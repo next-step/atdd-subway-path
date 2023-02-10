@@ -66,6 +66,8 @@ public class Line {
             if (isUpStationId(section.getDownStation().getId())) {
                 // 노선의 맨 앞에 구간 추가
                 sections.addFirst(section);
+            } else {
+                sections.addLast(section);
             }
         } else {
             sections.addLast(section);

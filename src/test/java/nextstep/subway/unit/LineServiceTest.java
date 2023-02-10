@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @SpringBootTest
 @Transactional
@@ -27,6 +29,9 @@ public class LineServiceTest {
 
     @Autowired
     private LineService lineService;
+
+    @Autowired
+    private EntityManager em;
 
     private Line 신분당선;
 
@@ -98,6 +103,32 @@ public class LineServiceTest {
             sa.assertThat(lineResponse.getStations()).usingRecursiveComparison().isEqualTo(List.of(StationResponse.from(강남역), StationResponse.from(양재역)));
         });
     }
+
+    @Test
+    void getSections() {
+        // given
+        강남역 = stationRepository.save(강남역);
+        양재역 = stationRepository.save(양재역);
+        Station 청계산역 = stationRepository.save(new Station("청계산역"));
+        LineRequest lineRequest = new LineRequest(신분당선.getName(), 신분당선.getColor(), 강남역.getId(), 양재역.getId(), distance);
+
+
+        // when
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+        lineService.addSection(lineResponse.getId(), new SectionRequest(양재역.getId(), 청계산역.getId(), 10));
+        em.flush();
+        em.clear();
+
+        Line line = lineRepository.findById(lineResponse.getId()).orElseThrow();
+        // then
+        SoftAssertions.assertSoftly((sa) -> {
+            sa.assertThat(line.getName()).isEqualTo(신분당선.getName());
+            sa.assertThat(line.getColor()).isEqualTo(신분당선.getColor());
+        });
+        assertThat(line.getStations()).usingRecursiveComparison()
+                .isEqualTo(List.of(강남역, 양재역, 청계산역));
+    }
+
 
     @Test
     void deleteSection() {

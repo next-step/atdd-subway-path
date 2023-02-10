@@ -15,8 +15,10 @@ class SectionsTest {
         Sections sections = new Sections();
         Section section1 = new Section(new Station("강남역"), new Station("양재역"), 10);
         Section section2 = new Section(new Station("양재역"), new Station("청계산역"), 10);
+        Section section3 = new Section(new Station("청계산역"), new Station("정자역"), 10);
         sections.addLast(section1);
         sections.addLast(section2);
+        sections.addLast(section3);
 
         // when
         List<Station> stations = sections.getStations();
@@ -24,6 +26,6 @@ class SectionsTest {
         // then
         Assertions.assertThat(stations)
                 .map(Station::getName)
-                .containsExactly("강남역", "양재역", "청계산역");
+                .containsExactly("강남역", "양재역", "청계산역", "정자역");
     }
 }
