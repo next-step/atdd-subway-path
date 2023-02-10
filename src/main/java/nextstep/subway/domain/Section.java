@@ -62,4 +62,20 @@ public class Section {
     public void setLine(Line line) {
         this.line = line;
     }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public void minusDistance(int distance) {
+        this.distance -= distance;
+    }
 }

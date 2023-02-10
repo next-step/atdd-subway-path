@@ -44,9 +44,10 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
+        Line result = lineRepository.findById(이호선.getId()).get();
         assertAll(() -> {
-            assertThat(이호선.getSections()).hasSize(1);
-            assertThat(이호선.getStations()).containsExactlyElementsOf(List.of(강남역, 역삼역));
+            assertThat(result.getSections()).hasSize(1);
+            assertThat(result.getStations()).containsExactlyElementsOf(List.of(강남역, 역삼역));
         });
     }
 
@@ -91,7 +92,6 @@ public class LineServiceTest {
         assertThat(lines).hasSize(2);
     }
 
-    //updateLine
     @Test
     void updateLine() {
         //given
@@ -107,7 +107,6 @@ public class LineServiceTest {
         assertThat(line.getColor()).isEqualTo(lineRequest.getColor());
     }
 
-    //deleteLine
     @Test
     void deleteLine() {
         //given
@@ -120,7 +119,6 @@ public class LineServiceTest {
         assertThat(lineRepository.findById(이호선.getId())).isEmpty();
     }
 
-    //deleteSection
     @Test
     void deleteSection() {
         //given

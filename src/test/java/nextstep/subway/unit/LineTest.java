@@ -64,6 +64,7 @@ class LineTest {
      *  강남역 --- 역삼역 --- 삼성역
      */
     @Test
+    @Deprecated
     void addSection_When_중간역에_추가하면_Then_ThrownException() {
         //given
         Station 선릉역 = new Station(3L, "선릉역");
