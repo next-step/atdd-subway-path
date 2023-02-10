@@ -1,8 +1,15 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import nextstep.subway.domain.sections.Sections;
 
 @Entity
 public class Line {
@@ -12,42 +19,72 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section, this);
+    }
+
+    public void updateLine(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+
+        if (color != null) {
+            this.color = color;
+        }
+    }
+
+    public void deleteSection(Long stationId) {
+        sections.deleteSection(stationId);
+    }
+
+    public boolean canAddSection(Long upStationId, Long downStationId, int distance) {
+        return upStationId != null && downStationId != null && distance != 0;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public List<Section> getSections() {
+        return sections.getValue();
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Line line = (Line)o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, sections);
     }
 }

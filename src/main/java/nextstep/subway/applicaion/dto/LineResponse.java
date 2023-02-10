@@ -1,12 +1,24 @@
 package nextstep.subway.applicaion.dto;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.List;
 
+import nextstep.subway.domain.Line;
+
 public class LineResponse {
-    private Long id;
-    private String name;
-    private String color;
-    private List<StationResponse> stations;
+    private final Long id;
+    private final String name;
+    private final String color;
+    private final List<StationResponse> stations;
+
+    public static LineResponse createResponse(Line line) {
+        List<StationResponse> stationResponses = line.getStations().stream()
+            .map(StationResponse::createResponse)
+            .collect(toList());
+
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
+    }
 
     public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
