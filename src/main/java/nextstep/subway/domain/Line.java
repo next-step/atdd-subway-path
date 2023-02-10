@@ -61,21 +61,7 @@ public class Line {
     }
 
     public List<Station> getAllStations() {
-        // list of stations that first is upStation and last is downStation
-        Section firstSection = getFirstSection();
-        Section lastSection = getLastSection();
-
-        // order all stations by firstSection and lastSection
-        LinkedList<Station> stations = new LinkedList<>();
-        while (true) {
-            stations.add(firstSection.getUpStation());
-            stations.add(firstSection.getDownStation());
-            if (firstSection.equals(lastSection)) {
-                break;
-            }
-            firstSection = getSectionByUpStation(firstSection.getDownStation());
-        }
-        return stations.stream().distinct().collect(Collectors.toList());
+        return sections.getAllStations();
     }
 
     public void addSection(Section section) {

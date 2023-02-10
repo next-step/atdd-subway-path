@@ -8,8 +8,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -30,6 +32,24 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public List<Station> getAllStations() {
+        // list of stations that first is upStation and last is downStation
+        Section firstSection = getFirstSection();
+        Section lastSection = getLastSection();
+
+        // order all stations by firstSection and lastSection
+        LinkedList<Station> stations = new LinkedList<>();
+        while (true) {
+            stations.add(firstSection.getUpStation());
+            stations.add(firstSection.getDownStation());
+            if (firstSection.equals(lastSection)) {
+                break;
+            }
+            firstSection = getSectionByUpStation(firstSection.getDownStation());
+        }
+        return stations.stream().distinct().collect(Collectors.toList());
     }
 
     public void addSection(Line line, Section section) {
@@ -146,6 +166,12 @@ public class Sections {
                 .orElseThrow(() -> new NotFoundException("Section not found."));
     }
 
+    private Section getSectionByDownStation(Station station) {
+        return sections.stream().filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Section not found."));
+    }
+
     public int size() {
         return sections.size();
     }
@@ -153,12 +179,51 @@ public class Sections {
     private static final int MIN_SECTION_SIZE_OF_LINE = 1;
 
     public void removeSection(Station deleteStation) {
+        validateCanRemoveSection(deleteStation);
+
+        if (isUpStation(deleteStation)) {
+            sections.remove(getSectionByUpStation(deleteStation));
+            return;
+        }
+
+        if (isDownStation(deleteStation)) {
+            sections.remove(getSectionByDownStation(deleteStation));
+            return;
+        }
+
+        Section upSection = getSectionByDownStation(deleteStation);
+        Section downSection = getSectionByUpStation(deleteStation);
+
+        Section mergedSection = new Section(
+                upSection.getLine(),
+                upSection.getUpStation(),
+                downSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance()
+        );
+
+        sections.add(mergedSection);
+        sections.removeAll(List.of(upSection, downSection));
+    }
+
+    private void validateCanRemoveSection(Station deleteStation) {
+        if (sections.isEmpty() || isNotContainStation(deleteStation)) {
+            throw new CannotDeleteSectionException("Station is not registered in the line.");
+        }
+
         if (sections.size() == MIN_SECTION_SIZE_OF_LINE) {
             throw new CannotDeleteSectionException("Line has only 1 section");
         }
-        if (!getLastSection().isDownStation(deleteStation)) {
-            throw new CannotDeleteSectionException("Station that trying to delete is not downStation of this line.");
-        }
-        sections.remove(getLastSection());
+    }
+
+    private boolean isNotContainStation(Station deleteStation) {
+        return !getAllStations().contains(deleteStation);
+    }
+
+    private boolean isUpStation(Station station) {
+        return getUpStation().equals(station);
+    }
+
+    private boolean isDownStation(Station station) {
+        return getDownStation().equals(station);
     }
 }

@@ -1,15 +1,14 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 import nextstep.subway.exception.BadRequestException;
+import nextstep.subway.exception.CannotDeleteSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -246,9 +245,10 @@ class LineTest {
 
         // when
         Station 민정역 = new Station("민정역");
-        이호선.removeSection(민정역);
 
         // then
-        assertThrows(DeletedStationNotRegisteredInLineException.class, () -> 이호선.removeSection(민정역));
+        assertThatCode(() -> 이호선.removeSection(민정역))
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage("Station is not registered in the line.");
     }
 }

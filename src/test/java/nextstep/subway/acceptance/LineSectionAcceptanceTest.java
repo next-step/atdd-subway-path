@@ -165,7 +165,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선, 양재역);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(신분당선);
