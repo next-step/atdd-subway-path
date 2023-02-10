@@ -26,6 +26,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
+     *
+     * 강남역 <---10---> 양재역
      */
     @BeforeEach
     public void setUp() {
@@ -39,20 +41,156 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선의 하행 종착역이, 상행역인 구간을
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
+     *
+     * As-is
+     *                   양재역 <----6----> 정자역
+     *                                     ↓
+     * 강남역 <----10----> 양재역
+     *
+     * To-be
+     * 강남역 <----10----> 양재역 <----6----> 정자역
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("지하철 노선에 새로운 꼬리 구간을 등록")
     @Test
-    void addLineSection() {
-        // when
+    void extendSection() {
+        // Given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // When
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
 
-        // then
+        // Then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선의 상행 종착역이, 상행역인 구간을
+     * When 지하철 노선에 새로운 구간 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     *
+     * As-is
+     * 강남역 <----6----> 정자역
+     *                    ↓
+     * 강남역 <---------10---------> 양재역
+     *
+     * To-be
+     * 강남역 <----6----> 정자역 <-4-> 양재역
+     */
+    @DisplayName("지하철 노선에 새로운 사이 구간을 상행역 기준으로 등록")
+    @Test
+    void betweenExtendSectionByUpStation() {
+    }
+
+    /**
+     * Given 지하철 노선의 하행 종착역이, 하행역인 구간을
+     * When 지하철 노선에 새로운 구간 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     *
+     * As-is
+     *            정자역 <----6----> 양재역
+     *              ↓
+     * 강남역 <---------10---------> 양재역
+     *
+     * To-be
+     * 강남역 <-4-> 정자역 <----6----> 양재역
+     */
+    @DisplayName("지하철 노선에 새로운 꼬리 구간을 하행역 기준으로 등록")
+    @Test
+    void betweenExtendSectionByDownStation() {
+    }
+
+    /**
+     * Given 기존 구간과 같은 길이의 구간을
+     * When 지하철 노선에 새로운 구간 추가를 요청 하면
+     * Then 예외가 발생한다
+     *
+     * As-is
+     * 강남역 <--------6-------> 정자역
+     *                           ↓
+     *                           X
+     * 강남역 <--------6-------> 양재역
+     */
+    @DisplayName("기존 구간과 같은 길이 구간은 등록 불가")
+    @Test
+    void exceptionWhenConflictDistance() {
+    }
+
+    /**
+     * Given 기존 구간보다 큰 길이의 구간을
+     * When 지하철 노선에 새로운 구간 추가를 요청 하면
+     * Then 예외가 발생한다
+     *
+     * 강남역 <------------12-----------> 정자역
+     *                                    ↓
+     *                                    X
+     * 강남역 <--------6-------> 양재역
+     */
+    @DisplayName("기존 구간보다 긴 길이 구간은 등록 불가")
+    @Test
+    void exceptionWhenExceededDistance() {
+    }
+
+    /**
+     * Given 노선에 이미 등록되어있는 역의 구간을
+     * When 지하철 노선에 새로운 구간 추가를 요청 하면
+     * Then 예외가 발생한다
+     *
+     * 강남역 <--------6-------> 양재역
+     *   ↓                       ↓
+     *   X                       X
+     * 강남역 <--------6-------> 양재역
+     */
+    @DisplayName("노선에 모두 존재하는 역들로 이루어진 구간은 등록 불가")
+    @Test
+    void exceptionWhenRequestStationsAreAlreadyResister() {
+    }
+
+    /**
+     * Given 노선의 상행 종착역이, 하행역인 구간을
+     * When 지하철 노선에 새로운 구간 추가를 요청 하면
+     * Then 노선에 새로운 구간이 추가된다
+     *
+     * As-is
+     * 정자역 <--6--> 강남역
+     *   ↓
+     *              강남역 <--------10-------> 양재역
+     *
+     * To-be
+     * 정자역 <--6--> 강남역 <--------10-------> 양재역
+     */
+    @DisplayName("지하철 노선에 새로운 머리 구간을 등록")
+    @Test
+    void leftExtendSection() {
+    }
+
+    /**
+     * Given 노선에 존재하지 않는 역들로 구성된 구간을
+     * When 지하철 노선에 새로운 구간 추가를 요청 하면
+     * Then 예외가 발생한다
+     *
+     *       부산역 <---6---> 강원역
+     *         ↓              ↓
+     *         X              X
+     * 강남역 <---6---> 정자역 <-4-> 양재역
+     */
+    @DisplayName("노선에 모두 존재하지 않는 역들로 이루어진 구간은 등록 불가")
+    @Test
+    void exceptionWhenRequestStationsNotExistOnLine() {
+    }
+
+    /**
+     * Given 노선에 새로운 구간을 추가하고
+     * When 지하철 노선 조회를 요청 하면
+     * Then 상행 종착역에서 시작하여 하행 종착역을 끝으로 하는 순서로 응답된다
+     */
+    @DisplayName("노선 조회시, 시작을 상행 종착역, 끝을 하행 종착역으로 하는 순서를 보장한다.")
+    @Test
+    void ensureSequentialOrderStations() {
     }
 
     /**
