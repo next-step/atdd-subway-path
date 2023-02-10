@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 @Getter
@@ -51,10 +52,23 @@ public class Sections {
     }
 
     void remove(final Station station) {
-        if (!getLastDownSection().getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        final List<Section> sections = this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station) ||
+                        section.getDownStation().equals(station))
+                .collect(Collectors.toList());
+        if (sections.size() > 1) {
+            final Section firstSection = sections.stream()
+                    .filter(section -> section.getDownStation().equals(station))
+                    .findFirst().get();
+            final Section secondSection = sections.stream()
+                    .filter(section -> section.getUpStation().equals(station))
+                    .findFirst().get();
+            this.sections.remove(firstSection);
+            this.sections.remove(secondSection);
+            this.sections.add(new Section(firstSection.getLine(), firstSection.getUpStation(), secondSection.getDownStation(), firstSection.getDistance() + secondSection.getDistance()));
+            return;
         }
-        sections.remove(sections.size() - 1);
+        this.sections.remove(getSection(station));
     }
 
     private void validateUpStationAndDownStation(final Station upStation, final Station downStation) {
@@ -124,5 +138,12 @@ public class Sections {
             return null;
         }
         return findSection.get();
+    }
+
+    private Section getSection(final Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station) ||
+                        section.getDownStation().equals(station))
+                .findFirst().get();
     }
 }
