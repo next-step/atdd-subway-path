@@ -20,8 +20,8 @@ public class Sections {
             sections.add(section);
             return;
         }
-        List<Section> upStationSection = findByStation(section.getUpStation());
-        List<Section> downStationSection = findByStation(section.getDownStation());
+        List<Section> upStationSection = getSectionsByStation(section.getUpStation());
+        List<Section> downStationSection = getSectionsByStation(section.getDownStation());
 
         validateAddSection(upStationSection, downStationSection);
 
@@ -71,7 +71,7 @@ public class Sections {
     }
 
     private Section findDownStationSection(final Station downStation) {
-        return findByStation(downStation).stream()
+        return getSectionsByStation(downStation).stream()
                 .filter(section -> section.isDownStation(downStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("역을 하행선으로 하는 구간이 존재하지 않습니다."));
@@ -126,13 +126,13 @@ public class Sections {
     }
 
     private Section findUpStationSection(final Station upStation) {
-        return findByStation(upStation).stream()
+        return getSectionsByStation(upStation).stream()
                 .filter(section -> section.isUpStation(upStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("역을 상행선으로 하는 구간이 존재하지 않습니다."));
     }
 
-    public List<Section> findByStation(final Station station) {
+    private List<Section> getSectionsByStation(final Station station) {
         return sections.stream()
                 .filter(s -> s.isContain(station))
                 .collect(Collectors.toUnmodifiableList());

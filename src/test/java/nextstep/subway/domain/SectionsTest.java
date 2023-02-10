@@ -146,18 +146,6 @@ class SectionsTest {
             assertThat(sections.getSections()).isEmpty();
         }
 
-        @DisplayName("특정 역이 포함된 구간 목록을 조회한다.")
-        @Test
-        void findSectionByStation() {
-            Sections sections = new Sections();
-            Section section1 = new Section(line, 강남역, 역삼역, 10);
-            Section section2 = new Section(line, 역삼역, 선릉역, 5);
-            sections.add(section1);
-            sections.add(section2);
-
-            assertThat(sections.findByStation(역삼역)).containsExactly(section1, section2);
-        }
-
         @DisplayName("구간 목록의 역 목록을 조회한다.")
         @Test
         void getStations() {
