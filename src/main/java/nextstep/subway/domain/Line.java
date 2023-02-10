@@ -45,10 +45,9 @@ public class Line {
     }
 
     public void setName(final String name) {
-        if (name == null) {
-            throw new IllegalArgumentException("노선 이름은 null일 수 없습니다.");
+        if (name != null) {
+            this.name = name;
         }
-        this.name = name;
     }
 
     public String getColor() {
@@ -56,10 +55,9 @@ public class Line {
     }
 
     public void setColor(final String color) {
-        if (color == null) {
-            throw new IllegalArgumentException("노선 색깔은 null일 수 없습니다.");
+        if (color != null) {
+            this.color = color;
         }
-        this.color = color;
     }
 
     public List<Section> getSections() {
