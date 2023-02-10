@@ -90,7 +90,7 @@ public class Section {
     }
 
     public boolean isSameUpStationId(Long stationId) {
-        return  getUpStationId().equals(stationId);
+        return getUpStationId().equals(stationId);
     }
 
     private boolean isSameDownStationId(Long stationId) {
@@ -108,5 +108,14 @@ public class Section {
 
     public boolean isFirst() {
         return orderSeq == 0;
+    }
+
+    public void plusDistance(int distance) {
+        this.distance += distance;
+    }
+
+    public void deleteMiddleStation(Section target) {
+        plusDistance(target.getDistance());
+        this.downStation = target.getDownStation();
     }
 }

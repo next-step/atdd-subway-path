@@ -21,11 +21,16 @@ public class SectionFixture {
     }
 
     public static Section createSection(Long lineId, Long upStationId, Long downStationId, int distance) {
+        return createSection(lineId, upStationId, downStationId, distance, 0);
+    }
+
+    public static Section createSection(Long lineId, Long upStationId, Long downStationId, int distance, int orderSeq) {
         return Section.builder()
                 .id(lineId)
                 .upStation(new Station(upStationId, "역2"))
                 .downStation(new Station(downStationId, "역1"))
                 .distance(distance)
+                .orderSeq(orderSeq)
                 .build();
     }
 }
