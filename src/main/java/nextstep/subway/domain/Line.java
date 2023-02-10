@@ -65,4 +65,14 @@ public class Line {
 
         return stations;
     }
+
+    public void removeStation(Station station) {
+        int index = sections.size() - 1;
+
+        if (!sections.get(index).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(index);
+    }
 }
