@@ -48,18 +48,22 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section up(Section newSection) {
-        return new Section(line,
-                upStation,
-                newSection.upStation,
-                distance - newSection.distance);
-    }
+    public Section to(Section newSection) {
+        if (isSameUpStation(newSection)) {
+            return new Section(line,
+                    newSection.downStation,
+                    downStation,
+                    distance - newSection.distance);
+        }
 
-    public Section down(Section newSection) {
-        return new Section(line,
-                newSection.downStation,
-                downStation,
-                distance - newSection.distance);
+        if (isSameDownStation(newSection)) {
+            return new Section(line,
+                    upStation,
+                    newSection.upStation,
+                    distance - newSection.distance);
+        }
+
+        throw new SubwayException("구간 사이에 생성할 수 없습니다.");
     }
 
     public Long getId() {
@@ -72,6 +76,10 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public boolean isDownStationId(long stationId) {

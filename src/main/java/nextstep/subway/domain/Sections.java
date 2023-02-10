@@ -16,10 +16,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public List<Section> getSections() {
-        return sections;
-    }
-
     public List<Station> stations() {
         List<Station> stations = new ArrayList<>();
 
@@ -51,8 +47,7 @@ public class Sections {
 
         validate(section);
 
-        addUpSection(section);
-        addDownSection(section);
+        addBetweenSection(section);
         sections.add(section);
     }
 
@@ -106,34 +101,25 @@ public class Sections {
                 .findFirst();
     }
 
-    private void addUpSection(Section section) {
+    private void addBetweenSection(Section section) {
         sections.stream()
-                .filter(oldSection -> oldSection.isSameDownStation(section))
+                .filter(oldSection -> oldSection.isSameUpStation(section) ||
+                        oldSection.isSameDownStation(section))
                 .findFirst()
                 .ifPresent(oldSection -> {
-                    sections.add(oldSection.up(section));
-                    sections.remove(oldSection);
-                });
-    }
-
-    private void addDownSection(Section section) {
-        sections.stream()
-                .filter(oldSection -> oldSection.isSameUpStation(section))
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    sections.add(oldSection.down(section));
+                    sections.add(oldSection.to(section));
                     sections.remove(oldSection);
                 });
     }
 
     public void remove(long stationId) {
-        if (sections.size() == 1) {
-            throw new SubwayException("구간이 1개인 경우 삭제할 수 없습니다.");
+        if (sections.size() <= 1) {
+            throw new SubwayException("구간이 1개 이하인 경우 삭제할 수 없습니다.");
         }
 
         Section lastSection = findDownEndSection().orElseThrow(() -> new NotFoundException("마지막 구간을 찾을 수 없습니다."));
         if (!lastSection.isDownStationId(stationId)) {
-            throw new SubwayException("마지막 구간만 제거할 수 있습니다.");
+            throw new SubwayException(stationId + "번 역이 존재하지 않거나 마지막 구간이 아닙니다.");
         }
 
         sections.remove(lastSection);
