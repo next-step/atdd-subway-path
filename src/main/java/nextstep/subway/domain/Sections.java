@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import org.hibernate.boot.model.naming.IllegalIdentifierException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -52,6 +53,12 @@ public class Sections {
     }
 
     void remove(final Station station) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException();
+        }
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException();
+        }
         final List<Section> sections = this.sections.stream()
                 .filter(section -> section.getUpStation().equals(station) ||
                         section.getDownStation().equals(station))

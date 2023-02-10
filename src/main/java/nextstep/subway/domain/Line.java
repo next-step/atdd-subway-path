@@ -3,11 +3,8 @@ package nextstep.subway.domain;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -66,7 +63,7 @@ public class Line {
         return sections.getStations();
     }
 
-    public void removeLastSection(final Station station) {
+    public void removeSection(final Station station) {
         sections.remove(station);
     }
 }
