@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.service;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -35,19 +35,20 @@ public class LineServiceTest {
 
     @BeforeEach
     void setUp() {
-        강남역 = new Station(1L, "강남역");
-        역삼역 = new Station(2L, "역삼역");
+        강남역 = new Station("강남역");
+        역삼역 = new Station("역삼역");
 
         stationRepository.saveAll(List.of(강남역, 역삼역));
         line = lineRepository.save(new Line("2호선", "green"));
     }
 
+    @DisplayName("구간 추가")
     @Test
     void addSection() {
         SectionRequest request = new SectionRequest(강남역.getId(), 역삼역.getId(), 10);
 
         lineService.addSection(line.getId(), request);
 
-        assertThat(line.sections()).hasSize(1);
+        assertThat(line.getStations()).containsExactly(강남역, 역삼역);
     }
 }

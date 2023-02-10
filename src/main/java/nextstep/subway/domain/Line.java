@@ -34,10 +34,6 @@ public class Line {
         return color;
     }
 
-    public List<Section> sections() {
-        return sections.getSections();
-    }
-
     public List<Station> getStations() {
         return sections.stations();
     }

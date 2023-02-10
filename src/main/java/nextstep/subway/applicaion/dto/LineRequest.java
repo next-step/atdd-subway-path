@@ -7,6 +7,9 @@ public class LineRequest {
     private Long downStationId;
     private int distance;
 
+    private LineRequest() {
+    }
+
     public String getName() {
         return name;
     }

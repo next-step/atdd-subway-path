@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.domain;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 @DisplayName("구간 단위 테스트")
@@ -38,10 +37,7 @@ class LineTest {
     void addSection() {
         line.addSection(강남역, 역삼역, DEFAULT_DISTANCE);
 
-        assertAll(() -> {
-            assertThat(line.sections()).hasSize(1);
-            assertThat(line.getStations()).contains(강남역, 역삼역);
-        });
+        assertThat(line.getStations()).contains(강남역, 역삼역);
     }
 
     @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가한다.")

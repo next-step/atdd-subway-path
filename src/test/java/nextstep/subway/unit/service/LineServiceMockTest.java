@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.service;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
@@ -34,6 +34,7 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
+    @DisplayName("구간 추가")
     @Test
     void addSection() {
         long 강남역_ID = 1L;
