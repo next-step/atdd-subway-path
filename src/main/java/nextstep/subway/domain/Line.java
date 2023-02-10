@@ -64,14 +64,25 @@ public class Line {
 
             // 추가하행역이 노선의 상행역인 경우
             if (isUpStationId(section.getDownStation().getId())) {
-                // 노선의 맨 앞에 구간 추가
-                sections.addFirst(section);
-            } else {
                 sections.addLast(section);
+            } else if (isDownStaionId(section.getUpStation().getId())) {
+                sections.addLast(section);
+            } else {
+                Section existSection = getSectionHasSameUpStation(section.getUpStation());
+                sections.remove(existSection);
+                sections.addLast(section);
+                sections.addLast(new Section(this, section.getDownStation(), existSection.getDownStation(),
+                        existSection.getDistance() - section.getDistance()));
             }
         } else {
             sections.addLast(section);
         }
+    }
+
+    private Section getSectionHasSameUpStation(Station upStation) {
+        return getSections().stream()
+                .filter(s -> s.getUpStation().equals(upStation))
+                .findFirst().get();
     }
 
     private boolean doesNotContainStationId(Long id) {
@@ -79,6 +90,10 @@ public class Line {
         return stations.stream()
                 .map(Station::getId)
                 .anyMatch((stationId) -> stationId.equals(id));
+    }
+
+    private boolean isDownStaionId(Long id) {
+        return sections.getLastSection().getDownStation().getId().equals(id);
     }
 
     private boolean isUpStationId(long id) {

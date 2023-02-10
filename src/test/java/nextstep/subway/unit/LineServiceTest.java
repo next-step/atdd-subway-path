@@ -90,7 +90,28 @@ public class LineServiceTest {
         flushAndClearEntityManger();
 
         // then
-        // line.getSections 메서드를 통해 검증
+        신분당선 = lineRepository.findById(line.getId()).orElseThrow();
+        assertThat(신분당선.getStations()).containsExactly(신논현역, 강남역, 양재역);
+    }
+
+    @Test
+    @DisplayName("노선의 기존구간의 중간에 새구간이 삽입되는 경우 테스트")
+    void addSectionMiddle() {
+        // given
+        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        강남역 = stationRepository.save(강남역);
+        양재역 = stationRepository.save(양재역);
+        Station 신논현역 = stationRepository.save(new Station("신논현역"));
+        Line line = lineRepository.save(신분당선);
+        SectionRequest sectionRequest1 = new SectionRequest(신논현역.getId(), 양재역.getId(), distance);
+        SectionRequest sectionRequest2 = new SectionRequest(신논현역.getId(), 강남역.getId(), distance);
+        lineService.addSection(line.getId(), sectionRequest1);
+
+        // when
+        lineService.addSection(line.getId(), sectionRequest2);
+        flushAndClearEntityManger();
+
+        // then
         신분당선 = lineRepository.findById(line.getId()).orElseThrow();
         assertThat(신분당선.getStations()).containsExactly(신논현역, 강남역, 양재역);
     }

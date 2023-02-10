@@ -4,7 +4,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -20,11 +19,26 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        return sections;
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Section> sectionResults = new ArrayList<>();
+
+        Section currSection = getFirstSection();
+        sectionResults.add(currSection);
+        while (true) {
+            Optional<Section> nextStationOpt = getNextSection(currSection);
+            if (nextStationOpt.isEmpty()) {
+                break;
+            }
+            currSection = nextStationOpt.get();
+            sectionResults.add(currSection);
+        }
+        return sectionResults;
     }
 
     public Section getLastSection() {
-        return sections.get(getLastIndex());
+        return getSections().get(getLastIndex());
     }
 
     public List<Station> getStations() {
@@ -84,7 +98,7 @@ public class Sections {
         return new HashSet<>(existStations).containsAll(stations);
     }
 
-    public void addFirst(Section section) {
-        sections.add(0, section);
+    public void remove(Section existSection) {
+        sections.remove(existSection);
     }
 }
