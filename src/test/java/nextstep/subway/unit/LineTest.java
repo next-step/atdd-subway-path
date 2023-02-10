@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nextstep.subway.domain.Line.EXCEPTION_MESSAGE_CAN_REMOVE_TAIL_STATION;
+import static nextstep.subway.domain.Line.EXCEPTION_MESSAGE_MINIMUM_ONE_SECTION_REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -86,7 +88,7 @@ class LineTest {
         // When & Then
         assertThatThrownBy(() -> 이호선.removeSection(삼성역))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 노선의 하행종점역만 제거할 수 있습니다.");
+                .hasMessage(EXCEPTION_MESSAGE_CAN_REMOVE_TAIL_STATION);
     }
 
     @DisplayName("지하철노선의 구간이 1개만 존재한다면, 구간을 제거할 수 없다.")
@@ -95,6 +97,6 @@ class LineTest {
         // When & Then
         assertThatThrownBy(() -> 이호선.removeSection(삼성역))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("지하철노선은 1개 구간 이하로 구성될 수 없습니다.");
+                .hasMessage(EXCEPTION_MESSAGE_MINIMUM_ONE_SECTION_REQUIRED);
     }
 }

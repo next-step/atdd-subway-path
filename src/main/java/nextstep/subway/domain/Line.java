@@ -11,6 +11,9 @@ import java.util.List;
 
 @Entity
 public class Line {
+    public static final String EXCEPTION_MESSAGE_MINIMUM_ONE_SECTION_REQUIRED = "지하철노선은 1개 구간 이하로 구성될 수 없습니다.";
+    public static final String EXCEPTION_MESSAGE_CAN_REMOVE_TAIL_STATION = "해당 노선의 하행종점역만 제거할 수 있습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -73,14 +76,14 @@ public class Line {
 
     private void verifyMinimumSectionCount() {
         if (sections.size() == 1) {
-            throw new IllegalStateException("지하철노선은 1개 구간 이하로 구성될 수 없습니다.");
+            throw new IllegalStateException(EXCEPTION_MESSAGE_MINIMUM_ONE_SECTION_REQUIRED);
         }
     }
 
     private void verifyTailStation(Station station) {
         Station tailStation = getTailStation();
         if (!tailStation.equals(station)) {
-            throw new IllegalArgumentException("해당 노선의 하행종점역만 제거할 수 있습니다.");
+            throw new IllegalArgumentException(EXCEPTION_MESSAGE_CAN_REMOVE_TAIL_STATION);
         }
     }
 
