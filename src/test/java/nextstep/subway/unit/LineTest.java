@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class LineTest {
-
-    @Autowired
-    StationService stationService;
+    
     @Test
     @DisplayName("section을 추가할 수 있다.")
     void addSection() {
@@ -19,6 +17,7 @@ class LineTest {
         Station firstStation = new Station();
         Station secondStation = new Station();
         Section section = new Section(line, firstStation, secondStation, 10);
+        stationService.create
     }
 
     @Test
