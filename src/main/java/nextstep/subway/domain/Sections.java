@@ -27,19 +27,43 @@ public class Sections {
         return sections.get(getLastIndex());
     }
 
-    public Section getFirstSection() {
-        return sections.get(0);
-    }
-
     public List<Station> getStations() {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
-        LinkedList<Station> stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toCollection(LinkedList::new));
-        stations.addFirst(sections.get(0).getUpStation());
+        List<Station> stations = new ArrayList<>();
+
+        Section currSection = getFirstSection();
+        stations.add(currSection.getUpStation());
+        while (true) {
+            stations.add(currSection.getDownStation());
+            Optional<Section> nextStationOpt = getNextSection(currSection);
+            if (nextStationOpt.isEmpty()) {
+                break;
+            }
+            currSection = nextStationOpt.get();
+        }
         return stations;
+    }
+
+    private Optional<Section> getNextSection(Section currSection) {
+        Station downStation = currSection.getDownStation();
+        return sections.stream()
+                .filter(section -> {
+                    Station upStation = section.getUpStation();
+                    return downStation.equals(upStation);
+                })
+                .findFirst();
+    }
+
+    public Section getFirstSection() {
+        return sections.stream()
+                .filter(section -> {
+                    Station upStation = section.getUpStation();
+                    return sections.stream()
+                            .map(Section::getDownStation)
+                            .noneMatch(upStation::equals);
+                }).findFirst().get();
     }
 
     public void removeLastSection() {

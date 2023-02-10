@@ -79,7 +79,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 노선의 상행역이 구간의 하행역인 구간을 추가할 때
      * Then 노선 맨 앞에 구간이 추가된다.
      */
-    @DisplayName("구간의 하행역이 기존구간의 하행종점으로 등록되는 경우 테스트")
+    @DisplayName("구간의 상행역이 기존구간의 상행종점으로 등록되는 경우 테스트")
     @Test
     void addSectionFirst() {
         // given
@@ -93,7 +93,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역, 정자역);
     }
 
     /**
