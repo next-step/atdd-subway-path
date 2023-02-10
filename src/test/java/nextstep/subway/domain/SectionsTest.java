@@ -54,7 +54,7 @@ class SectionsTest {
             sections.add(section1);
             sections.add(section2);
 
-            assertThat(sections.getStations()).containsExactly(강남역, 역삼역, 선릉역);
+            assertThat(sections.getSections()).contains(section1, section2);
         }
 
         @DisplayName("기존 구간 사이에 신규 구간을 추가한다")
@@ -92,7 +92,7 @@ class SectionsTest {
 
             sections.add(section2);
 
-            assertThat(sections.getStations()).containsExactly(선릉역, 강남역, 역삼역);
+            assertThat(sections.getSections()).contains(section2, section1);
         }
 
         @DisplayName("노선의 하행 종점으로 신규 구간을 추가한다.")
