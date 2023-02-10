@@ -5,6 +5,7 @@ import nextstep.subway.common.ErrorMessage;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
@@ -55,7 +56,19 @@ public class Line {
     }
 
     public void addSections(Section section) {
+        Section lastSection = getLastStation();
+        if (lastSection != null && !Objects.equals(lastSection.getDownStation(), section.getUpStation())) {
+            throw new IllegalStateException(ErrorMessage.ENOUGH_ADD_CONNECT.toString());
+        }
         sections.add(section);
+    }
+
+    private Section getLastStation() {
+        int index = sections.size() - 1;
+        if (index == -1) {
+            return null;
+        }
+        return sections.get(index);
     }
 
     public List<Station> getStations() {
@@ -71,7 +84,7 @@ public class Line {
     public void removeStation(Station station) {
         int index = sections.size() - 1;
 
-        if (index == 0) {
+        if (index < 1) {
             throw new IllegalStateException(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
         }
         if (!sections.get(index).getDownStation().equals(station)) {
