@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.common.ErrorMessage;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,8 +71,11 @@ public class Line {
     public void removeStation(Station station) {
         int index = sections.size() - 1;
 
+        if (index == 0) {
+            throw new IllegalStateException(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
+        }
         if (!sections.get(index).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ErrorMessage.ENOUGH_REMOVE_DOWN.toString());
         }
 
         sections.remove(index);
