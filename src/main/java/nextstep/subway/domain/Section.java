@@ -1,9 +1,17 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,10 +30,6 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -33,23 +37,16 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Section section = (Section) o;
+        return distance == section.distance && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }
 
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    @Override
+    public int hashCode() {
+        return Objects.hash(line, upStation, downStation, distance);
     }
 }
