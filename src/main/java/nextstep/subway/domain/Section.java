@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.CanNotSplitSectionException;
+
 import javax.persistence.*;
 
 @Entity
@@ -20,17 +22,38 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section split(Section that) {
+        if (isSameUpStation(that) && !isSameDownStation(that)) {
+            return new Section(line, that.getDownStation(), this.downStation, distance.minus(that.distance));
+        }
+
+        if (!isSameUpStation(that) && isSameDownStation(that)) {
+            return new Section(line, upStation, that.upStation, distance.minus(that.distance));
+        }
+
+        throw new CanNotSplitSectionException("상행역과 하행역 둘 중 하나만 같아야 함");
+    }
+
+    private boolean isSameUpStation(Section that) {
+        return this.upStation.equals(that.upStation);
+    }
+
+    private boolean isSameDownStation(Section that) {
+        return this.downStation.equals(that.downStation);
     }
 
     public Long getId() {
@@ -49,7 +72,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 }
