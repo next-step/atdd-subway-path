@@ -10,15 +10,11 @@ import static nextstep.subway.ui.error.exception.ErrorCode.*;
 public class SectionValidator {
 
 	public static void addSectionValidator(Line line, Station upStation, Station downStation) {
-		if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(upStation)) {
-			throw new InvalidValueException(STATION_NOT_FINAL);
-		}
 		for (Section section : line.getSections()) {
 			if (section.getDownStation().equals(downStation) || section.getUpStation().equals(downStation)) {
 				throw new InvalidValueException(ALREADY_REGISTERED_STAION);
 			}
 		}
-
 	}
 
 	public static void deleteSectionValidator(Line line, Station station) {
