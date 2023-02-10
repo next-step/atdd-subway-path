@@ -1,11 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import nextstep.subway.exception.*;
 
 @Entity
@@ -64,8 +61,15 @@ public class Line {
             if (!sections.checkExistStation(section.getUpStation()) && !sections.checkExistStation(section.getDownStation())) {
                 throw new SectionDoesNotHaveAlreadyCreateStationException();
             }
+
+            // 추가하행역이 노선의 상행역인 경우
+            if (isUpStationId(section.getDownStation().getId())) {
+                // 노선의 맨 앞에 구간 추가
+                sections.addFirst(section);
+            }
+        } else {
+            sections.addLast(section);
         }
-        sections.add(section);
     }
 
     private boolean doesNotContainStationId(Long id) {
@@ -75,8 +79,8 @@ public class Line {
                 .anyMatch((stationId) -> stationId.equals(id));
     }
 
-    private boolean isNotDownStationId(long id) {
-        return !sections.getLastSection().getDownStation().getId().equals(id);
+    private boolean isUpStationId(long id) {
+        return sections.getFirstSection().getUpStation().getId().equals(id);
     }
 
     public List<Station> getStations() {

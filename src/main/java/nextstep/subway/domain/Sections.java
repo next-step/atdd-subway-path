@@ -15,7 +15,7 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    public void add(Section Section) {
+    public void addLast(Section Section) {
         sections.add(Section);
     }
 
@@ -25,6 +25,10 @@ public class Sections {
 
     public Section getLastSection() {
         return sections.get(getLastIndex());
+    }
+
+    public Section getFirstSection() {
+        return sections.get(0);
     }
 
     public List<Station> getStations() {
@@ -54,5 +58,9 @@ public class Sections {
     public boolean containsStations(List<Station> stations) {
         List<Station> existStations = getStations();
         return new HashSet<>(existStations).containsAll(stations);
+    }
+
+    public void addFirst(Section section) {
+        sections.add(0, section);
     }
 }

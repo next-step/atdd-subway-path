@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class SectionsTest {
 
     @Test
@@ -17,8 +15,8 @@ class SectionsTest {
         Sections sections = new Sections();
         Section section1 = new Section(new Station("강남역"), new Station("양재역"), 10);
         Section section2 = new Section(new Station("양재역"), new Station("청계산역"), 10);
-        sections.add(section1);
-        sections.add(section2);
+        sections.addLast(section1);
+        sections.addLast(section2);
 
         // when
         List<Station> stations = sections.getStations();
