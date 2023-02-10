@@ -138,6 +138,14 @@ class SectionsTest {
             assertThat(sectionList).containsExactly(section);
         }
 
+        @DisplayName("비어있는 구간 목록 조회시 빈 리스트를 반환한다.")
+        @Test
+        void getStationsEmptySections() {
+            Sections sections = new Sections();
+
+            assertThat(sections.getSections()).isEmpty();
+        }
+
         @DisplayName("특정 역이 포함된 구간 목록을 조회한다.")
         @Test
         void findSectionByStation() {
