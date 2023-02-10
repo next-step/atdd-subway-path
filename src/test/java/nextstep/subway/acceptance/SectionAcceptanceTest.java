@@ -211,6 +211,34 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * When 지하철 노선의 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거에 실패한다
+     */
+    @DisplayName("지하철 노선에 구간이 하나일때 제거")
+    @Test
+    void removeLineSection4() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철 노선에 없는 역으로 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거에 실패한다
+     */
+    @DisplayName("지하철 노선에 없는 역을 제거")
+    @Test
+    void removeLineSection5() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 100L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
