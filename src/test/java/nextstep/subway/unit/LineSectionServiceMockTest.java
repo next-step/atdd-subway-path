@@ -60,6 +60,33 @@ class LineSectionServiceMockTest {
         );
     }
 
+    @DisplayName("노선의 구간을 삭제한다.")
+    @Test
+    void removeLineStation() {
+
+        final long 요청_호선 = 1L;
+        final SectionRequest 요청_구간 = new SectionRequest(1L, 2L, 10);
+        final Line line = new Line("2호선", "green");
+        final Station 강남역 = 역_생성(1L, "강남역");
+        final Station 잠실역 = 역_생성(2L, "잠실역");
+
+        when(stationService.findById(anyLong())).thenReturn(강남역)
+                .thenReturn(잠실역);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+
+        lineService.addSection(요청_호선, 요청_구간);
+
+        final InOrder inOrder = inOrder(stationService, lineRepository);
+        inOrder.verify(stationService, times(2)).findById(anyLong());
+        inOrder.verify(lineRepository, times(1)).findById(anyLong());
+
+        final List<Station> stations = line.convertToStation();
+        assertAll(
+                () -> assertThat(stations).hasSize(2),
+                () -> assertThat(stations).containsExactly(강남역, 잠실역)
+        );
+    }
+
     private Station 역_생성(final Long id, final String name) {
         final Station 역 = new Station(name);
         ReflectionTestUtils.setField(역, "id", id);

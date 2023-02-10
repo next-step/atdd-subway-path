@@ -116,17 +116,51 @@ class SectionsTest {
                 .hasMessage(NO_REGISTER_DISTANCE_GREATER_THAN.getMessage());
     }
 
-    @DisplayName("기존 등록된 구간을 삭제한다.")
+    @DisplayName("지하철 노선에 상행종점역 삭제한다.")
     @Test
-    void removeSection() {
-        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, 강남역, 양재역, 10);
-        final Sections 구간들 = 노선_구간들(노선_신분당선);
-        구간들.addSection(노선_신분당선, 양재역, 몽촌토성역, 10);
+    void removeLineUpStation() {
+        final Section 첫번째_구간 = 구간_생성(1L, 강남역, 양재역, 10);
+        final Section 두번째_구간 = 구간_생성(2L, 양재역, 몽촌토성역, 4);
+        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, List.of(첫번째_구간, 두번째_구간));
+        final Sections 구간들 = 노선_신분당선.getSections();
 
-        구간들.removeSection(몽촌토성역);
+        구간들.removeSectionByStation(강남역);
 
         assertAll(
-                () -> assertThat(구간들.getSections()).hasSize(1)
+                () -> assertThat(구간들.getSections()).hasSize(1),
+                () -> assertThat(구간들.findAllStationsOrderBy()).containsExactly(양재역, 몽촌토성역)
+        );
+    }
+
+    @DisplayName("지하철 노선에 중간역 삭제한다.")
+    @Test
+    void removeLineMiddleStation() {
+        final Section 첫번째_구간 = 구간_생성(1L, 강남역, 양재역, 10);
+        final Section 두번째_구간 = 구간_생성(2L, 양재역, 몽촌토성역, 4);
+        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, List.of(첫번째_구간, 두번째_구간));
+        final Sections 구간들 = 노선_신분당선.getSections();
+
+        구간들.removeSectionByStation(양재역);
+
+        assertAll(
+                () -> assertThat(구간들.getSections()).hasSize(1),
+                () -> assertThat(구간들.findAllStationsOrderBy()).containsExactly(강남역, 몽촌토성역)
+        );
+    }
+
+    @DisplayName("지하철 노선에 하행종점역 삭제한다.")
+    @Test
+    void removeLineDownStation() {
+        final Section 첫번째_구간 = 구간_생성(1L, 강남역, 양재역, 10);
+        final Section 두번째_구간 = 구간_생성(2L, 양재역, 몽촌토성역, 4);
+        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, List.of(첫번째_구간, 두번째_구간));
+        final Sections 구간들 = 노선_신분당선.getSections();
+
+        구간들.removeSectionByStation(몽촌토성역);
+
+        assertAll(
+                () -> assertThat(구간들.getSections()).hasSize(1),
+                () -> assertThat(구간들.findAllStationsOrderBy()).containsExactly(강남역, 양재역)
         );
     }
 
@@ -137,28 +171,29 @@ class SectionsTest {
         final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, List.of(첫번째_구간));
         final Sections 구간들 = 노선_구간들(노선_신분당선);
 
-        assertThatThrownBy(() -> 구간들.removeSection(양재역))
+        assertThatThrownBy(() -> 구간들.removeSectionByStation(양재역))
                 .isInstanceOf(NoDeleteOneSectionException.class)
                 .hasMessage(NO_DELETE_ONE_SECTION.getMessage());
     }
 
-    @DisplayName("노선 구간 제거 시 등록된 하행 종점역이 아니어서 구간 삭제가 불가능하다.")
-    @ParameterizedTest(name = "{0}은 노선의 하행종점역이 아닙니다.")
+    @DisplayName("노선 구간 제거 시 노선에 등록되지 않은 역은 삭제가 불가능하다.")
+    @ParameterizedTest(name = "{0}은 노선의 등록된 역이 아닙니다.")
     @MethodSource("provideDeleteStation")
     void error_removeSection_2(final Station deleteStation) {
-        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, 강남역, 양재역, 10);
-        final Sections 구간들 = 노선_구간들(노선_신분당선);
-        구간들.addSection(노선_신분당선, 양재역, 몽촌토성역, 10);
+        final Section 첫번째_구간 = 구간_생성(1L, 강남역, 양재역, 10);
+        final Section 두번째_구간 = 구간_생성(2L, 양재역, 몽촌토성역, 4);
+        final Line 노선_신분당선 = 노선_생성(1L, 신분당선, 빨간색, List.of(첫번째_구간, 두번째_구간));
+        final Sections 구간들 = 노선_신분당선.getSections();
 
-        assertThatThrownBy(() -> 구간들.removeSection(deleteStation))
+        assertThatThrownBy(() -> 구간들.removeSectionByStation(deleteStation))
                 .isInstanceOf(NoRegisterStationException.class)
-                .hasMessage(NO_REGISTER_LAST_LINE_STATION.getMessage());
+                .hasMessage(NO_REGISTER_LINE_STATION.getMessage());
     }
 
     private static Stream<Arguments> provideDeleteStation() {
         return Stream.of(
-                Arguments.of(강남역.getName(), 강남역),
-                Arguments.of(양재역.getName(), 양재역)
+                Arguments.of(검암역.getName(), 검암역),
+                Arguments.of(부평역.getName(), 부평역)
         );
     }
 

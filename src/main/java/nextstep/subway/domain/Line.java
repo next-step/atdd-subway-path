@@ -46,11 +46,11 @@ public class Line {
     }
 
     public void removeSection(final Station downStation) {
-        this.sections.remove(downStation);
+        this.sections.removeSectionByStation(downStation);
     }
 
     public List<Station> convertToStation() {
-        return this.sections.findAllStationsOrderBu();
+        return this.sections.findAllStationsOrderBy();
     }
 
     public Long getId() {

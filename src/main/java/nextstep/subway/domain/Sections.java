@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.error.SubwayError;
 import nextstep.subway.common.exception.*;
 import org.springframework.util.CollectionUtils;
 
@@ -40,22 +39,54 @@ public class Sections {
         }
     }
 
-    public void removeSection(final Station station) {
-        validateOnlyOneSection();
-        final Section lastSection = findLastSection();
-        validateMatchLastStation(lastSection, station);
-        this.sections.remove(lastSection);
+    public void removeSectionByStation(final Station station) {
+        validateRemoveSection();
+        if (canMatchUpStation(station)) return;
+        if (canMatchDownStation(station)) return;
+        if (canMatchMiddleStation(station)) return;
+        validateNoRegisterStation();
     }
 
-    public Section findByIndex(final int index) {
-        return this.sections.get(index);
+    private void validateNoRegisterStation() {
+        throw new NoRegisterStationException(NO_REGISTER_LINE_STATION);
     }
 
-    public void remove(final Station downStation) {
-        validateSections();
+    private boolean canMatchMiddleStation(final Station station) {
+        for (int index = 0; index < this.sections.size(); index++) {
+            if (canMatchMiddleStation(station, this.sections, index)) {
+                final Section beforeSection = this.sections.get(index);
+                final Section afterSection = this.sections.get(index + 1);
+                this.sections.remove(afterSection);
+                beforeSection.mergeSection(afterSection);
+                this.sections.set(index, beforeSection);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canMatchMiddleStation(final Station station, final List<Section> sections, final int index) {
+
+        return sections.get(index).matchDownStation(station) && sections.get(index + 1).matchUpStation(station);
+    }
+
+    private boolean canMatchDownStation(final Station station) {
         final int index = this.sections.size() - 1;
-        validateMatchStation(downStation, index);
-        this.sections.remove(index);
+        final Section lastSection = this.sections.get(index);
+        if (lastSection.matchDownStation(station)) {
+            this.sections.remove(lastSection);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean canMatchUpStation(final Station station) {
+        final Section firstSection = this.sections.get(0);
+        if (firstSection.matchUpStation(station)) {
+            this.sections.remove(firstSection);
+            return true;
+        }
+        return false;
     }
 
     public void addLine(final Line line) {
@@ -64,17 +95,25 @@ public class Sections {
         }
     }
 
-    private void validateMatchStation(final Station downStation, final int index) {
-        final Section section = findByIndex(index);
-        if (!section.getDownStation().equals(downStation)) {
-            throw new IllegalArgumentException();
+    public List<Station> convertToStations() {
+        if (CollectionUtils.isEmpty(this.sections)) {
+            return Collections.emptyList();
         }
+        final List<Station> stations = new ArrayList<>();
+        stations.add(this.sections.get(0).getUpStation());
+        List<Station> collect = this.sections
+                .stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+        stations.addAll(collect);
+        return stations;
     }
 
-    private void validateSections() {
-        if (this.sections.isEmpty()) {
-            throw new IllegalArgumentException();
+    public List<Station> findAllStationsOrderBy() {
+        if (CollectionUtils.isEmpty(this.sections)) {
+            return Collections.emptyList();
         }
+        return getStations();
     }
 
     private void add(final Line line, final Station upStation, final Station downStation, final Integer distance) {
@@ -116,27 +155,6 @@ public class Sections {
         validateAnyMatchStation(stations, upStation, downStation);
     }
 
-    public List<Station> convertToStations() {
-        if (CollectionUtils.isEmpty(this.sections)) {
-            return Collections.emptyList();
-        }
-        final List<Station> stations = new ArrayList<>();
-        stations.add(this.sections.get(0).getUpStation());
-        List<Station> collect = this.sections
-                .stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.addAll(collect);
-        return stations;
-    }
-
-    public List<Station> findAllStationsOrderBu() {
-        if (CollectionUtils.isEmpty(this.sections)) {
-            return Collections.emptyList();
-        }
-        return getStations();
-    }
-
     private List<Station> getStations() {
         final List<Station> stations = new ArrayList<>();
         final List<Section> sections = getSections();
@@ -161,31 +179,14 @@ public class Sections {
         }
     }
 
-    private void validateOnlyOneSection() {
+    private void validateRemoveSection() {
         if (this.sections.size() == ONE_SECTION) {
             throw new NoDeleteOneSectionException(NO_DELETE_ONE_SECTION);
         }
-    }
 
-    private void validateMatchLastStation(final Section findSection, final Station upStation) {
-        validateMatchStation(findSection, upStation, NO_REGISTER_LAST_LINE_STATION);
-    }
-
-    private void validateMatchStation(final Section findSection, final Station upStation, final SubwayError subwayError) {
-        if (canNotMatchDownStation(findSection, upStation)) {
-            throw new NoRegisterStationException(subwayError);
-        }
-    }
-
-    private boolean canNotMatchDownStation(final Section findSection, final Station station) {
-        return !findSection.matchDownStation(station);
-    }
-
-    private Section findLastSection() {
         if (CollectionUtils.isEmpty(this.sections)) {
             throw new NoLastSectionException(NO_LAST_SECTION);
         }
-        return this.sections.get(this.sections.size() -1);
     }
 
     private void addStations(final List<Station> stations, final List<Section> sections, Station downStation) {

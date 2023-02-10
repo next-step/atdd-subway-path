@@ -20,7 +20,11 @@ public class Distance {
 
     public void minus(final Integer distance) {
         validateGreaterThan(distance);
-        this.distance = this.distance - distance;
+        this.distance -= distance;
+    }
+
+    public void plus(final Integer distance) {
+        this.distance += distance;
     }
 
     public void change(final Integer distance) {
@@ -49,5 +53,4 @@ public class Distance {
     public int hashCode() {
         return Objects.hash(distance);
     }
-
 }
