@@ -41,6 +41,16 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("추가하는 역의 상행역이 마지막 역의 하행역이 아니면 추가할 수 없다.")
+    void addSectionFail() {
+        Station lastStation = new Station("양재역");
+        section = new Section(line, firstStation, lastStation, 10);
+        assertThatThrownBy(() -> line.addSections(section))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(ErrorMessage.ENOUGH_ADD_CONNECT.toString());
+    }
+
+    @Test
     @DisplayName("지하철 노선을 조회할 수 있따.")
     void getStations() {
         List<Station> stations = line.getStations();
