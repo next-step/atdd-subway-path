@@ -119,7 +119,7 @@ public class SectionsTest {
     }
 
     @Test
-    void removeSection() {
+    void removeLastSection() {
         // given
         sections.add(이호선, 강남역, 역삼역, 10);
         sections.add(이호선, 역삼역, 선릉역, 10);
@@ -130,5 +130,24 @@ public class SectionsTest {
         // then
         final List<Station> stations = sections.getStations();
         assertThat(stations).containsOnly(강남역, 역삼역);
+    }
+
+    @Test
+    void cannotRemoveLastRemainingSection() {
+        // given
+        sections.add(이호선, 강남역, 역삼역, 10);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            sections.remove(역삼역);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void cannotRemoveSectionWithNotContainsStation() {
+        // when, then
+        assertThatThrownBy(() -> {
+            sections.remove(역삼역);
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 }
