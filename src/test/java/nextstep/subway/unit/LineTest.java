@@ -41,8 +41,9 @@ class LineTest {
         line.addSection(section);
 
         // then
-        assertThat(line.getAllStations().size()).isEqualTo(2);
-        assertThat(line.getAllStations().stream().map(Station::getName).collect(Collectors.toList())).contains("강남역", "교대역");
+        var stations = line.getAllStations().stream().map(Station::getName).collect(Collectors.toList());
+        assertThat(stations).hasSize(2);
+        assertThat(stations).contains("강남역", "교대역");
     }
 
     @Test

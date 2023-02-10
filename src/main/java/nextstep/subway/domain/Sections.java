@@ -18,7 +18,6 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
-        this.sections = new ArrayList<>();
     }
 
     public Sections(List<Section> sections) {
@@ -41,7 +40,7 @@ public class Sections {
         validateSection(section);
 
         // 상행역이 같으며 사이에 삽입하는 경우
-        if (isInsertSectionIntoExistingSectionWithSameUpStation(section)) {
+        if (addableAfterUpStation(section)) {
             Section existingSection = getSectionByUpStation(section.getUpStation());
             Section newSection1 = new Section(line, section.getUpStation(), section.getDownStation(), section.getDistance());
             Section newSection2 = new Section(line, section.getDownStation(), existingSection.getDownStation(), existingSection.getDistance() - section.getDistance());
@@ -52,7 +51,7 @@ public class Sections {
         }
 
         // 하행역이 같으며 사이에 삽입하는 경우
-        if (isInsertSectionIntoExistingSectionWithSameDownStation(section)) {
+        if (addableBeforeDownStation(section)) {
             Section existingSection = getSectionByUpStation(section.getUpStation());
             Section newSection1 = new Section(line, existingSection.getUpStation(), section.getUpStation(), existingSection.getDistance() - section.getDistance());
             Section newSection2 = new Section(line, section.getUpStation(), section.getDownStation(), section.getDistance());
@@ -63,6 +62,14 @@ public class Sections {
         }
 
         sections.add(section);
+    }
+
+    private boolean addableBeforeDownStation(Section section) {
+        return (!getUpStation().equals(section.getUpStation()) && getDownStation().equals(section.getDownStation()));
+    }
+
+    private boolean addableAfterUpStation(Section section) {
+        return (getUpStation().equals(section.getUpStation()) && !getDownStation().equals(section.getDownStation()));
     }
 
     public void addSectionWhenExistingSectionsIsEmpty(Section section) {
@@ -96,16 +103,8 @@ public class Sections {
     }
 
     private boolean isInsertSectionIntoExistingSection(Section section) {
-        return isInsertSectionIntoExistingSectionWithSameDownStation(section) ||
-                isInsertSectionIntoExistingSectionWithSameUpStation(section);
-    }
-
-    private boolean isInsertSectionIntoExistingSectionWithSameDownStation(Section section) {
-        return (!getUpStation().equals(section.getUpStation()) && getDownStation().equals(section.getDownStation()));
-    }
-
-    private boolean isInsertSectionIntoExistingSectionWithSameUpStation(Section section) {
-        return (getUpStation().equals(section.getUpStation()) && !getDownStation().equals(section.getDownStation()));
+        return addableBeforeDownStation(section) ||
+                addableAfterUpStation(section);
     }
 
     private boolean isSectionContainsStation(Station station) {
