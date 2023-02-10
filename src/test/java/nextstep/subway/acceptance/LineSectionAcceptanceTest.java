@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -130,7 +131,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
     }
 
-
     /**
      * Given 지하철 노선을 생성 및 구간을 등록하고
      * When 지하철 노선을 조회하면
@@ -148,6 +148,48 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선을 생성 및 구간을 등록하고
+     * When 종점이 아닌 역을 제거하면
+     * Then 해당 역이 노선에서 제거된다
+     */
+    @DisplayName("지하철 노선에 등록된 역 제거")
+    @Test
+    void deleteStation() {
+        // given
+        // 신분당선, 강남역 - 양재역
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5L));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선, 양재역);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(신분당선);
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선을 생성 및 구간을 등록하고
+     * When 노선에 등록되어있지 않은 역을 제거하면
+     * Then 400 응답을 받는다
+     */
+    @DisplayName("지하철 노선에 등록되어있지 않은 역을 제거")
+    @Test
+    void deleteStationNotRegisteredInLine() {
+        // given
+        // 신분당선, 강남역 - 양재역
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 등록되어있지않은역 = 지하철역_생성_요청("등록되어있지않은역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5L));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선, 등록되어있지않은역);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, Long distance) {
