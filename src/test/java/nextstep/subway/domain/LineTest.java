@@ -151,6 +151,6 @@ class LineTest {
 
         // then
         final List<Station> stations = 이호선.getStations();
-        assertThat(stations).containsExactly(강남역, 역삼역);
+        assertThat(stations).containsExactly(강남역, 선릉역);
     }
 }
