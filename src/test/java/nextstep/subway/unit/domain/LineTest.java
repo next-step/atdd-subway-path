@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 @DisplayName("구간 단위 테스트")
@@ -30,6 +31,27 @@ class LineTest {
         역삼역 = new Station(2L, "역삼역");
         교대역 = new Station(3L, "교대역");
         양재역 = new Station(4L, "양재역");
+    }
+
+    @DisplayName("노선을 수정할 수 있다.")
+    @Test
+    void updateLine() {
+        String updateName = "3호선";
+        String updateColor = "orange";
+
+        line.update(updateName, updateColor);
+
+        assertAll(() -> {
+            assertThat(line.getName()).isEqualTo(updateName);
+            assertThat(line.getColor()).isEqualTo(updateColor);
+        });
+    }
+
+    @DisplayName("노선 수정값에 null 이 들어가는 경우 예외가 발생한다.")
+    @Test
+    void updateLineException() {
+        assertThatThrownBy(() -> line.update(null, null))
+                .isInstanceOf(SubwayException.class);
     }
 
     @DisplayName("노선에 구간을 추가한다.")

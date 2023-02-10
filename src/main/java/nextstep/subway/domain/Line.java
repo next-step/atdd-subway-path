@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.SubwayException;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -52,12 +54,11 @@ public class Line {
     }
 
     public void update(String name, String color) {
-        if (name != null) {
-            this.name = name;
+        if (name == null || color == null) {
+            throw new SubwayException("노선의 이름 또는 색상은 null 이 될 수 없습니다.");
         }
 
-        if (color != null) {
-            this.color = color;
-        }
+        this.name = name;
+        this.color = color;
     }
 }
