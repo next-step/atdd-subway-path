@@ -20,4 +20,14 @@ public class SectionAcceptanceAssert {
                         .containsExactly(stationIds.toArray(Long[]::new))
         );
     }
+
+    protected static void 기존_구간_사이에_신규_구간을_추가_검증(Long lineId, List<Long> stationIds) {
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
+
+        Assertions.assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class))
+                        .containsExactly(stationIds.toArray(Long[]::new))
+        );
+    }
 }

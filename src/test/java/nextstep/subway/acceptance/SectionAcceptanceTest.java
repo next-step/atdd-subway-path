@@ -4,6 +4,7 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요�
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.기존_구간_사이에_신규_구간을_추가_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_등록_검증;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,9 +76,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 선릉역, 3));
 
             // then
-            ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 선릉역, 양재역);
+            기존_구간_사이에_신규_구간을_추가_검증(신분당선, List.of(강남역, 선릉역, 양재역));
         }
 
         /**
