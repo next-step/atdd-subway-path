@@ -89,10 +89,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @ValueSource(ints = {10, 11, 15})
         void addSectionDistanceMoreThanExistingSectionDistance(int distance) {
             // when
-            지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 선릉역, distance));
+            ExtractableResponse<Response> response
+                    = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 선릉역, distance));
 
             // then
-            ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
