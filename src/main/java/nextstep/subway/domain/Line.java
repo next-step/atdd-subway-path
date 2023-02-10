@@ -1,10 +1,10 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SectionAlreadyCreateStationException;
+import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
+
 import javax.persistence.*;
 import java.util.List;
-import java.util.Optional;
-
-import nextstep.subway.exception.*;
 
 @Entity
 public class Line {
