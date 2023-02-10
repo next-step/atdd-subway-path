@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +68,10 @@ class SectionsTest {
             sections.add(section1);
             sections.add(section2);
 
-            assertThat(sections.getStations()).containsExactly(강남역, 선릉역, 역삼역);
+            assertAll(
+                    () -> assertThat(sections.getStations()).containsExactly(강남역, 선릉역, 역삼역),
+                    () -> assertThat(section1.getDistance()).isEqualTo(5)
+            );
         }
 
         @DisplayName("기존 구간 사이에 신규 구간을 추가시 신규 구간이 역과 역 사이 길이보다 크거나 같으면 에러 처리한다.")
