@@ -39,7 +39,15 @@ public class Line {
         return name;
     }
 
-    public void setName(String name) {
+    public void update(final String name, final String color) {
+        setName(name);
+        setColor(color);
+    }
+
+    public void setName(final String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("노선 이름은 null일 수 없습니다.");
+        }
         this.name = name;
     }
 
@@ -47,7 +55,10 @@ public class Line {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(final String color) {
+        if (color == null) {
+            throw new IllegalArgumentException("노선 색깔은 null일 수 없습니다.");
+        }
         this.color = color;
     }
 
