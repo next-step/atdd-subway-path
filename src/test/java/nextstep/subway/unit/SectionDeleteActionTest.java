@@ -80,6 +80,19 @@ class SectionDeleteActionTest {
 
     @Test
     void 마지막_구간_삭제_액션_생성() {
-
+        SectionDeleteAction action = SectionDeleteAction.of(sections, STATION_ID_3);
+        assertThat(action).isEqualTo(SectionDeleteAction.DOWN_STATION);
     }
+
+    @Test
+    void 마지막_구간_삭제() {
+        SectionDeleteAction action = SectionDeleteAction.of(sections, STATION_ID_3);
+        action.delete(sections, STATION_ID_3);
+
+        assertThat(sections).hasSize(1);
+        Section section = sections.get(0);
+        assertThat(section.getUpStationId()).isEqualTo(STATION_ID_1);
+        assertThat(section.getDownStationId()).isEqualTo(STATION_ID_2);
+    }
+
 }

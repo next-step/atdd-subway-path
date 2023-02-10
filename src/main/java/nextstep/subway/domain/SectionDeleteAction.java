@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 public enum SectionDeleteAction {
     UP_STATION((sections, stationId) -> isDeleteUpStation(sections, stationId), (sections, stationId) -> deleteUpStation(sections)),
     MIDDLE_STATION((sections, stationId) -> isDeleteMiddleStation(sections, stationId), (sections, stationId) -> deleteMiddleStation(sections, stationId)),
-    DOWN_STATION((sections, stationId) -> isDeleteDownStation(sections, stationId), (sections, stationId) -> deleteDownStation(sections, stationId));
+    DOWN_STATION((sections, stationId) -> isDeleteDownStation(sections, stationId), (sections, stationId) -> deleteDownStation(sections));
 
     private final BiPredicate<List<Section>, Long> matchFunction;
     private final BiConsumer<List<Section>, Long> deleteFunction;
@@ -84,10 +84,15 @@ public enum SectionDeleteAction {
     }
 
     private static boolean isDeleteDownStation(List<Section> sections, Long stationId) {
-
-        return false;
+        return sections.stream()
+                .anyMatch(s -> s.getDownStationId().equals(stationId) && s.isLast(sections.size()));
     }
 
-    private static void deleteDownStation(List<Section> sections, Long stationId) {
+    private static void deleteDownStation(List<Section> sections) {
+        sections.remove(getLastIndex(sections.size()));
+    }
+
+    private static int getLastIndex(int size) {
+        return size - 1;
     }
 }

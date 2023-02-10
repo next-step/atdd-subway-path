@@ -118,4 +118,8 @@ public class Section {
         plusDistance(target.getDistance());
         this.downStation = target.getDownStation();
     }
+
+    public boolean isLast(int size) {
+        return orderSeq == size - 1;
+    }
 }
