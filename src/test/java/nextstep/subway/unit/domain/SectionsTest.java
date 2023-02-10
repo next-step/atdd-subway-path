@@ -17,7 +17,6 @@ class SectionsTest {
     private Station 강남역;
     private Station 역삼역;
     private Station 교대역;
-    private Station 양재역;
     private Line line;
     private Section 강남역_역삼역_구간;
     private Section 역삼역_교대역_구간;
@@ -29,7 +28,6 @@ class SectionsTest {
         강남역 = new Station(1L, "강남역");
         역삼역 = new Station(2L, "역삼역");
         교대역 = new Station(3L, "교대역");
-        양재역 = new Station(4L, "양재역");
 
         강남역_역삼역_구간 = new Section(line, 강남역, 역삼역, 10);
         역삼역_교대역_구간 = new Section(line, 역삼역, 교대역, 10);
@@ -48,16 +46,21 @@ class SectionsTest {
     @DisplayName("새로운 구간을 추가할 수 있다.")
     @Test
     void add() {
+        // when
+        Station 양재역 = new Station(4L, "양재역");
         sections.add(new Section(line, 교대역, 양재역, 10));
 
+        // then
         assertThat(sections.stations()).containsExactly(강남역, 역삼역, 교대역, 양재역);
     }
 
     @DisplayName("기존에 있는 마지막 구간을 삭제할 수 있다.")
     @Test
     void remove() {
+        // when
         sections.remove(교대역.getId());
 
+        // then
         assertThat(sections.stations()).containsExactly(강남역, 역삼역);
     }
 
@@ -71,8 +74,10 @@ class SectionsTest {
     @DisplayName("구간이 1개인 상태에서 삭제를 하는 경우 예외가 발생한다.")
     @Test
     void removeException3() {
+        // when
         sections.remove(교대역.getId());
 
+        // then
         assertThatThrownBy(() -> sections.remove(역삼역.getId()))
                 .isInstanceOf(SubwayException.class);
     }

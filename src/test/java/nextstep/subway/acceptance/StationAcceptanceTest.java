@@ -22,10 +22,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
+        // when
         var response = 지하철역_생성_요청("강남역");
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
+        // then
         List<String> stationNames =
                 RestAssured.given().log().all()
                         .when().get("/stations")
@@ -42,14 +45,17 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
         지하철역_생성_요청("강남역");
         지하철역_생성_요청("역삼역");
 
+        // when
         var stationResponse = RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
 
+        // then
         var stations = stationResponse.jsonPath().getList(".", StationResponse.class);
         assertThat(stations).hasSize(2);
     }
@@ -62,8 +68,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
         var createResponse = 지하철역_생성_요청("강남역");
 
+        // when
         String location = createResponse.header("location");
         RestAssured.given().log().all()
                 .when()
@@ -71,6 +79,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
+        // then
         List<String> stationNames =
                 RestAssured.given().log().all()
                         .when().get("/stations")

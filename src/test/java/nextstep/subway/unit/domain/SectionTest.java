@@ -32,10 +32,13 @@ class SectionTest {
     @DisplayName("상행역이 동일한 경우 기존 구간을 기준으로 오른쪽 구간이 생성된다.")
     @Test
     void to1() {
+        // given
         Section addSection = new Section(line, 교대역, 역삼역, 3);
 
+        // when
         Section upSection = 교대역_강남역.to(addSection);
 
+        // then
         assertAll(() -> {
             assertThat(upSection.getUpStation()).isEqualTo(역삼역);
             assertThat(upSection.getDownStation()).isEqualTo(강남역);
@@ -46,10 +49,13 @@ class SectionTest {
     @DisplayName("하행역이 동일한 경우 기존 구간을 기준으로 왼쪽 구간이 생성된다.")
     @Test
     void to2() {
+        // given
         Section addSection = new Section(line, 역삼역, 강남역, 8);
 
+        // when
         Section upSection = 교대역_강남역.to(addSection);
 
+        // then
         assertAll(() -> {
             assertThat(upSection.getUpStation()).isEqualTo(교대역);
             assertThat(upSection.getDownStation()).isEqualTo(역삼역);
@@ -60,9 +66,11 @@ class SectionTest {
     @DisplayName("구간끼리 역이 동일한지 확인할 수 있다.")
     @Test
     void isSameStations() {
+        // given
         Section sectionA = new Section(null, 강남역, 역삼역, 5);
         Section sectionB = new Section(null, 강남역, 역삼역, 10);
 
+        // then
         assertThat(sectionA.isSameUpStation(sectionB)).isTrue();
     }
 }

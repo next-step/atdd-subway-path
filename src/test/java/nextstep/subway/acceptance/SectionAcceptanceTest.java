@@ -27,6 +27,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
+        // given
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
 
@@ -41,9 +42,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선에 구간을 등록")
     @Test
     void addLineSection() {
+        // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
 
+        // then
         var response = 지하철_노선_조회_요청(신분당선);
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -59,13 +62,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선에 구간을 제거")
     @Test
     void removeLineSection() {
+        // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
 
+        // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
+        // then
         var response = 지하철_노선_조회_요청(신분당선);
-
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
