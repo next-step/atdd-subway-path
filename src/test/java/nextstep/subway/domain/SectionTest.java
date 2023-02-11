@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import nextstep.subway.domain.exception.SectionStationCanNotBeNullException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -33,9 +34,9 @@ class SectionTest {
         void createStationIdIsNull() {
             assertAll(
                     () -> assertThatThrownBy(() -> new Section(line, null, 역삼역, 10))
-                            .isInstanceOf(IllegalArgumentException.class),
+                            .isInstanceOf(SectionStationCanNotBeNullException.class),
                     () -> assertThatThrownBy(() -> new Section(line, 강남역, null, 10))
-                            .isInstanceOf(IllegalArgumentException.class)
+                            .isInstanceOf(SectionStationCanNotBeNullException.class)
             );
         }
     }

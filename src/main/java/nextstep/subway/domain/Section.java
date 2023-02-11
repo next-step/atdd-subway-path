@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.exception.SectionStationCanNotBeNullException;
 
 @Entity
 public class Section {
@@ -53,7 +54,7 @@ public class Section {
 
     private void validateStation(final Station station) {
         if (station == null) {
-            throw new IllegalArgumentException("구간의 역은 null이 될 수 없습니다.");
+            throw new SectionStationCanNotBeNullException();
         }
     }
 
