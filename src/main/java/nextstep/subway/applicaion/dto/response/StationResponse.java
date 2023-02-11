@@ -3,8 +3,11 @@ package nextstep.subway.applicaion.dto.response;
 import nextstep.subway.domain.Station;
 
 public class StationResponse {
-    private final Long id;
-    private final String name;
+    private Long id;
+    private String name;
+
+    private StationResponse() {
+    }
 
     public StationResponse(Long id, String name) {
         this.id = id;
