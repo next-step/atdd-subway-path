@@ -22,34 +22,50 @@ public class Sections {
             values.add(section);
             return;
         }
-        if (contains(section.getDownStation()) && contains(section.getUpStation())) {
+        if (isAlreadyAdd(section)) {
             throw new SubwayException(SubwayExceptionMessage.SECTION_ALREADY_ADDED);
         }
-        // 상행 종점 구간 추가
-        if (equalFirstStation(section.getDownStation()) && !contains(section.getUpStation())) {
+        if (isFirstStation(section)) {
             values.add(section);
             return;
         }
-        // 하행 종점 구간 추가
-        if (equalLastStation(section.getUpStation()) && !contains(section.getDownStation())) {
+        if (isLastStation(section)) {
             values.add(section);
             return;
         }
-        // 중간 구간 추가 상행역 일치
-        if (contains(section.getUpStation()) && !contains(section.getDownStation())) {
+        if (isBetweenUp(section)) {
             Section includedSection = getIncludedSectionWhenEqualUpStation(section);
             includedSection.divideUpStation(section);
             values.add(section);
             return;
         }
-        // 중간 구간 추가 하행역 일치
-        if (contains(section.getDownStation()) && !contains(section.getUpStation())) {
+        if (isBetweenDown(section)) {
             Section includedSection = getIncludedSectionWhenEqualDownStation(section);
             includedSection.divideDownStation(section);
             values.add(section);
             return;
         }
         throw new SubwayException(SubwayExceptionMessage.SECTION_CANNOT_ADD);
+    }
+
+    private boolean isBetweenDown(Section section) {
+        return contains(section.getDownStation()) && !contains(section.getUpStation());
+    }
+
+    private boolean isBetweenUp(Section section) {
+        return contains(section.getUpStation()) && !contains(section.getDownStation());
+    }
+
+    private boolean isLastStation(Section section) {
+        return equalLastStation(section.getUpStation()) && !contains(section.getDownStation());
+    }
+
+    private boolean isFirstStation(Section section) {
+        return equalFirstStation(section.getDownStation()) && !contains(section.getUpStation());
+    }
+
+    private boolean isAlreadyAdd(Section section) {
+        return contains(section.getDownStation()) && contains(section.getUpStation());
     }
 
     private Optional<Section> getAfterSection(Section section) {
