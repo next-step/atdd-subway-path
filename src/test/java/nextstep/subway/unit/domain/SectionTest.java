@@ -3,11 +3,13 @@ package nextstep.subway.unit.domain;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.SubwayException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("[Domain] 지하철 구간 테스트")
@@ -90,5 +92,18 @@ class SectionTest {
             assertThat(newSection.getDownStation()).isEqualTo(교대역);
             assertThat(newSection.getDistance()).isEqualTo(15);
         });
+    }
+
+    @DisplayName("구간끼리 이어져있지 않으면 합칠 수 없다.")
+    @Test
+    void mergeException() {
+        // given
+        Section left = new Section(null, 강남역, 역삼역, 5);
+        Section right = new Section(null, new Station(4L, "양재역"), 교대역, 10);
+
+        // when
+        // then
+        assertThatThrownBy(() -> Section.merge(left, right))
+                .isInstanceOf(SubwayException.class);
     }
 }

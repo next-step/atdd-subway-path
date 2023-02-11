@@ -49,6 +49,10 @@ public class Section {
     }
 
     public static Section merge(Section upSection, Section downSection) {
+        if (upSection.downStation != downSection.upStation) {
+            throw new SubwayException("구간이 이어져있지 않습니다.");
+        }
+
         return new Section(upSection.line, upSection.upStation, downSection.downStation, upSection.distance + downSection.distance);
     }
 
