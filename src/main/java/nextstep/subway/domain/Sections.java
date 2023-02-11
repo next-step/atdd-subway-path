@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.exception.AddSectionConstraintException;
 import nextstep.subway.domain.exception.AddSectionDistanceOverExistingSection;
 import nextstep.subway.domain.exception.NotExistBasedOnDownStationException;
 import nextstep.subway.domain.exception.NotExistBasedOnUpStationException;
@@ -45,7 +46,7 @@ public class Sections {
     ) {
         if (isAlreadyAddedSection(sectionsBasedOnUpStation, sectionsBasedOnDownStation)
                 || isNonIncludeStation(sectionsBasedOnUpStation, sectionsBasedOnDownStation)) {
-            throw new IllegalArgumentException("구간 추가 제약 조건을 위반했습니다.");
+            throw new AddSectionConstraintException();
         }
     }
 

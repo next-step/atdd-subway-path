@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import nextstep.subway.domain.exception.AddSectionConstraintException;
 import nextstep.subway.domain.exception.AddSectionDistanceOverExistingSection;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
 import nextstep.subway.domain.exception.SectionsEmptyException;
@@ -112,7 +113,7 @@ class SectionsTest {
             Section section2 = new Section(line, 강남역, 역삼역, 5);
             sections.add(section1);
 
-            assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(AddSectionConstraintException.class);
         }
 
         @DisplayName("신규 구간 추가시 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 에러 처리한다.")
@@ -123,7 +124,7 @@ class SectionsTest {
             Section section2 = new Section(line, 선릉역, 정자역, 5);
             sections.add(section1);
 
-            assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(AddSectionConstraintException.class);
         }
     }
 
