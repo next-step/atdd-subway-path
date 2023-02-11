@@ -105,6 +105,23 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
 
+        /**
+         * When 지하철 노선 기존 구간 맨 앞에 새로운 구간 추가 요청 시
+         * Then 노선에 새로운 구간이 추가된다
+         */
+        @DisplayName("지하철 노선 기존 구간 맨 앞에 새로운 구간 추가 요청 시 새로운 구간이 추가된다")
+        @Test
+        void 지하철_노선_기존_구간_맨_앞에_새로운_구간_추가_요청_시_새로운_구간이_추가된다() {
+            // when
+            Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
+            지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신사역, 강남역));
+
+            // then
+            ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신사역, 강남역, 양재역);
+        }
+
         private void 노선에_새로운_구간이_추가되며_길이가_재_정의_된다(Long 정자역, ExtractableResponse<Response> lineResponse) {
             assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
             List<SectionResponse> sections = lineResponse.jsonPath().getList("sections", SectionResponse.class);
