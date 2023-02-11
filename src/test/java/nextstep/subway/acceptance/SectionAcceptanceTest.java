@@ -13,8 +13,6 @@ import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노�
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,8 +90,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @ValueSource(ints = {10, 11, 15})
         void addSectionDistanceMoreThanExistingSectionDistance(int distance) {
             // when
-            ExtractableResponse<Response> response
-                    = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 선릉역, distance));
+            var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 선릉역, distance));
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -135,8 +132,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void addLineSectionAlreadyAddedInLine() {
             // when
-            ExtractableResponse<Response> response
-                    = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 4));
+            var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 4));
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -150,8 +146,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void addLineSectionNonIncludeInLine() {
             // when
-            ExtractableResponse<Response> response
-                    = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(선릉역, 정자역, 4));
+            var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(선릉역, 정자역, 4));
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
