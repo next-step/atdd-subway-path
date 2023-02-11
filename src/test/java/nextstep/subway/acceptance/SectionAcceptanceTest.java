@@ -131,9 +131,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 기존 구간과 같은 길이의 구간을
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 예외가 발생한다
+     * Then 등록되지 않는다
      *
-     * As-is
      * 강남역 <--------10-------> 정자역
      *                           ↓
      *                           X
@@ -158,7 +157,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 기존 구간보다 큰 길이의 구간을
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 예외가 발생한다
+     * Then 등록되지 않는다
      *
      * 강남역 <------------12-----------> 정자역
      *                                    ↓
@@ -184,7 +183,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 노선에 이미 등록되어있는 역의 구간을
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 예외가 발생한다
+     * Then 등록되지 않는다
      *
      * 강남역 <--------10-------> 양재역
      *   ↓                        ↓
@@ -235,7 +234,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 노선에 존재하지 않는 역들로 구성된 구간을
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 예외가 발생한다
+     * Then 등록되지 않는다
      *
      *       부산역 <---6---> 강원역
      *         ↓              ↓
