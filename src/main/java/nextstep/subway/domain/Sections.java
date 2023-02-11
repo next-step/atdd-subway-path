@@ -98,9 +98,8 @@ public class Sections {
     }
 
     public void remove(final Station station) {
-        if (sections.size() < REMOVE_SIZE_MIN) {
-            throw new IllegalArgumentException("구간 목록의 크기가 " + REMOVE_SIZE_MIN + " 이상일 경우 구간 제거가 가능합니다.");
-        }
+        validateRemoveBy(station);
+
         if (isLineUpStation(station)) {
             sections.remove(0);
             return;
@@ -109,12 +108,26 @@ public class Sections {
             sections.remove(sections.size() - 1);
             return;
         }
+
         Section stationBasedOnDownStation = findDownStationSection(station);
         Section stationBasedOnUpStation = findUpStationSection(station);
         sections.removeAll(List.of(stationBasedOnUpStation, stationBasedOnDownStation));
 
         Section relocationSection = relocationRemoveMiddleSection(stationBasedOnDownStation, stationBasedOnUpStation);
         sections.add(relocationSection);
+    }
+
+    private void validateRemoveBy(final Station station) {
+        if (sections.size() < REMOVE_SIZE_MIN) {
+            throw new IllegalArgumentException("구간 목록의 크기가 " + REMOVE_SIZE_MIN + " 이상일 경우 구간 제거가 가능합니다.");
+        }
+        if(!isContainStation(station)) {
+            throw new IllegalArgumentException("구간 목록에 포함되지 않은 역입니다.");
+        }
+    }
+
+    private boolean isContainStation(final Station station) {
+        return sections.stream().anyMatch(section -> section.isContain(station));
     }
 
     private Section relocationRemoveMiddleSection(
@@ -196,9 +209,5 @@ public class Sections {
             throw new IllegalArgumentException("노선에 포함되지 않은 역 입니다.");
         }
         return sectionList;
-    }
-
-    private boolean isContainStation(final Station station) {
-        return sections.stream().anyMatch(section -> section.isContain(station));
     }
 }
