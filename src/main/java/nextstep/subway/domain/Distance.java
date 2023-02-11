@@ -9,7 +9,7 @@ public class Distance {
 
     private static final int MIN = 0;
 
-    @Column
+    @Column(name = "distance")
     private int value;
 
     protected Distance() {
