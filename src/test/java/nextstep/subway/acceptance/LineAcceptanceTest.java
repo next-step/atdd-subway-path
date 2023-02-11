@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
+import static nextstep.subway.acceptance.AssertResponse.응답_성공_검증;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,7 +50,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_성공_검증(response);
         assertThat(response.jsonPath().getList("name")).contains("2호선", "3호선");
     }
 
@@ -68,7 +69,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_성공_검증(response);
         assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
     }
 
@@ -95,7 +96,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답_성공_검증(response);
         assertThat(response.jsonPath().getString("color")).isEqualTo("red");
     }
 
