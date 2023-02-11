@@ -76,6 +76,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             노선에_새로운_구간이_추가되며_길이가_재_정의_된다(정자역, lineResponse);
         }
 
+        /**
+         * When 노선의 기존 구간들의 상행역과 하행역이 같게 구간 추가 요청 시
+         * Then 기존 구간에 추가가 안된다
+         */
+        @DisplayName("노선의 기존 구간들의 상행역과 하행역이 같게 구간 추가 요청 시 기존 구간에 추가가 안된다")
+        @Test
+        void 노선의_기존_구간들의_상행역과_하행역이_같게_구간_추가_요청_시_기존_구간에_추가가_안된다() {
+            // when
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 4L));
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
         private void 노선에_새로운_구간이_추가되며_길이가_재_정의_된다(Long 정자역, ExtractableResponse<Response> lineResponse) {
             assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
             List<SectionResponse> sections = lineResponse.jsonPath().getList("sections", SectionResponse.class);
@@ -86,7 +100,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             assertThat(sections.get(1).getDownStation().getId()).isEqualTo(양재역);
             assertThat(sections.get(1).getDistance()).isEqualTo(6);
         }
-
     }
 
     /**
