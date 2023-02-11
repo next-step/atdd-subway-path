@@ -205,6 +205,42 @@ class SectionsTest {
             assertThat(sections.getSections()).containsExactly(expected);
         }
 
+        @DisplayName("구간 목록의 상행역을 제거한다.")
+        @Test
+        void removeUpStation() {
+            Sections sections = new Sections();
+            Section expected = new Section(line, 역삼역, 선릉역, 5);
+            sections.add(new Section(line, 강남역, 역삼역, 10));
+            sections.add(expected);
+
+            sections.remove(강남역);
+
+            assertThat(sections.getSections()).containsExactly(expected);
+        }
+
+        @DisplayName("구간 목록의 하행역을 제거한다.")
+        @Test
+        void removeDownStation() {
+            Sections sections = new Sections();
+            Section expected = new Section(line, 강남역, 역삼역, 10);
+            sections.add(expected);
+            sections.add(new Section(line, 역삼역, 선릉역, 5));
+
+            sections.remove(선릉역);
+
+            assertThat(sections.getSections()).containsExactly(expected);
+        }
+
+        @DisplayName("구간 목록에 포함되지 않은 역일 경우 예외 처리한다..")
+        @Test
+        void removeNotIncludeStation() {
+            Sections sections = new Sections();
+            sections.add(new Section(line, 강남역, 역삼역, 10));
+            sections.add(new Section(line, 역삼역, 선릉역, 5));
+
+            assertThatThrownBy(() -> sections.remove(정자역)).isInstanceOf(IllegalArgumentException.class);
+        }
+
         @DisplayName("상행역과 하행역만 포함된 구간 목록에 삭제를 요청할 경우 에러 처리한다.")
         @Test
         void removeFailSectionsOnlyContainUpStationAndDownStation() {
