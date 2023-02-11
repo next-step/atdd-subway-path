@@ -63,15 +63,20 @@ public class Line {
     public void addSection(Station upStation, Station downStation, int distance) {
         Section newSection = new Section(this, upStation, downStation, distance);
 
-        Optional<Section> sameUpStationSection = findSameUpStationSection(upStation);
+        Optional<Section> sameUpStationSection = findUpToUp(upStation);
         if(sameUpStationSection.isPresent()) {
             addUpToUp(sameUpStationSection.get(), newSection);
             return;
         }
 
-        Optional<Section> sameDownStationSection = findSameDownStationSection(downStation);
+        Optional<Section> sameDownStationSection = findDownToDown(downStation);
         if(sameDownStationSection.isPresent()) {
             addDownToDown(sameDownStationSection.get(), newSection);
+            return;
+        }
+
+        if(hasDownToBeginUp(downStation)) {
+            addDownToBeginUp(newSection);
             return;
         }
     }
@@ -90,11 +95,21 @@ public class Line {
         return stations;
     }
 
-
-    private Optional<Section> findSameUpStationSection(Station upStation) {
+    private Optional<Section> findUpToUp(Station upStation) {
         return sections.stream()
-                .filter(it -> it.getUpStation().equals(upStation))
+                .filter(it -> upStation.equals(it.getUpStation()))
                 .findFirst();
+    }
+
+    private Optional<Section> findDownToDown(Station downStation) {
+        return sections.stream()
+                .filter(it -> downStation.equals(it.getDownStation()))
+                .findFirst();
+    }
+
+    private boolean hasDownToBeginUp(Station downStation) {
+        Section beginSection = sections.stream().findFirst().get();
+        return downStation.equals(beginSection.getUpStation());
     }
 
     private void addUpToUp(Section oldSection, Section newSection) {
@@ -108,12 +123,6 @@ public class Line {
         sections.remove(oldSection);
     }
 
-    private Optional<Section> findSameDownStationSection(Station downStation) {
-        return sections.stream()
-                .filter(it -> it.getDownStation().equals(downStation))
-                .findFirst();
-    }
-
     private void addDownToDown(Section oldSection, Section newSection) {
         sections.remove(oldSection);
         sections.add(
@@ -123,6 +132,10 @@ public class Line {
                         oldSection.getDistance() - newSection.getDistance())
         );
         sections.add(newSection);
+    }
+
+    private void addDownToBeginUp(Section newSection) {
+        sections.add(0, newSection);
     }
 
     private Section getFirstSection() {
