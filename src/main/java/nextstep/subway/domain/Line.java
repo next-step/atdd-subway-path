@@ -63,6 +63,8 @@ public class Line {
     public void addSection(Station upStation, Station downStation, int distance) {
         Section newSection = new Section(this, upStation, downStation, distance);
 
+        validateMatchingSection(newSection);
+
         Optional<Section> sameUpStationSection = findUpToUp(upStation);
         if(sameUpStationSection.isPresent()) {
             addUpToUp(sameUpStationSection.get(), newSection);
@@ -97,6 +99,18 @@ public class Line {
         sections.forEach((it) -> stations.add(it.getDownStation()));
 
         return stations;
+    }
+
+    private void validateMatchingSection(Section newSection) {
+        boolean matchUpStation = sections.stream()
+                .anyMatch((it) -> it.getUpStation().equals(newSection.getUpStation()));
+
+        boolean matchDownStation = sections.stream()
+                .anyMatch((it) -> it.getDownStation().equals(newSection.getDownStation()));
+
+        if(matchUpStation && matchDownStation) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+        }
     }
 
     private Optional<Section> findUpToUp(Station upStation) {

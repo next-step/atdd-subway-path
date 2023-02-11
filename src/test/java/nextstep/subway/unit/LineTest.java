@@ -79,4 +79,16 @@ class LineTest {
         assertThatThrownBy(() -> line.addSection(서울역, 종각역, 10))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("구간 추가 - 예외 케이스 - 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSection_6() {
+        Station 서울역 = new Station("서울역");
+        Station 시청역 = new Station("시청역");
+
+        Line line = new Line("1호선", "남색", 서울역, 시청역, 10);
+
+        assertThatThrownBy(() -> line.addSection(서울역, 시청역, 5))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
