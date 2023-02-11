@@ -39,6 +39,19 @@ class SectionTest {
         );
     }
 
+    @DisplayName("지하철 구간이 특정 역을 하행역으로 갖는지 확인한다.")
+    @Test
+    void hasDownStation() {
+        // given
+        Section section = new Section(line, station1, station2, 5);
+
+        // when & then
+        assertAll(
+            () -> assertThat(section.hasDownStation(station1)).isFalse(),
+            () -> assertThat(section.hasDownStation(station2)).isTrue()
+        );
+    }
+
     @DisplayName("지하철 구간 등록 시, 상행역과 하행역이 같으면 예외가 발생한다.")
     @Test
     void cannotCreateSectionWithIdenticalStations() {

@@ -27,12 +27,12 @@ public class Sections {
         int distance = section.getDistance();
 
         sections.stream()
-            .filter(it -> it.getUpStation().equals(upStation))
+            .filter(it -> it.hasUpStation(upStation))
             .findFirst()
             .ifPresent(it -> it.updateUpStation(downStation, distance));
 
         sections.stream()
-            .filter(it -> it.getDownStation().equals(downStation))
+            .filter(it -> it.hasDownStation(downStation))
             .findFirst()
             .ifPresent(it -> it.updateDownStation(upStation, distance));
 
@@ -40,11 +40,11 @@ public class Sections {
     }
 
     private void validateSection(Section section) {
-        List<Station> stations = getStationsInOrder();
-        if (stations.isEmpty()) {
+        if (sections.isEmpty()) {
             return;
         }
 
+        List<Station> stations = getStationsInOrder();
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
 
@@ -62,7 +62,7 @@ public class Sections {
     }
 
     public List<Station> getStationsInOrder() {
-        if (sections.isEmpty()) {
+        if (isEmpty()) {
             return Collections.emptyList();
         }
 
