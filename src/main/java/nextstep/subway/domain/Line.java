@@ -54,6 +54,10 @@ public class Line {
         return sections;
     }
 
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public void addSection(Station requestUpStation, Station requestDownStation, int requestDistance) {
         for (int i = 0; i < sections.size(); i++) {
             Section originSection = sections.get(i);
