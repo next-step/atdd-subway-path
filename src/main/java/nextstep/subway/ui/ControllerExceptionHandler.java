@@ -11,4 +11,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Void> handleIllegalStateException(IllegalStateException e) {
+        return ResponseEntity.badRequest().build();
+    }
 }
