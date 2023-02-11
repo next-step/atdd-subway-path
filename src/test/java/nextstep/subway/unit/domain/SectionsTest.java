@@ -77,6 +77,19 @@ class SectionsTest {
         assertThat(sections.stations()).containsExactly(양재역, 강남역, 역삼역, 교대역);
     }
 
+    @DisplayName("겹치는 구간을 추가하는 경우 예외가 발생한다.")
+    @Test
+    void addException() {
+        // given
+        Station 양재역 = new Station(4L, "양재역");
+        sections.add(new Section(line, 양재역, 강남역, 10));
+
+        // when
+        // then
+        assertThatThrownBy(() -> sections.add(new Section(line, 강남역, 교대역, 5)))
+                .isInstanceOf(SubwayException.class);
+    }
+
     @DisplayName("기존에 있는 마지막 구간을 삭제할 수 있다.")
     @Test
     void remove() {

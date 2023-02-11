@@ -52,31 +52,31 @@ public class Sections {
     }
 
     private boolean isEndSection(Section section) {
-        Section upEndSection = findUpEndSection().orElseThrow(() -> new NotFoundException("상행 종점 구간을 찾을 수 없습니다."));
-        Section downEndSection = findDownEndSection().orElseThrow(() -> new NotFoundException("하행 종점 구간을 찾을 수 없습니다."));
+        Section upEndSection = findUpEndSection().orElseThrow(() -> new NotFoundException("상행 종점 구간이 존재하지 않습니다."));
+        Section downEndSection = findDownEndSection().orElseThrow(() -> new NotFoundException("하행 종점 구간이 존재하지 않습니다."));
 
         return upEndSection.getUpStation() == section.getDownStation() ||
                 downEndSection.getDownStation() == section.getUpStation();
     }
 
     private void validate(Section section) {
-        if (containAllStations(section)) {
-            throw new SubwayException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
-        }
-
-
-        if (isNotContainedAnyStations(section)) {
-            throw new SubwayException("상행역과 하행역 둘 중 하나라도 포함되어야 합니다.");
-        }
-    }
-
-    private boolean containAllStations(Section section) {
-        return sections.stream()
-                .anyMatch(it -> it.isSameStations(section));
-    }
-
-    private boolean isNotContainedAnyStations(Section section) {
         List<Station> stations = stations();
+        if (containAllStations(stations, section)) {
+            throw new SubwayException("상행역과 하행역이 이미 노선에 등록되어 있습니다.");
+        }
+
+        if (isNotContainedAnyStations(stations, section)) {
+            throw new SubwayException("노선에 등록되지 않은 상행역 또는 하행역이 포함되어 있습니다.");
+        }
+    }
+
+    private boolean containAllStations(List<Station> stations, Section section) {
+        return stations.contains(section.getUpStation()) &&
+                stations.contains(section.getDownStation());
+
+    }
+
+    private boolean isNotContainedAnyStations(List<Station> stations, Section section) {
         return !stations.contains(section.getUpStation()) &&
                 !stations.contains(section.getDownStation());
     }
@@ -114,7 +114,7 @@ public class Sections {
 
     public void remove(long stationId) {
         if (sections.size() <= 1) {
-            throw new SubwayException("구간이 1개 이하인 경우 삭제할 수 없습니다.");
+            throw new SubwayException("구간이 1개 이하인 경우, 삭제할 수 없습니다.");
         }
 
         List<Section> deleteSections = sections.stream()
