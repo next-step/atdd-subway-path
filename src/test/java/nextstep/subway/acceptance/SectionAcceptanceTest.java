@@ -9,6 +9,7 @@ import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선의_상�
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선의_하행_종점으로_신규_구간을_추가_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_등록_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_제거;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_중간역을_제거_검증;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -188,10 +189,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void removeMiddleSection() {
             // given
+            지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 6));
 
             // when
+            지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
             // then
+            지하철_노선에_중간역을_제거_검증(신분당선, List.of(강남역, 양재역));
         }
 
         /**
@@ -201,11 +205,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @DisplayName("구간이 하나인 노선에서 구간 제거할 경우 에러 처리한다.")
         @Test
         void removeSectionLineHasOnlyOneSection() {
-            // given
-
             // when
+            var response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
             // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
         /**
@@ -215,11 +219,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @DisplayName("노선에 등록되지 않은 역을 제거할 경우 에러 처리한다.")
         @Test
         void removeSectionStationNotIncludeInLine() {
-            // given
-
             // when
+            var response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
             // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 
