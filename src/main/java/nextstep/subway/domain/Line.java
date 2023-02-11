@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.exception.CustomException;
 import org.springframework.data.geo.Distance;
 
@@ -209,5 +210,14 @@ public class Line {
             throw new CustomException(CustomException.CAN_NOT_ADD_SECTION_CAUSE_DISTANCE);
         }
         section.minusDistance(distance);
+    }
+
+    public void updateLine(LineRequest lineRequest) {
+        if (lineRequest.getName() != null) {
+            this.name = lineRequest.getName();
+        }
+        if (lineRequest.getColor() != null) {
+            this.color = lineRequest.getColor();
+        }
     }
 }
