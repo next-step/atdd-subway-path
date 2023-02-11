@@ -98,11 +98,11 @@ public class Section {
         return getDownStation().equals(station);
     }
 
-    public boolean isOutSideOverlapOnDownStation(Section section) {
+    public boolean isOutSideOverlapOnUpStation(Section section) {
         return isUpStation(section.getDownStation());
     }
 
-    public boolean isOutSideOverlapOnUpStation(Section section) {
+    public boolean isOutSideOverlapOnDownStation(Section section) {
         return isDownStation(section.getUpStation());
     }
 

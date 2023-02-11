@@ -75,11 +75,11 @@ public class Sections {
         for (int index = 0; index < sections.size(); index++) {
             Section section = sections.get(index);
 
-            if (section.isOutSideOverlapOnDownStation(target)) {
+            if (section.isOutSideOverlapOnUpStation(target)) {
                 return InsertLocation.PREV_HEAD;
             }
 
-            if (section.isOutSideOverlapOnUpStation(target)) {
+            if (section.isOutSideOverlapOnDownStation(target)) {
                 return InsertLocation.NEXT_TAIL;
             }
 
