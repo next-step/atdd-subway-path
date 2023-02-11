@@ -48,12 +48,12 @@ class LineTest {
 
         // Then
         List<Section> sections = line.getSections();
-        assertThat(sections.get(0).getUpStation()).isEqualTo(논현역);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(강남역);
-        assertThat(sections.get(0).getDistance()).isEqualTo(7);
-        assertThat(sections.get(1).getUpStation()).isEqualTo(강남역);
-        assertThat(sections.get(1).getDownStation()).isEqualTo(양재역);
-        assertThat(sections.get(1).getDistance()).isEqualTo(10);
+        assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
+        assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
+        assertThat(sections.get(0).getDistance()).isEqualTo(10);
+        assertThat(sections.get(1).getUpStation()).isEqualTo(논현역);
+        assertThat(sections.get(1).getDownStation()).isEqualTo(강남역);
+        assertThat(sections.get(1).getDistance()).isEqualTo(7);
     }
 
     /**
@@ -73,12 +73,12 @@ class LineTest {
 
         // Then
         List<Section> sections = line.getSections();
-        assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(새로운역);
-        assertThat(sections.get(0).getDistance()).isEqualTo(4);
-        assertThat(sections.get(1).getUpStation()).isEqualTo(새로운역);
-        assertThat(sections.get(1).getDownStation()).isEqualTo(양재역);
-        assertThat(sections.get(1).getDistance()).isEqualTo(6);
+        assertThat(sections.get(0).getUpStation()).isEqualTo(새로운역);
+        assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
+        assertThat(sections.get(0).getDistance()).isEqualTo(6);
+        assertThat(sections.get(1).getUpStation()).isEqualTo(강남역);
+        assertThat(sections.get(1).getDownStation()).isEqualTo(새로운역);
+        assertThat(sections.get(1).getDistance()).isEqualTo(4);
     }
 
     /**

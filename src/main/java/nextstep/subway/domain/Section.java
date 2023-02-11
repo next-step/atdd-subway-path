@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.IllegalDistanceSectionException;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -54,9 +56,21 @@ public class Section {
         return distance;
     }
 
-    public void changeDownStation(Station downStation, int distance) {
-        this.downStation = downStation;
-        this.distance = distance;
+    public void changeUpStation(Station requestUpStation, int requestDistance) {
+        this.upStation = requestUpStation;
+        changeDistance(requestDistance);
+    }
+
+    private void changeDistance(int requestDistance) {
+        if (this.distance <= requestDistance) {
+            throw new IllegalDistanceSectionException();
+        }
+
+        this.distance = this.distance - requestDistance;
+    }
+
+    public boolean isDuplicateSection(Station requestUpStation, Station requestDownStation) {
+        return this.upStation.equals(requestUpStation) && this.downStation.equals(requestDownStation);
     }
 
     @Override
@@ -64,16 +78,12 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    public boolean isDuplicateSection(Station requestUpStation, Station requestDownStation) {
-        return this.upStation.equals(requestUpStation) && this.downStation.equals(requestDownStation);
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 
 }

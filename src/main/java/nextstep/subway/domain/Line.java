@@ -60,38 +60,21 @@ public class Line {
     }
 
     public void addSection(Station requestUpStation, Station requestDownStation, int requestDistance) {
-        for (int i = 0; i < sections.size(); i++) {
-            Section originSection = sections.get(i);
-            if (originSection.isDuplicateSection(requestUpStation, requestDownStation)) {
+        for (Section section : sections) {
+            if (section.isDuplicateSection(requestUpStation, requestDownStation)) {
                 throw new DuplicateAddSectionException();
             }
 
-            // 첫 번째
-            if (originSection.getUpStation().equals(requestDownStation)) {
-                sections.add(0, new Section(this, requestUpStation, requestDownStation, requestDistance));
-                return;
-            }
-
-            // 중간
-            if (originSection.getUpStation().equals(requestUpStation)) {
-                Station originDownStation = originSection.getDownStation();
-                int originDistance = originSection.getDistance();
-
-                if (originSection.getDistance() <= requestDistance) {
-                    throw new IllegalDistanceSectionException();
-                }
-
-                originSection.changeDownStation(requestDownStation, requestDistance);
-                sections.add(new Section(this, requestDownStation, originDownStation, originDistance - requestDistance));
-                return;
-            }
-
-            // 마지막
-            if (originSection.getDownStation().equals(requestUpStation)) {
+            if (section.getUpStation().equals(requestDownStation) || section.getDownStation().equals(requestUpStation)) {
                 sections.add(new Section(this, requestUpStation, requestDownStation, requestDistance));
                 return;
             }
 
+            if (section.getUpStation().equals(requestUpStation)) {
+                section.changeUpStation(requestDownStation, requestDistance);
+                sections.add(new Section(this, requestUpStation, requestDownStation, requestDistance));
+                return;
+            }
         }
 
         throw new IllegalAddSectionException();
