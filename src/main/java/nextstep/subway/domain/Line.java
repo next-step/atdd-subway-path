@@ -58,7 +58,6 @@ public class Line {
 
     public void addSection(Section section) {
         sections.addSection(section);
-
     }
 
     public boolean isEmptySections() {
@@ -70,12 +69,12 @@ public class Line {
     }
 
     public boolean equalLastStations(Station station){
-        return sections.equalsLastStation(station);
+        return sections.equalLastStation(station);
     }
 
     public void removeLastSection(Station station) {
 
-        if (!sections.equalsLastStation(station)) {
+        if (!sections.equalLastStation(station)) {
             throw new IllegalArgumentException();
         }
         sections.remove(station);

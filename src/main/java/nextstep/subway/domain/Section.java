@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import org.springframework.dao.DataIntegrityViolationException;
+
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
@@ -49,12 +51,39 @@ public class Section {
         return downStation;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public boolean equalDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
     public List<Station> getStations(){
         return Arrays.asList(upStation, downStation);
+    }
+
+    public boolean equalUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean contains(Station station){
+        return equalUpStation(station) || equalDownStation(station);
+    }
+
+    public void divideUpStation(Section section) {
+        if(this.distance <= section.distance){
+            throw new DataIntegrityViolationException("추가하려는 구간의 길이가 더 길어 추가할 수 없습니다.");
+        }
+        this.distance = this.distance - section.distance;
+        this.upStation = section.downStation;
+    }
+    public void divideDownStation(Section section) {
+        if(this.distance <= section.distance){
+            throw new DataIntegrityViolationException("추가하려는 구간의 길이가 더 길어 추가할 수 없습니다.");
+        }
+        this.distance = this.distance - section.distance;
+        this.downStation = section.upStation;
     }
 
     public static class SectionBuilder {
@@ -87,6 +116,4 @@ public class Section {
         }
 
     }
-
-
 }
