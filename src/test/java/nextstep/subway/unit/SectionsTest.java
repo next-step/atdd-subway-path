@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SubwayException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ class SectionsTest {
                 .build();
         //then 오류 발생
         assertThatThrownBy(  () -> line.addSection(DtoE))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(SubwayException.class);
     }
 
 
@@ -98,7 +99,7 @@ class SectionsTest {
                 .build();
         //then 오류 발생
         assertThatThrownBy(  () -> line.addSection(AtoC))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(SubwayException.class);
     }
 
     @Test
@@ -144,7 +145,7 @@ class SectionsTest {
                 .build();
         //then 오류 발생
         assertThatThrownBy(  () -> line.addSection(DtoC))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(SubwayException.class);
     }
 
     @Test
@@ -190,7 +191,7 @@ class SectionsTest {
                 .build();
         //then 오류 발생
         assertThatThrownBy(  () -> line.addSection(BtoD))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(SubwayException.class);
     }
 
 }

@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SubwayException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ class LineTest {
 
         //then IllegalArgumentException
         assertThatThrownBy(  () -> line.addSection(서울역_숙대입구))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(SubwayException.class);
     }
 
     @Test
@@ -90,7 +91,7 @@ class LineTest {
 
         //then IllegalArgumentException
         assertThatThrownBy(  () -> line.addSection(상계_서울역))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(SubwayException.class);
     }
 
     @Test
