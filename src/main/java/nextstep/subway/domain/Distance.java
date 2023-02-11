@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import nextstep.subway.domain.exception.DistanceSizeException;
 
 @Embeddable
 public class Distance {
@@ -17,7 +18,7 @@ public class Distance {
 
     public Distance(final int value) {
         if (value < MIN) {
-            throw new IllegalArgumentException("거리 생성 최솟값 보다 작습니다.");
+            throw new DistanceSizeException();
         }
         this.value = value;
     }
