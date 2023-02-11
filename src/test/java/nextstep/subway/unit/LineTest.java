@@ -3,19 +3,37 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineErrorMessage;
 import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
+
+    private Station upStation;
+    private Station middleStation;
+    private Station downStation;
+
+    private Line line;
+
+    @BeforeEach
+    void setUp() {
+        upStation = new Station("상행역");
+        middleStation = new Station("중간역");
+        downStation = new Station("하행역");
+
+        line = new Line("1호선", "파란색");
+        line.addSection(upStation, downStation, 10);
+    }
+
     @Test
     void addSection() {
         // given
         Line line = new Line("1호선", "파란색");
 
         // when
-        line.addSection(createUpStation(), createDownStation(), 10);
+        line.addSection(upStation, downStation, 10);
 
         // then
         assertThat(line.getSections()).isNotEmpty();
@@ -27,7 +45,7 @@ class LineTest {
         Line line = createLine();
 
         // when
-        line.addSection(createUpStation(), createMiddleStation(), 6);
+        line.addSection(upStation, middleStation, 6);
 
         // then
         assertThat(line.getOrderedStations()).extracting("name").containsExactly("상행역", "중간역", "하행역");
@@ -40,7 +58,7 @@ class LineTest {
         Line line = createLine();
 
         // when & then
-        assertThatThrownBy(() -> line.addSection(createUpStation(), createMiddleStation(), 10))
+        assertThatThrownBy(() -> line.addSection(upStation, middleStation, 10))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage(LineErrorMessage.INVALID_DISTANCE.getMessage());
     }
@@ -49,8 +67,6 @@ class LineTest {
     void addAlreadyExistentStations() {
         // given
         Line line = createLine();
-        Station upStation = createUpStation();
-        Station downStation = createDownStation();
 
         // when & then
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 5))
@@ -115,21 +131,9 @@ class LineTest {
         assertThat(line.getColor()).isEqualTo("초록색");
     }
 
-    private static Line createLine() {
+    private Line createLine() {
         Line line = new Line("1호선", "파란색");
-        line.addSection(createUpStation(), createDownStation(), 10);
+        line.addSection(upStation, downStation, 10);
         return line;
-    }
-
-    private static Station createUpStation() {
-        return new Station("상행역");
-    }
-
-    private static Station createDownStation() {
-        return new Station("하행역");
-    }
-
-    private static Station createMiddleStation() {
-        return new Station("중간역");
     }
 }

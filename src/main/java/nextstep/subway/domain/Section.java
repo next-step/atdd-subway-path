@@ -36,6 +36,12 @@ public class Section {
         this.distance = distance;
     }
 
+    @Builder
+    public Section(Station upStation, Station downStation) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+    }
+
     public Long getId() {
         return id;
     }
