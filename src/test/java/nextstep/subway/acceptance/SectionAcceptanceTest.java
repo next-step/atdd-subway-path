@@ -213,14 +213,18 @@ class SectionAcceptanceTest extends AcceptanceTest {
         }
 
         /**
+         * Given 새로운 구간을 추가하고
          * When 노선에 등록되지 않은 역을 제거할 경우
          * Then 에러 처리한다.
          */
         @DisplayName("노선에 등록되지 않은 역을 제거할 경우 에러 처리한다.")
         @Test
         void removeSectionStationNotIncludeInLine() {
+            // given
+            지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 6));
+
             // when
-            var response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+            var response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 선릉역);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
