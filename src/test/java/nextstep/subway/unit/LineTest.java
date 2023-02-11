@@ -19,9 +19,9 @@ class LineTest {
     void addSection() {
         Line line = new Line("4호선", "#00A5DE");
 
-        Station upStation = new Station("금정");
-        Station downStation = new Station("오이도");
-        Section newSection = new Section(line, upStation, downStation, 13);
+        Station upStation = new Station("사당");
+        Station downStation = new Station("금정");
+        Section newSection = new Section(line, upStation, downStation, 10);
 
         Section addedSection = line.addSection(newSection);
         assertThat(addedSection).isEqualTo(newSection);
@@ -32,9 +32,9 @@ class LineTest {
     void getStations() {
         Line line = new Line("4호선", "#00A5DE");
 
-        Station upStation = new Station("금정");
-        Station downStation = new Station("오이도");
-        Section newSection = new Section(line, upStation, downStation, 13);
+        Station upStation = new Station("사당");
+        Station downStation = new Station("금정");
+        Section newSection = new Section(line, upStation, downStation, 10);
 
         line.addSection(newSection);
 
@@ -45,7 +45,26 @@ class LineTest {
         );
     }
 
+    @DisplayName("노선의 마지막 구간을 삭제할 수 있다")
     @Test
     void removeSection() {
+        Line line = new Line("4호선", "#00A5DE");
+
+        Station upStation = new Station("사당");
+        Station downStation = new Station("금정");
+        Station newDownStation = new Station("오이도");
+
+        Section newSection = new Section(line, upStation, downStation, 10);
+        Section newSection2 = new Section(line, downStation, newDownStation, 13);
+
+        line.addSection(newSection);
+        line.addSection(newSection2);
+
+        line.removeSection(newDownStation);
+        List<Station> stations = line.getStations();
+        assertAll(
+            () -> assertThat(stations.size()).isEqualTo(2),
+            () -> assertThat(stations).containsOnly(upStation, downStation)
+        );
     }
 }

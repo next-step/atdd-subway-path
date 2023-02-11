@@ -65,4 +65,12 @@ public class Line {
         stations.add(0, getSections().get(0).getUpStation());
         return stations;
     }
+
+    public void removeSection(Station station) {
+        if (!getSections().get(getSections().size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        getSections().remove(getSections().size() - 1);
+    }
 }
