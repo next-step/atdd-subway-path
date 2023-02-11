@@ -1,8 +1,8 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ class LineTest {
 
         Line line = new Line("1호선", "남색", 서울역, 시청역, 10);
 
-        line.addSection(서울역, 종각역, 3);
+        line.addSection(new Section(line, 서울역, 종각역, 3));
 
         assertThat(line.getStations()).containsExactly(서울역, 종각역, 시청역);
     }
@@ -34,7 +34,7 @@ class LineTest {
 
         Line line = new Line("1호선", "남색", 서울역, 시청역, 10);
 
-        line.addSection(종각역, 시청역, 3);
+        line.addSection(new Section(line, 종각역, 시청역, 3));
 
         assertThat(line.getStations()).containsExactly(서울역, 종각역, 시청역);
     }
@@ -48,7 +48,7 @@ class LineTest {
 
         Line line = new Line("1호선", "남색", 서울역, 시청역, 10);
 
-        line.addSection(종각역, 서울역, 3);
+        line.addSection(new Section(line, 종각역, 서울역, 3));
 
         assertThat(line.getStations()).containsExactly(종각역, 서울역, 시청역);
     }
@@ -62,7 +62,7 @@ class LineTest {
 
         Line line = new Line("1호선", "남색", 서울역, 시청역, 10);
 
-        line.addSection(시청역, 종각역, 3);
+        line.addSection(new Section(line, 시청역, 종각역, 3));
 
         assertThat(line.getStations()).containsExactly(서울역, 시청역, 종각역);
     }
@@ -76,7 +76,7 @@ class LineTest {
 
         Line line = new Line("1호선", "남색", 서울역, 시청역, 10);
 
-        assertThatThrownBy(() -> line.addSection(서울역, 종각역, 10))
+        assertThatThrownBy(() -> line.addSection(new Section(line, 서울역, 종각역, 10)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -88,7 +88,7 @@ class LineTest {
 
         Line line = new Line("1호선", "남색", 서울역, 시청역, 10);
 
-        assertThatThrownBy(() -> line.addSection(서울역, 시청역, 5))
+        assertThatThrownBy(() -> line.addSection(new Section(line, 서울역, 시청역, 5)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -102,7 +102,7 @@ class LineTest {
 
         Line line = new Line("1호선", "남색", 서울역, 시청역, 10);
 
-        assertThatThrownBy(() -> line.addSection(강남역, 역삼역, 5))
+        assertThatThrownBy(() -> line.addSection(new Section(line, 강남역, 역삼역, 5)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

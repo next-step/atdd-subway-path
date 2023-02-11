@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,31 +61,63 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        Section newSection = new Section(this, upStation, downStation, distance);
-
-        validateMatchingSection(newSection);
-        validateUnmatchingSection(newSection);
-
-        Optional<Section> sameUpStationSection = findUpToUp(upStation);
-        if(sameUpStationSection.isPresent()) {
-            addUpToUp(sameUpStationSection.get(), newSection);
+    public void validateSection(Section section) {
+        if(sections.isEmpty()) {
             return;
         }
 
-        Optional<Section> sameDownStationSection = findDownToDown(downStation);
-        if(sameDownStationSection.isPresent()) {
-            addDownToDown(sameDownStationSection.get(), newSection);
+        validateMatchingSection(section);
+        validateUnmatchingSection(section);
+        validateDistance(section);
+    }
+
+
+
+    private boolean hasUpToUp(Station upStation) {
+        return findUpToUp(upStation).isPresent();
+    }
+
+    private boolean hasDownToDown(Station downStation) {
+        return findDownToDown(downStation).isPresent();
+    }
+
+    private void addUpToUp(Section section) {
+        findUpToUp(section.getUpStation())
+                .ifPresent(it -> {
+                    sections.remove(it);
+                    sections.add(section);
+                    sections.add(new Section(this, section.getDownStation(), it.getDownStation(), it.getDistance() - section.getDistance()));
+                });
+    }
+
+    private void addDownToDown(Section section) {
+        findDownToDown(section.getDownStation()).ifPresent(it -> {
+            sections.remove(it);
+            sections.add(new Section(this, it.getUpStation(), section.getUpStation(), it.getDistance() - section.getDistance()));
+            sections.add(section);
+        });
+    }
+
+    public void addSection(Section section) {
+        validateSection(section);
+
+        if(hasUpToUp(section.getUpStation())) {
+            addUpToUp(section);
             return;
         }
 
-        if(hasDownToBeginUp(downStation)) {
-            addDownToBeginUp(newSection);
+        if(hasDownToDown(section.getDownStation())) {
+            addDownToDown(section);
             return;
         }
 
-        if(hasUpToEndDown(upStation)) {
-            addUpToEndDown(newSection);
+        if(hasDownToBeginUp(section.getDownStation())) {
+            addDownToBeginUp(section);
+            return;
+        }
+
+        if(hasUpToEndDown(section.getUpStation())) {
+            addUpToEndDown(section);
         }
     }
 
@@ -95,11 +128,17 @@ public class Line {
             return stations;
         }
 
-        stations.add(getFirstSection().getUpStation());
+        sections.sort(Comparator.comparingInt(Section::getOrder));
+        stations.add(findFirstSection().getUpStation());
 
         sections.forEach((it) -> stations.add(it.getDownStation()));
 
         return stations;
+    }
+
+    public int getGreatestOrder() {
+        return sections.stream().max(Comparator.comparing(Section::getOrder))
+                .orElse(new Section()).getOrder();
     }
 
     private void validateMatchingSection(Section newSection) {
@@ -111,12 +150,6 @@ public class Line {
         }
     }
 
-    private void validateDistance(Section oldSection, Section newSection) {
-        if(oldSection.getDistance() <= newSection.getDistance()) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-        }
-    }
-
     private void validateUnmatchingSection(Section newSection) {
         boolean matchUpStation = hasMatchingStation(newSection.getUpStation());
         boolean matchDownStation = hasMatchingStation(newSection.getDownStation());
@@ -124,6 +157,32 @@ public class Line {
         if(!matchUpStation && !matchDownStation) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
         }
+    }
+
+    private void validateDistance(Section section) {
+        validateUpStationDistance(section);
+        validateDownStationDistance(section);
+    }
+
+    private void validateUpStationDistance(Section section) {
+        findUpToUp(section.getUpStation())
+                .filter(it -> it.getDistance() <= section.getDistance())
+                .ifPresent(it -> {
+                    throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+                });
+    }
+
+    private void validateDownStationDistance(Section section) {
+        findDownToDown(section.getDownStation())
+                .filter(it -> it.getDistance() <= section.getDistance())
+                .ifPresent(it -> {
+                    throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+                });
+    }
+
+    private boolean hasMatchingStation(Station station) {
+        return sections.stream()
+                .anyMatch((it) -> station.equals(it.getUpStation()) || station.equals(it.getDownStation()));
     }
 
     private Optional<Section> findUpToUp(Station upStation) {
@@ -138,62 +197,33 @@ public class Line {
                 .findFirst();
     }
 
-    private boolean hasDownToBeginUp(Station downStation) {
-        Section beginSection = getFirstSection();
+    private Section findFirstSection() {
+        return sections.stream().min(Comparator.comparing(Section::getOrder))
+                .orElseThrow(() -> new EntityNotFoundException("노선에 구간이 없습니다"));
+    }
 
+    private Section findLastSection() {
+        return sections.stream().max(Comparator.comparing(Section::getOrder))
+                .orElseThrow(() -> new EntityNotFoundException("노선에 구간이 없습니다"));
+    }
+
+    private boolean hasDownToBeginUp(Station downStation) {
+        Section beginSection = findFirstSection();
         return downStation.equals(beginSection.getUpStation());
     }
 
     private boolean hasUpToEndDown(Station upStation) {
-        Section endSection = getLastSection();
-
+        Section endSection = findLastSection();
         return upStation.equals(endSection.getDownStation());
     }
 
-    private void addUpToUp(Section oldSection, Section newSection) {
-        validateDistance(oldSection, newSection);
-
-        sections.add(newSection);
-        sections.add(
-                new Section(this,
-                        newSection.getDownStation(),
-                        oldSection.getDownStation(),
-                        oldSection.getDistance() - newSection.getDistance())
-        );
-        sections.remove(oldSection);
+    private void addDownToBeginUp(Section section) {
+        sections.forEach(Section::increaseOrder);
+        section.beginOrder();
+        sections.add(section);
     }
 
-    private void addDownToDown(Section oldSection, Section newSection) {
-        validateDistance(oldSection, newSection);
-
-        sections.remove(oldSection);
-        sections.add(
-                new Section(this,
-                        oldSection.getUpStation(),
-                        newSection.getUpStation(),
-                        oldSection.getDistance() - newSection.getDistance())
-        );
-        sections.add(newSection);
-    }
-
-    private void addDownToBeginUp(Section newSection) {
-        sections.add(0, newSection);
-    }
-
-    private void addUpToEndDown(Section newSection) {
-        sections.add(newSection);
-    }
-
-    private Section getFirstSection() {
-        return sections.get(0);
-    }
-
-    private Section getLastSection() {
-        return sections.get(sections.size() - 1);
-    }
-
-    private boolean hasMatchingStation(Station station) {
-        return sections.stream()
-                .anyMatch((it) -> station.equals(it.getUpStation()) || station.equals(it.getDownStation()));
+    private void addUpToEndDown(Section section) {
+        sections.add(section);
     }
 }

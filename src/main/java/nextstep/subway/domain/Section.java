@@ -22,15 +22,17 @@ public class Section {
 
     private int distance;
 
-    public Section() {
+    @Column(name = "section_order")
+    private int order = 0;
 
-    }
+    public Section() {}
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.order = getLine().getGreatestOrder() + 1;
     }
 
     public Long getId() {
@@ -51,5 +53,17 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void increaseOrder() {
+        order++;
+    }
+
+    public void beginOrder() {
+        order = 1;
     }
 }
