@@ -214,6 +214,24 @@ class SectionsTest {
 
             assertThatThrownBy(() -> sections.remove(선릉역)).isInstanceOf(IllegalArgumentException.class);
         }
+
+        @DisplayName("A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 된다.")
+        @Test
+        void removeMiddleSectionRelocation() {
+            Sections sections = new Sections();
+            sections.add(new Section(line, 강남역, 역삼역, 10));
+            sections.add(new Section(line, 선릉역, 역삼역, 5));
+
+            sections.remove(선릉역);
+
+            List<Section> sectionList = sections.getSections();
+            assertAll(
+                    () -> assertThat(sectionList).hasSize(1),
+                    () -> assertThat(sectionList.get(0).getUpStation()).isEqualTo(강남역),
+                    () -> assertThat(sectionList.get(0).getDownStation()).isEqualTo(역삼역),
+                    () -> assertThat(sectionList.get(0).getDistance()).isEqualTo(10)
+            );
+        }
     }
 
     @DisplayName("노선 조회시 상행 종점역부터 하행 종점역 순으로 역 목록을 조회한다.")
