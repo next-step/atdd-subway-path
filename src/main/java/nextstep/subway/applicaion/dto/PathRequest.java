@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Builder
 public class PathRequest {
 
@@ -20,5 +23,9 @@ public class PathRequest {
 
     public static PathRequest of(Long source, Long target) {
         return new PathRequest(source, target);
+    }
+
+    public List<Long> toStationIds() {
+        return List.of(source, target);
     }
 }

@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 public class Lines {
-    public Object toPathFinder() {
+    public PathFinder toPathFinder() {
         return null;
     }
 }
