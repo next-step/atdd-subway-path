@@ -97,10 +97,27 @@ public class Sections {
     }
 
     public void remove(final Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException("구간 제거에 실패하였습니다.");
+        if (isLineUpStation(station) || isLineDownStation(station)) {
+            sections.remove(sections.size() - 1);
+            return;
         }
-        sections.remove(sections.size() - 1);
+        Section stationBasedOnDownStation = findDownStationSection(station);
+        Section stationBasedOnUpStation = findUpStationSection(station);
+        sections.removeAll(List.of(stationBasedOnUpStation, stationBasedOnDownStation));
+        
+        Section relocationSection = relocationRemoveMiddleSection(stationBasedOnDownStation, stationBasedOnUpStation);
+        sections.add(relocationSection);
+    }
+
+    private Section relocationRemoveMiddleSection(
+            final Section stationBasedOnDownStation,
+            final Section stationBasedOnUpStation
+    ) {
+        Line line = stationBasedOnUpStation.getLine();
+        Station upStation = stationBasedOnDownStation.getUpStation();
+        Station downStation = stationBasedOnUpStation.getDownStation();
+        int distance = stationBasedOnDownStation.getDistance() + stationBasedOnUpStation.getDistance();
+        return new Section(line, upStation, downStation, distance);
     }
 
     public List<Section> getSections() {
