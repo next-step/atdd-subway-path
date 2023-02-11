@@ -109,6 +109,7 @@ public class Line {
         if(isAddUpSection(section.getUpStation())) {
             Section upSection = sections.stream().filter(s -> s.getUpStation().getId().equals(section.getUpStation().getId()))
                                         .findFirst().get();
+            upSection.setUpStation(section.getDownStation());
             calcDistanceByAddSection(upSection, section.getDistance());
         }
 
@@ -116,6 +117,7 @@ public class Line {
         if(isAddDownSection(section.getDownStation())) {
             Section downSection = sections.stream().filter(s -> s.getDownStation().getId().equals(section.getDownStation().getId()))
                                         .findFirst().get();
+            downSection.setDownStation(section.getUpStation());
             calcDistanceByAddSection(downSection, section.getDistance());
         }
 
@@ -123,10 +125,12 @@ public class Line {
         section.setLine(this);
     }
 
+
+
     private void validationAddSection(Section section) {
         //두 역이 모두 등록되어 있으면 안된다.
         if (getStations().stream()
-                .anyMatch(station -> getUpStations().contains(station) && getDownStations().contains(station))) {
+                .anyMatch(station -> getUpStations().contains(section.getUpStation()) && getDownStations().contains(section.getDownStation()))) {
             throw new CustomException(CustomException.DUPLICATE_STATION_MSG);
         }
 

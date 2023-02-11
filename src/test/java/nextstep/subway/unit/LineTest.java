@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,7 +65,7 @@ class LineTest {
      *  강남역 --- 역삼역 --- 삼성역
      */
     @Test
-    @Deprecated
+    @Disabled
     void addSection_When_중간역에_추가하면_Then_ThrownException() {
         //given
         Station 선릉역 = new Station(3L, "선릉역");
