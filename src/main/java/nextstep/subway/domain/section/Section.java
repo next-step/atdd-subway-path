@@ -6,6 +6,8 @@ import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.line.Line;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -36,4 +38,20 @@ public class Section {
         this.distance = distance;
     }
 
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Section)) return false;
+        Section section = (Section) o;
+        return Objects.equals(getId(), section.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 }

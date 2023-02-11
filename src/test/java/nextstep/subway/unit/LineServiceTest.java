@@ -41,13 +41,8 @@ public class LineServiceTest {
         // then
         // line.getSections 메서드를 통해 검증
         Line line = lineRepository.findById(1L).get();
-        assertThat(line.getSections())
-                .extracting(Section::getUpStation)
+        assertThat(line.getStations())
                 .extracting(Station::getId)
-                .containsExactly(1L);
-        assertThat(line.getSections())
-                .extracting(Section::getDownStation)
-                .extracting(Station::getId)
-                .containsExactly(2L);
+                .containsExactly(1L, 2L);
     }
 }
