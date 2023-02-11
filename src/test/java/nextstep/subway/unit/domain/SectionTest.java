@@ -73,4 +73,22 @@ class SectionTest {
         // then
         assertThat(sectionA.isSameUpStation(sectionB)).isTrue();
     }
+
+    @DisplayName("이어진 구간을 합칠 수 있다.")
+    @Test
+    void merge() {
+        // given
+        Section left = new Section(null, 강남역, 역삼역, 5);
+        Section right = new Section(null, 역삼역, 교대역, 10);
+
+        // when
+        Section newSection = Section.merge(left, right);
+
+        // then
+        assertAll(() -> {
+            assertThat(newSection.getUpStation()).isEqualTo(강남역);
+            assertThat(newSection.getDownStation()).isEqualTo(교대역);
+            assertThat(newSection.getDistance()).isEqualTo(15);
+        });
+    }
 }

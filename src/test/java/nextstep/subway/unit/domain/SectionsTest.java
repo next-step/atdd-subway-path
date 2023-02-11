@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.NotFoundException;
 import nextstep.subway.domain.exception.SubwayException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,11 +87,32 @@ class SectionsTest {
         assertThat(sections.stations()).containsExactly(강남역, 역삼역);
     }
 
-    @DisplayName("마지막 구간이 아닌 역을 삭제하는 경우 예외가 발생한다.")
+    @DisplayName("기존에 있는 첫번째 구간을 삭제할 수 있다.")
+    @Test
+    void remove1() {
+        // when
+        sections.remove(강남역.getId());
+
+        // then
+        assertThat(sections.stations()).containsExactly(역삼역, 교대역);
+    }
+
+
+    @DisplayName("기존 구간 사이에 있는 역을 삭제할 수 있다.")
+    @Test
+    void remove2() {
+        // when
+        sections.remove(역삼역.getId());
+
+        // then
+        assertThat(sections.stations()).containsExactly(강남역, 교대역);
+    }
+
+    @DisplayName("존재하지 않는 역을 삭제하는 경우 예외가 발생한다.")
     @Test
     void removeException1() {
-        assertThatThrownBy(() -> sections.remove(강남역.getId()))
-                .isInstanceOf(SubwayException.class);
+        assertThatThrownBy(() -> sections.remove(Long.MAX_VALUE))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("구간이 1개인 상태에서 삭제를 하는 경우 예외가 발생한다.")
