@@ -131,6 +131,21 @@ class LineTest {
     }
 
     /**
+     * When 기존 구간에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면
+     * Then 추가가 안된다
+     */
+    @DisplayName("기존 구간에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가가 안된다")
+    @Test
+    void 기존_구간에_상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가가_안된다() {
+        // Given
+        Station 판교역 = new Station("판교역");
+        Station 수지구청역 = new Station("수지구청역");
+
+        // When && Then
+        assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10)).isInstanceOf(IllegalAddSectionException.class);
+    }
+
+    /**
      * When 기존 구간들에 상행역과 하행역 둘 중 하나도 포함되어있지 않은 구간 요청 시
      * Then 추가가 안된다
      */
