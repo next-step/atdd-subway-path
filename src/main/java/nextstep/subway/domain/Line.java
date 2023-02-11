@@ -64,6 +64,7 @@ public class Line {
         Section newSection = new Section(this, upStation, downStation, distance);
 
         validateMatchingSection(newSection);
+        validateUnmatchingSection(newSection);
 
         Optional<Section> sameUpStationSection = findUpToUp(upStation);
         if(sameUpStationSection.isPresent()) {
@@ -102,13 +103,25 @@ public class Line {
     }
 
     private void validateMatchingSection(Section newSection) {
-        boolean matchUpStation = sections.stream()
-                .anyMatch((it) -> it.getUpStation().equals(newSection.getUpStation()));
-
-        boolean matchDownStation = sections.stream()
-                .anyMatch((it) -> it.getDownStation().equals(newSection.getDownStation()));
+        boolean matchUpStation = hasMatchingStation(newSection.getUpStation());
+        boolean matchDownStation = hasMatchingStation(newSection.getDownStation());
 
         if(matchUpStation && matchDownStation) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+        }
+    }
+
+    private void validateDistance(Section oldSection, Section newSection) {
+        if(oldSection.getDistance() <= newSection.getDistance()) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
+    }
+
+    private void validateUnmatchingSection(Section newSection) {
+        boolean matchUpStation = hasMatchingStation(newSection.getUpStation());
+        boolean matchDownStation = hasMatchingStation(newSection.getDownStation());
+
+        if(!matchUpStation && !matchDownStation) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
         }
     }
@@ -126,13 +139,13 @@ public class Line {
     }
 
     private boolean hasDownToBeginUp(Station downStation) {
-        Section beginSection = sections.get(0);
+        Section beginSection = getFirstSection();
 
         return downStation.equals(beginSection.getUpStation());
     }
 
     private boolean hasUpToEndDown(Station upStation) {
-        Section endSection = sections.get(sections.size() - 1);
+        Section endSection = getLastSection();
 
         return upStation.equals(endSection.getDownStation());
     }
@@ -175,9 +188,12 @@ public class Line {
         return sections.get(0);
     }
 
-    private void validateDistance(Section oldSection, Section newSection) {
-        if(oldSection.getDistance() <= newSection.getDistance()) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-        }
+    private Section getLastSection() {
+        return sections.get(sections.size() - 1);
+    }
+
+    private boolean hasMatchingStation(Station station) {
+        return sections.stream()
+                .anyMatch((it) -> station.equals(it.getUpStation()) || station.equals(it.getDownStation()));
     }
 }
