@@ -7,8 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import nextstep.subway.domain.exception.AddSectionConstraintException;
-import nextstep.subway.domain.exception.AddSectionDistanceOverExistingSection;
+import javax.persistence.Transient;
 import nextstep.subway.domain.exception.NotExistBasedOnDownStationException;
 import nextstep.subway.domain.exception.NotExistBasedOnUpStationException;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
@@ -22,6 +21,13 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    @Transient
+    private final SectionsValidator sectionsValidator;
+
+    public Sections() {
+        this.sectionsValidator = new SectionsValidator();
+    }
+
     public void add(final Section section) {
         if (sections.size() == 0) {
             sections.add(section);
@@ -29,9 +35,7 @@ public class Sections {
         }
         List<Section> sectionsBasedOnUpStation = getSectionsBy(section.getUpStation());
         List<Section> sectionsBasedOnDownStation = getSectionsBy(section.getDownStation());
-
-        validateAddSection(sectionsBasedOnUpStation, sectionsBasedOnDownStation);
-
+        sectionsValidator.addSection(sections, sectionsBasedOnUpStation, sectionsBasedOnDownStation);
         if (sectionsBasedOnUpStation.isEmpty()) {
             addBasedOnDownStationSection(section);
         }
@@ -40,37 +44,13 @@ public class Sections {
         }
     }
 
-    private void validateAddSection(
-            final List<Section> sectionsBasedOnUpStation,
-            final List<Section> sectionsBasedOnDownStation
-    ) {
-        if (isAlreadyAddedSection(sectionsBasedOnUpStation, sectionsBasedOnDownStation)
-                || isNonIncludeStation(sectionsBasedOnUpStation, sectionsBasedOnDownStation)) {
-            throw new AddSectionConstraintException();
-        }
-    }
-
-    private boolean isAlreadyAddedSection(
-            final List<Section> upStationSection,
-            final List<Section> downStationSection
-    ) {
-        return !upStationSection.isEmpty() && !downStationSection.isEmpty();
-    }
-
-    private boolean isNonIncludeStation(
-            final List<Section> upStationSection,
-            final List<Section> downStationSection
-    ) {
-        return !sections.isEmpty() && upStationSection.isEmpty() && downStationSection.isEmpty();
-    }
-
     private void addBasedOnDownStationSection(final Section section) {
         if (section.getDownStation().equals(getLineUpStation())) {
             sections.add(section);
             return;
         }
         Section existingSection = findSectionBasedOnDownStationBy(section.getDownStation());
-        validateDistanceAddSectionBetweenExistingSection(section, existingSection);
+        sectionsValidator.distanceAddSectionBetweenExistingSection(section, existingSection);
         existingSection
                 .setDownStation(section.getUpStation())
                 .minusDistance(section.getDistance());
@@ -83,20 +63,11 @@ public class Sections {
             return;
         }
         Section existingSection = findSectionBasedOnUpStationBy(section.getUpStation());
-        validateDistanceAddSectionBetweenExistingSection(section, existingSection);
+        sectionsValidator.distanceAddSectionBetweenExistingSection(section, existingSection);
         existingSection
                 .setUpStation(section.getDownStation())
                 .minusDistance(section.getDistance());
         sections.add(section);
-    }
-
-    private void validateDistanceAddSectionBetweenExistingSection(
-            final Section newSection,
-            final Section existingSection
-    ) {
-        if (newSection.getDistance().more(existingSection.getDistance())) {
-            throw new AddSectionDistanceOverExistingSection();
-        }
     }
 
     public void remove(final Station station) {
