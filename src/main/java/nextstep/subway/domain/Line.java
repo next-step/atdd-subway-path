@@ -3,9 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.common.ErrorMessage;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Entity
@@ -16,8 +14,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private SectionCollection sectionCollection = new SectionCollection();
 
     public Line() {
     }
@@ -52,36 +50,20 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sectionCollection.getSections();
     }
 
     public void addSections(Section section) {
-        Section lastSection = getLastStation();
-        if (lastSection != null && !Objects.equals(lastSection.getDownStation(), section.getUpStation())) {
-            throw new IllegalStateException(ErrorMessage.ENOUGH_ADD_CONNECT.toString());
-        }
-        sections.add(section);
-    }
-
-    private Section getLastStation() {
-        int index = sections.size() - 1;
-        if (index == -1) {
-            return null;
-        }
-        return sections.get(index);
+        sectionCollection.addSection(section);
     }
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
 
-        stations.add(0, sections.get(0).getUpStation());
-
-        return stations;
+        return sectionCollection.getStations();
     }
 
     public void removeStation(Station station) {
+        List<Section> sections = sectionCollection.getSections();
         int index = sections.size() - 1;
 
         if (index < 1) {

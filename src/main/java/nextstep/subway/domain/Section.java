@@ -20,7 +20,8 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
 
@@ -30,7 +31,7 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Long getId() {
@@ -50,6 +51,16 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
+    }
+
+    public void updateUpStation(Station updateStation, int distance) {
+        this.upStation = updateStation;
+        this.distance.decrease(distance);
+    }
+
+    public void updateDownStation(Station updateStation, int distance) {
+        this.downStation = updateStation;
+        this.distance.decrease(distance);
     }
 }
