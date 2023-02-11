@@ -41,9 +41,6 @@ class LineTest {
 
     @Test
     void addSectionInExistentSection() {
-        // given
-        Line line = createLine();
-
         // when
         line.addSection(upStation, middleStation, 6);
 
@@ -54,9 +51,6 @@ class LineTest {
 
     @Test
     void addSectionWithTooLongDistance() {
-        // given
-        Line line = createLine();
-
         // when & then
         assertThatThrownBy(() -> line.addSection(upStation, middleStation, 10))
             .isInstanceOf(IllegalArgumentException.class)
@@ -65,9 +59,6 @@ class LineTest {
 
     @Test
     void addAlreadyExistentStations() {
-        // given
-        Line line = createLine();
-
         // when & then
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 5))
             .isInstanceOf(IllegalArgumentException.class)
@@ -77,7 +68,6 @@ class LineTest {
     @Test
     void addNonExistentStations() {
         // given
-        Line line = createLine();
         Station upStation = new Station("공릉역");
         Station downStation = new Station("소요산역");
 
@@ -89,18 +79,12 @@ class LineTest {
 
     @Test
     void getStations() {
-        // given
-        Line line = createLine();
-
         // when & then
         assertThat(line.getOrderedStations()).extracting("name").containsExactly("상행역", "하행역");
     }
 
     @Test
     void removeSection() {
-        // given
-        Line line = createLine();
-
         // when
         line.removeSection(line.getOrderedStations().get(1));
 
@@ -110,9 +94,6 @@ class LineTest {
 
     @Test
     void removeNonLastSection() {
-        // given
-        Line line = createLine();
-
         // when & then
         assertThatThrownBy(() -> line.removeSection(line.getOrderedStations().get(0)))
             .isInstanceOf(IllegalArgumentException.class);
@@ -120,20 +101,11 @@ class LineTest {
 
     @Test
     void updateLine() {
-        // given
-        Line line = createLine();
-
         // when
         line.updateLine("2호선", "초록색");
 
         // then
         assertThat(line.getName()).isEqualTo("2호선");
         assertThat(line.getColor()).isEqualTo("초록색");
-    }
-
-    private Line createLine() {
-        Line line = new Line("1호선", "파란색");
-        line.addSection(upStation, downStation, 10);
-        return line;
     }
 }

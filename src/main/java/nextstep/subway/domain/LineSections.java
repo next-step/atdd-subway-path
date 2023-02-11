@@ -91,13 +91,12 @@ public class LineSections {
 
     private List<Station> getAllStations() {
         List<Station> stations = new ArrayList<>();
-        Section anySection = this.sections.stream().findFirst().orElse(null);
 
-        if (anySection == null) {
+        if (this.sections.isEmpty()) {
             return stations;
         }
 
-        stations.add(anySection.getUpStation());
+        stations.add(this.sections.get(0).getUpStation());
         for (Section section : this.sections) {
             stations.add(section.getDownStation());
         }
