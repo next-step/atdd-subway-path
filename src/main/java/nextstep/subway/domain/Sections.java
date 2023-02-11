@@ -8,6 +8,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.exception.NotExistBasedOnDownStationException;
+import nextstep.subway.domain.exception.NotExistBasedOnUpStationException;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
 import nextstep.subway.domain.exception.StationNotInSectionsException;
 
@@ -132,7 +134,7 @@ public class Sections {
         return getSectionsBy(downStation).stream()
                 .filter(section -> section.isDownStation(downStation))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("역을 하행선으로 하는 구간이 존재하지 않습니다."));
+                .orElseThrow(NotExistBasedOnDownStationException::new);
     }
 
     private Section relocateWithRemovingMiddleSection(
@@ -174,7 +176,7 @@ public class Sections {
         return getSectionsBy(station).stream()
                 .filter(section -> section.isUpStation(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("역을 상행선으로 하는 구간이 존재하지 않습니다."));
+                .orElseThrow(NotExistBasedOnUpStationException::new);
     }
 
     private List<Section> getSectionsBy(final Station station) {
