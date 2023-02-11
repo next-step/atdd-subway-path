@@ -183,4 +183,8 @@ public class Sections {
     private boolean isLineUpStation(final Station upStation) {
         return sections.stream().filter(section -> section.isDownStation(upStation)).findFirst().isEmpty();
     }
+
+    private boolean isContainStation(final Station station) {
+        return sections.stream().anyMatch(section -> section.isContain(station));
+    }
 }
