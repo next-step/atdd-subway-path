@@ -152,15 +152,20 @@ public class Sections {
         if (sections.isEmpty()) {
             return Collections.emptyList();
         }
+        return Collections.unmodifiableList(getSortedStation());
+    }
+
+    private List<Station> getSortedStation() {
         List<Station> stations = new ArrayList<>();
         Station upStation = getLineUpStation();
-        for (int i = 0; i < sections.size(); i++) {
+        Station lineDownStation = getLineDownStation();
+        while (upStation != lineDownStation) {
             Section upStationSection = findSectionBasedOnUpStationBy(upStation);
             stations.add(upStationSection.getUpStation());
             upStation = upStationSection.getDownStation();
         }
-        stations.add(getLineDownStation());
-        return Collections.unmodifiableList(stations);
+        stations.add(lineDownStation);
+        return stations;
     }
 
     private Section findSectionBasedOnUpStationBy(final Station station) {
