@@ -134,14 +134,25 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Then 예외가 발생한다
      *
      * As-is
-     * 강남역 <--------6-------> 정자역
+     * 강남역 <--------10-------> 정자역
      *                           ↓
      *                           X
-     * 강남역 <--------6-------> 양재역
+     * 강남역 <--------10-------> 양재역
      */
     @DisplayName("기존 구간과 같은 길이 구간은 등록 불가")
     @Test
     void exceptionWhenConflictDistance() {
+        // Given
+        Map<String, String> section = createSectionCreateParamsWithDistance(강남역, 정자역, 10);
+
+        // When & Then
+        ExtractableResponse<Response> responseOf구간생성 = 지하철_노선에_지하철_구간_생성_요청(신분당선, section);
+        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+        // When & Then
+        ExtractableResponse<Response> responseOf노선조회 = 지하철_노선_조회_요청(신분당선);
+        assertThat(responseOf노선조회.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(responseOf노선조회.jsonPath().getList("stations.id", Long.class)).doesNotContain(정자역);
     }
 
     /**
@@ -152,11 +163,22 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * 강남역 <------------12-----------> 정자역
      *                                    ↓
      *                                    X
-     * 강남역 <--------6-------> 양재역
+     * 강남역 <--------10-------> 양재역
      */
     @DisplayName("기존 구간보다 긴 길이 구간은 등록 불가")
     @Test
     void exceptionWhenExceededDistance() {
+        // Given
+        Map<String, String> section = createSectionCreateParamsWithDistance(강남역, 정자역, 12);
+
+        // When & Then
+        ExtractableResponse<Response> responseOf구간생성 = 지하철_노선에_지하철_구간_생성_요청(신분당선, section);
+        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+        // When & Then
+        ExtractableResponse<Response> responseOf노선조회 = 지하철_노선_조회_요청(신분당선);
+        assertThat(responseOf노선조회.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(responseOf노선조회.jsonPath().getList("stations.id", Long.class)).doesNotContain(정자역);
     }
 
     /**
@@ -164,14 +186,22 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 예외가 발생한다
      *
-     * 강남역 <--------6-------> 양재역
-     *   ↓                       ↓
-     *   X                       X
-     * 강남역 <--------6-------> 양재역
+     * 강남역 <--------10-------> 양재역
+     *   ↓                        ↓
+     *   X                        X
+     * 강남역 <--------10-------> 양재역
      */
     @DisplayName("노선에 모두 존재하는 역들로 이루어진 구간은 등록 불가")
     @Test
     void exceptionWhenRequestStationsAreAlreadyResister() {
+        // Given
+        Map<String, String> section = createSectionCreateParamsWithDistance(강남역, 양재역, 10);
+
+        // When
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, section);
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -215,6 +245,19 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 모두 존재하지 않는 역들로 이루어진 구간은 등록 불가")
     @Test
     void exceptionWhenRequestStationsNotExistOnLine() {
+        // Given
+        Long 부산역 = 지하철역_생성_요청("부산역").jsonPath().getLong("id");
+        Long 강원역 = 지하철역_생성_요청("강원역").jsonPath().getLong("id");
+        Map<String, String> section = createSectionCreateParams(부산역, 강원역);
+
+        // When & Then
+        ExtractableResponse<Response> responseOf구간생성 = 지하철_노선에_지하철_구간_생성_요청(신분당선, section);
+        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+
+        // When & Then
+        ExtractableResponse<Response> responseOf노선조회 = 지하철_노선_조회_요청(신분당선);
+        assertThat(responseOf노선조회.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(responseOf노선조회.jsonPath().getList("stations.id", Long.class)).doesNotContain(부산역, 강원역);
     }
 
     /**
@@ -284,6 +327,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
+        return params;
+    }
+
+    private Map<String, String> createSectionCreateParamsWithDistance(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
         return params;
     }
 }
