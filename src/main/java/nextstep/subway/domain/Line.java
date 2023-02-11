@@ -38,10 +38,6 @@ public class Line {
     }
 
     private void validateSection(Section section) {
-        if (section.hasIdenticalStations()) {
-            throw new IllegalArgumentException();
-        }
-
         List<Station> stations = getStations();
         if (stations.isEmpty()) {
             return;

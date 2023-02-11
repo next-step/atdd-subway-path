@@ -1,17 +1,16 @@
 package nextstep.subway.unit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 
 class LineTest {
@@ -45,11 +44,8 @@ class LineTest {
     @DisplayName("지하철 구간 등록 시, 상행역과 하행역이 같으면 예외가 발생한다.")
     @Test
     void identicalStations() {
-        // given
-        Section section = new Section(분당선, 수서역, 수서역, 5);
-
         // when & then
-        assertThatThrownBy(() -> 분당선.addSection(section))
+        assertThatThrownBy(() -> new Section(분당선, 수서역, 수서역, 5))
             .isInstanceOf(IllegalArgumentException.class);
     }
 

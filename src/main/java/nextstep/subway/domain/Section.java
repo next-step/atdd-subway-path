@@ -29,14 +29,17 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        if (hasIdenticalStations(upStation, downStation)) {
+            throw new IllegalArgumentException();
+        }
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
     }
 
-    public boolean hasIdenticalStations() {
-        return upStation.equals(downStation);
+    public boolean hasIdenticalStations(Station upStation, Station downStation) {
+        return (upStation != null && downStation != null) && upStation.equals(downStation);
     }
 
     public void updateUpStation(Station station, int distance) {
