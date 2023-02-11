@@ -79,6 +79,10 @@ public class Line {
             addDownToBeginUp(newSection);
             return;
         }
+
+        if(hasUpToEndDown(upStation)) {
+            addUpToEndDown(newSection);
+        }
     }
 
     public List<Station> getStations() {
@@ -108,11 +112,22 @@ public class Line {
     }
 
     private boolean hasDownToBeginUp(Station downStation) {
-        Section beginSection = sections.stream().findFirst().get();
+        Section beginSection = sections.get(0);
+
         return downStation.equals(beginSection.getUpStation());
     }
 
+    private boolean hasUpToEndDown(Station upStation) {
+        Section endSection = sections.get(sections.size() - 1);
+
+        return upStation.equals(endSection.getDownStation());
+    }
+
     private void addUpToUp(Section oldSection, Section newSection) {
+        if(notAddableDistance(oldSection, newSection)) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
+
         sections.add(newSection);
         sections.add(
                 new Section(this,
@@ -124,6 +139,10 @@ public class Line {
     }
 
     private void addDownToDown(Section oldSection, Section newSection) {
+        if(notAddableDistance(oldSection, newSection)) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
+
         sections.remove(oldSection);
         sections.add(
                 new Section(this,
@@ -138,7 +157,15 @@ public class Line {
         sections.add(0, newSection);
     }
 
+    private void addUpToEndDown(Section newSection) {
+        sections.add(newSection);
+    }
+
     private Section getFirstSection() {
         return sections.get(0);
+    }
+
+    private boolean notAddableDistance(Section oldSection, Section newSection) {
+        return oldSection.getDistance() <= newSection.getDistance();
     }
 }
