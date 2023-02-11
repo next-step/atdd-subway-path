@@ -1,14 +1,17 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.*;
-import nextstep.subway.domain.*;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,7 +25,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest request) {
+    public Line saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
@@ -34,17 +37,15 @@ public class LineService {
                     .build();
             line.addSection(section);
         }
-        return createLineResponse(line);
+        return line;
     }
 
-    public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+    public List<Line> showLines() {
+        return Collections.unmodifiableList(lineRepository.findAll());
     }
 
-    public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+    public Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
@@ -75,40 +76,6 @@ public class LineService {
                 .setDistance(sectionRequest.getDistance())
                 .build();
         line.addSection(section);
-    }
-
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createSectionResponses(line),
-                createStationResponses(line)
-        );
-    }
-
-    private List<SectionResponse> createSectionResponses(Line line) {
-        if(line.isEmptySections()){
-            return Collections.emptyList();
-        }
-        List<Section> sections = line.getSections().getValuesOrderBy();
-
-        return sections.stream()
-                .map(SectionResponse::new)
-                .collect(Collectors.toList());
-    }
-
-
-    private List<StationResponse> createStationResponses(Line line) {
-        if (line.isEmptySections()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getAllStations();
-
-        return stations.stream()
-                .map(stationService::createStationResponse)
-                .collect(Collectors.toList());
     }
 
     @Transactional

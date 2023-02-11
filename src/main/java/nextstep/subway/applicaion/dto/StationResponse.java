@@ -2,6 +2,9 @@ package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Station;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class StationResponse {
     private Long id;
     private String name;
@@ -14,9 +17,16 @@ public class StationResponse {
         this.name = name;
     }
 
-    public StationResponse(Station station) {
-        this.id = station.getId();
-        this.name = station.getName();
+    public static StationResponse of(Station station) {
+        return new StationResponse(station.getId(), station.getName());
+
+
+    }
+
+    public static List<StationResponse> asList(List<Station> stations) {
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public Long getId() {
