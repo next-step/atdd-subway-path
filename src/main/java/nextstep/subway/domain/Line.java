@@ -45,9 +45,10 @@ public class Line {
     }
 
     public void setName(final String name) {
-        if (name != null) {
-            this.name = name;
+        if (name == null) {
+            return;
         }
+        this.name = name;
     }
 
     public String getColor() {
@@ -55,9 +56,10 @@ public class Line {
     }
 
     public void setColor(final String color) {
-        if (color != null) {
-            this.color = color;
+        if (color == null) {
+            return;
         }
+        this.color = color;
     }
 
     public List<Section> getSections() {
