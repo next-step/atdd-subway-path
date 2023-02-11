@@ -1,6 +1,10 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
+import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,6 +20,8 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        validateSection(section);
+
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int distance = section.getDistance();
@@ -33,11 +39,33 @@ public class Sections {
         sections.add(section);
     }
 
+    private void validateSection(Section section) {
+        List<Station> stations = getStationsInOrder();
+        if (stations.isEmpty()) {
+            return;
+        }
+
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+
+        if (stations.contains(upStation) && stations.contains(downStation)) {
+            throw new SectionStationsAlreadyExistsInLineException(upStation.getName(), downStation.getName());
+        }
+
+        if (!stations.contains(upStation) && !stations.contains(downStation)) {
+            throw new BothSectionStationsNotExistsInLineException(upStation.getName(), downStation.getName());
+        }
+    }
+
     public boolean isEmpty() {
         return sections.isEmpty();
     }
 
     public List<Station> getStationsInOrder() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         Station firstStation = findFirstLineStation();
 
         List<Station> stations = new ArrayList<>();

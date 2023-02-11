@@ -1,10 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
-import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
-
 import javax.persistence.*;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -33,36 +29,10 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        validateSection(section);
         sections.add(section);
     }
 
-    private void validateSection(Section section) {
-        List<Station> stations = getStations();
-        if (stations.isEmpty()) {
-            return;
-        }
-
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-
-        if (stations.contains(upStation) && stations.contains(downStation)) {
-            throw new SectionStationsAlreadyExistsInLineException(upStation.getName(), downStation.getName());
-        }
-
-        if (!stations.contains(upStation) && !stations.contains(downStation)) {
-            throw new BothSectionStationsNotExistsInLineException(upStation.getName(), downStation.getName());
-        }
-    }
-
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return getStationsInOrder();
-    }
-
-    private List<Station> getStationsInOrder() {
         return sections.getStationsInOrder();
     }
 
