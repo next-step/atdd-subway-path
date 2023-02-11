@@ -320,7 +320,7 @@ class SectionsTest {
         //then 역을 삭제하면 오류가 난다.
         assertAll(
                 ()->assertThatThrownBy(() -> line.remove(stationC)).isInstanceOf(SubwayException.class)
-                        .hasMessageContaining(SubwayExceptionMessage.STATION_CANNOT_REMOVE.getMessage())
+                        .hasMessageContaining(SubwayExceptionMessage.STATION_NOT_CONTAINED.getMessage())
         );
 
     }

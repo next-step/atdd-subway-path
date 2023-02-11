@@ -153,7 +153,7 @@ class LineTest {
         line.addSection(상계_노원);
 
         //when 구간을 삭제한다.
-        line.removeLastStation(노원);
+        line.remove(노원);
 
         //then 삭제된 역이 노선에서 조회되지 않는다.
         Assertions.assertAll(

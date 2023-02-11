@@ -4,8 +4,7 @@ import nextstep.subway.exception.SubwayException;
 import nextstep.subway.exception.SubwayExceptionMessage;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
+
 
 @Entity
 public class Section {
@@ -38,6 +37,11 @@ public class Section {
         this.distance = builder.distance;
     }
 
+    public void combineUpSection(Section upStation) {
+        this.upStation = upStation.upStation;
+        this.distance += upStation.distance;
+
+    }
 
     public Long getId() {
         return id;
@@ -60,32 +64,30 @@ public class Section {
         return this.downStation.equals(station);
     }
 
-    public List<Station> getStations(){
-        return Arrays.asList(upStation, downStation);
-    }
-
     public boolean equalUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
-    public boolean contains(Station station){
+    public boolean contains(Station station) {
         return equalUpStation(station) || equalDownStation(station);
     }
 
     public void divideUpStation(Section section) {
-        if(this.distance <= section.distance){
+        if (this.distance <= section.distance) {
             throw new SubwayException(SubwayExceptionMessage.SECTION_LONGER);
         }
         this.distance = this.distance - section.distance;
         this.upStation = section.downStation;
     }
+
     public void divideDownStation(Section section) {
-        if(this.distance <= section.distance){
+        if (this.distance <= section.distance) {
             throw new SubwayException(SubwayExceptionMessage.SECTION_LONGER);
         }
         this.distance = this.distance - section.distance;
         this.downStation = section.upStation;
     }
+
 
     public static class SectionBuilder {
         private Line line;
@@ -117,4 +119,6 @@ public class Section {
         }
 
     }
+
+
 }

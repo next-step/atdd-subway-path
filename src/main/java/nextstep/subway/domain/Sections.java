@@ -25,11 +25,11 @@ public class Sections {
         if (isAlreadyAdd(section)) {
             throw new SubwayException(SubwayExceptionMessage.SECTION_ALREADY_ADDED);
         }
-        if (isFirstStation(section)) {
+        if (canAddFirstSection(section)) {
             values.add(section);
             return;
         }
-        if (isLastStation(section)) {
+        if (canAddLastSection(section)) {
             values.add(section);
             return;
         }
@@ -56,11 +56,11 @@ public class Sections {
         return contains(section.getUpStation()) && !contains(section.getDownStation());
     }
 
-    private boolean isLastStation(Section section) {
+    private boolean canAddLastSection(Section section) {
         return equalLastStation(section.getUpStation()) && !contains(section.getDownStation());
     }
 
-    private boolean isFirstStation(Section section) {
+    private boolean canAddFirstSection(Section section) {
         return equalFirstStation(section.getDownStation()) && !contains(section.getUpStation());
     }
 
@@ -86,6 +86,11 @@ public class Sections {
         return values.stream()
                 .filter(value -> getBeforeSection(value).isEmpty())
                 .findFirst().orElseThrow();
+
+    }
+
+    private Section getLastSection() {
+        return getValuesOrderBy().get(size() - 1);
 
     }
 
@@ -136,7 +141,32 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        values.remove(getStations().indexOf(station) - 1);
+
+        if (!contains(station)) {
+            throw new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED);
+        }
+        if (size() <= 1) {
+            throw new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE);
+        }
+        if (equalFirstStation(station)) {
+            values.remove(getFirstSection());
+            return;
+        }
+        if (equalLastStation(station)) {
+            values.remove(getLastSection());
+            return;
+        }
+        Section removeSection = values.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED));
+
+        Section updateSection = getAfterSection(removeSection)
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED));
+
+        updateSection.combineUpSection(removeSection);
+        values.remove(removeSection);
+
     }
 
     public int size() {

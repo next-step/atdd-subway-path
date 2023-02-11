@@ -20,6 +20,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역;
     private Long 양재역;
+    public static final String DEFAULT_DISTANCE = "10";
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -80,7 +81,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         lineCreateParams.put("color", "bg-red-600");
         lineCreateParams.put("upStationId", upStationId + "");
         lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", 10 + "");
+        lineCreateParams.put("distance", DEFAULT_DISTANCE);
         return lineCreateParams;
     }
 
@@ -88,7 +89,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", DEFAULT_DISTANCE + "");
         return params;
     }
 }

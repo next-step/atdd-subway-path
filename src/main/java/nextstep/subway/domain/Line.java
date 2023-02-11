@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.SubwayException;
-import nextstep.subway.exception.SubwayExceptionMessage;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -63,27 +60,15 @@ public class Line {
         sections.addSection(section);
     }
 
-    public boolean isEmptySections() {
-        return sections.isEmpty();
-    }
-
     public List<Station> getAllStations() {
         return sections.getStations();
     }
 
-    public boolean equalLastStations(Station station){
+    public boolean equalLastStations(Station station) {
         return sections.equalLastStation(station);
     }
 
-    public void removeLastStation(Station station) {
-
-        if (!sections.equalLastStation(station)) {
-            throw new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE);
-        }
+    public void remove(Station station) {
         sections.remove(station);
-    }
-
-    public void remove(Station station){
-
     }
 }
