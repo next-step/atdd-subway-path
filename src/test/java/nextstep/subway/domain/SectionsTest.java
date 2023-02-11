@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import nextstep.subway.domain.exception.RemoveSectionsSizeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -227,7 +228,7 @@ class SectionsTest {
         void removeFailSectionsOnlyContainUpStationAndDownStation() {
             Sections sections = createSectionsBy(line, 강남역, 역삼역);
 
-            assertThatThrownBy(() -> sections.remove(선릉역)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.remove(선릉역)).isInstanceOf(RemoveSectionsSizeException.class);
         }
 
         @DisplayName("A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 된다.")

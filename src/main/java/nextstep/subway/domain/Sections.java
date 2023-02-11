@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.exception.RemoveSectionsSizeException;
 
 @Embeddable
 public class Sections {
@@ -115,7 +116,7 @@ public class Sections {
 
     private void validateRemoveBy(final Station station) {
         if (sections.size() < REMOVE_SIZE_MIN) {
-            throw new IllegalArgumentException("구간 목록의 크기가 " + REMOVE_SIZE_MIN + " 이상일 경우 구간 제거가 가능합니다.");
+            throw new RemoveSectionsSizeException(REMOVE_SIZE_MIN);
         }
         if (!isContain(station)) {
             throw new IllegalArgumentException("구간 목록에 포함되지 않은 역입니다.");
