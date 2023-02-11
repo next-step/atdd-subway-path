@@ -99,7 +99,7 @@ public class Sections {
 
     public void remove(final Station station) {
         if (sections.size() < REMOVE_SIZE_MIN) {
-            throw new IllegalArgumentException("구간 목록의 크기가 " + REMOVE_SIZE_MIN + " 보다 클 경우 구간 제거가 가능합니다.");
+            throw new IllegalArgumentException("구간 목록의 크기가 " + REMOVE_SIZE_MIN + " 이상일 경우 구간 제거가 가능합니다.");
         }
         if (isLineUpStation(station) || isLineDownStation(station)) {
             sections.remove(sections.size() - 1);
