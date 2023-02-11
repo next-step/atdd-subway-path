@@ -48,6 +48,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section merge(Section upSection, Section downSection) {
+        return new Section(upSection.line, upSection.upStation, downSection.downStation, upSection.distance + downSection.distance);
+    }
+
     public Section to(Section newSection) {
         if (isSameUpStation(newSection)) {
             return new Section(line,
@@ -82,8 +86,8 @@ public class Section {
         return distance;
     }
 
-    public boolean isDownStationId(long stationId) {
-        return downStation.getId() == stationId;
+    public boolean hasStationId(long stationId) {
+        return upStation.getId() == stationId || downStation.getId() == stationId;
     }
 
     public boolean isSameStations(Section other) {
