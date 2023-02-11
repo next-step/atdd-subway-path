@@ -47,8 +47,8 @@ public class Line {
         return lineSections.getOrderedStations();
     }
 
-    public void removeSection(Station downEndStation) {
-        this.lineSections.removeSection(downEndStation);
+    public void removeSection(Station station) {
+        this.lineSections.removeSection(this, station);
     }
 
     public void updateLine(String name, String color) {

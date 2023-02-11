@@ -84,19 +84,55 @@ class LineTest {
     }
 
     @Test
-    void removeSection() {
+    void removeLastSection() {
+        // given
+        line.addSection(upStation, middleStation, 5);
+
+        // when
+        line.removeSection(line.getOrderedStations().get(2));
+
+        // then
+        assertThat(line.getOrderedStations()).extracting("name").containsExactly("상행역", "중간역");
+    }
+
+    @Test
+    void removeFirstSection() {
+        // given
+        line.addSection(upStation, middleStation, 5);
+
+        // when
+        line.removeSection(line.getOrderedStations().get(0));
+
+        // then
+        assertThat(line.getOrderedStations()).extracting("name").containsExactly("중간역", "하행역");
+    }
+
+    @Test
+    void removeMiddleSection() {
+        // given
+        line.addSection(upStation, middleStation, 5);
+
         // when
         line.removeSection(line.getOrderedStations().get(1));
 
         // then
-        assertThat(line.getSections()).isEmpty();
+        assertThat(line.getOrderedStations()).extracting("name").containsExactly("상행역", "하행역");
     }
 
     @Test
-    void removeNonLastSection() {
+    void removeLastOneSection() {
         // when & then
         assertThatThrownBy(() -> line.removeSection(line.getOrderedStations().get(0)))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage(LineErrorMessage.REMOVE_SECTION_LAST_ONE.getMessage());
+    }
+
+    @Test
+    void removeNonExistentStationFromSection() {
+        // when & then
+        assertThatThrownBy(() -> line.removeSection(new Station("공릉역")))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage(LineErrorMessage.REMOVE_SECTION_STATIONS_NOT_EXISTS.getMessage());
     }
 
     @Test

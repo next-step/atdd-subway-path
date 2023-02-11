@@ -148,10 +148,28 @@ public class LineSections {
             .build();
     }
 
-    public void removeSection(Station downEndStation) {
-        if (!this.sections.get(this.sections.size() - 1).getDownStation().equals(downEndStation)) {
-            throw new IllegalArgumentException();
+    public void removeSection(Line line, Station station) {
+        Station targetStation = getAllStations().stream()
+            .filter(station::equals)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(LineErrorMessage.REMOVE_SECTION_STATIONS_NOT_EXISTS.getMessage()));
+
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException(LineErrorMessage.REMOVE_SECTION_LAST_ONE.getMessage());
         }
-        this.sections.remove(this.sections.size() - 1);
+
+        List<Section> targetSections = this.sections.stream()
+            .filter(section -> section.getUpStation().equals(targetStation) || section.getDownStation().equals(targetStation))
+            .collect(Collectors.toList());
+
+        if (targetSections.size() > 1) {
+            Section firstSection = targetSections.get(0);
+            Section secondSection = targetSections.get(1);
+            extendSection(line, firstSection.getUpStation(), secondSection.getDownStation(), firstSection.getDistance() + secondSection.getDistance());
+            this.sections.removeIf(section -> section.equals(targetSections.get(0)) || section.equals(targetSections.get(1)));
+            return;
+        }
+
+        this.sections.removeIf(section -> section.equals(targetSections.get(0)));
     }
 }
