@@ -63,7 +63,7 @@ class DistanceTest {
     @Test
     void isLessMin() {
         assertAll(
-                () -> assertThat(new Distance(1).isOverMin()).isFalse(),
+                () -> assertThat(new Distance(1).isUnderMin()).isFalse(),
                 () -> assertThatThrownBy(() -> new Distance(0)).isInstanceOf(IllegalArgumentException.class),
                 () -> assertThatThrownBy(() -> new Distance(-1)).isInstanceOf(IllegalArgumentException.class)
         );

@@ -39,8 +39,8 @@ public class Distance {
         return this.value >= distance.value;
     }
 
-    public boolean isOverMin() {
-        return this.value > MIN;
+    public boolean isUnderMin() {
+        return this.value < MIN;
     }
 
     @Override
