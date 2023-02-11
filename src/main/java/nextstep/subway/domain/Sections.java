@@ -176,18 +176,36 @@ public class Sections {
 		}
 
 		if (includedSection.equalUpStation(upStation)) {
-			this.sections.remove(includedSection);
-			this.sections.add(new Section(line, upStation, downStation, distance));
-			this.sections.add(
-				new Section(
-					line,
-					downStation,
-					includedSection.getDownStation(),
-					includedSection.getDistance() - distance
-				)
-			);
+			addSectionIfEqualUpStation(line, upStation, downStation, distance, includedSection);
 			return;
 		}
+
+		addSectionIfEqualDownStation(line, upStation, downStation, distance, includedSection);
+	}
+
+	private void addSectionIfEqualUpStation(
+		Line line,
+		Station upStation,
+		Station downStation,
+		int distance,
+		Section includedSection) {
+		this.sections.remove(includedSection);
+		this.sections.add(new Section(line, upStation, downStation, distance));
+		this.sections.add(
+			new Section(
+				line,
+				downStation,
+				includedSection.getDownStation(),
+				includedSection.getDistance() - distance
+			)
+		);
+	}
+
+	private void addSectionIfEqualDownStation(Line line,
+		Station upStation,
+		Station downStation,
+		int distance,
+		Section includedSection) {
 
 		this.sections.remove(includedSection);
 		this.sections.add(
