@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
+import nextstep.subway.domain.exception.SectionsEmptyException;
 import nextstep.subway.domain.exception.StationNotInSectionsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -169,6 +170,15 @@ class SectionsTest {
             assertThat(downStation).isEqualTo(선릉역);
         }
 
+        @DisplayName("구간 목록에 추가된 구간이 없을때 하행역을 조회하면 예외 처리한다.")
+        @Test
+        void getDownStationEmptySections() {
+            Sections sections = new Sections();
+
+
+            assertThatThrownBy(sections::getLineDownStation).isInstanceOf(SectionsEmptyException.class);
+        }
+
         @DisplayName("구간 목록의 상행 종점역을 조회한다.")
         @Test
         void getUpStation() {
@@ -177,6 +187,15 @@ class SectionsTest {
             Station upStation = sections.getLineUpStation();
 
             assertThat(upStation).isEqualTo(강남역);
+        }
+
+        @DisplayName("구간 목록에 추가된 구간이 없을때 상행역을 조회하면 예외 처리한다.")
+        @Test
+        void getUpStationEmptySections() {
+            Sections sections = new Sections();
+
+
+            assertThatThrownBy(sections::getLineUpStation).isInstanceOf(SectionsEmptyException.class);
         }
     }
 
