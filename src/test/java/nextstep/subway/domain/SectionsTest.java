@@ -189,6 +189,7 @@ class SectionsTest {
         }
     }
 
+    @DisplayName("구간 제거 관련 기능")
     @Nested
     class RemoveSectionTest {
         @DisplayName("구간 목록의 구간을 제거한다.")
