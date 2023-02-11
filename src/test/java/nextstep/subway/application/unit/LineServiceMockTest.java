@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.application.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
@@ -15,8 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static nextstep.subway.unit.SubwayFixture.노선_생성;
-import static nextstep.subway.unit.SubwayFixture.역_생성;
+import static nextstep.subway.SubwayFixture.노선_생성;
+import static nextstep.subway.SubwayFixture.역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 

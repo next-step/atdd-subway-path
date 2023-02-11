@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.application.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static nextstep.subway.unit.SubwayFixture.노선_생성;
-import static nextstep.subway.unit.SubwayFixture.역_생성;
+import static nextstep.subway.SubwayFixture.노선_생성;
+import static nextstep.subway.SubwayFixture.역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

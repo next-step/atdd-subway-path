@@ -1,13 +1,11 @@
-package nextstep.subway.unit;
+package nextstep.subway.domain;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.unit.SubwayFixture.구간_생성;
-import static nextstep.subway.unit.SubwayFixture.노선_생성;
+import static nextstep.subway.SubwayFixture.구간_생성;
+import static nextstep.subway.SubwayFixture.노선_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
