@@ -24,8 +24,8 @@ public class Distance {
     }
 
     public Distance minus(final Distance minusDistance) {
-        if (this.value <= minusDistance.value) {
-            throw new IllegalArgumentException("거리는 음수가 될 수 없습니다.");
+        if (this.value - minusDistance.value < MIN) {
+            throw new DistanceSizeException();
         }
         this.value -= minusDistance.value;
         return this;

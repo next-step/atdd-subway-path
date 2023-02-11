@@ -36,7 +36,7 @@ class DistanceTest {
     void minusUnderZero(int value) {
         Distance distance = new Distance(5);
 
-        assertThatThrownBy(() -> distance.minus(new Distance(value))).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> distance.minus(new Distance(value))).isInstanceOf(DistanceSizeException.class);
     }
 
     @DisplayName("거리를 연장시킨다.")
