@@ -52,8 +52,8 @@ class SectionsTest {
             Sections sections = new Sections();
             Section section1 = new Section(line, 강남역, 역삼역, 10);
             Section section2 = new Section(line, 강남역, 선릉역, 5);
-
             sections.add(section1);
+
             sections.add(section2);
 
             assertAll(
@@ -149,39 +149,28 @@ class SectionsTest {
         @DisplayName("구간 목록의 역 목록을 조회한다.")
         @Test
         void getStations() {
-            Sections sections = new Sections();
-            Section section1 = new Section(line, 강남역, 역삼역, 10);
-            Section section2 = new Section(line, 역삼역, 선릉역, 5);
-            sections.add(section1);
-            sections.add(section2);
+            Station[] expected = {강남역, 역삼역, 선릉역};
+            Sections sections = createSectionsBy(line, expected);
 
             List<Station> stations = sections.getStations();
 
-            assertThat(stations).containsExactly(강남역, 역삼역, 선릉역);
+            assertThat(stations).containsExactly(expected);
         }
 
         @DisplayName("구간 목록의 하행 종점역을 조회한다.")
         @Test
         void getDownStation() {
-            Sections sections = new Sections();
-            Section section1 = new Section(line, 강남역, 역삼역, 10);
-            Section section2 = new Section(line, 역삼역, 선릉역, 5);
-            sections.add(section1);
-            sections.add(section2);
+            Sections sections = createSectionsBy(line, 강남역, 역삼역, 선릉역);
 
             Station downStation = sections.getLineDownStation();
 
             assertThat(downStation).isEqualTo(선릉역);
         }
 
-        @DisplayName("구간 목록의 하행 종점역을 조회한다.")
+        @DisplayName("구간 목록의 상행 종점역을 조회한다.")
         @Test
         void getUpStation() {
-            Sections sections = new Sections();
-            Section section1 = new Section(line, 강남역, 역삼역, 10);
-            Section section2 = new Section(line, 역삼역, 선릉역, 5);
-            sections.add(section1);
-            sections.add(section2);
+            Sections sections = createSectionsBy(line, 강남역, 역삼역, 선릉역);
 
             Station upStation = sections.getLineUpStation();
 
@@ -208,35 +197,27 @@ class SectionsTest {
         @DisplayName("구간 목록의 상행역을 제거한다.")
         @Test
         void removeUpStation() {
-            Sections sections = new Sections();
-            Section expected = new Section(line, 역삼역, 선릉역, 5);
-            sections.add(new Section(line, 강남역, 역삼역, 10));
-            sections.add(expected);
+            Sections sections = createSectionsBy(line, 강남역, 역삼역, 선릉역);
 
             sections.remove(강남역);
 
-            assertThat(sections.getSections()).containsExactly(expected);
+            assertThat(sections.getStations()).containsExactly(역삼역, 선릉역);
         }
 
         @DisplayName("구간 목록의 하행역을 제거한다.")
         @Test
         void removeDownStation() {
-            Sections sections = new Sections();
-            Section expected = new Section(line, 강남역, 역삼역, 10);
-            sections.add(expected);
-            sections.add(new Section(line, 역삼역, 선릉역, 5));
+            Sections sections = createSectionsBy(line, 강남역, 역삼역, 선릉역);
 
             sections.remove(선릉역);
 
-            assertThat(sections.getSections()).containsExactly(expected);
+            assertThat(sections.getStations()).containsExactly(강남역, 역삼역);
         }
 
         @DisplayName("구간 목록에 포함되지 않은 역일 경우 예외 처리한다..")
         @Test
         void removeNotIncludeStation() {
-            Sections sections = new Sections();
-            sections.add(new Section(line, 강남역, 역삼역, 10));
-            sections.add(new Section(line, 역삼역, 선릉역, 5));
+            Sections sections = createSectionsBy(line, 강남역, 역삼역, 선릉역);
 
             assertThatThrownBy(() -> sections.remove(정자역)).isInstanceOf(IllegalArgumentException.class);
         }
@@ -244,9 +225,7 @@ class SectionsTest {
         @DisplayName("상행역과 하행역만 포함된 구간 목록에 삭제를 요청할 경우 에러 처리한다.")
         @Test
         void removeFailSectionsOnlyContainUpStationAndDownStation() {
-            Sections sections = new Sections();
-            Section expected = new Section(line, 강남역, 역삼역, 10);
-            sections.add(expected);
+            Sections sections = createSectionsBy(line, 강남역, 역삼역);
 
             assertThatThrownBy(() -> sections.remove(선릉역)).isInstanceOf(IllegalArgumentException.class);
         }
@@ -254,9 +233,7 @@ class SectionsTest {
         @DisplayName("A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 된다.")
         @Test
         void removeMiddleSectionRelocation() {
-            Sections sections = new Sections();
-            sections.add(new Section(line, 강남역, 역삼역, 10));
-            sections.add(new Section(line, 선릉역, 역삼역, 5));
+            Sections sections = createSectionsBy(line, 강남역, 선릉역, 역삼역);
 
             sections.remove(선릉역);
 
@@ -273,11 +250,18 @@ class SectionsTest {
     @DisplayName("노선 조회시 상행 종점역부터 하행 종점역 순으로 역 목록을 조회한다.")
     @Test
     void showStationsOrderByUpStationToDownStation() {
-        Sections sections = new Sections();
-        sections.add(new Section(line, 역삼역, 선릉역, 7));
-        sections.add(new Section(line, 강남역, 역삼역, 10));
-        sections.add(new Section(line, 정자역, 선릉역, 5));
+        Station[] expected = {강남역, 역삼역, 정자역, 선릉역};
 
-        assertThat(sections.getStations()).containsExactly(강남역, 역삼역, 정자역, 선릉역);
+        List<Station> actual = createSectionsBy(line, expected).getStations();
+
+        assertThat(actual).containsExactly(expected);
+    }
+
+    public static Sections createSectionsBy(Line line, Station... stations) {
+        Sections sections = new Sections();
+        for (int i = 0; i < stations.length - 1; i++) {
+            sections.add(new Section(line, stations[i], stations[i + 1], 5));
+        }
+        return sections;
     }
 }
