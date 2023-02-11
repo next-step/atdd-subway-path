@@ -54,31 +54,35 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Station requestUpStation, Station requestDownStation, int distance) {
-        for (Section originSection : sections) {
-            validateAddSection(originSection, requestUpStation, requestDownStation, distance);
+    public void addSection(Station requestUpStation, Station requestDownStation, int requestDistance) {
+        for (int i = 0; i < sections.size(); i++) {
+            Section originSection = sections.get(i);
+            if (originSection.isDuplicateSection(requestUpStation, requestDownStation)) {
+                throw new IllegalDuplicateSectionException();
+            }
 
-            // 구간 변경
+            // 첫 번째
+            if (originSection.getUpStation().equals(requestDownStation)) {
+                sections.add(0, new Section(this, requestUpStation, requestDownStation, requestDistance));
+                return;
+            }
+
+            // 중간
             if (originSection.getUpStation().equals(requestUpStation)) {
                 Station originDownStation = originSection.getDownStation();
                 int originDistance = originSection.getDistance();
-                originSection.changeDownStation(requestDownStation, distance);
-                sections.add(new Section(this, requestDownStation, originDownStation, originDistance - distance));
+
+                if (originSection.getDistance() <= requestDistance) {
+                    throw new IllegalDistanceSectionException();
+                }
+
+                originSection.changeDownStation(requestDownStation, requestDistance);
+                sections.add(new Section(this, requestDownStation, originDownStation, originDistance - requestDistance));
                 return;
             }
         }
 
-        sections.add(new Section(this, requestUpStation, requestDownStation, distance));
-    }
-
-    private void validateAddSection(Section originSection, Station requestUpStation, Station requestDownStation, int distance) {
-        if (originSection.isDuplicateSection(requestUpStation, requestDownStation)) {
-            throw new IllegalDuplicateSectionException();
-        }
-
-        if (originSection.getDistance() <= distance) {
-            throw new IllegalDistanceSectionException();
-        }
+        sections.add(new Section(this, requestUpStation, requestDownStation, requestDistance));
     }
 
 }
