@@ -100,13 +100,13 @@ class SectionTest {
         assertThat(section.getDownStation()).isEqualTo(정자역);
     }
 
-    @DisplayName("구간의 거리를 설정한다.")
+    @DisplayName("구간 거리를 감소시킨다.")
     @Test
-    void setDistance() {
+    void minusDistance() {
         Section section = new Section(line, 강남역, 역삼역, 10);
 
-        section.setDistance(new Distance(5));
+        section.minusDistance(new Distance(3));
 
-        assertThat(section.getDistance()).isEqualTo(new Distance(5));
+        assertThat(section.getDistance()).isEqualTo(new Distance(7));
     }
 }

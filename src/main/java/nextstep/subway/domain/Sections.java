@@ -64,7 +64,7 @@ public class Sections {
         validateDistanceAddSectionBetweenExistingSection(section, existingSection);
         existingSection
                 .setDownStation(section.getUpStation())
-                .setDistance(existingSection.getDistance().minus(section.getDistance()));
+                .minusDistance(section.getDistance());
         sections.add(section);
     }
 
@@ -84,7 +84,7 @@ public class Sections {
         validateDistanceAddSectionBetweenExistingSection(section, existingSection);
         existingSection
                 .setUpStation(section.getDownStation())
-                .setDistance(existingSection.getDistance().minus(section.getDistance()));
+                .minusDistance(section.getDistance());
         sections.add(section);
     }
 

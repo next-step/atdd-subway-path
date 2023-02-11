@@ -101,13 +101,12 @@ public class Section {
         return this;
     }
 
-    public Section setDistance(final Distance distance) {
-        this.distance = distance;
-        return this;
-    }
-
     public Section setUpStation(final Station upStation) {
         this.upStation = upStation;
         return this;
+    }
+
+    public void minusDistance(final Distance distance) {
+        this.distance.minus(distance);
     }
 }
