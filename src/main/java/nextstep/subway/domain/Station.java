@@ -12,8 +12,10 @@ public class Station {
     private Long id;
     private String name;
 
-    public Station() {
-    }
+    /**
+     * JPA를 위한 기본 생성자
+     */
+    protected Station() {}
 
     public Station(String name) {
         this.name = name;

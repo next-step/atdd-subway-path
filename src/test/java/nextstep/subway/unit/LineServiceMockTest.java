@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,6 +37,7 @@ public class LineServiceMockTest {
     private Line 이호선;
     private Station 강남역;
     private Station 삼성역;
+
     @BeforeEach
     void setUp() {
         // Given
@@ -60,7 +62,8 @@ public class LineServiceMockTest {
         lineService.addSection(1L, sectionRequest);
 
         // then
-        Line line = lineService.findLineById(1L);
-        assertThat(line.getSections()).hasSize(1);
+        Sections sections = lineService.findLineById(1L)
+                .getSections();
+        assertThat(sections.size()).isEqualTo(1);
     }
 }

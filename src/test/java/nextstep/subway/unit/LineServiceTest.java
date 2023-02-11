@@ -43,13 +43,14 @@ public class LineServiceTest {
         삼성역 = stationRepository.save(new Station("삼성역"));
         when(sectionRequest.getUpStationId()).thenReturn(강남역.getId());
         when(sectionRequest.getDownStationId()).thenReturn(삼성역.getId());
+        when(sectionRequest.getDistance()).thenReturn(10);
 
         // when
         lineService.addSection(이호선.getId(), sectionRequest);
 
         // then
         Line line = lineRepository.findById(이호선.getId()).orElseThrow();
-        Section addedSection = line.getSections().get(0);
+        Section addedSection = line.getHeadSection();
         assertThat(addedSection.getLine()).isEqualTo(이호선);
     }
 }
