@@ -67,6 +67,10 @@ public class Line {
     }
 
     public void removeSection(Station station) {
+        if (this.sections.size() == 1) {
+            throw new IllegalArgumentException("삭제하려는 구간이 노선의 마지막 구간입니다.");
+        }
+
         if (!getSections().get(getSections().size() - 1).getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }

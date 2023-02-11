@@ -67,4 +67,18 @@ class LineTest {
             () -> assertThat(stations).containsOnly(upStation, downStation)
         );
     }
+
+    @DisplayName("노선의 구간이 1개라면 삭제할 수 없다")
+    @Test
+    void removeOneSection() {
+        Line line = new Line("4호선", "#00A5DE");
+
+        Station upStation = new Station("사당");
+        Station downStation = new Station("금정");
+
+        Section newSection = new Section(line, upStation, downStation, 10);
+        line.addSection(newSection);
+
+        assertThatThrownBy(() -> line.removeSection(downStation)).isInstanceOf(IllegalArgumentException.class);
+    }
 }
