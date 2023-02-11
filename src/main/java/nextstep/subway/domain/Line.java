@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.common.AddTypeEnum;
+import nextstep.subway.exception.SubwayRestApiException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.common.AddTypeEnum.FRONT_ADD_SECTION;
 import static nextstep.subway.common.AddTypeEnum.MIDDLE_ADD_SECTION;
+import static nextstep.subway.exception.ErrorResponseEnum.*;
 
 @Entity
 public class Line {
@@ -84,25 +87,25 @@ public class Line {
 
     private void isValidationSectionDistance(Section standardSection, Section section) {
         if (standardSection.getDistance() <= section.getDistance()) {
-            throw new IllegalArgumentException();
+            throw new SubwayRestApiException(ERROR_ADD_SECTION_INVAILD_DISTANCE);
         }
     }
 
     private void isValidationSection(Section section) {
         if (this.getSections().size() > 0 && isExistUpOrDownStation(section)){
-            throw new IllegalArgumentException();
+            throw new SubwayRestApiException(ERROR_ADD_SECTION_INVAILD_STATION);
         }
     }
 
     private boolean isExistUpOrDownStation (Section section) {
-        int existStationCnt = this.getStations().stream().filter(a -> a.getName().equals(section.getUpStation().getName())
-                || a.getName().equals(section.getDownStation().getName())).collect(Collectors.toList()).size();
+        int existStationCnt = this.getStations().stream().filter(a -> a.equals(section.getUpStation())
+                || a.equals(section.getDownStation())).collect(Collectors.toList()).size();
         return existStationCnt != 1;
     }
 
     public void removeSection(Station station) {
         if (!this.getSections().get(this.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+            throw new SubwayRestApiException(ERROR_DELETE_SECTION_INVAILD_STATION);
         }
 
         this.getSections().remove(this.getSections().size() - 1);

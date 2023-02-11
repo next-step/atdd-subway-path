@@ -86,6 +86,61 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 판교역, 정자역);
     }
 
+    /**
+     * when 노선에 존재하는 상행역과 하행역으로 구성된 구간을 추가 요청한다
+     * then "section's stations is already all exist or no exist" 에러 메세지와 함께 에러가 발생한다
+     */
+    @DisplayName("지하철 노선에 구간을 등록 중 Exception 발생")
+    @Test
+    void addLineSection_exception() {
+        // when
+        var response = 지하철_노선에_지하철_구간_생성_New_요청(MIDDLE_ADD_SECTION, 신분당선, createSectionCreateParams(정자역, 양재역));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * given 노선에 없는 역 2개를 생성한다.
+     * when 노선에 없는 상행역과 하행역으로 구성된 구간을 추가 요청한다
+     * then "section's stations is already all exist or no exist" 에러 메세지와 함께 에러가 발생한다
+     */
+    @DisplayName("지하철 노선에 구간을 등록 중 Exception 발생")
+    @Test
+    void addLineSection_exception2() {
+        //given
+        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+        Long 미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
+
+        // when
+        var response = 지하철_노선에_지하철_구간_생성_New_요청(MIDDLE_ADD_SECTION, 신분당선, createSectionCreateParams(판교역, 미금역));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+//    /**
+//     * when 노선에 중간에 추가하려는 구간의 길이와 동일한 새로운 구간을 추가 요청한다
+//     * then "section's stations is already all exist or no exist" 에러 메세지와 함께 에러가 발생한다
+//     */
+//    @DisplayName("지하철 노선에 구간을 등록 중 Exception 발생")
+//    @Test
+//    void addLineSection_middle_exception() {
+//        //given
+//        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+//
+//        // when
+//        Map<String, String> params = new HashMap<>();
+//        params.put("upStationId", 양재역 + "");
+//        params.put("downStationId", 판교역 + "");
+//        params.put("distance", 10 + "");
+//
+//        var response = 지하철_노선에_지하철_구간_생성_New_요청(MIDDLE_ADD_SECTION, 신분당선, createSectionCreateParams(양재역, 판교역));
+//
+//        // then
+//        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//    }
+
 //    /**
 //     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
 //     * When 지하철 노선의 마지막 구간 제거를 요청 하면
