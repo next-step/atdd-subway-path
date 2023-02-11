@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import nextstep.subway.domain.exception.NotExistBasedOnDownStationException;
 import nextstep.subway.domain.exception.NotExistBasedOnUpStationException;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
+import nextstep.subway.domain.exception.SectionsEmptyException;
 import nextstep.subway.domain.exception.StationNotInSectionsException;
 
 @Embeddable
@@ -190,7 +190,7 @@ public class Sections {
                 .map(Section::getDownStation)
                 .filter(this::isLineDownStation)
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("노선에 하행역이 존재하지 않았습니다."));
+                .orElseThrow(SectionsEmptyException::new);
     }
 
     private boolean isLineDownStation(final Station station) {
@@ -204,7 +204,7 @@ public class Sections {
                 .map(Section::getUpStation)
                 .filter(this::isLineUpStation)
                 .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("노선에 상행역이 존재하지 않았습니다."));
+                .orElseThrow(SectionsEmptyException::new);
     }
 
     private boolean isLineUpStation(final Station station) {
