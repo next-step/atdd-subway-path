@@ -1,10 +1,10 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.common.SectionFixtures.*;
 import static nextstep.subway.common.StationFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -14,11 +14,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.util.ReflectionUtils;
 
 import nextstep.subway.common.StationFixtures;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.SectionAddException;
@@ -84,44 +82,15 @@ class SectionsTest {
 		);
 	}
 
-	@DisplayName("구간이 한개 이상일때 마지막 구간 제거에 성공한다")
-	@Test
-	void 구간이_한개_이상일때_마지막_구간_제거에_성공한다() throws Exception {
-		// given
-		Long downStationId = 충무로_ID;
-
-		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
-		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(sections.getList());
-
-		// when
-		sections.remove(충무로, downStationId);
-
-		// then
-		assertThat(sections.getList()).hasSize(1);
-	}
-
 	@DisplayName("구간제거시 상행종점역과 하행종점역만 있을경우 예외가 발생한다")
 	@Test
 	void 구간제거시_상행종점역과_하행종점역만_있을경우_예외가_발생한다() throws Exception {
 		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
 
-		assertThatThrownBy(() -> sections.remove(동대문역사문화공원, 동대문역사문화공원_ID))
+		assertThatThrownBy(() -> sections.remove(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), 동대문_ID, 동대문역사문화공원_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.SINGLE_SECTION.getMessage());
 
-	}
-
-	@DisplayName("구간제거시 제거할구간이 하행종점역이 아닐경우 예외가 발생한다")
-	@Test
-	void 구간제거시_제거할구간이_하행종점역이_아닐경우_예외가_발생한다() throws Exception {
-		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
-		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(sections.getList());
-
-		assertThatThrownBy(() -> sections.remove(동대문역사문화공원, 충무로_ID))
-			.isInstanceOf(SectionRemoveException.class)
-			.hasMessage(SectionErrorCode.INVALID_REMOVE_STATION.getMessage());
 	}
 
 	@DisplayName("구간제거시 제거할 지하철역이 노선에 포함되지않을경우 예외가 발생한다")
@@ -129,9 +98,8 @@ class SectionsTest {
 	void 구간제거시_제거할_지하철역이_노선에_포함되지않을경우_예외가_발생한다() throws Exception {
 		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
 		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(sections.getList());
 
-		assertThatThrownBy(() -> sections.remove(withId(서울역, 서울역_ID), 충무로_ID))
+		assertThatThrownBy(() -> sections.remove(line, withId(서울역, 서울역_ID), 동대문_ID, 충무로_ID))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
@@ -190,13 +158,21 @@ class SectionsTest {
 			.hasMessage(SectionErrorCode.NOT_FOUND_EXISTING_STATION.getMessage());
 	}
 
-	private void insertIdInSections(List<Section> sections) {
-		for (int i = 1; i <= sections.size(); i++) {
-			Section section = sections.get(i - 1);
-			Field idField = ReflectionUtils.findField(section.getClass(), "id");
-			ReflectionUtils.makeAccessible(idField);
-			ReflectionUtils.setField(idField, section, (long)i);
-		}
+	@DisplayName("상행 하행 종점역을 제거요청할 경우 다음에 오는역이 종점역이 된다")
+	@ParameterizedTest
+	@MethodSource("provideRemoveFinalUpAndDownStation")
+	void 상행_하행_종점역을_제거요청할_경우_다음에_오는역이_종점역이_된다(Station removeStation) throws Exception {
+		// given
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), 10);
+
+		insertSectionIds(sections.getList());
+
+		// when
+		sections.remove(line, removeStation, 동대문_ID, 서울역_ID);
+
+		// then
+		assertThat(sections.getList()).hasSize(1);
 	}
 
 	private static Stream<Arguments> provideUpAndDownStations() throws Exception {
@@ -207,6 +183,13 @@ class SectionsTest {
 			Arguments.of(withId(충무로, 충무로_ID), withId(서울역, 서울역_ID), 5),
 			Arguments.of(withId(서울역, 서울역_ID), withId(숙대입구역, 숙대입구역_ID), 10),
 			Arguments.of(withId(혜화역, 혜화역_ID), withId(동대문, 동대문_ID), 10)
+		);
+	}
+
+	private static Stream<Arguments> provideRemoveFinalUpAndDownStation() throws Exception {
+		return Stream.of(
+			Arguments.of(withId(서울역, 서울역_ID)),
+			Arguments.of(withId(동대문, 동대문_ID))
 		);
 	}
 }

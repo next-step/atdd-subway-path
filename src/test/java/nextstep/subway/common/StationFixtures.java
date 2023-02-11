@@ -1,9 +1,11 @@
 package nextstep.subway.common;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.springframework.util.ReflectionUtils;
 
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 public class StationFixtures {

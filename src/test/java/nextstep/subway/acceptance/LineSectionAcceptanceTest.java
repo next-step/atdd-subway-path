@@ -6,9 +6,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -131,6 +129,58 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(response.jsonPath().getList("stations.id", Long.class))
 				.containsExactly(강남역, 양재역, 판교역, 정자역)
+		);
+	}
+
+	/**
+	 * Given 지하철역을 생성 요청을 하고
+	 * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+	 * When 하행 종점역 제거를 요청하면
+	 * Then 종점역이 다음에 오는 역으로 변경된다
+	 */
+	@DisplayName("하행 종점역 제거 요청시 다음에오는역이 종점역이 된다")
+	@Test
+	void 하행_종점역_제거_요청시_다음에오는역이_종점역이_된다() {
+		// given
+		Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+
+		// when
+		지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+		// then
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.jsonPath().getList("stations.id", Long.class))
+				.containsExactly(강남역, 양재역)
+		);
+	}
+
+	/**
+	 * Given 지하철역을 생성 요청을 하고
+	 * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+	 * When 상행 종점역 제거를 요청하면
+	 * Then 종점역이 다음에 오는 역으로 변경된다
+	 */
+	@DisplayName("상행 종점역 제거 요청시 다음에오는역이 종점역이 된다")
+	@Test
+	void 상행_종점역_제거_요청시_다음에오는역이_종점역이_된다() {
+		// given
+		Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+
+		// when
+		지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+		// then
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.jsonPath().getList("stations.id", Long.class))
+				.containsExactly(양재역, 정자역)
 		);
 	}
 

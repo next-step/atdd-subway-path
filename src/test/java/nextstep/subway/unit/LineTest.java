@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static nextstep.subway.common.LineFixtures.*;
+import static nextstep.subway.common.SectionFixtures.*;
 import static nextstep.subway.common.StationFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -204,6 +205,24 @@ class LineTest {
 			.hasMessage(SectionErrorCode.NOT_FOUND_EXISTING_STATION.getMessage());
 	}
 
+	@DisplayName("상행 하행 종점역을 제거요청할 경우 다음에 오는역이 종점역이 된다")
+	@ParameterizedTest
+	@MethodSource("provideRemoveFinalUpAndDownStation")
+	void 상행_하행_종점역을_제거요청할_경우_다음에_오는역이_종점역이_된다(Station removeStation) throws Exception {
+		// given
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), 10);
+
+		insertSectionIds(line.getSections());
+
+		// when
+		line.removeSection(removeStation);
+
+		// then
+		assertThat(line.getSections()).hasSize(1);
+	}
+
 	private void insertIdInSections(List<Section> sections) {
 		for (int i = 1; i <= sections.size(); i++) {
 			Section section = sections.get(i - 1);
@@ -221,6 +240,13 @@ class LineTest {
 			Arguments.of(withId(충무로, 충무로_ID), withId(서울역, 서울역_ID), 5),
 			Arguments.of(withId(서울역, 서울역_ID), withId(숙대입구역, 숙대입구역_ID), 10),
 			Arguments.of(withId(혜화역, 혜화역_ID), withId(동대문, 동대문_ID), 10)
+		);
+	}
+
+	private static Stream<Arguments> provideRemoveFinalUpAndDownStation() throws Exception {
+		return Stream.of(
+			Arguments.of(withId(서울역, 서울역_ID)),
+			Arguments.of(withId(동대문, 동대문_ID))
 		);
 	}
 }

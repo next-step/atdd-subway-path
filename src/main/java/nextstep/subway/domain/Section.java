@@ -78,6 +78,10 @@ public class Section {
         return this.downStation.getId();
     }
 
+    public boolean isLonger(int distance) {
+        return this.distance > distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -91,9 +95,5 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    public boolean isLonger(int distance) {
-        return this.distance > distance;
     }
 }
