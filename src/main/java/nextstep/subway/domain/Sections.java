@@ -218,7 +218,7 @@ public class Sections {
                 .filter(section -> section.isContain(station))
                 .collect(Collectors.toUnmodifiableList());
         if (result.isEmpty()) {
-            throw new IllegalArgumentException("노선에 포함되지 않은 역 입니다.");
+            throw new StationNotInSectionsException();
         }
         return result;
     }
