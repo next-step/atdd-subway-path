@@ -45,12 +45,12 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return findLineById(id);
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Line line = findLineById(id);
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -58,6 +58,10 @@ public class LineService {
         if (lineRequest.getColor() != null) {
             line.setColor(lineRequest.getColor());
         }
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
@@ -69,7 +73,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        Line line = findLineById(lineId);
         Section section = new Section.SectionBuilder(line)
                 .setUpStation(upStation)
                 .setDownStation(downStation)
@@ -80,10 +84,9 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        Line line = findLineById(lineId);
         Station station = stationService.findById(stationId);
 
         line.removeLastSection(station);
-
     }
 }
