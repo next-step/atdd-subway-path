@@ -22,9 +22,14 @@ class LineTest {
 
     @Test
     void getStations() {
+        Station 서울대 = new Station(서울대입구역);
+        Station 봉천 = new Station(봉천역);
+        Station 신림 = new Station(신림역);
         Line line = new Line("2호선", "초록색");
-        line.addSection(createTestSection(line, 서울대입구역, 봉천역));
-        line.addSection(createTestSection(line, 봉천역, 신림역));
+
+        line.addSection(createTestSection(line, 서울대, 봉천));
+        line.addSection(createTestSection(line, 봉천, 신림));
+
         assertThat(line.getStations().size()).isEqualTo(3);
     }
 
@@ -44,9 +49,7 @@ class LineTest {
         return new Section(line, upStation, downStation,10);
     }
 
-    private Section createTestSection(Line line, String station1, String station2) {
-        Station upStation = new Station(station1);
-        Station downStation = new Station(station2);
+    private Section createTestSection(Line line, Station upStation, Station downStation) {
         return new Section(line, upStation, downStation,10);
     }
 }

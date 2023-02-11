@@ -20,6 +20,9 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
+    @Column(name="section_order")
+    private Long order;
+
     private int distance;
 
     public Section() {
@@ -51,5 +54,9 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void setOrder(int i) {
+        order = (long) i;
     }
 }

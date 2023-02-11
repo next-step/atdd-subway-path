@@ -120,7 +120,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("노선의 상행역에 노선을 추가할 수 있다.")
     @Test
-    void creataeUpStationSection() {
+    void createUpStationSection() {
         // given
         Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
 
@@ -185,7 +185,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", distance + "");
         return params;
     }
 }
