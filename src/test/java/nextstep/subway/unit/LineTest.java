@@ -51,12 +51,43 @@ class LineTest {
         Section 역삼억_선릉역 = new Section(역삼역, 선릉역, 10);
         Line 삼호선 = new Line("삼호선", "blue", List.of(강남역_역삼역, 역삼억_선릉역));
 
-        Section 선릉역_강남역 = new Section(선릉역, 강남역, 10);
+        Section 강남역_선릉역 = new Section(강남역, 선릉역, 10);
 
         //then
-        assertThatThrownBy(() -> 삼호선.addSection(선릉역_강남역))
+        assertThatThrownBy(() -> 삼호선.addSection(강남역_선릉역))
                 .isInstanceOf(CustomException.class)
                 .hasMessageContaining(CustomException.DUPLICATE_STATION_MSG);
+    }
+
+    @Test
+    void addSection_When_새로운_구간의_길이가_기존_길이보다_길면_Then_ThrownException() {
+        //given
+        Station 선릉역 = new Station(3L, "선릉역");
+        Section 강남억_선릉역 = new Section(강남역, 선릉역, 10);
+        Line 삼호선 = new Line("삼호선", "blue", List.of(강남억_선릉역));
+
+        Section 강남역_역삼역 = new Section(강남역, 역삼역, 20);
+
+        //then
+        assertThatThrownBy(() -> 삼호선.addSection(강남역_역삼역))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(CustomException.CAN_NOT_ADD_SECTION_CAUSE_DISTANCE);
+    }
+
+    @Test
+    void addSection_When_새로운_구간의_역이_기존_노선에_존재하지_않는다면_Then_ThrownException() {
+        //given
+        Station 선릉역 = new Station(3L, "선릉역");
+        Station 삼성역 = new Station(4L, "삼성역");
+        Section 강남억_역삼역 = new Section(강남역, 역삼역, 10);
+        Line 삼호선 = new Line("삼호선", "blue", List.of(강남억_역삼역));
+
+        Section 선릉역_삼성역 = new Section(선릉역, 삼성역, 20);
+
+        //then
+        assertThatThrownBy(() -> 삼호선.addSection(선릉역_삼성역))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(CustomException.ADD_STATION_MUST_INCLUDE_IN_LINE);
     }
 
     /**
