@@ -9,6 +9,7 @@ import nextstep.subway.domain.exception.NotFoundLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,14 +88,18 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-            .map(Section::getDownStation)
-            .collect(Collectors.toList());
+        List<Section> sections = line.getSections();
 
-        stations.add(0, line.getSections().get(0).getUpStation());
+        return sections.stream().sorted((o1, o2) -> {
+                if (o1.getDownStation().equals(o2.getUpStation())) {
+                    return -1;
+                }
 
-        return stations.stream()
-            .map(it -> stationService.createStationResponse(it))
+                return 0;
+            }).map(section -> List.of(section.getUpStation(), section.getDownStation()))
+            .flatMap(Collection::stream)
+            .distinct()
+            .map(station -> stationService.createStationResponse(station))
             .collect(Collectors.toList());
     }
 
