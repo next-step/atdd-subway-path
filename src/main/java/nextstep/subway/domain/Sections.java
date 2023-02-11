@@ -27,13 +27,10 @@ public class Sections {
 
         if (upStationSection.isEmpty()) {
             addBasedOnDownStationSection(section);
-            return;
         }
         if (downStationSection.isEmpty()) {
             addBasedOnUpStationSection(section);
-            return;
         }
-        throw new IllegalArgumentException("노선 추가에 실패했습니다.");
     }
 
     private void validateAddSection(final List<Section> upStationSection, final List<Section> downStationSection) {
