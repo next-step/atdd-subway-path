@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -22,7 +23,7 @@ public class Sections {
             return;
         }
         if (contains(section.getDownStation()) && contains(section.getUpStation())) {
-            throw new DataIntegrityViolationException("이미 등록된 구간입니다.");
+            throw new SubwayException(SubwayExceptionMessage.SECTION_ALREADY_ADDED);
         }
         // 상행 종점 구간 추가
         if (equalFirstStation(section.getDownStation()) && !contains(section.getUpStation())) {
@@ -48,7 +49,7 @@ public class Sections {
             values.add(section);
             return;
         }
-        throw new DataIntegrityViolationException("구간을 추가할 수 없습니다.");
+        throw new SubwayException(SubwayExceptionMessage.SECTION_CANNOT_ADD);
     }
 
     private Optional<Section> getAfterSection(Section section) {
@@ -131,7 +132,7 @@ public class Sections {
 
     }
 
-    public List<Section> getValuesOrderBy(){
+    public List<Section> getValuesOrderBy() {
         if (values.isEmpty()) {
             return Collections.emptyList();
         }

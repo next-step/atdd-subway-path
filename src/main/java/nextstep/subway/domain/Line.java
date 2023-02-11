@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -75,7 +78,7 @@ public class Line {
     public void removeLastSection(Station station) {
 
         if (!sections.equalLastStation(station)) {
-            throw new IllegalArgumentException();
+            throw new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE);
         }
         sections.remove(station);
     }

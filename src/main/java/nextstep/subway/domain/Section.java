@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -73,14 +74,14 @@ public class Section {
 
     public void divideUpStation(Section section) {
         if(this.distance <= section.distance){
-            throw new DataIntegrityViolationException("추가하려는 구간의 길이가 더 길어 추가할 수 없습니다.");
+            throw new SubwayException(SubwayExceptionMessage.SECTION_LONGER);
         }
         this.distance = this.distance - section.distance;
         this.upStation = section.downStation;
     }
     public void divideDownStation(Section section) {
         if(this.distance <= section.distance){
-            throw new DataIntegrityViolationException("추가하려는 구간의 길이가 더 길어 추가할 수 없습니다.");
+            throw new SubwayException(SubwayExceptionMessage.SECTION_LONGER);
         }
         this.distance = this.distance - section.distance;
         this.downStation = section.upStation;
