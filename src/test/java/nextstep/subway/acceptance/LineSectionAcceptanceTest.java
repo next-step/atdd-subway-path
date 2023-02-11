@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.SectionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -70,13 +72,19 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 4L));
 
             // then
-            ExtractableResponse<Response> lineResponse = 지하철_노선_조회_요청(신분당선);
-            assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(lineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+            ExtractableResponse<Response> lineResponse = 지하철_노선_구간_조회_요청(신분당선);
+            노선에_새로운_구간이_추가되며_길이가_재_정의_된다(정자역, lineResponse);
+        }
 
-//            ExtractableResponse<Response> sectionsResponse = 지하철_구간_조회_요청(신분당선);
-//            assertThat(sectionsResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-//            assertThat(sectionsResponse.jsonPath().getList("sections.distance", Long.class)).containsExactly(7L, 3L);
+        private void 노선에_새로운_구간이_추가되며_길이가_재_정의_된다(Long 정자역, ExtractableResponse<Response> lineResponse) {
+            assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+            List<SectionResponse> sections = lineResponse.jsonPath().getList("sections", SectionResponse.class);
+            assertThat(sections.get(0).getUpStation().getId()).isEqualTo(강남역);
+            assertThat(sections.get(0).getDownStation().getId()).isEqualTo(정자역);
+            assertThat(sections.get(0).getDistance()).isEqualTo(4);
+            assertThat(sections.get(1).getUpStation().getId()).isEqualTo(정자역);
+            assertThat(sections.get(1).getDownStation().getId()).isEqualTo(양재역);
+            assertThat(sections.get(1).getDistance()).isEqualTo(6);
         }
 
     }

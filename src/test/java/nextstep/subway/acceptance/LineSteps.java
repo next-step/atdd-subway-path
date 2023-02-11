@@ -59,6 +59,13 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_구간_조회_요청(Long id) {
+        return RestAssured
+            .given().log().all()
+            .when().get("/lines/{lineId}/sections", id)
+            .then().log().all().extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

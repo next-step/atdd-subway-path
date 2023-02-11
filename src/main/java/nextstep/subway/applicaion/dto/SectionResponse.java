@@ -3,18 +3,30 @@ package nextstep.subway.applicaion.dto;
 public class SectionResponse {
 
     private Long id;
-    private String name;
-    private Long distance;
+    private StationResponse upStation;
+    private StationResponse downStation;
+    private Integer distance;
+
+    public SectionResponse(Long id, StationResponse upStation, StationResponse downStation, Integer distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public StationResponse getUpStation() {
+        return upStation;
     }
 
-    public Long getDistance() {
+    public StationResponse getDownStation() {
+        return downStation;
+    }
+
+    public Integer getDistance() {
         return distance;
     }
 }
