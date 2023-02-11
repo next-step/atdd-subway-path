@@ -22,9 +22,9 @@ public class DatabaseCleanup implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         tableNames = entityManager.getMetamodel().getEntities().stream()
-                .filter(entity -> entity.getJavaType().getAnnotation(Entity.class) != null)
-                .map(entity -> entity.getName())
-                .collect(Collectors.toList());
+            .filter(entity -> entity.getJavaType().getAnnotation(Entity.class) != null)
+            .map(entity -> entity.getName())
+            .collect(Collectors.toList());
     }
 
     @Transactional

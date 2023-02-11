@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.DuplicateAddSectionException;
 import nextstep.subway.domain.exception.IllegalAddSectionException;
-import nextstep.subway.domain.exception.IllegalDistanceSectionException;
 
 import javax.persistence.*;
 import java.util.ArrayList;

@@ -107,7 +107,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly( 강남역, 양재역, 판교역);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 판교역);
         }
 
         private void 노선에_새로운_구간이_추가되며_길이가_재_정의_된다(Long 정자역, ExtractableResponse<Response> lineResponse) {
