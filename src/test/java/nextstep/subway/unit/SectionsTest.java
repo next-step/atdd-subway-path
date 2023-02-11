@@ -1,6 +1,5 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.common.LineFixtures.*;
 import static nextstep.subway.common.SectionFixtures.*;
 import static nextstep.subway.common.StationFixtures.*;
 import static org.assertj.core.api.Assertions.*;
