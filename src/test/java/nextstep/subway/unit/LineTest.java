@@ -1,6 +1,9 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,8 +27,22 @@ class LineTest {
         assertThat(addedSection).isEqualTo(newSection);
     }
 
+    @DisplayName("노선의 모든 역을 조회할 수 있다")
     @Test
     void getStations() {
+        Line line = new Line("4호선", "#00A5DE");
+
+        Station upStation = new Station("금정");
+        Station downStation = new Station("오이도");
+        Section newSection = new Section(line, upStation, downStation, 13);
+
+        line.addSection(newSection);
+
+        List<Station> stations = line.getStations();
+        assertAll(
+            () -> assertThat(stations.size()).isEqualTo(2),
+            () -> assertThat(stations).containsOnly(upStation, downStation)
+        );
     }
 
     @Test
