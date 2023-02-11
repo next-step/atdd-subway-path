@@ -1,19 +1,11 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
 import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
+
+import javax.persistence.*;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 public class Line {
