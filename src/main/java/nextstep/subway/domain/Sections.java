@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
+    private static final int REMOVE_SIZE_MIN = 2;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -97,6 +98,9 @@ public class Sections {
     }
 
     public void remove(final Station station) {
+        if (sections.size() < REMOVE_SIZE_MIN) {
+            throw new IllegalArgumentException("구간 목록의 크기가 " + REMOVE_SIZE_MIN + " 보다 클 경우 구간 제거가 가능합니다.");
+        }
         if (isLineUpStation(station) || isLineDownStation(station)) {
             sections.remove(sections.size() - 1);
             return;
@@ -104,7 +108,7 @@ public class Sections {
         Section stationBasedOnDownStation = findDownStationSection(station);
         Section stationBasedOnUpStation = findUpStationSection(station);
         sections.removeAll(List.of(stationBasedOnUpStation, stationBasedOnDownStation));
-        
+
         Section relocationSection = relocationRemoveMiddleSection(stationBasedOnDownStation, stationBasedOnUpStation);
         sections.add(relocationSection);
     }
