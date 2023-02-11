@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nextstep.subway.common.AddTypeEnum.BACK_ADD_SECTION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -32,7 +33,7 @@ public class LineServiceTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(line.getId(), new SectionRequest(station.getId(), station2.getId(), 5));
+        lineService.addSection(BACK_ADD_SECTION, line.getId(), new SectionRequest(station.getId(), station2.getId(), 5));
 
         // then
         // line.getSections 메서드를 통해 검증

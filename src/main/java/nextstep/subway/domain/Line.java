@@ -1,9 +1,13 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.common.AddTypeEnum;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.common.AddTypeEnum.FRONT_ADD_SECTION;
+import static nextstep.subway.common.AddTypeEnum.MIDDLE_ADD_SECTION;
 
 @Entity
 public class Line {
@@ -52,24 +56,18 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Section section) {
+    public void addSection(AddTypeEnum addTypeEnum, Section section) {
         isValidationSection(section);
 
-        this.getSections().add(section);
-    }
-
-    public void addSection(String addTypeCd, Section section) {
-        isValidationSection(section);
-
-        if ("1".equals(addTypeCd)) {
-            Section standardSection = this.getSections().stream().filter(a -> section.getDownStation().getName().equals(a.getUpStation().getName())).findFirst().orElseThrow(IllegalArgumentException::new);
+        if (FRONT_ADD_SECTION.equals(addTypeEnum)) {
+            Section standardSection = this.getSections().stream().filter(a -> section.getDownStation().equals(a.getUpStation())).findFirst().orElseThrow(IllegalArgumentException::new);
 
             this.getSections().add(this.getSections().indexOf(standardSection), section);
             return;
         }
 
-        if ("2".equals(addTypeCd)) {
-            Section standardSection = this.getSections().stream().filter(a -> section.getUpStation().getName().equals(a.getUpStation().getName())).findFirst().orElseThrow(IllegalArgumentException::new);
+        if (MIDDLE_ADD_SECTION.equals(addTypeEnum)) {
+            Section standardSection = this.getSections().stream().filter(a -> section.getUpStation().equals(a.getUpStation())).findFirst().orElseThrow(IllegalArgumentException::new);
 
             isValidationSectionDistance(standardSection, section);
 
@@ -80,6 +78,8 @@ public class Line {
 
             return;
         }
+
+        this.getSections().add(section);
     }
 
     private void isValidationSectionDistance(Section standardSection, Section section) {
@@ -89,7 +89,7 @@ public class Line {
     }
 
     private void isValidationSection(Section section) {
-        if ((this.getSections().size() > 0) && isExistUpOrDownStation(section)){
+        if (this.getSections().size() > 0 && isExistUpOrDownStation(section)){
             throw new IllegalArgumentException();
         }
     }
@@ -109,15 +109,26 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        if (this.getSections().size() <= 0) {
-            return new ArrayList<>();
+        List<Station> downStations = this.getSections().stream().map(Section::getDownStation).collect(Collectors.toList());
+        Section topSection = this.getSections().stream().filter(a -> downStations.contains(a.getUpStation()) == false).findFirst().orElse(null);
+
+        List<Station> stations = new ArrayList<>();
+        stations.add(topSection.getUpStation());
+
+        Station downStation = topSection.getDownStation();
+
+        for (int i = 0; i < this.getSections().size(); i++) {
+            Station tempStation = downStation;
+            stations.add(downStation);
+
+            Section section = this.getSections().stream().filter(a -> tempStation.equals(a.getUpStation())).findFirst().orElse(null);
+
+            if (null == section) {
+                break;
+            }
+
+            downStation = section.getDownStation();
         }
-
-        List<Station> stations = this.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, this.getSections().get(0).getUpStation());
 
         return stations;
     }
