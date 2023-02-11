@@ -67,25 +67,10 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Station requestUpStation = stationService.findById(sectionRequest.getUpStationId());
+        Station requestDownStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        List<Section> sections = line.getSections();
-
-        for (int i = 0; i < sections.size(); i++) {
-            Section section = sections.get(i);
-            Station downStation1 = section.getDownStation();
-
-            // 중간 구간에 추가
-            if (section.getUpStation().equals(upStation)) {
-                section.changeDownStation(downStation);
-                sections.add(new Section(line, downStation, downStation1, sectionRequest.getDistance()));
-                return;
-            }
-        }
-
-        sections.add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(requestUpStation, requestDownStation, sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -126,7 +111,9 @@ public class LineService {
     }
 
     public LineSectionResponse getLineSections(Long lineId) {
-        return null;
+        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
+        List<SectionResponse> sectionResponse = sectionService.showSections(line);
+        return new LineSectionResponse(line.getId(), line.getName(), line.getColor(), sectionResponse);
     }
 
 }

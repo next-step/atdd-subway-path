@@ -50,4 +50,20 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
+    public void addSection(Station requestUpStation, Station requestDownStation, int distance) {
+        for (Section originSection : sections) {
+            // 구간 변경
+            if (originSection.getUpStation().equals(requestUpStation)) {
+                Station originDownStation = originSection.getDownStation();
+                int originDistance = originSection.getDistance();
+                originSection.changeDownStation(requestDownStation, distance);
+                sections.add(new Section(this, requestDownStation, originDownStation, originDistance - distance));
+                return;
+            }
+        }
+
+        sections.add(new Section(this, requestUpStation, requestDownStation, distance));
+    }
+
 }
