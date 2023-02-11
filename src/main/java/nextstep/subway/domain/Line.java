@@ -138,9 +138,7 @@ public class Line {
     }
 
     private void addUpToUp(Section oldSection, Section newSection) {
-        if(notAddableDistance(oldSection, newSection)) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-        }
+        validateDistance(oldSection, newSection);
 
         sections.add(newSection);
         sections.add(
@@ -153,9 +151,7 @@ public class Line {
     }
 
     private void addDownToDown(Section oldSection, Section newSection) {
-        if(notAddableDistance(oldSection, newSection)) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-        }
+        validateDistance(oldSection, newSection);
 
         sections.remove(oldSection);
         sections.add(
@@ -179,7 +175,9 @@ public class Line {
         return sections.get(0);
     }
 
-    private boolean notAddableDistance(Section oldSection, Section newSection) {
-        return oldSection.getDistance() <= newSection.getDistance();
+    private void validateDistance(Section oldSection, Section newSection) {
+        if(oldSection.getDistance() <= newSection.getDistance()) {
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+        }
     }
 }
