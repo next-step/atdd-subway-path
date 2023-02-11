@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.IllegalDuplicateSectionException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,8 @@ public class Line {
 
     public void addSection(Station requestUpStation, Station requestDownStation, int distance) {
         for (Section originSection : sections) {
+            validateAddSection(originSection, requestUpStation, requestDownStation);
+
             // 구간 변경
             if (originSection.getUpStation().equals(requestUpStation)) {
                 Station originDownStation = originSection.getDownStation();
@@ -64,6 +68,12 @@ public class Line {
         }
 
         sections.add(new Section(this, requestUpStation, requestDownStation, distance));
+    }
+
+    private void validateAddSection(Section originSection, Station requestUpStation, Station requestDownStation) {
+        if (originSection.isDuplicateSection(requestUpStation, requestDownStation)) {
+            throw new IllegalDuplicateSectionException();
+        }
     }
 
 }

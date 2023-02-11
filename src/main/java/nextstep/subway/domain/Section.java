@@ -72,4 +72,8 @@ public class Section {
         return Objects.hash(id);
     }
 
+    public boolean isDuplicateSection(Station requestUpStation, Station requestDownStation) {
+        return this.upStation.equals(requestUpStation) && this.downStation.equals(requestDownStation);
+    }
+
 }
