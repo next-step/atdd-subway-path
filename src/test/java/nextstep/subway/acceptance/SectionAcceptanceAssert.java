@@ -51,7 +51,7 @@ public class SectionAcceptanceAssert {
         );
     }
 
-    protected static void 지하철_노선에_구간을_제거(Long lineId, List<Long> stationIds) {
+    protected static void 지하철_노선에_구간을_제거_검증(Long lineId, List<Long> stationIds) {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineId);
 
         Assertions.assertAll(

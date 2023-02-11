@@ -8,7 +8,7 @@ import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선_조회�
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선의_상행_종점으로_신규_구간을_추가_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선의_하행_종점으로_신규_구간을_추가_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_등록_검증;
-import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_제거;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_제거_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_중간역을_제거_검증;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -177,7 +177,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
             // then
-            지하철_노선에_구간을_제거(신분당선, List.of(강남역, 양재역));
+            지하철_노선에_구간을_제거_검증(신분당선, List.of(강남역, 양재역));
         }
 
         /**
