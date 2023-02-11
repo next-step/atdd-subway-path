@@ -94,16 +94,16 @@ public class Line {
             return;
         }
 
-        //중복된 역
-        validationAddSection(section);
-
         //첫, 마지막 정류장일때
-        if (getFirstStation().getId().equals(section.getDownStation())
-                || getLastStation().getId().equals(section.getUpStation())) {
+        if (getFirstStation().getId().equals(section.getDownStation().getId())
+                || getLastStation().getId().equals(section.getUpStation().getId())) {
             sections.add(section);
             section.setLine(this);
             return;
         }
+
+        //중복된 역
+        validationAddSection(section);
 
         //상행에 추가할 때
         if(isAddUpSection(section.getUpStation())) {
