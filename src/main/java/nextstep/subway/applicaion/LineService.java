@@ -10,8 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.domain.Section.*;
-
 @Service
 @Transactional(readOnly = true)
 public class LineService {
@@ -29,7 +27,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            Section section = new SectionBuilder(line)
+            Section section = new Section.SectionBuilder(line)
                     .setDownStation(downStation)
                     .setUpStation(upStation)
                     .setDistance(request.getDistance())
@@ -71,7 +69,7 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
-        Section section = new SectionBuilder(line)
+        Section section = new Section.SectionBuilder(line)
                 .setUpStation(upStation)
                 .setDownStation(downStation)
                 .setDistance(sectionRequest.getDistance())
