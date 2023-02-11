@@ -78,3 +78,36 @@
 
 - 판단 : 역id로 모든 구간의 하행역중 일치하는 역을 찾는다. 찾은 구간이 마지막 이면 하행역. 마지막 판단은 구간의 order와 Sections size() -1 이 같을 떄이다
 - 삭제 : 가장 마지막 구간을 삭제 (list의 size-1 번쨰 인덱스 삭제)
+
+## 경로 조회 기능 추가
+
+### 요청 & 응답 정의
+
+- 요청 : 출발역id, 도착역id
+- 응답 : 역목록(stations), 총거리(distance)
+
+### 기능 상세 구현
+
+1. 출발/도착역 아이디로 노선을 모두 조회 하고
+    - `Lines.from(Set<Line>)`
+    - 같은 같은 노선의 경로를 조회하면 List로 조회시 중복값이 생길수 있기때문에 Set으로 조회한다
+2. PathFinder를 초기화한다
+    - `PathFinder = PathFinder.from(PathStrategy)`
+    - 알고리즘은 변경될수 있으므로 외부에서 주입받는다
+2. PathFinder로 최단경로를 구한다.
+    - `Path = PathFinder.findShortest(Lines)`
+
+    1. Line의 Sections를 합친다 -> `Sections = Lines.mergeSection()`
+        - 내부적으로 `Sections = sections.merge(sections)` 처리
+    2. PathStrategy 값을 입력한다
+        - `strategy.init(sections)` 실행
+           - 내부에서 `sections.initGraph(strategy)` 호출해 `strategy` 에 정보를 입력한다.
+             - Q.그래프에 구간을 넣는데 구간의 값을 노출하지 않기위해 sections의 인자로 전략를 넘기고 있어 가독성이 떨어지지 않을까?
+           - `strategy.add(section)` 호출
+3. 컨트롤러에서 Path를 PathResponse로 변환후 리턴
+
+### 예외 처리
+
+- 출발역 == 도착역
+- 출발역과 도착역이 연결안됨
+- 출발역, 도착역이 없음
