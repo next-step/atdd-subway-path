@@ -86,7 +86,6 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
         Station station = stationService.findById(stationId);
-
-        line.removeLastSection(station);
+        line.removeLastStation(station);
     }
 }

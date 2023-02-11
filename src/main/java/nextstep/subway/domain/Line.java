@@ -75,11 +75,15 @@ public class Line {
         return sections.equalLastStation(station);
     }
 
-    public void removeLastSection(Station station) {
+    public void removeLastStation(Station station) {
 
         if (!sections.equalLastStation(station)) {
             throw new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE);
         }
         sections.remove(station);
+    }
+
+    public void remove(Station station){
+
     }
 }
