@@ -16,7 +16,7 @@ public class LineFixture {
 
     public static Line createLine(Long upStationId, Long downStationId) {
         Line line = createLine();
-        Section section = createSection(0L, 1L);
+        Section section = createSection(upStationId, downStationId);
         line.addSection(section);
         return line;
     }

@@ -4,14 +4,13 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Lines;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -19,6 +18,7 @@ import java.util.List;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
+    private final SectionRepository sectionRepository;
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
@@ -60,6 +60,12 @@ public class LineService {
     }
 
     public Lines findByStationIds(List<Long> stationIds) {
-        throw new UnsupportedOperationException();
+        List<Section> sections = sectionRepository.findByIdStationIds(stationIds);
+
+        Set<Line> lineSet = sections.stream()
+                .map(s -> s.getLine())
+                .collect(Collectors.toSet());
+
+        return Lines.from(lineSet);
     }
 }
