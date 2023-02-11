@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -21,6 +22,14 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+
+        Section section = new Section(this, upStation, downStation, distance);
+        this.sections.add(section);
     }
 
     public Long getId() {
@@ -49,5 +58,74 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        Section newSection = new Section(this, upStation, downStation, distance);
+
+        Optional<Section> sameUpStationSection = findSameUpStationSection(upStation);
+        if(sameUpStationSection.isPresent()) {
+            addUpToUp(sameUpStationSection.get(), newSection);
+            return;
+        }
+
+        Optional<Section> sameDownStationSection = findSameDownStationSection(downStation);
+        if(sameDownStationSection.isPresent()) {
+            addDownToDown(sameDownStationSection.get(), newSection);
+            return;
+        }
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+
+        if(sections.isEmpty()) {
+            return stations;
+        }
+
+        stations.add(getFirstSection().getUpStation());
+
+        sections.forEach((it) -> stations.add(it.getDownStation()));
+
+        return stations;
+    }
+
+
+    private Optional<Section> findSameUpStationSection(Station upStation) {
+        return sections.stream()
+                .filter(it -> it.getUpStation().equals(upStation))
+                .findFirst();
+    }
+
+    private void addUpToUp(Section oldSection, Section newSection) {
+        sections.add(newSection);
+        sections.add(
+                new Section(this,
+                        newSection.getDownStation(),
+                        oldSection.getDownStation(),
+                        oldSection.getDistance() - newSection.getDistance())
+        );
+        sections.remove(oldSection);
+    }
+
+    private Optional<Section> findSameDownStationSection(Station downStation) {
+        return sections.stream()
+                .filter(it -> it.getDownStation().equals(downStation))
+                .findFirst();
+    }
+
+    private void addDownToDown(Section oldSection, Section newSection) {
+        sections.remove(oldSection);
+        sections.add(
+                new Section(this,
+                        oldSection.getUpStation(),
+                        newSection.getUpStation(),
+                        oldSection.getDistance() - newSection.getDistance())
+        );
+        sections.add(newSection);
+    }
+
+    private Section getFirstSection() {
+        return sections.get(0);
     }
 }
