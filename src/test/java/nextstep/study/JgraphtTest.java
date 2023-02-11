@@ -32,13 +32,15 @@ class JgraphtTest {
         graph.setEdgeWeight(graph.addEdge(역1, 역3), 100); // 구간3 - 거리3
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<String> shortestPath = dijkstraShortestPath.getPath(출발, 도착).getVertexList();
+        GraphPath graphPath = dijkstraShortestPath.getPath(출발, 도착);
+        List<String> shortestPath = graphPath.getVertexList();
 
         assertThat(shortestPath.size()).isEqualTo(3);
         // 역3 -> 역2 거리2
         // 역3 -> 역1 거리100 
         // 역3 -> 역2가 더짧으므로 역3 -> 역2 -> 역1 순으로 탐색함
         assertThat(shortestPath).containsExactly(역3, 역2, 역1);
+        assertThat(graphPath.getWeight()).isEqualTo(4.0);
     }
 
     @Test
