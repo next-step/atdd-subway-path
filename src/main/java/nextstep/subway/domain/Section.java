@@ -1,6 +1,14 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import nextstep.subway.domain.exception.SubwayException;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Section {
@@ -22,23 +30,44 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
+    protected Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        if (upStation == downStation) {
+            throw new SubwayException("상행역과 하행역은 같을 수 없습니다.");
+        }
+
+        if (distance <= 0) {
+            throw new SubwayException("역과 역 사이의 길이는 0 이상이어야 합니다.");
+        }
+
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    public Section to(Section newSection) {
+        if (isSameUpStation(newSection)) {
+            return new Section(line,
+                    newSection.downStation,
+                    downStation,
+                    distance - newSection.distance);
+        }
+
+        if (isSameDownStation(newSection)) {
+            return new Section(line,
+                    upStation,
+                    newSection.upStation,
+                    distance - newSection.distance);
+        }
+
+        throw new SubwayException("구간 사이에 생성할 수 없습니다.");
     }
 
-    public Line getLine() {
-        return line;
+    public Long getId() {
+        return id;
     }
 
     public Station getUpStation() {
@@ -51,5 +80,21 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isDownStationId(long stationId) {
+        return downStation.getId() == stationId;
+    }
+
+    public boolean isSameStations(Section other) {
+        return upStation == other.upStation && downStation == other.downStation;
+    }
+
+    public boolean isSameUpStation(Section other) {
+        return upStation == other.upStation;
+    }
+
+    public boolean isSameDownStation(Section other) {
+        return downStation == other.downStation;
     }
 }

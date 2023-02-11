@@ -1,9 +1,9 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.request.LineRequest;
+import nextstep.subway.applicaion.dto.response.LineResponse;
+import nextstep.subway.applicaion.dto.request.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
