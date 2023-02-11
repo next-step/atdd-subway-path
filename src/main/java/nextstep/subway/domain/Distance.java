@@ -1,9 +1,8 @@
 package nextstep.subway.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-
 import nextstep.subway.exception.InvalidSectionDistanceException;
+
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
@@ -13,7 +12,6 @@ public class Distance {
     protected Distance() {
     }
 
-    @Column(name = "distance")
     private int value;
 
     public Distance(int value) {
