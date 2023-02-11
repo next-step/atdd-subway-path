@@ -33,10 +33,29 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        validateSection(upStation, downStation, distance);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateSection(final Station upStation, final Station downStation, final int distance) {
+        validateStation(upStation);
+        validateStation(downStation);
+        validateDistance(distance);
+    }
+
+    private void validateStation(final Station station) {
+        if (station == null) {
+            throw new IllegalArgumentException("구간의 역은 null이 될 수 없습니다.");
+        }
+    }
+
+    private void validateDistance(final int distance) {
+        if (distance == 0) {
+            throw new IllegalArgumentException("구간의 거리는 0이 될 수 없습니다.");
+        }
     }
 
     public Long getId() {
