@@ -21,31 +21,27 @@ public class Sections {
             sections.add(section);
             return;
         }
-        List<Section> upStationSection = getSectionsBy(section.getUpStation());
-        List<Section> downStationSection = getSectionsBy(section.getDownStation());
+        List<Section> sectionsBasedOnUpStation = getSectionsBy(section.getUpStation());
+        List<Section> sectionsBasedOnDownStation = getSectionsBy(section.getDownStation());
 
-        validateAddSection(upStationSection, downStationSection);
+        validateAddSection(sectionsBasedOnUpStation, sectionsBasedOnDownStation);
 
-        if (upStationSection.isEmpty()) {
+        if (sectionsBasedOnUpStation.isEmpty()) {
             addBasedOnDownStationSection(section);
         }
-        if (downStationSection.isEmpty()) {
+        if (sectionsBasedOnDownStation.isEmpty()) {
             addBasedOnUpStationSection(section);
         }
     }
 
-    private void validateAddSection(final List<Section> upStationSection, final List<Section> downStationSection) {
-        if (isAlreadyAddedSection(upStationSection, downStationSection)
-                || isNonIncludeStation(upStationSection, downStationSection)) {
+    private void validateAddSection(
+            final List<Section> sectionsBasedOnUpStation,
+            final List<Section> sectionsBasedOnDownStation
+    ) {
+        if (isAlreadyAddedSection(sectionsBasedOnUpStation, sectionsBasedOnDownStation)
+                || isNonIncludeStation(sectionsBasedOnUpStation, sectionsBasedOnDownStation)) {
             throw new IllegalArgumentException("구간 추가 제약 조건을 위반했습니다.");
         }
-    }
-
-    private boolean isNonIncludeStation(
-            final List<Section> upStationSection,
-            final List<Section> downStationSection
-    ) {
-        return !sections.isEmpty() && upStationSection.isEmpty() && downStationSection.isEmpty();
     }
 
     private boolean isAlreadyAddedSection(
@@ -55,12 +51,19 @@ public class Sections {
         return !upStationSection.isEmpty() && !downStationSection.isEmpty();
     }
 
+    private boolean isNonIncludeStation(
+            final List<Section> upStationSection,
+            final List<Section> downStationSection
+    ) {
+        return !sections.isEmpty() && upStationSection.isEmpty() && downStationSection.isEmpty();
+    }
+
     private void addBasedOnDownStationSection(final Section section) {
         if (section.getDownStation().equals(getLineUpStation())) {
             sections.add(section);
             return;
         }
-        Section existingSection = findDownStationSection(section.getDownStation());
+        Section existingSection = findSectionBasedOnDownStationBy(section.getDownStation());
         validateDistanceAddSectionBetweenExistingSection(section, existingSection);
         existingSection
                 .setDownStation(section.getUpStation())
@@ -68,19 +71,12 @@ public class Sections {
         sections.add(section);
     }
 
-    private Section findDownStationSection(final Station downStation) {
-        return getSectionsBy(downStation).stream()
-                .filter(section -> section.isDownStation(downStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("역을 하행선으로 하는 구간이 존재하지 않습니다."));
-    }
-
     private void addBasedOnUpStationSection(final Section section) {
         if (section.getUpStation().equals(getLineDownStation())) {
             sections.add(section);
             return;
         }
-        Section existingSection = findUpStationSection(section.getUpStation());
+        Section existingSection = findSectionBasedOnUpStationBy(section.getUpStation());
         validateDistanceAddSectionBetweenExistingSection(section, existingSection);
         existingSection
                 .setUpStation(section.getDownStation())
@@ -108,36 +104,43 @@ public class Sections {
             sections.remove(sections.size() - 1);
             return;
         }
+        Section sectionToRemoveDownStation = findSectionBasedOnDownStationBy(station);
+        Section sectionToRemoveUpStation = findSectionBasedOnUpStationBy(station);
+        sections.removeAll(List.of(sectionToRemoveDownStation, sectionToRemoveUpStation));
 
-        Section stationBasedOnDownStation = findDownStationSection(station);
-        Section stationBasedOnUpStation = findUpStationSection(station);
-        sections.removeAll(List.of(stationBasedOnUpStation, stationBasedOnDownStation));
-
-        Section relocationSection = relocationRemoveMiddleSection(stationBasedOnDownStation, stationBasedOnUpStation);
-        sections.add(relocationSection);
+        Section relocateSection
+                = relocateWithRemovingMiddleSection(sectionToRemoveDownStation, sectionToRemoveUpStation);
+        sections.add(relocateSection);
     }
 
     private void validateRemoveBy(final Station station) {
         if (sections.size() < REMOVE_SIZE_MIN) {
             throw new IllegalArgumentException("구간 목록의 크기가 " + REMOVE_SIZE_MIN + " 이상일 경우 구간 제거가 가능합니다.");
         }
-        if(!isContainStation(station)) {
+        if (!isContain(station)) {
             throw new IllegalArgumentException("구간 목록에 포함되지 않은 역입니다.");
         }
     }
 
-    private boolean isContainStation(final Station station) {
+    private boolean isContain(final Station station) {
         return sections.stream().anyMatch(section -> section.isContain(station));
     }
 
-    private Section relocationRemoveMiddleSection(
-            final Section stationBasedOnDownStation,
-            final Section stationBasedOnUpStation
+    private Section findSectionBasedOnDownStationBy(final Station downStation) {
+        return getSectionsBy(downStation).stream()
+                .filter(section -> section.isDownStation(downStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("역을 하행선으로 하는 구간이 존재하지 않습니다."));
+    }
+
+    private Section relocateWithRemovingMiddleSection(
+            final Section sectionToRemoveDownStation,
+            final Section sectionToRemoveUpStation
     ) {
-        Line line = stationBasedOnUpStation.getLine();
-        Station upStation = stationBasedOnDownStation.getUpStation();
-        Station downStation = stationBasedOnUpStation.getDownStation();
-        Distance distance = stationBasedOnDownStation.getDistance().plus(stationBasedOnUpStation.getDistance());
+        Line line = sectionToRemoveUpStation.getLine();
+        Station upStation = sectionToRemoveDownStation.getUpStation();
+        Station downStation = sectionToRemoveUpStation.getDownStation();
+        Distance distance = sectionToRemoveDownStation.getDistance().plus(sectionToRemoveUpStation.getDistance());
         return new Section(line, upStation, downStation, distance);
     }
 
@@ -152,7 +155,7 @@ public class Sections {
         List<Station> stations = new ArrayList<>();
         Station upStation = getLineUpStation();
         for (int i = 0; i < sections.size(); i++) {
-            Section upStationSection = findUpStationSection(upStation);
+            Section upStationSection = findSectionBasedOnUpStationBy(upStation);
             stations.add(upStationSection.getUpStation());
             upStation = upStationSection.getDownStation();
         }
@@ -160,9 +163,9 @@ public class Sections {
         return Collections.unmodifiableList(stations);
     }
 
-    private Section findUpStationSection(final Station upStation) {
-        return getSectionsBy(upStation).stream()
-                .filter(section -> section.isUpStation(upStation))
+    private Section findSectionBasedOnUpStationBy(final Station station) {
+        return getSectionsBy(station).stream()
+                .filter(section -> section.isUpStation(station))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("역을 상행선으로 하는 구간이 존재하지 않습니다."));
     }
@@ -181,9 +184,9 @@ public class Sections {
                 .orElseThrow(() -> new EntityNotFoundException("노선에 하행역이 존재하지 않았습니다."));
     }
 
-    private boolean isLineDownStation(final Station downStation) {
-        return findContainSections(downStation).stream()
-                .filter(section -> section.isUpStation(downStation))
+    private boolean isLineDownStation(final Station station) {
+        return findContainSectionsBy(station).stream()
+                .filter(section -> section.isUpStation(station))
                 .findFirst().isEmpty();
     }
 
@@ -195,19 +198,19 @@ public class Sections {
                 .orElseThrow(() -> new EntityNotFoundException("노선에 상행역이 존재하지 않았습니다."));
     }
 
-    private boolean isLineUpStation(final Station upStation) {
-        return findContainSections(upStation).stream()
-                .filter(section -> section.isDownStation(upStation))
+    private boolean isLineUpStation(final Station station) {
+        return findContainSectionsBy(station).stream()
+                .filter(section -> section.isDownStation(station))
                 .findFirst().isEmpty();
     }
 
-    private List<Section> findContainSections(final Station downStation) {
-        List<Section> sectionList = sections.stream()
-                .filter(section -> section.isContain(downStation))
+    private List<Section> findContainSectionsBy(final Station station) {
+        List<Section> result = sections.stream()
+                .filter(section -> section.isContain(station))
                 .collect(Collectors.toUnmodifiableList());
-        if (sectionList.isEmpty()) {
+        if (result.isEmpty()) {
             throw new IllegalArgumentException("노선에 포함되지 않은 역 입니다.");
         }
-        return sectionList;
+        return result;
     }
 }
