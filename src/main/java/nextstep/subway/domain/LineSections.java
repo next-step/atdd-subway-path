@@ -66,10 +66,10 @@ public class LineSections {
     private void checkStationStatus(Station upStation, Station downStation) {
         List<Station> allStations = getAllStations();
         if (stationsAlreadyExist(upStation, downStation, allStations)) {
-            throw new IllegalArgumentException(LineErrorMessage.STATIONS_ALREADY_EXIST.getMessage());
+            throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_STATIONS_ALREADY_EXIST.getMessage());
         }
         if (stationsNotExist(upStation, downStation, allStations)) {
-            throw new IllegalArgumentException(LineErrorMessage.STATIONS_NOT_EXIST.getMessage());
+            throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_STATIONS_NOT_EXIST.getMessage());
         }
     }
 
@@ -82,7 +82,7 @@ public class LineSections {
     }
 
     private void checkDistance(int distance, int oldDistance) {
-        if (distance >= oldDistance) throw new IllegalArgumentException(LineErrorMessage.INVALID_DISTANCE.getMessage());
+        if (distance >= oldDistance) throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_INVALID_DISTANCE.getMessage());
     }
 
     private void extendSection(Line line, Station upStation, Station downStation, int distance) {

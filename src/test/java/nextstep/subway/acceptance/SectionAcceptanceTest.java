@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.LineErrorMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -119,11 +120,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         // then
-        assertThat(response.body().asString()).isEqualTo("역 사이에 기존 역 사이 길이보다 크거나 같은 구간을 등록할 수 없습니다.");
+        assertThat(response.body().asString()).isEqualTo(LineErrorMessage.ADD_SECTION_INVALID_DISTANCE.getMessage());
     }
 
     /**
      * When 상행역과 하행역이 이미 모두 노선에 등록되어 있는 구간 추가를 요청하면
+     * Then 400에러가 발생하고
      * Then 에러 메시지를 응답받는다
      */
     @DisplayName("상행역과 하행역이 이미 모두 노선에 등록되어 있는 구간을 등록")
@@ -136,7 +138,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         // then
-        assertThat(response.body().asString()).isEqualTo("새로운 구간의 상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.");
+        assertThat(response.body().asString()).isEqualTo(LineErrorMessage.ADD_SECTION_STATIONS_ALREADY_EXIST.getMessage());
     }
 
     /**
@@ -155,7 +157,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         // then
-        assertThat(response.body().asString()).isEqualTo("새로운 구간의 상행역과 하행역이 모두 노선에 등록되어 있지 않습니다.");
+        assertThat(response.body().asString()).isEqualTo(LineErrorMessage.ADD_SECTION_STATIONS_NOT_EXIST.getMessage());
     }
 
     /**
@@ -163,9 +165,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선의 마지막 구간을 제거")
     @Test
-    void removeLineSection() {
+    void removeLastLineSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
@@ -177,6 +179,87 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 첫번째 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @DisplayName("지하철 노선의 첫번째 구간을 제거")
+    @Test
+    void removeLastFirstSection() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @DisplayName("지하철 노선의 중간 구간을 제거")
+    @Test
+    void removeLastMiddleSection() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+    }
+
+    /**
+     * When 구간이 하나인 노선에서 구간 제거를 요청 하면
+     * Then 400에러가 발생하고
+     * Then 에러 메시지를 응답받는다
+     */
+    @DisplayName("구간이 하나인 노선에서 구간 제거")
+    @Test
+    void removeLastOneSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        // then
+        assertThat(response.body().asString()).isEqualTo(LineErrorMessage.REMOVE_SECTION_LAST_ONE.getMessage());
+    }
+
+    /**
+     * When 노선에 등록되어 있지 않은 역을 구간에서 제거하려 하면
+     * Then 400에러가 발생하고
+     * Then 에러 메시지를 응답받는다
+     */
+    @DisplayName("노선에 등록되어 있지 않은 역을 구간에서 제거")
+    @Test
+    void removeNonExistentStationFromSection() {
+        // given
+        Long 시청역 = 지하철역_생성_요청("시청역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 시청역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        // then
+        assertThat(response.body().asString()).isEqualTo(LineErrorMessage.REMOVE_SECTION_STATIONS_NOT_EXISTS.getMessage());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

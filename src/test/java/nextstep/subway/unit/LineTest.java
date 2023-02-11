@@ -60,7 +60,7 @@ class LineTest {
         // when & then
         assertThatThrownBy(() -> line.addSection(upStation, middleStation, 10))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage(LineErrorMessage.INVALID_DISTANCE.getMessage());
+            .hasMessage(LineErrorMessage.ADD_SECTION_INVALID_DISTANCE.getMessage());
     }
 
     @Test
@@ -71,7 +71,7 @@ class LineTest {
         // when & then
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 5))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage(LineErrorMessage.STATIONS_ALREADY_EXIST.getMessage());
+            .hasMessage(LineErrorMessage.ADD_SECTION_STATIONS_ALREADY_EXIST.getMessage());
     }
 
     @Test
@@ -84,7 +84,7 @@ class LineTest {
         // when & then
         assertThatThrownBy(() -> line.addSection(upStation, downStation, 5))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage(LineErrorMessage.STATIONS_NOT_EXIST.getMessage());
+            .hasMessage(LineErrorMessage.ADD_SECTION_STATIONS_NOT_EXIST.getMessage());
     }
 
     @Test
