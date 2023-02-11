@@ -1,11 +1,15 @@
 package nextstep.subway.domain;
 
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
 
+    private static final int MIN = 0;
+
+    @Column
     private int value;
 
     protected Distance() {
@@ -26,6 +30,14 @@ public class Distance {
     public Distance plus(final Distance plusDistance) {
         this.value += plusDistance.value;
         return this;
+    }
+
+    public boolean more(final Distance distance) {
+        return this.value >= distance.value;
+    }
+
+    public boolean isOverMin() {
+        return this.value > MIN;
     }
 
     @Override

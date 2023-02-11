@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,5 +45,25 @@ class DistanceTest {
         Distance distance = new Distance(5);
 
         assertThat(distance.plus(new Distance(value))).isEqualTo(new Distance(5 + value));
+    }
+
+    @DisplayName("구간이 전달된 구간 이상인지 반환한다.")
+    @Test
+    void more() {
+        Distance distance = new Distance(4);
+
+        assertAll(
+                () -> assertThat(distance.more(new Distance(3))).isTrue(),
+                () -> assertThat(distance.more(new Distance(4))).isTrue(),
+                () -> assertThat(distance.more(new Distance(6))).isFalse()
+        );
+    }
+
+    @DisplayName("구간이 최솟값 초과인지 반환한다.")
+    @Test
+    void isOverZero() {
+        Distance distance = new Distance(4);
+
+        assertThat(distance.isOverMin()).isTrue();
     }
 }
