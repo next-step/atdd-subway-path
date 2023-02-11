@@ -63,7 +63,7 @@ class LineTest {
 		// given
 		Line line = LINE_4();
 		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(line.getSections());
+		insertSectionIds(line.getSections());
 
 		// when
 		line.removeSection(충무로);
@@ -86,24 +86,12 @@ class LineTest {
 
 	}
 
-	@DisplayName("구간제거시 제거할구간이 하행종점역이 아닐경우 예외가 발생한다")
-	@Test
-	void 구간제거시_제거할구간이_하행종점역이_아닐경우_예외가_발생한다() throws Exception {
-		Line line = LINE_4();
-		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(line.getSections());
-
-		assertThatThrownBy(() -> line.removeSection(withId(동대문역사문화공원, 동대문역사문화공원_ID)))
-			.isInstanceOf(SectionRemoveException.class)
-			.hasMessage(SectionErrorCode.INVALID_REMOVE_STATION.getMessage());
-	}
-
 	@DisplayName("구간제거시 제거할 지하철역이 노선에 포함되지않을경우 예외가 발생한다")
 	@Test
 	void 구간제거시_제거할_지하철역이_노선에_포함되지않을경우_예외가_발생한다() throws Exception {
 		Line line = LINE_4();
 		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(line.getSections());
+		insertSectionIds(line.getSections());
 
 		assertThatThrownBy(() -> line.removeSection(withId(서울역, 서울역_ID)))
 			.isInstanceOf(SectionRemoveException.class)
@@ -254,13 +242,18 @@ class LineTest {
 		);
 	}
 
-	private void insertIdInSections(List<Section> sections) {
-		for (int i = 1; i <= sections.size(); i++) {
-			Section section = sections.get(i - 1);
-			Field idField = ReflectionUtils.findField(section.getClass(), "id");
-			ReflectionUtils.makeAccessible(idField);
-			ReflectionUtils.setField(idField, section, (long)i);
-		}
+	@DisplayName("역 제거요청시 노선에 역이존재하지 않으면 예외가 발생한다")
+	@Test
+	void 역_제거요청시_노선에_역이존재하지_않으면_예외가_발생한다() throws Exception {
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), 5);
+
+		insertSectionIds(line.getSections());
+
+		assertThatThrownBy(() -> line.removeSection(withId(등록되지않은역, 등록되지않은역_ID)))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
 
 	private static Stream<Arguments> provideUpAndDownStations() throws Exception {

@@ -101,7 +101,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 		assertAll(
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(response.jsonPath().getList("stations.id", Long.class))
-				.containsExactly(강남역, 양재역, 정자역, 판교역)
+				.containsExactly(강남역, 양재역, 판교역, 정자역)
 		);
 	}
 

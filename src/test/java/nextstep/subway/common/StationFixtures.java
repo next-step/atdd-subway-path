@@ -33,6 +33,8 @@ public class StationFixtures {
 
 	public static final Long 등록되지않은역_ID = 50L;
 
+	public static final Station 등록되지않은역 = new Station("등록되지않은역");
+
 	public static Station withId(Station station, Long id) throws IllegalAccessException {
 		Field idField = ReflectionUtils.findField(station.getClass(), "id");
 		idField.setAccessible(true);

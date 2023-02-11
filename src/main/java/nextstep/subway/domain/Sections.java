@@ -115,7 +115,7 @@ public class Sections {
 	private void removeFinalUpStation(Line line, Station station) {
 		Section section = this.sections.stream().filter(it -> it.equalUpStation(station))
 			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
 
 		this.sections.remove(section);
 		line.updateFinalUpStation(section.getDownStation());
@@ -125,9 +125,9 @@ public class Sections {
 		Section section = this.sections.stream()
 			.filter(it -> it.equalDownStation(station))
 			.findFirst()
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
 
-		boolean result = this.sections.remove(section);
+		this.sections.remove(section);
 		line.updateFinalDownStation(section.getUpStation());
 	}
 
@@ -135,12 +135,12 @@ public class Sections {
 		Section inFrontsection = this.sections.stream()
 			.filter(it -> it.equalDownStation(station))
 			.findFirst()
-			.orElseThrow(IllegalAccessError::new);
+			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
 
 		Section afterSection = this.sections.stream()
 			.filter(it -> it.equalUpStation(station))
 			.findFirst()
-			.orElseThrow(IllegalAccessError::new);
+			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
 
 		this.sections.remove(inFrontsection);
 		this.sections.remove(afterSection);

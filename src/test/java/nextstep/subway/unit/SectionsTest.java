@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import static nextstep.subway.common.LineFixtures.*;
 import static nextstep.subway.common.SectionFixtures.*;
 import static nextstep.subway.common.StationFixtures.*;
 import static org.assertj.core.api.Assertions.*;
@@ -204,6 +205,19 @@ class SectionsTest {
 				.containsExactly(withId(동대문, 동대문_ID), withId(서울역, 서울역_ID)),
 			() -> assertThat(totalDistance).isEqualTo(inFrontSectionDistance + afterSectionDistance)
 		);
+	}
+
+	@DisplayName("역 제거요청시 노선에 역이존재하지 않으면 예외가 발생한다")
+	@Test
+	void 역_제거요청시_노선에_역이존재하지_않으면_예외가_발생한다() throws Exception {
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), 5);
+
+		insertSectionIds(sections.getList());
+
+		assertThatThrownBy(() -> line.removeSection(withId(등록되지않은역, 등록되지않은역_ID)))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
 
 	private static Stream<Arguments> provideUpAndDownStations() throws Exception {
