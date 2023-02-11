@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Entity
@@ -44,15 +45,7 @@ public class Line {
         }
 
         sections.add(section);
-        section.changeLine(this);
-    }
-
-    public void remove(Section section) {
-        sections.remove(section);
-    }
-
-    public Section getLastSection() {
-        return sections.getLast();
+        section.addLine(this);
     }
 
     public int getSectionsSize() {
@@ -61,5 +54,13 @@ public class Line {
 
     public void removeSection(Station station) {
         sections.remove(station);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public boolean isSectionsEmpty() {
+        return sections.isEmpty();
     }
 }

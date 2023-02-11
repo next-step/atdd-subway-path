@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.AlreadyAddedLineException;
 
 import javax.persistence.*;
 import java.util.Optional;
@@ -35,6 +36,14 @@ public class Section {
 
     private int distance;
 
+    public void addLine(Line line) {
+        if (this.line != null) {
+            throw new AlreadyAddedLineException();
+        }
+
+        this.line = line;
+    }
+
     public Long getDownStationId() {
         return Optional.ofNullable(downStation)
                 .orElseThrow(() -> new IllegalStateException("하행역이 없습니다."))
@@ -45,28 +54,6 @@ public class Section {
         return Optional.ofNullable(upStation)
                 .orElseThrow(() -> new IllegalStateException("상행역이 없습니다."))
                 .getId();
-    }
-
-    public void changeLine(Line newLine) {
-        if (line != null && line.equals(newLine)) {
-            return;
-        }
-
-        if (line != null) {
-            line.remove(this);
-        }
-
-        newLine.addSection(this);
-        line = newLine;
-    }
-
-    public void removeLine() {
-        if (line == null) {
-            return;
-        }
-
-        line.remove(this);
-        line = null;
     }
 
     public void minusDistacne(int distance) {
@@ -85,11 +72,41 @@ public class Section {
         return this.downStation.equals(station);
     }
 
+    public boolean hasStationId(Long stationId) {
+        return isSameUpStationId(stationId) || isSameDownStationId(stationId);
+    }
+
+    public boolean isSameUpStationId(Long stationId) {
+        return getUpStationId().equals(stationId);
+    }
+
+    private boolean isSameDownStationId(Long stationId) {
+        return getDownStationId().equals(stationId);
+    }
+
     public void changeUpStation(Station station) {
         this.upStation = station;
     }
 
     public void changeOrder(int orderSeq) {
         this.orderSeq = orderSeq;
+    }
+
+
+    public boolean isFirst() {
+        return orderSeq == 0;
+    }
+
+    public void plusDistance(int distance) {
+        this.distance += distance;
+    }
+
+    public void deleteMiddleStation(Section target) {
+        plusDistance(target.getDistance());
+        this.downStation = target.getDownStation();
+    }
+
+    public boolean isLast(int size) {
+        return orderSeq == size - 1;
     }
 }
