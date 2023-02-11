@@ -5,7 +5,6 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,10 +50,7 @@ public class LineServiceMockTest {
         // then
         verify(stationService, times(2)).findById(anyLong());
         verify(lineRepository, times(1)).findById(anyLong());
-        assertThat(분당선.getSections()).hasSize(1)
-                .flatExtracting(Section::getStations).hasSize(2)
-                .containsAnyElementsOf(분당선.getStations())
-                .extracting(Station::getName)
-                .containsExactlyInAnyOrder("수원역", "매탄권선역");
+        assertThat(분당선.getSections()).hasSize(1);
+        assertThat(분당선.getStations()).hasSize(2).containsExactlyInAnyOrder(수원역, 매탄권선역);
     }
 }

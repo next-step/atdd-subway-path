@@ -45,19 +45,11 @@ class LineTest {
         분당선.addSection(구간_생성(분당선, "수원역", "매탄권선역", 5));
         분당선.addSection(구간_생성(분당선, "매탄권선역", "망포역", 5));
 
-        //then
-        List<Section> sections = 분당선.getSections();
-        assertThat(sections).hasSize(2);
-
         //when
         분당선.removeSection("망포역");
 
         //then
-        sections = 분당선.getSections();
-        assertThat(sections).hasSize(1);
-
-        List<Station> stations = 분당선.getStations();
-        assertThat(stations).hasSize(2)
+        assertThat(분당선.getStations()).hasSize(2)
                 .extracting(Station::getName)
                 .containsExactlyInAnyOrder("수원역", "매탄권선역");
     }
@@ -66,12 +58,10 @@ class LineTest {
     void updateLine() {
         //given
         Line 분당선 = 노선_생성("분당선", "yellow");
-        //then
-        assertThat(분당선.getName()).isEqualTo("분당선");
-        assertThat(분당선.getColor()).isEqualTo("yellow");
 
         //when
         분당선.update(노선_생성("신분당선", "red"));
+
         //then
         assertThat(분당선.getName()).isEqualTo("신분당선");
         assertThat(분당선.getColor()).isEqualTo("red");
