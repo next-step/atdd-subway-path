@@ -59,11 +59,13 @@ class DistanceTest {
         );
     }
 
-    @DisplayName("구간이 최솟값 초과인지 반환한다.")
+    @DisplayName("구간이 최솟값 미만인지 반환한다.")
     @Test
-    void isOverZero() {
-        Distance distance = new Distance(4);
-
-        assertThat(distance.isOverMin()).isTrue();
+    void isLessMin() {
+        assertAll(
+                () -> assertThat(new Distance(1).isOverMin()).isFalse(),
+                () -> assertThatThrownBy(() -> new Distance(0)).isInstanceOf(IllegalArgumentException.class),
+                () -> assertThatThrownBy(() -> new Distance(-1)).isInstanceOf(IllegalArgumentException.class)
+        );
     }
 }

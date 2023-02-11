@@ -7,7 +7,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Distance {
 
-    private static final int MIN = 0;
+    private static final int MIN = 1;
 
     @Column(name = "distance")
     private int value;
@@ -16,6 +16,9 @@ public class Distance {
     }
 
     public Distance(final int value) {
+        if (value < MIN) {
+            throw new IllegalArgumentException("거리 생성 최솟값 보다 작습니다.");
+        }
         this.value = value;
     }
 
