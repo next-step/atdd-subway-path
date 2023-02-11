@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -74,6 +74,15 @@ public class Section {
     }
 
     @Override
+    public int compareTo(Section o) {
+        if (this.getDownStation().equals(o.getUpStation())) {
+            return -1;
+        }
+
+        return 0;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -85,5 +94,6 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
+
 
 }
