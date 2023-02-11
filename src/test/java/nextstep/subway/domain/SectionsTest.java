@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import nextstep.subway.domain.exception.AddSectionDistanceOverExistingSection;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
 import nextstep.subway.domain.exception.SectionsEmptyException;
 import nextstep.subway.domain.exception.StationNotInSectionsException;
@@ -74,7 +75,7 @@ class SectionsTest {
             Section section2 = new Section(line, 강남역, 역삼역, distance);
             sections.add(section1);
 
-            assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.add(section2)).isInstanceOf(AddSectionDistanceOverExistingSection.class);
         }
 
         @DisplayName("노선의 상행 종점으로 신규 구간을 추가한다.")

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.exception.AddSectionDistanceOverExistingSection;
 import nextstep.subway.domain.exception.NotExistBasedOnDownStationException;
 import nextstep.subway.domain.exception.NotExistBasedOnUpStationException;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
@@ -93,7 +94,7 @@ public class Sections {
             final Section existingSection
     ) {
         if (newSection.getDistance().more(existingSection.getDistance())) {
-            throw new IllegalArgumentException("기존 구간 사이에 새로운 구간 추가시 새로운 구간의 길이는 기존 구간의 길이보다 작아야 합니다.");
+            throw new AddSectionDistanceOverExistingSection();
         }
     }
 
