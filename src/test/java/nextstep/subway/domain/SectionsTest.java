@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
+import nextstep.subway.domain.exception.StationNotInSectionsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -220,7 +221,7 @@ class SectionsTest {
         void removeNotIncludeStation() {
             Sections sections = createSectionsBy(line, 강남역, 역삼역, 선릉역);
 
-            assertThatThrownBy(() -> sections.remove(정자역)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.remove(정자역)).isInstanceOf(StationNotInSectionsException.class);
         }
 
         @DisplayName("상행역과 하행역만 포함된 구간 목록에 삭제를 요청할 경우 에러 처리한다.")

@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import nextstep.subway.domain.exception.RemoveSectionsSizeException;
+import nextstep.subway.domain.exception.StationNotInSectionsException;
 
 @Embeddable
 public class Sections {
@@ -119,7 +120,7 @@ public class Sections {
             throw new RemoveSectionsSizeException(REMOVE_SIZE_MIN);
         }
         if (!isContain(station)) {
-            throw new IllegalArgumentException("구간 목록에 포함되지 않은 역입니다.");
+            throw new StationNotInSectionsException();
         }
     }
 
