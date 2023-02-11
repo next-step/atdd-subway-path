@@ -64,7 +64,7 @@ public class Sections {
         validateDistanceAddSectionBetweenExistingSection(section, existingSection);
         existingSection
                 .setDownStation(section.getUpStation())
-                .setDistance(existingSection.getDistance() - section.getDistance());
+                .setDistance(existingSection.getDistance().minus(section.getDistance()));
         sections.add(section);
     }
 
@@ -84,7 +84,7 @@ public class Sections {
         validateDistanceAddSectionBetweenExistingSection(section, existingSection);
         existingSection
                 .setUpStation(section.getDownStation())
-                .setDistance(existingSection.getDistance() - section.getDistance());
+                .setDistance(existingSection.getDistance().minus(section.getDistance()));
         sections.add(section);
     }
 
@@ -92,7 +92,7 @@ public class Sections {
             final Section newSection,
             final Section existingSection
     ) {
-        if (newSection.getDistance() >= existingSection.getDistance()) {
+        if (newSection.getDistance().more(existingSection.getDistance())) {
             throw new IllegalArgumentException("기존 구간 사이에 새로운 구간 추가시 새로운 구간의 길이는 기존 구간의 길이보다 작아야 합니다.");
         }
     }
@@ -120,7 +120,7 @@ public class Sections {
         Line line = stationBasedOnUpStation.getLine();
         Station upStation = stationBasedOnDownStation.getUpStation();
         Station downStation = stationBasedOnUpStation.getDownStation();
-        int distance = stationBasedOnDownStation.getDistance() + stationBasedOnUpStation.getDistance();
+        Distance distance = stationBasedOnDownStation.getDistance().plus(stationBasedOnUpStation.getDistance());
         return new Section(line, upStation, downStation, distance);
     }
 

@@ -58,7 +58,7 @@ class SectionsTest {
 
             assertAll(
                     () -> assertThat(sections.getStations()).containsExactly(강남역, 선릉역, 역삼역),
-                    () -> assertThat(section1.getDistance()).isEqualTo(5)
+                    () -> assertThat(section1.getDistance()).isEqualTo(new Distance(5))
             );
         }
 
@@ -229,7 +229,7 @@ class SectionsTest {
                     () -> assertThat(sectionList).hasSize(1),
                     () -> assertThat(sectionList.get(0).getUpStation()).isEqualTo(강남역),
                     () -> assertThat(sectionList.get(0).getDownStation()).isEqualTo(역삼역),
-                    () -> assertThat(sectionList.get(0).getDistance()).isEqualTo(10)
+                    () -> assertThat(sectionList.get(0).getDistance()).isEqualTo(new Distance(10))
             );
         }
     }

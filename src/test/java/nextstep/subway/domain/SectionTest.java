@@ -105,8 +105,8 @@ class SectionTest {
     void setDistance() {
         Section section = new Section(line, 강남역, 역삼역, 10);
 
-        section.setDistance(5);
+        section.setDistance(new Distance(5));
 
-        assertThat(section.getDistance()).isEqualTo(5);
+        assertThat(section.getDistance()).isEqualTo(new Distance(5));
     }
 }

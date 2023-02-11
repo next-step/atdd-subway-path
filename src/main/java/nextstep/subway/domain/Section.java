@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,13 +27,18 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
+        this(line, upStation, downStation, new Distance(distance));
+    }
+
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
         validateSection(upStation, downStation, distance);
         this.line = line;
         this.upStation = upStation;
@@ -40,7 +46,7 @@ public class Section {
         this.distance = distance;
     }
 
-    private void validateSection(final Station upStation, final Station downStation, final int distance) {
+    private void validateSection(final Station upStation, final Station downStation, final Distance distance) {
         validateStation(upStation);
         validateStation(downStation);
         validateDistance(distance);
@@ -52,9 +58,9 @@ public class Section {
         }
     }
 
-    private void validateDistance(final int distance) {
-        if (distance == 0) {
-            throw new IllegalArgumentException("구간의 거리는 0이 될 수 없습니다.");
+    private void validateDistance(final Distance distance) {
+        if (distance.isUnderMin()) {
+            throw new IllegalArgumentException("구간의 생성 최소 값 보다 작습니다.");
         }
     }
 
@@ -74,7 +80,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -95,7 +101,7 @@ public class Section {
         return this;
     }
 
-    public Section setDistance(final int distance) {
+    public Section setDistance(final Distance distance) {
         this.distance = distance;
         return this;
     }
