@@ -8,10 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.List;
 
 class LineTest {
 
@@ -60,6 +60,7 @@ class LineTest {
     }
 
     /**
+     * 요구사항 변경으로 disabled
      *                선릉역
      *                  |
      *  강남역 --- 역삼역 --- 삼성역

@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.exception.CustomException;
-import org.springframework.data.geo.Distance;
 
 import javax.persistence.*;
 import java.util.ArrayList;
