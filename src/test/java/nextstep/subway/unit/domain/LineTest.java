@@ -7,6 +7,8 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -50,6 +52,79 @@ class LineTest {
         // Then
         sections = 이호선.getSections();
         assertThat(이호선.getSections().size()).isEqualTo(beforeSize + 1);
+    }
+
+    /**
+     * Given 기존 구간보다 크거나 같은 길이의 구간을
+     * When 지하철 노선에 새로운 구간 추가시
+     * Then 예외가 발생한다
+     *
+     * Case 1
+     * 강남역 <--------10-------> 잠실역
+     *                           ↓
+     *                           X
+     * 강남역 <--------10-------> 삼성역
+     *
+     * Case 2
+     * 강남역 <------------12-----------> 잠실역
+     *                                    ↓
+     *                                    X
+     * 강남역 <--------10-------> 삼성역
+     */
+    @DisplayName("기존 구간보다 크거나 같으면 구간 추가시 예외발생")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 12})
+    void addSectionEx1(int distance) {
+        // Given
+        Section section = new Section(이호선, 강남역, 잠실역, distance);
+
+        // When & Then
+        assertThatThrownBy(() -> 이호선.addSection(section))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    /**
+     * Given 노선에 이미 등록되어있는 역의 구간을
+     * When 지하철 노선에 새로운 구간 추가시
+     * Then 예외가 발생한다
+     *
+     * 강남역 <--------10-------> 삼성역
+     *   ↓                        ↓
+     *   X                        X
+     * 강남역 <--------10-------> 삼성역
+     */
+    @DisplayName("기존 구간와 같은 구간 추가시 예외발생")
+    @Test
+    void addSectionEx2() {
+        // Given
+        Section section = new Section(이호선, 강남역, 삼성역, 10);
+
+        // When & Then
+        assertThatThrownBy(() -> 이호선.addSection(section))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    /**
+     * Given 노선에 존재하지 않는 역들로 구성된 구간을
+     * When 지하철 노선에 새로운 구간 추가시
+     * Then 예외가 발생한다
+     *
+     *       부산역 <---6---> 강원역
+     *         ↓              ↓
+     *         X              X
+     * 강남역 <--------10-------> 삼성역
+     */
+    @DisplayName("노선에서 찾을 수 없는 역들의 구간 추가시 예외발생")
+    @Test
+    void addSectionEx3() {
+        // Given
+        Station 부산역 = new Station("부산역");
+        Station 강원역 = new Station("강원역");
+        Section section = new Section(이호선, 부산역, 강원역, 6);
+
+        // When & Then
+        assertThatThrownBy(() -> 이호선.addSection(section))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("지하철노선의 역을 조회한다.")
