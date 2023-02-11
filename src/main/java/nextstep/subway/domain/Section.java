@@ -39,28 +39,21 @@ public class Section {
     }
 
     public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
-        validateSection(upStation, downStation, distance);
+        validateSection(upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    private void validateSection(final Station upStation, final Station downStation, final Distance distance) {
+    private void validateSection(final Station upStation, final Station downStation) {
         validateStation(upStation);
         validateStation(downStation);
-        validateDistance(distance);
     }
 
     private void validateStation(final Station station) {
         if (station == null) {
             throw new IllegalArgumentException("구간의 역은 null이 될 수 없습니다.");
-        }
-    }
-
-    private void validateDistance(final Distance distance) {
-        if (distance.isUnderMin()) {
-            throw new IllegalArgumentException("구간의 생성 최소 값 보다 작습니다.");
         }
     }
 

@@ -28,12 +28,6 @@ class SectionTest {
     @DisplayName("구간 생성 관련 기능")
     @Nested
     class SectionCreateTest {
-        @DisplayName("구간 생성시 거리는 0이 될 수 없다.")
-        @Test
-        void createDistanceZero() {
-            assertThatThrownBy(() -> new Section(line, 강남역, 역삼역, 0)).isInstanceOf(IllegalArgumentException.class);
-        }
-
         @DisplayName("구간 생성시 역은 Null이 될 수 없다.")
         @Test
         void createStationIdIsNull() {
