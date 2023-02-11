@@ -101,7 +101,11 @@ public class Sections {
         if (sections.size() < REMOVE_SIZE_MIN) {
             throw new IllegalArgumentException("구간 목록의 크기가 " + REMOVE_SIZE_MIN + " 이상일 경우 구간 제거가 가능합니다.");
         }
-        if (isLineUpStation(station) || isLineDownStation(station)) {
+        if (isLineUpStation(station)) {
+            sections.remove(0);
+            return;
+        }
+        if (isLineDownStation(station)) {
             sections.remove(sections.size() - 1);
             return;
         }
