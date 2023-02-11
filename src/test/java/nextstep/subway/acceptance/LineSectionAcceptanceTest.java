@@ -184,6 +184,32 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 		);
 	}
 
+	/**
+	 * Given 지하철역을 생성 요청을 하고
+	 * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+	 * When A - B - C 역중 중간 B 역 제거를 요청하면
+	 * Then A - C 구간으로 구간이 재배치 된다
+	 */
+	@DisplayName("중간역 제거요청시 기존 2개의 구간이 하나의 구간으로 재배치된다")
+	@Test
+	void 중간역_제거요청시_기존_2개의_구간이_하나의_구간으로_재배치된다() {
+		// given
+		Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+
+		// when
+		지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+		// then
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(response.jsonPath().getList("stations.id", Long.class))
+				.containsExactly(강남역, 정자역)
+		);
+	}
+
 	private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
 		Map<String, String> lineCreateParams;
 		lineCreateParams = new HashMap<>();

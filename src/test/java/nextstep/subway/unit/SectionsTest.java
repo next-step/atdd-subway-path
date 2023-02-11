@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import nextstep.subway.common.StationFixtures;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.SectionAddException;
@@ -173,6 +174,36 @@ class SectionsTest {
 
 		// then
 		assertThat(sections.getList()).hasSize(1);
+	}
+
+	@DisplayName("중간역이 제거될경우 구간이 재배치된다")
+	@Test
+	void 중간역이_제거될경우_구간이_재배치된다() throws Exception {
+		// given
+		int inFrontSectionDistance = 10;
+		int afterSectionDistance = 5;
+
+		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), inFrontSectionDistance);
+		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), afterSectionDistance);
+
+		insertSectionIds(sections.getList());
+
+		// when
+		sections.remove(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), 동대문_ID, 서울역_ID);
+
+		// then
+		List<Section> resultSections = sections.getList();
+
+		int totalDistance = resultSections.stream()
+			.mapToInt(Section::getDistance)
+			.sum();
+
+		assertAll(
+			() -> assertThat(resultSections).hasSize(1),
+			() -> assertThat(sections.getStations(동대문_ID, 서울역_ID))
+				.containsExactly(withId(동대문, 동대문_ID), withId(서울역, 서울역_ID)),
+			() -> assertThat(totalDistance).isEqualTo(inFrontSectionDistance + afterSectionDistance)
+		);
 	}
 
 	private static Stream<Arguments> provideUpAndDownStations() throws Exception {

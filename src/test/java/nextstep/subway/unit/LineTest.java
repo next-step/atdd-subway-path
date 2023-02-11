@@ -223,6 +223,37 @@ class LineTest {
 		assertThat(line.getSections()).hasSize(1);
 	}
 
+	@DisplayName("중간역이 제거될경우 구간이 재배치된다")
+	@Test
+	void 중간역이_제거될경우_구간이_재배치된다() throws Exception {
+		// given
+		int inFrontSectionDistance = 10;
+		int afterSectionDistance = 5;
+
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), inFrontSectionDistance);
+		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), afterSectionDistance);
+
+		insertSectionIds(line.getSections());
+
+		// when
+		line.removeSection(withId(동대문역사문화공원, 동대문역사문화공원_ID));
+
+		// then
+		List<Section> resultSections = line.getSections();
+
+		int totalDistance = resultSections.stream()
+			.mapToInt(Section::getDistance)
+			.sum();
+
+		assertAll(
+			() -> assertThat(resultSections).hasSize(1),
+			() -> assertThat(line.getStations())
+				.containsExactly(withId(동대문, 동대문_ID), withId(서울역, 서울역_ID)),
+			() -> assertThat(totalDistance).isEqualTo(inFrontSectionDistance + afterSectionDistance)
+		);
+	}
+
 	private void insertIdInSections(List<Section> sections) {
 		for (int i = 1; i <= sections.size(); i++) {
 			Section section = sections.get(i - 1);

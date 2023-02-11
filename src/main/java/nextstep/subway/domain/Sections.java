@@ -109,7 +109,7 @@ public class Sections {
 			return;
 		}
 
-		throw new SectionRemoveException(SectionErrorCode.INVALID_REMOVE_STATION);
+		removeMiddleStation(line, station);
 	}
 
 	private void removeFinalUpStation(Line line, Station station) {
@@ -129,6 +129,29 @@ public class Sections {
 
 		boolean result = this.sections.remove(section);
 		line.updateFinalDownStation(section.getUpStation());
+	}
+
+	private void removeMiddleStation(Line line, Station station) {
+		Section inFrontsection = this.sections.stream()
+			.filter(it -> it.equalDownStation(station))
+			.findFirst()
+			.orElseThrow(IllegalAccessError::new);
+
+		Section afterSection = this.sections.stream()
+			.filter(it -> it.equalUpStation(station))
+			.findFirst()
+			.orElseThrow(IllegalAccessError::new);
+
+		this.sections.remove(inFrontsection);
+		this.sections.remove(afterSection);
+		this.sections.add(
+			new Section(
+				line,
+				inFrontsection.getUpStation(),
+				afterSection.getDownStation(),
+				inFrontsection.getDistance() + afterSection.getDistance()
+			)
+		);
 	}
 
 	private void addInFrontSection(Line line, Station upStation, Station downStation, int distance) {
