@@ -169,7 +169,9 @@ public class Sections {
     }
 
     private boolean isLineDownStation(final Station downStation) {
-        return sections.stream().filter(section -> section.isUpStation(downStation)).findFirst().isEmpty();
+        return findContainSections(downStation).stream()
+                .filter(section -> section.isUpStation(downStation))
+                .findFirst().isEmpty();
     }
 
     public Station getLineUpStation() {
@@ -181,7 +183,19 @@ public class Sections {
     }
 
     private boolean isLineUpStation(final Station upStation) {
-        return sections.stream().filter(section -> section.isDownStation(upStation)).findFirst().isEmpty();
+        return findContainSections(upStation).stream()
+                .filter(section -> section.isDownStation(upStation))
+                .findFirst().isEmpty();
+    }
+
+    private List<Section> findContainSections(final Station downStation) {
+        List<Section> sectionList = sections.stream()
+                .filter(section -> section.isContain(downStation))
+                .collect(Collectors.toUnmodifiableList());
+        if (sectionList.isEmpty()) {
+            throw new IllegalArgumentException("노선에 포함되지 않은 역 입니다.");
+        }
+        return sectionList;
     }
 
     private boolean isContainStation(final Station station) {
