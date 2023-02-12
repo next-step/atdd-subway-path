@@ -80,7 +80,7 @@ public class Line {
 	}
 
 	public void removeSection(Station station) {
-		this.sections.remove(this, station, upStationId, downStationId);
+		this.sections.remove(this, station);
 	}
 
 	public void updateInfo(String name, String color) {

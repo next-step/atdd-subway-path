@@ -88,7 +88,7 @@ class SectionsTest {
 	void 구간제거시_상행종점역과_하행종점역만_있을경우_예외가_발생한다() throws Exception {
 		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
 
-		assertThatThrownBy(() -> sections.remove(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), 동대문_ID, 동대문역사문화공원_ID))
+		assertThatThrownBy(() -> sections.remove(line, withId(동대문역사문화공원, 동대문역사문화공원_ID)))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.SINGLE_SECTION.getMessage());
 
@@ -100,7 +100,7 @@ class SectionsTest {
 		sections.addSection(line, withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
 		sections.addSection(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
 
-		assertThatThrownBy(() -> sections.remove(line, withId(서울역, 서울역_ID), 동대문_ID, 충무로_ID))
+		assertThatThrownBy(() -> sections.remove(line, withId(서울역, 서울역_ID)))
 			.isInstanceOf(SectionRemoveException.class)
 			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
@@ -170,7 +170,7 @@ class SectionsTest {
 		insertSectionIds(sections.getList());
 
 		// when
-		sections.remove(line, removeStation, 동대문_ID, 서울역_ID);
+		sections.remove(line, removeStation);
 
 		// then
 		assertThat(sections.getList()).hasSize(1);
@@ -189,7 +189,7 @@ class SectionsTest {
 		insertSectionIds(sections.getList());
 
 		// when
-		sections.remove(line, withId(동대문역사문화공원, 동대문역사문화공원_ID), 동대문_ID, 서울역_ID);
+		sections.remove(line, withId(동대문역사문화공원, 동대문역사문화공원_ID));
 
 		// then
 		List<Section> resultSections = sections.getList();

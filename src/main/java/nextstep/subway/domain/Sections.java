@@ -82,15 +82,7 @@ public class Sections {
 		return List.copyOf(stations);
 	}
 
-	public void createInitialLineSection(Station upStation, Station downStation, int distance, Line line) {
-		if (distance == INVALID_SECTION_DISTANCE) {
-			throw new SubwayBadRequestException(LineErrorCode.INVALID_SECTION_DISTANCE);
-		}
-
-		this.sections.add(new Section(line, upStation, downStation, distance));
-	}
-
-	public void remove(Line line, Station station, Long finalUpStationId, Long finalDownStationId) {
+	public void remove(Line line, Station station) {
 		if (!existingStations().contains(station)) {
 			throw new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION);
 		}
@@ -99,57 +91,50 @@ public class Sections {
 			throw new SectionRemoveException(SectionErrorCode.SINGLE_SECTION);
 		}
 
-		if (station.equalId(finalUpStationId)) {
-			removeFinalUpStation(line, station);
-			return;
-		}
-
-		if (station.equalId(finalDownStationId)) {
-			removeFinalDownStation(line, station);
-			return;
-		}
-
-		removeMiddleStation(line, station);
-	}
-
-	private void removeFinalUpStation(Line line, Station station) {
-		Section section = this.sections.stream().filter(it -> it.equalUpStation(station))
-			.findFirst()
-			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
-
-		this.sections.remove(section);
-		line.updateFinalUpStation(section.getDownStation());
-	}
-
-	private void removeFinalDownStation(Line line, Station station) {
-		Section section = this.sections.stream()
+		Optional<Section> inFrontSection = this.sections.stream()
 			.filter(it -> it.equalDownStation(station))
-			.findFirst()
-			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
+			.findFirst();
 
-		this.sections.remove(section);
-		line.updateFinalDownStation(section.getUpStation());
-	}
-
-	private void removeMiddleStation(Line line, Station station) {
-		Section inFrontsection = this.sections.stream()
-			.filter(it -> it.equalDownStation(station))
-			.findFirst()
-			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
-
-		Section afterSection = this.sections.stream()
+		Optional<Section> afterSection = this.sections.stream()
 			.filter(it -> it.equalUpStation(station))
-			.findFirst()
-			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
+			.findFirst();
 
-		this.sections.remove(inFrontsection);
+		if (inFrontSection.isPresent() && afterSection.isPresent()) {
+			removeMiddleStation(line, inFrontSection.get(), afterSection.get(), station);
+			return;
+		}
+
+		inFrontSection.ifPresent(section -> removeFinalDownStation(line, section));
+		afterSection.ifPresent(section -> removeFinalUpStation(line, section));
+	}
+
+	public void createInitialLineSection(Station upStation, Station downStation, int distance, Line line) {
+		if (distance == INVALID_SECTION_DISTANCE) {
+			throw new SubwayBadRequestException(LineErrorCode.INVALID_SECTION_DISTANCE);
+		}
+
+		this.sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private void removeFinalUpStation(Line line, Section infrontSection) {
+		this.sections.remove(infrontSection);
+		line.updateFinalUpStation(infrontSection.getDownStation());
+	}
+
+	private void removeFinalDownStation(Line line, Section afterSection) {
+		this.sections.remove(afterSection);
+		line.updateFinalDownStation(afterSection.getUpStation());
+	}
+
+	private void removeMiddleStation(Line line, Section inFrontSection, Section afterSection, Station station) {
+		this.sections.remove(inFrontSection);
 		this.sections.remove(afterSection);
 		this.sections.add(
 			new Section(
 				line,
-				inFrontsection.getUpStation(),
+				inFrontSection.getUpStation(),
 				afterSection.getDownStation(),
-				inFrontsection.getDistance() + afterSection.getDistance()
+				inFrontSection.getDistance() + afterSection.getDistance()
 			)
 		);
 	}

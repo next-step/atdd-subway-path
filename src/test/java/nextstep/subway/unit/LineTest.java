@@ -66,6 +66,7 @@ class LineTest {
 		// when
 		line.removeSection(충무로);
 
+		List<Section> sections = line.getSections();
 		// then
 		assertAll(
 			() -> assertThat(line.getDownStationId()).isEqualTo(동대문역사문화공원_ID),
