@@ -1,6 +1,9 @@
 package nextstep.subway.applicaion.dto;
 
+import nextstep.subway.domain.Line;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -13,6 +16,16 @@ public class LineResponse {
         this.name = name;
         this.color = color;
         this.stations = stations;
+    }
+
+    public static LineResponse toResponse(Line line) {
+        return new LineResponse(
+                line.getId(),
+                line.getName(),
+                line.getColor(),
+                line.getStations().stream()
+                        .map(StationResponse::toResponse)
+                        .collect(Collectors.toList()));
     }
 
     public Long getId() {
