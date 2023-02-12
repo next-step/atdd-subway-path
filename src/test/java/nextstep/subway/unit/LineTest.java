@@ -60,8 +60,12 @@ class LineTest {
     @Test
     void addSection_middle_Exception2() {
         Line line = 지하철노선_생성_기존구간_추가("지하철역1", "지하철역3", 7);
-
-        Section newSection = new Section(line, new Station("지하철역1"), new Station("지하철역3"), 5);
+        Section newSection = Section.builder()
+                .line(line)
+                .upStation(new Station("지하철역1"))
+                .downStation(new Station("지하철역3"))
+                .distance(5)
+                .build();
 
         assertThrows(SubwayRestApiException.class, () -> line.addSection(MIDDLE_ADD_SECTION, newSection));
     }
@@ -70,8 +74,12 @@ class LineTest {
     @Test
     void addSection_middle_Exception3() {
         Line line = 지하철노선_생성_기존구간_추가("지하철역1", "지하철역3", 7);
-
-        Section newSection = new Section(line, new Station("지하철역4"), new Station("지하철역5"), 5);
+        Section newSection = Section.builder()
+                .line(line)
+                .upStation(new Station("지하철역4"))
+                .downStation(new Station("지하철역5"))
+                .distance(5)
+                .build();
 
         assertThrows(SubwayRestApiException.class, () -> line.addSection(MIDDLE_ADD_SECTION, newSection));
     }
@@ -80,9 +88,16 @@ class LineTest {
     void getStations() {
         Station station = new Station("지하철역1");
         Station station2 = new Station("지하철역2");
+
         Line line = new Line("지하철노선", "bg-red-600");
-        Section section = new Section(line, station, station2, 5);
-        line.addSection(BACK_ADD_SECTION, section);
+        Section newSection = Section.builder()
+                .line(line)
+                .upStation(station)
+                .downStation(station2)
+                .distance(5)
+                .build();
+
+        line.addSection(BACK_ADD_SECTION, newSection);
 
         지하철노선_구간_지하철역_검증(line, "지하철역1", "지하철역2");
     }
@@ -92,9 +107,21 @@ class LineTest {
         Station station = new Station("지하철역1");
         Station station2 = new Station("지하철역2");
         Station station3 = new Station("지하철역3");
+
         Line line = new Line("지하철노선", "bg-red-600");
-        Section section = new Section(line, station, station2, 5);
-        Section section2 = new Section(line, station2, station3, 10);
+        Section section = Section.builder()
+                .line(line)
+                .upStation(station)
+                .downStation(station2)
+                .distance(5)
+                .build();
+        Section section2 = Section.builder()
+                .line(line)
+                .upStation(station2)
+                .downStation(station3)
+                .distance(10)
+                .build();
+
         line.addSection(BACK_ADD_SECTION, section);
         line.addSection(BACK_ADD_SECTION, section2);
 
@@ -104,7 +131,12 @@ class LineTest {
     }
 
     private Section createSection(Line line, String upStationName, String downStationName, int distance) {
-        return new Section(line, new Station(upStationName), new Station(downStationName), distance);
+        return Section.builder()
+                .line(line)
+                .upStation(new Station(upStationName))
+                .downStation(new Station(downStationName))
+                .distance(distance)
+                .build();
     }
 
     private Line 지하철노선_생성_기존구간_추가(String upStationName, String downStationName, int distance) {

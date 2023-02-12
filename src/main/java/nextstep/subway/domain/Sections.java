@@ -52,7 +52,13 @@ public class Sections {
 
         int standardIndex = this.sections.indexOf(standardSection);
 
-        Section newSection = new Section(section.getLine(), section.getDownStation(), standardSection.getDownStation(), standardSection.getDistance() - section.getDistance());
+        Section newSection = Section.builder()
+                .line(section.getLine())
+                .upStation(section.getDownStation())
+                .downStation(standardSection.getDownStation())
+                .distance(standardSection.getDistance() - section.getDistance())
+                .build();
+
         standardSection.change(standardSection.getUpStation(), section.getDownStation(), section.getDistance());
 
         this.sections.set(standardIndex, standardSection);

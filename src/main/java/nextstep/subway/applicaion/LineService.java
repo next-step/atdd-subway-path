@@ -33,7 +33,12 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(AddTypeEnum.BACK_ADD_SECTION, new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(AddTypeEnum.BACK_ADD_SECTION, Section.builder()
+                    .line(line)
+                    .upStation(upStation)
+                    .downStation(downStation)
+                    .distance(request.getDistance())
+                    .build());
         }
         return createLineResponse(line);
     }
@@ -71,7 +76,12 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.addSection(addTypeEnum, new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(addTypeEnum, Section.builder()
+                .line(line)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(sectionRequest.getDistance())
+                .build());
     }
 
     private LineResponse createLineResponse(Line line) {
