@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
@@ -38,40 +39,64 @@ public class Sections {
         return this.sections.isEmpty();
     }
 
-    public boolean isAddInUpSection(Section newSection) {
-        return getStations().get().contains(newSection.getUpStation());
+    public boolean exist(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isUpStationEquals(station)
+                        || section.isDownStationEquals(station));
     }
 
-    public boolean isAddInDownSection(Section newSection) {
-        return getStations().get().contains(newSection.getDownStation());
-    }
-
-    public List<Section> get() {
+    public List<Section> getSection() {
         return sections;
     }
 
-    public Stations getStations() {
+    public List<Station> getStations() {
         if (isEmpty()) {
-            return Stations.of();
+            return Collections.emptyList();
         }
-        Stations stations = Stations.of(getFinalUpStation());
-        Station finalDownStation = getFinalDownStation();
-        while (!stations.isFinalDownStationEqualTo(finalDownStation)) {
-            findNextStation(stations);
+        List<Station> stations = new ArrayList<>();
+        Station station = getFinalUpStation();
+        stations.add(station);
+        while (existNextSection(station)) {
+            Section nextSection = findNextSection(station);
+            station = nextSection.getDownStation();
+            stations.add(station);
         }
         return stations;
     }
 
-    private void findNextStation(Stations stations) {
-        this.sections.stream()
-                .filter(section -> stations.isFinalDownStationEqualTo(section.getUpStation()))
+    private boolean existNextSection(Station station) {
+        return this.sections.stream()
+                .filter(Section::isExistUpStation)
+                .anyMatch(section -> section.isUpStationEquals(station));
+    }
+
+    private Section findNextSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.isUpStationEquals(station))
                 .findFirst()
-                .map(Section::getDownStation)
-                .ifPresent(stations::add);
+                .orElseThrow(() -> new IllegalArgumentException("다음 구간이 존재하지 않습니다."));
     }
 
     private Station getFinalUpStation() {
-        return findFinalStation(Section::getUpStation, getDownStations());
+        Station finalUpStation = this.sections.get(0).getUpStation();
+        while (existPreSection(finalUpStation)) {
+            Section preSection = findPreSection(finalUpStation);
+            finalUpStation = preSection.getUpStation();
+        }
+        return finalUpStation;
+    }
+
+    private boolean existPreSection(Station station) {
+        return this.sections.stream()
+                .filter(Section::isExistDownStation)
+                .anyMatch(section -> section.isDownStationEquals(station));
+    }
+
+    private Section findPreSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.isDownStationEquals(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("이전 구간이 존재하지 않습니다."));
     }
 
     private Station getFinalDownStation() {

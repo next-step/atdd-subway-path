@@ -40,12 +40,12 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections.get();
+        return sections.getSection();
     }
 
     public void addSection(Section newSection) {
-        boolean addInUpSection = sections.isAddInUpSection(newSection);
-        boolean addInDownSection = sections.isAddInDownSection(newSection);
+        boolean addInUpSection = sections.exist(newSection.getUpStation());
+        boolean addInDownSection = sections.exist(newSection.getDownStation());
         validate(addInUpSection, addInDownSection);
         if (addInUpSection) {
             sections.addInUp(newSection);
@@ -66,7 +66,7 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return sections.getStations().get();
+        return sections.getStations();
     }
 
     public List<Integer> getSectionDistances() {
