@@ -109,27 +109,34 @@ public class Sections {
         if (isSingleSection()) {
             throw new CannotDeleteSoleSectionException();
         }
-
-        if (isFirstLineStation(station)) {
-            removeFirstSection(station);
-            return;
-        }
-
-        if (isLastLineStation(station)) {
-            sections.remove(sections.size() - 1);
-            return;
-        }
-
-        removeIntermediateSection(station);
+        removeSection(station);
     }
 
     private boolean isSingleSection() {
         return sections.size() == 1;
     }
 
+    private void removeSection(Station station) {
+        if (isFirstLineStation(station)) {
+            removeFirstSection(station);
+            return;
+        }
+
+        if (isLastLineStation(station)) {
+            removeLastSection();
+            return;
+        }
+
+        removeIntermediateSection(station);
+    }
+
     private boolean isFirstLineStation(Station station) {
         List<Station> stations = getStationsInOrder();
         return stations.get(0).equals(station);
+    }
+
+    private void removeLastSection() {
+        sections.remove(sections.size() - 1);
     }
 
     private void removeFirstSection(Station station) {
