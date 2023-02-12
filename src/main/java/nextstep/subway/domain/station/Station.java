@@ -32,11 +32,11 @@ public class Station {
         if (this == o) return true;
         if (!(o instanceof Station)) return false;
         Station station = (Station) o;
-        return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
+        return Objects.equals(getId(), station.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName());
+        return Objects.hash(getId());
     }
 }
