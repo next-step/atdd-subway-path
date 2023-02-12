@@ -112,10 +112,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void test4() {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 20L));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 20L));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).contains("기존 지하철 구간의 길이보다 추가된 구간의 길이가 더 깁니다.");
     }
@@ -129,10 +128,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void test5() {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 20L));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 20L));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).contains("기존 지하철 구간의 길이보다 추가된 구간의 길이가 더 깁니다.");
     }
@@ -145,10 +143,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존 지하철 노선에 포함되어 있는 지하철 역들 사이에서 새로운 구간 추가를 요청 (A, B) + (B, A)")
     void test6() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 강남역, 20L));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 강남역, 20L));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).contains("노선에 존재하던 지하철 역 끼리는 구간을 만들 수 없습니다.");
     }
@@ -163,10 +160,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 신사역, 20L));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 신사역, 20L));
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).contains("새로운 구간의 지하철 역들 중 하나는 기존 지하철 노선에 포함되어 있어야 합니다.");
     }
