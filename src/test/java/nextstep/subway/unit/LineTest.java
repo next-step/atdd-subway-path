@@ -8,10 +8,13 @@ import org.assertj.core.api.ListAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static nextstep.subway.common.AddTypeEnum.BACK_ADD_SECTION;
 import static nextstep.subway.common.AddTypeEnum.FRONT_ADD_SECTION;
 import static nextstep.subway.common.AddTypeEnum.MIDDLE_ADD_SECTION;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
@@ -80,8 +83,8 @@ class LineTest {
     }
 
     @Test
-    void removeSection() {
-        Line line = 지하철노선_생성_기존구간_추가_2();
+    void removeSection_firstStation() {
+        Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
 
         line.removeSection(지하철역2);
 
@@ -90,8 +93,8 @@ class LineTest {
     }
 
     @Test
-    void removeSection2() {
-        Line line = 지하철노선_생성_기존구간_추가_2();
+    void removeSection_middleStation() {
+        Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
 
         line.removeSection(지하철역0);
 
@@ -100,13 +103,30 @@ class LineTest {
     }
 
     @Test
-    void removeSection3() {
-        Line line = 지하철노선_생성_기존구간_추가_2();
+    void removeSection_lastStation() {
+        Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
 
         line.removeSection(지하철역3);
 
         assertThat(line.getStations().stream().anyMatch(a -> a.getName().equals(지하철역3.getName()))).isEqualTo(false);
         지하철노선_구간_지하철역_검증(line, 지하철역0, 지하철역1, 지하철역2);
+    }
+
+    @DisplayName("지하철 노선에 없는 지하철역을 삭제할 경우 Exception 발생")
+    @Test
+    void removeSection_exception() {
+        Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
+
+        assertThrows(SubwayRestApiException.class, () -> line.removeSection(new Station("지하철역4")));
+    }
+
+    @DisplayName("지하철 노선의 구간이 1개인 상태에서 지하철역을 삭제할 경우 Exception 발생")
+    @Test
+    void removeSection_exception2() {
+        Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1);
+
+        assertAll(() -> assertThrows(SubwayRestApiException.class, () -> line.removeSection(지하철역0)),
+                  () -> assertThrows(SubwayRestApiException.class, () -> line.removeSection(지하철역1)));
     }
 
     @Test
@@ -141,17 +161,19 @@ class LineTest {
         return line;
     }
 
-    private Line 지하철노선_생성_기존구간_추가_2() {
+    private Line 지하철노선_생성_기존구간_추가_2(int distance, Station... station) {
         Line line = new Line("지하철노선", "bg-red-600");
-        Section section = createSection(line, 지하철역0, 지하철역1, distance_5);
-        Section section2 = createSection(line, 지하철역1, 지하철역2, distance_10);
-        Section section3 = createSection(line, 지하철역2, 지하철역3, distance_7);
 
-        line.addSection(BACK_ADD_SECTION, section);
-        line.addSection(BACK_ADD_SECTION, section2);
-        line.addSection(BACK_ADD_SECTION, section3);
+        for (int i = 0; i < station.length-1; i++) {
+            지하철구간_추가(line, station[i], station[i+1], distance);
+        }
 
         return line;
+    }
+
+    private void 지하철구간_추가(Line line, Station upStation, Station downStation, int distance) {
+        Section section = createSection(line, upStation, downStation, distance);
+        line.addSection(BACK_ADD_SECTION, section);
     }
 
     private ListAssert<Station> 지하철노선_구간_지하철역_검증(Line line, Station... stations) {
