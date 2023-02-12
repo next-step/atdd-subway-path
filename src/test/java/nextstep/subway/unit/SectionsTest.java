@@ -173,7 +173,22 @@ class SectionsTest {
             .isInstanceOf(BothSectionStationsNotExistsInLineException.class);
     }
 
-    @DisplayName("마지막 지하철 구간을 제거한다.")
+    @DisplayName("상행 종점역을 포함하는 지하철 구간을 제거한다.")
+    @Test
+    void removeFirstLineSection() {
+        // given
+        Sections sections = new Sections();
+        sections.add(createSection(station1, station2));
+        sections.add(createSection(station2, station3));
+
+        // when
+        sections.remove(station1);
+
+        // then
+        assertThat(sections.getStationsInOrder()).containsExactly(station2, station3);
+    }
+
+    @DisplayName("하행 종점역을 포함하는 지하철 구간을 제거한다.")
     @Test
     void removeLastLineSection() {
         // given

@@ -188,13 +188,37 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선에 새로운 구간을 추가하고
+     * When 지하철 노선의 첫 번쨰 역을 제거하면
+     * Then 노선에 구간이 제거된다
+     * AS-IS    A---------B---------C
+     *        - A----x----
+     * TO-BE              B---------C
+     */
+    @DisplayName("지하철 노선의 상행 종점역을 제거한다.")
+    @Test
+    void removeFirstLineSection() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createDefaultSectionCreateParams(양재역, 정자역));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간을 추가하고
      * When 지하철 노선의 마지막 구간을 제거하면
      * Then 노선에 구간이 제거된다
      * AS-IS    A---------B---------C
      *        -            ----x----C
      * TO-BE    A---------B
      */
-    @DisplayName("지하철 노선의 마지막 역을 제거한다.")
+    @DisplayName("지하철 노선의 하행 종점역을 제거한다.")
     @Test
     void removeLastLineSection() {
         // given

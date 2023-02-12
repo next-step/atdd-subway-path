@@ -109,12 +109,39 @@ public class Sections {
             throw new IllegalArgumentException();
         }
 
+        if (isFirstLineStation(station)) {
+            removeFirstSection(station);
+            return;
+        }
+
         if (isLastLineStation(station)) {
             sections.remove(sections.size() - 1);
             return;
         }
 
         removeIntermediateSection(station);
+    }
+
+    private boolean isSingleSection() {
+        return sections.size() == 1;
+    }
+
+    private boolean isFirstLineStation(Station station) {
+        List<Station> stations = getStationsInOrder();
+        return stations.get(0).equals(station);
+    }
+
+    private void removeFirstSection(Station station) {
+        Section section = sections.stream()
+            .filter(it -> it.hasUpStation(station))
+            .findFirst()
+            .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
+        sections.remove(section);
+    }
+
+    private boolean isLastLineStation(Station station) {
+        List<Station> stations = getStationsInOrder();
+        return stations.get(stations.size() - 1).equals(station);
     }
 
     private void removeIntermediateSection(Station station) {
@@ -132,15 +159,6 @@ public class Sections {
         upSection.increaseDistance(downSection.getDistance());
 
         sections.remove(downSection);
-    }
-
-    private boolean isSingleSection() {
-        return sections.size() == 1;
-    }
-
-    private boolean isLastLineStation(Station station) {
-        List<Station> stations = getStationsInOrder();
-        return stations.get(stations.size() - 1).equals(station);
     }
 
     public List<Section> getSections() {
