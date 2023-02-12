@@ -114,7 +114,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 구간을 등록 - 역 사이에 새로운 역을 등록하는 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
-    void addLineSection_ADD_SECTION_DISTANCE() {
+    void addLineSection_5() {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, CREATE_LINE_DISTANCE));
