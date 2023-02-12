@@ -196,7 +196,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선의 마지막 역을 제거한다.")
     @Test
-    void removeLineSection() {
+    void removeLastLineSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createDefaultSectionCreateParams(양재역, 정자역));
@@ -220,7 +220,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선의 중간역을 제거한다.")
     @Test
-    void removeIntermediateSection() {
+    void removeIntermediateLineSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createDefaultSectionCreateParams(양재역, 정자역));
@@ -232,7 +232,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
-
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

@@ -3,15 +3,14 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
 import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
@@ -99,10 +98,37 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        if (isSingleSection() || !isLastLineStation(station)) {
+        if (isSingleSection()) {
             throw new IllegalArgumentException();
         }
-        sections.remove(sections.size() - 1);
+
+        if (isLastLineStation(station)) {
+            sections.remove(sections.size() - 1);
+            return;
+        }
+
+        removeIntermediateSection(station);
+    }
+
+    private void removeIntermediateSection(Station station) {
+        Section upSection = sections.stream()
+            .filter(it -> it.hasDownStation(station))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new);
+
+        Section downSection = sections.stream()
+            .filter(it -> it.hasUpStation(station))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new);
+
+        sections.removeAll(List.of(upSection, downSection));
+
+        add(new Section(
+            upSection.getLine(),
+            upSection.getUpStation(),
+            downSection.getDownStation(),
+            upSection.getDistance() + downSection.getDistance())
+        );
     }
 
     private boolean isSingleSection() {

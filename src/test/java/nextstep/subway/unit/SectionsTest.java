@@ -174,7 +174,7 @@ class SectionsTest {
 
     @DisplayName("마지막 지하철 구간을 제거한다.")
     @Test
-    void remove() {
+    void removeLastLineSection() {
         // given
         Sections sections = new Sections();
         sections.add(createSection(station1, station2));
@@ -187,25 +187,27 @@ class SectionsTest {
         assertThat(sections.getStationsInOrder()).containsExactly(station1, station2);
     }
 
+    @DisplayName("지하철 노선의 중간역을 제거한다.")
+    @Test
+    void removeIntermediateLineSection() {
+        // given
+        Sections sections = new Sections();
+        sections.add(createSection(station1, station2));
+        sections.add(createSection(station2, station3));
+
+        // when
+        sections.remove(station2);
+
+        // then
+        assertThat(sections.getStationsInOrder()).containsExactly(station1, station3);
+    }
+
     @DisplayName("현재 등록된 지하철 구간이 하나인 경우, 지하철 구간을 제거할 수 없다.")
     @Test
     void cannotRemoveWhenSingleSection() {
         // given
         Sections sections = new Sections();
         sections.add(createSection(station1, station2));
-
-        // when & then
-        assertThatThrownBy(() -> sections.remove(station2))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("지하철 구간 제거 시, 하행 종점역이 아니라면 제거할 수 없다.")
-    @Test
-    void cannotRemoveWhenNotLastStation() {
-        // given
-        Sections sections = new Sections();
-        sections.add(createSection(station1, station2));
-        sections.add(createSection(station2, station3));
 
         // when & then
         assertThatThrownBy(() -> sections.remove(station2))

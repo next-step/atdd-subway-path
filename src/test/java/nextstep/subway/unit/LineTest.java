@@ -50,9 +50,9 @@ class LineTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("지하철 노선에 등록된 구간을 제거한다.")
+    @DisplayName("지하철 노선의 마지막 구간을 제거한다.")
     @Test
-    void removeSection() {
+    void removeLastLineSection() {
         // given
         분당선.addSection(new Section(분당선, 수서역, 복정역, 5));
         분당선.addSection(new Section(분당선, 복정역, 가천대역, 5));
@@ -61,7 +61,21 @@ class LineTest {
         분당선.removeSection(가천대역);
 
         // then
-        assertThat(분당선.getSections()).hasSize(1);
+        assertThat(분당선.getStations()).containsExactly(수서역, 복정역);
+    }
+
+    @DisplayName("지하철 노선의 중간 구간을 제거한다.")
+    @Test
+    void removeIntermediateLineSection() {
+        // given
+        분당선.addSection(new Section(분당선, 수서역, 복정역, 5));
+        분당선.addSection(new Section(분당선, 복정역, 가천대역, 5));
+
+        // when
+        분당선.removeSection(복정역);
+
+        // then
+        assertThat(분당선.getStations()).containsExactly(수서역, 가천대역);
     }
 
     @DisplayName("지하철 구간 제거 시, 노선에 등록된 구간이 하나라면 예외가 발생한다.")
@@ -72,18 +86,6 @@ class LineTest {
 
         // when & then
         assertThatThrownBy(() -> 분당선.removeSection(가천대역))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("지하철 구간 제거 시, 전달한 역이 하행 종점역이 아니라면 예외가 발생한다.")
-    @Test
-    void cannotDeleteSectionWhenNonDownStation() {
-        // given
-        분당선.addSection(new Section(분당선, 수서역, 복정역, 5));
-        분당선.addSection(new Section(분당선, 복정역, 가천대역, 5));
-
-        // when & then
-        assertThatThrownBy(() -> 분당선.removeSection(복정역))
             .isInstanceOf(IllegalArgumentException.class);
     }
 }
