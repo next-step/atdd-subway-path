@@ -60,37 +60,19 @@ class SectionTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("기존 구간의 상행역과 길이를 변경한다.")
+    @DisplayName("기존 구간의 상행역을 변경한다.")
     @Test
-    void updateUpStationWithDistance() {
+    void updateUpStation() {
         // given
         Section section = new Section(line, station1, station2, 5);
 
         // when
-        section.updateUpStation(station1_5, 1);
+        section.updateUpStation(station1_5);
 
         // then
         assertAll(
             () -> assertThat(section.getUpStation()).isEqualTo(station1_5),
-            () -> assertThat(section.getDownStation()).isEqualTo(station2),
-            () -> assertThat(section.getDistance()).isEqualTo(4)
-        );
-    }
-
-    @DisplayName("기존 구간의 하행역과 길이를 변경한다.")
-    @Test
-    void updateDownStationWithDistance() {
-        // given
-        Section section = new Section(line, station1, station2, 5);
-
-        // when
-        section.updateDownStation(station1_5, 1);
-
-        // then
-        assertAll(
-            () -> assertThat(section.getUpStation()).isEqualTo(station1),
-            () -> assertThat(section.getDownStation()).isEqualTo(station1_5),
-            () -> assertThat(section.getDistance()).isEqualTo(4)
+            () -> assertThat(section.getDownStation()).isEqualTo(station2)
         );
     }
 
@@ -122,5 +104,18 @@ class SectionTest {
 
         // then
         assertThat(section.getDistance()).isEqualTo(10);
+    }
+
+    @DisplayName("기존 구간의 길이를 감소시킨다.")
+    @Test
+    void decreaseDistance() {
+        // given
+        Section section = new Section(line, station1, station2, 5);
+
+        // when
+        section.decreaseDistance(3);
+
+        // then
+        assertThat(section.getDistance()).isEqualTo(2);
     }
 }

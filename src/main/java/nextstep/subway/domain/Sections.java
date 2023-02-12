@@ -28,12 +28,18 @@ public class Sections {
         sections.stream()
             .filter(it -> it.hasUpStation(upStation))
             .findFirst()
-            .ifPresent(it -> it.updateUpStation(downStation, distance));
+            .ifPresent(it -> {
+                it.updateUpStation(downStation);
+                it.decreaseDistance(distance);
+            });
 
         sections.stream()
             .filter(it -> it.hasDownStation(downStation))
             .findFirst()
-            .ifPresent(it -> it.updateDownStation(upStation, distance));
+            .ifPresent(it -> {
+                it.updateDownStation(upStation);
+                it.decreaseDistance(distance);
+            });
 
         sections.add(section);
     }
