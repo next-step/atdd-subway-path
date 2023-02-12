@@ -117,6 +117,16 @@ public class Sections {
             throw new SubwayException("구간이 1개 이하인 경우, 삭제할 수 없습니다.");
         }
 
+        List<Section> deleteSections = findSectionsByStationId(stationId);
+        if (deleteSections.size() == 2) {
+            Section mergedSection = Section.merge(deleteSections.get(0), deleteSections.get(1));
+            sections.add(mergedSection);
+        }
+
+        sections.removeAll(deleteSections);
+    }
+
+    private List<Section> findSectionsByStationId(long stationId) {
         List<Section> deleteSections = sections.stream()
                 .filter(it -> it.hasStationId(stationId))
                 .collect(Collectors.toList());
@@ -124,12 +134,7 @@ public class Sections {
         if (deleteSections.isEmpty()) {
             throw new NotFoundException(stationId + "번 역을 찾을 수 없습니다.");
         }
-
-        if (deleteSections.size() == 2) {
-            Section mergedSection = Section.merge(deleteSections.get(0), deleteSections.get(1));
-            sections.add(mergedSection);
-        }
-
-        sections.removeAll(deleteSections);
+        
+        return deleteSections;
     }
 }
