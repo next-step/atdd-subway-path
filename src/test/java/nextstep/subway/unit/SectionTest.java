@@ -93,4 +93,17 @@ class SectionTest {
             () -> assertThat(section.getDistance()).isEqualTo(4)
         );
     }
+
+    @DisplayName("기존 구간의 길이를 증가시킨다.")
+    @Test
+    void increaseDistance() {
+        // given
+        Section section = new Section(line, station1, station2, 5);
+
+        // when
+        section.increaseDistance(5);
+
+        // then
+        assertThat(section.getDistance()).isEqualTo(10);
+    }
 }

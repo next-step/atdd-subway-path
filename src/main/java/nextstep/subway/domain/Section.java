@@ -60,6 +60,10 @@ public class Section {
         return downStation.equals(station);
     }
 
+    public void increaseDistance(int value) {
+        distance.increase(value);
+    }
+
     public Long getId() {
         return id;
     }
