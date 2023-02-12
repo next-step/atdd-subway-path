@@ -176,7 +176,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 지하철 노선을 생성 및 구간을 등록하고
      * When 노선에 등록되어있지 않은 역을 제거하면
-     * Then 400 응답을 받는다
+     * Then 해당 역이 노선에 등록되어있지 않다는 에러를 응답받는다
      */
     @DisplayName("지하철 노선에 등록되어있지 않은 역을 제거")
     @Test

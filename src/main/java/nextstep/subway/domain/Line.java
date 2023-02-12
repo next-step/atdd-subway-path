@@ -4,9 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -30,6 +28,13 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
+    }
+
+    public Line(Long id, String name, String color, Sections sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
     }
 
     public Long getId() {
@@ -66,20 +71,6 @@ public class Line {
 
     public void addSection(Section section) {
         sections.addSection(this, section);
-    }
-
-    private Section getSectionByUpStation(Station upStation) {
-        return sections.getSectionByUpStation(upStation);
-    }
-
-    private Section getFirstSection() {
-        // find upStation that is not downStation of other section.
-        return sections.getFirstSection();
-    }
-
-    private Section getLastSection() {
-        // find downStation that is not upStation of other section.
-        return sections.getLastSection();
     }
 
     public void removeSection(Station deleteStation) {

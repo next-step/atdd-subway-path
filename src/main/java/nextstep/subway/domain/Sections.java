@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
+    private static final int MIN_SECTION_SIZE_OF_LINE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -23,7 +25,14 @@ public class Sections {
     }
 
     public Sections(List<Section> sections) {
+        validateEndSection(sections);
         this.sections = sections;
+    }
+
+    private static void validateEndSection(List<Section> sections) {
+        if (sections.size() == 1 && (Objects.equals(sections.get(0).getUpStation(), sections.get(0).getDownStation()))) {
+            throw new BadRequestException("UpStation and DownStation are same.");
+        }
     }
 
     public boolean isEmpty() {
@@ -54,7 +63,10 @@ public class Sections {
 
     public void addSection(Line line, Section section) {
         if (sections.isEmpty()) {
-            addSectionWhenExistingSectionsIsEmpty(section);
+            if (Objects.equals(section.getUpStation(), section.getDownStation())) {
+                throw new BadRequestException("UpStation and DownStation are same.");
+            }
+            sections.add(section);
             return;
         }
         validateSection(section);
@@ -90,14 +102,6 @@ public class Sections {
 
     private boolean addableAfterUpStation(Section section) {
         return (getUpStation().equals(section.getUpStation()) && !getDownStation().equals(section.getDownStation()));
-    }
-
-    private void addSectionWhenExistingSectionsIsEmpty(Section section) {
-        if (Objects.equals(section.getUpStation(), section.getDownStation())) {
-            throw new BadRequestException("UpStation and DownStation are same.");
-        }
-
-        sections.add(section);
     }
 
     private void validateSection(Section section) {
@@ -175,8 +179,6 @@ public class Sections {
     public int size() {
         return sections.size();
     }
-
-    private static final int MIN_SECTION_SIZE_OF_LINE = 1;
 
     public void removeSection(Station deleteStation) {
         validateCanRemoveSection(deleteStation);
