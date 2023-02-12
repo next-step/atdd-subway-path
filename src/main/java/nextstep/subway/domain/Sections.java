@@ -12,8 +12,7 @@ import java.util.stream.Collectors;
 import static nextstep.subway.exception.ErrorResponseEnum.ERROR_ADD_SECTION_INVAILD_DISTANCE;
 import static nextstep.subway.exception.ErrorResponseEnum.ERROR_ADD_SECTION_INVAILD_STATION;
 import static nextstep.subway.exception.ErrorResponseEnum.ERROR_DELETE_SECTION_COUNT_LINE;
-import static nextstep.subway.exception.ErrorResponseEnum.ERROR_DELETE_SECTION_NO_LAST_SECTION_LINE;
-import static nextstep.subway.exception.ErrorResponseEnum.ERROR_NO_FOUND;
+import static nextstep.subway.exception.ErrorResponseEnum.ERROR_DELETE_SECTION_INVAILD_STATION;
 
 
 @Embeddable
@@ -68,14 +67,20 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Section section = this.sections.stream()
-                .filter(a -> station.equals(a.getDownStation()))
-                .findFirst()
-                .orElse(null);
+        this.validationDeleteSection(station);
 
-        this.validationDeleteSection(section);
+        int deleteIndex = getDeleteSectionIndex(station);
 
-        this.sections.remove(this.sections.size()-1);
+        if (deleteIndex > 0) {
+            Section section = this.sections.get(deleteIndex);
+            Section beforeSection = this.sections.get(deleteIndex - 1);
+
+            section.change(beforeSection.getUpStation(), section.getDownStation(),beforeSection.getDistance() + section.getDistance());
+
+            this.sections.set(deleteIndex - 1, section);
+        }
+
+        this.sections.remove(isLastStation(station) ? this.sections.size() - 1 : deleteIndex);
     }
 
     public List<Station> getStations() {
@@ -120,30 +125,22 @@ public class Sections {
                 .orElse(null);
     }
 
-    private void validationDeleteSection(Section section) {
-        if (null == section) {
-            throw new SubwayRestApiException(ERROR_NO_FOUND);
-        }
-
+    private void validationDeleteSection(Station station) {
         if (this.isNotValidSectionCount()) {
             throw new SubwayRestApiException(ERROR_DELETE_SECTION_COUNT_LINE);
         }
 
-        if (!this.isSameLastSection(section)) {
-            throw new SubwayRestApiException(ERROR_DELETE_SECTION_NO_LAST_SECTION_LINE);
+        if (!this.isExistStationInLine(station)) {
+            throw new SubwayRestApiException(ERROR_DELETE_SECTION_INVAILD_STATION);
         }
+    }
+
+    private boolean isExistStationInLine(Station station) {
+        return this.getStations().contains(station);
     }
 
     private boolean isNotValidSectionCount() {
         return this.sections.size() <= 1;
-    }
-
-    private boolean isSameLastSection(Section section) {
-        return this.getLastSection().equals(section);
-    }
-
-    private Section getLastSection() {
-        return this.sections.get(this.sections.size()-1);
     }
 
     private void isValidationSection(Section section) {
@@ -162,5 +159,18 @@ public class Sections {
         if (standardSection.getDistance() <= section.getDistance()) {
             throw new SubwayRestApiException(ERROR_ADD_SECTION_INVAILD_DISTANCE);
         }
+    }
+
+    private int getDeleteSectionIndex(Station station) {
+        Section section = this.sections.stream()
+                .filter(a -> a.isSameUpStation(station))
+                .findFirst()
+                .orElse(null);
+
+        return this.sections.indexOf(section);
+    }
+
+    private boolean isLastStation(Station station) {
+        return this.getStations().size() -1 == this.getStations().indexOf(station);
     }
 }
