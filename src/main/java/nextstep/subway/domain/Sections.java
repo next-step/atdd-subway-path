@@ -100,7 +100,7 @@ public class Sections {
 			.findFirst();
 
 		if (inFrontSection.isPresent() && afterSection.isPresent()) {
-			removeMiddleStation(line, inFrontSection.get(), afterSection.get(), station);
+			removeMiddleStation(line, inFrontSection.get(), afterSection.get());
 			return;
 		}
 
@@ -126,7 +126,7 @@ public class Sections {
 		line.updateFinalDownStation(afterSection.getUpStation());
 	}
 
-	private void removeMiddleStation(Line line, Section inFrontSection, Section afterSection, Station station) {
+	private void removeMiddleStation(Line line, Section inFrontSection, Section afterSection) {
 		this.sections.remove(inFrontSection);
 		this.sections.remove(afterSection);
 		this.sections.add(
