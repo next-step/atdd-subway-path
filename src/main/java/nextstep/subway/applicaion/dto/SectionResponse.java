@@ -14,9 +14,6 @@ public class SectionResponse {
     private StationResponse downStation;
     private int distance;
 
-    public SectionResponse() {
-    }
-
     private SectionResponse(Long id, Station upStation, Station downStation, int distance) {
         this.id = id;
         this.upStation = StationResponse.of(upStation);
