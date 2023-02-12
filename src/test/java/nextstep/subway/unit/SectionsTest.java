@@ -40,11 +40,18 @@ class SectionsTest {
 
         // when & then
         assertThat(sections.isEmpty()).isTrue();
+    }
+
+    @DisplayName("지하철 구간이 하나라도 등록되어 있으면, 지하철 구간 목록은 비어있지 않다.")
+    @Test
+    void isNotEmpty() {
+        // given
+        Sections sections = new Sections();
 
         // when
         sections.add(createSection(station1, station2));
 
-        // then
+        // when & then
         assertThat(sections.isEmpty()).isFalse();
     }
 
