@@ -3,10 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -126,41 +123,36 @@ public class LineSections {
     }
 
     private Section findBothEndsStations() {
-        List<Station> upStations = this.sections.stream()
+        Set<Station> upStations = this.sections.stream()
             .map(Section::getUpStation)
-            .collect(Collectors.toList());
-        List<Station> downStations = this.sections.stream()
+            .collect(Collectors.toSet());
+        Set<Station> downStations = this.sections.stream()
             .map(Section::getDownStation)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
-        Station upEndStation = upStations.stream()
-            .filter(s -> !downStations.contains(s))
-            .findFirst()
-            .orElse(null);
-        Station downEndStation = downStations.stream()
-            .filter(s -> !upStations.contains(s))
-            .findFirst()
-            .orElse(null);
+        HashSet<Station> allMiddleStations = getAllMiddleStations(upStations, downStations);
+
+        upStations.removeAll(allMiddleStations);
+        downStations.removeAll(allMiddleStations);
 
         return Section.builder()
-            .upStation(upEndStation)
-            .downStation(downEndStation)
+            .upStation(upStations.stream().findFirst().orElse(null))
+            .downStation(downStations.stream().findFirst().orElse(null))
             .build();
     }
 
+    private static HashSet<Station> getAllMiddleStations(Set<Station> upStations, Set<Station> downStations) {
+        HashSet<Station> intersection = new HashSet<>(upStations);
+        intersection.retainAll(downStations);
+        return intersection;
+    }
+
     public void removeSection(Line line, Station station) {
-        Station targetStation = getAllStations().stream()
-            .filter(station::equals)
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(LineErrorMessage.REMOVE_SECTION_STATIONS_NOT_EXISTS.getMessage()));
+        Station targetStation = findStation(station);
 
-        if (sections.size() < 2) {
-            throw new IllegalArgumentException(LineErrorMessage.REMOVE_SECTION_LAST_ONE.getMessage());
-        }
+        checkSectionsSize();
 
-        List<Section> targetSections = this.sections.stream()
-            .filter(section -> section.getUpStation().equals(targetStation) || section.getDownStation().equals(targetStation))
-            .collect(Collectors.toList());
+        List<Section> targetSections = findSectionsByStation(targetStation);
 
         if (targetSections.size() > 1) {
             Section firstSection = targetSections.get(0);
@@ -171,5 +163,24 @@ public class LineSections {
         }
 
         this.sections.removeIf(section -> section.equals(targetSections.get(0)));
+    }
+
+    private List<Section> findSectionsByStation(Station targetStation) {
+        return this.sections.stream()
+            .filter(section -> section.getUpStation().equals(targetStation) || section.getDownStation().equals(targetStation))
+            .collect(Collectors.toList());
+    }
+
+    private void checkSectionsSize() {
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException(LineErrorMessage.REMOVE_SECTION_LAST_ONE.getMessage());
+        }
+    }
+
+    private Station findStation(Station station) {
+        return getAllStations().stream()
+            .filter(station::equals)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(LineErrorMessage.REMOVE_SECTION_STATIONS_NOT_EXISTS.getMessage()));
     }
 }

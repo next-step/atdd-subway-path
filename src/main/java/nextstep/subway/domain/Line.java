@@ -12,7 +12,7 @@ public class Line {
     private String color;
 
     @Embedded
-    private LineSections lineSections;
+    private LineSections lineSections = new LineSections();
 
     public Line() {
     }
