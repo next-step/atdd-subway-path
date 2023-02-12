@@ -134,13 +134,44 @@ public class Sections {
 
     public void removeSection(Station station) {
         List<Station> stations = getStations();
-        Station lastStation = stations.get(stations.size() - 1);
-        if (!lastStation.equals(station)) {
-            throw new IllegalArgumentException();
+        if (!stations.contains(station)) {
+            throw new IllegalArgumentException("해당 역을 찾을 수 없습니다.");
         }
-        Section lastSection = sections.stream().filter(s -> s.getDownStation().equals(lastStation))
+        if (stations.size() == 2) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서는 역을 제거할 수 없습니다.");
+        }
+
+        int index = stations.indexOf(station);
+        if (index == 0) {
+            sections.stream()
+                    .filter(s -> s.getUpStation().equals(station))
+                    .findFirst()
+                    .ifPresent(section -> {
+                        sections.remove(section);
+                    });
+            return;
+        }
+        if (index == stations.size() - 1) {
+            sections.stream()
+                    .filter(s -> s.getDownStation().equals(station))
+                    .findFirst()
+                    .ifPresent(section -> {
+                        sections.remove(section);
+                    });
+            return;
+        }
+
+        Section upSection = sections.stream()
+                .filter(s -> s.getDownStation().equals(station))
                 .findFirst()
-                .orElseThrow(IllegalAccessError::new);
-        sections.remove(lastSection);
+                .orElseThrow();
+        Section downSection = sections.stream()
+                .filter(s -> s.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow();
+
+        sections.remove(upSection);
+        sections.remove(downSection);
+        sections.add(new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance() + downSection.getDistance()));
     }
 }
