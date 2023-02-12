@@ -2,7 +2,14 @@ package nextstep.subway.domain;
 
 import lombok.Builder;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import java.util.List;
 
 @Entity
 @Builder
@@ -61,5 +68,17 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isContaionsUpStations(List<Station> stations) {
+        return stations.contains(this.upStation);
     }
 }

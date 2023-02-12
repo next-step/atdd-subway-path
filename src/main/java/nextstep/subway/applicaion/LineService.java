@@ -84,6 +84,14 @@ public class LineService {
                 .build());
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Station deleteStation = stationService.findById(stationId);
+
+        line.removeSection(deleteStation);
+    }
+
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
                 line.getId(),
@@ -103,13 +111,5 @@ public class LineService {
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-        Station deleteStation = stationService.findById(stationId);
-
-        line.removeSection(deleteStation);
     }
 }

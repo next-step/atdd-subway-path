@@ -64,8 +64,20 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().post("/lines/{lineId}/sections?addTypeCd={addTypeCd}", lineId, addTypeEnum.getAddTypeCd())
+                .when().post(getAddSectionUrl(addTypeEnum), lineId)
                 .then().log().all().extract();
+    }
+
+    private static String getAddSectionUrl(AddTypeEnum addTypeEnum) {
+        if (AddTypeEnum.FRONT_ADD_SECTION.equals(addTypeEnum)) {
+            return "/lines/{lineId}/sections/front";
+        }
+
+        if (AddTypeEnum.MIDDLE_ADD_SECTION.equals(addTypeEnum)) {
+            return "/lines/{lineId}/sections/middle";
+        }
+
+        return "/lines/{lineId}/sections";
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_요청(Long lineId, Long stationId) {

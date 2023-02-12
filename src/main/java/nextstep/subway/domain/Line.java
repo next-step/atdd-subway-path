@@ -1,16 +1,16 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.common.AddTypeEnum;
-import nextstep.subway.exception.SubwayRestApiException;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.common.AddTypeEnum.FRONT_ADD_SECTION;
 import static nextstep.subway.common.AddTypeEnum.MIDDLE_ADD_SECTION;
-import static nextstep.subway.exception.ErrorResponseEnum.*;
 
 @Entity
 public class Line {
@@ -21,10 +21,8 @@ public class Line {
     private String color;
     @Embedded
     private Sections sections = new Sections();
-//    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-//    private List<Section> sections = new ArrayList<>();
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
