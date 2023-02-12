@@ -75,7 +75,7 @@ public class Sections {
 
     }
 
-    public Section getIncludedSectionWhenEqualUpStation(Section section) {
+    private Section getIncludedSectionWhenEqualUpStation(Section section) {
         return values.stream()
                 .filter(value -> value.equalUpStation(section.getUpStation()))
                 .findFirst()
@@ -113,41 +113,33 @@ public class Sections {
 
     }
 
-    protected boolean equalLastStation(Station station) {
+    public boolean equalLastStation(Station station) {
         return values.get(values.size() - 1).equalDownStation(station);
     }
 
-    protected boolean equalFirstStation(Station station) {
+    public boolean equalFirstStation(Station station) {
         return values.get(0).equalUpStation(station);
     }
 
-    public void remove(Station station) {
-
-        if (!contains(station)) {
-            throw new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED);
-        }
-        if (size() <= 1) {
-            throw new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE);
-        }
-        if (equalFirstStation(station)) {
+    public void removeFirstStation() {
             values.remove(getFirstSection());
-            return;
-        }
-        if (equalLastStation(station)) {
+    }
+
+    public void removeLastStation() {
             values.remove(getLastSection());
-            return;
-        }
+    }
+
+    public void removeBetween(Station station){
         Section removeSection = values.stream()
                 .filter(section -> section.equalDownStation(station))
                 .findFirst()
-                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED));
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE));
 
         Section updateSection = getAfterSection(removeSection)
-                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED));
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE));
 
         updateSection.combineUpSection(removeSection);
         values.remove(removeSection);
-
     }
 
     public int size() {

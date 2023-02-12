@@ -1,10 +1,14 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.policy.section.SectionAddPolicy;
+import nextstep.subway.domain.policy.section.StationRemovePolicy;
 import nextstep.subway.domain.policy.section.add.SectionBetweenDownAddPolicy;
 import nextstep.subway.domain.policy.section.add.SectionBetweenUpAddPolicy;
 import nextstep.subway.domain.policy.section.add.SectionFirstAddPolicy;
 import nextstep.subway.domain.policy.section.add.SectionLastAddPolicy;
+import nextstep.subway.domain.policy.section.remove.StationBetweenRemovePolicy;
+import nextstep.subway.domain.policy.section.remove.StationFirstRemovePolicy;
+import nextstep.subway.domain.policy.section.remove.StationLastRemovePolicy;
 import nextstep.subway.exception.SubwayException;
 import nextstep.subway.exception.SubwayExceptionMessage;
 
@@ -25,10 +29,16 @@ public class Line {
 
     @Transient
     private final List<SectionAddPolicy> sectionAddPolicies
-            = Arrays.asList(new SectionFirstAddPolicy(sections)
-            , new SectionLastAddPolicy(sections)
-            , new SectionBetweenUpAddPolicy(sections)
-            , new SectionBetweenDownAddPolicy(sections));
+            = Arrays.asList(new SectionFirstAddPolicy()
+            , new SectionLastAddPolicy()
+            , new SectionBetweenUpAddPolicy()
+            , new SectionBetweenDownAddPolicy());
+    @Transient
+    private final List<StationRemovePolicy> stationRemovePolicies
+            = Arrays.asList(new StationBetweenRemovePolicy()
+            , new StationFirstRemovePolicy()
+            , new StationLastRemovePolicy()
+    );
 
     public Line() {
     }
@@ -73,11 +83,11 @@ public class Line {
     }
 
     public void addSection(Section section) {
-            SectionAddPolicy sectionAddPolicy = sectionAddPolicies.stream().
-                    filter(policy -> policy.isSatisfied(section))
-                    .findFirst()
-                    .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.SECTION_CANNOT_ADD));
-            sectionAddPolicy.execute(section);
+        SectionAddPolicy sectionAddPolicy = sectionAddPolicies.stream().
+                filter(policy -> policy.isSatisfied(sections, section))
+                .findFirst()
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.SECTION_CANNOT_ADD));
+        sectionAddPolicy.execute(sections, section);
 
     }
 
@@ -90,6 +100,10 @@ public class Line {
     }
 
     public void remove(Station station) {
-        sections.remove(station);
+        StationRemovePolicy stationRemovePolicy = stationRemovePolicies.stream().
+                filter(policy -> policy.isSatisfied(sections, station))
+                .findFirst()
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE));
+        stationRemovePolicy.execute(sections, station);
     }
 }
