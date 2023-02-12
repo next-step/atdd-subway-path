@@ -29,9 +29,9 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("name", "color")));
-        when(stationService.findById(1L)).thenReturn(new Station("up"));
-        when(stationService.findById(2L)).thenReturn(new Station("down"));
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line(1L, "name", "color")));
+        when(stationService.findById(1L)).thenReturn(new Station(1L, "up"));
+        when(stationService.findById(2L)).thenReturn(new Station(2L, "down"));
         SectionRequest sectionRequest = new SectionRequest(1L, 2L, 20);
         // when
         // lineService.addSection 호출
