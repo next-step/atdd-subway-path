@@ -2,7 +2,9 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -83,9 +85,26 @@ class LineServiceTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("지하철 노선 제거 시, 마지막 역을 포함하는 구간을 제거한다.")
+    @DisplayName("지하철 노선 제거 시, 상행 종점역을 포함하는 구간을 제거한다.")
     @Test
-    void deleteSectionWithLastLineStation() {
+    void deleteFirstSection() {
+        // given
+        lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
+        lineService.addSection(분당선.getId(), new SectionRequest(복정역.getId(), 가천대역.getId(), 5));
+
+        // when
+        lineService.deleteSection(분당선.getId(), 수서역.getId());
+
+        // then
+        assertAll(
+            () -> assertThat(분당선.getStations()).containsExactly(복정역, 가천대역),
+            () -> assertThat(분당선.getSections().get(0).getDistance()).isEqualTo(5)
+        );
+    }
+
+    @DisplayName("지하철 노선 제거 시, 하행 종점역을 포함하는 구간을 제거한다.")
+    @Test
+    void deleteLastSection() {
         // given
         lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
         lineService.addSection(분당선.getId(), new SectionRequest(복정역.getId(), 가천대역.getId(), 5));
@@ -94,12 +113,15 @@ class LineServiceTest {
         lineService.deleteSection(분당선.getId(), 가천대역.getId());
 
         // then
-        assertThat(분당선.getStations()).containsExactly(수서역, 복정역);
+        assertAll(
+            () -> assertThat(분당선.getStations()).containsExactly(수서역, 복정역),
+            () -> assertThat(분당선.getSections().get(0).getDistance()).isEqualTo(5)
+        );
     }
 
     @DisplayName("지하철 노선 제거 시, 중간역을 포함하는 구간을 제거한다.")
     @Test
-    void deleteSectionWithIntermediateLineStation() {
+    void deleteIntermediateSection() {
         // given
         lineService.addSection(분당선.getId(), new SectionRequest(수서역.getId(), 복정역.getId(), 5));
         lineService.addSection(분당선.getId(), new SectionRequest(복정역.getId(), 가천대역.getId(), 5));
@@ -108,7 +130,10 @@ class LineServiceTest {
         lineService.deleteSection(분당선.getId(), 복정역.getId());
 
         // then
-        assertThat(분당선.getStations()).containsExactly(수서역, 가천대역);
+        assertAll(
+            () -> assertThat(분당선.getStations()).containsExactly(수서역, 가천대역),
+            () -> assertThat(분당선.getSections().get(0).getDistance()).isEqualTo(10)
+        );
     }
 
     @DisplayName("지하철 구간 제거 시, 노선에 등록된 구간이 하나라면 예외가 발생한다.")
