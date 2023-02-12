@@ -50,13 +50,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
-        }
+        line.updateLine(lineRequest);
     }
 
     @Transactional
@@ -70,7 +64,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(upStation, downStation, sectionRequest.getDistance()));
     }
 
     private LineResponse createLineResponse(Line line) {
