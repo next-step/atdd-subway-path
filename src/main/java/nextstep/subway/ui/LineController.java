@@ -51,8 +51,20 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest, @RequestParam(name = "addTypeCd") String addTypeCd) {
-        lineService.addSection(AddTypeEnum.convertAddTypeCd(addTypeCd), lineId, sectionRequest);
+    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(AddTypeEnum.BACK_ADD_SECTION, lineId, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{lineId}/sections/front")
+    public ResponseEntity<Void> addSectionFront(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(AddTypeEnum.FRONT_ADD_SECTION, lineId, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{lineId}/sections/middle")
+    public ResponseEntity<Void> addSectionMiddle(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(AddTypeEnum.MIDDLE_ADD_SECTION, lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
