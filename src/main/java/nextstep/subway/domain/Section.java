@@ -1,9 +1,15 @@
 package nextstep.subway.domain;
 
+import org.springframework.dao.DataIntegrityViolationException;
+
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,6 +37,32 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean hasShorterDistanceThan(Section origin) {
+        return this.distance < origin.distance;
+    }
+
+    public boolean hasOneMatchedStation(Section section) {
+        return this.upStation.equals(section.downStation)
+                || this.downStation.equals(section.upStation)
+                || this.upStation.equals(section.upStation)
+                || this.downStation.equals(section.downStation);
+    }
+
+    public boolean hasBothMatchedStation(Section section) {
+        return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
+    }
+
+    public boolean hasNoneMatchedStation(Section section) {
+        return !this.hasBothMatchedStation(section);
+    }
+
+    public Section divideBy(Section section) {
+        if(this.downStation.equals(section.downStation)){
+            return new Section(this.line, this.upStation, section.upStation, this.distance - section.distance);
+        }
+        return new Section(this.line, section.downStation, this.downStation, this.distance - section.distance);
     }
 
     public Long getId() {
