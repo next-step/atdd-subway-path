@@ -30,7 +30,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            Section section = new Section.SectionBuilder(line)
+            Section section = Section.builder(line)
                     .setDownStation(downStation)
                     .setUpStation(upStation)
                     .setDistance(request.getDistance())
@@ -45,12 +45,12 @@ public class LineService {
     }
 
     public Line findById(Long id) {
-        return findLineById(id);
+        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = findLineById(id);
+        Line line = findById(id);
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -58,10 +58,6 @@ public class LineService {
         if (lineRequest.getColor() != null) {
             line.setColor(lineRequest.getColor());
         }
-    }
-
-    private Line findLineById(Long id) {
-        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
@@ -73,8 +69,8 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = findLineById(lineId);
-        Section section = new Section.SectionBuilder(line)
+        Line line = findById(lineId);
+        Section section = Section.builder(line)
                 .setUpStation(upStation)
                 .setDownStation(downStation)
                 .setDistance(sectionRequest.getDistance())
@@ -84,7 +80,7 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = findLineById(lineId);
+        Line line = findById(lineId);
         Station station = stationService.findById(stationId);
         line.remove(station);
     }
