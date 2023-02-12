@@ -38,7 +38,7 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    public boolean hasIdenticalStations(Station upStation, Station downStation) {
+    private boolean hasIdenticalStations(Station upStation, Station downStation) {
         return (upStation != null && downStation != null) && upStation.equals(downStation);
     }
 
