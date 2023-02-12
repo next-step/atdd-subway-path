@@ -28,11 +28,12 @@ class DistanceTest {
             .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("새로운 지하철 구간의 추가에 의한 기존 지하철 구간의 길이가 감소할 때, 기존 구간의 길이는 1보다 작아질 수 없다.")
-    @Test
-    void invalidDecreasedValue() {
+    @DisplayName("지하철 구간의 길이 감소 시, 기존 값보다 크거나 같은 값은 감소할 수 없다.")
+    @ValueSource(ints = {10, 11})
+    @ParameterizedTest
+    void invalidDecreasedValue(int value) {
         Distance distance = new Distance(10);
-        assertThatThrownBy(() -> distance.decrease(10))
+        assertThatThrownBy(() -> distance.decrease(value))
             .isInstanceOf(InvalidSectionDistanceException.class);
     }
 }
