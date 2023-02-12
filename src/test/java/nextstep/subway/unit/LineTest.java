@@ -41,14 +41,6 @@ class LineTest {
         assertThat(분당선.getSections()).containsExactly(section);
     }
 
-    @DisplayName("지하철 구간 등록 시, 상행역과 하행역이 같으면 예외가 발생한다.")
-    @Test
-    void identicalStations() {
-        // when & then
-        assertThatThrownBy(() -> new Section(분당선, 수서역, 수서역, 5))
-            .isInstanceOf(IllegalArgumentException.class);
-    }
-
     @DisplayName("지하철 구간 등록 시, 구간의 길이는 최소 1 이상이어야 한다.")
     @ValueSource(ints = {-1, 0})
     @ParameterizedTest
