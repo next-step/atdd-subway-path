@@ -32,7 +32,7 @@ class SectionsTest {
         stationC = new Station("C");
         stationD = new Station("D");
         stationE = new Station("E");
-        Section AtoB = new Section.SectionBuilder(line)
+        Section AtoB = Section.builder(line)
                 .setUpStation(stationA)
                 .setDownStation(stationB)
                 .setDistance(DEFAULT_DISTANCE)
@@ -44,7 +44,7 @@ class SectionsTest {
     @DisplayName("상행역 종점 구간 추가")
     void addSectionFirstSection() {
         //when 노선의 상행 종점을 하행역으로 하는 구간을 추가한다.
-        Section CtoA = new Section.SectionBuilder(line)
+        Section CtoA = Section.builder(line)
                 .setUpStation(stationC)
                 .setDownStation(stationA)
                 .setDistance(DEFAULT_DISTANCE)
@@ -58,7 +58,7 @@ class SectionsTest {
     @DisplayName("하행역 종점 구간 추가")
     void addSectionLastSection() {
         //when 노선의 상행 종점을 하행역으로 하는 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
@@ -72,7 +72,7 @@ class SectionsTest {
     @DisplayName("기존 노선에 상행역, 하행역 모두 없는 구간 추가")
     void addSectionNoneContain() {
         //when 노선의 상행 종점을 하행역으로 하는 구간을 추가한다.
-        Section DtoE = new Section.SectionBuilder(line)
+        Section DtoE = Section.builder(line)
                 .setUpStation(stationD)
                 .setDownStation(stationE)
                 .setDistance(DEFAULT_DISTANCE)
@@ -87,7 +87,7 @@ class SectionsTest {
     @DisplayName("기존 노선에 상행역, 하행역 모두 있는 구간 추가")
     void addSectionContainAll() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
@@ -95,7 +95,7 @@ class SectionsTest {
         line.addSection(BtoC);
 
         //when 기존 노선에 상행역, 하행역 모두 있는 구간 추가한다.
-        Section AtoC = new Section.SectionBuilder(line)
+        Section AtoC = Section.builder(line)
                 .setUpStation(stationA)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
@@ -109,14 +109,14 @@ class SectionsTest {
     @DisplayName("하행역이 일치하는 사이 구간 추가")
     void addSectionIntervalEqualDownStation() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
                 .build();
         line.addSection(BtoC);
         //when 추가된 노선과 하행역이 같은 구간을 추가한다.
-        Section DtoC = new Section.SectionBuilder(line)
+        Section DtoC = Section.builder(line)
                 .setUpStation(stationD)
                 .setDownStation(stationC)
                 .setDistance(5)
@@ -134,14 +134,14 @@ class SectionsTest {
     @DisplayName("길이가 더 길고 하행역이 일치하는 사이 구간 추가")
     void addSectionIntervalEqualDownStationAndGreaterDistance() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
                 .build();
         line.addSection(BtoC);
         //when 추가된 노선과 길이가 같거나 길고 하행역이 같은 구간을 추가한다.
-        Section DtoC = new Section.SectionBuilder(line)
+        Section DtoC = Section.builder(line)
                 .setUpStation(stationD)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE*2)
@@ -154,14 +154,14 @@ class SectionsTest {
     @DisplayName("길이가 더 같고 하행역이 일치하는 사이 구간 추가")
     void addSectionIntervalEqualDownStationAndEqualDistance() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
                 .build();
         line.addSection(BtoC);
         //when 추가된 노선과 길이가 같거나 길고 하행역이 같은 구간을 추가한다.
-        Section DtoC = new Section.SectionBuilder(line)
+        Section DtoC = Section.builder(line)
                 .setUpStation(stationD)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
@@ -175,14 +175,14 @@ class SectionsTest {
     @DisplayName("상행역이 일치하는 사이 구간 추가")
     void addSectionIntervalEqualUpStation() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
                 .build();
         line.addSection(BtoC);
         //when 추가된 노선과 상행역이 같은 구간을 추가한다.
-        Section BtoD = new Section.SectionBuilder(line)
+        Section BtoD = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationD)
                 .setDistance(DEFAULT_DISTANCE/2)
@@ -200,14 +200,14 @@ class SectionsTest {
     @DisplayName("길이가 더 길고 상행역이 일치하는 사이 구간 추가")
     void addSectionIntervalEqualUpStationAndGreaterDistance() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
                 .build();
         line.addSection(BtoC);
         //when 추가된 노선과 상행역이 같은 구간을 추가한다.
-        Section BtoD = new Section.SectionBuilder(line)
+        Section BtoD = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationD)
                 .setDistance(DEFAULT_DISTANCE*2)
@@ -221,14 +221,14 @@ class SectionsTest {
     @DisplayName("길이가 같고 상행역이 일치하는 사이 구간 추가")
     void addSectionIntervalEqualUpStationAndEqualDistance() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
                 .build();
         line.addSection(BtoC);
         //when 추가된 노선과 상행역이 같은 구간을 추가한다.
-        Section BtoD = new Section.SectionBuilder(line)
+        Section BtoD = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationD)
                 .setDistance(DEFAULT_DISTANCE)
@@ -242,7 +242,7 @@ class SectionsTest {
     @DisplayName("역 삭제")
     void removeStation() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
@@ -263,7 +263,7 @@ class SectionsTest {
     @DisplayName("상행 종점역 삭제")
     void removeFirstStation() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)
@@ -284,7 +284,7 @@ class SectionsTest {
     @DisplayName("하행 종점역 삭제")
     void removeLastStation() {
         //given 노선에 구간을 추가한다.
-        Section BtoC = new Section.SectionBuilder(line)
+        Section BtoC = Section.builder(line)
                 .setUpStation(stationB)
                 .setDownStation(stationC)
                 .setDistance(DEFAULT_DISTANCE)

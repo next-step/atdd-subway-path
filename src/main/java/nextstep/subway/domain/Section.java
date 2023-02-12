@@ -30,6 +30,9 @@ public class Section {
 
     }
 
+    public static SectionBuilder builder(Line line) {
+        return new SectionBuilder(line);
+    }
     public Section(SectionBuilder builder) {
         this.line = builder.line;
         this.upStation = builder.upStation;
@@ -94,6 +97,7 @@ public class Section {
         private Station upStation;
         private Station downStation;
         private int distance;
+
 
         public SectionBuilder(Line line) {
             this.line = line;

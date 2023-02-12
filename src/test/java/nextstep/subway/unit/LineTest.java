@@ -21,7 +21,7 @@ class LineTest {
         Station 상계 = new Station("상계");
 
         //when 노선에 구간을 추가한다.
-        Section section = new Section.SectionBuilder(line)
+        Section section = Section.builder(line)
                 .setUpStation(당고개)
                 .setDownStation(상계)
                 .setDistance(10)
@@ -46,7 +46,7 @@ class LineTest {
         Line line = new Line("4호선", "sky-blue");
         Station 당고개 = new Station("당고개");
         Station 상계 = new Station("상계");
-        Section 당고개_상계 = new Section.SectionBuilder(line)
+        Section 당고개_상계 = Section.builder(line)
                 .setUpStation(당고개)
                 .setDownStation(상계)
                 .setDistance(10)
@@ -56,7 +56,7 @@ class LineTest {
         //when 노선의 마지막역에서 출발하지 않는 구간을 추가한다.
         Station 서울역 = new Station("서울역");
         Station 숙대입구 = new Station("숙대입구");
-        Section 서울역_숙대입구 = new Section.SectionBuilder(line)
+        Section 서울역_숙대입구 = Section.builder(line)
                 .setUpStation(서울역)
                 .setDownStation(숙대입구)
                 .setDistance(10)
@@ -74,7 +74,7 @@ class LineTest {
         Line line = new Line("4호선", "sky-blue");
         Station 당고개 = new Station("당고개");
         Station 상계 = new Station("상계");
-        Section 당고개_상계 = new Section.SectionBuilder(line)
+        Section 당고개_상계 = Section.builder(line)
                 .setUpStation(당고개)
                 .setDownStation(상계)
                 .setDistance(10)
@@ -83,7 +83,7 @@ class LineTest {
 
         //when 추가하는 구간의 하행역을 추가한다.
         Station 서울역 = new Station("서울역");
-        Section 상계_서울역 = new Section.SectionBuilder(line)
+        Section 상계_서울역 = Section.builder(line)
                 .setUpStation(서울역)
                 .setDownStation(상계)
                 .setDistance(10)
@@ -104,12 +104,12 @@ class LineTest {
         Station 노원 = new Station("노원");
 
         //when 노선에 구간을 추가한다.
-        Section 당고개_상계 = new Section.SectionBuilder(line)
+        Section 당고개_상계 = Section.builder(line)
                 .setUpStation(당고개)
                 .setDownStation(상계)
                 .setDistance(10)
                 .build();
-        Section 상계_노원 = new Section.SectionBuilder(line)
+        Section 상계_노원 = Section.builder(line)
                 .setUpStation(상계)
                 .setDownStation(노원)
                 .setDistance(10)
@@ -138,12 +138,12 @@ class LineTest {
         Station 상계 = new Station("상계");
         Station 노원 = new Station("노원");
 
-        Section 당고개_상계 = new Section.SectionBuilder(line)
+        Section 당고개_상계 = Section.builder(line)
                 .setUpStation(당고개)
                 .setDownStation(상계)
                 .setDistance(10)
                 .build();
-        Section 상계_노원 = new Section.SectionBuilder(line)
+        Section 상계_노원 = Section.builder(line)
                 .setUpStation(상계)
                 .setDownStation(노원)
                 .setDistance(5)
