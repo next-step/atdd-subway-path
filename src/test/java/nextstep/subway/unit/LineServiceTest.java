@@ -37,6 +37,6 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getStations().stream().map(Station::getName)).containsExactly(station.getName(), station2.getName());
     }
 }

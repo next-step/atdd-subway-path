@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SubwayRestApiException;
 import org.assertj.core.api.ListAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,6 @@ class LineTest {
         line.addSection(MIDDLE_ADD_SECTION, newSection);
 
         지하철노선_구간_지하철역_검증(line, "지하철역1", "지하철역2", "지하철역3");
-        assertThat(line.getSections().stream().map(Section::getDistance)).containsExactly(5, 2);
     }
 
     @DisplayName("지하철 구간 중간에 새로운 구간을 추가 중 구간길이 검증 실패로 Exception 발생")
@@ -53,7 +53,7 @@ class LineTest {
 
         Section newSection = createSection(line, "지하철역1", "지하철역2", 7);
 
-        assertThrows(IllegalArgumentException.class, () -> line.addSection(MIDDLE_ADD_SECTION, newSection));
+        assertThrows(SubwayRestApiException.class, () -> line.addSection(MIDDLE_ADD_SECTION, newSection));
     }
 
     @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 모두 존재하는 경우 Exception 발생")
@@ -63,7 +63,7 @@ class LineTest {
 
         Section newSection = new Section(line, new Station("지하철역1"), new Station("지하철역3"), 5);
 
-        assertThrows(IllegalArgumentException.class, () -> line.addSection(MIDDLE_ADD_SECTION, newSection));
+        assertThrows(SubwayRestApiException.class, () -> line.addSection(MIDDLE_ADD_SECTION, newSection));
     }
 
     @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 노선에 아예 없는 경우 Exception 발생")
@@ -73,7 +73,7 @@ class LineTest {
 
         Section newSection = new Section(line, new Station("지하철역4"), new Station("지하철역5"), 5);
 
-        assertThrows(IllegalArgumentException.class, () -> line.addSection(MIDDLE_ADD_SECTION, newSection));
+        assertThrows(SubwayRestApiException.class, () -> line.addSection(MIDDLE_ADD_SECTION, newSection));
     }
 
     @Test

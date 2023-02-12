@@ -6,7 +6,9 @@ public enum ErrorResponseEnum {
     ERROR_NO_FOUND (HttpStatus.INTERNAL_SERVER_ERROR,"do not found data by id"),
     ERROR_ADD_SECTION_INVAILD_DISTANCE (HttpStatus.INTERNAL_SERVER_ERROR,"section's distance is not enough"),
     ERROR_ADD_SECTION_INVAILD_STATION (HttpStatus.INTERNAL_SERVER_ERROR,"section's stations is already all exist or no exist"),
-    ERROR_DELETE_SECTION_INVAILD_STATION (HttpStatus.INTERNAL_SERVER_ERROR,"stations is no exist in line");
+    ERROR_DELETE_SECTION_INVAILD_STATION (HttpStatus.INTERNAL_SERVER_ERROR,"stations is no exist in line"),
+    ERROR_DELETE_SECTION_COUNT_LINE (HttpStatus.INTERNAL_SERVER_ERROR, "line have only one section"),
+    ERROR_DELETE_SECTION_NO_LAST_SECTION_LINE (HttpStatus.INTERNAL_SERVER_ERROR, "section's not last section");
 
     HttpStatus httpStatus;
     String message;
