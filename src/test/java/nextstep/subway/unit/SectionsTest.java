@@ -33,7 +33,7 @@ public class SectionsTest {
         논현역 = new Station(5L, "논현역");
         삼성역 = new Station(6L, "삼성역");
         구로역 = new Station(7L, "구로역");
-        개탄역 = new Station(8L, "구로역");
+        개탄역 = new Station(8L, "개탄역");
 
         Line line = new Line(1L, "line", "color");
 
@@ -58,13 +58,6 @@ public class SectionsTest {
         assertThat(stations)
                 .extracting(Station::getId)
                 .containsExactly(1L, 2L, 3L, 4L, 5L, 6L);
-    }
-
-    @Test
-    @DisplayName("Section 삭제 테스트 (마지막 섹션 삭제)")
-    void test() {
-        sections.removeSection(삼성역);
-        assertThat(sections.getStations()).containsExactly(신논역, 신사역, 강남역, 판교역, 논현역);
     }
 
     @Test
@@ -151,5 +144,41 @@ public class SectionsTest {
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    @DisplayName("Section 삭제 테스트 (마지막 역 삭제)")
+    void test10() {
+        sections.removeSection(삼성역);
+        assertThat(sections.getStations()).containsExactly(신논역, 신사역, 강남역, 판교역, 논현역);
+    }
+
+    @Test
+    @DisplayName("Section 삭제 테스트 (중간 역 삭제)")
+    void test11() {
+        sections.removeSection(신사역);
+        assertThat(sections.getStations()).containsExactly(신논역, 강남역, 판교역, 논현역, 삼성역);
+    }
+
+    @Test
+    @DisplayName("Section 삭제 테스트 (첫번째 역 삭제)")
+    void test12() {
+        sections.removeSection(신논역);
+        assertThat(sections.getStations()).containsExactly(신사역, 강남역, 판교역, 논현역, 삼성역);
+    }
+
+    @Test
+    @DisplayName("Section 삭제 테스트 (첫번째 역 삭제)")
+    void test13() {
+        구로역 = new Station(7L, "구로역");
+        개탄역 = new Station(8L, "개탄역");
+
+        Line line = new Line(1L, "line", "color");
+        Section section = new Section(5L, line, 구로역, 개탄역, 10);
+        sections = new Sections();
+        sections.addSection(section);
+
+        assertThatThrownBy(() -> {
+            sections.removeSection(개탄역);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
 
 }
