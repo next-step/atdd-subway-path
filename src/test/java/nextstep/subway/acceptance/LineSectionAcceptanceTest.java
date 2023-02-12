@@ -294,6 +294,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    /**
+     * When 지하철 노선에 등록된 구간이 하나뿐인 경우
+     * Then 구간이 제거되지 않는다.
+     */
+    @DisplayName("지하철 노선에 등록된 구간이 하나뿐이라면 구간을 제거할 수 없다.")
+    @Test
+    void cannotRemoveSoleSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
