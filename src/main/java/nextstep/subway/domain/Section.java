@@ -1,12 +1,14 @@
 package nextstep.subway.domain;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.exception.SectionStationCanNotBeNullException;
 
 @Entity
 public class Section {
@@ -26,17 +28,34 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
+        this(line, upStation, downStation, new Distance(distance));
+    }
+
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
+        validateSection(upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateSection(final Station upStation, final Station downStation) {
+        validateStation(upStation);
+        validateStation(downStation);
+    }
+
+    private void validateStation(final Station station) {
+        if (station == null) {
+            throw new SectionStationCanNotBeNullException();
+        }
     }
 
     public Long getId() {
@@ -55,7 +74,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -76,13 +95,12 @@ public class Section {
         return this;
     }
 
-    public Section setDistance(final int distance) {
-        this.distance = distance;
-        return this;
-    }
-
     public Section setUpStation(final Station upStation) {
         this.upStation = upStation;
         return this;
+    }
+
+    public void minusDistance(final Distance distance) {
+        this.distance.minus(distance);
     }
 }

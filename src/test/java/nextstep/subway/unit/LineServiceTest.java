@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.List;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -65,7 +66,7 @@ public class LineServiceTest {
                 () -> assertThat(line.getSections()).hasSize(1),
                 () -> assertThat(section.getUpStation()).isEqualTo(upStation),
                 () -> assertThat(section.getDownStation()).isEqualTo(downStation),
-                () -> assertThat(section.getDistance()).isEqualTo(distance)
+                () -> assertThat(section.getDistance()).isEqualTo(new Distance(distance))
         );
     }
 
@@ -92,7 +93,7 @@ public class LineServiceTest {
                 () -> assertThat(sections).hasSize(1),
                 () -> assertThat(sections.get(0).getUpStation()).isEqualTo(upStation),
                 () -> assertThat(sections.get(0).getDownStation()).isEqualTo(downStation),
-                () -> assertThat(sections.get(0).getDistance()).isEqualTo(distance)
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(new Distance(distance))
         );
     }
 }
