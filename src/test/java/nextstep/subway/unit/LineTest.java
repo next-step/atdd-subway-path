@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.CannotDeleteSoleSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,6 @@ class LineTest {
 
         // when & then
         assertThatThrownBy(() -> 분당선.removeSection(가천대역))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(CannotDeleteSoleSectionException.class);
     }
 }

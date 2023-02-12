@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
+import nextstep.subway.exception.CannotDeleteSoleSectionException;
 import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
 import nextstep.subway.exception.SectionWithStationNotExistsException;
 
@@ -106,7 +107,7 @@ public class Sections {
 
     public void remove(Station station) {
         if (isSingleSection()) {
-            throw new IllegalArgumentException();
+            throw new CannotDeleteSoleSectionException();
         }
 
         if (isFirstLineStation(station)) {
