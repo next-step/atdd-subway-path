@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -6,13 +6,13 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
-import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.StationService;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.line.LineService;
+import nextstep.subway.station.StationService;
+import nextstep.subway.line.LineResponse;
+import nextstep.subway.section.SectionRequest;
+import nextstep.subway.line.Line;
+import nextstep.subway.line.LineRepository;
+import nextstep.subway.station.Station;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

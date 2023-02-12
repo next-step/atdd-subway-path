@@ -1,6 +1,9 @@
-package nextstep.subway.domain;
+package nextstep.subway.section;
 
 import javax.persistence.*;
+
+import nextstep.subway.line.Line;
+import nextstep.subway.station.Station;
 
 @Entity
 public class Section {

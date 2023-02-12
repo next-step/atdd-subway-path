@@ -1,16 +1,16 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
-import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.line.LineService;
+import nextstep.subway.section.SectionRequest;
+import nextstep.subway.line.Line;
+import nextstep.subway.line.LineRepository;
+import nextstep.subway.section.Section;
+import nextstep.subway.station.Station;
+import nextstep.subway.station.StationRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

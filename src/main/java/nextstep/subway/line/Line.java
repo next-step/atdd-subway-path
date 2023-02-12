@@ -1,9 +1,12 @@
-package nextstep.subway.domain;
+package nextstep.subway.line;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import nextstep.subway.section.Section;
+import nextstep.subway.station.Station;
 
 @Entity
 public class Line {
