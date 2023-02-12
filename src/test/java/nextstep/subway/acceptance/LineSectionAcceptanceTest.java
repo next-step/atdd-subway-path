@@ -234,6 +234,25 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간을 추가하고
+     * When 지하철 노선에 등록되지 않은 역을 제거하려고 하면
+     * Then 구간이 제거되지 않는다.
+     */
+    @DisplayName("지하철 노선에 등록되지 않은 역은 제거할 수 없다.")
+    @Test
+    void cannotRemoveNonExistingStation() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createDefaultSectionCreateParams(양재역, 정자역));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 신규역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

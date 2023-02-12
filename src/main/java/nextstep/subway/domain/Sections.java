@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
 import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
+import nextstep.subway.exception.SectionWithStationNotExistsException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -120,12 +121,12 @@ public class Sections {
         Section upSection = sections.stream()
             .filter(it -> it.hasDownStation(station))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
 
         Section downSection = sections.stream()
             .filter(it -> it.hasUpStation(station))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
 
         upSection.updateDownStation(downSection.getDownStation());
         upSection.increaseDistance(downSection.getDistance());

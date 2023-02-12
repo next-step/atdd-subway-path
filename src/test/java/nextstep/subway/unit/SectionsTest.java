@@ -6,6 +6,7 @@ import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
 import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
+import nextstep.subway.exception.SectionWithStationNotExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -212,6 +213,19 @@ class SectionsTest {
         // when & then
         assertThatThrownBy(() -> sections.remove(station2))
             .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 노선에 등록된 역이 아니라면, 지하철 구간을 제거할 수 없다.")
+    @Test
+    void cannotRemoveNotRegisteredStation() {
+        // given
+        Sections sections = new Sections();
+        sections.add(createSection(station1, station2));
+        sections.add(createSection(station2, station3));
+
+        // when & then
+        assertThatThrownBy(() -> sections.remove(station1_5))
+            .isInstanceOf(SectionWithStationNotExistsException.class);
     }
 
     @DisplayName("등록된 모든 지하철 구간의 역 목록을 순서대로 조회한다.")
