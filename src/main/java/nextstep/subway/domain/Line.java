@@ -89,12 +89,11 @@ public class Line {
         removable(upSection.isPresent(), downSection.isPresent());
         if (upSection.isPresent() && downSection.isPresent()) {
             Section section = upSection.get();
-            sections.removeInUp(section);
-            sections.removeSection(section);
-        } else {
-            upSection.ifPresent(sections::removeInUp);
-            downSection.ifPresent(sections::removeInDown);
+            sections.mergeSection(section);
+            return;
         }
+        upSection.ifPresent(sections::removeSection);
+        downSection.ifPresent(sections::removeSection);
     }
 
     private void removable(boolean existInUpSection, boolean existInDownSection) {

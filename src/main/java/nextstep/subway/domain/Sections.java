@@ -35,22 +35,12 @@ public class Sections {
                 .ifPresent(section -> section.updateDownStation(newSection.getUpStation(), newSection.getDistance()));
     }
 
-    public void removeInUp(Section upSection) {
+    public void mergeSection(Section targetSection) {
         this.sections.stream()
-                .filter(section -> section.isDownStationEquals(upSection.getUpStation()))
+                .filter(section -> section.isDownStationEquals(targetSection.getUpStation()))
                 .findFirst()
-                .ifPresentOrElse(
-                        section -> section.updateDownStation(upSection.getDownStation(), -upSection.getDistance())
-                        , () -> removeSection(upSection));
-    }
-
-    public void removeInDown(Section downSection) {
-        this.sections.stream()
-                .filter(section -> section.isUpStationEquals(downSection.getDownStation()))
-                .findFirst()
-                .ifPresentOrElse(
-                        section -> section.updateUpStation(downSection.getUpStation(), -downSection.getDistance())
-                        , () -> removeSection(downSection));
+                .ifPresent(section -> section.updateDownStation(targetSection.getDownStation(), -targetSection.getDistance()));
+        removeSection(targetSection);
     }
 
     public void removeSection(Section section) {
