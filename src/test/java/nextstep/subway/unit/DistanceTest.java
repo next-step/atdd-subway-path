@@ -16,7 +16,37 @@ class DistanceTest {
     @DisplayName("지하철 구간 길이를 생성한다.")
     @Test
     void create() {
+        // given
         Distance distance = new Distance(5);
+
+        // when & then
+        assertThat(distance).isEqualTo(new Distance(5));
+    }
+
+    @DisplayName("지하철 구간 길이를 증가시킨다.")
+    @Test
+    void increase() {
+        // given
+        Distance distance = new Distance(5);
+
+        // when
+        distance.increase(5);
+
+        // then
+        assertThat(distance).isEqualTo(new Distance(10));
+    }
+
+    @DisplayName("지하철 구간의 길이 증가 시, 0 또는 음수 값은 증가되지 않는다.")
+    @ValueSource(ints = {0, -1})
+    @ParameterizedTest
+    void notIncreased(int value) {
+        // given
+        Distance distance = new Distance(5);
+
+        // when
+        distance.increase(value);
+
+        // then
         assertThat(distance).isEqualTo(new Distance(5));
     }
 
@@ -24,6 +54,7 @@ class DistanceTest {
     @ValueSource(ints = {0, -1})
     @ParameterizedTest
     void invalidValue(int value) {
+        // when & then
         assertThatThrownBy(() -> new Distance(value))
             .isInstanceOf(IllegalArgumentException.class);
     }
@@ -32,7 +63,10 @@ class DistanceTest {
     @ValueSource(ints = {10, 11})
     @ParameterizedTest
     void invalidDecreasedValue(int value) {
+        // given
         Distance distance = new Distance(10);
+
+        // when & then
         assertThatThrownBy(() -> distance.decrease(value))
             .isInstanceOf(InvalidSectionDistanceException.class);
     }

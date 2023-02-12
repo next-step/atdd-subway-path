@@ -22,6 +22,13 @@ public class Distance {
         this.value = value;
     }
 
+    public void increase(int value) {
+        if (value < MIN_VALUE) {
+            return;
+        }
+        this.value += value;
+    }
+
     public void decrease(int value) {
         if (isLessThan(value)) {
             throw new InvalidSectionDistanceException(this.value, value);
