@@ -22,6 +22,11 @@ public class Station {
         this.name = new Name(name);
     }
 
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = new Name(name);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

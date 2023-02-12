@@ -2,11 +2,10 @@ package nextstep.subway.domain.section;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.station.Station;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -38,8 +37,12 @@ public class Section {
         this.distance = distance;
     }
 
-    public List<Station> getStations() {
-        return List.of(upStation, downStation);
+    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     @Override
