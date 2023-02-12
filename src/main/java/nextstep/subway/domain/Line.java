@@ -155,7 +155,7 @@ public class Line {
         boolean matchDownStation = hasMatchingStation(newSection.getDownStation());
 
         if(!matchUpStation && !matchDownStation) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있지 않아 추가할 수 없음");
         }
     }
 
