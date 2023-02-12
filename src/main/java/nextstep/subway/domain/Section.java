@@ -52,6 +52,10 @@ public class Section {
         this.downStation = station;
     }
 
+    public void updateDownStation(Station station) {
+        this.downStation = station;
+    }
+
     public boolean hasUpStation(Station station) {
         return upStation.equals(station);
     }

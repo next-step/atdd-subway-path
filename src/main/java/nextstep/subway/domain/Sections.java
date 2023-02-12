@@ -121,14 +121,10 @@ public class Sections {
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
 
-        sections.removeAll(List.of(upSection, downSection));
+        upSection.updateDownStation(downSection.getDownStation());
+        upSection.increaseDistance(downSection.getDistance());
 
-        add(new Section(
-            upSection.getLine(),
-            upSection.getUpStation(),
-            downSection.getDownStation(),
-            upSection.getDistance() + downSection.getDistance())
-        );
+        sections.remove(downSection);
     }
 
     private boolean isSingleSection() {
