@@ -6,8 +6,8 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
@@ -32,7 +32,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(upStation, downStation, request.getDistance());
         }
         return createLineResponse(line);
     }
@@ -69,8 +69,7 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -87,13 +86,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
+        return line.getStations().stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
     }
@@ -102,11 +95,11 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
+        line.deleteSection(station);
+    }
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new DataIntegrityViolationException("존재하지 않는 라인"));
     }
 }
