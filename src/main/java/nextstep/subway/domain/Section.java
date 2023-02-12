@@ -20,17 +20,44 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "distance"))
+    private Distance distance;
 
     public Section() {
 
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        if (hasIdenticalStations(upStation, downStation)) {
+            throw new IllegalArgumentException();
+        }
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
+    }
+
+    public boolean hasIdenticalStations(Station upStation, Station downStation) {
+        return (upStation != null && downStation != null) && upStation.equals(downStation);
+    }
+
+    public void updateUpStation(Station station, int distance) {
+        this.distance.decrease(distance);
+        this.upStation = station;
+    }
+
+    public void updateDownStation(Station station, int distance) {
+        this.distance.decrease(distance);
+        this.downStation = station;
+    }
+
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Long getId() {
@@ -50,6 +77,6 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.value();
     }
 }
