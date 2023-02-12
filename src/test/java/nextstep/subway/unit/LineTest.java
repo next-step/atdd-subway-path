@@ -4,165 +4,350 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
-    @Test
-    @DisplayName("구간 추가")
-    void addSection() {
-        //given 노선을 생성한다.
-        Line line = new Line("4호선", "sky-blue");
-        Station 당고개 = new Station("당고개");
-        Station 상계 = new Station("상계");
 
-        //when 노선에 구간을 추가한다.
-        Section section = Section.builder(line)
-                .setUpStation(당고개)
-                .setDownStation(상계)
-                .setDistance(10)
+    private Line line;
+    private Station stationA;
+    private Station stationB;
+    private Station stationC;
+    private Station stationD;
+    private Station stationE;
+
+    private final int DEFAULT_DISTANCE = 10;
+
+    @BeforeEach
+    void setUp() {
+        line = new Line("1호선", "blue");
+        stationA = new Station("A");
+        stationB = new Station("B");
+        stationC = new Station("C");
+        stationD = new Station("D");
+        stationE = new Station("E");
+        Section AtoB = Section.builder(line)
+                .setUpStation(stationA)
+                .setDownStation(stationB)
+                .setDistance(DEFAULT_DISTANCE)
                 .build();
-        line.addSection(section);
-
-        //then 노선에서 구간이 조회된다.
-        Assertions.assertAll(
-                () -> assertThat(line.getSections().isEmpty()).isFalse(),
-                () -> assertThat(line.equalLastStations(상계)).isTrue(),
-                () -> assertThat(line.getAllStations()
-                        .stream().map(Station::getName)).containsOnly("당고개", "상계")
-        );
-
-
+        line.addSection(AtoB);
     }
 
     @Test
-    @DisplayName("구간 추가 실패 - 마지막역에서 출발하는 구간이 아닐 때")
-    void addSectionLastStation() {
-        //given 노선을 생성하고 구간을 추가한다.
-        Line line = new Line("4호선", "sky-blue");
-        Station 당고개 = new Station("당고개");
-        Station 상계 = new Station("상계");
-        Section 당고개_상계 = Section.builder(line)
-                .setUpStation(당고개)
-                .setDownStation(상계)
-                .setDistance(10)
+    @DisplayName("상행역 종점 구간 추가")
+    void addSectionFirstSection() {
+        //when 노선의 상행 종점을 하행역으로 하는 구간을 추가한다.
+        Section CtoA = Section.builder(line)
+                .setUpStation(stationC)
+                .setDownStation(stationA)
+                .setDistance(DEFAULT_DISTANCE)
                 .build();
-        line.addSection(당고개_상계);
-
-        //when 노선의 마지막역에서 출발하지 않는 구간을 추가한다.
-        Station 서울역 = new Station("서울역");
-        Station 숙대입구 = new Station("숙대입구");
-        Section 서울역_숙대입구 = Section.builder(line)
-                .setUpStation(서울역)
-                .setDownStation(숙대입구)
-                .setDistance(10)
-                .build();
-
-        //then IllegalArgumentException
-        assertThatThrownBy(() -> line.addSection(서울역_숙대입구))
-                .isInstanceOf(SubwayException.class);
-    }
-
-    @Test
-    @DisplayName("구간 추가 실패 - 추가하는 구간의 하행역이 이미 포함됬을때")
-    void addSectionContainDownStation() {
-        //given 노선을 생성하고 구간을 추가한다.
-        Line line = new Line("4호선", "sky-blue");
-        Station 당고개 = new Station("당고개");
-        Station 상계 = new Station("상계");
-        Section 당고개_상계 = Section.builder(line)
-                .setUpStation(당고개)
-                .setDownStation(상계)
-                .setDistance(10)
-                .build();
-        line.addSection(당고개_상계);
-
-        //when 추가하는 구간의 하행역을 추가한다.
-        Station 서울역 = new Station("서울역");
-        Section 상계_서울역 = Section.builder(line)
-                .setUpStation(서울역)
-                .setDownStation(상계)
-                .setDistance(10)
-                .build();
-
-        //then IllegalArgumentException
-        assertThatThrownBy(() -> line.addSection(상계_서울역))
-                .isInstanceOf(SubwayException.class);
+        line.addSection(CtoA);
+        //then 역을 조회하면 추가한 구간의 상행역이 노선의 상행 종점이다.
+        assertThat(line.getAllStations()).containsExactly(stationC, stationA, stationB);
     }
 
     @Test
     @DisplayName("노선의 모든 역 조회")
     void getStations() {
-        //given 노선과 역을 생성한다.
-        Line line = new Line("4호선", "sky-blue");
-        Station 당고개 = new Station("당고개");
-        Station 상계 = new Station("상계");
-        Station 노원 = new Station("노원");
-
         //when 노선에 구간을 추가한다.
-        Section 당고개_상계 = Section.builder(line)
-                .setUpStation(당고개)
-                .setDownStation(상계)
-                .setDistance(10)
-                .build();
-        Section 상계_노원 = Section.builder(line)
-                .setUpStation(상계)
-                .setDownStation(노원)
-                .setDistance(10)
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
                 .build();
 
-        line.addSection(당고개_상계);
-        line.addSection(상계_노원);
+        line.addSection(BtoC);
 
         //then 노선의 모든 역을 조회한다.
         Assertions.assertAll(
                 () -> assertThat(line.getSections().isEmpty()).isFalse(),
-                () -> assertThat(line.equalLastStations(노원)).isTrue(),
+                () -> assertThat(line.equalLastStations(stationC)).isTrue(),
                 () -> assertThat(line.getAllStations()
-                        .stream().map(Station::getName)).containsOnly("당고개", "상계", "노원"),
+                        .stream().map(Station::getName)).containsOnly("A", "B", "C"),
                 () -> assertThat(line.getAllStations()).hasSize(3)
         );
 
     }
 
     @Test
-    @DisplayName("구간 삭제")
-    void removeSection() {
-        //given 노선과 역을 생성하고 구간 2개를 추가한다.
-        Line line = new Line("4호선", "sky-blue");
-        Station 당고개 = new Station("당고개");
-        Station 상계 = new Station("상계");
-        Station 노원 = new Station("노원");
-
-        Section 당고개_상계 = Section.builder(line)
-                .setUpStation(당고개)
-                .setDownStation(상계)
-                .setDistance(10)
+    @DisplayName("하행역 종점 구간 추가")
+    void addSectionLastSection() {
+        //when 노선의 상행 종점을 하행역으로 하는 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
                 .build();
-        Section 상계_노원 = Section.builder(line)
-                .setUpStation(상계)
-                .setDownStation(노원)
+        line.addSection(BtoC);
+        //then 역을 조회하면 추가한 구간의 상행역이 노선의 상행 종점이다.
+        assertThat(line.getAllStations()).containsExactly(stationA, stationB, stationC);
+    }
+
+    @Test
+    @DisplayName("기존 노선에 상행역, 하행역 모두 없는 구간 추가")
+    void addSectionNoneContain() {
+        //when 노선의 상행 종점을 하행역으로 하는 구간을 추가한다.
+        Section DtoE = Section.builder(line)
+                .setUpStation(stationD)
+                .setDownStation(stationE)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        //then 오류 발생
+        assertThatThrownBy(() -> line.addSection(DtoE))
+                .isInstanceOf(SubwayException.class);
+    }
+
+
+    @Test
+    @DisplayName("기존 노선에 상행역, 하행역 모두 있는 구간 추가")
+    void addSectionContainAll() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+
+        //when 기존 노선에 상행역, 하행역 모두 있는 구간 추가한다.
+        Section AtoC = Section.builder(line)
+                .setUpStation(stationA)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        //then 오류 발생
+        assertThatThrownBy(() -> line.addSection(AtoC))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @Test
+    @DisplayName("하행역이 일치하는 사이 구간 추가")
+    void addSectionIntervalEqualDownStation() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 추가된 노선과 하행역이 같은 구간을 추가한다.
+        Section DtoC = Section.builder(line)
+                .setUpStation(stationD)
+                .setDownStation(stationC)
                 .setDistance(5)
                 .build();
-
-        line.addSection(당고개_상계);
-        line.addSection(상계_노원);
-
-        //when 구간을 삭제한다.
-        line.remove(노원);
-
-        //then 삭제된 역이 노선에서 조회되지 않는다.
-        Assertions.assertAll(
-                () -> assertThat(line.getSections().isEmpty()).isFalse(),
-                () -> assertThat(line.equalLastStations(상계)).isTrue(),
-                () -> assertThat(line.getAllStations()
-                        .stream().map(Station::getName)).containsOnly("당고개", "상계"),
-                () -> assertThat(line.getAllStations()).hasSize(2)
+        line.addSection(DtoC);
+        //then 추가된 구간이 사이에 조회된다. 이전 노선의 길이가 줄어든다. 상행 ~ 하행 순서로 역이 조회된다.
+        assertAll(
+                () -> assertThat(line.getAllStations()).containsExactly(stationA, stationB, stationD, stationC),
+                () -> assertThat(BtoC.getDistance()).isEqualTo(5),
+                () -> assertThat(BtoC.getDownStation()).isEqualTo(stationD)
         );
+    }
+
+    @Test
+    @DisplayName("길이가 더 길고 하행역이 일치하는 사이 구간 추가")
+    void addSectionIntervalEqualDownStationAndGreaterDistance() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 추가된 노선과 길이가 같거나 길고 하행역이 같은 구간을 추가한다.
+        Section DtoC = Section.builder(line)
+                .setUpStation(stationD)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE * 2)
+                .build();
+        //then 오류 발생
+        assertThatThrownBy(() -> line.addSection(DtoC))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @Test
+    @DisplayName("길이가 더 같고 하행역이 일치하는 사이 구간 추가")
+    void addSectionIntervalEqualDownStationAndEqualDistance() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 추가된 노선과 길이가 같거나 길고 하행역이 같은 구간을 추가한다.
+        Section DtoC = Section.builder(line)
+                .setUpStation(stationD)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        //then 오류 발생
+        assertThatThrownBy(() -> line.addSection(DtoC))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @Test
+    @DisplayName("상행역이 일치하는 사이 구간 추가")
+    void addSectionIntervalEqualUpStation() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 추가된 노선과 상행역이 같은 구간을 추가한다.
+        Section BtoD = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationD)
+                .setDistance(DEFAULT_DISTANCE / 2)
+                .build();
+        line.addSection(BtoD);
+        //then 추가된 구간이 사이에 조회된다. 이전 노선의 길이가 줄어든다. 상행~하행 순서로 역이 조회된다.
+        assertAll(
+                () -> assertThat(line.getAllStations()).containsExactly(stationA, stationB, stationD, stationC),
+                () -> assertThat(BtoC.getDistance()).isEqualTo(DEFAULT_DISTANCE / 2),
+                () -> assertThat(BtoC.getUpStation()).isEqualTo(stationD)
+        );
+    }
+
+    @Test
+    @DisplayName("길이가 더 길고 상행역이 일치하는 사이 구간 추가")
+    void addSectionIntervalEqualUpStationAndGreaterDistance() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 추가된 노선과 상행역이 같은 구간을 추가한다.
+        Section BtoD = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationD)
+                .setDistance(DEFAULT_DISTANCE * 2)
+                .build();
+        //then 오류 발생
+        assertThatThrownBy(() -> line.addSection(BtoD))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @Test
+    @DisplayName("길이가 같고 상행역이 일치하는 사이 구간 추가")
+    void addSectionIntervalEqualUpStationAndEqualDistance() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 추가된 노선과 상행역이 같은 구간을 추가한다.
+        Section BtoD = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationD)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        //then 오류 발생
+        assertThatThrownBy(() -> line.addSection(BtoD))
+                .isInstanceOf(SubwayException.class);
+    }
+
+    @Test
+    @DisplayName("역 삭제")
+    void removeStation() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 노선에서 사이 역1개를 삭제한다.
+        line.remove(stationB);
+        //then 노선을 조회하면 삭제한 역이x 조회되지 않고, 구간의 길이는 두 구간의 합이다.
+        assertAll(
+                () -> assertThat(line.getAllStations()).containsExactly(stationA, stationC),
+                () -> assertThat(line.getSections().getValuesOrderBy()).hasSize(1),
+                () -> assertThat(line.getSections().getValuesOrderBy()
+                        .get(0).getDistance()).isEqualTo(DEFAULT_DISTANCE * 2)
+        );
+    }
+
+    @Test
+    @DisplayName("상행 종점역 삭제")
+    void removeFirstStation() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 노선에서 상행 종점역을 삭제한다.
+        line.remove(stationA);
+        //then 노선을 조회하면 삭제한 역이x 조회되지 않는다.
+        assertAll(
+                () -> assertThat(line.getAllStations()).containsExactly(stationB, stationC),
+                () -> assertThat(line.getSections().getValuesOrderBy()).hasSize(1),
+                () -> assertThat(line.getSections().getValuesOrderBy()
+                        .get(0).getDistance()).isEqualTo(DEFAULT_DISTANCE)
+        );
+    }
+
+    @Test
+    @DisplayName("하행 종점역 삭제")
+    void removeLastStation() {
+        //given 노선에 구간을 추가한다.
+        Section BtoC = Section.builder(line)
+                .setUpStation(stationB)
+                .setDownStation(stationC)
+                .setDistance(DEFAULT_DISTANCE)
+                .build();
+        line.addSection(BtoC);
+        //when 노선에서 사이 역1개를 삭제한다.
+        line.remove(stationC);
+        //then 노선을 조회하면 삭제한 역이x 조회되지 않고, 구간의 길이는 두 구간의 합이다.
+        assertAll(
+                () -> assertThat(line.getAllStations()).containsExactly(stationA, stationB),
+                () -> assertThat(line.getSections().getValuesOrderBy()).hasSize(1),
+                () -> assertThat(line.getSections().getValuesOrderBy()
+                        .get(0).getDistance()).isEqualTo(DEFAULT_DISTANCE)
+        );
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 노선은 역을 삭제할 수 없다.")
+    void removeWhenHaveOneSection() {
+        //then 역을 삭제하면 오류가 난다.
+        assertAll(
+                () -> assertThatThrownBy(() -> line.remove(stationA)).isInstanceOf(SubwayException.class)
+                        .hasMessageContaining(SubwayExceptionMessage.STATION_CANNOT_REMOVE.getMessage()),
+                () -> assertThatThrownBy(() -> line.remove(stationB)).isInstanceOf(SubwayException.class)
+                        .hasMessageContaining(SubwayExceptionMessage.STATION_CANNOT_REMOVE.getMessage())
+        );
+
+    }
+
+    @Test
+    @DisplayName("노선에 없는 역은 삭제할 수 없다.")
+    void removeNotContainStation() {
+        //then 역을 삭제하면 오류가 난다.
+        assertAll(
+                () -> assertThatThrownBy(() -> line.remove(stationC)).isInstanceOf(SubwayException.class)
+                        .hasMessageContaining(SubwayExceptionMessage.STATION_CANNOT_REMOVE.getMessage())
+        );
+
     }
 
 }
