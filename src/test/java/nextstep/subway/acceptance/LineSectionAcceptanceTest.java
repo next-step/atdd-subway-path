@@ -15,6 +15,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -52,8 +53,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역)
+        );
     }
 
     /**
@@ -71,15 +74,17 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 신규역, 양재역);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 신규역, 양재역)
+        );
     }
 
     /**
      * When 기존 구간 사이에 새로 등록된 역과 기존 구간의 하행역을 포함하는 새로운 구간을 추가하면
      * Then 기존 구간 사이에 새로운 구간이 추가된다.
      * AS-IS    A ----------------- C
-     *        +           B ------- C
+     * +                  B ------- C
      * TO-BE    A --------B-------- C
      */
     @DisplayName("기존 구간의 하행역을 기준으로 새로운 구간을 추가한다.")
@@ -90,8 +95,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 신규역, 양재역);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 신규역, 양재역)
+        );
     }
 
     /**
@@ -119,7 +126,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // given
         Long 수서역 = 지하철역_생성_요청("수서역").jsonPath().getLong("id");
         Long 복정역 = 지하철역_생성_요청("복정역").jsonPath().getLong("id");
-        
+
         // when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createDefaultSectionCreateParams(수서역, 복정역));
 
@@ -163,15 +170,17 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신규역, 강남역, 양재역);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신규역, 강남역, 양재역)
+        );
     }
 
     /**
      * When 노선에 새로운 역이 하행 종점인 구간을 등록하면
      * Then 기존 구간 사이에 새로운 구간이 추가된다.
      * AS-IS    A---------B
-     *        +           B-------- C
+     * +                  B-------- C
      * TO-BE    A --------B-------- C
      */
     @DisplayName("새로운 역을 하행 종점으로 갖는 구간을 등록한다.")
@@ -182,8 +191,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 신규역);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 신규역)
+        );
     }
 
     /**
@@ -206,8 +217,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역)
+        );
     }
 
     /**
@@ -230,8 +243,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역)
+        );
     }
 
     /**
@@ -254,8 +269,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역)
+        );
     }
 
     /**
