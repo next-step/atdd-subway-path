@@ -1,6 +1,11 @@
 package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Station;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SectionResponse {
 
@@ -12,11 +17,26 @@ public class SectionResponse {
     public SectionResponse() {
     }
 
-    public SectionResponse(Section section) {
-        this.id = section.getId();
-        this.upStation = new StationResponse(section.getUpStation());
-        this.downStation = new StationResponse(section.getDownStation());
-        this.distance = section.getDistance();
+    private SectionResponse(Long id, Station upStation, Station downStation, int distance) {
+        this.id = id;
+        this.upStation = StationResponse.of(upStation);
+        this.downStation = StationResponse.of(downStation);
+        this.distance = distance;
+    }
+
+    public static SectionResponse of(Section section) {
+        return new SectionResponse(
+                section.getId(),
+                section.getUpStation(),
+                section.getDownStation(),
+                section.getDistance()
+        );
+    }
+
+    public static List<SectionResponse> asList(Sections sections) {
+        return sections.getValuesOrderBy().stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public Long getId() {

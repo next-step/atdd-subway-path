@@ -18,12 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
-public class LineServiceTest {
+class LineServiceTest {
+
+    private static final int DEFAULT_DISTANCE = 10;
+
     @Autowired
     private StationRepository stationRepository;
     @Autowired
     private LineRepository lineRepository;
-
     @Autowired
     private LineService lineService;
 
@@ -83,7 +85,7 @@ public class LineServiceTest {
     }
 
     private void addSection(Line 사호선, Station 서울역, Station 숙대입구역) {
-        SectionRequest sectionRequest = new SectionRequest(서울역.getId(), 숙대입구역.getId(), 10);
+        SectionRequest sectionRequest = new SectionRequest(서울역.getId(), 숙대입구역.getId(), DEFAULT_DISTANCE);
         lineService.addSection(사호선.getId(), sectionRequest);
     }
 }

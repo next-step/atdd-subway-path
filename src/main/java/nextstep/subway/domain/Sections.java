@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -21,34 +22,50 @@ public class Sections {
             values.add(section);
             return;
         }
-        if (contains(section.getDownStation()) && contains(section.getUpStation())) {
-            throw new DataIntegrityViolationException("이미 등록된 구간입니다.");
+        if (isAlreadyAdd(section)) {
+            throw new SubwayException(SubwayExceptionMessage.SECTION_ALREADY_ADDED);
         }
-        // 상행 종점 구간 추가
-        if (equalFirstStation(section.getDownStation()) && !contains(section.getUpStation())) {
+        if (canAddFirstSection(section)) {
             values.add(section);
             return;
         }
-        // 하행 종점 구간 추가
-        if (equalLastStation(section.getUpStation()) && !contains(section.getDownStation())) {
+        if (canAddLastSection(section)) {
             values.add(section);
             return;
         }
-        // 중간 구간 추가 상행역 일치
-        if (contains(section.getUpStation()) && !contains(section.getDownStation())) {
+        if (isBetweenUp(section)) {
             Section includedSection = getIncludedSectionWhenEqualUpStation(section);
             includedSection.divideUpStation(section);
             values.add(section);
             return;
         }
-        // 중간 구간 추가 하행역 일치
-        if (contains(section.getDownStation()) && !contains(section.getUpStation())) {
+        if (isBetweenDown(section)) {
             Section includedSection = getIncludedSectionWhenEqualDownStation(section);
             includedSection.divideDownStation(section);
             values.add(section);
             return;
         }
-        throw new DataIntegrityViolationException("구간을 추가할 수 없습니다.");
+        throw new SubwayException(SubwayExceptionMessage.SECTION_CANNOT_ADD);
+    }
+
+    private boolean isBetweenDown(Section section) {
+        return contains(section.getDownStation()) && !contains(section.getUpStation());
+    }
+
+    private boolean isBetweenUp(Section section) {
+        return contains(section.getUpStation()) && !contains(section.getDownStation());
+    }
+
+    private boolean canAddLastSection(Section section) {
+        return equalLastStation(section.getUpStation()) && !contains(section.getDownStation());
+    }
+
+    private boolean canAddFirstSection(Section section) {
+        return equalFirstStation(section.getDownStation()) && !contains(section.getUpStation());
+    }
+
+    private boolean isAlreadyAdd(Section section) {
+        return contains(section.getDownStation()) && contains(section.getUpStation());
     }
 
     private Optional<Section> getAfterSection(Section section) {
@@ -69,6 +86,11 @@ public class Sections {
         return values.stream()
                 .filter(value -> getBeforeSection(value).isEmpty())
                 .findFirst().orElseThrow();
+
+    }
+
+    private Section getLastSection() {
+        return getValuesOrderBy().get(size() - 1);
 
     }
 
@@ -119,7 +141,32 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        values.remove(getStations().indexOf(station) - 1);
+
+        if (!contains(station)) {
+            throw new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED);
+        }
+        if (size() <= 1) {
+            throw new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE);
+        }
+        if (equalFirstStation(station)) {
+            values.remove(getFirstSection());
+            return;
+        }
+        if (equalLastStation(station)) {
+            values.remove(getLastSection());
+            return;
+        }
+        Section removeSection = values.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED));
+
+        Section updateSection = getAfterSection(removeSection)
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED));
+
+        updateSection.combineUpSection(removeSection);
+        values.remove(removeSection);
+
     }
 
     public int size() {
@@ -131,7 +178,7 @@ public class Sections {
 
     }
 
-    public List<Section> getValuesOrderBy(){
+    public List<Section> getValuesOrderBy() {
         if (values.isEmpty()) {
             return Collections.emptyList();
         }

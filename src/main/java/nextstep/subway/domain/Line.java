@@ -60,23 +60,15 @@ public class Line {
         sections.addSection(section);
     }
 
-    public boolean isEmptySections() {
-        return sections.isEmpty();
-    }
-
     public List<Station> getAllStations() {
         return sections.getStations();
     }
 
-    public boolean equalLastStations(Station station){
+    public boolean equalLastStations(Station station) {
         return sections.equalLastStation(station);
     }
 
-    public void removeLastSection(Station station) {
-
-        if (!sections.equalLastStation(station)) {
-            throw new IllegalArgumentException();
-        }
+    public void remove(Station station) {
         sections.remove(station);
     }
 }

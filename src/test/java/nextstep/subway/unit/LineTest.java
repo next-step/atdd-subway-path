@@ -3,12 +3,13 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SubwayException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
     @Test
@@ -29,10 +30,10 @@ class LineTest {
 
         //then 노선에서 구간이 조회된다.
         Assertions.assertAll(
-                () ->   assertThat(line.getSections().isEmpty()).isFalse(),
+                () -> assertThat(line.getSections().isEmpty()).isFalse(),
                 () -> assertThat(line.equalLastStations(상계)).isTrue(),
                 () -> assertThat(line.getAllStations()
-                    .stream().map(Station::getName)).containsOnly("당고개", "상계")
+                        .stream().map(Station::getName)).containsOnly("당고개", "상계")
         );
 
 
@@ -62,8 +63,8 @@ class LineTest {
                 .build();
 
         //then IllegalArgumentException
-        assertThatThrownBy(  () -> line.addSection(서울역_숙대입구))
-                .isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> line.addSection(서울역_숙대입구))
+                .isInstanceOf(SubwayException.class);
     }
 
     @Test
@@ -89,8 +90,8 @@ class LineTest {
                 .build();
 
         //then IllegalArgumentException
-        assertThatThrownBy(  () -> line.addSection(상계_서울역))
-                .isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> line.addSection(상계_서울역))
+                .isInstanceOf(SubwayException.class);
     }
 
     @Test
@@ -152,7 +153,7 @@ class LineTest {
         line.addSection(상계_노원);
 
         //when 구간을 삭제한다.
-        line.removeLastSection(노원);
+        line.remove(노원);
 
         //then 삭제된 역이 노선에서 조회되지 않는다.
         Assertions.assertAll(
