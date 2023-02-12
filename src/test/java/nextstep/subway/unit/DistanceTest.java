@@ -36,6 +36,19 @@ class DistanceTest {
         assertThat(distance).isEqualTo(new Distance(10));
     }
 
+    @DisplayName("지하철 구간의 길이를 감소시킨다.")
+    @Test
+    void decrease() {
+        // given
+        Distance distance = new Distance(5);
+
+        // when
+        distance.decrease(3);
+
+        // then
+        assertThat(distance).isEqualTo(new Distance(2));
+    }
+
     @DisplayName("지하철 구간의 길이 증가 시, 0 또는 음수 값은 증가되지 않는다.")
     @ValueSource(ints = {0, -1})
     @ParameterizedTest
