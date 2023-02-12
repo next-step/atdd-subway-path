@@ -32,6 +32,16 @@ public class Sections {
         return stations;
     }
 
+    private Optional<Section> findUpEndSection() {
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        return sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst();
+    }
+
     private Section findNextOf(Section section) {
         return sections.stream()
                 .filter(it -> it.getUpStation() == section.getDownStation())
@@ -40,23 +50,26 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (sections.isEmpty() || isEndSection(section)) {
+        if (isFirstOrEndpoint(section)) {
             sections.add(section);
             return;
         }
 
         validate(section);
-
         addBetweenSection(section);
         sections.add(section);
     }
 
-    private boolean isEndSection(Section section) {
-        Section upEndSection = findUpEndSection().orElseThrow(() -> new NotFoundException("상행 종점 구간이 존재하지 않습니다."));
-        Section downEndSection = findDownEndSection().orElseThrow(() -> new NotFoundException("하행 종점 구간이 존재하지 않습니다."));
+    private boolean isFirstOrEndpoint(Section section) {
+        List<Station> stations = stations();
+        if (sections.isEmpty()) {
+            return true;
+        }
 
-        return upEndSection.getUpStation() == section.getDownStation() ||
-                downEndSection.getDownStation() == section.getUpStation();
+        Station upEndStation = stations.get(0);
+        Station downEndStation = stations.get(stations.size() - 1);
+        return upEndStation == section.getDownStation() ||
+                downEndStation == section.getUpStation();
     }
 
     private void validate(Section section) {
@@ -79,26 +92,6 @@ public class Sections {
     private boolean isNotContainedAnyStations(List<Station> stations, Section section) {
         return !stations.contains(section.getUpStation()) &&
                 !stations.contains(section.getDownStation());
-    }
-
-    private Optional<Section> findUpEndSection() {
-        List<Station> downStations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        return sections.stream()
-                .filter(section -> !downStations.contains(section.getUpStation()))
-                .findFirst();
-    }
-
-    private Optional<Section> findDownEndSection() {
-        List<Station> upStations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-
-        return sections.stream()
-                .filter(section -> !upStations.contains(section.getDownStation()))
-                .findFirst();
     }
 
     private void addBetweenSection(Section section) {
@@ -134,7 +127,7 @@ public class Sections {
         if (deleteSections.isEmpty()) {
             throw new NotFoundException(stationId + "번 역을 찾을 수 없습니다.");
         }
-        
+
         return deleteSections;
     }
 }
