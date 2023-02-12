@@ -204,7 +204,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(removeResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
-        assertThat(response.jsonPath().getList("stations.distance", Long.class)).containsExactly(강남역, 정자역);
+        assertThat(response.jsonPath().getInt("totalDistance")).isEqualTo(15);
     }
 
     /**

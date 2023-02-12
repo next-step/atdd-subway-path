@@ -6,7 +6,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -35,6 +35,35 @@ public class Sections {
                 .ifPresent(section -> section.updateDownStation(newSection.getUpStation(), newSection.getDistance()));
     }
 
+    public void removeInUp(Section upSection) {
+        this.sections.stream()
+                .filter(section -> section.isDownStationEquals(upSection.getUpStation()))
+                .findFirst()
+                .ifPresentOrElse(
+                        section -> section.updateDownStation(upSection.getDownStation(), -upSection.getDistance())
+                        , () -> removeSection(upSection));
+    }
+
+    public void removeInDown(Section downSection) {
+        this.sections.stream()
+                .filter(section -> section.isUpStationEquals(downSection.getDownStation()))
+                .findFirst()
+                .ifPresentOrElse(
+                        section -> section.updateUpStation(downSection.getUpStation(), -downSection.getDistance())
+                        , () -> removeSection(downSection));
+    }
+
+    public void removeSection(Section section) {
+        if (isLeftOneSection()) {
+            throw new IllegalArgumentException("노선에 구간이 하나 남아 삭제할 수 없습니다.");
+        }
+        this.sections.remove(section);
+    }
+
+    private boolean isLeftOneSection() {
+        return sections.size() == 1;
+    }
+
     public boolean isEmpty() {
         return this.sections.isEmpty();
     }
@@ -45,8 +74,20 @@ public class Sections {
                         || section.isDownStationEquals(station));
     }
 
-    public List<Section> getSection() {
+    public List<Section> getSections() {
         return sections;
+    }
+
+    public Optional<Section> findUpSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStationEquals(station))
+                .findFirst();
+    }
+
+    public Optional<Section> findDownSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStationEquals(station))
+                .findFirst();
     }
 
     public List<Station> getStations() {
@@ -99,47 +140,9 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("이전 구간이 존재하지 않습니다."));
     }
 
-    private Station getFinalDownStation() {
-        return findFinalStation(Section::getDownStation, getUpStations());
-    }
-
-    private Station findFinalStation(Function<Section, Station> getStation, List<Station> stations) {
-        return sections.stream()
-                .map(getStation)
-                .filter(station -> !stations.contains(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("종점역이 존재하지 않습니다."));
-    }
-
-    private List<Station> getDownStations() {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-    }
-
-    private List<Station> getUpStations() {
-        return sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-    }
-
     public List<Integer> getSectionDistances() {
         return sections.stream()
                 .map(Section::getDistance)
                 .collect(Collectors.toList());
-    }
-
-    public void removeSection(Station station) {
-        if (!getFinalDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-        this.sections.remove(this.sections.size() - 1);
-    }
-
-    public void removeSection(String stationName) {
-        sections.stream()
-                .filter(section -> section.isStationNameEqualTo(stationName))
-                .findFirst()
-                .ifPresent(section -> sections.remove(section));
     }
 }
