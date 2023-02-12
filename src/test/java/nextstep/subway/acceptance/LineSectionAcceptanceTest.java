@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
-
     private Long 강남역;
     private Long 양재역;
 
@@ -36,8 +35,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 노선에 새로운 구간이 추가된다
+     * When 지하철 노선 하행 종점에 새로운 구간 추가를 요청 하면 (A, B) + (B, C)
+     * Then 노선에 새로운 구간이 추가된다. (A, B, C)
      */
     @DisplayName("지하철 노선에 구간을 등록")
     @Test
@@ -51,6 +50,47 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
     }
+
+    /**
+     * When 지하철 노선 중간에 새로운 구간 추가를 요청 하면 (A, B) + (A, C)
+     * Then 노선에 새로운 구간이 추가된다. (A, C, B)
+     */
+
+
+    /**
+     * When 지하철 노선 중간에 새로운 구간 추가를 요청 하면 (A, B) + (C, B)
+     * Then 노선에 새로운 구간이 추가된다. (A, C, B)
+     */
+
+
+    /**
+     * When 지하철 노선 앞에 새로운 구간 추가를 요청 하면 (A, B), (C, A)
+     * Then 노선에 새로운 구간이 추가된다. (C, A, B)
+     */
+
+
+    /**
+     * When 기존 지하철 구간 사이에 더 긴 구간의 추가를 요청하면 (A, B : 5m) + (A, C : 10m)
+     * Then 노선 구간 추가 실패 오류가 나온다. ("기존 지하철 구간의 길이보다 추가된 구간의 길이가 더 깁니다.")
+     */
+
+    /**
+     * When 기존 지하철 구간 사이에 더 긴 구간의 추가를 요청하면 (A, B : 5m) + (C, B : 10m)
+     * Then 노선 구간 추가 실패 오류가 나온다. ("기존 지하철 구간의 길이보다 추가된 구간의 길이가 더 깁니다.")
+     */
+
+
+    /**
+     * When 기존 지하철 노선에 포함되어 있는 지하철 역들 사이에서 새로운 구간 추가를 요청하면 (A, B) + (B, A)
+     * Then 노선 구간 추가 실패 오류가 나온다. ("노선에 존재하던 지하철 역 끼리는 구간을 만들 수 없습니다.")
+     */
+
+
+    /**
+     * When 새로운 구간의 지하철 역들이 기존 지하철 노선에 하나도 포함되어 있지 않다면 (A, B) + (C, D)
+     * Then 노선 구간 추가 실패 오류가 나온다. ("새로운 구간의 지하철 역들 중 하나는 기존 지하철 노선에 포함되어 있어야 합니다.")
+     */
+
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
