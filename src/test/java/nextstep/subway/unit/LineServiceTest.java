@@ -38,21 +38,19 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         이호선 = lineRepository.save(new Line("2호선", "green"));
         강남역 = stationRepository.save(new Station("강남역"));
         삼성역 = stationRepository.save(new Station("삼성역"));
         when(sectionRequest.getUpStationId()).thenReturn(강남역.getId());
         when(sectionRequest.getDownStationId()).thenReturn(삼성역.getId());
+        when(sectionRequest.getDistance()).thenReturn(10);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(이호선.getId(), sectionRequest);
 
         // then
-        // line.getSections 메서드를 통해 검증
         Line line = lineRepository.findById(이호선.getId()).orElseThrow();
-        Section addedSection = line.getSections().get(0);
+        Section addedSection = line.getHeadSection();
         assertThat(addedSection.getLine()).isEqualTo(이호선);
     }
 }

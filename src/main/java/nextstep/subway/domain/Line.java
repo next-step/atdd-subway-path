@@ -1,12 +1,10 @@
 package nextstep.subway.domain;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,10 +15,13 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
-    public Line() {
+    /**
+     * JPA를 위한 기본 생성자
+     */
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -52,7 +53,7 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 
@@ -61,14 +62,14 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        if (sections.size() == 1) {
-            throw new IllegalStateException("지하철노선은 1개 구간 이하로 구성될 수 없습니다.");
-        }
+        sections.remove(station);
+    }
 
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException("해당 노선의 하행종점역만 제거할 수 있습니다.");
-        }
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
 
-        sections.remove(sections.size() - 1);
+    public Section getHeadSection() {
+        return sections.getHeadSection();
     }
 }

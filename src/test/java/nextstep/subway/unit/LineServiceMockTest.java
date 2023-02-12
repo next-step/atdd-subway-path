@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("구간 서비스 단위 테스트 ; mocking")
+@DisplayName("구간 서비스 단위 테스트; mocking")
 @Transactional
 public class LineServiceMockTest {
     @Mock
@@ -36,6 +37,7 @@ public class LineServiceMockTest {
     private Line 이호선;
     private Station 강남역;
     private Station 삼성역;
+
     @BeforeEach
     void setUp() {
         // Given
@@ -52,18 +54,16 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         when(lineRepository.findById(1L)).thenReturn(Optional.of(이호선));
         when(stationService.findById(1L)).thenReturn(강남역);
         when(stationService.findById(2L)).thenReturn(삼성역);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(1L, sectionRequest);
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
-        Line line = lineService.findLineById(1L);
-        assertThat(line.getSections()).hasSize(1);
+        Sections sections = lineService.findLineById(1L)
+                .getSections();
+        assertThat(sections.size()).isEqualTo(1);
     }
 }
