@@ -1,6 +1,15 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.policy.section.SectionAddPolicy;
+import nextstep.subway.domain.policy.section.add.SectionBetweenDownAddPolicy;
+import nextstep.subway.domain.policy.section.add.SectionBetweenUpAddPolicy;
+import nextstep.subway.domain.policy.section.add.SectionFirstAddPolicy;
+import nextstep.subway.domain.policy.section.add.SectionLastAddPolicy;
+import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
+
 import javax.persistence.*;
+import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -12,7 +21,14 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private final Sections sections = new Sections();
+
+    @Transient
+    private final List<SectionAddPolicy> sectionAddPolicies
+            = Arrays.asList(new SectionFirstAddPolicy(sections)
+            , new SectionLastAddPolicy(sections)
+            , new SectionBetweenUpAddPolicy(sections)
+            , new SectionBetweenDownAddPolicy(sections));
 
     public Line() {
     }
@@ -57,7 +73,12 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        sections.addSection(section);
+            SectionAddPolicy sectionAddPolicy = sectionAddPolicies.stream().
+                    filter(policy -> policy.isSatisfied(section))
+                    .findFirst()
+                    .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.SECTION_CANNOT_ADD));
+            sectionAddPolicy.execute(section);
+
     }
 
     public List<Station> getAllStations() {
