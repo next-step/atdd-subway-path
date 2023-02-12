@@ -142,7 +142,7 @@ public class LineServiceTest extends IntegrationUnitTest {
 
 		assertThatThrownBy(() -> lineService.deleteSection(LINE_4_ID, 동대문역사문화공원_ID))
 			.isInstanceOf(SectionRemoveException.class)
-			.hasMessage(SectionErrorCode.INVALID_REMOVE_STATION.getMessage());
+			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
 
 	@DisplayName("구간제거시 제거할 지하철역이 노선에 포함되지않을경우 예외가 발생한다")

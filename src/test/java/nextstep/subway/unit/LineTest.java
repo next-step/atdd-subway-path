@@ -1,11 +1,11 @@
 package nextstep.subway.unit;
 
 import static nextstep.subway.common.LineFixtures.*;
+import static nextstep.subway.common.SectionFixtures.*;
 import static nextstep.subway.common.StationFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,7 +15,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.springframework.util.ReflectionUtils;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
@@ -62,11 +61,12 @@ class LineTest {
 		// given
 		Line line = LINE_4();
 		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(line.getSections());
+		insertSectionIds(line.getSections());
 
 		// when
 		line.removeSection(충무로);
 
+		List<Section> sections = line.getSections();
 		// then
 		assertAll(
 			() -> assertThat(line.getDownStationId()).isEqualTo(동대문역사문화공원_ID),
@@ -85,24 +85,12 @@ class LineTest {
 
 	}
 
-	@DisplayName("구간제거시 제거할구간이 하행종점역이 아닐경우 예외가 발생한다")
-	@Test
-	void 구간제거시_제거할구간이_하행종점역이_아닐경우_예외가_발생한다() throws Exception {
-		Line line = LINE_4();
-		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(line.getSections());
-
-		assertThatThrownBy(() -> line.removeSection(withId(동대문역사문화공원, 동대문역사문화공원_ID)))
-			.isInstanceOf(SectionRemoveException.class)
-			.hasMessage(SectionErrorCode.INVALID_REMOVE_STATION.getMessage());
-	}
-
 	@DisplayName("구간제거시 제거할 지하철역이 노선에 포함되지않을경우 예외가 발생한다")
 	@Test
 	void 구간제거시_제거할_지하철역이_노선에_포함되지않을경우_예외가_발생한다() throws Exception {
 		Line line = LINE_4();
 		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(충무로, 충무로_ID), 5);
-		insertIdInSections(line.getSections());
+		insertSectionIds(line.getSections());
 
 		assertThatThrownBy(() -> line.removeSection(withId(서울역, 서울역_ID)))
 			.isInstanceOf(SectionRemoveException.class)
@@ -204,13 +192,67 @@ class LineTest {
 			.hasMessage(SectionErrorCode.NOT_FOUND_EXISTING_STATION.getMessage());
 	}
 
-	private void insertIdInSections(List<Section> sections) {
-		for (int i = 1; i <= sections.size(); i++) {
-			Section section = sections.get(i - 1);
-			Field idField = ReflectionUtils.findField(section.getClass(), "id");
-			ReflectionUtils.makeAccessible(idField);
-			ReflectionUtils.setField(idField, section, (long)i);
-		}
+	@DisplayName("상행 하행 종점역을 제거요청할 경우 다음에 오는역이 종점역이 된다")
+	@ParameterizedTest
+	@MethodSource("provideRemoveFinalUpAndDownStation")
+	void 상행_하행_종점역을_제거요청할_경우_다음에_오는역이_종점역이_된다(Station removeStation) throws Exception {
+		// given
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), 10);
+
+		insertSectionIds(line.getSections());
+
+		// when
+		line.removeSection(removeStation);
+
+		// then
+		assertThat(line.getSections()).hasSize(1);
+	}
+
+	@DisplayName("중간역이 제거될경우 구간이 재배치된다")
+	@Test
+	void 중간역이_제거될경우_구간이_재배치된다() throws Exception {
+		// given
+		int inFrontSectionDistance = 10;
+		int afterSectionDistance = 5;
+
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), inFrontSectionDistance);
+		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), afterSectionDistance);
+
+		insertSectionIds(line.getSections());
+
+		// when
+		line.removeSection(withId(동대문역사문화공원, 동대문역사문화공원_ID));
+
+		// then
+		List<Section> resultSections = line.getSections();
+
+		int totalDistance = resultSections.stream()
+			.mapToInt(Section::getDistance)
+			.sum();
+
+		assertAll(
+			() -> assertThat(resultSections).hasSize(1),
+			() -> assertThat(line.getStations())
+				.containsExactly(withId(동대문, 동대문_ID), withId(서울역, 서울역_ID)),
+			() -> assertThat(totalDistance).isEqualTo(inFrontSectionDistance + afterSectionDistance)
+		);
+	}
+
+	@DisplayName("역 제거요청시 노선에 역이존재하지 않으면 예외가 발생한다")
+	@Test
+	void 역_제거요청시_노선에_역이존재하지_않으면_예외가_발생한다() throws Exception {
+		Line line = LINE_4_WITH_NOT_SECTION();
+		line.addSection(withId(동대문, 동대문_ID), withId(동대문역사문화공원, 동대문역사문화공원_ID), 10);
+		line.addSection(withId(동대문역사문화공원, 동대문역사문화공원_ID), withId(서울역, 서울역_ID), 5);
+
+		insertSectionIds(line.getSections());
+
+		assertThatThrownBy(() -> line.removeSection(withId(등록되지않은역, 등록되지않은역_ID)))
+			.isInstanceOf(SectionRemoveException.class)
+			.hasMessage(SectionErrorCode.NOT_INCLUDE_STATION.getMessage());
 	}
 
 	private static Stream<Arguments> provideUpAndDownStations() throws Exception {
@@ -221,6 +263,13 @@ class LineTest {
 			Arguments.of(withId(충무로, 충무로_ID), withId(서울역, 서울역_ID), 5),
 			Arguments.of(withId(서울역, 서울역_ID), withId(숙대입구역, 숙대입구역_ID), 10),
 			Arguments.of(withId(혜화역, 혜화역_ID), withId(동대문, 동대문_ID), 10)
+		);
+	}
+
+	private static Stream<Arguments> provideRemoveFinalUpAndDownStation() throws Exception {
+		return Stream.of(
+			Arguments.of(withId(서울역, 서울역_ID)),
+			Arguments.of(withId(동대문, 동대문_ID))
 		);
 	}
 }

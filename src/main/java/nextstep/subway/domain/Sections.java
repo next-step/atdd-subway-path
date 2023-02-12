@@ -82,6 +82,32 @@ public class Sections {
 		return List.copyOf(stations);
 	}
 
+	public void remove(Line line, Station station) {
+		if (!existingStations().contains(station)) {
+			throw new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION);
+		}
+
+		if (this.sections.size() == SINGLE_SECTION_COUNT) {
+			throw new SectionRemoveException(SectionErrorCode.SINGLE_SECTION);
+		}
+
+		Optional<Section> inFrontSection = this.sections.stream()
+			.filter(it -> it.equalDownStation(station))
+			.findFirst();
+
+		Optional<Section> afterSection = this.sections.stream()
+			.filter(it -> it.equalUpStation(station))
+			.findFirst();
+
+		if (inFrontSection.isPresent() && afterSection.isPresent()) {
+			removeMiddleStation(line, inFrontSection.get(), afterSection.get());
+			return;
+		}
+
+		inFrontSection.ifPresent(section -> removeFinalDownStation(line, section));
+		afterSection.ifPresent(section -> removeFinalUpStation(line, section));
+	}
+
 	public void createInitialLineSection(Station upStation, Station downStation, int distance, Line line) {
 		if (distance == INVALID_SECTION_DISTANCE) {
 			throw new SubwayBadRequestException(LineErrorCode.INVALID_SECTION_DISTANCE);
@@ -90,22 +116,27 @@ public class Sections {
 		this.sections.add(new Section(line, upStation, downStation, distance));
 	}
 
-	public Station remove(Station station, Long finalDownStationId) {
-		if (this.sections.size() == SINGLE_SECTION_COUNT) {
-			throw new SectionRemoveException(SectionErrorCode.SINGLE_SECTION);
-		}
+	private void removeFinalUpStation(Line line, Section infrontSection) {
+		this.sections.remove(infrontSection);
+		line.updateFinalUpStation(infrontSection.getDownStation());
+	}
 
-		Section section = this.sections.stream()
-			.filter(it -> it.equalDownStation(station))
-			.findFirst()
-			.orElseThrow(() -> new SectionRemoveException(SectionErrorCode.NOT_INCLUDE_STATION));
+	private void removeFinalDownStation(Line line, Section afterSection) {
+		this.sections.remove(afterSection);
+		line.updateFinalDownStation(afterSection.getUpStation());
+	}
 
-		if (section.hasFinalDownStation(finalDownStationId)) {
-			sections.remove(section);
-			return section.getUpStation();
-		}
-
-		throw new SectionRemoveException(SectionErrorCode.INVALID_REMOVE_STATION);
+	private void removeMiddleStation(Line line, Section inFrontSection, Section afterSection) {
+		this.sections.remove(inFrontSection);
+		this.sections.remove(afterSection);
+		this.sections.add(
+			new Section(
+				line,
+				inFrontSection.getUpStation(),
+				afterSection.getDownStation(),
+				inFrontSection.getDistance() + afterSection.getDistance()
+			)
+		);
 	}
 
 	private void addInFrontSection(Line line, Station upStation, Station downStation, int distance) {
@@ -176,18 +207,36 @@ public class Sections {
 		}
 
 		if (includedSection.equalUpStation(upStation)) {
-			this.sections.remove(includedSection);
-			this.sections.add(new Section(line, upStation, downStation, distance));
-			this.sections.add(
-				new Section(
-					line,
-					downStation,
-					includedSection.getDownStation(),
-					includedSection.getDistance() - distance
-				)
-			);
+			addSectionIfEqualUpStation(line, upStation, downStation, distance, includedSection);
 			return;
 		}
+
+		addSectionIfEqualDownStation(line, upStation, downStation, distance, includedSection);
+	}
+
+	private void addSectionIfEqualUpStation(
+		Line line,
+		Station upStation,
+		Station downStation,
+		int distance,
+		Section includedSection) {
+		this.sections.remove(includedSection);
+		this.sections.add(new Section(line, upStation, downStation, distance));
+		this.sections.add(
+			new Section(
+				line,
+				downStation,
+				includedSection.getDownStation(),
+				includedSection.getDistance() - distance
+			)
+		);
+	}
+
+	private void addSectionIfEqualDownStation(Line line,
+		Station upStation,
+		Station downStation,
+		int distance,
+		Section includedSection) {
 
 		this.sections.remove(includedSection);
 		this.sections.add(
