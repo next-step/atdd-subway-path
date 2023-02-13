@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exceptions.CanNotAddSectionException;
+import nextstep.subway.domain.exceptions.CanNotRemoveSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -109,6 +110,10 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        if (sections.size() <= 1) {
+            throw new CanNotRemoveSectionException("구간의 개수가 1개 이하인 경우 구간 제거 불가");
+        }
+
         Optional<Section> upperSection = sections.stream()
                 .filter(it -> it.getDownStation().equals(station))
                 .findFirst();
