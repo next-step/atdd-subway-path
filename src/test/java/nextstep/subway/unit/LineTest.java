@@ -139,8 +139,8 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("Section을 하나이상 가지고 있는 Line 삭제 테스트")
-    void removeSection() {
+    @DisplayName("Section을 하나이상 가지고 있는 Line 삭제 테스트 (종점삭제)")
+    void removeLastSection() {
         // given
         Station 양재시민의숲역 = new Station("양재시민의숲역");
         injectId(양재시민의숲역, 4L);
@@ -157,6 +157,28 @@ class LineTest {
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(강남_양재_구간));
             softAssertions.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(강남역, 양재역));
+        });
+    }
+
+    @Test
+    @DisplayName("Section을 하나이상 가지고 있는 Line 삭제 테스트 (기점삭제)")
+    void removeFirstSection() {
+        // given
+        Station 양재시민의숲역 = new Station("양재시민의숲역");
+        injectId(양재시민의숲역, 4L);
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
+
+        신분당선.addSection(강남_양재_구간);
+        신분당선.addSection(양재_양재시민의숲_구간);
+
+        // when
+        신분당선.removeSection(강남역);
+
+        // then
+        List<Station> 신분당선_지하철 = 신분당선.getStations();
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(양재_양재시민의숲_구간));
+            softAssertions.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(양재역, 양재시민의숲역));
         });
     }
 
