@@ -116,8 +116,8 @@ public class Sections {
         Section newSection = new Section(
                 upperSection.getLine(),
                 upperSection.getUpStation(),
-                lowerSection.get().getDownStation(),
-                Distance.of(upperSection.getDistance().getValue() + lowerSection.get().getDistance().getValue())
+                lowerSection.get().getDownStation(), 
+                upperSection.getDistance().plus(lowerSection.get().getDistance())
         );
         
         sections.remove(upperSection);

@@ -30,8 +30,8 @@ public class Distance {
         return new Distance(this.value - that.value);
     }
 
-    public int getValue() {
-        return value;
+    public Distance plus(Distance that) {
+        return new Distance(this.value + that.value);
     }
 
     @Override
