@@ -68,6 +68,10 @@ public class Line {
         return sections;
     }
 
+    public Integer[] getDistances() {
+        return sections.getDistances();
+    }
+
     public List<Station> getStations() {
         return sections.getStations();
     }

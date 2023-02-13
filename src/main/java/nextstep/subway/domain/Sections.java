@@ -67,6 +67,16 @@ public class Sections {
         return sections.isEmpty();
     }
 
+    public void removeLastSection() {
+        sections.remove(sections.size() - 1);
+    }
+
+    public Integer[] getDistances() {
+        return sections.stream()
+                .map(Section::getDistance)
+                .toArray(Integer[]::new);
+    }
+
     private void validateSection(Section section) {
         validateMatchingSection(section);
         validateUnMatchingSection(section);
@@ -149,12 +159,19 @@ public class Sections {
     }
 
     private void addDownToBeginUp(Section section) {
+        Section firstSection = findFirstSection();
+        firstSection.subtractDistance(section.getDistance());
+
         sections.forEach(Section::increaseOrder);
+
         section.beginOrder();
         sections.add(section);
     }
 
     private void addUpToEndDown(Section section) {
+        Section lastSection = findLastSection();
+        lastSection.subtractDistance(section.getDistance());
+
         sections.add(section);
     }
 
@@ -183,9 +200,5 @@ public class Sections {
     public Section findLastSection() {
         return sections.stream().max(Comparator.comparing(Section::getOrder))
                 .orElseThrow(() -> new EntityNotFoundException("노선에 구간이 없습니다"));
-    }
-
-    public void removeLastSection() {
-        sections.remove(sections.size() - 1);
     }
 }
