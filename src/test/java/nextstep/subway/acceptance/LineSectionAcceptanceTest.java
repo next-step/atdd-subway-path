@@ -73,6 +73,18 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 상행 종점역을 하행역으로 하는 신논현-강남 구간을 등록하면
      * Then 신논현역이 지하철 노선의 상행 종점역이 된다.
      */
+    @Test
+    @DisplayName("노선의 상행 역을 하행역으로 갖는 구간 등록")
+    void addLineSection_frontStation() {
+        // when
+        Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getLong("stations[0].id")).isEqualTo(신논현역);
+    }
 
     /**
      * When 지하철 노선의 하행 종점역을 상행역으로 하는 양재-판교 구간을 등록하면

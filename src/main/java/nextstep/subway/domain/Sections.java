@@ -27,6 +27,11 @@ public class Sections {
             sections.add(section);
             return;
         }
+        if (getUpStation().equals(section.getDownStation())) {
+            sections.add(section);
+            return;
+        }
+
         addMiddleStation(section);
     }
 
