@@ -72,12 +72,8 @@ public class Sections {
             sections.add(newSection);
             return;
         }
-        boolean isUpStationExist = sections.stream()
-                .anyMatch(s -> s.getUpStation().equals(newSection.getUpStation())
-                        || s.getDownStation().equals(newSection.getUpStation()));
-        boolean isDownStationExist = sections.stream()
-                .anyMatch(s -> s.getUpStation().equals(newSection.getDownStation())
-                        || s.getDownStation().equals(newSection.getDownStation()));
+        boolean isUpStationExist = isStationExist(newSection.getUpStation());
+        boolean isDownStationExist = isStationExist(newSection.getDownStation());
         if (isUpStationExist && isDownStationExist) {
             throw new IllegalArgumentException("노선에 존재하던 지하철 역 끼리는 구간을 만들 수 없습니다.");
         }
@@ -90,6 +86,12 @@ public class Sections {
             return;
         }
         addDownAndUpSection(newSection);
+    }
+
+    private boolean isStationExist(Station station) {
+        return sections.stream()
+                .anyMatch(s -> s.getUpStation().equals(station)
+                        || s.getDownStation().equals(station));
     }
 
     private void addUpAndDownSection(Section newSection) {
