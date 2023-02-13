@@ -3,18 +3,25 @@ package nextstep.subway.applicaion;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.section.SectionRepository;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
+import nextstep.subway.vo.PathFinder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PathService {
-    private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
     public PathResponse findPath(Long sourceStationId, Long targetStationId) {
-        return null;
+        PathFinder pathFinder = new PathFinder(stationRepository.findAll(), sectionRepository.findAll());
+        Station source = stationRepository.findById(sourceStationId).orElseThrow();
+        Station target = stationRepository.findById(targetStationId).orElseThrow();
+        return pathFinder.findPath(source, target);
     }
 }
