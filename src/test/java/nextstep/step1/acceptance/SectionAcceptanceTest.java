@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+
 @DisplayName("구간 관리 - 추가 인수 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
@@ -43,7 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("구간 목록 조회: 구간 정보가 상행 - 하행 순으로 정렬되어 있어야 한다.")
     void findSections_withSortedSection(){
-        // given -
+        // given
 
         // when - 노선의 구간 정보를 조회하면
 
