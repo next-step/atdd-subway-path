@@ -87,8 +87,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Section> sections = line.getSections();
-        List<Station> stations = sectionService.showStationsInSections(sections);
+        List<Station> stations = line.getStations();
 
         return stations.stream().map(stationService::createStationResponse)
             .collect(Collectors.toList());
