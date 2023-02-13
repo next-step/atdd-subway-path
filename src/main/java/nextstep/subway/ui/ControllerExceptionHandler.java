@@ -1,6 +1,6 @@
 package nextstep.subway.ui;
 
-import nextstep.subway.domain.exceptions.*;
+import nextstep.subway.domain.exceptions.BusinessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,8 +15,8 @@ public class ControllerExceptionHandler {
     }
 
     @ResponseBody
-    @ExceptionHandler({CanNotAddSectionException.class, CanNotSplitSectionException.class, NotPositiveNumberException.class, CanNotMergeSectionException.class, CanNotRemoveSectionException.class})
-    public ResponseEntity<Void> exception(RuntimeException e) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<Void> exception(BusinessException e) {
         return ResponseEntity.unprocessableEntity().build();
     }
 }
