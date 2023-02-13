@@ -119,7 +119,7 @@ class SectionsTest {
     void add_exception_기존_구간들에_이미_존재하는_역일때() {
         // Given
         sections.add(section);
-        
+
         Section newSection = new Section(이호선, 강남역, 삼성역, 10);
 
         // When & Then
@@ -161,8 +161,12 @@ class SectionsTest {
     }
 
     @Test
-    void remove() {
+    void remove_exception_한개의_구간만_존재시() {
+        // Given
+        sections.add(section);
+
+        // When & Then
+        assertThatThrownBy(() -> sections.remove(강남역))
+                .isInstanceOf(IllegalStateException.class);
     }
-
-
 }
