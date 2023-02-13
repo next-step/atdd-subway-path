@@ -67,8 +67,8 @@ public class Line {
             }
 
             if (section.getUpStation().equals(requestUpStation)) {
-                section.changeUpStation(requestDownStation, requestDistance);
                 sections.add(section.makeNext(this, requestUpStation, requestDownStation, requestDistance));
+                section.changeUpStation(requestDownStation, requestDistance);
                 return;
             }
         }

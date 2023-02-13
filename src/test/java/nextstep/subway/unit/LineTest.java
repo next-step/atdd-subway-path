@@ -113,7 +113,7 @@ class LineTest {
     @Test
     void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
         // When && Then
-        assertThatThrownBy(() -> line.addSection(강남역, 양재역, 10)).isInstanceOf(DuplicateAddSectionException.class);
+        assertThatThrownBy(() -> line.addSection(강남역, 양재역, 4)).isInstanceOf(DuplicateAddSectionException.class);
     }
 
     /**
