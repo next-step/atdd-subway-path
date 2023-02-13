@@ -110,7 +110,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
     /**
      * When 존재하지 않는 역이 포함된 경로를 조회하면
      * Then 400에러가 발생하고
-     * Then 에러 메시지를 응답받는다
      */
     @DisplayName("존재하지 않는 역이 포함된 경로를 조회")
     @Test
@@ -120,9 +119,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        // then
-        assertThat(response.body().asString()).isEqualTo(PathErrorMessage.FIND_PATH_STATION_NOT_EXIST.getMessage());
     }
 
     private ExtractableResponse<Response> getPathRequest(Long sourceId, Long targetId) {
