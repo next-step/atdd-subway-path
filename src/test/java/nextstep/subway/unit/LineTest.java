@@ -66,4 +66,20 @@ class LineTest {
                 }
         );
     }
+
+    @Test
+    void 노선에_이름과_색상을_변경한다() {
+        // given
+        String newName = "분당선";
+        String newColor = "yellow";
+
+        // when
+        신분당선.modify(newName, newColor);
+
+        // then
+        assertAll(() -> {
+            assertThat(신분당선.getName()).isEqualTo(newName);
+            assertThat(신분당선.getColor()).isEqualTo(newColor);
+        });
+    }
 }
