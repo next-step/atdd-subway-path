@@ -89,16 +89,14 @@ public class Line {
 
     public void addSection(Section section) {
         if (this.sections.isEmpty()) {
-            sections.add(section);
-            section.setLine(this);
+            addSectionToLine(section);
             return;
         }
 
         //첫, 마지막 정류장일때
         if (getFirstStation().getId().equals(section.getDownStation().getId())
                 || getLastStation().getId().equals(section.getUpStation().getId())) {
-            sections.add(section);
-            section.setLine(this);
+            addSectionToLine(section);
             return;
         }
 
@@ -121,11 +119,8 @@ public class Line {
             calcDistanceByAddSection(downSection, section.getDistance());
         }
 
-        sections.add(section);
-        section.setLine(this);
+        addSectionToLine(section);
     }
-
-
 
     private void validationAddSection(Section section) {
         //두 역이 모두 등록되어 있으면 안된다.
@@ -218,5 +213,10 @@ public class Line {
         if (lineRequest.getColor() != null) {
             this.color = lineRequest.getColor();
         }
+    }
+
+    private void addSectionToLine(Section section) {
+        sections.add(section);
+        section.setLine(this);
     }
 }
