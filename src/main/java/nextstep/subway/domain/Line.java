@@ -2,8 +2,6 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line {
