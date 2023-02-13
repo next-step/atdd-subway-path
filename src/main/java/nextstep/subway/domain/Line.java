@@ -188,15 +188,11 @@ public class Line {
     }
 
     private boolean isAddUpSection(Station station) {
-        return sections.stream().filter(s -> s.getUpStation().getId().equals(station.getId()))
-                .findFirst()
-                .isPresent();
+        return sections.stream().anyMatch(s -> s.getUpStation().getId().equals(station.getId()));
     }
 
     private boolean isAddDownSection(Station station) {
-        return sections.stream().filter(s -> s.getDownStation().getId().equals(station.getId()))
-                .findFirst()
-                .isPresent();
+        return sections.stream().anyMatch(s -> s.getDownStation().getId().equals(station.getId()));
     }
 
     private void calcDistanceByAddSection(Section section, int distance) {
