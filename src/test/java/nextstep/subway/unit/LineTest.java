@@ -24,12 +24,10 @@ class LineTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line("신분당선", "red");
         List<Section> sections = new ArrayList<>();
-
         sections.add(new Section(line, 강남역, 양재역, 10));
 
-        line.setSections(sections);
+        line = new Line("신분당선", "red", sections);
     }
 
     /**
