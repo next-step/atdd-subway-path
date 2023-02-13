@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class LineTest {
 
@@ -160,8 +160,16 @@ class LineTest {
         assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10)).isInstanceOf(IllegalAddSectionException.class);
     }
 
+    // When 라인에 해당하는 역들을 요청 시
+    // Then 상행역 부터 역들이 조회가 된다
+    @DisplayName("라인에 해당하는 역들을 요청 시 상행역 부터 역들이 조회가 된다")
     @Test
-    void getStations() {
+    void 라인에_해당하는_역들을_요청_시_상행역_부터_역들이_조회가_된다() {
+        // When
+        List<Station> stations = line.getStations();
+
+        // Then
+        assertThat(stations).containsExactly(강남역 , 양재역);
     }
 
     @Test
