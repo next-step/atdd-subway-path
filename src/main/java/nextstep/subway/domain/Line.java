@@ -44,7 +44,7 @@ public class Line {
         setColor(color);
     }
 
-    public void setName(final String name) {
+    private void setName(final String name) {
         if (name == null) {
             return;
         }
@@ -55,7 +55,7 @@ public class Line {
         return color;
     }
 
-    public void setColor(final String color) {
+    private void setColor(final String color) {
         if (color == null) {
             return;
         }
