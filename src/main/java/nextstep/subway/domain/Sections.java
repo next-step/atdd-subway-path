@@ -99,23 +99,27 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Section upperSection = sections.stream()
+        Optional<Section> upperSection = sections.stream()
                 .filter(it -> it.getDownStation().equals(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("삭제하려는 역이 가장 상행선 일 수 없다"));
+                .findFirst();
 
         Optional<Section> lowerSection = sections.stream()
                 .filter(it -> it.getUpStation().equals(station))
                 .findFirst();
 
         if (lowerSection.isEmpty()) {
-            sections.remove(upperSection);
+            sections.remove(upperSection.get());
             return;
         }
 
-        Section newSection = upperSection.merge(lowerSection.get());
+        if (upperSection.isEmpty()) {
+            sections.remove(lowerSection.get());
+            return;
+        }
 
-        sections.remove(upperSection);
+        Section newSection = upperSection.get().merge(lowerSection.get());
+
+        sections.remove(upperSection.get());
         sections.remove(lowerSection.get());
         sections.add(newSection);
     }
