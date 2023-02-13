@@ -7,6 +7,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CannotDeleteSoleSectionException;
+import nextstep.subway.exception.InvalidSectionDistanceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,7 +90,7 @@ class LineServiceMockTest {
 
         // when & then
         assertThatThrownBy(() -> lineService.addSection(분당선.getId(), request))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(InvalidSectionDistanceException.class);
     }
 
     @DisplayName("첫 번째 지하철 구간을 제거한다.")

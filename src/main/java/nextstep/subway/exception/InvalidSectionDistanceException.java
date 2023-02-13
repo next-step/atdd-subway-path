@@ -1,11 +1,12 @@
 package nextstep.subway.exception;
 
+import nextstep.subway.domain.Distance;
+
 public class InvalidSectionDistanceException extends RuntimeException {
 
-    private static final String MESSAGE = "새로 추가하려는 구간의 길이는 기존 구간의 길이보다 작아야 합니다.\n"
-        + "현재 구간의 길이: %d, 추가하려는 구간의 길이: %d";
+    private static final String MESSAGE = "지하철 구간의 길이는 %d 이상이어야 합니다 (현재: %d)";
 
-    public InvalidSectionDistanceException(int existingSectionDistance, int addingSectionDistance) {
-        super(String.format(MESSAGE, existingSectionDistance, addingSectionDistance));
+    public InvalidSectionDistanceException(int distance) {
+        super(String.format(MESSAGE, Distance.MIN_VALUE, distance));
     }
 }

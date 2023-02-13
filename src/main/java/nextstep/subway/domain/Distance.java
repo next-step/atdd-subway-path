@@ -8,7 +8,7 @@ import java.util.Objects;
 @Embeddable
 public class Distance {
 
-    private static final int MIN_VALUE = 1;
+    public static final int MIN_VALUE = 1;
 
     protected Distance() {
     }
@@ -17,27 +17,9 @@ public class Distance {
 
     public Distance(int value) {
         if (value < MIN_VALUE) {
-            throw new IllegalArgumentException();
+            throw new InvalidSectionDistanceException(value);
         }
         this.value = value;
-    }
-
-    public void increase(int value) {
-        if (value < MIN_VALUE) {
-            return;
-        }
-        this.value += value;
-    }
-
-    public void decrease(int value) {
-        if (isLessThan(value)) {
-            throw new InvalidSectionDistanceException(this.value, value);
-        }
-        this.value -= value;
-    }
-
-    private boolean isLessThan(int value) {
-        return this.value <= value;
     }
 
     public int value() {

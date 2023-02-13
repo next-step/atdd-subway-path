@@ -4,10 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
-import nextstep.subway.exception.CannotDeleteSoleSectionException;
-import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
-import nextstep.subway.exception.SectionWithStationNotExistsException;
+import nextstep.subway.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -144,6 +141,20 @@ class SectionsTest {
 
         // then
         assertThat(sections.getStationsInOrder()).containsExactly(station1, station2, station3);
+    }
+
+    @DisplayName("새로운 구간 추가 시, 기존 구간의 길이보다 크거나 같으면 추가할 수 없다.")
+    @Test
+    void invalidSectionDistance() {
+        // given
+        Sections sections = new Sections();
+        sections.add(createSection(station1, station2, 1));
+
+        Section newSection = createSection(station1, station1_5, 1);
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(newSection))
+            .isInstanceOf(InvalidSectionDistanceException.class);
     }
 
     @DisplayName("새로운 구간 추가 시, 상행역과 하행역 모두 노선에 등록되어 있지 않아야 한다.")

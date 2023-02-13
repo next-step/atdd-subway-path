@@ -15,14 +15,12 @@ class SectionTest {
 
     private Line line;
     private Station station1;
-    private Station station1_5;
     private Station station2;
 
     @BeforeEach
     void setUp() {
         line = new Line("line", "green");
         station1 = new Station("station1");
-        station1_5 = new Station("station1.5");
         station2 = new Station("station2");
     }
 
@@ -58,64 +56,5 @@ class SectionTest {
         // when & then
         assertThatThrownBy(() -> new Section(line, station1, station1, 5))
             .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @DisplayName("기존 구간의 상행역을 변경한다.")
-    @Test
-    void updateUpStation() {
-        // given
-        Section section = new Section(line, station1, station2, 5);
-
-        // when
-        section.updateUpStation(station1_5);
-
-        // then
-        assertAll(
-            () -> assertThat(section.getUpStation()).isEqualTo(station1_5),
-            () -> assertThat(section.getDownStation()).isEqualTo(station2)
-        );
-    }
-
-    @DisplayName("기존 구간의 하행역을 변경한다.")
-    @Test
-    void updateDownStation() {
-        // given
-        Section section = new Section(line, station1, station2, 5);
-
-        // when
-        section.updateDownStation(station1_5);
-
-        // then
-        assertAll(
-            () -> assertThat(section.getUpStation()).isEqualTo(station1),
-            () -> assertThat(section.getDownStation()).isEqualTo(station1_5),
-            () -> assertThat(section.getDistance()).isEqualTo(5)
-        );
-    }
-
-    @DisplayName("기존 구간의 길이를 증가시킨다.")
-    @Test
-    void increaseDistance() {
-        // given
-        Section section = new Section(line, station1, station2, 5);
-
-        // when
-        section.increaseDistance(5);
-
-        // then
-        assertThat(section.getDistance()).isEqualTo(10);
-    }
-
-    @DisplayName("기존 구간의 길이를 감소시킨다.")
-    @Test
-    void decreaseDistance() {
-        // given
-        Section section = new Section(line, station1, station2, 5);
-
-        // when
-        section.decreaseDistance(3);
-
-        // then
-        assertThat(section.getDistance()).isEqualTo(2);
     }
 }

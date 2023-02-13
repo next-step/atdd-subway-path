@@ -25,7 +25,6 @@ public class Section {
     private Distance distance;
 
     public Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -42,28 +41,12 @@ public class Section {
         return (upStation != null && downStation != null) && upStation.equals(downStation);
     }
 
-    public void updateUpStation(Station station) {
-        this.upStation = station;
-    }
-
-    public void updateDownStation(Station station) {
-        this.downStation = station;
-    }
-
     public boolean hasUpStation(Station station) {
         return upStation.equals(station);
     }
 
     public boolean hasDownStation(Station station) {
         return downStation.equals(station);
-    }
-
-    public void increaseDistance(int value) {
-        distance.increase(value);
-    }
-
-    public void decreaseDistance(int value) {
-        distance.decrease(value);
     }
 
     public Long getId() {
@@ -84,10 +67,5 @@ public class Section {
 
     public int getDistance() {
         return distance.value();
-    }
-
-    public void updateUpStationWithDecreaseDistance(Station station, int distance) {
-        this.updateUpStation(station);
-        this.decreaseDistance(distance);
     }
 }
