@@ -1,10 +1,19 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,42 +21,47 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
-    public Line() {
-    }
-
-    public Line(String name, String color) {
+    public Line(final String name, final String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    /**
+     * 노선 정보를 수정합니다.
+     *
+     * @param name  수정할 노선 이름
+     * @param color 수정할 노선 색깔
+     */
+    public void update(final String name, final String color) {
+        updateName(name);
+        updateColor(color);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void addSection(final Section section) {
+        getSections().add(section);
     }
 
-    public String getName() {
-        return name;
+    public List<Station> getStations() {
+        return getSections().getAllStations();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void removeLastSection(final Station station) {
+        getSections().removeLastSection(station);
     }
 
-    public String getColor() {
-        return color;
+
+    private void updateName(final String name) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public List<Section> getSections() {
-        return sections;
+    private void updateColor(final String color) {
+        if (color != null && !color.isBlank()) {
+            this.color = color;
+        }
     }
 }
