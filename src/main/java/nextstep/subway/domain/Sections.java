@@ -69,18 +69,14 @@ public class Sections {
         if (sections.isEmpty()) {
             return new ArrayList<>();
         }
+        List<Section> currSections = getSections();
         List<Station> stations = new ArrayList<>();
 
-        Section currSection = getFirstSection();
-        stations.add(currSection.getUpStation());
-        while (true) {
+        stations.add(currSections.get(0).getUpStation());
+        for (Section currSection : currSections) {
             stations.add(currSection.getDownStation());
-            Optional<Section> nextStationOpt = getNextSection(currSection);
-            if (nextStationOpt.isEmpty()) {
-                break;
-            }
-            currSection = nextStationOpt.get();
         }
+
         return stations;
     }
 
