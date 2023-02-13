@@ -166,22 +166,22 @@ public class Sections {
         checkRemovableStation(station);
 
         SectionsRemover sectionsRemover = new SectionsRemover(this);
+        setRemoverStrategy(station, sectionsRemover);
 
+        sectionsRemover.remove(station);
+    }
+
+    private void setRemoverStrategy(Station station, SectionsRemover sectionsRemover) {
         if (isHeadSection(station)) {
             sectionsRemover.setStrategy(new RemoveHeadSectionStrategy());
-            sectionsRemover.remove(station);
-            return;
         }
 
         if (isTailSection(station)) {
             sectionsRemover.setStrategy(new RemoveTailSectionStrategy());
-            sectionsRemover.remove(station);
-            return;
         }
 
         if (isInternalSection(station)) {
             sectionsRemover.setStrategy(new RemoveInternalSectionStrategy());
-            sectionsRemover.remove(station);
         }
     }
 
