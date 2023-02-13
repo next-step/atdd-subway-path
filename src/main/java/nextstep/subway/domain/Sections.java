@@ -23,18 +23,19 @@ public class Sections {
     public void add(Section section) {
         validateSection(section);
 
+        Line line = section.getLine();
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int distance = section.getDistance();
 
         findSectionByUpStation(upStation).ifPresent(it -> {
-            it.updateUpStation(downStation);
-            it.decreaseDistance(distance);
+            sections.add(new Section(line, downStation, it.getDownStation(), it.getDistance() - distance));
+            sections.remove(it);
         });
 
         findSectionByDownStation(downStation).ifPresent(it -> {
-            it.updateDownStation(upStation);
-            it.decreaseDistance(distance);
+            sections.add(new Section(line, it.getUpStation(), upStation, it.getDistance() - distance));
+            sections.remove(it);
         });
 
         sections.add(section);
@@ -145,9 +146,15 @@ public class Sections {
         Section downSection = findSectionByUpStation(station)
             .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
 
-        upSection.updateDownStation(downSection.getDownStation());
-        upSection.increaseDistance(downSection.getDistance());
-        sections.remove(downSection);
+        Section mergedSection = new Section(
+            upSection.getLine(),
+            upSection.getUpStation(),
+            downSection.getDownStation(),
+            upSection.getDistance() + downSection.getDistance()
+        );
+
+        sections.add(mergedSection);
+        sections.removeAll(List.of(upSection, downSection));
     }
 
     private Optional<Section> findSectionByUpStation(Station station) {
