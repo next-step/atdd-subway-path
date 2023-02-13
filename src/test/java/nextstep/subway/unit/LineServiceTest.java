@@ -49,13 +49,13 @@ public class LineServiceTest {
     @Test
     void addSection() {
         section = new Section(line, firstStation, secondStation, 10);
-        line.addSections(section);
+
         SectionRequest sectionRequest = new SectionRequest(firstStation.getId(), secondStation.getId(), 10);
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
         // line.getSections 메서드를 통해 검증
         LineResponse response = lineService.findById(line.getId());
-        assertThat(response.getStations()).hasSize(3);
+        assertThat(response.getStations()).hasSize(2);
     }
 }

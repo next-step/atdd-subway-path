@@ -57,7 +57,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 강남역 - 양재역 구간 사이에 새로운 구간(강남역 - 청계산역)을 등록하면
      * Then 강남역 - 청계신역 - 양재역 구간이 생성된다.
      */
-    @DisplayName("지하철 노선 추가")
+    @DisplayName("지하철 노선 맨 뒤에 추가")
     @Test
     void addStation() {
         Long 청계산역 = 지하철역_생성_요청("청계산역").jsonPath().getLong("id");
@@ -73,7 +73,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 강남역 - 양재역 구간 뒤에 새로운 구간(양재역 - 청계산역)을 등록하면
      * Then 강남역 - 양재역 - 청계산역 구간이 생성된다.
      */
-    @DisplayName("지하철 노선 추가")
+    @DisplayName("지하철 노선 중간 추가")
     @Test
     void addStation_2() {
         Long 청계산역 = 지하철역_생성_요청("청계산역").jsonPath().getLong("id");
@@ -89,7 +89,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 강남역 - 양재역 구간 앞에 새로운 구간(서초역 - 강남역)을 등록하면
      * Then 서초역 - 강남역 - 양재역 구간이 생성된다.
      */
-    @DisplayName("지하철 노선 추가")
+    @DisplayName("지하철 노선 맨 앞에 추가")
     @Test
     void addStation_3() {
         Long 서초역 = 지하철역_생성_요청("서초역").jsonPath().getLong("id");
@@ -105,7 +105,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 강남역 - 양재역 구간 사이에 새로운 구간(강남역 - 청계산역)을 등록할때 구간 간격이 기존의 구간보다 크면
      * Then 요청이 실패한다.
      */
-    @DisplayName("지하철 노선 추가 실패")
+    @DisplayName("지하철 노선 중간 삽입 시 구간 길이가 더 클때 추가 실패")
     @Test
     void addStationFail() {
         Long 서초역 = 지하철역_생성_요청("서초역").jsonPath().getLong("id");
@@ -119,12 +119,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 상행역과 하행역이 이미 등록되어 있으
      * Then 요청이 실패한다.
      */
-    @DisplayName("지하철 노선 추가 실패")
+    @DisplayName("지하철 노선 이미등록된 구간을 추가할 경우 실패")
     @Test
     void addStationFail_2() {
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역,20));
+        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역,20));
 
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -133,7 +132,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 상행역과 하행역이 모두 등록되어 있지않으면
      * Then 요청이 실패한다.
      */
-    @DisplayName("지하철 노선 추가 실패")
+    @DisplayName("지하철 노선 이어져있찌 않은 구간의 경우 실패")
     @Test
     void addStationFail_3() {
         Long 서초역 = 지하철역_생성_요청("서초역").jsonPath().getLong("id");
