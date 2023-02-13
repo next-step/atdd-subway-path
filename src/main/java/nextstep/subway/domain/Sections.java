@@ -48,7 +48,8 @@ public class Sections {
 
         Section ordinarySection = sections.stream()
                 .filter(it -> it.getUpStation().equals(newUpStation) || it.getDownStation().equals(newDownStation))
-                .findFirst().get();
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("로직 에러. 기존 노선을 찾을 수 없음."));
 
         Section splittedSection = ordinarySection.split(newSection);
 
@@ -92,7 +93,8 @@ public class Sections {
         while (result.size() != sections.size()) {
             Section section = sections.stream()
                     .filter(it -> it.getUpStation().equals(result.get(result.size() - 1).getDownStation()))
-                    .findFirst().get();
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("로직 에러. Sections 가 불변식을 지키지 못하고 있음. 디버깅 필요"));
             result.add(section);
         }
 
