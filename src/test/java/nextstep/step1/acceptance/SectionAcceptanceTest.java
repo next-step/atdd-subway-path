@@ -43,11 +43,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("구간 목록 조회: 구간 정보가 상행 - 하행 순으로 정렬되어 있어야 한다.")
     void findSections_withSortedSection(){
-        // given
+        // given -
 
-        // when
+        // when - 노선의 구간 정보를 조회하면
 
-        // then
+        // then - 구간 정보가 상행 <-> 하행 순으로 정렬되어 반환한다
     }
 }
 
