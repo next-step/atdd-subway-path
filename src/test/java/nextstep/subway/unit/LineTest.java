@@ -13,9 +13,10 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 
+@DisplayName("노선 도메인 테스트")
 class LineTest {
 
-    private Line 신분당선;
+    private Line 이호선;
     private Station 강남역;
     private Station 역삼역;
     private Station 선릉역;
@@ -25,15 +26,15 @@ class LineTest {
 
     @BeforeEach
     void setUp(){
-        신분당선 = new Line("신분당신", "#29832");
+        이호선 = new Line("이호선", "#29832");
         강남역 = new Station("강남역");
         역삼역 = new Station("역삼역");
         선릉역 = new Station("선릉역");
         삼성역 = new Station("삼성역");
-        강남_역삼_구간 = new Section(신분당선, 강남역, 역삼역, 10);
-        역삼_선릉_구간 = new Section(신분당선, 역삼역, 선릉역, 5);
+        강남_역삼_구간 = new Section(이호선, 강남역, 역삼역, 10);
+        역삼_선릉_구간 = new Section(이호선, 역삼역, 선릉역, 5);
 
-        ReflectionTestUtils.setField(신분당선, "id", 1L);
+        ReflectionTestUtils.setField(이호선, "id", 1L);
         ReflectionTestUtils.setField(강남역, "id", 1L);
         ReflectionTestUtils.setField(역삼역, "id", 2L);
         ReflectionTestUtils.setField(선릉역, "id", 3L);
@@ -48,37 +49,37 @@ class LineTest {
     void addSection() {
 
         // when
-        신분당선.getSections().add(강남_역삼_구간);
+        이호선.getSections().add(강남_역삼_구간);
 
         // then
-        assertThat(신분당선.getSections()).contains(강남_역삼_구간);
+        assertThat(이호선.getSections()).contains(강남_역삼_구간);
     }
 
     @Test
     @DisplayName("구간 조회 테스트")
     void getStations() {
         // given
-        신분당선.getSections().add(강남_역삼_구간);
-        신분당선.getSections().add(역삼_선릉_구간);
+        이호선.getSections().add(강남_역삼_구간);
+        이호선.getSections().add(역삼_선릉_구간);
 
         // when
-        List<Section> sections = 신분당선.getSections();
+        List<Section> sections = 이호선.getSections();
 
         // then
-        assertThat(신분당선.getSections()).contains(강남_역삼_구간, 역삼_선릉_구간);
+        assertThat(이호선.getSections()).contains(강남_역삼_구간, 역삼_선릉_구간);
     }
 
     @Test
     @DisplayName("구간 삭제 테스트")
     void removeSection() {
         // given
-        신분당선.getSections().add(강남_역삼_구간);
-        신분당선.getSections().add(역삼_선릉_구간);
+        이호선.getSections().add(강남_역삼_구간);
+        이호선.getSections().add(역삼_선릉_구간);
 
         // when
-        신분당선.getSections().remove(역삼_선릉_구간);
+        이호선.getSections().remove(역삼_선릉_구간);
 
         // then
-        assertThat(신분당선.getSections()).doesNotContain(역삼_선릉_구간);
+        assertThat(이호선.getSections()).doesNotContain(역삼_선릉_구간);
     }
 }
