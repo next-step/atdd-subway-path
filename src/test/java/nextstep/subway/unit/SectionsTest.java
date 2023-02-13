@@ -114,4 +114,18 @@ public class SectionsTest {
         // then
         assertThat(신분당선.getStations()).extracting("name").containsExactly("신논현역", "강남역", "양재역");
     }
+
+    @Test
+    @DisplayName("하행 종점역을 상행역으로 갖는 구간 등록")
+    void addSection_lastSection() {
+        // given
+        Station 판교역 = new Station("판교역");
+        Section 양재_판교_구간 = new Section(신분당선, 양재역, 판교역, 6);
+
+        // when
+        신분당선.addSection(양재_판교_구간);
+
+        // then
+        assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "양재역", "판교역");
+    }
 }

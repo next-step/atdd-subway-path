@@ -23,11 +23,8 @@ public class Sections {
 
         addValidation(section);
 
-        if (getDownStation().equals(section.getUpStation())) {
-            sections.add(section);
-            return;
-        }
-        if (getUpStation().equals(section.getDownStation())) {
+        if (getDownStation().equals(section.getUpStation())
+                || getUpStation().equals(section.getDownStation())) {
             sections.add(section);
             return;
         }

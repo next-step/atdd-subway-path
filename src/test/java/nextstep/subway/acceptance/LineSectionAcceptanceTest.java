@@ -90,6 +90,18 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 하행 종점역을 상행역으로 하는 양재-판교 구간을 등록하면
      * Then 판교역이 지하철 노선의 하행 종점역이 된다.
      */
+    @Test
+    @DisplayName("노선의 하행 종점역을 상행역으로 하는 구간 등록")
+    void addLineSection_lastStation() {
+        // when
+        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 판교역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getLong("stations[-1].id")).isEqualTo(판교역);
+    }
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
