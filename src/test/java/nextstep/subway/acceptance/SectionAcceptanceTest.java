@@ -42,7 +42,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 새로운 구간 추가를 요청 하면
      * Then 노선에 새로운 구간이 추가된다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("지하철 노선에 새로운 역을 하행 종점역으로 갖는 구간을 등록한다")
     @Test
     void addLineSection() {
         // when
@@ -53,6 +53,72 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
+    /**
+     * given:
+     * when :
+     * then :
+     */
+    @DisplayName("지하철 노선에 새로운 역을 상행 종점역으로 갖는 구간을 등록한다")
+    @Test
+    void addFirstSection() {
+
+    }
+
+    /**
+     * given:
+     * when :
+     * then :
+     */
+    @DisplayName("지하철 노선의 중간에 노선의 역을 상행역으로 갖는 구간을 등록한다")
+    @Test
+    void addMiddleSectionFromUpStation() {
+
+    }
+
+    /**
+     * given:
+     * when :
+     * then :
+     */
+    @DisplayName("지하철 노선의 중간에 노선의 역을 하행역으로 갖는 구간을 등록한다.")
+    @Test
+    void addMiddleSectionFromDownStation() {
+
+    }
+
+    /**
+     * given:
+     * when :
+     * then :
+     */
+    @DisplayName("새로운 역 사이의 길이가 기존 역사이의 길이보다 같거나 큰 경우 등록할 수 없다")
+    @Test
+    void sectionCannotRegisteredWhenNewSectionIsLongerOrEqual() {
+
+    }
+
+    /**
+     * given:
+     * when :
+     * then :
+     */
+    @DisplayName("상행역과 하행역이 모두 노선에 등록되어있는 경우 등록할 수 없다.")
+    @Test
+    void sectionCannotRegisteredWhenBothAreRegistered() {
+
+    }
+
+    /**
+     * given:
+     * when :
+     * then :
+     */
+    @DisplayName("상행역과 하행역 모두 노선에 등록되어있지 않는 경우 등록할 수 없다.")
+    @Test
+    void sectionCannotRegisteredWhenBothAreNotRegistered() {
+
     }
 
     /**
