@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.LineMinimumSectionException;
 import nextstep.subway.exception.SectionAlreadyCreateStationException;
 import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
 import nextstep.subway.exception.SectionInsertDistanceTooLargeException;
@@ -127,7 +128,7 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("Section을 하나만 가지고 있는 Line 삭제 테스트")
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때 예외발생")
     void removeSectionLineHasOneSection() {
         // given
         신분당선.getSections().add(강남_양재_구간);
@@ -136,8 +137,8 @@ class LineTest {
         신분당선.removeSection(양재역);
 
         // then
-        List<Station> 신분당선_지하철 = 신분당선.getStations();
-        assertThat(신분당선_지하철).containsExactlyElementsOf(List.of());
+        assertThatThrownBy(() -> 신분당선.removeSection(양재역))
+                .isInstanceOf(LineMinimumSectionException.class);
     }
 
     @Test
@@ -159,6 +160,28 @@ class LineTest {
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(강남_양재_구간));
             softAssertions.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(강남역, 양재역));
+        });
+    }
+
+    @Test
+    @DisplayName("노선이 가지고 있는 중간구간 삭제 테스트")
+    void removeMidSection() {
+        // given
+        Station 양재시민의숲역 = new Station("양재시민의숲역");
+        injectId(양재시민의숲역, 4L);
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
+
+        신분당선.addSection(강남_양재_구간);
+        신분당선.addSection(양재_양재시민의숲_구간);
+
+        // when
+        신분당선.removeSection(양재역);
+
+        // then
+        List<Station> 신분당선_지하철 = 신분당선.getStations();
+        SoftAssertions.assertSoftly(sa -> {
+            sa.assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(20);
+            sa.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(강남역, 양재시민의숲역));
         });
     }
 
