@@ -23,8 +23,7 @@ public class Sections {
 
         addValidation(section);
 
-        if (getDownStation().equals(section.getUpStation())
-                || getUpStation().equals(section.getDownStation())) {
+        if (isFrontSection(section) || isLastSection(section)) {
             sections.add(section);
             return;
         }
@@ -32,18 +31,42 @@ public class Sections {
         addMiddleStation(section);
     }
 
+    private boolean isFrontSection(Section section) {
+        return getDownStation().equals(section.getUpStation());
+    }
+
+    private boolean isLastSection(Section section) {
+        return getUpStation().equals(section.getDownStation());
+    }
+
     private void addMiddleStation(Section newSection) {
         for (Section section : sections) {
-            if (section.getUpStation().equals(newSection.getUpStation())) {
-                sections.add(section.addStation(newSection.getDownStation(), section.getDistance() - newSection.getDistance()));
-                break;
-            }
-
-            if (section.getDownStation().equals(newSection.getDownStation())) {
-                sections.add(section.addStation(newSection.getUpStation(), newSection.getDistance()));
+            if (addStation(section, newSection)) {
                 break;
             }
         }
+    }
+
+    private boolean addStation(Section section, Section newSection) {
+        return sameUpStation(section, newSection) || sameDownStation(section, newSection);
+    }
+
+    private boolean sameUpStation(Section section, Section newSection) {
+        if (section.getUpStation().equals(newSection.getUpStation())) {
+            sections.add(section.addStation(newSection.getDownStation(), section.getDistance() - newSection.getDistance()));
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean sameDownStation(Section newSection, Section section) {
+        if (section.getDownStation().equals(newSection.getDownStation())) {
+            sections.add(section.addStation(newSection.getUpStation(), newSection.getDistance()));
+            return true;
+        }
+
+        return false;
     }
 
     private void addValidation(Section newSection) {
