@@ -16,39 +16,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public List<Station> stations() {
-        List<Station> stations = new ArrayList<>();
-
-        findUpEndSection().ifPresent(upEndSection -> {
-            stations.add(upEndSection.getUpStation());
-
-            Section nextSection = upEndSection;
-            while (nextSection != null) {
-                stations.add(nextSection.getDownStation());
-                nextSection = findNextOf(nextSection);
-            }
-        });
-
-        return stations;
-    }
-
-    private Optional<Section> findUpEndSection() {
-        List<Station> downStations = sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        return sections.stream()
-                .filter(section -> !downStations.contains(section.getUpStation()))
-                .findFirst();
-    }
-
-    private Section findNextOf(Section section) {
-        return sections.stream()
-                .filter(it -> it.getUpStation() == section.getDownStation())
-                .findFirst()
-                .orElse(null);
-    }
-
     public void add(Section section) {
         if (isFirstOrEndpoint(section)) {
             sections.add(section);
@@ -105,6 +72,22 @@ public class Sections {
                 });
     }
 
+    public List<Station> stations() {
+        List<Station> stations = new ArrayList<>();
+
+        findUpEndSection().ifPresent(upEndSection -> {
+            stations.add(upEndSection.getUpStation());
+
+            Section nextSection = upEndSection;
+            while (nextSection != null) {
+                stations.add(nextSection.getDownStation());
+                nextSection = nextOf(nextSection);
+            }
+        });
+
+        return stations;
+    }
+
     public void remove(long stationId) {
         if (sections.size() <= 1) {
             throw new SubwayException("구간이 1개 이하인 경우, 삭제할 수 없습니다.");
@@ -120,14 +103,44 @@ public class Sections {
     }
 
     private List<Section> findSectionsByStationId(long stationId) {
-        List<Section> deleteSections = sections.stream()
-                .filter(it -> it.hasStationId(stationId))
-                .collect(Collectors.toList());
+        List<Section> deleteSections = sortedSections().stream()
+            .filter(it -> it.hasStationId(stationId))
+            .collect(Collectors.toList());
 
         if (deleteSections.isEmpty()) {
             throw new NotFoundException(stationId + "번 역을 찾을 수 없습니다.");
         }
 
         return deleteSections;
+    }
+
+    private List<Section> sortedSections() {
+        List<Section> sortedSections = new ArrayList<>();
+        findUpEndSection().ifPresent(upEndSection -> {
+            Section nextSection = upEndSection;
+            while (nextSection != null) {
+                sortedSections.add(nextSection);
+                nextSection = nextOf(nextSection);
+            }
+        });
+
+        return sortedSections;
+    }
+
+    private Optional<Section> findUpEndSection() {
+        List<Station> downStations = sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
+
+        return sections.stream()
+            .filter(section -> !downStations.contains(section.getUpStation()))
+            .findFirst();
+    }
+
+    private Section nextOf(Section section) {
+        return sections.stream()
+            .filter(it -> it.getUpStation() == section.getDownStation())
+            .findFirst()
+            .orElse(null);
     }
 }

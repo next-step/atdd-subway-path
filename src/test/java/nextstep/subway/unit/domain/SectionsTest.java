@@ -121,6 +121,21 @@ class SectionsTest {
         assertThat(sections.stations()).containsExactly(강남역, 교대역);
     }
 
+    @DisplayName("종점역을 제외하고 중간역을 모두 삭제할 수 있다.")
+    @Test
+    void remove3() {
+        // given
+        Station 사당역 = new Station(4L, "사당역");
+        sections.add(new Section(line, 교대역, 사당역, 10));
+
+        // when
+        sections.remove(역삼역.getId());
+        sections.remove(교대역.getId());
+
+        // then
+        assertThat(sections.stations()).containsExactly(강남역, 사당역);
+    }
+
     @DisplayName("존재하지 않는 역을 삭제하는 경우 예외가 발생한다.")
     @Test
     void removeException1() {

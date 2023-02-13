@@ -193,6 +193,32 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 중간에 있는 역을 모두 제거하면
+     * Then 해당 구간이 제거된다
+     */
+    @DisplayName("지하철 노선에 중간 구간을 제거")
+    @Test
+    void removeLineSection2() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 미금역, 10));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        var response = 지하철_노선_조회_요청(신분당선);
+        assertAll(() -> {
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 미금역);
+        });
+    }
+
+    /**
      * Given 구간을 삭제할 수 있게 구간을 추가로 등록하고
      * When 등록되어있지 않은 역을 제거하면
      * Then 제거할 수 없다
