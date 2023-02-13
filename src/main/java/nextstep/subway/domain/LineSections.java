@@ -86,7 +86,7 @@ public class LineSections {
         this.sections.add(new Section(line, upStation, downStation, distance));
     }
 
-    private List<Station> getAllStations() {
+    public List<Station> getAllStations() {
         List<Station> stations = new ArrayList<>();
 
         if (this.sections.isEmpty()) {
