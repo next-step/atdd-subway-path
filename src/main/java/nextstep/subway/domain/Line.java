@@ -1,8 +1,11 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.AddSectionException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Line {
@@ -16,6 +19,12 @@ public class Line {
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
+    }
+
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
     }
 
     public Line(String name, String color) {
@@ -49,5 +58,17 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        if (getSections() == null || getSections().isEmpty()) {
+            getSections().add(new Section(this, upStation, downStation, distance));
+            return;
+        }
+        for (Section section : getSections()) {
+            if (Objects.equals(section.getUpStation().getId(), upStation.getId()) && Objects.equals(section.getDownStation().getId(), downStation.getId())) {
+                throw new AddSectionException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+            }
+        }
     }
 }
