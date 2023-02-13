@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
 import nextstep.subway.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
@@ -217,18 +218,60 @@ public class LineServiceTest {
     }
 
     @Test
-    void deleteSection() {
-        //given
+    void deleteSection_When_마지막_역을_제거하면_Then_마지막_구간제거() {
+        // given
+        // 강남역 --- 역삼역 --- 선릉역
         Station 강남역 = stationRepository.save(new Station( "강남역"));
         Station 역삼역 = stationRepository.save(new Station( "역삼역"));
+        Station 선릉역 = stationRepository.save(new Station( "선릉역"));
         LineRequest lineRequest = new LineRequest("이호선", "green", 강남역.getId(), 역삼역.getId(), 10);
         LineResponse 이호선 = lineService.saveLine(lineRequest);
+        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 선릉역.getId(), 15);
+        lineService.addSection(이호선.getId(), sectionRequest);
+
+        //when
+        lineService.deleteSection(이호선.getId(), 선릉역.getId());
+
+        //then
+        LineResponse response = lineService.findById(이호선.getId());
+        assertThat(response.getStations().stream()
+                            .map(StationResponse::getId)
+                            .collect(Collectors.toList())).containsExactlyElementsOf(List.of(강남역.getId(), 역삼역.getId()));
+    }
+
+    @Test
+    void deleteSection_When_중간_역을_제거하면_Then_중간_구간제거() {
+        // given
+        // 강남역 --- 역삼역 --- 선릉역
+        Station 강남역 = stationRepository.save(new Station( "강남역"));
+        Station 역삼역 = stationRepository.save(new Station( "역삼역"));
+        Station 선릉역 = stationRepository.save(new Station( "선릉역"));
+        LineRequest lineRequest = new LineRequest("이호선", "green", 강남역.getId(), 역삼역.getId(), 10);
+        LineResponse 이호선 = lineService.saveLine(lineRequest);
+        SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 선릉역.getId(), 15);
+        lineService.addSection(이호선.getId(), sectionRequest);
 
         //when
         lineService.deleteSection(이호선.getId(), 역삼역.getId());
 
         //then
         LineResponse response = lineService.findById(이호선.getId());
-        assertThat(response.getStations()).isEmpty();
+        assertThat(response.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList())).containsExactlyElementsOf(List.of(강남역.getId(), 선릉역.getId()));
+    }
+
+    @Test
+    void deleteSection_Given_노선에_구간이_하나뿐일때_When_구간을_제거하면_Then_ThrowException() {
+        //given
+        Station 강남역 = stationRepository.save(new Station( "강남역"));
+        Station 역삼역 = stationRepository.save(new Station( "역삼역"));
+        LineRequest lineRequest = new LineRequest("이호선", "green", 강남역.getId(), 역삼역.getId(), 10);
+        LineResponse 이호선 = lineService.saveLine(lineRequest);
+
+        //then
+        assertThatThrownBy(() -> lineService.deleteSection(이호선.getId(), 역삼역.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(CustomException.LINE_HAS_SECTION_AT_LEAST_ONE);
     }
 }

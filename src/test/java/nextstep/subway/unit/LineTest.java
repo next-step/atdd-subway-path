@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -18,8 +19,11 @@ class LineTest {
     private Line 이호선;
 
     private Section 강남역_역삼역;
+    private Section 역삼역_선릉역;
+
     private Station 강남역;
     private Station 역삼역;
+    private Station 선릉역;
 
     @BeforeEach
     public void init() {
@@ -27,7 +31,10 @@ class LineTest {
 
         강남역 = new Station(1L, "강남역");
         역삼역 = new Station(2L, "역삼역");
+        선릉역 = new Station(3L, "선릉역");
+
         강남역_역삼역 = new Section(강남역, 역삼역, 10);
+        역삼역_선릉역 = new Section(역삼역, 선릉역, 15);
     }
 
     @Test
@@ -127,21 +134,52 @@ class LineTest {
     }
 
     @Test
-    void removeSection() {
+    @DisplayName("마지막 구간을 제거한다")
+    void removeSection_When_마지막_역을_제거하면_Then_마지막_구간제거() {
         //given
         이호선.addSection(강남역_역삼역);
+        이호선.addSection(역삼역_선릉역);
+
+        //when
+        이호선.removeSection(선릉역);
+
+        //then
+        assertThat(이호선.getStations()).doesNotContain(선릉역);
+    }
+
+    @Test
+    @DisplayName("중간 구간을 제거한다")
+    void removeSection_When_중간_역을_제거하면_Then_중간_구간제거() {
+        //given
+        이호선.addSection(강남역_역삼역);
+        이호선.addSection(역삼역_선릉역);
 
         //when
         이호선.removeSection(역삼역);
 
         //then
-        assertThat(이호선.getStations()).doesNotContain(역삼역);
+        assertThat(이호선.getStations()).containsExactlyElementsOf(List.of(강남역, 선릉역));
+        assertThat(이호선.getSections().get(0).getDistance()).isEqualTo(25);
+    }
+
+    @Test
+    void removeSection_Given_노선에_구간이_하나뿐일때_When_구간을_제거하면_Then_ThrowException() {
+        //given
+        이호선.addSection(강남역_역삼역);
+
+        //then
+        assertThatThrownBy(() -> 이호선.removeSection(역삼역))
+                .isInstanceOf(CustomException.class)
+                .hasMessageContaining(CustomException.LINE_HAS_SECTION_AT_LEAST_ONE);
     }
 
     /**
+     * 요구사항 변경으로 disabled
+     *
      * 강남역(제거) --- 역삼역
      */
     @Test
+    @Disabled
     void removeSection_When_마지막_구간이_아니면_Then_ThrownException() {
         //given
         이호선.addSection(강남역_역삼역);

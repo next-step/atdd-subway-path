@@ -20,6 +20,8 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    private static final int MIN_SECTION_COUNT = 1;
+
     public Line() {
     }
 
@@ -89,16 +91,14 @@ public class Line {
 
     public void addSection(Section section) {
         if (this.sections.isEmpty()) {
-            sections.add(section);
-            section.setLine(this);
+            addSectionToLine(section);
             return;
         }
 
         //첫, 마지막 정류장일때
         if (getFirstStation().getId().equals(section.getDownStation().getId())
                 || getLastStation().getId().equals(section.getUpStation().getId())) {
-            sections.add(section);
-            section.setLine(this);
+            addSectionToLine(section);
             return;
         }
 
@@ -121,11 +121,8 @@ public class Line {
             calcDistanceByAddSection(downSection, section.getDistance());
         }
 
-        sections.add(section);
-        section.setLine(this);
+        addSectionToLine(section);
     }
-
-
 
     private void validationAddSection(Section section) {
         //두 역이 모두 등록되어 있으면 안된다.
@@ -142,16 +139,26 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        if(sections.isEmpty()) {
-            throw new CustomException(CustomException.NO_SECTION_IN_LINE_MSG);
+        if(sections.size() <= MIN_SECTION_COUNT) {
+            throw new CustomException(CustomException.LINE_HAS_SECTION_AT_LEAST_ONE);
         }
 
-        Section lastSection = sections.get(sections.size() - 1);
-        if(!station.getId().equals(lastSection.getDownStation().getId())) {
-            throw new CustomException(CustomException.ONLY_CAN_REMOVE_LAST_STATION_MSG);
+        // 첫 번째 구간일 때
+        if(getFirstStation().getId().equals(station.getId())) {
+            Section firstSection = sections.stream().filter(s -> s.getUpStation().getId().equals(station.getId())).findFirst().get();
+            sections.remove(firstSection);
+            return;
         }
 
-        sections.remove(sections.size() - 1);
+        // 마지막 구간일 때
+        if(getLastStation().getId().equals(station.getId())) {
+            Section lastSection = sections.stream().filter(s -> s.getDownStation().getId().equals(station.getId())).findFirst().get();
+            sections.remove(lastSection);
+            return;
+        }
+
+        // 중간 구간일 때
+        removeMiddleSection(station);
     }
 
     private List<Station> getUpStations() {
@@ -180,6 +187,13 @@ public class Line {
         return lastStation;
     }
 
+    private Section nextSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId().equals(station.getId()))
+                .findFirst()
+                .get();
+    }
+
     private Optional<Station> nextSectionDownStation(Station station) {
         Optional<Section> nextSection = sections.stream()
                 .filter(section -> section.getUpStation().getId().equals(station.getId()))
@@ -193,15 +207,11 @@ public class Line {
     }
 
     private boolean isAddUpSection(Station station) {
-        return sections.stream().filter(s -> s.getUpStation().getId().equals(station.getId()))
-                .findFirst()
-                .isPresent();
+        return sections.stream().anyMatch(s -> s.getUpStation().getId().equals(station.getId()));
     }
 
     private boolean isAddDownSection(Station station) {
-        return sections.stream().filter(s -> s.getDownStation().getId().equals(station.getId()))
-                .findFirst()
-                .isPresent();
+        return sections.stream().anyMatch(s -> s.getDownStation().getId().equals(station.getId()));
     }
 
     private void calcDistanceByAddSection(Section section, int distance) {
@@ -218,5 +228,22 @@ public class Line {
         if (lineRequest.getColor() != null) {
             this.color = lineRequest.getColor();
         }
+    }
+
+    private void addSectionToLine(Section section) {
+        sections.add(section);
+        section.setLine(this);
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section targetSection = sections.stream().filter(s -> s.getDownStation().getId().equals(station.getId()))
+                .findFirst()
+                .orElseThrow(() -> new CustomException(CustomException.NOT_EXIST_STATION_IN_LINE));
+
+        Section nextSection = nextSection(station);
+        nextSection.setUpStation(targetSection.getUpStation());
+        nextSection.plusDistance(targetSection.getDistance());
+
+        sections.remove(targetSection);
     }
 }

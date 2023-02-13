@@ -78,4 +78,8 @@ public class Section {
     public void minusDistance(int distance) {
         this.distance -= distance;
     }
+
+    public void plusDistance(int distance) {
+        this.distance += distance;
+    }
 }
