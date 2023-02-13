@@ -21,8 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
-    private Long 신분당선;
 
+    private static final String 강남역_이름 = "강남역";
+    private static final String 양재역_이름 = "양재역";
+    private static final String 신규역_이름 = "신규역";
+
+    private Long 신분당선;
     private Long 강남역;
     private Long 양재역;
     private Long 신규역;
@@ -34,9 +38,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
-        양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
-        신규역 = 지하철역_생성_요청("신규역").jsonPath().getLong("id");
+        강남역 = 지하철역_생성_요청(강남역_이름).jsonPath().getLong("id");
+        양재역 = 지하철역_생성_요청(양재역_이름).jsonPath().getLong("id");
+        신규역 = 지하철역_생성_요청(신규역_이름).jsonPath().getLong("id");
 
         Map<String, String> lineCreateParams = createLineCreateParams(강남역, 양재역);
         신분당선 = 지하철_노선_생성_요청(lineCreateParams).jsonPath().getLong("id");
@@ -117,7 +121,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
             () -> assertThat(response.body().asString()).isEqualTo(
-                String.format(SectionStationsAlreadyExistsInLineException.MESSAGE, "강남역", "양재역")
+                String.format(SectionStationsAlreadyExistsInLineException.MESSAGE, 강남역_이름, 양재역_이름)
             )
         );
     }
@@ -316,7 +320,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-            () -> assertThat(response.body().asString()).isEqualTo(String.format(SectionWithStationNotExistsException.MESSAGE, "신규역"))
+            () -> assertThat(response.body().asString()).isEqualTo(
+                String.format(SectionWithStationNotExistsException.MESSAGE, 신규역_이름)
+            )
         );
     }
 
