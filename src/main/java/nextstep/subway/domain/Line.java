@@ -42,10 +42,6 @@ public class Line {
         return color;
     }
 
-    public List<Section> getSections() {
-        return sections.getSections();
-    }
-
     public void modify(String name, String color) {
         this.name = name;
         this.color = color;

@@ -29,11 +29,7 @@ class LineTest {
         신분당선.addSection(강남역, 양재역, 10);
 
         // then
-        assertAll(() -> {
-            assertThat(신분당선.getSections()).hasSize(1);
-            assertThat(신분당선.getSections().get(0).getUpStation()).isEqualTo(강남역);
-            assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(양재역);
-        });
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
     }
 
     @Test
@@ -59,10 +55,7 @@ class LineTest {
         신분당선.removeSection(양재시민의숲역);
 
         // then
-        assertAll(() -> {
-            assertThat(신분당선.getSections()).hasSize(1);
-            assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
-        });
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
     }
 
     @Test
