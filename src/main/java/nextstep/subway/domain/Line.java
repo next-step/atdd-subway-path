@@ -1,8 +1,16 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import nextstep.subway.common.AddTypeEnum;
+
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.List;
+
+import static nextstep.subway.common.AddTypeEnum.FRONT_ADD_SECTION;
+import static nextstep.subway.common.AddTypeEnum.MIDDLE_ADD_SECTION;
 
 @Entity
 public class Line {
@@ -11,11 +19,10 @@ public class Line {
     private Long id;
     private String name;
     private String color;
+    @Embedded
+    private Sections sections = new Sections();
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color) {
@@ -47,7 +54,29 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
+    }
+
+    public void addSection(AddTypeEnum addTypeEnum, Section section) {
+        if (FRONT_ADD_SECTION.equals(addTypeEnum)) {
+            sections.addFront(section);
+            return;
+        }
+
+        if (MIDDLE_ADD_SECTION.equals(addTypeEnum)) {
+            sections.addMiddle(section);
+            return;
+        }
+
+        sections.addBack(section);
+    }
+
+    public void removeSection(Station station) {
+        sections.remove(station);
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
     }
 }

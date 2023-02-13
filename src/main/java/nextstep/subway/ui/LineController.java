@@ -4,8 +4,17 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.common.AddTypeEnum;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
@@ -51,7 +60,19 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(lineId, sectionRequest);
+        lineService.addSection(AddTypeEnum.BACK_ADD_SECTION, lineId, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{lineId}/sections/front")
+    public ResponseEntity<Void> addSectionFront(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(AddTypeEnum.FRONT_ADD_SECTION, lineId, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{lineId}/sections/middle")
+    public ResponseEntity<Void> addSectionMiddle(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(AddTypeEnum.MIDDLE_ADD_SECTION, lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
