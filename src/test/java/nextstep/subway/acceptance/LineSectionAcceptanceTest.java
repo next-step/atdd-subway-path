@@ -53,6 +53,57 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 지하철 노선의 강남-양재 구간에 새로운 역(정자역)을 갖는 강남-정자 구간을 등록하면
+     * Then 강남-정자 구간과 정자-양재 구간이 생성된다.
+     */
+    @Test
+    @DisplayName("기존 구간 사이 새로운 역을 갖는 구간 등록")
+    void addLineSection_middleStation() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선의 상행 종점역을 하행역으로 하는 신논현-강남 구간을 등록하면
+     * Then 신논현역이 지하철 노선의 상행 종점역이 된다.
+     */
+    @Test
+    @DisplayName("노선의 상행 역을 하행역으로 갖는 구간 등록")
+    void addLineSection_frontStation() {
+        // when
+        Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getLong("stations[0].id")).isEqualTo(신논현역);
+    }
+
+    /**
+     * When 지하철 노선의 하행 종점역을 상행역으로 하는 양재-판교 구간을 등록하면
+     * Then 판교역이 지하철 노선의 하행 종점역이 된다.
+     */
+    @Test
+    @DisplayName("노선의 하행 종점역을 상행역으로 하는 구간 등록")
+    void addLineSection_lastStation() {
+        // when
+        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 판교역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getLong("stations[-1].id")).isEqualTo(판교역);
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
