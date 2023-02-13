@@ -12,7 +12,6 @@ import javax.persistence.ManyToOne;
 import java.util.List;
 
 @Entity
-@Builder
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +35,8 @@ public class Section {
 
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
-        this.id = id;
+    @Builder
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;

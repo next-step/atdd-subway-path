@@ -8,8 +8,6 @@ import org.assertj.core.api.ListAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
-
 import static nextstep.subway.common.AddTypeEnum.BACK_ADD_SECTION;
 import static nextstep.subway.common.AddTypeEnum.FRONT_ADD_SECTION;
 import static nextstep.subway.common.AddTypeEnum.MIDDLE_ADD_SECTION;
@@ -24,7 +22,6 @@ class LineTest {
     Station 지하철역3 = new Station("지하철역3");
     int distance_5 = 5;
     int distance_7 = 7;
-    int distance_10 = 10;
 
     @Test
     void addSection() {
