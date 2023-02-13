@@ -203,7 +203,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 노선에 새로운 역이 하행 종점인 구간을 등록하면
      * Then 기존 구간 사이에 새로운 구간이 추가된다.
      * AS-IS    A---------B
-     * +                  B-------- C
+     *        +           B-------- C
      * TO-BE    A --------B-------- C
      */
     @DisplayName("새로운 역을 하행 종점으로 갖는 구간을 등록한다.")
