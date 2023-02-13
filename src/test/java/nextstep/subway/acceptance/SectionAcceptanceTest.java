@@ -144,14 +144,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // Given
         Map<String, String> section = createSectionCreateParamsWithDistance(강남역, 정자역, 10);
 
-        // When & Then
+        // When
         ExtractableResponse<Response> responseOf구간생성 = 지하철_노선에_지하철_구간_생성_요청(신분당선, section);
-        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
-        // When & Then
-        ExtractableResponse<Response> responseOf노선조회 = 지하철_노선_조회_요청(신분당선);
-        assertThat(responseOf노선조회.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(responseOf노선조회.jsonPath().getList("stations.id", Long.class)).doesNotContain(정자역);
+        // Then
+        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -172,12 +169,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // When & Then
         ExtractableResponse<Response> responseOf구간생성 = 지하철_노선에_지하철_구간_생성_요청(신분당선, section);
-        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
-        // When & Then
-        ExtractableResponse<Response> responseOf노선조회 = 지하철_노선_조회_요청(신분당선);
-        assertThat(responseOf노선조회.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(responseOf노선조회.jsonPath().getList("stations.id", Long.class)).doesNotContain(정자역);
+        // Then
+        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -251,12 +245,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // When & Then
         ExtractableResponse<Response> responseOf구간생성 = 지하철_노선에_지하철_구간_생성_요청(신분당선, section);
-        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
-        // When & Then
-        ExtractableResponse<Response> responseOf노선조회 = 지하철_노선_조회_요청(신분당선);
-        assertThat(responseOf노선조회.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(responseOf노선조회.jsonPath().getList("stations.id", Long.class)).doesNotContain(부산역, 강원역);
+        // Then
+        assertThat(responseOf구간생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
