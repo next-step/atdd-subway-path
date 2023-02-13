@@ -46,6 +46,10 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public int getDistance() {
+        return distance.getDistance();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

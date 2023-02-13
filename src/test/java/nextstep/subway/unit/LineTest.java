@@ -15,7 +15,6 @@ class LineTest {
         line.addSection(new Section(1L, line, new Station(1L, "up"), new Station(2L, "down"), 20));
         assertThat(line.getStations())
                 .extracting(Station::getName)
-                .extracting(Name::getName)
                 .containsExactly("up", "down");
     }
 
@@ -25,7 +24,6 @@ class LineTest {
         line.addSection(new Section(1L, line, new Station(1L, "up"), new Station(2L, "down"), 20));
         assertThat(line.getStations())
                 .extracting(Station::getName)
-                .extracting(Name::getName)
                 .containsExactly("up", "down");
     }
 
@@ -41,7 +39,6 @@ class LineTest {
 
         assertThat(line.getStations())
                 .extracting(Station::getName)
-                .extracting(Name::getName)
                 .containsExactly("up", "down");
     }
 }
