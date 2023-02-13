@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.CanNotMergeSectionException;
 import nextstep.subway.domain.exceptions.CanNotSplitSectionException;
 
 import javax.persistence.*;
@@ -46,6 +47,28 @@ public class Section {
         }
 
         throw new CanNotSplitSectionException("상행역과 하행역 둘 중 하나만 같아야 함");
+    }
+
+    public Section merge(Section that) {
+        if (this.downStation.equals(that.upStation)) {
+            return new Section(
+                    this.line,
+                    this.upStation,
+                    that.downStation,
+                    this.distance.plus(that.distance)
+            );
+        }
+
+        if (this.upStation.equals(that.downStation)) {
+            return new Section(
+                    this.line,
+                    that.upStation,
+                    this.downStation,
+                    this.distance.plus(that.distance)
+            );
+        }
+
+        throw new CanNotMergeSectionException("두 구간이 연결되지 않아 합칠 수 없음");
     }
 
     private boolean isSameUpStation(Section that) {

@@ -113,13 +113,8 @@ public class Sections {
             return;
         }
 
-        Section newSection = new Section(
-                upperSection.getLine(),
-                upperSection.getUpStation(),
-                lowerSection.get().getDownStation(), 
-                upperSection.getDistance().plus(lowerSection.get().getDistance())
-        );
-        
+        Section newSection = upperSection.merge(lowerSection.get());
+
         sections.remove(upperSection);
         sections.remove(lowerSection.get());
         sections.add(newSection);

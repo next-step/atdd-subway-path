@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exceptions.CanNotMergeSectionException;
 import nextstep.subway.domain.exceptions.CanNotSplitSectionException;
 import nextstep.subway.domain.exceptions.NotPositiveNumberException;
 import org.junit.jupiter.api.BeforeEach;
