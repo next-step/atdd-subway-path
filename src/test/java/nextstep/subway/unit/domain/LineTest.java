@@ -181,7 +181,7 @@ class LineTest {
         // Then
         assertThat(이호선.getSections().size()).isEqualTo(beforeSize - 1);
     }
-    
+
     @DisplayName("지하철노선의 구간이 1개만 존재한다면, 구간을 제거할 수 없다.")
     @Test
     void removeSectionException2() {

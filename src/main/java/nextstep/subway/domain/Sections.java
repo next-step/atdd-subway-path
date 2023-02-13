@@ -86,6 +86,12 @@ public class Sections {
                 .findFirst();
     }
 
+    public Optional<Section> findContinuedSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(station) || section.isUpStation(station))
+                .findFirst();
+    }
+
     private InsertLocation findInsertLocation(Section target) {
         for (int index = 0; index < sections.size(); index++) {
             Section section = sections.get(index);
@@ -154,43 +160,34 @@ public class Sections {
     public void remove(Station station) {
         checkRemovableStation(station);
 
-        // 제거 로직
+        removeIfEndsSection(station);
+        removeIfInternalSection(station);
+    }
 
+    private void removeIfEndsSection(Station station) {
+        findContinuedSection(station).ifPresent(sections::remove);
+    }
+
+    private void removeIfInternalSection(Station station) {
         Optional<Section> frontSectionOptional = findSectionOnDownStation(station);
         Optional<Section> backSectionOptional = findSectionOnUpStation(station);
+        if (frontSectionOptional.isPresent() && backSectionOptional.isPresent()) {
+            Section frontSection = frontSectionOptional.get();
+            Section backSection = backSectionOptional.get();
 
-        // if head
-        if (!frontSectionOptional.isPresent()) {
-            Section frontSection = backSectionOptional.get();
-
-            if (findPreSection(frontSection).isEmpty()) {
-                sections.remove(frontSection);
-                return;
-            }
+            sections.remove(frontSection);
+            sections.remove(backSection);
+            sections.add(mergeSection(frontSection, backSection));
         }
+    }
 
-        // if tail
-        if (!backSectionOptional.isPresent()) {
-            Section backSection = frontSectionOptional.get();
-
-            if (findNextStation(backSection.getDownStation()).isEmpty()) {
-                sections.remove(backSection);
-                return;
-            }
-        }
-
-        // if 중간
-        Section frontSection = frontSectionOptional.get();
-        Section backSection = backSectionOptional.get();
-
-        Station upStation = frontSection.getUpStation();
-        Station downStation = backSection.getDownStation();
-
-        Section newSection = new Section(frontSection.getLine(), upStation, downStation, frontSection.getDistance() + backSection.getDistance());
-
-        sections.remove(frontSection);
-        sections.remove(backSection);
-        sections.add(newSection);
+    private Section mergeSection(Section frontSection, Section backSection) {
+        return new Section(
+                frontSection.getLine(),
+                frontSection.getUpStation(),
+                backSection.getDownStation(),
+                frontSection.getDistance() + backSection.getDistance()
+        );
     }
 
     private void checkRemovableStation(Station station) {
