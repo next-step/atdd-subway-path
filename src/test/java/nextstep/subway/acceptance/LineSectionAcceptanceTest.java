@@ -77,12 +77,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         }
 
         /**
-         * When 지하철 노선 기존 구간 맨 앞에 새로운 구간 추가 요청 시
-         * Then 노선에 새로운 구간이 추가된다
+         * When 새로운 역을 상행 종점으로 등록할 경우
+         * Then 새로운 구간이 추가된다
          */
-        @DisplayName("지하철 노선 기존 구간 맨 앞에 새로운 구간 추가 요청 시 새로운 구간이 추가된다")
+        @DisplayName("새로운 역을 상행 종점으로 등록할 경우 새로운 구간이 추가 된다")
         @Test
-        void 지하철_노선_기존_구간_맨_앞에_새로운_구간_추가_요청_시_새로운_구간이_추가된다() {
+        void 새로운_역을_상행_종점으로_등록할_경우_새로운_구간이_추가_된다() {
             // when
             Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
             지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신사역, 강남역));
@@ -94,12 +94,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         }
 
         /**
-         * When 지하철 노선 기존 구간 맨 뒤에 새로운 구간 추가 요청 시
-         * Then 노선에 새로운 구간이 추가된다
+         * When 새로운 역을 하행 종점으로 등록할 경우
+         * Then 새로운 구간이 추가된다
          */
-        @DisplayName("지하철 노선 기존 구간 맨 뒤에 새로운 구간 추가 요청 시 새로운 구간이 추가된다")
+        @DisplayName("새로운 역을 하행 종점으로 등록할 경우 새로운 구간이 추가된다")
         @Test
-        void 지하철_노선_기존_구간_맨_뒤에_새로운_구간_추가_요청_시_새로운_구간이_추가된다() {
+        void 새로운_역을_하행_종점으로_등록할_경우_새로운_구간이_추가된다() {
             // when
             Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
             지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 판교역));
