@@ -3,6 +3,7 @@ package nextstep.subway.ui;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.domain.Station;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RestController
 public class StationController {
-    private StationService stationService;
+    private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
@@ -19,13 +20,16 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse station = stationService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
+        Station station = stationService.saveStation(stationRequest);
+        return ResponseEntity
+                .created(URI.create("/stations/" + station.getId()))
+                .body(StationResponse.of(station));
     }
 
     @GetMapping(value = "/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations());
+        List<Station> stations = stationService.findAllStations();
+        return ResponseEntity.ok().body(StationResponse.asList(stations));
     }
 
     @DeleteMapping("/stations/{id}")
