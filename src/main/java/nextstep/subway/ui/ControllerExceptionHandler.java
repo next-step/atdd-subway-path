@@ -14,19 +14,21 @@ import javax.servlet.http.HttpServletResponse;
 @ControllerAdvice
 public class ControllerExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<ErrorResponse> handleIllegalArgsException(DataIntegrityViolationException e) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST, "1000", e.getMessage());
+
+        return buildResponseEntity(errorResponse);
     }
 
     @ExceptionHandler(value = DomainException.class)
     public ResponseEntity<ErrorResponse> handleDomainException(
-            HttpServletRequest request, HttpServletResponse response, DomainException exception) {
+            HttpServletRequest request, HttpServletResponse response, DomainException e) {
         ErrorResponse errorResponse =
                 new ErrorResponse(
                         HttpStatus.CONFLICT,
-                        exception.getCode(),
-                        exception.getMessage(),
-                        exception.getData());
+                        e.getCode(),
+                        e.getMessage(),
+                        e.getData());
 
         return buildResponseEntity(errorResponse);
     }

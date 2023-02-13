@@ -64,15 +64,6 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    @Transactional
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
-    }
-
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
                 line.getId(),
@@ -83,7 +74,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.getSectionCount() == 0) {
             return Collections.emptyList();
         }
 
@@ -99,14 +90,24 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+        if (!line.getSections().get(line.getSectionCount() - 1).getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
-        line.getSections().remove(line.getSectionCount() - 1);
+        line.deleteSectionByIndex(line.getSectionCount() - 1);
     }
 }

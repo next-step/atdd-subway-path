@@ -20,4 +20,10 @@ public class ErrorResponse {
         this.errorMessage = errorMessage;
         this.data = data;
     }
+
+    public ErrorResponse(HttpStatus status, String errorCode, String errorMessage) {
+        this.status = status;
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
 }
