@@ -56,6 +56,18 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 강남-양재 구간에 새로운 역(정자역)을 갖는 강남-정자 구간을 등록하면
      * Then 강남-정자 구간과 정자-양재 구간이 생성된다.
      */
+    @Test
+    @DisplayName("기존 구간 사이 새로운 역을 갖는 구간 등록")
+    void addLineSection_middleStation() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역, 양재역);
+    }
 
     /**
      * When 지하철 노선의 상행 종점역을 하행역으로 하는 신논현-강남 구간을 등록하면

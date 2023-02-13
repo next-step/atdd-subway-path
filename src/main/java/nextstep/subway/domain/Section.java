@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 
+import static nextstep.subway.common.constants.ErrorConstant.MORE_THEN_DISTANCE;
+
 @Entity
 public class Section {
     @Id
@@ -21,6 +23,27 @@ public class Section {
     private Station downStation;
 
     private int distance;
+
+    public boolean isContainStation(Station station) {
+        return upStation.equals(station)
+                || downStation.equals(station);
+    }
+
+    public Section addStation(Station station, int distance) {
+        this.distance = remainDistance(distance);
+        Station downStation = this.downStation;
+        this.downStation = station;
+
+        return new Section(line, station, downStation, distance);
+    }
+
+    private int remainDistance(int distance) {
+        if(distance <= 0 || this.distance <= distance){
+            throw new IllegalArgumentException(MORE_THEN_DISTANCE);
+        }
+
+        return this.distance - distance;
+    }
 
     public Section() {
 
