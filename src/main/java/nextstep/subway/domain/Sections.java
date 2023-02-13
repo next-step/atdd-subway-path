@@ -28,11 +28,11 @@ public class Sections {
         Station newUpStation = newSection.getUpStation();
         Station newDownStation = newSection.getDownStation();
 
-        if (hasStation(newUpStation) && hasStation(newDownStation)) {
+        if (alreadyExistAllStations(newUpStation, newDownStation)) {
             throw new CanNotAddSectionException("상행역과 하행역 모두 이미 존재하여 구간 추가 불가능");
         }
 
-        if (!hasStation(newUpStation) && !hasStation(newDownStation)) {
+        if (notExistAnyStations(newUpStation, newDownStation)) {
             throw new CanNotAddSectionException("상행역과 하행역 모두 존재하지 않아 구간 추가 불가능");
         }
 
@@ -55,6 +55,14 @@ public class Sections {
         sections.remove(ordinarySection);
         sections.add(newSection);
         sections.add(splittedSection);
+    }
+
+    private boolean notExistAnyStations(Station station1, Station station2) {
+        return !hasStation(station1) && !hasStation(station2);
+    }
+
+    private boolean alreadyExistAllStations(Station station1, Station station2) {
+        return hasStation(station1) && hasStation(station2);
     }
 
     private boolean hasStation(Station station) {
