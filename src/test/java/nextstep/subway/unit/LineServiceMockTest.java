@@ -47,8 +47,6 @@ public class LineServiceMockTest {
         firstStation = new Station("강남역");
         secondStation = new Station("판교역");
         section = new Section(line, firstStation, secondStation, 10);
-
-        line.addSections(section);
     }
 
     @Test
