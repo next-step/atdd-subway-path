@@ -1,19 +1,17 @@
-package nextstep.subway.unit;
+package nextstep.subway.domain;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 import nextstep.subway.exception.BadRequestException;
+import nextstep.subway.exception.CannotDeleteSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 
 class LineTest {
     @Test
@@ -41,8 +39,9 @@ class LineTest {
         line.addSection(section);
 
         // then
-        assertThat(line.getAllStations().size()).isEqualTo(2);
-        assertThat(line.getAllStations().stream().map(Station::getName).collect(Collectors.toList())).contains("강남역", "교대역");
+        var stations = line.getAllStations().stream().map(Station::getName).collect(Collectors.toList());
+        assertThat(stations).hasSize(2);
+        assertThat(stations).contains("강남역", "교대역");
     }
 
     @Test
@@ -207,5 +206,49 @@ class LineTest {
         // then
         assertThat(stations).hasSize(3);
         assertThat(stations).containsExactly(강남역, 교대역, 서초역);
+    }
+
+    @DisplayName("노선에 등록된 역을 제거한다.")
+    @Test
+    void deleteStation() {
+        // given
+        Station 교대역 = new Station("교대역");
+        Station 서초역 = new Station("서초역");
+
+        Station 강남역 = new Station("강남역");
+        Line 이호선 = new Line("이호선", "green");
+        Section firstSection = new Section(이호선, 강남역, 교대역, 10);
+        Section secondSection = new Section(이호선, 교대역, 서초역, 10);
+        이호선.addSection(firstSection);
+        이호선.addSection(secondSection);
+
+        // when
+        이호선.removeSection(교대역);
+
+        // then
+        assertThat(이호선.getAllStations()).containsExactly(강남역, 서초역);
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역을 제거한다.")
+    @Test
+    void deleteStationNotRegisteredInLine() {
+        // given
+        Station 교대역 = new Station("교대역");
+        Station 서초역 = new Station("서초역");
+        Station 강남역 = new Station("강남역");
+
+        Line 이호선 = new Line("이호선", "green");
+        Section firstSection = new Section(이호선, 강남역, 교대역, 10);
+        Section secondSection = new Section(이호선, 교대역, 서초역, 10);
+        이호선.addSection(firstSection);
+        이호선.addSection(secondSection);
+
+        // when
+        Station 민정역 = new Station("민정역");
+
+        // then
+        assertThatCode(() -> 이호선.removeSection(민정역))
+                .isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage("Station is not registered in the line.");
     }
 }

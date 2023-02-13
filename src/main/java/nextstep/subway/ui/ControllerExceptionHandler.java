@@ -1,5 +1,6 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.ui.response.ErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,7 +17,12 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgsException(NotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
 }
