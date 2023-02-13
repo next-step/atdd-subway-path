@@ -169,4 +169,16 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.remove(강남역))
                 .isInstanceOf(IllegalStateException.class);
     }
+
+    @Test
+    void remove_exception_기준할_역이_없을때() {
+        // Given
+        sections.add(section);
+
+        Station 부산역 = new Station("부산역");
+
+        // When & Then
+        assertThatThrownBy(() -> sections.remove(부산역))
+                .isInstanceOf(IllegalStateException.class);
+    }
 }
