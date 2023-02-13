@@ -6,7 +6,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SectionAlreadyCreateStationException;
 import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
 import nextstep.subway.exception.SectionInsertDistanceTooLargeException;
-import nextstep.subway.exception.SectionUpStationNotMatchException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +23,7 @@ class LineTest {
 
     private Station 강남역;
     private Station 양재역;
+    private Station 양재시민의숲역;
 
     private Section 강남_양재_구간;
 
@@ -36,8 +36,11 @@ class LineTest {
 
         강남역 = new Station("강남역");
         양재역 = new Station("양재역");
+        양재시민의숲역 = new Station("양재시민의숲역");
+
         injectId(강남역, 1L);
         injectId(양재역, 2L);
+        injectId(양재시민의숲역, 4L);
 
 
         강남_양재_구간 = new Section(신분당선, 강남역, 양재역, distance);
@@ -63,7 +66,7 @@ class LineTest {
         신분당선.addSection(강남_양재_구간);
 
         // then
-        assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(강남_양재_구간));
+        노선에_구간이_포함되는지_검증(신분당선, List.of(강남_양재_구간));
     }
 
     @Test
@@ -71,15 +74,13 @@ class LineTest {
     void addSectionForLineHasSection() {
         // given
         신분당선.addSection(강남_양재_구간);
-        Station 양재시민의숲역 = new Station("양재시민의숲역");
-        injectId(양재시민의숲역, 4L);
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
 
         // when
         신분당선.addSection(양재_양재시민의숲_구간);
 
         // then
-        assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(강남_양재_구간, 양재_양재시민의숲_구간));
+        노선에_구간이_포함되는지_검증(신분당선, List.of(강남_양재_구간, 양재_양재시민의숲_구간));
     }
 
     @Test
@@ -88,16 +89,13 @@ class LineTest {
         // given
         신분당선.addSection(강남_양재_구간);
 
-        Station 양재시민의숲역 = new Station("양재시민의숲역");
-        injectId(양재시민의숲역, 4L);
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
         injectId(양재_양재시민의숲_구간, 3L);
         신분당선.addSection(양재_양재시민의숲_구간);
 
         // when, then
         Section 강남_양재시민의숲_구간 = new Section(신분당선, 강남역, 양재시민의숲역, distance);
-        assertThatThrownBy(() -> 신분당선.addSection(강남_양재시민의숲_구간))
-                .isInstanceOf(SectionAlreadyCreateStationException.class);
+        노선에_구간의역이_모두_등록되어있다면_예외(신분당선, 강남_양재시민의숲_구간);
     }
 
     @Test
@@ -113,8 +111,7 @@ class LineTest {
         injectId(등록안된_역_구간, 3L);
 
         // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(등록안된_역_구간))
-                .isInstanceOf(SectionDoesNotHaveAlreadyCreateStationException.class);
+        노선에_구간의역이_존재하지않는다면_예외(신분당선, 등록안된_역_구간);
     }
 
     @Test
@@ -204,7 +201,25 @@ class LineTest {
 
         // when
         // then
-        assertThatThrownBy(() -> 신분당선.addSection(강남_양재_구간))
+        새구간의_거리가_기존구간보다_크면_예외(신분당선, 강남_양재_구간);
+    }
+
+    private void 노선에_구간이_포함되는지_검증(Line 노선, List<Section> 구간들) {
+        assertThat(노선.getSections()).containsExactlyElementsOf(구간들);
+    }
+
+    private void 노선에_구간의역이_모두_등록되어있다면_예외(Line 노선, Section 구간) {
+        assertThatThrownBy(() -> 노선.addSection(구간))
+                .isInstanceOf(SectionAlreadyCreateStationException.class);
+    }
+
+    private void 노선에_구간의역이_존재하지않는다면_예외(Line 노선, Section 구간) {
+        assertThatThrownBy(() -> 노선.addSection(구간))
+                .isInstanceOf(SectionDoesNotHaveAlreadyCreateStationException.class);
+    }
+
+    private void 새구간의_거리가_기존구간보다_크면_예외(Line 노선, Section 구간) {
+        assertThatThrownBy(() -> 노선.addSection(구간))
                 .isInstanceOf(SectionInsertDistanceTooLargeException.class);
     }
 }
