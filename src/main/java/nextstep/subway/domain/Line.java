@@ -59,7 +59,7 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        sections.removeLastSection();
+        sections.removeSection(station);
     }
 
     public void changeNameAndColor(String name, String color) {

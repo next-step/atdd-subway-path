@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.LineMinimumSectionException;
 import nextstep.subway.exception.SectionAlreadyCreateStationException;
 import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
 import nextstep.subway.exception.SectionInsertDistanceTooLargeException;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -100,8 +102,20 @@ public class Sections {
                 }).findFirst().get();
     }
 
-    public void removeLastSection() {
-        sections.remove(getLastIndex());
+    public void removeSection(Station station) {
+        validateMinimumSectionSize();
+        removeAndCombineSection(station);
+    }
+
+    private void removeAndCombineSection(Station station) {
+        List<Section> findSections = findSectionsWithStation(station);
+        sections.removeAll(findSections);
+        if (isSizeTwo(findSections)) {
+            Section upSection = findSections.get(0);
+            Section downSection = findSections.get(1);
+            sections.add(new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(),
+                    upSection.getDistance() + downSection.getDistance()));
+        }
     }
 
     public boolean checkExistStation(Station station) {
@@ -177,5 +191,24 @@ public class Sections {
 
     private boolean isUpStationId(long id) {
         return getFirstSection().getUpStation().getId().equals(id);
+    }
+
+    private void validateMinimumSectionSize() {
+        if (sections.size() == 1) {
+            throw new LineMinimumSectionException();
+        }
+    }
+
+    private boolean isSizeTwo(List<Section> findSections) {
+        return findSections.size() == 2;
+    }
+
+    private List<Section> findSectionsWithStation(Station station) {
+        return getSections().stream()
+                .filter(section -> {
+                    Station upStation = section.getUpStation();
+                    Station downStation = section.getDownStation();
+                    return downStation.equals(station) || upStation.equals(station);
+                }).collect(Collectors.toList());
     }
 }
