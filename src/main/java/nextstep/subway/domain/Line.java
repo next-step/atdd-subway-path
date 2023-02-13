@@ -45,37 +45,17 @@ public class Line {
     }
 
     public void addSection(Section newSection) {
-        boolean addInUpSection = sections.exist(newSection.getUpStation());
-        boolean addInDownSection = sections.exist(newSection.getDownStation());
-        addable(addInUpSection, addInDownSection);
-        if (addInUpSection) {
-            sections.addInUp(newSection);
-        }
-        if (addInDownSection) {
-            sections.addInDown(newSection);
-        }
-        this.sections.addNew(this, newSection);
-    }
-
-    public void addable(boolean existInUpSection, boolean existInDownSection) {
-        if (isExistBothSection(existInUpSection, existInDownSection)) {
-            throw new IllegalArgumentException("상행, 하행이 중복된 구간을 등록할 수 없습니다.");
-        }
-        if (isNotFoundSection(existInUpSection, existInDownSection)) {
-            throw new IllegalArgumentException("노선에 존재하지 않는 구간은 추가할 수 없습니다.");
-        }
-    }
-
-    private boolean isNotFoundSection(boolean existInUpSection, boolean existInDownSection) {
-        return !sections.isEmpty() && isExistBothSection(!existInUpSection, !existInDownSection);
-    }
-
-    private static boolean isExistBothSection(boolean existInUpSection, boolean existInDownSection) {
-        return existInUpSection && existInDownSection;
+        this.sections.add(this, newSection);
     }
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public int getLineDistance() {
+        return sections.getSectionDistances()
+                .stream()
+                .reduce(0, Integer::sum);
     }
 
     public List<Integer> getSectionDistances() {
@@ -83,23 +63,7 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        Optional<Section> upSection = sections.findUpSection(station);
-        Optional<Section> downSection = sections.findDownSection(station);
-
-        removable(upSection.isPresent(), downSection.isPresent());
-        if (upSection.isPresent() && downSection.isPresent()) {
-            Section section = upSection.get();
-            sections.mergeSection(section);
-            return;
-        }
-        upSection.ifPresent(sections::removeSection);
-        downSection.ifPresent(sections::removeSection);
-    }
-
-    private void removable(boolean existInUpSection, boolean existInDownSection) {
-        if (isNotFoundSection(existInUpSection, existInDownSection)) {
-            throw new IllegalArgumentException("존재하지 않는 구간은 삭제할 수 없습니다.");
-        }
+        sections.remove(station);
     }
 
     public void update(Line line) {

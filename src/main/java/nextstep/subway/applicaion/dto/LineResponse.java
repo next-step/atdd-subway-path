@@ -25,7 +25,7 @@ public class LineResponse {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                line.getSectionDistances().stream().reduce(0, Integer::sum),
+                line.getLineDistance(),
                 line.getStations().stream()
                         .map(StationResponse::toResponse)
                         .collect(Collectors.toList()));

@@ -57,6 +57,10 @@ public class Section {
         return downStation;
     }
 
+    public boolean has(Station station) {
+        return isUpStationEquals(station) || isDownStationEquals(station);
+    }
+
     public boolean isUpStationEquals(Station upStation) {
         return this.upStation.equals(upStation);
     }
@@ -67,10 +71,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public boolean isStationNameEqualTo(String stationName) {
-        return downStation.isNameEquals(stationName) || upStation.isNameEquals(stationName);
     }
 
     public void updateUpStation(Station upStation, int distance) {
@@ -96,6 +96,6 @@ public class Section {
     }
 
     public boolean isExistDownStation() {
-        return this.upStation != null;
+        return this.downStation != null;
     }
 }
