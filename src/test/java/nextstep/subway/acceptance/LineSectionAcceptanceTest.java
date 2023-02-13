@@ -56,7 +56,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.jsonPath().getString("id")).isEqualTo("1");
+            assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
+            assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
             assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+            assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "양재역", "정자역");
         }
 
         /**
