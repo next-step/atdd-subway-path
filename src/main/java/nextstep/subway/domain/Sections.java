@@ -62,6 +62,12 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
+    public Section findSectionByUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
 
     private Section findSectionOnDownStationOfSection(Section target) {
         return sections.stream()
@@ -69,7 +75,6 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
-
 
     private InsertLocation findInsertLocation(Section target) {
         for (int index = 0; index < sections.size(); index++) {

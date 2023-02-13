@@ -7,6 +7,7 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionsRemoveTest {
@@ -14,6 +15,7 @@ class SectionsRemoveTest {
     private Line 이호선;
     private Station 강남역;
     private Station 삼성역;
+    private Station 잠실역;
 
     private Sections sections;
     @BeforeEach
@@ -25,6 +27,8 @@ class SectionsRemoveTest {
 
         sections = new Sections();
         sections.add(new Section(이호선, 강남역, 삼성역, 10));
+
+        잠실역 = new Station("잠실역");
     }
 
     @Test
@@ -42,5 +46,20 @@ class SectionsRemoveTest {
         // When & Then
         assertThatThrownBy(() -> sections.remove(부산역))
                 .isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void removeTailSection() {
+        // Given
+        Section 상행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, 6);
+        sections.add(상행종착역_뒤_section);
+        int beforeSize = sections.size();
+
+        // When
+        sections.remove(삼성역);
+
+        // Then
+        assertThat(sections.size()).isEqualTo(beforeSize - 1);
+        assertThat(sections.findSectionByUpStation(강남역).getDistance()).isEqualTo(6);
     }
 }
