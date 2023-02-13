@@ -185,6 +185,7 @@ public class LineServiceTest {
     }
 
     @Test
+    @DisplayName("노선의 마지막 구간을 삭제한다.")
     void deleteSection() {
         // given
         Station 양재시민의숲역 = stationRepository.save(new Station("양재시민의숲역"));
@@ -200,6 +201,25 @@ public class LineServiceTest {
         // then
         Line 업데이트된노선 = lineRepository.findById(lineResponse.getId()).orElseThrow();
         노선의_지하철역_순서_검증(업데이트된노선, List.of(강남역, 양재역));
+    }
+
+    @Test
+    @DisplayName("노선의 중간구간을 삭제하면 중간구간을 제외한 나머지 구간이 순서대로 조회된다.")
+    void deleteMidSection() {
+        // given
+        Station 양재시민의숲역 = stationRepository.save(new Station("양재시민의숲역"));
+        LineRequest lineRequest = new LineRequest(신분당선.getName(), 신분당선.getColor(), 강남역.getId(), 양재역.getId(), distance);
+        LineResponse lineResponse = lineService.saveLine(lineRequest);
+
+        SectionRequest sectionRequest = new SectionRequest(양재역.getId(), 양재시민의숲역.getId(), distance);
+        lineService.addSection(lineResponse.getId(), sectionRequest);
+
+        // when
+        lineService.deleteSection(lineResponse.getId(), 양재역.getId());
+
+        // then
+        Line 업데이트된노선 = lineRepository.findById(lineResponse.getId()).orElseThrow();
+        노선의_지하철역_순서_검증(업데이트된노선, List.of(강남역, 양재시민의숲역));
     }
 
     private void 노선_수정_정보_검증(Line line) {
