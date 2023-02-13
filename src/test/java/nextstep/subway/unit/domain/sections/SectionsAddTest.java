@@ -61,10 +61,10 @@ class SectionsAddTest {
         // Given
         sections.add(section);
 
-        Section 하행종착역_뒤_section = new Section(이호선, 잠실역, 강남역, 10);
+        Section 상행종착역_앞_section = new Section(이호선, 잠실역, 강남역, 10);
 
         // When
-        sections.add(하행종착역_뒤_section);
+        sections.add(상행종착역_앞_section);
 
         // Then
         assertThat(sections.size()).isEqualTo(2);
@@ -75,10 +75,10 @@ class SectionsAddTest {
         // Given
         sections.add(section);
 
-        Section 하행종착역_뒤_section = new Section(이호선, 잠실역, 삼성역, 6);
+        Section 하행종착역_앞_section = new Section(이호선, 잠실역, 삼성역, 6);
 
         // When
-        sections.add(하행종착역_뒤_section);
+        sections.add(하행종착역_앞_section);
 
         // Then
         assertThat(sections.size()).isEqualTo(2);
@@ -89,10 +89,10 @@ class SectionsAddTest {
         // Given
         sections.add(section);
 
-        Section 하행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, 6);
+        Section 상행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, 6);
 
         // When
-        sections.add(하행종착역_뒤_section);
+        sections.add(상행종착역_뒤_section);
 
         // Then
         assertThat(sections.size()).isEqualTo(2);
