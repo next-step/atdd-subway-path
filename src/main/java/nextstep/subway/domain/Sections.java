@@ -86,7 +86,7 @@ public class Sections {
                 .findFirst();
     }
 
-    public Optional<Section> findContinuedSection(Station station) {
+    public Optional<Section> findEndSection(Station station) {
         return sections.stream()
                 .filter(section -> section.isDownStation(station) || section.isUpStation(station))
                 .findFirst();
@@ -160,25 +160,40 @@ public class Sections {
     public void remove(Station station) {
         checkRemovableStation(station);
 
-        removeIfEndsSection(station);
-        removeIfInternalSection(station);
-    }
+        Optional<Section> frontSection = findSectionOnDownStation(station);
+        Optional<Section> backSection = findSectionOnUpStation(station);
 
-    private void removeIfEndsSection(Station station) {
-        findContinuedSection(station).ifPresent(sections::remove);
-    }
-
-    private void removeIfInternalSection(Station station) {
-        Optional<Section> frontSectionOptional = findSectionOnDownStation(station);
-        Optional<Section> backSectionOptional = findSectionOnUpStation(station);
-        if (frontSectionOptional.isPresent() && backSectionOptional.isPresent()) {
-            Section frontSection = frontSectionOptional.get();
-            Section backSection = backSectionOptional.get();
-
-            sections.remove(frontSection);
-            sections.remove(backSection);
-            sections.add(mergeSection(frontSection, backSection));
+        if (isHeadSection(station)) {
+            Section headSection = backSection.get();
+            sections.remove(headSection);
+            return;
         }
+
+        if (isTailSection(station)) {
+            Section tailSection = frontSection.get();
+            sections.remove(tailSection);
+            return;
+        }
+
+        if (isInternalSection(station)) {
+            sections.remove(frontSection.get());
+            sections.remove(backSection.get());
+            sections.add(mergeSection(frontSection.get(), backSection.get()));
+        }
+    }
+
+    private boolean isInternalSection(Station station) {
+        Optional<Section> frontSection = findSectionOnDownStation(station);
+        Optional<Section> backSection = findSectionOnUpStation(station);
+        return frontSection.isPresent() && backSection.isPresent();
+    }
+
+    private boolean isHeadSection(Station station) {
+        return findSectionOnDownStation(station).isEmpty();
+    }
+
+    private boolean isTailSection(Station station) {
+        return findSectionOnUpStation(station).isEmpty();
     }
 
     private Section mergeSection(Section frontSection, Section backSection) {
