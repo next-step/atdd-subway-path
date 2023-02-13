@@ -27,21 +27,15 @@ public class Sections {
         Station downStation = section.getDownStation();
         int distance = section.getDistance();
 
-        sections.stream()
-            .filter(it -> it.hasUpStation(upStation))
-            .findFirst()
-            .ifPresent(it -> {
-                it.updateUpStation(downStation);
-                it.decreaseDistance(distance);
-            });
+        findSectionByUpStation(upStation).ifPresent(it -> {
+            it.updateUpStation(downStation);
+            it.decreaseDistance(distance);
+        });
 
-        sections.stream()
-            .filter(it -> it.hasDownStation(downStation))
-            .findFirst()
-            .ifPresent(it -> {
-                it.updateDownStation(upStation);
-                it.decreaseDistance(distance);
-            });
+        findSectionByDownStation(downStation).ifPresent(it -> {
+            it.updateDownStation(upStation);
+            it.decreaseDistance(distance);
+        });
 
         sections.add(section);
     }
@@ -78,16 +72,11 @@ public class Sections {
         List<Station> stations = new ArrayList<>();
         stations.add(firstStation);
 
-        Optional<Section> currentSection = sections.stream()
-            .filter(it -> it.hasUpStation(firstStation))
-            .findFirst();
-
+        Optional<Section> currentSection = findSectionByUpStation(firstStation);
         while (currentSection.isPresent()) {
             Station downStation = currentSection.get().getDownStation();
             stations.add(downStation);
-            currentSection = sections.stream()
-                .filter(it -> it.hasUpStation(downStation))
-                .findFirst();
+            currentSection = findSectionByUpStation(downStation);
         }
 
         return stations;
@@ -135,14 +124,8 @@ public class Sections {
         return stations.get(0).equals(station);
     }
 
-    private void removeLastSection() {
-        sections.remove(sections.size() - 1);
-    }
-
     private void removeFirstSection(Station station) {
-        Section section = sections.stream()
-            .filter(it -> it.hasUpStation(station))
-            .findFirst()
+        Section section = findSectionByUpStation(station)
             .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
         sections.remove(section);
     }
@@ -152,21 +135,31 @@ public class Sections {
         return stations.get(stations.size() - 1).equals(station);
     }
 
-    private void removeIntermediateSection(Station station) {
-        Section upSection = sections.stream()
-            .filter(it -> it.hasDownStation(station))
-            .findFirst()
-            .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
+    private void removeLastSection() {
+        sections.remove(sections.size() - 1);
+    }
 
-        Section downSection = sections.stream()
-            .filter(it -> it.hasUpStation(station))
-            .findFirst()
+    private void removeIntermediateSection(Station station) {
+        Section upSection = findSectionByDownStation(station)
+            .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
+        Section downSection = findSectionByUpStation(station)
             .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
 
         upSection.updateDownStation(downSection.getDownStation());
         upSection.increaseDistance(downSection.getDistance());
-
         sections.remove(downSection);
+    }
+
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return sections.stream()
+            .filter(it -> it.hasUpStation(station))
+            .findFirst();
+    }
+
+    private Optional<Section> findSectionByDownStation(Station station) {
+        return sections.stream()
+            .filter(it -> it.hasDownStation(station))
+            .findFirst();
     }
 
     public List<Section> getSections() {
