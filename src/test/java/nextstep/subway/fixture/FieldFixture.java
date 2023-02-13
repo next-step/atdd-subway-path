@@ -11,7 +11,8 @@ public enum FieldFixture {
     노선_하행_종점역_ID("downStationId"),
     노선_간_거리("distance"),
     노선_내_역_목록("stations"),
-    노선_내_역_이름_목록("stations.name"),
+    노선_내_역_아이디("stations.id"),
+    노선_내_역_이름("stations.name"),
     ;
 
     private final String value;

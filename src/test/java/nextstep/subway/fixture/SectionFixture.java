@@ -11,12 +11,16 @@ import static nextstep.subway.fixture.FieldFixture.노선_상행_종점역_ID;
 import static nextstep.subway.fixture.FieldFixture.노선_하행_종점역_ID;
 import static nextstep.subway.fixture.StationFixture.강남역;
 import static nextstep.subway.fixture.StationFixture.선릉역;
+import static nextstep.subway.fixture.StationFixture.양재역;
 import static nextstep.subway.fixture.StationFixture.역삼역;
+import static nextstep.subway.fixture.StationFixture.정자역;
 
 public enum SectionFixture {
 
     강남_역삼_구간(4, 강남역, 역삼역),
     역삼_선릉_구간(6, 역삼역, 선릉역),
+    강남_양재_구간(8, 강남역, 양재역),
+    양재_정자_구간(10, 양재역, 정자역),
     ;
 
     private final int distance;
@@ -41,10 +45,10 @@ public enum SectionFixture {
         return downStation;
     }
 
-    public Map<String, String> 요청_데이터_생성(String 상행역_id, String 하행역_id) {
+    public Map<String, String> 요청_데이터_생성(Long 상행역_id, Long 하행역_id) {
         Map<String, String> params = new HashMap<>();
-        params.put(노선_상행_종점역_ID.필드명(), 상행역_id);
-        params.put(노선_하행_종점역_ID.필드명(), 하행역_id);
+        params.put(노선_상행_종점역_ID.필드명(), String.valueOf(상행역_id));
+        params.put(노선_하행_종점역_ID.필드명(), String.valueOf(하행역_id));
         params.put(노선_간_거리.필드명(), String.valueOf(노선_간_거리()));
         return params;
     }
