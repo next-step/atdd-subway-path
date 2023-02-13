@@ -122,7 +122,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 중간 구간 제거를 요청 하면
      * Then 노선에 중간구간이 제거된채로 지하철역이 조회된다.
      */
-    @DisplayName("지하철 노선에 마지막 구간을 제거")
+    @DisplayName("지하철 노선에 중간 구간을 제거")
     @Test
     void removeLineMidSection() {
         // given
