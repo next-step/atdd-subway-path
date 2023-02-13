@@ -46,7 +46,7 @@ class SectionsTest {
 
     @DisplayName("새로운 구간을 하행 종점에 추가할 수 있다.")
     @Test
-    void add() {
+    void addDownEndSection() {
         // when
         Station 양재역 = new Station(4L, "양재역");
         sections.add(new Section(line, 교대역, 양재역, 10));
@@ -57,7 +57,7 @@ class SectionsTest {
 
     @DisplayName("새로운 구간을 기존 구간에 추가할 수 있다.")
     @Test
-    void add2() {
+    void addSection() {
         // when
         Station 양재역 = new Station(4L, "양재역");
         sections.add(new Section(line, 역삼역, 양재역, 5));
@@ -68,7 +68,7 @@ class SectionsTest {
 
     @DisplayName("새로운 구간을 상행 종점에 추가할 수 있다.")
     @Test
-    void add3() {
+    void addUpEndSection() {
         // when
         Station 양재역 = new Station(4L, "양재역");
         sections.add(new Section(line, 양재역, 강남역, 10));
@@ -79,7 +79,7 @@ class SectionsTest {
 
     @DisplayName("겹치는 구간을 추가하는 경우 예외가 발생한다.")
     @Test
-    void addException() {
+    void addOverlappingSection() {
         // given
         Station 양재역 = new Station(4L, "양재역");
         sections.add(new Section(line, 양재역, 강남역, 10));
@@ -92,7 +92,7 @@ class SectionsTest {
 
     @DisplayName("기존에 있는 마지막 구간을 삭제할 수 있다.")
     @Test
-    void remove() {
+    void removeDownEndSection() {
         // when
         sections.remove(교대역.getId());
 
@@ -102,7 +102,7 @@ class SectionsTest {
 
     @DisplayName("기존에 있는 첫번째 구간을 삭제할 수 있다.")
     @Test
-    void remove1() {
+    void removeUpEndSection() {
         // when
         sections.remove(강남역.getId());
 
@@ -113,7 +113,7 @@ class SectionsTest {
 
     @DisplayName("기존 구간 사이에 있는 역을 삭제할 수 있다.")
     @Test
-    void remove2() {
+    void removeBetweenSection() {
         // when
         sections.remove(역삼역.getId());
 
@@ -123,7 +123,7 @@ class SectionsTest {
 
     @DisplayName("종점역을 제외하고 중간역을 모두 삭제할 수 있다.")
     @Test
-    void remove3() {
+    void removeAllBetweenSection() {
         // given
         Station 사당역 = new Station(4L, "사당역");
         sections.add(new Section(line, 교대역, 사당역, 10));
@@ -138,14 +138,14 @@ class SectionsTest {
 
     @DisplayName("존재하지 않는 역을 삭제하는 경우 예외가 발생한다.")
     @Test
-    void removeException1() {
+    void removeUnregisteredStation() {
         assertThatThrownBy(() -> sections.remove(Long.MAX_VALUE))
                 .isInstanceOf(NotFoundException.class);
     }
 
     @DisplayName("구간이 1개인 상태에서 삭제를 하는 경우 예외가 발생한다.")
     @Test
-    void removeException3() {
+    void removeException() {
         // when
         sections.remove(교대역.getId());
 

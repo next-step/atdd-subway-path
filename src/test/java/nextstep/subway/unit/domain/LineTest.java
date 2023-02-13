@@ -109,7 +109,7 @@ class LineTest {
     @DisplayName("구간을 추가할 때 기존 역 사이 길이보다 크거나 같으면 예외가 발생한다.")
     @ValueSource(ints = {DEFAULT_DISTANCE, 15})
     @ParameterizedTest(name = "구간 길이 {0} 입력")
-    void addSectionException1(int distance) {
+    void addLongDistanceSection(int distance) {
         // when
         line.addSection(강남역, 역삼역, DEFAULT_DISTANCE);
 
@@ -120,7 +120,7 @@ class LineTest {
 
     @DisplayName("구간을 추가할 때 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 예외가 발생한다.")
     @Test
-    void addSectionException2() {
+    void addInvalidSection() {
         // when
         Station 양재역 = new Station(4L, "양재역");
         line.addSection(강남역, 역삼역, DEFAULT_DISTANCE);
@@ -132,7 +132,7 @@ class LineTest {
 
     @DisplayName("구간을 추가할 때 상행역과 하행역이 이미 노선에 모두 등록되어 있으면 예외가 발생한다.")
     @Test
-    void addSectionException3() {
+    void addExistingSection() {
         // when
         line.addSection(강남역, 역삼역, DEFAULT_DISTANCE);
 

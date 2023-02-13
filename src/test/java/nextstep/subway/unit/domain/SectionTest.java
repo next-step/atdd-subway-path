@@ -33,7 +33,7 @@ class SectionTest {
 
     @DisplayName("상행역이 동일한 경우 기존 구간을 기준으로 오른쪽 구간이 생성된다.")
     @Test
-    void to1() {
+    void toRight() {
         // given
         Section addSection = new Section(line, 교대역, 역삼역, 3);
 
@@ -50,7 +50,7 @@ class SectionTest {
 
     @DisplayName("하행역이 동일한 경우 기존 구간을 기준으로 왼쪽 구간이 생성된다.")
     @Test
-    void to2() {
+    void toLeft() {
         // given
         Section addSection = new Section(line, 역삼역, 강남역, 8);
 
