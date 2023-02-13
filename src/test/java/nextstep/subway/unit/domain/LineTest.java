@@ -2,7 +2,7 @@ package nextstep.subway.unit.domain;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.sections.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +12,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
-import static nextstep.subway.domain.Sections.EXCEPTION_MESSAGE_CAN_REMOVE_TAIL_STATION;
-import static nextstep.subway.domain.Sections.EXCEPTION_MESSAGE_MINIMUM_ONE_SECTION_REQUIRED;
+import static nextstep.subway.domain.sections.Sections.EXCEPTION_MESSAGE_MINIMUM_ONE_SECTION_REQUIRED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;

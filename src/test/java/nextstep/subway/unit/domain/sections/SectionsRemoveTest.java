@@ -2,7 +2,7 @@ package nextstep.subway.unit.domain.sections;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.sections.Sections;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class SectionsRemoveTest {
     @Test
     void remove_exception_한개의_구간만_존재시() {
         // When & Then
-        assertThatThrownBy(() -> sections.remove(강남역))
+        assertThatThrownBy(() -> sections.delete(강남역))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -46,7 +46,7 @@ class SectionsRemoveTest {
         Station 부산역 = new Station("부산역");
 
         // When & Then
-        assertThatThrownBy(() -> sections.remove(부산역))
+        assertThatThrownBy(() -> sections.delete(부산역))
                 .isInstanceOf(IllegalStateException.class);
     }
 
@@ -58,7 +58,7 @@ class SectionsRemoveTest {
         int beforeSize = sections.size();
 
         // When
-        sections.remove(삼성역);
+        sections.delete(삼성역);
 
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
@@ -73,7 +73,7 @@ class SectionsRemoveTest {
         int beforeSize = sections.size();
 
         // When
-        sections.remove(강남역);
+        sections.delete(강남역);
 
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
@@ -88,7 +88,7 @@ class SectionsRemoveTest {
         int beforeSize = sections.size();
 
         // When
-        sections.remove(잠실역);
+        sections.delete(잠실역);
         List<Section> sections1 = sections.getSections();
         for (Section section : sections1) {
             System.out.println("section = " + section);
