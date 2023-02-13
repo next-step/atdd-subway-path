@@ -1,9 +1,13 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import java.util.List;
+import java.util.Optional;
 
 public class Maps {
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
@@ -25,9 +29,20 @@ public class Maps {
 
     public Paths findShortestPath(Station source, Station target) {
 
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<Station> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
-        double weight = dijkstraShortestPath.getPath(source, target).getWeight();
+        if(source.equals(target)){
+            throw new SubwayException(SubwayExceptionMessage.PATH_CANNOT_FIND);
+        }
+
+        GraphPath path = getPath(source, target);
+        List<Station> shortestPath = path.getVertexList();
+        double weight = path.getWeight();
         return new Paths(shortestPath, (int) weight);
+    }
+
+    private GraphPath getPath(Station source, Station target) {
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        return Optional
+                .ofNullable(dijkstraShortestPath.getPath(source, target))
+                .orElseThrow(()-> new SubwayException(SubwayExceptionMessage.PATH_CANNOT_FIND));
     }
 }
