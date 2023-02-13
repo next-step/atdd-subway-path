@@ -7,6 +7,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -73,18 +75,14 @@ public class Sections {
     }
 
     public List<Station> stations() {
-        List<Station> stations = new ArrayList<>();
+        List<Section> sections = sortedSections();
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        findUpEndSection().ifPresent(upEndSection -> {
-            stations.add(upEndSection.getUpStation());
-
-            Section nextSection = upEndSection;
-            while (nextSection != null) {
-                stations.add(nextSection.getDownStation());
-                nextSection = nextOf(nextSection);
-            }
-        });
-
+        LinkedList<Station> stations = new LinkedList<>();
+        sections.forEach(section -> stations.add(section.getDownStation()));
+        stations.addFirst(sections.get(0).getUpStation());
         return stations;
     }
 
