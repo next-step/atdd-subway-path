@@ -110,6 +110,51 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 판교역);
         }
 
+        /**
+         * When 노선의 기존 구간들과 상행역과 하행역에 이미 등록 되어있는 경우
+         * Then 기존 구간에 추가가 안된다
+         */
+        @DisplayName("노선의 기존 구간들과 상행역과 하행역에 이미 등록 되어있는 경우 기존 구간에 추가가 안된다")
+        @Test
+        void 노선의_기존_구간들과_상행역과_하행역에_이미_등록_되어있는_경우_기존_구간에_추가가_안된다() {
+            // when
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 4L));
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        /**
+         * When 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면
+         * Then 구간 등록을 할 수 없다
+         */
+        @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 구간 등록을 할 수 없다")
+        @Test
+        void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_구간_등록을_할_수_없다() {
+            // when
+            Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 10L));
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        /**
+         * When 상행역과 하행역 둘 중 하나도 포함되어있지 않으면
+         * Then 구간 등록을 할 수 없다
+         */
+        @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간 등록을 할 수 없다")
+        @Test
+        void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_구간_등록을_할_수_없다() {
+            // when
+            Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+            Long 수지구청 = 지하철역_생성_요청("수지구청").jsonPath().getLong("id");
+            ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 수지구청, 10L));
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
         private void 노선에_새로운_구간이_추가되며_길이가_재_정의_된다(Long 정자역, ExtractableResponse<Response> lineResponse) {
             assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
             List<SectionResponse> sections = lineResponse.jsonPath().getList("sections", SectionResponse.class);
