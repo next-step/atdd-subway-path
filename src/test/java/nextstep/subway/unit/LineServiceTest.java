@@ -7,6 +7,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.exception.CannotDeleteSoleSectionException;
+import nextstep.subway.exception.IdenticalSectionAlreadyExistsInLineException;
 import nextstep.subway.exception.InvalidSectionDistanceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,7 +71,7 @@ class LineServiceTest {
 
         // when & then
         assertThatThrownBy(() -> lineService.addSection(분당선.getId(), request))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IdenticalSectionAlreadyExistsInLineException.class);
     }
 
     @DisplayName("지하철 구간 등록 시, 구간의 길이는 최소 1 이상이어야 한다.")

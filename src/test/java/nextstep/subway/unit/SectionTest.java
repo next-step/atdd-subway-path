@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.IdenticalSectionAlreadyExistsInLineException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,6 +56,6 @@ class SectionTest {
     void cannotCreateSectionWithIdenticalStations() {
         // when & then
         assertThatThrownBy(() -> new Section(line, station1, station1, 5))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(IdenticalSectionAlreadyExistsInLineException.class);
     }
 }

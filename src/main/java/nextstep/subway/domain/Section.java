@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.IdenticalSectionAlreadyExistsInLineException;
+
 import javax.persistence.*;
 
 @Entity
@@ -29,7 +31,7 @@ public class Section {
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         if (hasIdenticalStations(upStation, downStation)) {
-            throw new IllegalArgumentException();
+            throw new IdenticalSectionAlreadyExistsInLineException(upStation.getName(), downStation.getName());
         }
         this.line = line;
         this.upStation = upStation;
