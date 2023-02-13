@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.SectionAlreadyCreateStationException;
-import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -54,40 +51,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (sections.isEmpty()) {
-            sections.addLast(section);
-            return ;
-        }
-
-        // 상행, 하행 둘다 노선에 있을 때 예외 처리
-        if (sections.containsStations(List.of(section.getUpStation(), section.getDownStation()))) {
-            throw new SectionAlreadyCreateStationException();
-        }
-        if (!sections.checkExistStation(section.getUpStation()) && !sections.checkExistStation(section.getDownStation())) {
-            throw new SectionDoesNotHaveAlreadyCreateStationException();
-        }
-
-        // 노선 상행역, 하행역에 앞, 뒤에 추가
-        if (isUpStationId(section.getDownStation().getId()) || isDownStaionId(section.getUpStation().getId())) {
-            sections.addLast(section);
-            return ;
-        }
-        addSectionInMiddle(section);
-    }
-
-    private void addSectionInMiddle(Section section) {
-        if (sections.addSectionSameUpStation(section)) {
-            return ;
-        }
-        sections.addSectionSameDownStation(section);
-    }
-
-    private boolean isDownStaionId(Long id) {
-        return sections.getLastSection().getDownStation().getId().equals(id);
-    }
-
-    private boolean isUpStationId(long id) {
-        return sections.getFirstSection().getUpStation().getId().equals(id);
+        sections.addSection(section);
     }
 
     public List<Station> getStations() {
@@ -95,10 +59,6 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        if (!sections.getLastSection().getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
         sections.removeLastSection();
     }
 
