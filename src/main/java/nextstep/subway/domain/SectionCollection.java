@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.common.ErrorMessage;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -35,24 +36,32 @@ public class SectionCollection {
     }
 
     public void addSection(Section section) {
-        validation(section);
+        addValidation(section);
         AddSectionStrategy addSectionStrategy = createAddSection(section);
-        addSectionStrategy.addSection(section);
+        addSectionStrategy.addSection(this, section);
     }
 
-    private void validation(Section section) {
-        if (sections.isEmpty()) {
+    private void addValidation(Section section) {
+        if (ObjectUtils.isEmpty(sections)) {
             return;
         }
 
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         List<Station> stations = getStations();
-        if (stations.contains(upStation) && stations.contains(downStation)) {
-            throw new IllegalStateException(ErrorMessage.DUPLICATED_STATION.toString());
-        }
+        duplicatedValid(upStation, downStation, stations);
+        connectedValid(upStation, downStation, stations);
+    }
+
+    private static void connectedValid(Station upStation, Station downStation, List<Station> stations) {
         if (!stations.contains(upStation) && !stations.contains(downStation)) {
             throw new IllegalStateException(ErrorMessage.NOT_CONNECT_STATION.toString());
+        }
+    }
+
+    private static void duplicatedValid(Station upStation, Station downStation, List<Station> stations) {
+        if (stations.contains(upStation) && stations.contains(downStation)) {
+            throw new IllegalStateException(ErrorMessage.DUPLICATED_STATION.toString());
         }
     }
 
@@ -111,28 +120,42 @@ public class SectionCollection {
                 .findFirst();
     }
 
-    interface AddSectionStrategy {
-        void addSection(Section section);
+    public void removeSection(Station station) {
+        List<Section> sections = getSections();
+        int index = sections.size() - 1;
+
+        if (index < 1) {
+            throw new IllegalStateException(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
+        }
+        if (!sections.get(index).getDownStation().equals(station)) {
+            throw new IllegalArgumentException(ErrorMessage.ENOUGH_REMOVE_DOWN.toString());
+        }
+
+        sections.remove(index);
     }
 
-    class MiddleAddSection implements AddSectionStrategy {
+    interface AddSectionStrategy {
+        void addSection(SectionCollection sectionCollection, Section section);
+    }
+
+    static class MiddleAddSection implements AddSectionStrategy {
 
         @Override
-        public void addSection(Section section) {
+        public void addSection(SectionCollection sectionCollection, Section section) {
             Station upStation = section.getUpStation();
             Station downStation = section.getDownStation();
             int distance = section.getDistance();
-            getUpStation(upStation).ifPresent(updateSection -> updateSection.updateUpStation(downStation, distance));
-            getDownStation(downStation).ifPresent(updateSection -> updateSection.updateDownStation(upStation, distance));
-            sections.add(section);
+            sectionCollection.getUpStation(upStation).ifPresent(updateSection -> updateSection.updateUpStation(downStation, distance));
+            sectionCollection.getDownStation(downStation).ifPresent(updateSection -> updateSection.updateDownStation(upStation, distance));
+            sectionCollection.getSections().add(section);
         }
     }
 
-    class BasicAddSection implements AddSectionStrategy {
+    static class BasicAddSection implements AddSectionStrategy {
 
         @Override
-        public void addSection(Section section) {
-            sections.add(section);
+        public void addSection(SectionCollection sectionCollection, Section section) {
+            sectionCollection.getSections().add(section);
         }
     }
 }

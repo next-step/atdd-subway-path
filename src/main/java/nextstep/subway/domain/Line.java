@@ -63,16 +63,6 @@ public class Line {
     }
 
     public void removeStation(Station station) {
-        List<Section> sections = sectionCollection.getSections();
-        int index = sections.size() - 1;
-
-        if (index < 1) {
-            throw new IllegalStateException(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
-        }
-        if (!sections.get(index).getDownStation().equals(station)) {
-            throw new IllegalArgumentException(ErrorMessage.ENOUGH_REMOVE_DOWN.toString());
-        }
-
-        sections.remove(index);
+        sectionCollection.removeSection(station);
     }
 }
