@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.DuplicateAddSectionException;
 import nextstep.subway.domain.exception.IllegalDistanceSectionException;
 
 import javax.persistence.*;
@@ -36,6 +37,14 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
+    public Section makeNext(Line line, Station upStation, Station downStation, int distance) {
+        if (this.upStation.equals(upStation) && this.downStation.equals(downStation)) {
+            throw new DuplicateAddSectionException();
+        }
+
+        return new Section(line, upStation, downStation, distance);
+    }
+
     public Long getId() {
         return id;
     }
@@ -67,10 +76,6 @@ public class Section implements Comparable<Section> {
         }
 
         this.distance = this.distance - requestDistance;
-    }
-
-    public boolean isDuplicateSection(Station requestUpStation, Station requestDownStation) {
-        return this.upStation.equals(requestUpStation) && this.downStation.equals(requestDownStation);
     }
 
     @Override
