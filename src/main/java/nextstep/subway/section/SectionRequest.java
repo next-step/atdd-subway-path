@@ -1,22 +1,22 @@
 package nextstep.subway.section;
 
 public class SectionRequest {
-	private Long downStationId;
 	private Long upStationId;
+	private Long downStationId;
 	private int distance;
 
-	public SectionRequest(Long downStationId, Long upStationId, int distance) {
-		this.downStationId = downStationId;
+	public SectionRequest(Long upStationId, Long downStationId, int distance) {
 		this.upStationId = upStationId;
+		this.downStationId = downStationId;
 		this.distance = distance;
-	}
-
-	public Long getDownStationId() {
-		return downStationId;
 	}
 
 	public Long getUpStationId() {
 		return upStationId;
+	}
+
+	public Long getDownStationId() {
+		return downStationId;
 	}
 
 	public int getDistance() {

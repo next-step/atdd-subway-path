@@ -1,5 +1,7 @@
 package nextstep.subway.section;
 
+import java.util.NoSuchElementException;
+
 import javax.persistence.*;
 
 import nextstep.subway.line.Line;
@@ -29,12 +31,30 @@ public class Section {
 
     }
 
+	public static Section createSection(Line line, Station upStation, Station downStation, int distance) {
+		if (line.isEmptySection()) {
+			return new Section(line, upStation, downStation, distance);
+		}
+
+		return new Section(line, upStation, downStation, distance);
+	}
+
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
+
+	public void updateUpStation(Station upStation, int newDistance) {
+		this.upStation = upStation;
+		this.distance = newDistance;
+	}
+
+	public void updateDownStation(Station downStation, int newDistance) {
+		this.downStation = downStation;
+		this.distance = newDistance;
+	}
 
     public Long getId() {
         return id;
