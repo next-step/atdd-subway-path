@@ -1,5 +1,8 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_목록_조회_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
@@ -143,6 +147,31 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 여러개의 구간을 양방향으로 추가하고
+     * When 지하철 노선을 조회하면
+     * Then 상행역 부터 하행역 방향으로 정렬된 역을 확인할 수 있다.
+     */
+    @DisplayName("구간을 순서없이 등록해도 상행역부터 순서대로 조회된다.")
+    @Test
+    void showStations() {
+        // given
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        var 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        var 양재역_정자역_구간_추가_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+        var 신논현역_강남역_구간_추가_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 10));
+
+        // when
+        var response = 지하철_노선_조회_요청(신분당선);
+
+        // then
+        assertAll(() -> {
+            assertThat(양재역_정자역_구간_추가_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(신논현역_강남역_구간_추가_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역, 정자역);
+        });
     }
 
 
