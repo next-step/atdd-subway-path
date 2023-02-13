@@ -26,7 +26,8 @@ class LineTest {
         시청역 = new Station("시청역");
         종각역 = new Station("종각역");
 
-        line = new Line("1호선", "남색", 서울역, 시청역, CREATE_LINE_DISTANCE);
+        line = new Line("1호선", "남색");
+        line.addSection(new Section(line, 서울역, 시청역, CREATE_LINE_DISTANCE));
     }
 
     @DisplayName("구간 추가 - 역 사이에 새로운 역을 등록할 경우 - 새로운 구간의 상행역과 기존 구간의 상행역이 같은 경우")
