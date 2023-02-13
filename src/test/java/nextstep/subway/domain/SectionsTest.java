@@ -160,4 +160,18 @@ class SectionsTest {
         // then 
         assertThat(sections.getStations()).containsExactly(강남역, 양재시민의숲역);
     }
+
+    @Test
+    void 구간들에서_상행종점역을_제거하는_경우_정상적으로_제거된다() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(강남_양재_구간);
+        sections.addSection(양재_양재시민의숲_구간);
+
+        // when
+        sections.remove(강남역);
+
+        // then 
+        assertThat(sections.getStations()).containsExactly(양재역, 양재시민의숲역);
+    }
 }
