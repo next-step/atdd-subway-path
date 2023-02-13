@@ -51,8 +51,9 @@ class SectionsTest {
         // Given
         sections.add(section);
 
-        // When
         Section 하행종착역_뒤_section = new Section(이호선, 삼성역, 잠실역, 10);
+
+        // When
         sections.add(하행종착역_뒤_section);
 
         // Then
@@ -64,8 +65,9 @@ class SectionsTest {
         // Given
         sections.add(section);
 
-        // When
         Section 하행종착역_뒤_section = new Section(이호선, 잠실역, 강남역, 10);
+
+        // When
         sections.add(하행종착역_뒤_section);
 
         // Then
@@ -77,8 +79,9 @@ class SectionsTest {
         // Given
         sections.add(section);
 
-        // When
         Section 하행종착역_뒤_section = new Section(이호선, 잠실역, 삼성역, 6);
+
+        // When
         sections.add(하행종착역_뒤_section);
 
         // Then
@@ -90,8 +93,9 @@ class SectionsTest {
         // Given
         sections.add(section);
 
-        // When
         Section 하행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, 6);
+
+        // When
         sections.add(하행종착역_뒤_section);
 
         // Then
@@ -103,6 +107,7 @@ class SectionsTest {
     void add_exception_기준역의_구간보다_크거나_같을때(int distance) {
         // Given
         sections.add(section);
+
         Section 상행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, distance);
 
         // When & Then
@@ -114,6 +119,7 @@ class SectionsTest {
     void add_exception_기존_구간들에_이미_존재하는_역일때() {
         // Given
         sections.add(section);
+        
         Section newSection = new Section(이호선, 강남역, 삼성역, 10);
 
         // When & Then
