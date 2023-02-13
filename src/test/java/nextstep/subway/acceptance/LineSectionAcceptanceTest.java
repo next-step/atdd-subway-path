@@ -2,7 +2,6 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.ErrorResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
@@ -115,8 +113,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(errorResponse.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(errorResponse.getMessage()).isEqualTo(CustomException.ADD_STATION_MUST_INCLUDE_IN_LINE);
     }
-
-    //역이 포함되어 있지 않다
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
