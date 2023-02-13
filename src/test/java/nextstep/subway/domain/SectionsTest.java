@@ -174,4 +174,14 @@ class SectionsTest {
         // then 
         assertThat(sections.getStations()).containsExactly(양재역, 양재시민의숲역);
     }
+
+    @Test
+    void 구간들에_구간이_하나만_존재할_때_구간을_제거하는_경우_예외가_발생한다() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(강남_양재_구간);
+
+        // when // then
+        assertThatThrownBy(() -> sections.remove(강남역)).isInstanceOf(CanNotRemoveSectionException.class);
+    }
 }
