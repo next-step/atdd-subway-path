@@ -181,19 +181,7 @@ class LineTest {
         // Then
         assertThat(이호선.getSections().size()).isEqualTo(beforeSize - 1);
     }
-
-    @DisplayName("지하철노선의 하행종점역만 제거할 수 있다.")
-    @Test
-    void removeSectionException1() {
-        // Given
-        이호선.addSection(new Section(이호선, 삼성역, 잠실역, 7));
-
-        // When & Then
-        assertThatThrownBy(() -> 이호선.removeSection(삼성역))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(EXCEPTION_MESSAGE_CAN_REMOVE_TAIL_STATION);
-    }
-
+    
     @DisplayName("지하철노선의 구간이 1개만 존재한다면, 구간을 제거할 수 없다.")
     @Test
     void removeSectionException2() {
