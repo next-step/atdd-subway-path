@@ -3,18 +3,24 @@ package nextstep.subway.domain;
 import nextstep.subway.domain.exception.DuplicateAddSectionException;
 import nextstep.subway.domain.exception.IllegalDistanceSectionException;
 import org.assertj.core.api.AssertionsForClassTypes;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class SectionTest {
 
-    private final static Line 신분당선 = new Line("신분당선", "red");
-    private final static Station 강남역 = new Station("강남역");
-    private final static Station 양재역 = new Station("양재역");
-    private final static Section givenSection = new Section(신분당선, 강남역, 양재역, 10);
+    private final Line 신분당선 = new Line("신분당선", "red");
+    private final Station 강남역 = new Station("강남역");
+    private final Station 양재역 = new Station("양재역");
+    private  Section givenSection;
+
+    @BeforeEach
+    void setUp() {
+        givenSection = new Section(신분당선, 강남역, 양재역, 10);
+    }
 
     // When 기존 구간의 상행역 변경 시
     // Then 변경이 된다.
