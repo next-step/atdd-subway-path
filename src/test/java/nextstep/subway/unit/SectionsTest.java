@@ -4,8 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
-import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
+import nextstep.subway.exception.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,11 +39,18 @@ class SectionsTest {
 
         // when & then
         assertThat(sections.isEmpty()).isTrue();
+    }
+
+    @DisplayName("지하철 구간이 하나라도 등록되어 있으면, 지하철 구간 목록은 비어있지 않다.")
+    @Test
+    void isNotEmpty() {
+        // given
+        Sections sections = new Sections();
 
         // when
         sections.add(createSection(station1, station2));
 
-        // then
+        // when & then
         assertThat(sections.isEmpty()).isFalse();
     }
 
@@ -137,6 +143,20 @@ class SectionsTest {
         assertThat(sections.getStationsInOrder()).containsExactly(station1, station2, station3);
     }
 
+    @DisplayName("새로운 구간 추가 시, 기존 구간의 길이보다 크거나 같으면 추가할 수 없다.")
+    @Test
+    void invalidSectionDistance() {
+        // given
+        Sections sections = new Sections();
+        sections.add(createSection(station1, station2, 1));
+
+        Section newSection = createSection(station1, station1_5, 1);
+
+        // when & then
+        assertThatThrownBy(() -> sections.add(newSection))
+            .isInstanceOf(InvalidSectionDistanceException.class);
+    }
+
     @DisplayName("새로운 구간 추가 시, 상행역과 하행역 모두 노선에 등록되어 있지 않아야 한다.")
     @Test
     void bothStationsExistInLine() {
@@ -165,9 +185,24 @@ class SectionsTest {
             .isInstanceOf(BothSectionStationsNotExistsInLineException.class);
     }
 
-    @DisplayName("마지막 지하철 구간을 제거한다.")
+    @DisplayName("상행 종점역을 포함하는 지하철 구간을 제거한다.")
     @Test
-    void remove() {
+    void removeFirstLineSection() {
+        // given
+        Sections sections = new Sections();
+        sections.add(createSection(station1, station2));
+        sections.add(createSection(station2, station3));
+
+        // when
+        sections.remove(station1);
+
+        // then
+        assertThat(sections.getStationsInOrder()).containsExactly(station2, station3);
+    }
+
+    @DisplayName("하행 종점역을 포함하는 지하철 구간을 제거한다.")
+    @Test
+    void removeLastLineSection() {
         // given
         Sections sections = new Sections();
         sections.add(createSection(station1, station2));
@@ -180,6 +215,21 @@ class SectionsTest {
         assertThat(sections.getStationsInOrder()).containsExactly(station1, station2);
     }
 
+    @DisplayName("지하철 노선의 중간역을 제거한다.")
+    @Test
+    void removeIntermediateLineSection() {
+        // given
+        Sections sections = new Sections();
+        sections.add(createSection(station1, station2));
+        sections.add(createSection(station2, station3));
+
+        // when
+        sections.remove(station2);
+
+        // then
+        assertThat(sections.getStationsInOrder()).containsExactly(station1, station3);
+    }
+
     @DisplayName("현재 등록된 지하철 구간이 하나인 경우, 지하철 구간을 제거할 수 없다.")
     @Test
     void cannotRemoveWhenSingleSection() {
@@ -189,20 +239,20 @@ class SectionsTest {
 
         // when & then
         assertThatThrownBy(() -> sections.remove(station2))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(CannotDeleteSoleSectionException.class);
     }
 
-    @DisplayName("지하철 구간 제거 시, 하행 종점역이 아니라면 제거할 수 없다.")
+    @DisplayName("지하철 노선에 등록된 역이 아니라면, 지하철 구간을 제거할 수 없다.")
     @Test
-    void cannotRemoveWhenNotLastStation() {
+    void cannotRemoveNotRegisteredStation() {
         // given
         Sections sections = new Sections();
         sections.add(createSection(station1, station2));
         sections.add(createSection(station2, station3));
 
         // when & then
-        assertThatThrownBy(() -> sections.remove(station2))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> sections.remove(station1_5))
+            .isInstanceOf(SectionWithStationNotExistsException.class);
     }
 
     @DisplayName("등록된 모든 지하철 구간의 역 목록을 순서대로 조회한다.")

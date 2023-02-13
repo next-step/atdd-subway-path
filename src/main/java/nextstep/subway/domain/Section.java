@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.IdenticalSectionAlreadyExistsInLineException;
+
 import javax.persistence.*;
 
 @Entity
@@ -25,12 +27,11 @@ public class Section {
     private Distance distance;
 
     public Section() {
-
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         if (hasIdenticalStations(upStation, downStation)) {
-            throw new IllegalArgumentException();
+            throw new IdenticalSectionAlreadyExistsInLineException(upStation.getName(), downStation.getName());
         }
         this.line = line;
         this.upStation = upStation;
@@ -38,18 +39,8 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
-    public boolean hasIdenticalStations(Station upStation, Station downStation) {
+    private boolean hasIdenticalStations(Station upStation, Station downStation) {
         return (upStation != null && downStation != null) && upStation.equals(downStation);
-    }
-
-    public void updateUpStation(Station station, int distance) {
-        this.distance.decrease(distance);
-        this.upStation = station;
-    }
-
-    public void updateDownStation(Station station, int distance) {
-        this.distance.decrease(distance);
-        this.downStation = station;
     }
 
     public boolean hasUpStation(Station station) {

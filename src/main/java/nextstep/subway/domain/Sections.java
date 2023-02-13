@@ -1,17 +1,18 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
+import nextstep.subway.exception.CannotDeleteSoleSectionException;
 import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
+import nextstep.subway.exception.SectionWithStationNotExistsException;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
@@ -22,19 +23,20 @@ public class Sections {
     public void add(Section section) {
         validateSection(section);
 
+        Line line = section.getLine();
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         int distance = section.getDistance();
 
-        sections.stream()
-            .filter(it -> it.hasUpStation(upStation))
-            .findFirst()
-            .ifPresent(it -> it.updateUpStation(downStation, distance));
+        findSectionByUpStation(upStation).ifPresent(it -> {
+            sections.add(new Section(line, downStation, it.getDownStation(), it.getDistance() - distance));
+            sections.remove(it);
+        });
 
-        sections.stream()
-            .filter(it -> it.hasDownStation(downStation))
-            .findFirst()
-            .ifPresent(it -> it.updateDownStation(upStation, distance));
+        findSectionByDownStation(downStation).ifPresent(it -> {
+            sections.add(new Section(line, it.getUpStation(), upStation, it.getDistance() - distance));
+            sections.remove(it);
+        });
 
         sections.add(section);
     }
@@ -71,16 +73,11 @@ public class Sections {
         List<Station> stations = new ArrayList<>();
         stations.add(firstStation);
 
-        Optional<Section> currentSection = sections.stream()
-            .filter(it -> it.hasUpStation(firstStation))
-            .findFirst();
-
+        Optional<Section> currentSection = findSectionByUpStation(firstStation);
         while (currentSection.isPresent()) {
             Station downStation = currentSection.get().getDownStation();
             stations.add(downStation);
-            currentSection = sections.stream()
-                .filter(it -> it.hasUpStation(downStation))
-                .findFirst();
+            currentSection = findSectionByUpStation(downStation);
         }
 
         return stations;
@@ -99,19 +96,77 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        if (isSingleSection() || !isLastLineStation(station)) {
-            throw new IllegalArgumentException();
+        if (isSingleSection()) {
+            throw new CannotDeleteSoleSectionException();
         }
-        sections.remove(sections.size() - 1);
+        removeSection(station);
     }
 
     private boolean isSingleSection() {
         return sections.size() == 1;
     }
 
+    private void removeSection(Station station) {
+        if (isFirstLineStation(station)) {
+            removeFirstSection(station);
+            return;
+        }
+
+        if (isLastLineStation(station)) {
+            removeLastSection();
+            return;
+        }
+
+        removeIntermediateSection(station);
+    }
+
+    private boolean isFirstLineStation(Station station) {
+        List<Station> stations = getStationsInOrder();
+        return stations.get(0).equals(station);
+    }
+
+    private void removeFirstSection(Station station) {
+        Section section = findSectionByUpStation(station)
+            .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
+        sections.remove(section);
+    }
+
     private boolean isLastLineStation(Station station) {
         List<Station> stations = getStationsInOrder();
         return stations.get(stations.size() - 1).equals(station);
+    }
+
+    private void removeLastSection() {
+        sections.remove(sections.size() - 1);
+    }
+
+    private void removeIntermediateSection(Station station) {
+        Section upSection = findSectionByDownStation(station)
+            .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
+        Section downSection = findSectionByUpStation(station)
+            .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
+
+        Section mergedSection = new Section(
+            upSection.getLine(),
+            upSection.getUpStation(),
+            downSection.getDownStation(),
+            upSection.getDistance() + downSection.getDistance()
+        );
+
+        sections.add(mergedSection);
+        sections.removeAll(List.of(upSection, downSection));
+    }
+
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return sections.stream()
+            .filter(it -> it.hasUpStation(station))
+            .findFirst();
+    }
+
+    private Optional<Section> findSectionByDownStation(Station station) {
+        return sections.stream()
+            .filter(it -> it.hasDownStation(station))
+            .findFirst();
     }
 
     public List<Section> getSections() {
