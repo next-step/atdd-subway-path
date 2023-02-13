@@ -5,10 +5,7 @@ import nextstep.subway.domain.exceptions.CanNotAddSectionException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -102,12 +99,30 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Section section = sections.stream()
+        Section upperSection = sections.stream()
                 .filter(it -> it.getDownStation().equals(station))
                 .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("삭제하려는 역이 가장 상행선 일 수 없다"));
 
-        sections.remove(section);
+        Optional<Section> lowerSection = sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findFirst();
+
+        if (lowerSection.isEmpty()) {
+            sections.remove(upperSection);
+            return;
+        }
+
+        Section newSection = new Section(
+                upperSection.getLine(),
+                upperSection.getUpStation(),
+                lowerSection.get().getDownStation(),
+                Distance.of(upperSection.getDistance().getValue() + lowerSection.get().getDistance().getValue())
+        );
+        
+        sections.remove(upperSection);
+        sections.remove(lowerSection.get());
+        sections.add(newSection);
     }
 
     @Override
