@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -11,9 +13,8 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -21,6 +22,14 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+
+        Section section = new Section(this, upStation, downStation, distance);
+        this.sections.addSection(section);
     }
 
     public Long getId() {
@@ -47,7 +56,31 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public int getGreatestOrder() {
+        return sections.getGreatestOrder();
+    }
+
+    public Sections getSections() {
         return sections;
+    }
+
+    public Integer[] getDistances() {
+        return sections.getDistances();
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public Section getLastSection() {
+        return sections.findLastSection();
+    }
+
+    public void removeLastSection() {
+        sections.removeLastSection();
     }
 }
