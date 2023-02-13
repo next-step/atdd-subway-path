@@ -18,7 +18,7 @@ import static nextstep.subway.exception.ErrorResponseEnum.ERROR_DELETE_SECTION_I
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
