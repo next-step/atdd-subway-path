@@ -1,11 +1,12 @@
 package nextstep.subway.acceptance;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
@@ -198,7 +199,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 중간에 있는 역을 제거하면
      * Then 해당 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 중간 구간을 제거")
+    @DisplayName("지하철 노선에 중간 구간 제거")
     @Test
     void removeLineBetweenSection() {
         // given
@@ -221,7 +222,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 중간에 있는 역을 모두 제거하면
      * Then 해당 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 중간 구간을 제거")
+    @DisplayName("지하철 노선에 중간 구간을 모두 제거")
     @Test
     void removeAllLineBetweenSection() {
         // given
