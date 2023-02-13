@@ -27,7 +27,9 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(request.toEntity());
-        addSection(line, new SectionRequest(request));
+        if (request.createNewSection()) {
+            addSection(line, new SectionRequest(request));
+        }
         return LineResponse.toResponse(line);
     }
 
