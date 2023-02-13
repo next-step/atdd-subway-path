@@ -19,6 +19,10 @@ public class Sections {
     @OrderBy("id asc")
     private List<Section> sections = new ArrayList<>();
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public void add(Section section) {
         validateAddableSection(section);
 
@@ -62,18 +66,24 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
     }
-    public Section findSectionByUpStation(Station station) {
-        return sections.stream()
-                .filter(section -> section.isUpStation(station))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
-    }
 
     private Section findSectionOnDownStationOfSection(Section target) {
         return sections.stream()
                 .filter(section -> section.isInSideOverlapOnDownStation(target))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Optional<Section> findSectionOnDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findFirst();
+    }
+
+    public Optional<Section> findSectionOnUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findFirst();
     }
 
     private InsertLocation findInsertLocation(Section target) {
@@ -109,6 +119,7 @@ public class Sections {
             throw new IllegalArgumentException(EXCEPTION_MESSAGE_NEED_CRITERIA_STATION);
         }
     }
+
     private void verifyExistenceCriteriaStation(Station station) {
         if (!sections.isEmpty() && !hasMatchedStation(station)) {
             throw new IllegalArgumentException(EXCEPTION_MESSAGE_NEED_CRITERIA_STATION);
@@ -125,6 +136,7 @@ public class Sections {
         return hasStation(section.getUpStation())
                 || hasStation(section.getDownStation());
     }
+
     private boolean hasMatchedStation(Station station) {
         return hasStation(station);
     }
@@ -142,7 +154,43 @@ public class Sections {
     public void remove(Station station) {
         checkRemovableStation(station);
 
-        sections.remove(sections.size() - 1);
+        // 제거 로직
+
+        Optional<Section> frontSectionOptional = findSectionOnDownStation(station);
+        Optional<Section> backSectionOptional = findSectionOnUpStation(station);
+
+        // if head
+        if (!frontSectionOptional.isPresent()) {
+            Section frontSection = backSectionOptional.get();
+
+            if (findPreSection(frontSection).isEmpty()) {
+                sections.remove(frontSection);
+                return;
+            }
+        }
+
+        // if tail
+        if (!backSectionOptional.isPresent()) {
+            Section backSection = frontSectionOptional.get();
+
+            if (findNextStation(backSection.getDownStation()).isEmpty()) {
+                sections.remove(backSection);
+                return;
+            }
+        }
+
+        // if 중간
+        Section frontSection = frontSectionOptional.get();
+        Section backSection = backSectionOptional.get();
+
+        Station upStation = frontSection.getUpStation();
+        Station downStation = backSection.getDownStation();
+
+        Section newSection = new Section(frontSection.getLine(), upStation, downStation, frontSection.getDistance() + backSection.getDistance());
+
+        sections.remove(frontSection);
+        sections.remove(backSection);
+        sections.add(newSection);
     }
 
     private void checkRemovableStation(Station station) {
@@ -221,5 +269,12 @@ public class Sections {
 
     public int size() {
         return sections.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "sections=" + sections +
+                '}';
     }
 }

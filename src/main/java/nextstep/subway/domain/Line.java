@@ -72,4 +72,14 @@ public class Line {
     public Section getHeadSection() {
         return sections.getHeadSection();
     }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
+    }
 }

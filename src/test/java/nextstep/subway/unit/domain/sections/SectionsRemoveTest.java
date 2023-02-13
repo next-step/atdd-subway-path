@@ -60,6 +60,36 @@ class SectionsRemoveTest {
 
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
-        assertThat(sections.findSectionByUpStation(강남역).getDistance()).isEqualTo(6);
+        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(6);
+    }
+
+    @Test
+    void removeHeadSection() {
+        // Given
+        Section 상행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, 6);
+        sections.add(상행종착역_뒤_section);
+        int beforeSize = sections.size();
+
+        // When
+        sections.remove(강남역);
+
+        // Then
+        assertThat(sections.size()).isEqualTo(beforeSize - 1);
+        assertThat(sections.findSectionOnUpStation(잠실역).get().getDistance()).isEqualTo(4);
+    }
+
+    @Test
+    void removeInternalSection() {
+        // Given
+        Section 상행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, 6);
+        sections.add(상행종착역_뒤_section);
+        int beforeSize = sections.size();
+
+        // When
+        sections.remove(잠실역);
+
+        // Then
+        assertThat(sections.size()).isEqualTo(beforeSize - 1);
+        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(10);
     }
 }
