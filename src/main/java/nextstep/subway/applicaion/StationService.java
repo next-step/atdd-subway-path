@@ -39,7 +39,7 @@ public class StationService {
     public StationResponse createStationResponse(Station station) {
         return new StationResponse(
                 station.getId(),
-                station.getName().getName()
+                station.getName()
         );
     }
 
