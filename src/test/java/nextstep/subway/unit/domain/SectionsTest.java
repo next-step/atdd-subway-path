@@ -103,10 +103,10 @@ class SectionsTest {
     void add_exception_기준역의_구간보다_크거나_같을때(int distance) {
         // Given
         sections.add(section);
+        Section 상행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, distance);
 
         // When & Then
-        Section 하행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, distance);
-        assertThatThrownBy(() -> sections.add(하행종착역_뒤_section))
+        assertThatThrownBy(() -> sections.add(상행종착역_뒤_section))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -153,4 +153,10 @@ class SectionsTest {
                 () -> assertThat(stations).containsExactly(강남역, 잠실역, 삼성역)
         );
     }
+
+    @Test
+    void remove() {
+    }
+
+
 }
