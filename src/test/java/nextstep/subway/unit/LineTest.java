@@ -133,9 +133,6 @@ class LineTest {
         // given
         신분당선.getSections().add(강남_양재_구간);
 
-        // when
-        신분당선.removeSection(양재역);
-
         // then
         assertThatThrownBy(() -> 신분당선.removeSection(양재역))
                 .isInstanceOf(LineMinimumSectionException.class);
@@ -169,7 +166,7 @@ class LineTest {
         // given
         Station 양재시민의숲역 = new Station("양재시민의숲역");
         injectId(양재시민의숲역, 4L);
-        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, 15);
 
         신분당선.addSection(강남_양재_구간);
         신분당선.addSection(양재_양재시민의숲_구간);
@@ -180,7 +177,7 @@ class LineTest {
         // then
         List<Station> 신분당선_지하철 = 신분당선.getStations();
         SoftAssertions.assertSoftly(sa -> {
-            sa.assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(20);
+            sa.assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(강남_양재_구간.getDistance() + 양재_양재시민의숲_구간.getDistance());
             sa.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(강남역, 양재시민의숲역));
         });
     }
