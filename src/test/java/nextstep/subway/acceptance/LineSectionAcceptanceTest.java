@@ -90,7 +90,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 기존 구간 사이에 새로 등록된 역과 기존 구간의 하행역을 포함하는 새로운 구간을 추가하면
      * Then 기존 구간 사이에 새로운 구간이 추가된다.
      * AS-IS    A ----------------- C
-     * +                  B ------- C
+     *        +           B ------- C
      * TO-BE    A --------B-------- C
      */
     @DisplayName("기존 구간의 하행역을 기준으로 새로운 구간을 추가한다.")
