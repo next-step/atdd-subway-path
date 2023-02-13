@@ -86,4 +86,36 @@ class SectionTest {
         // when // then
         assertThatThrownBy(() -> 강남_양재_구간_거리10.split(강남_뱅뱅사거리_구간)).isInstanceOf(NotPositiveNumberException.class);
     }
+
+    @Test
+    void 구간을_합칠_때_구간의_하행역이_다른_구간의_상행역과_같은_경우_정상적으로_합칠_수_있다() {
+        // when
+        Section result = 강남_양재_구간_거리10.merge(양재_양재시민의숲_구간_거리10);
+
+        // then
+        assertThat(result.getUpStation()).isEqualTo(강남역);
+        assertThat(result.getDownStation()).isEqualTo(양재시민의숲역);
+        assertThat(result.getDistance()).isEqualTo(Distance.of(20));
+    }
+
+    @Test
+    void 구간을_합칠_때_구간의_상행역이_다른_구간의_하행역과_같은_경우_정상적으로_합칠_수_있다() {
+        // when
+        Section result = 양재_양재시민의숲_구간_거리10.merge(강남_양재_구간_거리10);
+
+        // then
+        assertThat(result.getUpStation()).isEqualTo(강남역);
+        assertThat(result.getDownStation()).isEqualTo(양재시민의숲역);
+        assertThat(result.getDistance()).isEqualTo(Distance.of(20));
+    }
+
+    @Test
+    void 구간을_합칠_때_두_구간의_상행선과_하행선이_모두_다른_경우_예외가_발생한다() {
+        assertThatThrownBy(() -> 양재_양재시민의숲_구간_거리10.merge(강남_뱅뱅사거리_구간_거리4)).isInstanceOf(CanNotMergeSectionException.class);
+    }
+
+    @Test
+    void 구간을_합칠_때_두_구간의_상행선이_동일한_경우_예외가_발생한다() {
+        assertThatThrownBy(() -> 강남_양재_구간_거리10.merge(강남_뱅뱅사거리_구간_거리4)).isInstanceOf(CanNotMergeSectionException.class);
+    }
 }
