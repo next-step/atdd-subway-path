@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.DuplicateAddSectionException;
 import nextstep.subway.domain.exception.IllegalDistanceSectionException;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +38,17 @@ class SectionTest {
         // When && Then
         Station 신사역 = new Station("신사역");
         assertThatThrownBy(() -> givenSection.changeUpStation(신사역, 10)).isInstanceOf(IllegalDistanceSectionException.class);
+    }
+
+    /**
+     * When 기존 구간과 동일한 구간 추가 요청시
+     * Then 추가가 안된다
+     */
+    @DisplayName("기존 구간과 동일한 구간 추가 요청시 추가가 안된다")
+    @Test
+    void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
+        // When && Then
+        AssertionsForClassTypes.assertThatThrownBy(() -> givenSection.makeNext(신분당선, 강남역, 양재역, 10)).isInstanceOf(DuplicateAddSectionException.class);
     }
 
 }
