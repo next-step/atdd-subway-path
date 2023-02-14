@@ -111,7 +111,8 @@ class LineTest {
     @Test
     void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
         // When && Then
-        assertThatThrownBy(() -> line.addSection(강남역, 양재역, 4)).isInstanceOf(DuplicateAddSectionException.class);
+        assertThatThrownBy(() -> line.addSection(강남역, 양재역, 4))
+            .isInstanceOf(DuplicateAddSectionException.class);
     }
 
     /**
@@ -125,7 +126,8 @@ class LineTest {
         Station 판교역 = new Station("판교역");
 
         // When && Then
-        assertThatThrownBy(() -> line.addSection(강남역, 판교역, 10)).isInstanceOf(IllegalDistanceSectionException.class);
+        assertThatThrownBy(() -> line.addSection(강남역, 판교역, 10))
+            .isInstanceOf(IllegalDistanceSectionException.class);
     }
 
     /**
@@ -140,7 +142,8 @@ class LineTest {
         Station 수지구청역 = new Station("수지구청역");
 
         // When && Then
-        assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10)).isInstanceOf(IllegalAddSectionException.class);
+        assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10))
+            .isInstanceOf(IllegalAddSectionException.class);
     }
 
     /**
@@ -155,7 +158,8 @@ class LineTest {
         Station 판교역 = new Station("판교역");
 
         // When && Then
-        assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10)).isInstanceOf(IllegalAddSectionException.class);
+        assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10))
+            .isInstanceOf(IllegalAddSectionException.class);
     }
 
     // When 라인에 해당하는 역들을 요청 시

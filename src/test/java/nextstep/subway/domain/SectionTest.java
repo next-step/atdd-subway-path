@@ -43,7 +43,8 @@ class SectionTest {
     void 상행역_변경시_기존_역과_역사이의_길이보다_크거나_같으면_변경이_안된다() {
         // When && Then
         Station 신사역 = new Station("신사역");
-        assertThatThrownBy(() -> givenSection.changeUpStation(신사역, 10)).isInstanceOf(IllegalDistanceSectionException.class);
+        assertThatThrownBy(() -> givenSection.changeUpStation(신사역, 10))
+            .isInstanceOf(IllegalDistanceSectionException.class);
     }
 
     /**
@@ -54,7 +55,8 @@ class SectionTest {
     @Test
     void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
         // When && Then
-        AssertionsForClassTypes.assertThatThrownBy(() -> givenSection.makeNext(신분당선, 강남역, 양재역, 10)).isInstanceOf(DuplicateAddSectionException.class);
+        assertThatThrownBy(() -> givenSection.makeNext(신분당선, 강남역, 양재역, 10))
+            .isInstanceOf(DuplicateAddSectionException.class);
     }
 
 }
