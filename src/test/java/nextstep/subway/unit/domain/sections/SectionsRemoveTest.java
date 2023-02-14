@@ -7,8 +7,11 @@ import nextstep.subway.domain.sections.Sections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SectionsRemoveTest {
 
@@ -90,6 +93,32 @@ class SectionsRemoveTest {
 
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
+        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(10);
+    }
+
+    @Test
+    void removeInternalSection2() {
+        // Given
+        Section 상행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, 6);
+
+        Station 논현역 = new Station("논현역");
+        Section 상행종착역_앞_section = new Section(이호선, 논현역, 강남역, 6);
+
+        Station 건대입구역 = new Station("건대입구역");
+        Section 하행종착역_뒤_section = new Section(이호선, 삼성역, 건대입구역, 6);
+
+        sections.add(상행종착역_뒤_section);
+        sections.add(상행종착역_앞_section);
+        sections.add(하행종착역_뒤_section);
+
+        int beforeSize = sections.size();
+
+        // When
+        sections.delete(잠실역);
+
+        // Then
+        assertThat(sections.size()).isEqualTo(beforeSize - 1);
+        assertTrue(sections.getStations().containsAll(List.of(논현역, 강남역, 삼성역, 건대입구역)));
         assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(10);
     }
 }
