@@ -1,6 +1,10 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.common.ErrorMessage;
+import nextstep.subway.domain.strategy.add.AddSectionFactory;
+import nextstep.subway.domain.strategy.add.AddSectionStrategy;
+import nextstep.subway.domain.strategy.remove.RemoveSectionFactory;
+import nextstep.subway.domain.strategy.remove.RemoveSectionStrategy;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.CascadeType;
@@ -18,12 +22,7 @@ public class SectionCollection {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    private Station getLastStation() {
+    public Station getLastStation() {
         List<Station> upStations = sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
@@ -35,10 +34,18 @@ public class SectionCollection {
                 .orElseThrow(() -> new IllegalStateException(ErrorMessage.INVALID_SECTION_STATE.toString()));
     }
 
-    public void addSection(Section section) {
+    public boolean isEmpty() {
+        return sections.isEmpty();
+    }
+    public void addSectionCollection(Section section) {
         addValidation(section);
-        AddSectionStrategy addSectionStrategy = createAddSection(section);
+        AddSectionFactory addSectionFactory = new AddSectionFactory();
+        AddSectionStrategy addSectionStrategy = addSectionFactory.createAddSection(this, section);
         addSectionStrategy.addSection(this, section);
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
     }
 
     private void addValidation(Section section) {
@@ -65,7 +72,7 @@ public class SectionCollection {
         }
     }
 
-    private Station getFirstStation() {
+    public Station getFirstStation() {
         List<Station> downStations = sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
@@ -78,21 +85,7 @@ public class SectionCollection {
     }
 
 
-    AddSectionStrategy createAddSection(Section section) {
-        if (sections.isEmpty()) {
-            return new BasicAddSection();
-        }
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-        Station firstStation = getFirstStation();
-        Station lastStation = getLastStation();
 
-        if (Objects.equals(downStation, firstStation) || Objects.equals(upStation, lastStation)) {
-            return new BasicAddSection();
-        }
-
-        return new MiddleAddSection();
-    }
 
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
@@ -101,61 +94,45 @@ public class SectionCollection {
         stations.add(nowStation);
 
         while (!Objects.equals(nowStation, lastStation)) {
-            Section section = getUpStation(nowStation).orElseThrow(() -> new IllegalStateException(ErrorMessage.INVALID_SECTION_STATE.toString()));
+            Section section = getUpSection(nowStation).orElseThrow(() -> new IllegalStateException(ErrorMessage.INVALID_SECTION_STATE.toString()));
             nowStation = section.getDownStation();
             stations.add(nowStation);
         }
         return stations;
     }
 
-    private Optional<Section> getUpStation(Station upStation) {
+    public Optional<Section> getUpSection(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst();
     }
 
-    private Optional<Section> getDownStation(Station downStation) {
+    public Optional<Section> getDownSection(Station downStation) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(downStation))
                 .findFirst();
     }
 
-    public void removeSection(Station station) {
-        List<Section> sections = getSections();
-        int index = sections.size() - 1;
+    public void removeSectionCollection(Station station) {
+        Optional<Section> downSection = getDownSection(station);
+        Optional<Section> upSection = getUpSection(station);
+        removeValidation(station, upSection, downSection);
 
-        if (index < 1) {
+        RemoveSectionFactory removeSectionFactory = new RemoveSectionFactory();
+        RemoveSectionStrategy removeSectionStrategy = removeSectionFactory.createRemoveSectionStrategy(this, station);
+        removeSectionStrategy.removeSection(this, station);
+    }
+
+    public void removeSection(Section section) {
+        this.sections.remove(section);
+    }
+
+    private void removeValidation(Station station, Optional<Section> upSection, Optional<Section> downSection) {
+        if (ObjectUtils.isEmpty(sections) || sections.size() < 2) {
             throw new IllegalStateException(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
         }
-        if (!sections.get(index).getDownStation().equals(station)) {
+        if (upSection.isEmpty() && downSection.isEmpty()) {
             throw new IllegalArgumentException(ErrorMessage.ENOUGH_REMOVE_DOWN.toString());
-        }
-
-        sections.remove(index);
-    }
-
-    interface AddSectionStrategy {
-        void addSection(SectionCollection sectionCollection, Section section);
-    }
-
-    static class MiddleAddSection implements AddSectionStrategy {
-
-        @Override
-        public void addSection(SectionCollection sectionCollection, Section section) {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            int distance = section.getDistance();
-            sectionCollection.getUpStation(upStation).ifPresent(updateSection -> updateSection.updateUpStation(downStation, distance));
-            sectionCollection.getDownStation(downStation).ifPresent(updateSection -> updateSection.updateDownStation(upStation, distance));
-            sectionCollection.getSections().add(section);
-        }
-    }
-
-    static class BasicAddSection implements AddSectionStrategy {
-
-        @Override
-        public void addSection(SectionCollection sectionCollection, Section section) {
-            sectionCollection.getSections().add(section);
         }
     }
 }
