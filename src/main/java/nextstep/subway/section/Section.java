@@ -1,16 +1,19 @@
 package nextstep.subway.section;
 
-import java.util.NoSuchElementException;
-
 import javax.persistence.*;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Section {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
@@ -27,20 +30,7 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
-	public static Section createSection(Line line, Station upStation, Station downStation, int distance) {
-		if (line.isEmptySection()) {
-			return new Section(line, upStation, downStation, distance);
-		}
-
-		return new Section(line, upStation, downStation, distance);
-	}
-
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
+    public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -51,28 +41,7 @@ public class Section {
 		this.distance = newDistance;
 	}
 
-	public void updateDownStation(Station downStation, int newDistance) {
-		this.downStation = downStation;
-		this.distance = newDistance;
+	public void updateLine(Line line) {
+		this.line = line;
 	}
-
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
 }
