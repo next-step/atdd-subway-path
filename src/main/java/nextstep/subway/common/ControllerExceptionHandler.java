@@ -1,4 +1,6 @@
-package nextstep.subway.ui;
+package nextstep.subway.common;
+
+import java.util.NoSuchElementException;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -13,7 +15,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.badRequest().build();
     }
 
-	@ExceptionHandler(value = IllegalArgumentException.class)
+	@ExceptionHandler(value = {NoSuchElementException.class, IllegalArgumentException.class})
 	public ResponseEntity IllegalArgumentException() {
 		return new ResponseEntity(HttpStatus.BAD_REQUEST);
 	}
