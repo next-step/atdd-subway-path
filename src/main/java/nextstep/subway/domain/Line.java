@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -121,15 +120,54 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        if (this.getSections().isEmpty()) {
+        if (this.sections.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = this.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+        List<Station> stations = new ArrayList<>();
+        Station station = findFirstUpStation();
+        stations.add(station);
 
-        stations.add(0, this.getSections().get(0).getUpStation());
+        while (isPresentNextSection(station)) {
+            Section nextSection = findNextSection(station);
+            station = nextSection.getDownStation();
+            stations.add(station);
+        }
         return stations;
+    }
+
+    private Section findNextSection(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private Station findFirstUpStation() {
+        Station upStation = this.sections.get(0).getUpStation();
+
+        while (isPresentPrevSection(upStation)) {
+            Section prevSection = findPrevSection(upStation);
+            upStation = prevSection.getUpStation();
+        }
+
+        return upStation;
+    }
+
+    private boolean isPresentNextSection(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.equalUpStation(station));
+    }
+
+    private boolean isPresentPrevSection(Station upStation) {
+        return this.sections.stream()
+                .anyMatch(section -> section.equalDownStation(upStation));
+    }
+
+    private Section findPrevSection(Station upStation) {
+        return this.sections.stream()
+                .filter(section -> section.equalDownStation(upStation))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
     }
 }
