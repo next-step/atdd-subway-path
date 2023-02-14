@@ -203,6 +203,8 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        validateRemoveSection(station);
+
         if(hasDownToEndDown(station)) {
             removeLastSection();
             return;
@@ -216,6 +218,21 @@ public class Sections {
         if(hasUpToUp(station) && hasDownToDown(station)) {
             removeMiddleSection(station);
         }
+    }
+
+
+    private void validateRemoveSection(Station station) {
+        if(isEmpty()) {
+            throw new IllegalArgumentException("노선에 구간이 없습니다");
+        }
+
+        if(hasOnlyOneSection()) {
+            throw new IllegalArgumentException("노선에 구간이 하나밖에 없습니다");
+        }
+    }
+
+    private boolean hasOnlyOneSection() {
+        return sections.size() == 1;
     }
 
     private boolean hasDownToEndDown(Station downStation) {

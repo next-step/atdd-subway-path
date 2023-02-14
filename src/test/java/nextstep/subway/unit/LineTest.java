@@ -125,4 +125,14 @@ class LineTest {
         assertThat(line.getStations()).containsExactly(서울역, 종각역);
         assertThat(line.getDistances()).containsExactly(CREATE_LINE_DISTANCE);
     }
+
+    @DisplayName("구간 삭제 - 예외 케이스 - 구간이 하나인 노선에서 마지막 구간을 제거할 때")
+    @Test
+    void removeSection_4() {
+        assertThatThrownBy(() -> line.removeSection(시청역))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThat(line.getStations()).containsExactly(서울역, 시청역);
+        assertThat(line.getDistances()).containsExactly(CREATE_LINE_DISTANCE);
+    }
 }
