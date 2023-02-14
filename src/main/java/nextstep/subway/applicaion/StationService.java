@@ -26,7 +26,11 @@ public class StationService {
     }
 
     public List<StationResponse> findAllStations() {
-        return stationRepository.findAll().stream()
+        return createStationResponsesBy(stationRepository.findAll());
+    }
+
+    public List<StationResponse> createStationResponsesBy(final List<Station> stations) {
+        return stations.stream()
                 .map(station -> StationResponse.by(station.getId(), station.getName()))
                 .collect(Collectors.toList());
     }
