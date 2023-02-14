@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,8 +32,7 @@ class LineTest {
     @Test
     void addSection() {
         이호선.addSection(정자역, 광교역, 15);
-        List<Section> sections = 이호선.getSections();
-        assertThat(sections.get(1).getDownStation()).isEqualTo(광교역);
+        assertThat(이호선.getDownStation()).isEqualTo(광교역);
     }
 
     @DisplayName("지하철역 목록 생성")

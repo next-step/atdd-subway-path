@@ -36,4 +36,12 @@ public class Sections {
     public void removeSection() {
         sections.remove(sections.size()-1);
     }
+
+    public Station getDownStation() {
+        return sections.get(sections.size()-1).getDownStation();
+    }
+
+    public Section getFirstSection() {
+        return sections.get(0);
+    }
 }

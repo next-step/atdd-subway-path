@@ -42,7 +42,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        Section 새로운_구간 = 신분당선.getSections().get(0);
+        Section 새로운_구간 = 신분당선.getFirstSection();
         assertThat(새로운_구간.getLine()).isEqualTo(신분당선);
         assertThat(새로운_구간.getUpStation()).isEqualTo(강남역);
         assertThat(새로운_구간.getDownStation()).isEqualTo(분당역);

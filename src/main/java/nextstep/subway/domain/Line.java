@@ -72,4 +72,12 @@ public class Line {
     public void removeSection() {
         sections.removeSection();
     }
+
+    public Section getFirstSection() {
+        return sections.getFirstSection();
+    }
+
+    public Station getDownStation() {
+        return sections.getDownStation();
+    }
 }
