@@ -8,6 +8,8 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import nextstep.subway.exception.IdenticalSourceTargetNotAllowedException;
+import nextstep.subway.exception.NonConnectedSourceTargetException;
+import nextstep.subway.exception.StationNotFoundException;
 
 public class PathFinder {
 
@@ -32,8 +34,21 @@ public class PathFinder {
             });
         }
 
+        if (!graph.containsVertex(source)) {
+            throw new StationNotFoundException(source.getId());
+        }
+
+        if (!graph.containsVertex(target)) {
+            throw new StationNotFoundException(target.getId());
+        }
+
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> result = dijkstraShortestPath.getPath(source, target);
+
+        if (result == null) {
+            throw new NonConnectedSourceTargetException(source.getName(), target.getName());
+        }
+
         return new Path(result.getVertexList(), (int) result.getWeight());
     }
 }

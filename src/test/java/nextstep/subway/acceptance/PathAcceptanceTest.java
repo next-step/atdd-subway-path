@@ -18,6 +18,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.exception.IdenticalSourceTargetNotAllowedException;
+import nextstep.subway.exception.NonConnectedSourceTargetException;
 import nextstep.subway.exception.StationNotFoundException;
 
 @DisplayName("지하철 경로 검색 기능")
@@ -27,15 +28,17 @@ class PathAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
     private Long 남부터미널역;
-    private Long 매봉역;
+    private Long 선릉역;
+    private Long 한티역;
     private Long 이호선;
     private Long 신분당선;
+    private Long 분당선;
     private Long 삼호선;
 
     /**
      * Given 지하철 역과 노선 생성을 요청하고
-     * 교대                         강남
-     *  ● ────────── <2> ────────── ●
+     * 교대                         강남           선릉                 한티
+     *  ● ────────── <2> ────────── ● -----X----- ● ───── <분당> ───── ●
      *  └───────┐                   │
      *         <3>                  │
      *          └─────●─────┐    <신분당>
@@ -52,10 +55,12 @@ class PathAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
-        매봉역 = 지하철역_생성_요청("매봉역").jsonPath().getLong("id");
+        선릉역 = 지하철역_생성_요청("선릉역").jsonPath().getLong("id");
+        한티역 = 지하철역_생성_요청("한티역").jsonPath().getLong("id");
 
         이호선 = 지하철_노선_생성_요청("2호선", "green", 교대역, 강남역, 10);
         신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 10);
+        분당선 = 지하철_노선_생성_요청("분당선", "yellow", 선릉역, 한티역, 10);
         삼호선 = 지하철_노선_생성_요청("3호선", "orange", 교대역, 남부터미널역, 2);
 
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
@@ -105,12 +110,14 @@ class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void notConnectedSourceTarget() {
         // when
-        ExtractableResponse<Response> response = 출발역과_도착역_사이의_경로_조회_요청(교대역, 매봉역);
+        ExtractableResponse<Response> response = 출발역과_도착역_사이의_경로_조회_요청(교대역, 한티역);
 
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-            () -> assertThat(response.body().asString()).isEqualTo("graph must contain the sink vertex")
+            () -> assertThat(response.body().asString()).isEqualTo(
+                String.format(NonConnectedSourceTargetException.MESSAGE, "교대역", "한티역")
+            )
         );
     }
 

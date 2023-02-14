@@ -15,6 +15,8 @@ import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.IdenticalSourceTargetNotAllowedException;
+import nextstep.subway.exception.NonConnectedSourceTargetException;
+import nextstep.subway.exception.StationNotFoundException;
 
 class PathFinderTest {
 
@@ -22,16 +24,18 @@ class PathFinderTest {
     private Station 강남역;
     private Station 양재역;
     private Station 남부터미널역;
-    private Station 매봉역;
+    private Station 선릉역;
+    private Station 한티역;
     private Line 이호선;
     private Line 신분당선;
+    private Line 분당선;
     private Line 삼호선;
 
     private PathFinder pathFinder;
 
     /**
-     * 교대                         강남
-     *  ● ────────── <2> ────────── ●
+     * 교대                         강남           선릉                 한티
+     *  ● ────────── <2> ────────── ● -----X----- ● ───── <분당> ───── ●
      *  └───────┐                   │
      *         <3>                  │
      *          └─────●─────┐    <신분당>
@@ -42,22 +46,25 @@ class PathFinderTest {
      */
     @BeforeEach
     void setUp() {
-        교대역 = new Station("교대역");
-        강남역 = new Station("강남역");
-        양재역 = new Station("양재역");
-        남부터미널역 = new Station("남부터미널역");
-        매봉역 = new Station("매봉역");
+        교대역 = new Station(1L, "교대역");
+        강남역 = new Station(2L, "강남역");
+        양재역 = new Station(3L, "양재역");
+        남부터미널역 = new Station(4L, "남부터미널역");
+        선릉역 = new Station(5L, "선릉역");
+        한티역 = new Station(6L, "한티역");
 
-        이호선 = new Line("2호선", "green");
-        신분당선 = new Line("신분당선", "red");
-        삼호선 = new Line("삼호선", "orange");
+        이호선 = new Line(1L, "2호선", "green");
+        신분당선 = new Line(2L, "신분당선", "red");
+        분당선 = new Line(3L, "분당선", "yellow");
+        삼호선 = new Line(4L, "삼호선", "orange");
 
         이호선.addSection(new Section(이호선, 교대역, 강남역, 10));
         신분당선.addSection(new Section(신분당선, 강남역, 양재역, 10));
+        분당선.addSection(new Section(분당선, 선릉역, 한티역, 10));
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 2));
         삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 3));
 
-        pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선));
+        pathFinder = new PathFinder(List.of(이호선, 신분당선, 분당선, 삼호선));
     }
 
     @DisplayName("출발역와 도착역 사이의 최단 경로를 조회한다.")
@@ -85,7 +92,15 @@ class PathFinderTest {
     @Test
     void notConnectedSourceTarget() {
         // when & then
-        assertThatThrownBy(() -> pathFinder.findPath(교대역, 매봉역))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> pathFinder.findPath(교대역, 한티역))
+            .isInstanceOf(NonConnectedSourceTargetException.class);
+    }
+
+    @DisplayName("지하철 경로 조회 시, 출발역과 도착역은 모두 존재하는 역이어야 한다.")
+    @Test
+    void identicalSourceTarget22() {
+        // when & then
+        assertThatThrownBy(() -> pathFinder.findPath(교대역, new Station(999L, "없는역")))
+            .isInstanceOf(StationNotFoundException.class);
     }
 }

@@ -21,8 +21,8 @@ public class ControllerExceptionHandler {
         SectionStationsAlreadyExistsInLineException.class,
         SectionWithStationNotExistsException.class,
         IdenticalSourceTargetNotAllowedException.class,
-        IllegalArgumentException.class,
-        StationNotFoundException.class
+        StationNotFoundException.class,
+        NonConnectedSourceTargetException.class
     })
     public ResponseEntity<String> handleCustomExceptions(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
