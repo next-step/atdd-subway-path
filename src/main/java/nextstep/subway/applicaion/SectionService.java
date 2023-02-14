@@ -24,7 +24,7 @@ public class SectionService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineService.findLineById(lineId);
 
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
@@ -32,6 +32,6 @@ public class SectionService {
         Line line = lineService.findLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        line.removeLastSection(station);
+        line.getSections().removeLastSection(station);
     }
 }

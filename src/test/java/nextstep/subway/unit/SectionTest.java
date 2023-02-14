@@ -26,7 +26,7 @@ class SectionTest {
 
         // when
         Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.addSection(section);
+        line.getSections().add(section);
 
         // then
         assertThat(line.getSections().isAlreadyRegisteredSection(section)).isTrue();
@@ -42,10 +42,10 @@ class SectionTest {
         // given
         Line line = 이호선.엔티티_생성();
         Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.addSection(section);
+        line.getSections().add(section);
 
         // when
-        List<Station> stations = line.getStations();
+        List<Station> stations = line.getSections().getAllStations();
 
         // then
         assertThat(stations).hasSize(2);
@@ -61,10 +61,10 @@ class SectionTest {
         // given
         Line line = 이호선.엔티티_생성();
         Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.addSection(section);
+        line.getSections().add(section);
 
         // when
-        line.removeLastSection(section.getDownStation());
+        line.getSections().removeLastSection(section.getDownStation());
 
         // then
         assertThat(line.getSections().isEmpty()).isTrue();

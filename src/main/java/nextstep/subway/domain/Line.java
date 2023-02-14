@@ -9,7 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,18 +37,6 @@ public class Line {
     public void update(final String name, final String color) {
         updateName(name);
         updateColor(color);
-    }
-
-    public void addSection(final Section section) {
-        getSections().add(section);
-    }
-
-    public List<Station> getStations() {
-        return getSections().getAllStations();
-    }
-
-    public void removeLastSection(final Station station) {
-        getSections().removeLastSection(station);
     }
 
 

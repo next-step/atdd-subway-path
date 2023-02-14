@@ -75,7 +75,7 @@ class SectionServiceMockTest {
                 .willReturn(false);
 
         // when - deleteSection 호출
-        // 의존 객체 Sections.removeLastSection() 에서 getLastSection 부분에 isEmpty()를 어떻게 모킹하지..?
+        // 의존 객체인 도메인 객체 Sections.removeLastSection() 에서 getLastSection 부분에 isEmpty()를 어떻게 모킹하지..?
         sectionService.deleteSection(노선_id, 삭제할_역_id);
 
         // then - 의존성 객체에 대한 행위 검증
