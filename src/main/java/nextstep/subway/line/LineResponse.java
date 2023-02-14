@@ -1,42 +1,25 @@
 package nextstep.subway.line;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import lombok.Getter;
 import nextstep.subway.station.StationResponse;
 
+@Getter
 public class LineResponse {
-    private Long id;
-    private String name;
-    private String color;
-    private List<StationResponse> stations;
+
+	private Long id;
+	private String name;
+	private String color;
+	private List<StationResponse> stations;
 	private int distance;
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations, int distance) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.stations = stations;
-		this.distance = distance;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<StationResponse> getStations() {
-        return stations;
-    }
-
-	public int getDistance() {
-		return distance;
+	public LineResponse(Line line) {
+		this.id = line.getId();
+		this.name = line.getName();
+		this.color = line.getColor();
+		this.stations = line.getOrderStation().stream().map(StationResponse::new).collect(Collectors.toList());
+		this.distance = line.getDistance();
 	}
 }
-
