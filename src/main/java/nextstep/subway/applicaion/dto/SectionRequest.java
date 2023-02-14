@@ -17,7 +17,7 @@ public class SectionRequest {
 
     public SectionRequest(Long upStationId, Long downStationId, int distance) {
         notNull(upStationId, "upStationId must not be null");
-        notNull(downStationId, "upStationId must not be null");
+        notNull(downStationId, "downStationId must not be null");
         isTrue(distance > 0, "distance must not be greater than zero");
         this.upStationId = upStationId;
         this.downStationId = downStationId;

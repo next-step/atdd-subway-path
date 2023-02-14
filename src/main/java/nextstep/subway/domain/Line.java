@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -40,33 +41,21 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections.get();
+        return sections.getSections();
     }
 
     public void addSection(Section newSection) {
-        boolean addInUpSection = sections.isAddInUpSection(newSection);
-        boolean addInDownSection = sections.isAddInDownSection(newSection);
-        validate(addInUpSection, addInDownSection);
-        if (addInUpSection) {
-            sections.addInUp(newSection);
-        }
-        if (addInDownSection) {
-            sections.addInDown(newSection);
-        }
-        this.sections.addNew(this, newSection);
-    }
-
-    public void validate(boolean addInUpSection, boolean addInDownSection) {
-        if (addInUpSection && addInDownSection) {
-            throw new IllegalArgumentException("상행, 하행이 중복된 구간을 등록할 수 없습니다.");
-        }
-        if (!sections.isEmpty() && !addInUpSection && !addInDownSection) {
-            throw new IllegalArgumentException("노선에 존재하지 않는 구간은 추가할 수 없습니다.");
-        }
+        this.sections.add(this, newSection);
     }
 
     public List<Station> getStations() {
-        return sections.getStations().get();
+        return sections.getStations();
+    }
+
+    public int getLineDistance() {
+        return sections.getSectionDistances()
+                .stream()
+                .reduce(0, Integer::sum);
     }
 
     public List<Integer> getSectionDistances() {
@@ -74,11 +63,7 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        this.sections.removeSection(station);
-    }
-
-    public void removeSection(String stationName) {
-        this.sections.removeSection(stationName);
+        sections.remove(station);
     }
 
     public void update(Line line) {

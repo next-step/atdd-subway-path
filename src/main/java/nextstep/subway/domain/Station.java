@@ -41,13 +41,15 @@ public class Station {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Station)) return false;
         Station station = (Station) o;
-        return Objects.equals(name, station.name);
+        // 프록시의 데이터 조회
+        if (id != null ? !id.equals(station.getId()) : station.getId() != null) return false;
+        return name != null ? name.equals(station.getName()) : station.getName() == null;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id, name);
     }
 }
