@@ -91,69 +91,33 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // then
     }
 
-    @DisplayName("출발역 관련 에러")
-    class SourceExceptionTest {
-        /**
-         * Given 경로 조회를 요청했을 때
-         * Then 존재하지 않은 출발역으로 조회할 경우
-         * And 에러 처리한다.
-         */
-        @DisplayName("경로 조회를 요청했을 때 존재하지 않은 출발역으로 조회할 경우 에러 처리한다.")
-        @Test
-        void findShortestPathIsSourceNotExist() {
-            // given
+    /**
+     * Given 경로 조회를 요청했을 때
+     * Then 존재하지 않은 출발역으로 조회할 경우
+     * And 에러 처리한다.
+     */
+    @DisplayName("경로 조회를 요청했을 때 존재하지 않은 출발역으로 조회할 경우 에러 처리한다.")
+    @Test
+    void findShortestPathIsSourceNotExist() {
+        // given
 
-            // when
+        // when
 
-            // then
-        }
-
-        /**
-         * Given 경로 조회를 요청했을 때
-         * Then 출발역을 상행역으로 하는 구간이 없는 경우
-         * And 에러 처리한다.
-         */
-        @DisplayName("경로 조회를 요청했을 때 존재하지 않은 출발역으로 조회할 경우 에러 처리한다.")
-        @Test
-        void findShortestPathIsSourceNotExistSection() {
-            // given
-
-            // when
-
-            // then
-        }
+        // then
     }
 
-    @DisplayName("도착역 관련 에러")
-    class TargetExceptionTest {
-        /**
-         * Given 경로 조회를 요청했을 때
-         * Then 존재하지 않은 도착역으로 조회할 경우
-         * And 에러 처리한다.
-         */
-        @DisplayName("경로 조회를 요청했을 때 존재하지 않은 도착역으로 조회할 경우 에러 처리한다.")
-        @Test
-        void findShortestPathIsTargetNotExist() {
-            // given
+    /**
+     * Given 경로 조회를 요청했을 때
+     * Then 존재하지 않은 도착역으로 조회할 경우
+     * And 에러 처리한다.
+     */
+    @DisplayName("경로 조회를 요청했을 때 존재하지 않은 도착역으로 조회할 경우 에러 처리한다.")
+    @Test
+    void findShortestPathIsTargetNotExist() {
+        // given
 
-            // when
+        // when
 
-            // then
-        }
-
-        /**
-         * Given 경로 조회를 요청했을 때
-         * Then 도착역을 하행역으로 하는 구간이 없는 경우
-         * And 에러 처리한다.
-         */
-        @DisplayName("경로 조회를 요청했을 때 존재하지 않은 출발역으로 조회할 경우 에러 처리한다.")
-        @Test
-        void findShortestPathIsTargetNotExistSection() {
-            // given
-
-            // when
-
-            // then
-        }
+        // then
     }
 }
