@@ -63,6 +63,24 @@ public class Sections {
                 .orElse(new Section()).getOrder();
     }
 
+    public void removeSection(Station station) {
+        validateRemoveSection(station);
+
+        if(hasDownToEndDown(station)) {
+            removeLastSection();
+            return;
+        }
+
+        if(hasUpToBeginUp(station)) {
+            removeFirstSection();
+            return;
+        }
+
+        if(hasUpToUp(station) && hasDownToDown(station)) {
+            removeMiddleSection(station);
+        }
+    }
+
     public boolean isEmpty() {
         return sections.isEmpty();
     }
@@ -202,25 +220,6 @@ public class Sections {
                 .orElseThrow(() -> new EntityNotFoundException("노선에 구간이 없습니다"));
     }
 
-    public void removeSection(Station station) {
-        validateRemoveSection(station);
-
-        if(hasDownToEndDown(station)) {
-            removeLastSection();
-            return;
-        }
-
-        if(hasUpToBeginUp(station)) {
-            removeFirstSection();
-            return;
-        }
-
-        if(hasUpToUp(station) && hasDownToDown(station)) {
-            removeMiddleSection(station);
-        }
-    }
-
-
     private void validateRemoveSection(Station station) {
         if(isEmpty()) {
             throw new IllegalArgumentException("노선에 구간이 없습니다");
@@ -229,6 +228,14 @@ public class Sections {
         if(hasOnlyOneSection()) {
             throw new IllegalArgumentException("노선에 구간이 하나밖에 없습니다");
         }
+
+        if(notRegisteredStation(station)) {
+            throw new IllegalArgumentException("노선에 등록되지 않은 역입니다");
+        }
+    }
+
+    private boolean notRegisteredStation(Station station) {
+        return !this.getStations().contains(station);
     }
 
     private boolean hasOnlyOneSection() {
