@@ -20,8 +20,10 @@ public class PathService {
 
     public PathResponse findPath(Long sourceStationId, Long targetStationId) {
         PathFinder pathFinder = new PathFinder(stationRepository.findAll(), sectionRepository.findAll());
-        Station source = stationRepository.findById(sourceStationId).orElseThrow();
-        Station target = stationRepository.findById(targetStationId).orElseThrow();
+        Station source = stationRepository.findById(sourceStationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 SourceId 입니다."));
+        Station target = stationRepository.findById(targetStationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 SourceId 입니다."));
         return pathFinder.findPath(source, target);
     }
 }
