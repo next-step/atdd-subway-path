@@ -160,7 +160,18 @@ public class Sections {
 
         if (getUpStation().equals(station)) {
             sections.remove(findSectionByUpStation(station));
+            return;
         }
+
+        removeMiddle(station);
+    }
+
+    private void removeMiddle(Station station) {
+        Section section = findSectionByDownStation(station);
+        Section nextSection = findSectionByUpStation(station);
+        nextSection.changeUpStation(section.getUpStation());
+
+        sections.remove(section);
     }
 
     private void removeValidation(Station station) {

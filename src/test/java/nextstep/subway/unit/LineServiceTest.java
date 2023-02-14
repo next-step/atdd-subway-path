@@ -19,6 +19,7 @@ import static nextstep.subway.common.constants.ErrorConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -222,4 +223,21 @@ public class LineServiceTest {
         assertThat(stations).extracting("name").containsExactly("정자역", "양재역");
     }
 
+    @Test
+    @DisplayName("중간역 삭제")
+    void removeSection_middleStation() {
+        // given
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 정자역.getId(), 6));
+
+        // when
+        lineService.deleteSection(신분당선.getId(), 양재역.getId());
+
+        // then
+        Line line = lineService.findLineById(신분당선.getId());
+        List<Station> stations = line.getStations();
+        assertThat(stations).extracting("name").containsExactly("강남역", "정자역");
+    }
 }

@@ -45,6 +45,10 @@ public class Section {
         return this.distance - distance;
     }
 
+    public void changeUpStation(Station station) {
+        upStation = station;
+    }
+
     public Section() {
 
     }

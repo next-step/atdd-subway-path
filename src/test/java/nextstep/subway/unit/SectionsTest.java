@@ -185,4 +185,19 @@ public class SectionsTest {
         // then
         assertThat(신분당선.getStations()).extracting("name").containsExactly("정자역", "양재역");
     }
+
+    @Test
+    @DisplayName("중간역 삭제")
+    void removeSection_middleStation() {
+        // given
+        Station 정자역 = new Station("정자역");
+        Section 강남_정자_구간 = new Section(신분당선, 강남역, 정자역, 6);
+        신분당선.addSection(강남_정자_구간);
+
+        // when
+        신분당선.removeSection(정자역);
+
+        // then
+        assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "양재역");
+    }
 }
