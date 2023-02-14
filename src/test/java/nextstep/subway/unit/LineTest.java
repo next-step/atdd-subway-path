@@ -123,8 +123,12 @@ class LineTest {
                 .hasMessage(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
     }
 
+    /**
+     * 비즈니스 로직 변경으로 Deprecated
+     */
     @Test
     @DisplayName("지하철 노선의 구간은 하행종점역이 아닌 역은 삭제할 수 없다.")
+    @Deprecated
     void removeSectionFail2() {
         Station lastStation = new Station("청계산역");
         section = new Section(line, secondStation, lastStation, 10);
@@ -137,7 +141,7 @@ class LineTest {
 
     @Test
     @DisplayName("지하철 노선의 하행종점역을 삭제할 수 있다.")
-    void removeSection() {
+    void removeSectionLast() {
         Station lastStation = new Station("청계산역");
         section = new Section(line, secondStation, lastStation, 10);
         line.addSections(section);
@@ -149,5 +153,37 @@ class LineTest {
         assertThat(stations).containsAnyOf(firstStation);
         assertThat(stations).containsAnyOf(secondStation);
         assertThat(stations).doesNotContain(lastStation);
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 중간역을 삭제할 수 있다")
+    void removeSectionMiddle() {
+        Station lastStation = new Station("청계산역");
+        section = new Section(line, secondStation, lastStation, 10);
+        line.addSections(section);
+
+        line.removeStation(secondStation);
+        List<String> names = line.getStations().stream().map(Station::getName).collect(Collectors.toList());
+        assertThat(names).containsExactly(firstStation.getName(), secondStation.getName());
+    }
+
+    @Test
+    @DisplayName("지하철 노선이 1개일 때는 삭제할 수 없다.")
+    void removeSectionSizeOne() {
+        assertThatThrownBy(() -> line.removeStation(secondStation))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
+    }
+
+    @Test
+    @DisplayName("없는 구간은 삭제할 수 없다")
+    void removeSectionNotFound() {
+        Station lastStation = new Station("청계산역");
+        section = new Section(line, secondStation, lastStation, 10);
+        line.addSections(section);
+
+        assertThatThrownBy(() -> line.removeStation(new Station("없는역")))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(ErrorMessage.NOT_CONNECT_STATION.toString());
     }
 }
