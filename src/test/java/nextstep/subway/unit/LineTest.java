@@ -1,8 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +26,7 @@ class LineTest {
         광교역 = new Station("광교역");
         이호선 = new Line("2호선", "green", 강남역, 정자역, 10);
     }
+
     @DisplayName("지하철 구간 추가")
     @Test
     void addSection() {
