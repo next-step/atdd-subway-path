@@ -9,25 +9,25 @@ import org.jgrapht.graph.WeightedMultigraph;
 import java.util.List;
 import java.util.Optional;
 
-public class Maps {
+public class SubwayMap {
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
 
-    private Maps(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+    private SubwayMap(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
         this.graph = graph;
     }
 
-    public static Maps of(List<Station> stations, List<Section> sections) {
+    public static SubwayMap of(List<Station> stations, List<Section> sections) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         stations.forEach(graph::addVertex);
         sections.forEach(section
                 -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation())
                 , section.getDistance()));
 
-        return new Maps(graph);
+        return new SubwayMap(graph);
 
     }
 
-    public Paths findShortestPath(Station source, Station target) {
+    public SubwayPath findShortestPath(Station source, Station target) {
 
         if(source.equals(target)){
             throw new SubwayException(SubwayExceptionMessage.PATH_CANNOT_FIND);
@@ -36,7 +36,7 @@ public class Maps {
         GraphPath path = getPath(source, target);
         List<Station> shortestPath = path.getVertexList();
         double weight = path.getWeight();
-        return new Paths(shortestPath, (int) weight);
+        return new SubwayPath(shortestPath, (int) weight);
     }
 
     private GraphPath getPath(Station source, Station target) {

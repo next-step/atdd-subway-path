@@ -63,7 +63,7 @@
 ### 기능 요구사항
 - [x] 경로 조회 기능 구현
   - 요청 포맷
-    - Get 방식 : http://localhost:55494/paths?source=1&target=3
+    - Get 방식 : http://localhost:55494/subwayPath?source=1&target=3
     - source:출발역Id, target:도착역Id
   - 응답 포맷
     - stations: 출발역으로부터 도착역까지의 경로에 있는 역 목록

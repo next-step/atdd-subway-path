@@ -1,7 +1,7 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.domain.Maps;
-import nextstep.subway.domain.Paths;
+import nextstep.subway.domain.SubwayMap;
+import nextstep.subway.domain.SubwayPath;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
@@ -21,13 +21,13 @@ public class PathService {
         this.stationService = stationService;
     }
 
-    public Paths findPath(Station source, Station target) {
+    public SubwayPath findPath(Station source, Station target) {
 
         List<Station> allStations = stationService.findAllStations();
         List<Section> allSections = sectionService.findAllSections();
 
-        Maps maps = Maps.of(allStations, allSections);
-        return maps.findShortestPath(source, target);
+        SubwayMap subwayMap = SubwayMap.of(allStations, allSections);
+        return subwayMap.findShortestPath(source, target);
     }
 }
 

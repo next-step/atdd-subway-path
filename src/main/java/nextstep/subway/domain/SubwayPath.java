@@ -3,12 +3,12 @@ package nextstep.subway.domain;
 import java.util.Collections;
 import java.util.List;
 
-public class Paths {
+public class SubwayPath {
 
     private final List<Station> stations;
     private final int distance;
 
-    public Paths(List<Station> stations, int distance) {
+    public SubwayPath(List<Station> stations, int distance) {
         this.stations = stations;
         this.distance = distance;
     }
