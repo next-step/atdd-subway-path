@@ -12,6 +12,7 @@ public enum StationFixture {
     정자역,
     양재역,
     강남역,
+    신사역,
     역삼역,
     선릉역,
     서울대입구역,

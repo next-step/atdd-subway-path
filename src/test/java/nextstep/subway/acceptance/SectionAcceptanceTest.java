@@ -18,8 +18,10 @@ import static nextstep.subway.fixture.FieldFixture.노선_내_역_아이디;
 import static nextstep.subway.fixture.FieldFixture.식별자_아이디;
 import static nextstep.subway.fixture.LineFixture.이호선;
 import static nextstep.subway.fixture.SectionFixture.강남_양재_구간;
+import static nextstep.subway.fixture.SectionFixture.신사_강남_구간;
 import static nextstep.subway.fixture.SectionFixture.양재_정자_구간;
 import static nextstep.subway.fixture.StationFixture.강남역;
+import static nextstep.subway.fixture.StationFixture.신사역;
 import static nextstep.subway.fixture.StationFixture.양재역;
 import static nextstep.subway.fixture.StationFixture.정자역;
 import static nextstep.subway.utils.JsonPathUtil.Long으로_추출;
@@ -62,6 +64,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선_id);
         assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class)).containsExactly(강남역_id, 양재역_id, 정자역_id);
+    }
+
+    /**
+     * When 새로운 역을 상행 좀점으로 등록할 경우
+     * Then 노선 목록 조회 시 역 목록은 상행 좀점역을 기준으로 정렬된다
+     */
+    @DisplayName("지하철 노선에 새로운 역을 상행 종점으로 등록")
+    @Test
+    void addFirstLineSection() {
+        // when
+        Long 신사역_id = Long으로_추출(지하철역_생성_요청(신사역.역_이름()), 식별자_아이디);
+        지하철_노선에_지하철_구간_생성_요청(신분당선_id, 신사_강남_구간.요청_데이터_생성(신사역_id, 강남역_id));
+
+        // then
+        ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선_id);
+        assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class)).containsExactly(신사역_id, 강남역_id, 양재역_id);
     }
 
     /**

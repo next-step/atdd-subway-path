@@ -18,7 +18,7 @@ public class Sections {
      * @param section 등록할 지하철 구간 정보
      */
     public void add(final Section section) {
-        this.sectionList.add(section);
+        sectionList.add(section);
     }
 
     /**
@@ -43,7 +43,7 @@ public class Sections {
      * @return 구간이 이미 등록되어 있으면 true, 그렇지 않으면 false
      */
     public boolean isAlreadyRegisteredSection(final Section section) {
-        return this.sectionList.stream()
+        return sectionList.stream()
                 .anyMatch(sec -> sec.equals(section));
     }
 
@@ -57,20 +57,15 @@ public class Sections {
     }
 
     /**
-     * 지하철 노선에 포함된 구간들의 역 목록을 조회합니다.
+     * 지하철 노선에 포함된 구간들의 역 목록을 상행 종점역 기준으로 정렬하여 조회합니다.
      *
-     * @return 지하철 노선에 포함된 역 목록 반환
+     * @return 지하철 노선에 포함된 졍렬된 역 목록 반환
      */
     public List<Station> getAllStations() {
         List<Station> stations = new ArrayList<>();
 
-        sectionList.forEach(section -> {
-            stations.add(section.getUpStation());
-        });
-
-        if (!sectionList.isEmpty()) {
-            stations.add(sectionList.get(sectionList.size() - 1).getDownStation());
-        }
+        addFirstSection(stations);
+        addAllSectionExceptFirst(stations);
 
         return stations;
     }
@@ -82,5 +77,34 @@ public class Sections {
         }
 
         return sectionList.get(sectionList.size() - 1);
+    }
+
+    // 해당 구간이 상행 종점 구간인지? -> 해당 구간의 상행역은 다른 구간들의 하행역이 아니다
+    private boolean isFinalUpStation(final Section section) {
+        return sectionList.stream()
+                .noneMatch(sec -> sec.getDownStation().equals(section.getUpStation()));
+    }
+
+    // 1. 상행 종점이 상행역인 구간을 먼저 찾는다.
+    private void addFirstSection(List<Station> stations) {
+        for (Section section : sectionList) {
+            if (isFinalUpStation(section)) {
+                stations.add(section.getUpStation());
+                stations.add(section.getDownStation());
+                break;
+            }
+        }
+    }
+
+    // 2. 그 다음 해당 구간의 하행역이 상행역인 다른 구간을 찾는다. (하행 종점역까지 -> 즉 끝까지)
+    private void addAllSectionExceptFirst(List<Station> stations) {
+        for (int i = 1; i < sectionList.size(); i++) {
+            Section section = sectionList.stream()
+                    .filter(sec -> sec.getUpStation().equals(stations.get(stations.size() - 1)))
+                    .findFirst()
+                    .orElseThrow(IllegalArgumentException::new);
+
+            stations.add(section.getDownStation());
+        }
     }
 }
