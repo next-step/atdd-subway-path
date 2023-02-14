@@ -6,14 +6,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-@Transactional(readOnly = true)
-public class StationService {
-    private StationRepository stationRepository;
+import lombok.RequiredArgsConstructor;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+@Service
+@RequiredArgsConstructor
+public class StationService {
+
+    private final StationRepository stationRepository;
 
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
@@ -21,6 +20,7 @@ public class StationService {
         return createStationResponse(station);
     }
 
+	@Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
                 .map(this::createStationResponse)
@@ -32,14 +32,7 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName()
-        );
-    }
-
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    private StationResponse createStationResponse(Station station) {
+        return new StationResponse(station);
     }
 }

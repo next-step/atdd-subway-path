@@ -1,8 +1,6 @@
-package nextstep.subway.ui;
+package nextstep.subway.station;
 
-import nextstep.subway.station.StationService;
-import nextstep.subway.station.StationRequest;
-import nextstep.subway.station.StationResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,12 +8,10 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class StationController {
-    private StationService stationService;
 
-    public StationController(StationService stationService) {
-        this.stationService = stationService;
-    }
+    private final StationService stationService;
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {

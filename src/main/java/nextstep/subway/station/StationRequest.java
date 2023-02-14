@@ -1,9 +1,9 @@
 package nextstep.subway.station;
 
-public class StationRequest {
-    private String name;
+import lombok.Getter;
 
-    public String getName() {
-        return name;
-    }
+@Getter
+public class StationRequest {
+
+    private String name;
 }
