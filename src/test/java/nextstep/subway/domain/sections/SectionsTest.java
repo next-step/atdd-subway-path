@@ -98,7 +98,7 @@ class SectionsTest {
     @DisplayName("노선의 마지막 역이 포함된 역을 제거한다.")
     void deleteSection() {
         // when
-        sections.deleteSection(Fixtures.미금역.getId());
+        sections.deleteSection(Fixtures.미금역.getId(), line);
         List<Station> stations = sections.getStations();
 
         // then
@@ -112,10 +112,10 @@ class SectionsTest {
     @DisplayName("노선에 속한 구간이 2개 이상이 아닐 경우 삭제 시도 시 예외를 던진다.")
     void deleteSectionWhenLineHasLessThanTwoSections() {
         // given
-        sections.deleteSection(Fixtures.미금역.getId());
+        sections.deleteSection(Fixtures.미금역.getId(), line);
 
         // then
-        assertThatThrownBy(() -> sections.deleteSection(Fixtures.정자역.getId()))
+        assertThatThrownBy(() -> sections.deleteSection(Fixtures.정자역.getId(), line))
             .isInstanceOf(CannotDeleteSectionException.class);
     }
 
@@ -123,7 +123,7 @@ class SectionsTest {
     @DisplayName("노선에 속하지 않는 하행역을 삭제하려 할 경우 예외를 던진다.")
     void deleteNonExistingDownStation() {
         // then
-        assertThatThrownBy(() -> sections.deleteSection(Fixtures.광교역.getId()))
+        assertThatThrownBy(() -> sections.deleteSection(Fixtures.광교역.getId(), line))
             .isInstanceOf(CannotDeleteSectionException.class);
     }
 
