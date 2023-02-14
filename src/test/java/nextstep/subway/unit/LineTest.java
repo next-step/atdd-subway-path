@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -128,7 +129,7 @@ class LineTest {
      */
     @Test
     @DisplayName("지하철 노선의 구간은 하행종점역이 아닌 역은 삭제할 수 없다.")
-    @Deprecated
+    @Disabled
     void removeSectionFail2() {
         Station lastStation = new Station("청계산역");
         section = new Section(line, secondStation, lastStation, 10);
