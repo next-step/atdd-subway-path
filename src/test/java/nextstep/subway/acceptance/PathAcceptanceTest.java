@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.PathErrorMessage;
@@ -8,13 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.PathSteps.경로_조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -77,7 +72,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findPathWithMoreStations() {
         // when
-        ExtractableResponse<Response> response = getPathRequest(교대역, 강남역);
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, 강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -94,7 +89,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findPathWithFewerStations() {
         // when
-        ExtractableResponse<Response> response = getPathRequest(교대역, 남부터미널역);
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, 남부터미널역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -111,7 +106,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findPathWithMoreTransfers() {
         // when
-        ExtractableResponse<Response> response = getPathRequest(강남역, 선릉역);
+        ExtractableResponse<Response> response = 경로_조회_요청(강남역, 선릉역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -128,7 +123,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findPathWithSameTargetAndSource() {
         // when
-        ExtractableResponse<Response> response = getPathRequest(교대역, 교대역);
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, 교대역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -146,7 +141,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findNotConnectedPath() {
         // when
-        ExtractableResponse<Response> response = getPathRequest(교대역, 천호역);
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, 천호역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -163,27 +158,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findPathWithNonExistentStation() {
         // when
-        ExtractableResponse<Response> response = getPathRequest(런던역, 교대역);
+        ExtractableResponse<Response> response = 경로_조회_요청(런던역, 교대역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> getPathRequest(Long sourceId, Long targetId) {
-        return RestAssured.given().log().all()
-            .queryParam("source", sourceId)
-            .queryParam("target", targetId)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().get("/paths")
-            .then().log().all()
-            .extract();
-    }
-
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", distance + "");
-        return params;
     }
 }
