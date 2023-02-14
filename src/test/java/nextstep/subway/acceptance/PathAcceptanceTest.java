@@ -54,7 +54,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("경로 찾기")
+    @DisplayName("경로 찾기 : 교대역 -> 양재역")
     void test1() {
         ExtractableResponse<Response> response =
                 RestAssured.given().params(Map.of("source", 교대역, "target", 양재역)).log().all()
@@ -69,6 +69,38 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(stations).extracting(PathStationResponse::getId).containsExactly(교대역, 남부터미널역, 양재역);
     }
 
+    @Test
+    @DisplayName("경로 찾기 : 강남역 -> 남부터미널역")
+    void test2() {
+        ExtractableResponse<Response> response =
+                RestAssured.given().params(Map.of("source", 강남역, "target", 남부터미널역)).log().all()
+                        .when().get("/paths")
+                        .then().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        JsonPath jsonPath = response.jsonPath();
+        assertThat(jsonPath.getInt("distance")).isEqualTo(12);
+        List<PathStationResponse> stations = jsonPath.getList("stations", PathStationResponse.class);
+        assertThat(stations).extracting(PathStationResponse::getId).containsExactly(강남역, 교대역, 남부터미널역);
+    }
+
+    @Test
+    @DisplayName("경로 찾기 : 교대역 -> 남부터미널역")
+    void test3() {
+        ExtractableResponse<Response> response =
+                RestAssured.given().params(Map.of("source", 교대역, "target", 남부터미널역)).log().all()
+                        .when().get("/paths")
+                        .then().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        JsonPath jsonPath = response.jsonPath();
+        assertThat(jsonPath.getInt("distance")).isEqualTo(2);
+        List<PathStationResponse> stations = jsonPath.getList("stations", PathStationResponse.class);
+        assertThat(stations).extracting(PathStationResponse::getId).containsExactly(교대역, 남부터미널역);
+    }
+
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Long distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
@@ -76,4 +108,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
         params.put("distance", distance + "");
         return params;
     }
+
+
+
+
+
 }
