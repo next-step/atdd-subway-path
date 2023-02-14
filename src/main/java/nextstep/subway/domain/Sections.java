@@ -44,4 +44,7 @@ public class Sections {
     public Section getFirstSection() {
         return sections.get(0);
     }
+    public Section getLastSection() {
+        return sections.get(sections.size()-1);
+    }
 }

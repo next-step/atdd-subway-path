@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineServiceTest {
     public static String 강남역_이름 = "강남역";
     public static String 분당역_이름 = "분당역";
+    public static String 정자역_이름 = "정자역";
     public static String 신분당선_이름 = "신분당선";
     public static String 신분당선_색 = "Green";
     @Autowired
@@ -47,5 +48,26 @@ public class LineServiceTest {
         assertThat(새로운_구간.getUpStation()).isEqualTo(강남역);
         assertThat(새로운_구간.getDownStation()).isEqualTo(분당역);
         assertThat(새로운_구간.getDistance()).isEqualTo(10);
+    }
+
+    @Test
+    void addSection2() {
+        //given
+        //초기값 세팇
+        Station 강남역 = stationRepository.save(new Station(강남역_이름));
+        Station 분당역 = stationRepository.save(new Station(분당역_이름));
+        Line 신분당선 = lineRepository.save(new Line(신분당선_이름, 신분당선_색));
+        lineService.addSection(신분당선.getId(),
+                new SectionRequest(강남역.getId(), 분당역.getId(), 10));
+
+        //when
+        //강남역과 분당역 사이에 정자역 추가
+        Station 정자역 = stationRepository.save(new Station(정자역_이름));
+        lineService.addSection(신분당선.getId(),
+                new SectionRequest(강남역.getId(), 정자역.getId(), 4));
+
+        //then
+        assertThat(신분당선.getFirstSection().getDistance()).isEqualTo(4);
+        assertThat(신분당선.getLastSection().getDistance()).isEqualTo(6);
     }
 }

@@ -77,6 +77,8 @@ public class Line {
         return sections.getFirstSection();
     }
 
+    public Section getLastSection() { return sections.getLastSection(); }
+
     public Station getDownStation() {
         return sections.getDownStation();
     }
