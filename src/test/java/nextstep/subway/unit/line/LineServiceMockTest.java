@@ -7,17 +7,19 @@ import static org.mockito.Mockito.*;
 import java.util.Optional;
 
 import nextstep.subway.line.LineService;
-import nextstep.subway.station.StationService;
-import nextstep.subway.line.LineResponse;
-import nextstep.subway.section.SectionRequest;
+import nextstep.subway.section.Section;
+import nextstep.subway.section.SectionRepository;
+import nextstep.subway.section.SectionService;
+import nextstep.subway.station.StationRepository;
+import nextstep.subway.section.SectionCreateRequest;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.station.Station;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -26,39 +28,30 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class LineServiceMockTest {
 
     @Mock private LineRepository lineRepository;
-    @Mock private StationService stationService;
+    @Mock private SectionRepository sectionRepository;
+    @Mock private StationRepository stationRepository;
 
+    @InjectMocks private SectionService sectionService;
     @InjectMocks private LineService lineService;
-
-	private Line line;
-	private Station upStation;
-	private Station downStation;
-
-	@BeforeEach
-	void setup() {
-		line = new Line("4호선", "#00A5DE");
-		upStation = new Station("사당");
-		downStation = new Station("금정");
-	}
 
 	@DisplayName("지하철 노선에 구간을 등록할 수 있다")
     @Test
     void addSection() {
         // given lineRepository, stationService stub 설정을 통해 초기값 셋팅
-		when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
-		when(stationService.findById(upStation.getId())).thenReturn(upStation);
-		when(stationService.findById(downStation.getId())).thenReturn(downStation);
+		when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("4호선", "#00A5DE")));
+		when(sectionRepository.save(any(Section.class))).then(AdditionalAnswers.returnsFirstArg());
+		when(stationRepository.findById(1L)).thenReturn(Optional.of(new Station("사당역")));
+		when(stationRepository.findById(2L)).thenReturn(Optional.of(new Station("금정역")));
 
-		// when lineService.addSection 호출
-		SectionRequest sectionCreateRequest = new SectionRequest(downStation.getId(), upStation.getId(), 10);
-		lineService.addSection(line.getId(), sectionCreateRequest);
+		// when sectionService.addSection 호출
+		sectionService.addSection(1L, new SectionCreateRequest(1L, 2L, 10));
 
-        // then lineService.findLineById 메서드를 통해 검증
-		LineResponse lineResponse = lineService.findById(line.getId());
+        // then lineService.findById 메서드를 통해 검증
+		Line line4 = lineService.findById(1L);
 		assertAll(
-			() -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
-			() -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor()),
-			() -> assertThat(lineResponse.getStations().size()).isEqualTo(2)
+			() -> assertThat(line4.getName()).isEqualTo("4호선"),
+			() -> assertThat(line4.getColor()).isEqualTo("#00A5DE"),
+			() -> assertThat(line4.getAllStation().size()).isEqualTo(2)
 		);
 	}
 }
