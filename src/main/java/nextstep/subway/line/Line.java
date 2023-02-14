@@ -45,14 +45,6 @@ public class Line {
 		sections.removeSection(station);
 	}
 
-	public List<Section> getSections() {
-		return sections.getSections();
-	}
-
-	public List<Station> getAllStation() {
-		return sections.getAllStation();
-	}
-
 	public List<Station> getOrderStation() {
 		return sections.getOrderStation();
 	}

@@ -50,8 +50,7 @@ public class LineServiceMockTest {
 		Line line4 = lineService.findById(1L);
 		assertAll(
 			() -> assertThat(line4.getName()).isEqualTo("4호선"),
-			() -> assertThat(line4.getColor()).isEqualTo("#00A5DE"),
-			() -> assertThat(line4.getAllStation().size()).isEqualTo(2)
+			() -> assertThat(line4.getColor()).isEqualTo("#00A5DE")
 		);
 	}
 }

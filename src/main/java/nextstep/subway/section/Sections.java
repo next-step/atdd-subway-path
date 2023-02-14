@@ -34,7 +34,7 @@ public class Sections {
 		return section;
 	}
 
-	public boolean isEmptySection() {
+	private boolean isEmptySection() {
 		return this.sections.size() == 0 ? true : false;
 	}
 
@@ -84,12 +84,11 @@ public class Sections {
 		getSections().remove(getSections().size() - 1);
 	}
 
-
-	public List<Section> getSections() {
+	private List<Section> getSections() {
 		return sections;
 	}
 
-	public List<Station> getAllStation() {
+	private List<Station> getAllStation() {
 		return this.sections.stream()
 			.map(section -> List.of(section.getUpStation(), section.getDownStation()))
 			.flatMap(Collection::stream)
