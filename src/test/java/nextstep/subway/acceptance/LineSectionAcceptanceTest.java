@@ -238,6 +238,21 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 상행 종점역 제거를 요청 하면
      * Then 노선에서 제거되고, 양재역이 하행 종점역이 된다.
      */
+    @Test
+    @DisplayName("상행 종점역 제거")
+    void removeLineSection_frontStation() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getLong("stations[0].id")).isEqualTo(양재역);
+    }
 
     /**
      * Given 지하철 노선에 새로운 양재-정자 구간 추가를 요청 하고

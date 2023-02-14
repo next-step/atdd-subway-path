@@ -151,6 +151,19 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        removeValidation(station);
+
+        if (getDownStation().equals(station)) {
+            sections.remove(findSectionByDownStation(station));
+            return;
+        }
+
+        if (getUpStation().equals(station)) {
+            sections.remove(findSectionByUpStation(station));
+        }
+    }
+
+    private void removeValidation(Station station) {
         if (sections.size() <= 1) {
             throw new IllegalArgumentException(LESS_THAN_ONE_SECTION);
         }
@@ -158,12 +171,6 @@ public class Sections {
         if (!isContainStation(station)) {
             throw new IllegalArgumentException(NOT_FOUND_STATION);
         }
-
-        if (!getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.remove(sections.size() - 1);
     }
 
     public List<Section> getSections() {
