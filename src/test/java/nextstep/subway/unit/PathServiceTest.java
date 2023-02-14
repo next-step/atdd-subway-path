@@ -6,12 +6,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.dto.PathResponse;
@@ -23,6 +23,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 
 @SpringBootTest
+@Transactional
 class PathServiceTest {
 
     @Autowired
@@ -42,6 +43,17 @@ class PathServiceTest {
     private Line 신분당선;
     private Line 삼호선;
 
+    /**
+     * 교대                         강남
+     *  ● ────────── <2> ────────── ●
+     *  └───────┐                   │
+     *         <3>                  │
+     *          └─────●─────┐    <신분당>
+     *            남부터미널  │       │
+     *                     <3>      │
+     *                      └────── ●
+     *                             양재
+     */
     @BeforeEach
     void setUp() {
         교대역 = stationRepository.save(new Station("교대역"));
