@@ -177,6 +177,34 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * When 등록된 구간이 하나인 노선에서 마지막 구간을 제거하면
+     * Then 예외가 발생한다.
+     */
+
+    /**
+     * When 노선에 등록되지 않은 역을 제거하면
+     * Then 예외가 발생한다.
+     */
+
+    /**
+     * Given 지하철 노선에 새로운 양재-정자 구간 추가를 요청 하고
+     * When 하행 종점역 제거를 요청 하면
+     * Then 노선에서 제거되고, 양재역이 하행 종점역이 된다.
+     */
+
+    /**
+     * Given 지하철 노선에 새로운 양재-정자 구간 추가를 요청 하고
+     * When 상행 종점역 제거를 요청 하면
+     * Then 노선에서 제거되고, 양재역이 하행 종점역이 된다.
+     */
+
+    /**
+     * Given 지하철 노선에 새로운 양재-정자 구간 추가를 요청 하고
+     * When 중간역인 양재역 제거를 요청 하면
+     * Then 노선에 양재역 구간이 제거되고, 강남-정자 구간으로 재배치 된다.
+     */
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
