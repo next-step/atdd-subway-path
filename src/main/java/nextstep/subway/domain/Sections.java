@@ -1,10 +1,13 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.IllegalSectionAddException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -13,12 +16,40 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Line line, Station upStation, Station downStation, int distance) {
+        Optional<Section> middleSection = sections.stream()
+                .filter(s -> s.getUpStation().equals(upStation))
+                .findAny();
+
+        if (middleSection.isPresent()) {
+            Section section = middleSection.get();
+            validateSectionDistance(distance, section);
+            sections.remove(section);
+            sections.add(new Section(
+                    line,
+                    upStation,
+                    downStation,
+                    distance)
+            );
+            sections.add(new Section(
+                    line,
+                    downStation,
+                    section.getDownStation(),
+                    section.getDistance() - distance)
+            );
+            return;
+        }
         sections.add(new Section(
                 line,
                 upStation,
                 downStation,
                 distance)
         );
+    }
+
+    private static void validateSectionDistance(int distance, Section section) {
+        if (distance > section.getDistance()) {
+            throw new IllegalSectionAddException();
+        }
     }
 
     public List<Station> getStations() {
