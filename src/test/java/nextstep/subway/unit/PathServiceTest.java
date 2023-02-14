@@ -40,6 +40,7 @@ class PathServiceTest {
     private Station 강남역;
     private Station 양재역;
     private Station 남부터미널역;
+    private Station 매봉역;
     private Line 이호선;
     private Line 신분당선;
     private Line 삼호선;
@@ -52,8 +53,8 @@ class PathServiceTest {
      *          └─────●─────┐    <신분당>
      *            남부터미널  │       │
      *                     <3>      │
-     *                      └────── ●
-     *                             양재
+     *                      └────── ● ────X────●
+     *                             양재        매봉
      */
     @BeforeEach
     void setUp() {
@@ -61,6 +62,7 @@ class PathServiceTest {
         강남역 = stationRepository.save(new Station("강남역"));
         양재역 = stationRepository.save(new Station("양재역"));
         남부터미널역 = stationRepository.save(new Station("남부터미널역"));
+        매봉역 = stationRepository.save(new Station("매봉역"));
 
         이호선 = lineRepository.save(new Line("2호선", "green"));
         신분당선 = lineRepository.save(new Line("신분당선", "red"));
@@ -95,5 +97,13 @@ class PathServiceTest {
         // when & then
         assertThatThrownBy(() -> pathService.findPath(교대역.getId(), 교대역.getId()))
             .isInstanceOf(IdenticalSourceTargetNotAllowedException.class);
+    }
+
+    @DisplayName("출발역와 도착역은 연결되어 있어야 한다.")
+    @Test
+    void notConnectedSourceTarget() {
+        // when & then
+        assertThatThrownBy(() -> pathService.findPath(교대역.getId(), 매봉역.getId()))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }

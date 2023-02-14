@@ -20,7 +20,8 @@ public class ControllerExceptionHandler {
         InvalidSectionDistanceException.class,
         SectionStationsAlreadyExistsInLineException.class,
         SectionWithStationNotExistsException.class,
-        IdenticalSourceTargetNotAllowedException.class
+        IdenticalSourceTargetNotAllowedException.class,
+        IllegalArgumentException.class
     })
     public ResponseEntity<String> handleCustomExceptions(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());

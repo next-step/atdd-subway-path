@@ -34,7 +34,6 @@ public class PathFinder {
 
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> result = dijkstraShortestPath.getPath(source, target);
-
         return new Path(result.getVertexList(), (int) result.getWeight());
     }
 }

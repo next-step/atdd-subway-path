@@ -26,6 +26,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
     private Long 남부터미널역;
+    private Long 매봉역;
     private Long 이호선;
     private Long 신분당선;
     private Long 삼호선;
@@ -39,8 +40,8 @@ class PathAcceptanceTest extends AcceptanceTest {
      *          └─────●─────┐    <신분당>
      *            남부터미널  │       │
      *                     <3>      │
-     *                      └────── ●
-     *                             양재
+     *                      └────── ● ────X────●
+     *                             양재        매봉
      */
     @BeforeEach
     public void setUp() {
@@ -50,6 +51,7 @@ class PathAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
+        매봉역 = 지하철역_생성_요청("매봉역").jsonPath().getLong("id");
 
         이호선 = 지하철_노선_생성_요청("2호선", "green", 교대역, 강남역, 10);
         신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 10);
@@ -91,6 +93,23 @@ class PathAcceptanceTest extends AcceptanceTest {
             () -> assertThat(response.body().asString()).isEqualTo(
                 String.format(IdenticalSourceTargetNotAllowedException.MESSAGE, "교대역", "교대역")
             )
+        );
+    }
+
+    /**
+     * When 출발역과 도착역이 연결되어 있지 않은 경로 조회 요청 시
+     * Then 경로가 조회되지 않는다.
+     */
+    @DisplayName("지하철 경로 조회 시, 출발역과 도착역은 연결되어 있어야 한다.")
+    @Test
+    void notConnectedSourceTarget() {
+        // when
+        ExtractableResponse<Response> response = 출발역과_도착역_사이의_경로_조회_요청(교대역, 매봉역);
+
+        // then
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.body().asString()).isEqualTo("graph must contain the sink vertex")
         );
     }
 
