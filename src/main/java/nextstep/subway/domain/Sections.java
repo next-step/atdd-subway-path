@@ -48,10 +48,10 @@ public class Sections {
     }
 
     private boolean addStation(Section section, Section newSection) {
-        return sameUpStation(section, newSection) || sameDownStation(section, newSection);
+        return addDownStation(section, newSection) || addUpStation(section, newSection);
     }
 
-    private boolean sameUpStation(Section section, Section newSection) {
+    private boolean addDownStation(Section section, Section newSection) {
         if (section.getUpStation().equals(newSection.getUpStation())) {
             sections.add(section.addStation(newSection.getDownStation(), section.getDistance() - newSection.getDistance()));
             return true;
@@ -60,7 +60,7 @@ public class Sections {
         return false;
     }
 
-    private boolean sameDownStation(Section newSection, Section section) {
+    private boolean addUpStation(Section section, Section newSection) {
         if (section.getDownStation().equals(newSection.getDownStation())) {
             sections.add(section.addStation(newSection.getUpStation(), newSection.getDistance()));
             return true;
