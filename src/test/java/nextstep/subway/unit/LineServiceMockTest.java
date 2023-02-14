@@ -45,7 +45,7 @@ public class LineServiceMockTest {
 
         // then
         // lineService.findLineById 메서드를 통해 검증
-        Line line = lineService.findById(1L);
+        Line line = lineService.findLineById(1L);
         assertThat(line.getName()).isEqualTo(신분당선);
         assertThat(line.getColor()).isEqualTo(신분당선_색);
     }
