@@ -43,7 +43,7 @@ class LineTest {
 
         Line line = new Line("2호선", "green", 강남역, 정자역, 10);
         line.addSection(정자역, 광교역, 15);
-        line.removeSection(광교역);
+        line.removeSection();
         List<Station> stations = line.getStations();
         assertThat(stations).doesNotContain(광교역);
     }

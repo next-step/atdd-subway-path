@@ -76,4 +76,9 @@ public class Line {
                 .forEach(downStation -> stations.add(downStation));
         return stations;
     }
+
+
+    public void removeSection() {
+        sections.remove(sections.size() - 1);
+    }
 }
