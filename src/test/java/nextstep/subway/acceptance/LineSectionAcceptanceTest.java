@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -50,6 +51,23 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
+    /**
+     * When 지하철 노선에 새로운 구간을 추가한다. 역 사이에 새로운 역을 등록한다.
+     * Then 구간의 길이가 수정된 것을 확인한다.
+     */
+    @DisplayName("지하철 노선에 역 사이에 새로운 역을 등록한다.")
+    @Test
+    void addLineMiddleStation() {
+        //When
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역));
+
+        //Then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        List<Long> distances = response.jsonPath().getList("sections.id", Long.class);
+        assertThat(distances).containsExactly(6L, 4L);
     }
 
     /**
