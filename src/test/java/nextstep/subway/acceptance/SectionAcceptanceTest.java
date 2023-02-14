@@ -11,7 +11,7 @@ import java.util.List;
 
 import static nextstep.subway.steps.LineSteps.*;
 import static nextstep.subway.steps.SectionSteps.*;
-import static nextstep.subway.steps.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.steps.StationSteps.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
@@ -29,8 +29,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-		사당역 = 지하철역_생성_요청("사당역").jsonPath().getLong("id");
-		금정역 = 지하철역_생성_요청("금정역").jsonPath().getLong("id");
+		사당역 = createStation("사당역").jsonPath().getLong("id");
+		금정역 = createStation("금정역").jsonPath().getLong("id");
 
 		line4 = createLine("4호선", "#00A5DE", 사당역, 금정역, 10).jsonPath().getLong("id");
     }
@@ -44,7 +44,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // when
-        Long 중앙역 = 지하철역_생성_요청("중앙역").jsonPath().getLong("id");
+        Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
 		createSection(line4, 금정역, 중앙역, 7);
 
         // then
@@ -60,7 +60,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSectionsFrontStation() {
 		// when
-		Long 서울역 = 지하철역_생성_요청("서울역").jsonPath().getLong("id");
+		Long 서울역 = createStation("서울역").jsonPath().getLong("id");
 		createSection(line4, 서울역, 사당역, 7);
 
 		// then
@@ -79,7 +79,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addSectionsBackStation() {
 		// when
-		Long 중앙역 = 지하철역_생성_요청("중앙역").jsonPath().getLong("id");
+		Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
 		createSection(line4, 금정역, 중앙역, 7);
 
 		// then
@@ -99,7 +99,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void addStationDistanceShort() {
 		// when
-		Long 대공원역 = 지하철역_생성_요청("대공원역").jsonPath().getLong("id");
+		Long 대공원역 = createStation("대공원역").jsonPath().getLong("id");
 		ExtractableResponse<Response> createResponse = createSection(line4, 사당역, 대공원역, 10); // 4
 
 		// then
@@ -138,8 +138,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void NoExistStation() {
 		// when
-		Long 대공원역 = 지하철역_생성_요청("대공원역").jsonPath().getLong("id");
-		Long 과천역 = 지하철역_생성_요청("과천역").jsonPath().getLong("id");
+		Long 대공원역 = createStation("대공원역").jsonPath().getLong("id");
+		Long 과천역 = createStation("과천역").jsonPath().getLong("id");
 		ExtractableResponse<Response> createResponse = createSection(line4, 대공원역, 과천역, 1);
 
 		// then
@@ -150,7 +150,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		assertThat(stationIds).doesNotContain(대공원역, 과천역);
 	}
 
-	/** 지하철 구간 제거 기능 개선 **/
+	/** Before 지하철 구간 제거 기능 개선**/
 	/**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
@@ -160,14 +160,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-		Long 중앙역 = 지하철역_생성_요청("중앙역").jsonPath().getLong("id");
+		Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
 		createSection(line4, 중앙역, 금정역, 7);
 
         // when
         지하철_노선에_지하철_구간_제거_요청(line4, 중앙역);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(line4);
+        ExtractableResponse<Response> response = showLineById(line4);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(사당역, 금정역);
     }
