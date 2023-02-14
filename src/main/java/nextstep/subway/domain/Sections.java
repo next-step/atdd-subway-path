@@ -68,7 +68,7 @@ public class Sections {
     }
 
     public void removeLastSection() {
-        sections.remove(sections.size() - 1);
+        sections.remove(findLastSection());
     }
 
     public Integer[] getDistances() {
@@ -206,9 +206,21 @@ public class Sections {
         if(hasDownToEndDown(station)) {
             removeLastSection();
         }
+
+        if(hasUpToBeginUp(station)) {
+            removeFirstSection();
+        }
     }
 
     private boolean hasDownToEndDown(Station downStation) {
         return findLastSection().getDownStation().equals(downStation);
+    }
+
+    private boolean hasUpToBeginUp(Station upStation) {
+        return findFirstSection().getUpStation().equals(upStation);
+    }
+
+    private void removeFirstSection() {
+        sections.remove(findFirstSection());
     }
 }

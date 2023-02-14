@@ -96,11 +96,22 @@ class LineTest {
     @DisplayName("구간 삭제 - 종점이 제거될 경우 다음으로 오던 역이 종점이 됨 - 종점 하행역 제거")
     @Test
     void removeSection_1() {
-        // 서울 시청 종각
         line.addSection(new Section(line, 시청역, 종각역, ADD_SECTION_DISTANCE));
+
         line.removeSection(종각역);
 
         assertThat(line.getStations()).containsExactly(서울역, 시청역);
+        assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE);
+    }
+
+    @DisplayName("구간 삭제 - 종점이 제거될 경우 다음으로 오던 역이 종점이 됨 - 종점 상행역 제거")
+    @Test
+    void removeSection_2() {
+        line.addSection(new Section(line, 시청역, 종각역, ADD_SECTION_DISTANCE));
+
+        line.removeSection(서울역);
+
+        assertThat(line.getStations()).containsExactly(시청역, 종각역);
         assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE);
     }
 }
