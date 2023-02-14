@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathRequest;
+import nextstep.subway.exception.CanNotFindShortestPathException;
 import nextstep.subway.fixture.LineFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,15 +11,17 @@ import java.util.Set;
 
 import static nextstep.subway.fixture.SectionFixture.createSection;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DijkstraPathFinderTest {
 
-    public static final long STATION_ID_1 = 0L;
-    public static final long STATION_ID_2 = 1L;
-    public static final long STATION_ID_3 = 2L;
-    public static final long STATION_ID_4 = 3L;
-    private Line line2;
-    private Line line;
+    private static final long STATION_ID_1 = 0L;
+    private static final long STATION_ID_2 = 1L;
+    private static final long STATION_ID_3 = 2L;
+    private static final long STATION_ID_4 = 3L;
+    private static final long STATION_ID_10 = 9L;
+    private static final long STATION_ID_11 = 10L;
+
     private List<Section> sectionList;
 
     /**
@@ -32,14 +35,16 @@ class DijkstraPathFinderTest {
      */
     @BeforeEach
     void setUp() {
-        line = LineFixture.createLineWithSection(STATION_ID_1, STATION_ID_4);
+        Line line = LineFixture.createLineWithSection(STATION_ID_1, STATION_ID_4);
         line.addSection(createSection(STATION_ID_4, STATION_ID_3, 5));
 
-        line2 = LineFixture.createLineWithSection(STATION_ID_1, STATION_ID_2);
+        Line line2 = LineFixture.createLineWithSection(STATION_ID_1, STATION_ID_2);
         line2.addSection(createSection(STATION_ID_2, STATION_ID_3, 2));
 
         Lines lines = Lines.from(Set.of(line, line2));
         sectionList = lines.mergeSections();
+
+        LineFixture.createLineWithSection(STATION_ID_10, STATION_ID_11);
     }
 
     @Test
@@ -55,5 +60,39 @@ class DijkstraPathFinderTest {
         assertThat(path.getStations()).hasSize(3);
         assertThat(path.getStations().stream().map(s -> s.getId())).containsExactly(STATION_ID_1, STATION_ID_2, STATION_ID_3);
         assertThat(path.getDistance()).isEqualTo(12);
+    }
+
+    @Test
+    void 출발역과_도착역이_같으면_조회불가() {
+        //given
+        PathRequest pathRequest = PathRequest.of(STATION_ID_1, STATION_ID_1);
+        PathFinder finder = new DijkstraPathFinder();
+
+        //when & then
+        assertThatThrownBy(() -> finder.searchShortestPath(pathRequest, sectionList))
+                .isInstanceOf(CanNotFindShortestPathException.class);
+
+    }
+
+    @Test
+    void 출발역과_도착역이_연결되지_않으면_조회불가() {
+        //given
+        PathRequest pathRequest = PathRequest.of(STATION_ID_1, STATION_ID_10);
+        PathFinder finder = new DijkstraPathFinder();
+
+        //when & then
+        assertThatThrownBy(() -> finder.searchShortestPath(pathRequest, sectionList))
+                .isInstanceOf(CanNotFindShortestPathException.class);
+    }
+
+    @Test
+    void 출발역_또는_도착역이_없으면_조회불가() {
+        //given
+        PathRequest pathRequest = PathRequest.of(999L, 1000L);
+        PathFinder finder = new DijkstraPathFinder();
+
+        //when & then
+        assertThatThrownBy(() -> finder.searchShortestPath(pathRequest, sectionList))
+                .isInstanceOf(CanNotFindShortestPathException.class);
     }
 }

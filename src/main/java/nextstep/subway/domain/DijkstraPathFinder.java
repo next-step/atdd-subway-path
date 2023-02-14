@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathRequest;
+import nextstep.subway.exception.CanNotFindShortestPathException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -13,6 +14,10 @@ public class DijkstraPathFinder implements PathFinder {
 
     @Override
     public Path searchShortestPath(PathRequest pathRequest, List<Section> sections) {
+        if (pathRequest.isSourceAndTargetSame()) {
+            throw new CanNotFindShortestPathException("출발역과 도착역은 같을수 없습니다.");
+        }
+
         GraphPath graphPath = createGraphPath(pathRequest, createWeightedMultigraph(sections));
 
         return Path.of(

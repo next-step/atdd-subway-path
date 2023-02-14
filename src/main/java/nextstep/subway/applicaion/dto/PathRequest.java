@@ -36,4 +36,8 @@ public class PathRequest {
     public Station getTargetStation() {
         return new Station(target);
     }
+
+    public boolean isSourceAndTargetSame() {
+        return source.equals(target);
+    }
 }
