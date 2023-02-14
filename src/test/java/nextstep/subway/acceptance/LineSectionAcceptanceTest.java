@@ -196,6 +196,21 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 노선에 등록되지 않은 역을 제거하면
      * Then 예외가 발생한다.
      */
+    @Test
+    @DisplayName("노선에 등록되지 않은 구간 제거")
+    void removeLineSection_notFoundStation() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 판교역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("역을 찾을 수 없습니다.");
+    }
 
     /**
      * Given 지하철 노선에 새로운 양재-정자 구간 추가를 요청 하고

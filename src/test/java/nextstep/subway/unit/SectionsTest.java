@@ -138,4 +138,21 @@ public class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(LESS_THAN_ONE_SECTION);
     }
+
+    @Test
+    @DisplayName("구간 삭제 실패-노선에 등록지 않은 구간")
+    void removeSection_notFoundStation() {
+        // given
+        Station 정자역 = new Station("정자역");
+        Section 강남_정자_구간 = new Section(신분당선, 강남역, 정자역, 6);
+        신분당선.addSection(강남_정자_구간);
+
+        Station 판교역 = new Station("판교역");
+
+        // when
+        // then
+        assertThatThrownBy(() -> 신분당선.removeSection(판교역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(NOT_FOUND_STATION);
+    }
 }

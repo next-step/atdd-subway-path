@@ -70,35 +70,25 @@ public class Sections {
     }
 
     private void addValidation(Section newSection) {
-        List<Section> containUpStation = new ArrayList<>();
-        List<Section> containDownStation = new ArrayList<>();
-
-        for (Section section : sections) {
-            if (section.isContainStation(newSection.getUpStation())) {
-                containUpStation.add(section);
-            }
-
-            if (section.isContainStation(newSection.getDownStation())) {
-                containDownStation.add(section);
-            }
-        }
-
-        alreadyEnrollUpAndDownStation(containUpStation, containDownStation);
-
-        notEnrollUpAndDownStation(containUpStation, containDownStation);
-    }
-    private void alreadyEnrollUpAndDownStation(List<Section> containUpStation, List<Section> containDownStation) {
-        if (!(containUpStation.isEmpty() || containDownStation.isEmpty())) {
-            throw new IllegalArgumentException(ALREADY_ENROLL_STATION);
-        }
+        checkAlreadyEnrollSection(newSection);
+        checkNotFoundSection(newSection);
     }
 
-    private void notEnrollUpAndDownStation(List<Section> containUpStation, List<Section> containDownStation) {
-        if (containUpStation.isEmpty() && containDownStation.isEmpty()) {
+    private void checkNotFoundSection(Section newSection) {
+        if (!(isContainStation(newSection.getUpStation()) || isContainStation(newSection.getDownStation()))) {
             throw new IllegalArgumentException(NOT_ENROLL_STATION);
         }
     }
 
+    private void checkAlreadyEnrollSection(Section newSection) {
+        if (isContainStation(newSection.getUpStation()) && isContainStation(newSection.getDownStation())) {
+            throw new IllegalArgumentException(ALREADY_ENROLL_STATION);
+        }
+    }
+
+    private boolean isContainStation(Station newStation) {
+        return sections.stream().anyMatch(section -> section.isContainStation(newStation));
+    }
 
     public List<Station> getStations() {
         if (sections.isEmpty()) {
@@ -163,6 +153,10 @@ public class Sections {
     public void removeSection(Station station) {
         if (sections.size() <= 1) {
             throw new IllegalArgumentException(LESS_THAN_ONE_SECTION);
+        }
+
+        if (!isContainStation(station)) {
+            throw new IllegalArgumentException(NOT_FOUND_STATION);
         }
 
         if (!getDownStation().equals(station)) {

@@ -168,4 +168,21 @@ public class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(LESS_THAN_ONE_SECTION);
     }
+
+    @Test
+    @DisplayName("등록되지 않은 구간 삭제")
+    void removeSection_notFoundStation() {
+        // given
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        Station 판교역 = stationRepository.save(new Station("판교역"));
+
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 정자역.getId(), 6));
+
+        // when
+        // then
+        assertThatThrownBy(() -> lineService.deleteSection(신분당선.getId(), 판교역.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(NOT_FOUND_STATION);
+    }
 }

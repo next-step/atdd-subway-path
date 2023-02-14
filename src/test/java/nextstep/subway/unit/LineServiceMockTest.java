@@ -167,4 +167,21 @@ public class LineServiceMockTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(LESS_THAN_ONE_SECTION);
     }
+
+    @Test
+    @DisplayName("등록되지 않은 구간 삭제")
+    void removeSection_notFoundStation() {
+        // given
+        when(stationService.findById(3L)).thenReturn(new Station("정자역"));
+        when(stationService.findById(4L)).thenReturn(new Station("판교역"));
+
+        lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
+        lineService.addSection(1L, new SectionRequest(3L, 2L, 6));
+
+        // when
+        // then
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 4L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(NOT_FOUND_STATION);
+    }
 }
