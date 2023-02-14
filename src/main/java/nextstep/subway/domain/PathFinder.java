@@ -1,7 +1,8 @@
 package nextstep.subway.domain;
 
-public class PathFinder {
-    public Path findShortest(Lines lines) {
-        throw new UnsupportedOperationException();
-    }
+import java.util.List;
+
+
+public interface PathFinder {
+    Path searchShortestPath(List<Section> sections);
 }
