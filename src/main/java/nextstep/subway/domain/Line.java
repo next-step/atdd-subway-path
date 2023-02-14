@@ -69,4 +69,8 @@ public class Line {
     public boolean isSectionsEmpty() {
         return sections.isEmpty();
     }
+
+    public void mergeSection(List<Section> result) {
+        sections.merge(result);
+    }
 }

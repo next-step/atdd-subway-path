@@ -38,6 +38,6 @@ class PathServiceTest {
         pathService.findShortestPath(pathRequest);
 
         //then
-        verify(pathFinder).searchShortestPath(lines.mergeSections());
+        verify(pathFinder).searchShortestPath(pathRequest, lines.mergeSections());
     }
 }

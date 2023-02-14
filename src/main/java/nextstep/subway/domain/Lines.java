@@ -3,11 +3,9 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
-import javax.smartcardio.TerminalFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Lines {
@@ -25,8 +23,8 @@ public class Lines {
     public List<Section> mergeSections() {
         List<Section> result = new ArrayList<>();
 
-        for (Section section : result) {
-            section.merge(result);
+        for (Line line : values) {
+            line.mergeSection(result);
         }
 
         return result;

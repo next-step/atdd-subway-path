@@ -1,13 +1,12 @@
 package nextstep.subway.applicaion.dto;
 
 import com.sun.istack.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Builder
 public class PathRequest {
 

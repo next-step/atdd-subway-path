@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.fixture.LineFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,22 +33,23 @@ class DijkstraPathFinderTest {
     @BeforeEach
     void setUp() {
         line = LineFixture.createLineWithSection(STATION_ID_1, STATION_ID_4);
-        line.addSection(createSection(STATION_ID_4, STATION_ID_3, 2));
+        line.addSection(createSection(STATION_ID_4, STATION_ID_3, 5));
 
         line2 = LineFixture.createLineWithSection(STATION_ID_1, STATION_ID_2);
-        line2.addSection(createSection(STATION_ID_2, STATION_ID_3));
+        line2.addSection(createSection(STATION_ID_2, STATION_ID_3, 2));
 
         Lines lines = Lines.from(Set.of(line, line2));
         sectionList = lines.mergeSections();
     }
 
     @Test
-    void 생성() {
+    void 최단거리_조회() {
         //given
+        PathRequest pathRequest = PathRequest.of(STATION_ID_1, STATION_ID_3);
         PathFinder finder = new DijkstraPathFinder();
 
         //when
-        Path path = finder.searchShortestPath(sectionList);
+        Path path = finder.searchShortestPath(pathRequest, sectionList);
 
         //then
         assertThat(path.getStations()).hasSize(3);

@@ -15,10 +15,11 @@ public class PathService {
 
     private final LineService lineService;
     private final PathFinder pathFinder;
+    private final StationService stationService;
 
     public Path findShortestPath(PathRequest request) {
         Lines lines = lineService.findByStationIds(request.toStationIds());
-        return pathFinder.searchShortestPath(lines.mergeSections());
+        return pathFinder.searchShortestPath(request, lines.mergeSections());
     }
 }
 
