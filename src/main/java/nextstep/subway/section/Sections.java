@@ -1,7 +1,6 @@
 package nextstep.subway.section;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,20 +17,20 @@ public class Sections {
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-	public Section addSection(Section section) { //
+	public Section  addSection(Section newSection) {
 		if (isEmptySection()) {
-			this.sections.add(section);
-			return section;
+			this.sections.add(newSection);
+			return newSection;
 		}
-		checkExistSection(section);
+		checkExistSection(newSection);
 
-		Section registeredSection = findByUpStation(section.getUpStation());
+		Section registeredSection = findByUpStation(newSection.getUpStation());
 		if (registeredSection != null) {
-			reRegisterSection(registeredSection, section);
+			reRegisterSection(registeredSection, newSection);
 		}
 
-		this.sections.add(section);
-		return section;
+		this.sections.add(newSection);
+		return newSection;
 	}
 
 	private boolean isEmptySection() {
@@ -99,17 +98,17 @@ public class Sections {
 	}
 
 	private List<Station> getAllStation() {
-		return this.sections.stream()
-			.map(section -> List.of(section.getUpStation(), section.getDownStation()))
-			.flatMap(Collection::stream)
-			.distinct()
-			.collect(Collectors.toList());
+		List<Station> stations = new ArrayList<>();
+		stations.add(getFirstStation());
+		stations.addAll(this.sections.stream().map(Section::getDownStation).collect(Collectors.toList()));
+		return stations;
 	}
 
 	public List<Station> getOrderStation() {
+		Map<Station, Station> stationMap = this.sections.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+
 		Station upStation = getFirstStation();
 		List<Station> stations = new ArrayList<>();
-		Map<Station, Station> stationMap = this.sections.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 
 		stations.add(upStation);
 		while (true) {
@@ -126,9 +125,7 @@ public class Sections {
 		List<Station> upStations = this.sections.stream().map(Section::getUpStation).collect(Collectors.toList());
 		List<Station> downStations = this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
 
-		return upStations.stream()
-			.filter(s -> !downStations.contains(s))
-			.findFirst().orElse(null);
+		return upStations.stream().filter(s -> !downStations.contains(s)).findFirst().orElse(null);
 	}
 
 	public int getDistance() {

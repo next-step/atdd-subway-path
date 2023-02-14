@@ -23,6 +23,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	private Long 사당역;
 	private Long 금정역;
 
+	private int 서울_사당_거리 = 7;
+	private int 사당_금정_거리 = 10;
+	private int 금정_중앙_거리 = 7;
+
 	/**
 	 * 상행) 서울역 - 사당역 - 대공원역 - 금정역 - 중앙역 (하행
 	 * Given 지하철역과 노선 생성을 요청 하고
@@ -34,7 +38,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		사당역 = createStation("사당역").jsonPath().getLong("id");
 		금정역 = createStation("금정역").jsonPath().getLong("id");
 
-		line4 = createLine("4호선", "#00A5DE", 사당역, 금정역, 10).jsonPath().getLong("id");
+		line4 = createLine("4호선", "#00A5DE", 사당역, 금정역, 사당_금정_거리).jsonPath().getLong("id");
 	}
 
 	/** 지하철 구간 추가 기능 개선 **/
@@ -47,7 +51,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void addLineSection() {
 		// when
 		Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
-		createSection(line4, 금정역, 중앙역, 7);
+		createSection(line4, 금정역, 중앙역, 금정_중앙_거리);
 
 		// then
 		List<Long> stationIds = getStationIds(showLineById(line4));
@@ -63,14 +67,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void addSectionsFrontStation() {
 		// when
 		Long 서울역 = createStation("서울역").jsonPath().getLong("id");
-		createSection(line4, 서울역, 사당역, 7);
+		createSection(line4, 서울역, 사당역, 서울_사당_거리);
 
 		// then
 		List<Long> stationIds = getStationIds(showLineById(line4));
 		assertThat(stationIds).contains(서울역, 사당역, 금정역);
 
 		int totalDistance = showLineById(line4).jsonPath().getInt("distance");
-		assertThat(totalDistance).isEqualTo(17);
+		assertThat(totalDistance).isEqualTo(서울_사당_거리 + 사당_금정_거리);
 	}
 
 	/**
@@ -82,14 +86,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void addSectionsBackStation() {
 		// when
 		Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
-		createSection(line4, 금정역, 중앙역, 7);
+		createSection(line4, 금정역, 중앙역, 금정_중앙_거리);
 
 		// then
 		List<Long> stationIds = getStationIds(showLineById(line4));
 		assertThat(stationIds).contains(사당역, 금정역, 중앙역);
 
 		int totalDistance = showLineById(line4).jsonPath().getInt("distance");
-		assertThat(totalDistance).isEqualTo(17);
+		assertThat(totalDistance).isEqualTo(사당_금정_거리 + 금정_중앙_거리);
 	}
 
 	/**
@@ -102,7 +106,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void addStationDistanceShort() {
 		// when
 		Long 대공원역 = createStation("대공원역").jsonPath().getLong("id");
-		ExtractableResponse<Response> createResponse = createSection(line4, 사당역, 대공원역, 10); // 4
+		ExtractableResponse<Response> createResponse = createSection(line4, 사당역, 대공원역, 사당_금정_거리); // 4
 
 		// then
 		assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -121,7 +125,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void AllExistStation() {
 		// when
-		ExtractableResponse<Response> createResponse = createSection(line4, 사당역, 금정역, 10);
+		ExtractableResponse<Response> createResponse = createSection(line4, 사당역, 금정역, 사당_금정_거리);
 
 		// then
 		assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -163,7 +167,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void deleteMiddleStation() {
 		// given
 		Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
-		createSection(line4, 금정역, 중앙역, 7);
+		createSection(line4, 금정역, 중앙역, 금정_중앙_거리);
 
 		// when
 		ExtractableResponse<Response> deleteResponse = deleteSection(line4, 금정역);
@@ -173,7 +177,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = showLineById(line4);
 		assertAll(
 			() -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(사당역, 중앙역),
-			() -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(17)
+			() -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(사당_금정_거리 + 금정_중앙_거리)
 		);
 	}
 
@@ -204,7 +208,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void deleteFrontStation() {
 		// given
 		Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
-		createSection(line4, 금정역, 중앙역, 7);
+		createSection(line4, 금정역, 중앙역, 금정_중앙_거리);
 
 		// when
 		ExtractableResponse<Response> deleteResponse = deleteSection(line4, 사당역);
@@ -214,7 +218,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = showLineById(line4);
 		assertAll(
 			() -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(금정역, 중앙역),
-			() -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(7)
+			() -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(금정_중앙_거리)
 		);
 	}
 
@@ -228,10 +232,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void deleteBackStation() {
 		// given
 		Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
-		createSection(line4, 금정역, 중앙역, 7);
+		createSection(line4, 금정역, 중앙역, 금정_중앙_거리);
 
 		int totalDistance = showLineById(line4).jsonPath().getInt("distance");
-		assertThat(totalDistance).isEqualTo(17);
+		assertThat(totalDistance).isEqualTo(사당_금정_거리 + 금정_중앙_거리);
 
 		// when
 		ExtractableResponse<Response> deleteResponse = deleteSection(line4, 중앙역);
@@ -241,7 +245,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = showLineById(line4);
 		assertAll(
 			() -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(사당역, 금정역),
-			() -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(10)
+			() -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(사당_금정_거리)
 		);
 	}
 
@@ -255,10 +259,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void deleteNoExistStation() {
 		// given
 		Long 중앙역 = createStation("중앙역").jsonPath().getLong("id");
-		createSection(line4, 금정역, 중앙역, 7);
+		createSection(line4, 금정역, 중앙역, 금정_중앙_거리);
 
 		int totalDistance = showLineById(line4).jsonPath().getInt("distance");
-		assertThat(totalDistance).isEqualTo(17);
+		assertThat(totalDistance).isEqualTo(사당_금정_거리 + 금정_중앙_거리);
 
 		// when
 		Long 서울역 = createStation("서울역").jsonPath().getLong("id");
@@ -269,7 +273,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		ExtractableResponse<Response> response = showLineById(line4);
 		assertAll(
 			() -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(사당역, 금정역, 중앙역),
-			() -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(17)
+			() -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(사당_금정_거리 + 금정_중앙_거리)
 		);
 	}
 }

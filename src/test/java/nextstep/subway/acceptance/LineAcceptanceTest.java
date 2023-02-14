@@ -22,6 +22,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 	private Long 사당역;
 	private Long 신도림역;
 
+	private int 서울_사당_거리 = 7;
+
 	@BeforeEach
 	public void setUp() {
 		super.setUp();
@@ -39,7 +41,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineTest() {
 		// when
-		long id = createLine("4호선", "#00A5DE", 서울역, 사당역, 7).jsonPath().getLong("id");
+		long id = createLine("4호선", "#00A5DE", 서울역, 사당역, 서울_사당_거리).jsonPath().getLong("id");
 
 		// then
 		String lineName = showLineById(id).jsonPath().getString("name");
@@ -55,7 +57,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void showLineList() {
 		// given
-		createLine("4호선", "#00A5DE", 서울역, 사당역, 7);
+		createLine("4호선", "#00A5DE", 서울역, 사당역, 서울_사당_거리);
 		createLine("1호선", "#0052A4", 서울역, 신도림역, 7);
 
 		// when
@@ -76,7 +78,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void showLine() {
 		// given
-		long id = createLine("4호선", "#00A5DE", 서울역, 사당역, 7).jsonPath().getLong("id");
+		long id = createLine("4호선", "#00A5DE", 서울역, 사당역, 서울_사당_거리).jsonPath().getLong("id");
 
 		// when
 		ExtractableResponse<Response> showResponse = showLineById(id);
@@ -98,7 +100,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void updateLineTest() {
 		// given
-		long id = createLine("4호선", "#00A5DE", 서울역, 사당역, 7).jsonPath().getLong("id");
+		long id = createLine("4호선", "#00A5DE", 서울역, 사당역, 서울_사당_거리).jsonPath().getLong("id");
 
 		// when
 		updateLine(id, "00호선", "bg-red-600");
@@ -121,7 +123,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLineTest() {
 		// given
-		long id = createLine("4호선", "#00A5DE", 서울역, 사당역, 7).jsonPath().getLong("id");
+		long id = createLine("4호선", "#00A5DE", 서울역, 사당역, 서울_사당_거리).jsonPath().getLong("id");
 
 		// when
 		ExtractableResponse<Response> deleteResponse = deleteLine(id);

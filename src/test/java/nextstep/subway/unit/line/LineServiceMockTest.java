@@ -10,11 +10,11 @@ import nextstep.subway.line.LineService;
 import nextstep.subway.section.Section;
 import nextstep.subway.section.SectionRepository;
 import nextstep.subway.section.SectionService;
-import nextstep.subway.station.StationRepository;
 import nextstep.subway.section.SectionCreateRequest;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.station.Station;
+import nextstep.subway.station.StationService;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,10 +29,10 @@ public class LineServiceMockTest {
 
     @Mock private LineRepository lineRepository;
     @Mock private SectionRepository sectionRepository;
-    @Mock private StationRepository stationRepository;
+	@Mock private StationService stationService;
 
-    @InjectMocks private SectionService sectionService;
-    @InjectMocks private LineService lineService;
+	@InjectMocks private LineService lineService;
+	@InjectMocks private SectionService sectionService;
 
 	@DisplayName("지하철 노선에 구간을 등록할 수 있다")
     @Test
@@ -40,14 +40,14 @@ public class LineServiceMockTest {
         // given lineRepository, stationService stub 설정을 통해 초기값 셋팅
 		when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("4호선", "#00A5DE")));
 		when(sectionRepository.save(any(Section.class))).then(AdditionalAnswers.returnsFirstArg());
-		when(stationRepository.findById(1L)).thenReturn(Optional.of(new Station("사당역")));
-		when(stationRepository.findById(2L)).thenReturn(Optional.of(new Station("금정역")));
+		when(stationService.findStationById(1L)).thenReturn(new Station("사당역"));
+		when(stationService.findStationById(2L)).thenReturn(new Station("금정역"));
 
 		// when sectionService.addSection 호출
 		sectionService.addSection(1L, new SectionCreateRequest(1L, 2L, 10));
 
         // then lineService.findById 메서드를 통해 검증
-		Line line4 = lineService.findById(1L);
+		Line line4 = lineService.findLineEntityById(1L);
 		assertAll(
 			() -> assertThat(line4.getName()).isEqualTo("4호선"),
 			() -> assertThat(line4.getColor()).isEqualTo("#00A5DE")

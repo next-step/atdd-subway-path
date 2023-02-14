@@ -27,6 +27,11 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+	@Transactional(readOnly = true)
+	public Station findStationById(Long id) {
+		return stationRepository.findById(id).orElseThrow(() -> new NullPointerException("Station doesn't exist"));
+	}
+
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);

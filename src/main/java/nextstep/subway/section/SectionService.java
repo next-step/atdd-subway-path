@@ -1,45 +1,41 @@
 package nextstep.subway.section;
 
-import javax.transaction.Transactional;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.station.Station;
-import nextstep.subway.station.StationRepository;
+import nextstep.subway.station.StationService;
 
 @Service
 @RequiredArgsConstructor
 public class SectionService {
 
+	private final StationService stationService;
+
 	private final LineRepository lineRepository;
 	private final SectionRepository sectionRepository;
-	private final StationRepository stationRepository;
 
 	@Transactional
 	public void addSection(Long lineId, SectionCreateRequest sectionRequest) {
 		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new NullPointerException("Line doesn't exist"));
-		Section newSection = saveSection(sectionRequest);
+
+		Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+		Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+
+		Section newSection = new Section(upStation, downStation, sectionRequest.getDistance());
+		sectionRepository.save(newSection);
 
 		findLine.addSection(newSection);
 		newSection.updateLine(findLine);
 	}
 
 	@Transactional
-	public Section saveSection(SectionCreateRequest sectionRequest) {
-		Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NullPointerException("Station doesn't exist"));
-		Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NullPointerException("Station doesn't exist"));
-
-		Section newSection = new Section(upStation, downStation, sectionRequest.getDistance());
-		return sectionRepository.save(newSection);
-	}
-
-	@Transactional
 	public void deleteSectionById(Long lineId, Long stationId) {
 		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new NullPointerException("Line doesn't exist"));
-		Station deleteStation = stationRepository.findById(stationId).orElseThrow(() -> new NullPointerException("Station doesn't exist"));
+		Station deleteStation = stationService.findStationById(stationId);
 		findLine.removeSection(deleteStation);
 	}
 }
