@@ -37,5 +37,14 @@ class LineTest {
 
     @Test
     void removeSection() {
+        Station 강남역 = new Station("강남역");
+        Station 정자역 = new Station("정자역");
+        Station 광교역 = new Station("광교역");
+
+        Line line = new Line("2호선", "green", 강남역, 정자역, 10);
+        line.addSection(정자역, 광교역, 15);
+        line.removeSection(광교역);
+        List<Station> stations = line.getStations();
+        assertThat(stations).doesNotContain(광교역);
     }
 }
