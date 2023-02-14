@@ -39,7 +39,7 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(BACK_ADD_SECTION, 1L, new SectionRequest());
+        lineService.addSection(BACK_ADD_SECTION, 1L, null);
 
         // then
         // lineService.findLineById 메서드를 통해 검증

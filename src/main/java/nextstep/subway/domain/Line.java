@@ -83,25 +83,4 @@ public class Line {
     public List<Station> getStations() {
         return this.sections.getStations();
     }
-
-    public LineResponse convertLineResponse(){
-        return new LineResponse(
-                this.id,
-                this.name,
-                this.color,
-                createStationResponses()
-        );
-    }
-
-    private List<StationResponse> createStationResponses() {
-        if (this.sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = this.getStations();
-
-        return stations.stream()
-                .map(it -> it.convertStationResponse())
-                .collect(Collectors.toList());
-    }
 }

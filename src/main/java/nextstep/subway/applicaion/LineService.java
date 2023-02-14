@@ -37,18 +37,18 @@ public class LineService {
                     .distance(request.getDistance())
                     .build());
         }
-        return line.convertLineResponse();
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(Line::convertLineResponse)
+                .map(a -> LineResponse.of(a))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        return line.convertLineResponse();
+        return LineResponse.of(line);
     }
 
     @Transactional

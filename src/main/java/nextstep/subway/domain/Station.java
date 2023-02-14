@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import java.util.Objects;
 
 @Entity
-@ToString
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,10 +51,11 @@ public class Station {
         return Objects.hash(id, name);
     }
 
-    public StationResponse convertStationResponse() {
-        return new StationResponse(
-                this.id,
-                this.name
-        );
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

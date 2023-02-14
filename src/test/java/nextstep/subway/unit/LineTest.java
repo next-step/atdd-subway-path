@@ -31,7 +31,7 @@ class LineTest {
     }
 
     @Test
-    void addSection_front() {
+    void addSectionFront() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_5);
 
         Section newSection = createSection(line, 지하철역0, 지하철역1, distance_5);
@@ -42,7 +42,7 @@ class LineTest {
 
     @DisplayName("지하철 구간 중간에 새로운 구간을 추가")
     @Test
-    void addSection_middle() {
+    void addSectionMiddle() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
 
         Section newSection = createSection(line, 지하철역1, 지하철역2, distance_5);
@@ -53,7 +53,7 @@ class LineTest {
 
     @DisplayName("지하철 구간 중간에 새로운 구간을 추가 중 구간길이 검증 실패로 Exception 발생")
     @Test
-    void addSection_middle_Exception1() {
+    void addSectionMiddleException1() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
 
         Section newSection = createSection(line, 지하철역1, 지하철역2, distance_7);
@@ -63,7 +63,7 @@ class LineTest {
 
     @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 모두 존재하는 경우 Exception 발생")
     @Test
-    void addSection_middle_Exception2() {
+    void addSectionMiddleException2() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
         Section newSection = createSection(line, 지하철역1, 지하철역3, distance_5);
 
@@ -72,7 +72,7 @@ class LineTest {
 
     @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 노선에 아예 없는 경우 Exception 발생")
     @Test
-    void addSection_middle_Exception3() {
+    void addSectionMiddleException3() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
         Section newSection = createSection(line, new Station("지하철역4"), new Station("지하철역5"), distance_5);
 
@@ -80,7 +80,7 @@ class LineTest {
     }
 
     @Test
-    void removeSection_firstStation() {
+    void removeSectionFirstStation() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
 
         line.removeSection(지하철역2);
@@ -90,7 +90,7 @@ class LineTest {
     }
 
     @Test
-    void removeSection_middleStation() {
+    void removeSectionMiddleStation() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
 
         line.removeSection(지하철역0);
@@ -100,7 +100,7 @@ class LineTest {
     }
 
     @Test
-    void removeSection_lastStation() {
+    void removeSectionLastStation() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
 
         line.removeSection(지하철역3);
@@ -111,7 +111,7 @@ class LineTest {
 
     @DisplayName("지하철 노선에 없는 지하철역을 삭제할 경우 Exception 발생")
     @Test
-    void removeSection_exception() {
+    void removeSectionException() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
 
         assertThrows(SubwayRestApiException.class, () -> line.removeSection(new Station("지하철역4")));
@@ -119,7 +119,7 @@ class LineTest {
 
     @DisplayName("지하철 노선의 구간이 1개인 상태에서 지하철역을 삭제할 경우 Exception 발생")
     @Test
-    void removeSection_exception2() {
+    void removeSectionException2() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1);
 
         assertAll(() -> assertThrows(SubwayRestApiException.class, () -> line.removeSection(지하철역0)),

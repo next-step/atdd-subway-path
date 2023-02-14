@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.ErrorResponseEnum.ERROR_ADD_SECTION_INVAILD_DISTANCE;
@@ -30,7 +31,7 @@ public class Sections {
         Section standardSection = this.sections.stream()
                 .filter(a -> section.isSameDownStation(a.getUpStation()))
                 .findFirst()
-                .orElse(null);;
+                .orElse(null);
 
         this.sections.add(this.sections.indexOf(standardSection), section);
     }
@@ -80,7 +81,11 @@ public class Sections {
             this.sections.set(deleteIndex - 1, section);
         }
 
-        this.sections.remove(isLastStation(station) ? this.sections.size() - 1 : deleteIndex);
+        if (isLastStation(station)) {
+            deleteIndex = this.sections.size() - 1;
+        }
+
+        this.sections.remove(deleteIndex);
     }
 
     public List<Station> getStations() {
@@ -162,15 +167,18 @@ public class Sections {
     }
 
     private int getDeleteSectionIndex(Station station) {
-        Section section = this.sections.stream()
+        Optional<Section> section = this.sections.stream()
                 .filter(a -> a.isSameUpStation(station))
-                .findFirst()
-                .orElse(null);
+                .findFirst();
 
-        return this.sections.indexOf(section);
+        if (!section.isPresent()) {
+            return -1;
+        }
+
+        return this.sections.indexOf(section.get());
     }
 
     private boolean isLastStation(Station station) {
-        return this.getStations().size() -1 == this.getStations().indexOf(station);
+        return this.sections.get(this.sections.size()-1).isSameDownStation(station);
     }
 }
