@@ -14,6 +14,9 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @Entity
 public class Station {
+
+    public static final Station DEFAULT_STATION = new Station();
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
