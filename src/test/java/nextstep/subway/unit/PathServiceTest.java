@@ -21,6 +21,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.IdenticalSourceTargetNotAllowedException;
 
 @SpringBootTest
 @Transactional
@@ -86,5 +87,13 @@ class PathServiceTest {
             () -> assertThat(stations).containsExactly(교대역.getName(), 남부터미널역.getName(), 양재역.getName()),
             () -> assertThat(response.getDistance()).isEqualTo(5)
         );
+    }
+
+    @DisplayName("출발역와 도착역이 같은 경로는 조회할 수 없다.")
+    @Test
+    void identicalSourceTarget() {
+        // when & then
+        assertThatThrownBy(() -> pathService.findPath(교대역.getId(), 교대역.getId()))
+            .isInstanceOf(IdenticalSourceTargetNotAllowedException.class);
     }
 }

@@ -7,6 +7,8 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
+import nextstep.subway.exception.IdenticalSourceTargetNotAllowedException;
+
 public class PathFinder {
 
     private final List<Line> lines;
@@ -16,6 +18,10 @@ public class PathFinder {
     }
 
     public Path findPath(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new IdenticalSourceTargetNotAllowedException(source.getName(), target.getName());
+        }
+
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
         for (Line line : lines) {
@@ -28,7 +34,7 @@ public class PathFinder {
 
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> result = dijkstraShortestPath.getPath(source, target);
-        
+
         return new Path(result.getVertexList(), (int) result.getWeight());
     }
 }

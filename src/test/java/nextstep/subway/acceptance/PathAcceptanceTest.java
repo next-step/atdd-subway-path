@@ -11,11 +11,13 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.exception.IdenticalSourceTargetNotAllowedException;
 
 @DisplayName("지하철 경로 검색 기능")
 class PathAcceptanceTest extends AcceptanceTest {
@@ -70,6 +72,25 @@ class PathAcceptanceTest extends AcceptanceTest {
         assertAll(
             () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역),
             () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(5)
+        );
+    }
+
+    /**
+     * When 출발역과 도착역이 동일한 경로 조회 요청 시
+     * Then 경로가 조회되지 않는다.
+     */
+    @DisplayName("지하철 경로 조회 시, 출발역과 도착역은 같지 않아야 한다.")
+    @Test
+    void identicalSourceTarget() {
+        // when
+        ExtractableResponse<Response> response = 출발역과_도착역_사이의_경로_조회_요청(교대역, 교대역);
+
+        // then
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+            () -> assertThat(response.body().asString()).isEqualTo(
+                String.format(IdenticalSourceTargetNotAllowedException.MESSAGE, "교대역", "교대역")
+            )
         );
     }
 

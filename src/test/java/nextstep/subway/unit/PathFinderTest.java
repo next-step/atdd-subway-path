@@ -14,6 +14,7 @@ import nextstep.subway.domain.Path;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.IdenticalSourceTargetNotAllowedException;
 
 class PathFinderTest {
 
@@ -24,6 +25,8 @@ class PathFinderTest {
     private Line 이호선;
     private Line 신분당선;
     private Line 삼호선;
+
+    private PathFinder pathFinder;
 
     /**
      * 교대                         강남
@@ -51,17 +54,28 @@ class PathFinderTest {
         신분당선.addSection(new Section(신분당선, 강남역, 양재역, 10));
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 2));
         삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 3));
+
+        pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선));
     }
 
     @DisplayName("출발역와 도착역 사이의 최단 경로를 조회한다.")
     @Test
     void findPath() {
-        PathFinder pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선));
+        // when
         Path path = pathFinder.findPath(교대역, 양재역);
 
+        // then
         assertAll(
             () -> assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역),
             () -> assertThat(path.getDistance()).isEqualTo(5)
         );
+    }
+
+    @DisplayName("출발역와 도착역이 같은 경로는 조회할 수 없다.")
+    @Test
+    void identicalSourceTarget() {
+        // when & then
+        assertThatThrownBy(() -> pathFinder.findPath(교대역, 교대역))
+            .isInstanceOf(IdenticalSourceTargetNotAllowedException.class);
     }
 }
