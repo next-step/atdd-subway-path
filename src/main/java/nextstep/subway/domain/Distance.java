@@ -44,6 +44,10 @@ public class Distance {
         return this.value < MIN;
     }
 
+    public int value() {
+        return this.value;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

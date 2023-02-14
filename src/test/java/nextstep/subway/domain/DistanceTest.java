@@ -69,4 +69,11 @@ class DistanceTest {
                 () -> assertThatThrownBy(() -> new Distance(-1)).isInstanceOf(DistanceSizeException.class)
         );
     }
+
+    @DisplayName("거리 값을 반환한다.")
+    @ParameterizedTest(name = "value : {0}")
+    @ValueSource(ints = {1, 4, 100, 1200})
+    void value(int value) {
+        assertThat(new Distance(value).value()).isEqualTo(value);
+    }
 }
