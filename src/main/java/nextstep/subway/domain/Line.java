@@ -4,7 +4,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static nextstep.subway.domain.validator.SectionValidator.*;
+import static nextstep.subway.domain.validator.SectionValidator.checkDistance;
+
 
 
 @Entity
@@ -73,5 +79,64 @@ public class Line {
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        if (sections.isEmpty()) {
+            sections.add(new Section(this, upStation, downStation, distance));
+            return;
+        }
+
+        addSectionValidator(this, upStation, downStation);
+
+        Section findedSection = sections.stream().filter(s -> s.getUpStation().equals(upStation))
+                .findFirst()
+                .orElse(null);
+
+        if (findedSection != null) {
+            splitSection(downStation, distance, findedSection);
+            return;
+        }
+
+        sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    private void splitSection(Station downStation, int distance, Section oldSection) {
+        Station oldUpstation = oldSection.getUpStation();
+        Station oldDownStation = oldSection.getDownStation();
+        int oldDistance = oldSection.getDistance();
+
+        checkDistance(distance, oldDistance);
+
+        sections.remove(oldSection);
+
+        sections.addAll(List.of(
+                new Section(this, downStation, oldDownStation, oldDistance - distance),
+                new Section(this, oldUpstation, downStation, distance)
+        ));
+    }
+
+    public List<Station> getStations() {
+        return this.sections.stream()
+                .map(s -> List.of(s.getUpStation(), s.getDownStation()))
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public void removeSection(Station downEndStation) {
+        if (!this.getSections().get(this.getSections().size() - 1).getDownStation().equals(downEndStation)) {
+            throw new IllegalArgumentException();
+        }
+        this.getSections().remove(this.getSections().size() - 1);
+    }
+
+    public void updateLine(String name, String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
     }
 }

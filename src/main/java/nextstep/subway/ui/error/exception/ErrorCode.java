@@ -18,6 +18,7 @@ public enum ErrorCode {
 	SECTION_NOT_DELETE_THEN_ONE(400, "구간이 하나 이하일때 제거할 수 없습니다.");
 
 
+
 	private int status;
 	private String message;
 

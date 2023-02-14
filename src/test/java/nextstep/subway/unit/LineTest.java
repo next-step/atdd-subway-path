@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.ui.error.exception.BusinessException;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -48,6 +49,7 @@ class LineTest {
         // when & then
         assertThatThrownBy(() -> line.removeSection(line.getStations().get(1)))
                 .isInstanceOf(BusinessException.class);
+
     }
 
     @Test
