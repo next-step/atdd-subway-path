@@ -73,6 +73,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * When 지하철 노선에 등록되어 있지 않은 역을 제거하는 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("지하철 노선에 등록되어 있지 않은 역을 제거")
+    @Test
+    void removeNotExistsStation() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
