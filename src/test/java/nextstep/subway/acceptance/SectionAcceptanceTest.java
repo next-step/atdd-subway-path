@@ -286,7 +286,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Then 노선에 구간이 제거된다
      *
      * As-is
-     * 강남역 <----6----> 정자역 <-4-> 양재역
+     * 강남역 <-4-> 정자역 <----6----> 양재역
      *
      * 제거요청: 양재역
      *
@@ -314,7 +314,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Then 노선에 구간이 제거된다
      *
      * As-is
-     * 강남역 <----6----> 정자역 <-4-> 양재역
+     * 강남역 <-4-> 정자역 <----6----> 양재역
      *
      * 제거요청: 강남역
      *
@@ -342,7 +342,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * Then 노선에 구간이 제거되고, 제거한 역 기준의 양 옆 구간이 하나의 구간이 된다
      *
      * As-is
-     * 강남역 <----6----> 정자역 <-4-> 양재역
+     * 강남역 <-4-> 정자역 <----6----> 양재역
      *
      * 제거요청: 정자역
      *
