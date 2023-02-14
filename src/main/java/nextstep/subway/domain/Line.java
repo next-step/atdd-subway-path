@@ -70,9 +70,9 @@ public class Line {
             validateSameUpDownStation(upStation, downStation, section);
 
             if (Objects.equals(section.getUpStation().getId(), upStation.getId())) {
-                validateDistance(distance, section);
-                this.sections.add(new Section(this, downStation, section.getDownStation(), distance));
-                section.modify(this, section.getUpStation(), downStation);
+                int newSectionDistance = getNewSectionDistance(distance, section);
+                this.sections.add(new Section(this, downStation, section.getDownStation(), newSectionDistance));
+                section.modify(this, section.getUpStation(), downStation, distance);
                 return;
             }
         }
@@ -80,6 +80,11 @@ public class Line {
 
     private boolean isEmptySections() {
         return getSections() == null || getSections().isEmpty();
+    }
+
+    private int getNewSectionDistance(int distance, Section section) {
+        validateDistance(distance, section);
+        return section.getDistance() - distance;
     }
 
     private void validateDistance(int distance, Section section) {

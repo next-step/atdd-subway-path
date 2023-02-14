@@ -53,9 +53,10 @@ public class Section {
         return distance;
     }
 
-    public void modify(Line line, Station upStation, Station downStation) {
+    public void modify(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 }

@@ -48,8 +48,10 @@ class LineTest {
         assertThat(신분당선.getSections()).hasSize(2);
         assertThat(신분당선.getSections().get(0).getUpStation().getId()).isEqualTo(광교.getId());
         assertThat(신분당선.getSections().get(0).getDownStation().getId()).isEqualTo(광교중앙.getId());
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(3);
         assertThat(신분당선.getSections().get(1).getUpStation().getId()).isEqualTo(광교중앙.getId());
         assertThat(신분당선.getSections().get(1).getDownStation().getId()).isEqualTo(상현.getId());
+        assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(2);
     }
 
     @Test
