@@ -20,11 +20,17 @@ public class PathService {
     }
 
     public PathResponse findShortestPath(Long sourceId, Long targetId) {
-        PathFinder pathFinder = new PathFinder(lineService.findAllLines());
+        PathFinder pathFinder = new PathFinder();
+        pathFinder.init(lineService.findAllLines());
+
         GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShortestPath(
             stationService.findById(sourceId),
             stationService.findById(targetId)
         );
-        return PathResponse.of(shortestPath.getVertexList(), shortestPath.getWeight());
+
+        return PathResponse.of(
+            shortestPath.getVertexList(),
+            (int) shortestPath.getWeight()
+        );
     }
 }

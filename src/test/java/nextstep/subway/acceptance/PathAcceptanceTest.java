@@ -22,13 +22,18 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     private Long 교대역;
     private Long 강남역;
+    private Long 역삼역;
+    private Long 선릉역;
     private Long 양재역;
     private Long 남부터미널역;
+    private Long 매봉역;
+    private Long 도곡역;
     private Long 천호역;
     private Long 광나루역;
     private Long 런던역 = 999L;
     private Long 이호선;
     private Long 신분당선;
+    private Long 분당선;
     private Long 삼호선;
     private Long 오호선;
 
@@ -41,34 +46,77 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        역삼역 = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
+        선릉역 = 지하철역_생성_요청("선릉역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
+        매봉역 = 지하철역_생성_요청("매봉역").jsonPath().getLong("id");
+        도곡역 = 지하철역_생성_요청("도곡역").jsonPath().getLong("id");
         남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
         천호역 = 지하철역_생성_요청("천호역").jsonPath().getLong("id");
         광나루역 = 지하철역_생성_요청("광나루역").jsonPath().getLong("id");
 
         이호선 = 지하철_노선_생성_요청("2호선", "green", 교대역, 강남역, 10).jsonPath().getLong("id");
-        신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 10).jsonPath().getLong("id");
+        신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 4).jsonPath().getLong("id");
+        분당선 = 지하철_노선_생성_요청("분당선", "yellow", 선릉역, 도곡역, 5).jsonPath().getLong("id");
         삼호선 = 지하철_노선_생성_요청("3호선", "orange", 교대역, 남부터미널역, 2).jsonPath().getLong("id");
         오호선 = 지하철_노선_생성_요청("5호선", "purple", 광나루역, 천호역, 8).jsonPath().getLong("id");
 
+        지하철_노선에_지하철_구간_생성_요청(이호선, createSectionCreateParams(강남역, 역삼역, 10));
+        지하철_노선에_지하철_구간_생성_요청(이호선, createSectionCreateParams(역삼역, 선릉역, 10));
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
+        지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(양재역, 매봉역, 2));
+        지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(매봉역, 도곡역, 2));
+    }
+
+    /**
+     * When 교대역에서 강남역으로 가는 최단경로를 조회하면
+     * Then 포함되는 역은 교대역, 남부터미널역, 양재역, 강남역 총 4개의 역이며
+     * Then 거리는 9이다
+     */
+    @DisplayName("거치는 역의 개수가 더 많지만 가까운 경로를 조회한다")
+    @Test
+    void findPathWithMoreStations() {
+        // when
+        ExtractableResponse<Response> response = getPathRequest(교대역, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역, 강남역);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(9);
     }
 
     /**
      * When 교대역에서 강남역으로 가는 경로를 조회하면
-     * Then 포함되는 역은 교대역, 남부터미널역, 양재역 총 3개의 역이며
-     * Then 거리는 5이다
+     * Then 포함되는 역은 교대역, 남부터미널역 총 2개의 역이며
+     * Then 거리는 2이다
      */
-    @DisplayName("경로를 조회한다")
+    @DisplayName("거치는 역의 개수가 적지만 가까운 경로를 조회한다")
     @Test
-    void findPath() {
+    void findPathWithFewerStations() {
         // when
-        ExtractableResponse<Response> response = getPathRequest(교대역, 양재역);
+        ExtractableResponse<Response> response = getPathRequest(교대역, 남부터미널역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
-        assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(2);
+    }
+
+    /**
+     * When 강남역에서 선릉역으로 가는 최단경로를 조회하면
+     * Then 포함되는 역은 강남역, 양재역, 매봉역, 도곡역, 선릉역 총 5개의 역이며
+     * Then 거리는 13이다
+     */
+    @DisplayName("환승역의 개수가 더 많지만 가까운 경로를 조회한다")
+    @Test
+    void findPathWithMoreTransfers() {
+        // when
+        ExtractableResponse<Response> response = getPathRequest(강남역, 선릉역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 매봉역, 도곡역, 선릉역);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(13);
     }
 
     /**

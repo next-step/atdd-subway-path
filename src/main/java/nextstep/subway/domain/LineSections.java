@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 @Embeddable
 public class LineSections {
 
+    private int MINIMUM_SECTION_COUNT = 2;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -22,7 +24,13 @@ public class LineSections {
             return;
         }
 
-        checkStationStatus(upStation, downStation);
+        List<Station> allStations = getAllStations();
+        if (stationsAlreadyExist(upStation, downStation, allStations)) {
+            throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_STATIONS_ALREADY_EXIST.getMessage());
+        }
+        if (stationsNotExist(upStation, downStation, allStations)) {
+            throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_STATIONS_NOT_EXIST.getMessage());
+        }
 
         findSameUpStation(upStation)
             .ifPresentOrElse(
@@ -41,7 +49,9 @@ public class LineSections {
         Station oldDownStation = oldSection.getDownStation();
         int oldDistance = oldSection.getDistance();
 
-        checkDistance(distance, oldDistance);
+        if (isDistanceTooLong(distance, oldDistance)) {
+            throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_INVALID_DISTANCE.getMessage());
+        }
 
         this.sections.remove(oldSection);
         this.sections.addAll(List.of(
@@ -60,16 +70,6 @@ public class LineSections {
         ));
     }
 
-    private void checkStationStatus(Station upStation, Station downStation) {
-        List<Station> allStations = getAllStations();
-        if (stationsAlreadyExist(upStation, downStation, allStations)) {
-            throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_STATIONS_ALREADY_EXIST.getMessage());
-        }
-        if (stationsNotExist(upStation, downStation, allStations)) {
-            throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_STATIONS_NOT_EXIST.getMessage());
-        }
-    }
-
     private boolean stationsNotExist(Station upStation, Station downStation, List<Station> allStations) {
         return !allStations.contains(upStation) && !allStations.contains(downStation);
     }
@@ -78,8 +78,8 @@ public class LineSections {
         return allStations.contains(upStation) && allStations.contains(downStation);
     }
 
-    private void checkDistance(int distance, int oldDistance) {
-        if (distance >= oldDistance) throw new IllegalArgumentException(LineErrorMessage.ADD_SECTION_INVALID_DISTANCE.getMessage());
+    private boolean isDistanceTooLong(int distance, int oldDistance) {
+        return distance >= oldDistance;
     }
 
     private void extendSection(Line line, Station upStation, Station downStation, int distance) {
@@ -123,38 +123,52 @@ public class LineSections {
     }
 
     private Section findBothEndsStations() {
-        Set<Station> upStations = this.sections.stream()
+        List<Station> upStations = this.sections.stream()
             .map(Section::getUpStation)
-            .collect(Collectors.toSet());
-        Set<Station> downStations = this.sections.stream()
+            .collect(Collectors.toCollection(LinkedList::new));
+        List<Station> downStations = this.sections.stream()
             .map(Section::getDownStation)
-            .collect(Collectors.toSet());
+            .collect(Collectors.toCollection(LinkedList::new));
 
-        HashSet<Station> allMiddleStations = getAllMiddleStations(upStations, downStations);
+        Set<Station> allMiddleStations = getAllMiddleStations(upStations, downStations);
 
         upStations.removeAll(allMiddleStations);
         downStations.removeAll(allMiddleStations);
 
         return Section.builder()
-            .upStation(upStations.stream().findFirst().orElse(null))
-            .downStation(downStations.stream().findFirst().orElse(null))
+            .upStation(getFirstStation(upStations))
+            .downStation(getLastStation(downStations))
             .build();
     }
 
-    private static HashSet<Station> getAllMiddleStations(Set<Station> upStations, Set<Station> downStations) {
-        HashSet<Station> intersection = new HashSet<>(upStations);
+    private Station getFirstStation(List<Station> upStations) {
+        if (!upStations.isEmpty()) {
+            return upStations.get(0);
+        }
+        return null;
+    }
+
+    private Station getLastStation(List<Station> downStations) {
+        if (!downStations.isEmpty()) {
+            return downStations.get(downStations.size() - 1);
+        }
+        return null;
+    }
+
+    private static Set<Station> getAllMiddleStations(List<Station> upStations, List<Station> downStations) {
+        Set<Station> intersection = new HashSet<>(upStations);
         intersection.retainAll(downStations);
         return intersection;
     }
 
     public void removeSection(Line line, Station station) {
-        Station targetStation = findStation(station);
+        List<Section> targetSections = findSectionsByStation(station);
 
-        checkSectionsSize();
+        if (canSectionRemoved()) {
+            throw new IllegalArgumentException(LineErrorMessage.REMOVE_SECTION_LAST_ONE.getMessage());
+        }
 
-        List<Section> targetSections = findSectionsByStation(targetStation);
-
-        if (targetSections.size() > 1) {
+        if (targetSections.size() >= MINIMUM_SECTION_COUNT) {
             Section firstSection = targetSections.get(0);
             Section secondSection = targetSections.get(1);
             extendSection(line, firstSection.getUpStation(), secondSection.getDownStation(), firstSection.getDistance() + secondSection.getDistance());
@@ -165,16 +179,15 @@ public class LineSections {
         this.sections.removeIf(section -> section.equals(targetSections.get(0)));
     }
 
-    private List<Section> findSectionsByStation(Station targetStation) {
+    private List<Section> findSectionsByStation(Station station) {
+        Station targetStation = findStation(station);
         return this.sections.stream()
             .filter(section -> section.getUpStation().equals(targetStation) || section.getDownStation().equals(targetStation))
             .collect(Collectors.toList());
     }
 
-    private void checkSectionsSize() {
-        if (sections.size() < 2) {
-            throw new IllegalArgumentException(LineErrorMessage.REMOVE_SECTION_LAST_ONE.getMessage());
-        }
+    private boolean canSectionRemoved() {
+        return sections.size() < MINIMUM_SECTION_COUNT;
     }
 
     private Station findStation(Station station) {

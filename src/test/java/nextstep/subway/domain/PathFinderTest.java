@@ -47,7 +47,8 @@ class PathFinderTest {
         삼호선.addSection(남부터미널역, 양재역, 3);
         오호선.addSection(광나루역, 천호역, 8);
 
-        pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선, 오호선));
+        pathFinder = new PathFinder();
+        pathFinder.init(List.of(이호선, 신분당선, 삼호선, 오호선));
     }
 
     @Test

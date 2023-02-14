@@ -9,9 +9,12 @@ import java.util.List;
 
 public class PathFinder {
 
-    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+    private WeightedMultigraph<Station, DefaultWeightedEdge> graph;
 
-    public PathFinder(List<Line> lines) {
+    public PathFinder() {
+    }
+
+    public void init(List<Line> lines) {
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         for (Line line : lines) {
             initLineVertices(line);
@@ -22,33 +25,33 @@ public class PathFinder {
     }
 
     public GraphPath<Station, DefaultWeightedEdge> getShortestPath(Station source, Station target) {
-        checkSameTargetAndSource(source, target);
-        checkStationExistence(source, target);
+        if (isEachStationSame(source, target)) {
+            throw new IllegalArgumentException(PathErrorMessage.FIND_PATH_SAME_TARGET_AND_SOURCE.getMessage());
+        }
+        if (!isEachStationExistent(source, target)) {
+            throw new IllegalArgumentException(PathErrorMessage.FIND_PATH_STATION_NOT_EXIST.getMessage());
+        }
 
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
 
-        checkPathConnected(shortestPath);
+        if (!isPathConnected(shortestPath)) {
+            throw new IllegalArgumentException(PathErrorMessage.FIND_PATH_NOT_CONNECTED.getMessage());
+        }
 
         return shortestPath;
     }
 
-    private void checkStationExistence(Station source, Station target) {
-        if (!graph.containsVertex(source) || !graph.containsVertex(target)) {
-            throw new IllegalArgumentException(PathErrorMessage.FIND_PATH_STATION_NOT_EXIST.getMessage());
-        }
+    private boolean isEachStationExistent(Station source, Station target) {
+        return graph.containsVertex(source) & graph.containsVertex(target);
     }
 
-    private void checkPathConnected(GraphPath<Station, DefaultWeightedEdge> shortestPath) {
-        if (shortestPath == null) {
-            throw new IllegalArgumentException(PathErrorMessage.FIND_PATH_NOT_CONNECTED.getMessage());
-        }
+    private boolean isPathConnected(GraphPath<Station, DefaultWeightedEdge> shortestPath) {
+        return shortestPath != null;
     }
 
-    private void checkSameTargetAndSource(Station source, Station target) {
-        if (source.equals(target)) {
-            throw new IllegalArgumentException(PathErrorMessage.FIND_PATH_SAME_TARGET_AND_SOURCE.getMessage());
-        }
+    private boolean isEachStationSame(Station source, Station target) {
+        return source.equals(target);
     }
 
     private void initLineEdges(Line line) {
