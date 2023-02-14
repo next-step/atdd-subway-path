@@ -2,12 +2,10 @@ package nextstep.subway.unit.domain.sections;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.sections.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.sections.Sections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -89,10 +87,7 @@ class SectionsRemoveTest {
 
         // When
         sections.delete(잠실역);
-        List<Section> sections1 = sections.getSections();
-        for (Section section : sections1) {
-            System.out.println("section = " + section);
-        }
+
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
         assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(10);
