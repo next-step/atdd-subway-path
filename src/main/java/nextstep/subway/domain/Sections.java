@@ -42,7 +42,7 @@ public class Sections {
     private void addMiddleStation(Section newSection) {
         for (Section section : sections) {
             if (addStation(section, newSection)) {
-                break;
+                return;
             }
         }
     }
