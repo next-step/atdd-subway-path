@@ -13,7 +13,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("지하철 노선도 조회 테스트")
+@DisplayName("지하철 노선도 조 테스트")
 class SectionCollectionTest {
     Line line;
     Station firstStation;
@@ -43,7 +43,7 @@ class SectionCollectionTest {
     @DisplayName("첫번째 역을 찾을 수 있다.")
     void getFirstStation() {
         Station findFirstStation = line.getSectionCollection().getFirstStation();
-        assertThat(findFirstStation).isEqualTo(secondStation);
+        assertThat(findFirstStation).isEqualTo(firstStation);
     }
 
     @Test
