@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,9 +58,9 @@ class PathAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 출발역과 도착역 사이의 경로 조회를 요청하면
-     * Then 출발역과 도착역까지의 역 목록과 경로의 길이가 조회된다.
+     * Then 출발역과 도착역까지의 최단 경로가 조회된다.
      */
-    @DisplayName("출발역과 도착역 사이의 경로를 조회한다.")
+    @DisplayName("출발역과 도착역 사이의 최단 경로를 조회한다.")
     @Test
     void findPath() {
         // when
