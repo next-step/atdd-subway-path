@@ -7,11 +7,8 @@ import nextstep.subway.domain.sections.Sections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SectionsRemoveTest {
 
@@ -118,7 +115,7 @@ class SectionsRemoveTest {
 
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
-        assertTrue(sections.getStations().containsAll(List.of(논현역, 강남역, 삼성역, 건대입구역)));
+        assertThat(sections.getStations()).containsExactly(논현역, 강남역, 삼성역, 건대입구역);
         assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(10);
     }
 }
