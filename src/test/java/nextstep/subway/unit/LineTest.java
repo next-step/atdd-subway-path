@@ -135,6 +135,20 @@ class LineTest {
         assertThat(신분당선.getStations()).containsExactly(강남역, 판교역);
     }
 
+    @DisplayName("지하철 노선에 등록된 순서와 상관없이 상행 종점역 부터 하행 종점역까지의 정렬된 역을 조회한다.")
+    @Test
+    void getStationsInOrder() {
+        // given
+        Station 신사역 = new Station("신사역");
+        Station 정자역 = new Station("정자역");
+        신분당선.addSection(판교역, 정자역, 3);
+        신분당선.addSection(강남역, 판교역, 3);
+        신분당선.addSection(신사역, 강남역, 3);
+
+        // when & then
+        assertThat(신분당선.getStations()).containsExactly(신사역, 강남역, 판교역, 정자역);
+    }
+
     @DisplayName("지하철 노선에 등록된 구간을 삭제한다.")
     @Test
     void removeSection() {
