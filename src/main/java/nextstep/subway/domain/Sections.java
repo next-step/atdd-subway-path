@@ -83,14 +83,22 @@ public class Sections {
             }
         }
 
+        alreadyEnrollUpAndDownStation(containUpStation, containDownStation);
+
+        notEnrollUpAndDownStation(containUpStation, containDownStation);
+    }
+    private void alreadyEnrollUpAndDownStation(List<Section> containUpStation, List<Section> containDownStation) {
         if (!(containUpStation.isEmpty() || containDownStation.isEmpty())) {
             throw new IllegalArgumentException(ALREADY_ENROLL_STATION);
         }
+    }
 
+    private void notEnrollUpAndDownStation(List<Section> containUpStation, List<Section> containDownStation) {
         if (containUpStation.isEmpty() && containDownStation.isEmpty()) {
             throw new IllegalArgumentException(NOT_ENROLL_STATION);
         }
     }
+
 
     public List<Station> getStations() {
         if (sections.isEmpty()) {
