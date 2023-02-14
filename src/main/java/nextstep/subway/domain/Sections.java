@@ -161,6 +161,10 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException(LESS_THAN_ONE_SECTION);
+        }
+
         if (!getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }

@@ -178,9 +178,19 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 등록된 구간이 하나인 노선에서 마지막 구간을 제거하면
+     * When 등록된 구간이 하나 이하인 노선에서 마지막 구간을 제거하면
      * Then 예외가 발생한다.
      */
+    @Test
+    @DisplayName("등록된 구간이 하나 이하인 노선에서 구간을 제거")
+    void removeLineSection_lessThanOneSection() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("노선에 등록된 구간이 하나 이하일 경우 구간을 제거할 수 없습니다.");
+    }
 
     /**
      * When 노선에 등록되지 않은 역을 제거하면

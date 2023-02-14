@@ -128,4 +128,14 @@ public class SectionsTest {
         // then
         assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "양재역", "판교역");
     }
+
+    @Test
+    @DisplayName("구간 삭제 실패-등록된 구간이 하나 이하인 노선")
+    void removeSection_lessThanOneSection() {
+        // when
+        // then
+        assertThatThrownBy(() -> 신분당선.removeSection(양재역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(LESS_THAN_ONE_SECTION);
+    }
 }

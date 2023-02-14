@@ -155,4 +155,17 @@ public class LineServiceTest {
         List<Station> stations = line.getStations();
         assertThat(stations).extracting("name").containsExactly("판교역", "강남역", "양재역");
     }
+
+    @Test
+    @DisplayName("등록된 구간이 하나 이하인 노선 구간 삭제")
+    void removeSection_lessThanOneSection() {
+        // given
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
+
+        // when
+        // then
+        assertThatThrownBy(() -> lineService.deleteSection(신분당선.getId(), 양재역.getId()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(LESS_THAN_ONE_SECTION);
+    }
 }
