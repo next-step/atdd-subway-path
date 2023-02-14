@@ -32,6 +32,9 @@ public class PathFinder {
             throw new IllegalArgumentException("존재하지 않는 역을 입력하였습니다.");
         }
         GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(source, target);
+        if (path == null) {
+            throw new IllegalArgumentException("출발역과 도착역이 이어져있지 않습니다");
+        }
         List<PathStationResponse> stations = path.getVertexList()
                 .stream()
                 .map(PathStationResponse::new)
