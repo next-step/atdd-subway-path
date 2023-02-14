@@ -10,12 +10,16 @@ import org.jgrapht.graph.WeightedMultigraph;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.PathErrorCode;
+import nextstep.subway.domain.exception.PathSearchException;
 
 public class PathFinder {
 
 	private final GraphPath<Station, DefaultWeightedEdge> graphPath;
 
 	public PathFinder(List<Line> lines, Station source, Station target) {
+		validateRequestStation(source, target);
+
 		this.graphPath = makeGraph(lines, source, target);
 	}
 
@@ -23,9 +27,20 @@ public class PathFinder {
 		return new SubwayPath(this.graphPath.getVertexList(), this.graphPath.getWeight());
 	}
 
+	private void validateRequestStation(Station source, Station target) {
+		if (source == target) {
+			throw new PathSearchException(PathErrorCode.EQUAL_SEARCH_STATION);
+		}
+	}
+
 	private GraphPath<Station, DefaultWeightedEdge> makeGraph(List<Line> lines, Station source, Station target) {
 		DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = build(lines);
 		GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(source, target);
+
+		if (graphPath == null) {
+			throw new PathSearchException(PathErrorCode.NOT_CONNECTION);
+		}
+
 		return graphPath;
 	}
 

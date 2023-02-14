@@ -4,7 +4,6 @@ import static nextstep.subway.common.PathFixtures.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.exception.PathErrorCode;
+import nextstep.subway.domain.exception.PathSearchException;
 
 class PathServiceTest extends IntegrationUnitTest {
 
@@ -77,4 +78,41 @@ class PathServiceTest extends IntegrationUnitTest {
 			() -> assertThat(pathResponse.getDistance()).isEqualTo(5)
 		);
 	}
+
+	@DisplayName("출발역과 도착역이 같은경우 예외가 발생한다")
+	@Test
+	void 출발역과_도착역이_같은경우_예외가_발생한다() {
+		assertThatThrownBy(() -> pathService.getPath(양재역.getId(), 양재역.getId()))
+			.isInstanceOf(PathSearchException.class)
+			.hasMessage(PathErrorCode.EQUAL_SEARCH_STATION.getMessage());
+	}
+
+	@DisplayName("출발역과 도착역이 연결이되어있지 않은경우 예외가 발생한다")
+	@Test
+	void 출발역과_도착역이_연결이되어있지_않은경우_예외가_발생한다() {
+		Station 동대문역 = stationRepository.save(동대문역());
+		Station 혜화역 = stationRepository.save(혜화역());
+		lineRepository.save(new Line("4호선", "blue", 동대문역, 혜화역, 6));
+
+		assertThatThrownBy(() -> pathService.getPath(교대역.getId(), 혜화역.getId()))
+			.isInstanceOf(PathSearchException.class)
+			.hasMessage(PathErrorCode.NOT_CONNECTION.getMessage());
+	}
+
+	@DisplayName("최단경로 검색시 존재하지않은 출발역을 요청한 경우 예외가 발생한다")
+	@Test
+	void 최단경로_검색시_존재하지않은_출발역을_요청한_경우_예외가_발생한다() {
+		assertThatThrownBy(() -> pathService.getPath(존재하지않은역, 교대역.getId()))
+			.isInstanceOf(PathSearchException.class)
+			.hasMessage(PathErrorCode.NOT_FOUND_STATION.getMessage());
+	}
+
+	@DisplayName("최단경로 검색시 존재하지않은 도착역을 요청한 경우 예외가 발생한다")
+	@Test
+	void 최단경로_검색시_존재하지않은_도착역을_요청한_경우_예외가_발생한다() {
+		assertThatThrownBy(() -> pathService.getPath(교대역.getId(), 존재하지않은역))
+			.isInstanceOf(PathSearchException.class)
+			.hasMessage(PathErrorCode.NOT_FOUND_STATION.getMessage());
+	}
+
 }
