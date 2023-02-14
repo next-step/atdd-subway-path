@@ -2,10 +2,10 @@ package nextstep.subway.applicaion.dto;
 
 public class SectionResponse {
 
-    private Long id;
-    private StationResponse upStation;
-    private StationResponse downStation;
-    private Integer distance;
+    private final Long id;
+    private final StationResponse upStation;
+    private final StationResponse downStation;
+    private final Integer distance;
 
     public SectionResponse(Long id, StationResponse upStation, StationResponse downStation, Integer distance) {
         this.id = id;

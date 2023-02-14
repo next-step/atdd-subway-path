@@ -4,10 +4,10 @@ import java.util.List;
 
 public class LineSectionResponse {
 
-    private Long id;
-    private String name;
-    private String color;
-    private List<SectionResponse> sections;
+    private final Long id;
+    private final String name;
+    private final String color;
+    private final List<SectionResponse> sections;
 
     public LineSectionResponse(Long id, String name, String color, List<SectionResponse> sections) {
         this.id = id;
