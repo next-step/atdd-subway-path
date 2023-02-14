@@ -9,15 +9,15 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -52,6 +52,32 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean equalDownStation(Station station) {
+        return this.downStation == station;
+    }
+
+    public boolean equalUpStation(Station station) {
+        return this.upStation == station;
+    }
+
+    public void updateUpStation(Station station, int distance) {
+        validateDistance(distance);
+        this.upStation = station;
+        this.distance -= distance;
+    }
+
+    public void updateDownStation(Station station, int distance) {
+        validateDistance(distance);
+        this.downStation = station;
+        this.distance -= distance;
+    }
+
+    private void validateDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException("등록할 구간의 길이가 등록된 구간 길이보다 작아야 합니다.");
+        }
     }
 
     @Override
