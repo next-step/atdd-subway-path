@@ -2,8 +2,10 @@ package nextstep.subway.acceptance;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.PathAcceptanceAssert.최단_경로_조회_검증;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,10 +52,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findShortestPath() {
         // given
+        Long source = 강남역;
+        Long target = 남부터미널역;
+        List<Long> path = List.of(강남역, 교대역, 남부터미널역);
+        long distance = 12L;
 
-        // when
-
-        // then
+        // when, then
+        최단_경로_조회_검증(source, target, path, distance);
     }
 
     /**
