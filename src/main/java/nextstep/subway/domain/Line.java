@@ -61,14 +61,36 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        if (getSections() == null || getSections().isEmpty()) {
-            getSections().add(new Section(this, upStation, downStation, distance));
+        if (isEmptySections()) {
+            this.sections.add(new Section(this, upStation, downStation, distance));
             return;
         }
-        for (Section section : getSections()) {
-            if (Objects.equals(section.getUpStation().getId(), upStation.getId()) && Objects.equals(section.getDownStation().getId(), downStation.getId())) {
-                throw new AddSectionException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+
+        for (Section section : this.sections) {
+            validateSameUpDownStation(upStation, downStation, section);
+
+            if (Objects.equals(section.getUpStation().getId(), upStation.getId())) {
+                validateDistance(distance, section);
+                this.sections.add(new Section(this, downStation, section.getDownStation(), distance));
+                section.modify(this, section.getUpStation(), downStation);
+                return;
             }
+        }
+    }
+
+    private boolean isEmptySections() {
+        return getSections() == null || getSections().isEmpty();
+    }
+
+    private void validateDistance(int distance, Section section) {
+        if (section.getDistance() <= distance) {
+            throw new AddSectionException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+        }
+    }
+
+    private void validateSameUpDownStation(Station upStation, Station downStation, Section section) {
+        if (Objects.equals(section.getUpStation().getId(), upStation.getId()) && Objects.equals(section.getDownStation().getId(), downStation.getId())) {
+            throw new AddSectionException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
         }
     }
 }
