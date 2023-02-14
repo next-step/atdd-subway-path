@@ -19,9 +19,12 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
     private Long 남부터미널역;
+    private Long 죽전역;
+    private Long 보정역;
     private Long 이호선;
     private Long 신분당선;
     private Long 삼호선;
+    private Long 수인분당선;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -38,10 +41,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
+        죽전역 = 지하철역_생성_요청("죽전역").jsonPath().getLong("id");
+        보정역 = 지하철역_생성_요청("보정역").jsonPath().getLong("id");
 
         이호선 = 지하철_노선_생성_요청("2호선", "green", 교대역, 강남역, 10).jsonPath().getLong("id");
         신분당선 = 지하철_노선_생성_요청("신분당선", "red", 강남역, 양재역, 10).jsonPath().getLong("id");
         삼호선 = 지하철_노선_생성_요청("3호선", "orange", 교대역, 남부터미널역, 2).jsonPath().getLong("id");
+        수인분당선 = 지하철_노선_생성_요청("수인분당선", "yellow", 죽전역, 보정역, 2).jsonPath().getLong("id");
 
         지하철_노선에_지하철_구간_생성_요청(삼호선, 남부터미널역, 양재역, 3);
     }
@@ -83,11 +89,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("경로 조회를 요청했을 때 출발역과 도착역이 연결되어 있지 않으면 에러 처리한다.")
     @Test
     void findShortestPathIsSourceAndTargetNotConnection() {
-        // given
-
         // when
+        var response = 최단_경로_조회(강남역, 죽전역);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -98,10 +104,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findShortestPathIsSourceNotExist() {
         // given
+        long 존재하지않는역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
 
         // when
+        var response = 최단_경로_조회(존재하지않는역, 죽전역);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -112,9 +121,12 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void findShortestPathIsTargetNotExist() {
         // given
+        long 존재하지않는역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
 
         // when
+        var response = 최단_경로_조회(강남역, 존재하지않는역);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
