@@ -3,9 +3,9 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +32,7 @@ class LineTest {
         Line line = new Line("2호선", "green", 강남역, 정자역, 10);
         line.addSection(정자역, 광교역, 15);
         List<Station> stations = line.getStations();
-        assertThat(stations).containsExactly(List.of(강남역, 정자역, 광교역));
+        assertThat(stations).containsExactly(Arrays.array(강남역, 정자역, 광교역));
     }
 
     @Test

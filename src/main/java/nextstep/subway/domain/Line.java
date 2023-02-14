@@ -64,4 +64,16 @@ public class Line {
     public void addSection(Station upStation, Station downStation, int distance) {
         add(upStation, downStation, distance);
     }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        if (sections.isEmpty()) {
+            return stations;
+        }
+        stations.add(sections.get(0).getUpStation());
+        sections.stream()
+                .map(section -> section.getDownStation())
+                .forEach(downStation -> stations.add(downStation));
+        return stations;
+    }
 }
