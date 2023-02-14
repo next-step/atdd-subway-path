@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
-    private final SectionRepository sectionRepository;
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
@@ -60,12 +59,7 @@ public class LineService {
     }
 
     public Lines findByStationIds(List<Long> stationIds) {
-        List<Section> sections = sectionRepository.findByIdStationIds(stationIds);
-
-        Set<Line> lineSet = sections.stream()
-                .map(s -> s.getLine())
-                .collect(Collectors.toSet());
-
+        Set<Line> lineSet = lineRepository.findByStationIds(stationIds);
         return Lines.from(lineSet);
     }
 }

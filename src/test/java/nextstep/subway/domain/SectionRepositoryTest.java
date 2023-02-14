@@ -4,23 +4,31 @@ import nextstep.subway.fixture.LineFixture;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
+import static nextstep.subway.fixture.LineFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Transactional
 @SpringBootTest
 class SectionRepositoryTest {
 
     @Autowired
-    private SectionRepository repository;
+    private LineRepository repository;
 
     @Test
     void findByIdStationIds() {
-        Section save1 = repository.save(LineFixture.createLineWithSection(null,null, null).getSections().getLast());
-        Section save2 = repository.save(LineFixture.createLineWithSection(null,null, null).getSections().getLast());
 
-        List<Section> sections = repository.findByIdStationIds(List.of(save1.getUpStationId(), save2.getUpStationId()));
-        assertThat(sections).hasSize(2);
+        Line line1 = repository.save(createLineWithSection(null, null, null));
+        Line line2 = repository.save(createLineWithSection(null, null, null));
+
+        Set<Line> lines = repository.findByStationIds(List.of(
+                line1.getStations().get(0).getId(),
+                line2.getStations().get(0).getId()));
+
+        assertThat(lines).hasSize(2);
     }
 }

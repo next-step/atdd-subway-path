@@ -22,11 +22,7 @@ public class Lines {
 
     public List<Section> mergeSections() {
         List<Section> result = new ArrayList<>();
-
-        for (Line line : values) {
-            line.mergeSection(result);
-        }
-
+        values.forEach(line -> line.mergeSection(result)); // 실제로는 result에 추가하는데 의미상 반대로 읽히나?
         return result;
     }
 }
