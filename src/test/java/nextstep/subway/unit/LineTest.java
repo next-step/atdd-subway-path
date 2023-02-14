@@ -6,8 +6,11 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
     private Station 강남역;
@@ -31,7 +34,7 @@ class LineTest {
         assertThat(신분당선.getSections()).containsExactly(new Section(신분당선, 강남역, 판교역, 10));
     }
 
-    @DisplayName("지하철 노선의 역 사이에 새로운 역을 등록")
+    @DisplayName("지하철 노선의 역 사이에 새로운 역을 등록한다.")
     @Test
     void addLineSectionWithinSection() {
         // given
@@ -51,7 +54,7 @@ class LineTest {
         );
     }
 
-    @DisplayName("지하철 노선의 새로운 상행 종점역 구간을 등록")
+    @DisplayName("지하철 노선의 새로운 상행 종점역 구간을 등록한다.")
     @Test
     void addLineSectionBeforeFirstStation() {
         // given
@@ -68,7 +71,44 @@ class LineTest {
         );
     }
 
-    @DisplayName("지하철 노선의 새로운 하행 종점역 구간을 등록")
+    @DisplayName("역 사이에 새로운 역 등록 시, 기존 역 사이 길이 보다 크거나 같은 경우 구간을 등록할 수 없다.")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 12})
+    void addLineSectionExceptionDistanceMoreThanExistSection(int distance) {
+        // given
+        신분당선.addSection(강남역, 판교역, 10);
+        Station 정자역 = new Station("정자역");
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선.addSection(강남역, 정자역, distance))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("등록할 구간의 역이 모두 노선에 등록된 경우, 구간을 등록할 수 없다.")
+    @Test
+    void addLineSectionExceptionAllStationInLine() {
+        // given
+        신분당선.addSection(강남역, 판교역, 10);
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선.addSection(강남역, 판교역, 3))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("등록할 구간의 역이 노선에 하나도 포함되지 않았다면, 구간을 등록할 수 없다.")
+    @Test
+    void addLineSectionExceptionNotContainsAllStation() {
+        // given
+        신분당선.addSection(강남역, 판교역, 10);
+        Station 신사역 = new Station("신사역");
+        Station 신논현역 = new Station("신논현역");
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선.addSection(신사역, 신논현역, 3))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 노선의 새로운 하행 종점역 구간을 등록한다.")
     @Test
     void addLineSectionAfterFinalStation() {
         // given
