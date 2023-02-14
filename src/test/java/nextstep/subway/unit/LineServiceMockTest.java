@@ -184,4 +184,22 @@ public class LineServiceMockTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(NOT_FOUND_STATION);
     }
+
+    @Test
+    @DisplayName("하행 종점역 삭제")
+    void removeSection_lastStation() {
+        // given
+        when(stationService.findById(3L)).thenReturn(new Station("정자역"));
+
+        lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
+        lineService.addSection(1L, new SectionRequest(3L, 2L, 6));
+
+        // when
+        lineService.deleteSection(1L, 2L);
+
+        // then
+        Line line = lineService.findLineById(1L);
+        List<Station> stations = line.getStations();
+        assertThat(stations).extracting("name").containsExactly("강남역", "정자역");
+    }
 }

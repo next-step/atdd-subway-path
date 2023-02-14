@@ -185,4 +185,22 @@ public class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(NOT_FOUND_STATION);
     }
+
+    @Test
+    @DisplayName("하행 종점역 삭제")
+    void removeSection_lastStation() {
+        // given
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(정자역.getId(), 양재역.getId(), 6));
+
+        // when
+        lineService.deleteSection(신분당선.getId(), 양재역.getId());
+
+        // then
+        Line line = lineService.findLineById(신분당선.getId());
+        List<Station> stations = line.getStations();
+        assertThat(stations).extracting("name").containsExactly("강남역", "정자역");
+    }
 }
