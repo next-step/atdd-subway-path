@@ -42,6 +42,26 @@ public class Sections {
         }
     }
 
+    public List<Station> getOrderedStations() {
+        return sections.stream().sorted()
+            .map(section -> List.of(section.getUpStation(), section.getDownStation()))
+            .flatMap(Collection::stream)
+            .distinct()
+            .collect(Collectors.toList());
+    }
+
+    public void removeLastSection(Station station) {
+        if (!isLastStation(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        this.sections.remove(sections.size() - 1);
+    }
+
+    public boolean isSectionsEmpty() {
+        return sections.isEmpty();
+    }
+
     private Section getSectionToAdd(Station requestUpStation, Station requestDownStation) {
         return sections.stream().filter(section -> {
             // 상행역 또는 하행역에 추가
@@ -59,26 +79,6 @@ public class Sections {
 
     private static boolean canAddInTheMiddleStation(Station requestUpStation, Section section) {
         return section.getUpStation().equals(requestUpStation);
-    }
-
-    public List<Station> getOrderedStations() {
-        return sections.stream().sorted()
-            .map(section -> List.of(section.getUpStation(), section.getDownStation()))
-            .flatMap(Collection::stream)
-            .distinct()
-            .collect(Collectors.toList());
-    }
-
-    public boolean isSectionsEmpty() {
-        return sections.isEmpty();
-    }
-
-    public void removeLastSection(Station station) {
-        if (!isLastStation(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        this.sections.remove(sections.size() - 1);
     }
 
     private boolean isLastStation(Station station) {
