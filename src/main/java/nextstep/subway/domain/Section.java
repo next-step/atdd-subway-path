@@ -39,13 +39,21 @@ public class Section {
         }
 
         if (distance <= 0) {
-            throw new SubwayException("역과 역 사이의 길이는 0 이상이어야 합니다.");
+            throw new SubwayException("역 사이의 길이는 0 이상이어야 합니다.");
         }
 
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static Section merge(Section upSection, Section downSection) {
+        if (upSection.downStation != downSection.upStation) {
+            throw new SubwayException(String.format("%s - %s 구간끼리 연결되어 있지 않습니다.", upSection.downStation.getName(), downSection.upStation.getName()));
+        }
+
+        return new Section(upSection.line, upSection.upStation, downSection.downStation, upSection.distance + downSection.distance);
     }
 
     public Section to(Section newSection) {
@@ -82,12 +90,8 @@ public class Section {
         return distance;
     }
 
-    public boolean isDownStationId(long stationId) {
-        return downStation.getId() == stationId;
-    }
-
-    public boolean isSameStations(Section other) {
-        return upStation == other.upStation && downStation == other.downStation;
+    public boolean hasStationId(long stationId) {
+        return upStation.getId() == stationId || downStation.getId() == stationId;
     }
 
     public boolean isSameUpStation(Section other) {

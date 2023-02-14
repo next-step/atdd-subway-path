@@ -24,6 +24,7 @@ public class Line {
     }
 
     public Line(String name, String color) {
+        validate(name, color);
         this.name = name;
         this.color = color;
     }
@@ -54,11 +55,14 @@ public class Line {
     }
 
     public void update(String name, String color) {
-        if (name == null || color == null) {
-            throw new SubwayException("노선의 이름 또는 색상은 null 이 될 수 없습니다.");
-        }
-
+        validate(name, color);
         this.name = name;
         this.color = color;
+    }
+
+    private void validate(String name, String color) {
+        if (name == null || color == null) {
+            throw new SubwayException("노선의 이름, 색상은 필수 항목입니다. null 값이 될 수 없습니다.");
+        }
     }
 }
