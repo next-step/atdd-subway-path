@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.ui.error.exception.BusinessException;
+import nextstep.subway.ui.error.exception.EntityNotFoundException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -10,6 +13,7 @@ import java.util.Collection;
 
 import static nextstep.subway.domain.validator.SectionValidator.addSectionValidator;
 import static nextstep.subway.domain.validator.SectionValidator.checkDistance;
+import static nextstep.subway.ui.error.exception.ErrorCode.*;
 
 @Embeddable
 public class Sections {
@@ -39,11 +43,31 @@ public class Sections {
 
 		sections.add(new Section(line, upStation, downStation, distance));
 	}
-	public void remove(Line line, Station oldSection) {
-		if (!sections.get(sections.size() - 1).getDownStation().equals(oldSection)) {
-			throw new IllegalArgumentException();
+	
+	public void remove(Line line, Station station) {
+
+		if (sections.size() <= 1) {
+			throw new BusinessException(SECTION_NOT_DELETE_THEN_ONE);
 		}
-		sections.remove(sections.size() - 1);
+
+		Station targetStation = getAllStations().stream()
+				.filter(station::equals)
+				.findFirst()
+				.orElseThrow(() -> new EntityNotFoundException(STATION_NOT_EXISTS));
+
+		List<Section> targetSections = line.getSections().stream()
+				.filter(section -> section.getUpStation().equals(targetStation) || section.getDownStation().equals(targetStation))
+				.collect(Collectors.toList());
+
+		if (targetSections.size() > 1) {
+			Section firstSection = targetSections.get(0);
+			Section secondSection = targetSections.get(1);
+			this.sections.add(new Section(line, firstSection.getUpStation(), secondSection.getDownStation(), firstSection.getDistance() + secondSection.getDistance()));
+			this.sections.removeIf(section -> section.equals(targetSections.get(0)) || section.equals(targetSections.get(1)));
+			return;
+		}
+
+		this.sections.removeIf(section -> section.equals(targetSections.get(0)));
 	}
 
 	public int size() {
@@ -75,5 +99,20 @@ public class Sections {
 				new Section(line, downStation, oldDownStation, oldDistance - distance),
 				new Section(line, oldUpstation, downStation, distance)
 		));
+	}
+
+	private List<Station> getAllStations() {
+		List<Station> stations = new ArrayList<>();
+
+		if (this.sections.isEmpty()) {
+			return stations;
+		}
+
+		stations.add(this.sections.get(0).getUpStation());
+		for (Section section : this.sections) {
+			stations.add(section.getDownStation());
+		}
+
+		return stations;
 	}
 }
