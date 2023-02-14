@@ -1,12 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.exception.IllegalAddSectionException;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -16,8 +11,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -30,7 +25,7 @@ public class Line {
     public Line(String name, String color, List<Section> sections) {
         this.name = name;
         this.color = color;
-        this.sections = sections;
+        this.sections = new Sections(sections);
     }
 
     public Long getId() {
@@ -58,32 +53,23 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public void addSection(Station requestUpStation, Station requestDownStation, int requestDistance) {
-        for (Section section : sections) {
-            if (section.getUpStation().equals(requestDownStation) || section.getDownStation().equals(requestUpStation)) {
-                sections.add(section.makeNext(this, requestUpStation, requestDownStation, requestDistance));
-                return;
-            }
-
-            if (section.getUpStation().equals(requestUpStation)) {
-                sections.add(section.makeNext(this, requestUpStation, requestDownStation, requestDistance));
-                section.changeUpStation(requestDownStation, requestDistance);
-                return;
-            }
-        }
-
-        throw new IllegalAddSectionException();
+        sections.addSection(this, requestUpStation, requestDownStation, requestDistance);
     }
 
     public List<Station> getStations() {
-        return sections.stream().sorted()
-            .map(section -> List.of(section.getUpStation(), section.getDownStation()))
-            .flatMap(Collection::stream)
-            .distinct()
-            .collect(Collectors.toList());
+        return sections.getOrderedStations();
+    }
+
+    public boolean isSectionsEmpty() {
+        return sections.isSectionsEmpty();
+    }
+
+    public void removeSection(Station station) {
+        sections.removeLastSection(station);
     }
 
 }
