@@ -15,6 +15,10 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    public void initSection(Section newSection){
+        sections.add(newSection);
+    }
+
     public void addSection(Section newSection){
         if(isAllStationExist(newSection.getUpStation(), newSection.getDownStation())){
             throw new IllegalArgumentException("추가하려는 구간의 상/하행역이 이미 노선에 포함되어 있습니다.");
@@ -67,7 +71,7 @@ public class Sections {
 
 
                 targetSection.updateDistance(targetSection.getDistance() - newSection.getDistance());
-                targetSection.updateUpStation(newSection.getDownStation());
+                targetSection.updateDownStation(newSection.getUpStation());
                 sections.set(sectionIndex, targetSection);
                 sections.add(sectionIndex-1, newSection);
                 return;
@@ -81,7 +85,7 @@ public class Sections {
 
 
             targetSection.updateDistance(targetSection.getDistance() - newSection.getDistance());
-            targetSection.updateDownStation(newSection.getUpStation());
+            targetSection.updateUpStation(newSection.getDownStation());
             sections.set(sectionIndex, targetSection);
             sections.add(sectionIndex, newSection);
         }
@@ -154,6 +158,7 @@ public class Sections {
     }
 
     public List<Station> getSortedStations(){
+
         Map<Station, Section> upStationMap = sections.stream().collect(Collectors.toMap(key -> key.getUpStation(), val -> val));
         Map<Station, Section> downStationMap = sections.stream().collect(Collectors.toMap(key -> key.getDownStation(), val -> val));
 

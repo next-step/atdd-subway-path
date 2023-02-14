@@ -23,6 +23,10 @@ public class Line {
         this.color = color;
     }
 
+    public void initSection(Section newSection){
+        sections.initSection(newSection);
+    }
+
     public void addSection(Section newSection){
         sections.addSection(newSection);
     }
