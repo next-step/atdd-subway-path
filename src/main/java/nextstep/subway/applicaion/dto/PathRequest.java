@@ -3,6 +3,7 @@ package nextstep.subway.applicaion.dto;
 import com.sun.istack.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import nextstep.subway.domain.Station;
 
 import java.util.List;
 
@@ -26,5 +27,13 @@ public class PathRequest {
 
     public List<Long> toStationIds() {
         return List.of(source, target);
+    }
+
+    public Station getSourceStation() {
+        return new Station(source);
+    }
+
+    public Station getTargetStation() {
+        return new Station(target);
     }
 }

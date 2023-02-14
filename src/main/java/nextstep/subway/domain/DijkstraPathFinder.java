@@ -13,24 +13,37 @@ public class DijkstraPathFinder implements PathFinder {
 
     @Override
     public Path searchShortestPath(PathRequest pathRequest, List<Section> sections) {
+        GraphPath graphPath = createGraphPath(pathRequest, createWeightedMultigraph(sections));
 
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        return Path.of(
+                graphPath.getVertexList(),
+                (int) graphPath.getWeight());
+    }
 
+    private WeightedMultigraph<Station, DefaultWeightedEdge> createWeightedMultigraph(List<Section> sections) {
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        addVertex(sections, graph);
+        addEdgeWight(sections, graph);
+        return graph;
+    }
+
+    private void addEdgeWight(List<Section> sections, WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+        sections.stream()
+                .forEach(s -> graph.setEdgeWeight(graph.addEdge(s.getUpStation(), s.getDownStation()), s.getDistance()));
+    }
+
+    private void addVertex(List<Section> sections, WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
         sections.stream()
                 .flatMap(s -> List.of(s.getUpStation(), s.getDownStation()).stream())
                 .distinct()
                 .collect(Collectors.toList())
-                .forEach(s -> graph.addVertex(s));
+                .forEach(graph::addVertex);
+    }
 
-        sections.stream()
-                .forEach(s -> graph.setEdgeWeight(graph.addEdge(s.getUpStation(), s.getDownStation()), s.getDistance()));
-
+    private GraphPath createGraphPath(PathRequest pathRequest, WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        GraphPath graphPath = dijkstraShortestPath.getPath(new Station(pathRequest.getSource()), new Station(pathRequest.getTarget()));
-
-        List<Station> shortestPath = graphPath.getVertexList();
-        int distance = (int) graphPath.getWeight();
-
-        return Path.of(shortestPath, distance);
+        return dijkstraShortestPath.getPath(
+                pathRequest.getSourceStation(),
+                pathRequest.getTargetStation());
     }
 }
