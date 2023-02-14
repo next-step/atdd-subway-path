@@ -10,8 +10,6 @@ public class RemoveHeadSectionStrategy implements SectionsRemoveStrategy {
 
     @Override
     public void remove(Sections sections, Station station) {
-
-        Optional<Section> frontSection = sections.findSectionOnDownStation(station);
         Optional<Section> backSection = sections.findSectionOnUpStation(station);
 
         Section headSection = backSection.get();
