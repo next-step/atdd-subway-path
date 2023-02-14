@@ -6,6 +6,7 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -18,18 +19,29 @@ public class SubwayMap {
 
     public static SubwayMap of(List<Station> stations, List<Section> sections) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        stations.forEach(graph::addVertex);
-        sections.forEach(section
-                -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation())
-                , section.getDistance()));
+
+        setVertex(graph, stations);
+        setEdge(graph, sections);
 
         return new SubwayMap(graph);
 
     }
 
+    private static void setVertex(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Station> stations) {
+        for (Station station : stations) {
+            graph.addVertex(station);
+        }
+    }
+
+    private static void setEdge(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Section> sections) {
+        for (Section section : sections) {
+            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+        }
+    }
+
     public SubwayPath findShortestPath(Station source, Station target) {
 
-        if(source.equals(target)){
+        if (source.equals(target)) {
             throw new SubwayException(SubwayExceptionMessage.PATH_CANNOT_FIND);
         }
 
@@ -43,6 +55,6 @@ public class SubwayMap {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         return Optional
                 .ofNullable(dijkstraShortestPath.getPath(source, target))
-                .orElseThrow(()-> new SubwayException(SubwayExceptionMessage.PATH_CANNOT_FIND));
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.PATH_CANNOT_FIND));
     }
 }
