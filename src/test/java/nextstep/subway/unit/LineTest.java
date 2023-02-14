@@ -164,7 +164,7 @@ class LineTest {
 
         line.removeStation(secondStation);
         List<String> names = line.getStations().stream().map(Station::getName).collect(Collectors.toList());
-        assertThat(names).containsExactly(firstStation.getName(), secondStation.getName());
+        assertThat(names).containsExactly(firstStation.getName(), lastStation.getName());
     }
 
     @Test
@@ -183,7 +183,7 @@ class LineTest {
         line.addSections(section);
 
         assertThatThrownBy(() -> line.removeStation(new Station("없는역")))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(ErrorMessage.NOT_CONNECT_STATION.toString());
     }
 }

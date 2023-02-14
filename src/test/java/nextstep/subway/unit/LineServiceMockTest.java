@@ -80,9 +80,12 @@ public class LineServiceMockTest {
         line.addSections(new Section(line, firstStation, secondStation, 10));
         line.addSections(new Section(line, secondStation, thirdStation, 10));
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
+        when(stationService.findById(any())).thenReturn(thirdStation);
+        when(stationService.createStationResponse(firstStation)).thenReturn(new StationResponse(1L, "강남역"));
+        when(stationService.createStationResponse(secondStation)).thenReturn(new StationResponse(2L, "양재역"));
 
         lineService.deleteSection(line.getId(), thirdStation.getId());
-        LineResponse response = lineService.findById(line.getId());
+        LineResponse response = lineService.findById(1L);
         List<String> names = response.getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
 
         assertThat(names).containsExactly("강남역", "양재역");

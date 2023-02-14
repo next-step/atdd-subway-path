@@ -66,12 +66,14 @@ public class LineServiceTest {
     @Test
     void removeSection() {
         Station thirdStation = new Station("청계산역");
+        stationRepository.save(thirdStation);
+
         line.addSections(new Section(line, firstStation, secondStation, 10));
         line.addSections(new Section(line, secondStation, thirdStation, 10));
 
         lineService.deleteSection(line.getId(), thirdStation.getId());
 
         List<String> names = lineService.findById(line.getId()).getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
-        assertThat(names).containsExactly("강남역", "양재역");
+        assertThat(names).containsExactly("강남역", "판교역");
     }
 }

@@ -37,6 +37,11 @@ public class SectionCollection {
     public boolean isEmpty() {
         return sections.isEmpty();
     }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public void addSectionCollection(Section section) {
         addValidation(section);
         AddSectionFactory addSectionFactory = new AddSectionFactory();
@@ -132,7 +137,7 @@ public class SectionCollection {
             throw new IllegalStateException(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
         }
         if (upSection.isEmpty() && downSection.isEmpty()) {
-            throw new IllegalArgumentException(ErrorMessage.ENOUGH_REMOVE_DOWN.toString());
+            throw new IllegalArgumentException(ErrorMessage.NOT_CONNECT_STATION.toString());
         }
     }
 }
