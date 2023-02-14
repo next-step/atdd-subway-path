@@ -3,7 +3,6 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.springframework.http.HttpStatus;
 
 public class PathSteps {
     
@@ -13,7 +12,6 @@ public class PathSteps {
                 .when()
                 .get("paths?source={source}&target={target}", source, target)
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
                 .extract();
     }
 }

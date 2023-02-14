@@ -3,12 +3,15 @@ package nextstep.subway.acceptance;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.PathAcceptanceAssert.최단_경로_조회_검증;
+import static nextstep.subway.acceptance.PathSteps.최단_경로_조회;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 @DisplayName("경로 조회 관련 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -68,11 +71,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("경로 조회를 요청했을 때 출발역과 도착역이 일치하면 에러 처리한다.")
     @Test
     void findShortestPathIsSourceAndTargetEqual() {
-        // given
+        var response = 최단_경로_조회(강남역, 강남역);
 
-        // when
-
-        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
