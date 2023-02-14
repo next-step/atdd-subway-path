@@ -79,7 +79,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
         assertThat(ids).containsExactly(교대역, 남부터미널역, 양재역);
-        
+
         // 거릭 검증
         int distance = response.jsonPath().getInt("distance");
         assertThat(distance).isEqualTo(5);
@@ -107,7 +107,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void findPathException2() {
         ExtractableResponse<Response> response = 지하철_경로_조회_요청(교대역, 상도역);
 
-        응답_성공_검증(response);
+        응답_실패_검증(response);
     }
 
     /**
@@ -119,6 +119,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void findPathException3() {
         ExtractableResponse<Response> response = 지하철_경로_조회_요청(교대역, 상도역);
 
-        응답_성공_검증(response);
+        응답_실패_검증(response);
     }
 }

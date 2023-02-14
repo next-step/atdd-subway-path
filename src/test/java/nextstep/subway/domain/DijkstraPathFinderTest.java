@@ -6,6 +6,7 @@ import nextstep.subway.fixture.LineFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -92,7 +93,7 @@ class DijkstraPathFinderTest {
         PathFinder finder = new DijkstraPathFinder();
 
         //when & then
-        assertThatThrownBy(() -> finder.searchShortestPath(pathRequest, sectionList))
+        assertThatThrownBy(() -> finder.searchShortestPath(pathRequest, new ArrayList<>()))
                 .isInstanceOf(CanNotFindShortestPathException.class);
     }
 }
