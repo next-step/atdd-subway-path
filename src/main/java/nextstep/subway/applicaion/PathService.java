@@ -8,19 +8,17 @@ import nextstep.subway.domain.PathFinder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class PathService {
 
     private final LineService lineService;
+    private final PathFinder pathFinder;
 
     public Path findShortestPath(PathRequest request) {
         Lines lines = lineService.findByStationIds(request.toStationIds());
-        PathFinder pathFinder = lines.toPathFinder();
-        return pathFinder.findShortest(lines);
+        return pathFinder.searchShortestPath(lines.mergeSections());
     }
 }
 

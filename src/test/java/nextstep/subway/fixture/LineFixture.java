@@ -11,11 +11,19 @@ import static nextstep.subway.fixture.SectionFixture.createSection;
 public class LineFixture {
 
     public static Line createLine() {
-        return Line.of("이름", "색깔");
+        return createLine(0L);
     }
 
-    public static Line createLine(Long upStationId, Long downStationId) {
-        Line line = createLine();
+    public static Line createLine(Long id) {
+        return Line.of(id, "이름", "색깔");
+    }
+
+    public static Line createLineWithSection(Long upStationId, Long downStationId) {
+        return createLineWithSection(0L, upStationId, downStationId);
+    }
+
+    public static Line createLineWithSection(Long lindId, Long upStationId, Long downStationId) {
+        Line line = createLine(lindId);
         Section section = createSection(upStationId, downStationId);
         line.addSection(section);
         return line;

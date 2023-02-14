@@ -4,7 +4,9 @@ import lombok.*;
 import nextstep.subway.exception.AlreadyAddedLineException;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ToString
 @Getter
@@ -106,5 +108,13 @@ public class Section {
 
     public boolean isLast(int size) {
         return orderSeq == size - 1;
+    }
+
+    public void merge(List<Section> list) {
+        list.addAll(copy(list));
+    }
+
+    private List<Section> copy(List<Section> list) {
+        return list.stream().collect(Collectors.toList());
     }
 }

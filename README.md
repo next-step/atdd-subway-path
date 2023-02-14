@@ -89,22 +89,9 @@
 ### 기능 상세 구현
 
 1. 출발/도착역 아이디로 노선을 모두 조회 하고
-    - `Lines.from(Set<Line>)`
-    - 같은 같은 노선의 경로를 조회하면 List로 조회시 중복값이 생길수 있기때문에 Set으로 조회한다
-2. PathFinder를 초기화한다
-    - `PathFinder = PathFinder.from(PathStrategy)`
-    - 알고리즘은 변경될수 있으므로 외부에서 주입받는다
-2. PathFinder로 최단경로를 구한다.
-    - `Path = PathFinder.findShortest(Lines)`
-
-    1. Line의 Sections를 합친다 -> `Sections = Lines.mergeSection()`
-        - 내부적으로 `Sections = sections.merge(sections)` 처리
-    2. PathStrategy 값을 입력한다
-        - `strategy.init(sections)` 실행
-           - 내부에서 `sections.initGraph(strategy)` 호출해 `strategy` 에 정보를 입력한다.
-             - Q.그래프에 구간을 넣는데 구간의 값을 노출하지 않기위해 sections의 인자로 전략를 넘기고 있어 가독성이 떨어지지 않을까?
-           - `strategy.add(section)` 호출
-3. 컨트롤러에서 Path를 PathResponse로 변환후 리턴
+2. 조회한 구간을 하나로 합치고
+3. 최단거리탐색기에 구간을 전달해 최단거리 정보를 구한다
+4. 컨트롤러에서 최단거리 정보를 응답 객체로 변환해 리턴
 
 ### 예외 처리
 

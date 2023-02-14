@@ -3,8 +3,11 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
-import java.util.HashSet;
+import javax.smartcardio.TerminalFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Lines {
@@ -15,11 +18,17 @@ public class Lines {
         return new Lines(lineSet);
     }
 
-    public PathFinder toPathFinder() {
-        throw new UnsupportedOperationException();
-    }
-
     public int size() {
         return values.size();
+    }
+
+    public List<Section> mergeSections() {
+        List<Section> result = new ArrayList<>();
+
+        for (Section section : result) {
+            section.merge(result);
+        }
+
+        return result;
     }
 }
