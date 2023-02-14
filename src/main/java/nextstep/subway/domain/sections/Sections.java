@@ -19,6 +19,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import nextstep.subway.domain.sections.strategy.ChangeableSections;
 import nextstep.subway.domain.sections.strategy.SectionAddStrategies;
 
@@ -26,7 +27,8 @@ import nextstep.subway.domain.sections.strategy.SectionAddStrategies;
 public class Sections {
     private static final String BOTH_STATIONS_REGISTERED_EXCEPTION_MESSAGE = "상/하행역이 이미 노선에 모두 등록되어 있습니다.";
     private static final String NONE_OF_STATIONS_EXIST_IN_LINE_EXCEPTION_MESSAGE = "상/하행역 모두 노선에 존재하지 않습니다.";
-
+    private static final String MINIMUM_SECTIONS_REQUIRED_EXCEPTION_MESSAGE = "2개 이상의 구간이 존재할 경우에 한해서 삭제가 가능합니다.";
+    private static final String NOT_EXISTING_DOWN_STATION_EXCEPTION_MESSAGE = "해당 역이 하행역으로 존재하는 구간이 존재하지 않습니다.";
     private static final SectionAddStrategies sectionAddStrategies = new SectionAddStrategies();
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -48,11 +50,19 @@ public class Sections {
     }
 
     public void deleteSection(Long stationId) {
-        if (!isDownMostStation(stationId)) {
-            throw new IllegalArgumentException();
-        }
+        validateDeleteSection(stationId);
 
         sections.removeIf(section -> section.isSameDownStation(stationId));
+    }
+
+    private void validateDeleteSection(Long stationId) {
+        if (sections.size() <= 1) {
+            throw new CannotDeleteSectionException(MINIMUM_SECTIONS_REQUIRED_EXCEPTION_MESSAGE);
+        }
+
+        if (sections.stream().noneMatch(section -> section.isSameDownStation(stationId))) {
+            throw new CannotDeleteSectionException(NOT_EXISTING_DOWN_STATION_EXCEPTION_MESSAGE);
+        }
     }
 
     private boolean isDownMostStation(Long stationId) {

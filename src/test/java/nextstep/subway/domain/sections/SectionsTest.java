@@ -17,6 +17,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import nextstep.subway.unit.Fixtures;
 
 class SectionsTest {
@@ -108,11 +109,22 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("노선의 마지막 역이 포함되지 않은 구간을 제거할시, 예외를 던진다.")
-    void deleteInvalidSection() {
+    @DisplayName("노선에 속한 구간이 2개 이상이 아닐 경우 삭제 시도 시 예외를 던진다.")
+    void deleteSectionWhenLineHasLessThanTwoSections() {
+        // given
+        sections.deleteSection(Fixtures.미금역.getId());
+
         // then
         assertThatThrownBy(() -> sections.deleteSection(Fixtures.정자역.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(CannotDeleteSectionException.class);
+    }
+
+    @Test
+    @DisplayName("노선에 속하지 않는 하행역을 삭제하려 할 경우 예외를 던진다.")
+    void deleteNonExistingDownStation() {
+        // then
+        assertThatThrownBy(() -> sections.deleteSection(Fixtures.광교역.getId()))
+            .isInstanceOf(CannotDeleteSectionException.class);
     }
 
     @Test
