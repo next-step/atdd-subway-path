@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Collection;
 import java.util.List;
+import nextstep.subway.domain.exception.PathFindException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -32,6 +33,18 @@ public class Path {
     }
 
     public GraphPath find(final Station source, final Station target) {
-        return path.getPath(source, target);
+        try {
+            GraphPath result = path.getPath(source, target);
+            validateFindPathSuccess(result);
+            return result;
+        } catch (Exception e) {
+            throw new PathFindException();
+        }
+    }
+
+    private static void validateFindPathSuccess(final GraphPath graphPath) {
+        if (graphPath == null) {
+            throw new PathFindException();
+        }
     }
 }
