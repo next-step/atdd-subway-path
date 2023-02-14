@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class PathResponse {
-    private List<PathStationResponse> stations = new ArrayList<>();
+    private final List<PathStationResponse> stations = new ArrayList<>();
     private Long distance;
 
     public PathResponse(List<PathStationResponse> stations, Long distance) {

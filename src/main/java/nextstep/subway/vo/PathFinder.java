@@ -14,8 +14,8 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public class PathFinder {
-    private WeightedMultigraph<Station, DefaultWeightedEdge> graph;
-    private DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
+    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+    private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
     public PathFinder(List<Station> stations, List<Section> sections) {
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
