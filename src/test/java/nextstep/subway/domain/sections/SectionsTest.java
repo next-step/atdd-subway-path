@@ -148,7 +148,7 @@ class SectionsTest {
     @DisplayName("노선의 최상행역을 삭제하려 할 경우 예외를 던진다.")
     void deleteUpmostStation() {
         // then
-        assertThatThrownBy(() -> sections.deleteSection(Fixtures.정자역.getId(), line))
+        assertThatThrownBy(() -> sections.deleteSection(Fixtures.판교역.getId(), line))
             .isInstanceOf(CannotDeleteSectionException.class);
     }
 
