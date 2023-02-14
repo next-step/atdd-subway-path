@@ -19,24 +19,26 @@ public class Sections {
         Optional<Section> middleSection = sections.stream()
                 .filter(s -> s.getUpStation().equals(upStation))
                 .findAny();
-
         if (middleSection.isPresent()) {
             Section section = middleSection.get();
             validateSectionDistance(distance, section);
+            int pos = sections.indexOf(section);
             sections.remove(section);
-            sections.add(new Section(
+            sections.add(pos, new Section(
                     line,
                     upStation,
                     downStation,
-                    distance)
+                    distance
+                    )
             );
-            sections.add(new Section(
+            sections.add(pos,new Section(
                     line,
                     downStation,
                     section.getDownStation(),
-                    section.getDistance() - distance)
+                    section.getDistance() - distance
+                    )
             );
-            return;
+            return ;
         }
         sections.add(new Section(
                 line,
@@ -77,5 +79,9 @@ public class Sections {
     }
     public Section getLastSection() {
         return sections.get(sections.size()-1);
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

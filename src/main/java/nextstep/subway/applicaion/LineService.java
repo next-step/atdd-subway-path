@@ -1,9 +1,6 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -78,14 +75,29 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                createStationResponses(line)
+                createStationResponses(line),
+                createSectionsResponse(line)
         );
+    }
+
+    private List<SectionResponse> createSectionsResponse(Line line) {
+        return line.getSections().stream()
+                .map(it -> createSectionResponse(it))
+                .collect(Collectors.toList());
     }
 
     private List<StationResponse> createStationResponses(Line line) {
         return line.getStations().stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
+    }
+
+    private SectionResponse createSectionResponse(Section section) {
+        return new SectionResponse(
+                section.getUpStation().getId(),
+                section.getDownStation().getId(),
+                section.getDistance()
+        );
     }
 
     @Transactional

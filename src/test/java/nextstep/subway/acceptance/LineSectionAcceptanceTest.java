@@ -66,7 +66,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //Then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        List<Long> distances = response.jsonPath().getList("sections.id", Long.class);
+        List<Long> distances = response.jsonPath().getList("sections.distance", Long.class);
         assertThat(distances).containsExactly(6L, 4L);
     }
 
