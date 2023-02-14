@@ -1,51 +1,101 @@
-package nextstep.subway.unit;
+package nextstep.subway.domain;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.DuplicateAddSectionException;
 import nextstep.subway.domain.exception.IllegalAddSectionException;
 import nextstep.subway.domain.exception.IllegalDistanceSectionException;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-class LineTest {
+class SectionsTest {
 
-    private Line line;
-    Station 양재역 = new Station("양재역");
-    Station 강남역 = new Station("강남역");
+    private Sections givenSections;
+    private Section givenSection;
+    private Station 양재역;
+    private Station 강남역;
+    private Line 신분당선;
 
     @BeforeEach
     void setUp() {
-        List<Section> sections = new ArrayList<>();
-        sections.add(new Section(line, 강남역, 양재역, 10));
+        강남역 = new Station("강남역");
+        양재역 = new Station("양재역");
+        신분당선 = new Line("신분당선", "red");
+        givenSection = new Section(신분당선, 강남역, 양재역, 10);
+        givenSections = new Sections(Lists.newArrayList(givenSection));
+    }
 
-        line = new Line("신분당선", "red", sections);
+    /**
+     * When 역 제거 요청 시
+     * Then 제거가 된다
+     */
+    @DisplayName("역 제거 요청 시 구간이 제거가 된다")
+    @Test
+    void 역_제거_요청_시_구간이_제거가_된다() {
+        // When
+        givenSections.removeLastSection(양재역);
+
+        // Then
+        assertThat(givenSections.isSectionsEmpty()).isTrue();
+    }
+
+    /**
+     * When 마지막 구간이 아닌데 구간 제거 요청 시
+     * Then 제거가 안된다
+     */
+    @DisplayName("마지막 구간이 아닌데 구간 제거 요청 시 제거가 안된다")
+    @Test
+    void 마지막_구간이_아닌데_구간_제거_요청_시_제거가_안된다() {
+        // When
+        assertThatThrownBy(() -> givenSections.removeLastSection(강남역))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    /**
+     * When & Then 구간이 있는지 없는지 확인 할 수 있다
+     */
+    @DisplayName("구간이 있는지 없는지 확인 할 수 있다")
+    @Test
+    void 구간이_있는지_없는지_확인_할_수_있다() {
+        // When
+        assertThat(givenSections.isSectionsEmpty()).isFalse();
+    }
+
+    /**
+     * When 구간에 역들을 조회 시
+     * Then 상행역 부터 조회가 된다
+     */
+    @DisplayName("구간에 역들을 조회 시 상행역 부터 조회가 된다")
+    @Test
+    void 구간에_역들을_조회_시_상행역_부터_조회가_된다() {
+        // When
+        List<Station> stations = givenSections.getOrderedStations();
+
+        // Then
+        assertThat(stations).containsExactly(강남역, 양재역);
     }
 
     /**
      * Given 새로운 역을 추가 후
-     * When 기존 구간 맨 앞에 새로운 구간을 추가 시
+     * When 기존 구간 상행역에 구간을 추가 요청 시
      * Then 추가가 된다.
      */
-    @DisplayName("기존 구간 맨 앞에 구간 추가 시 구간이 추가가 된다")
+    @DisplayName("새로운 역을 추가 후 기존 구간 상행역에 구간을 추가 요청 시 추가가 된다")
     @Test
-    void 기존_구간_맨_앞에_구간_추가_시_구간이_추가가_된다() {
+    void 새로운_역을_추가_후_기존_구간_상행역에_구간을_추가_요청_시_추가가_된다() {
         // Given
         Station 논현역 = new Station("논현역");
 
         // When
-        line.addSection(논현역, 강남역, 7);
+        givenSections.addSection(신분당선, 논현역, 강남역, 7);
 
         // Then
-        List<Section> sections = line.getSections();
+        List<Section> sections = givenSections.getSections();
         assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
         assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
         assertThat(sections.get(0).getDistance()).isEqualTo(10);
@@ -67,10 +117,10 @@ class LineTest {
         Station 새로운역 = new Station("새로운역");
 
         // When
-        line.addSection(강남역, 새로운역, 4);
+        givenSections.addSection(신분당선, 강남역, 새로운역, 4);
 
         // Then
-        List<Section> sections = line.getSections();
+        List<Section> sections = givenSections.getSections();
         assertThat(sections.get(0).getUpStation()).isEqualTo(새로운역);
         assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
         assertThat(sections.get(0).getDistance()).isEqualTo(6);
@@ -91,10 +141,10 @@ class LineTest {
         Station 판교역 = new Station("판교역");
 
         // When
-        line.addSection(양재역, 판교역, 4);
+        givenSections.addSection(신분당선, 양재역, 판교역, 4);
 
         // Then
-        List<Section> sections = line.getSections();
+        List<Section> sections = givenSections.getSections();
         assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
         assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
         assertThat(sections.get(0).getDistance()).isEqualTo(10);
@@ -111,7 +161,7 @@ class LineTest {
     @Test
     void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
         // When && Then
-        assertThatThrownBy(() -> line.addSection(강남역, 양재역, 4))
+        assertThatThrownBy(() -> givenSections.addSection(신분당선, 강남역, 양재역, 4))
             .isInstanceOf(DuplicateAddSectionException.class);
     }
 
@@ -126,7 +176,7 @@ class LineTest {
         Station 판교역 = new Station("판교역");
 
         // When && Then
-        assertThatThrownBy(() -> line.addSection(강남역, 판교역, 10))
+        assertThatThrownBy(() -> givenSections.addSection(신분당선, 강남역, 판교역, 10))
             .isInstanceOf(IllegalDistanceSectionException.class);
     }
 
@@ -142,7 +192,7 @@ class LineTest {
         Station 수지구청역 = new Station("수지구청역");
 
         // When && Then
-        assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10))
+        assertThatThrownBy(() -> givenSections.addSection(신분당선, 수지구청역, 판교역, 10))
             .isInstanceOf(IllegalAddSectionException.class);
     }
 
@@ -158,24 +208,8 @@ class LineTest {
         Station 판교역 = new Station("판교역");
 
         // When && Then
-        assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10))
+        assertThatThrownBy(() -> givenSections.addSection(신분당선, 수지구청역, 판교역, 10))
             .isInstanceOf(IllegalAddSectionException.class);
-    }
-
-    // When 라인에 해당하는 역들을 요청 시
-    // Then 상행역 부터 역들이 조회가 된다
-    @DisplayName("라인에 해당하는 역들을 요청 시 상행역 부터 역들이 조회가 된다")
-    @Test
-    void 라인에_해당하는_역들을_요청_시_상행역_부터_역들이_조회가_된다() {
-        // When
-        List<Station> stations = line.getStations();
-
-        // Then
-        assertThat(stations).containsExactly(강남역, 양재역);
-    }
-
-    @Test
-    void removeSection() {
     }
 
 }

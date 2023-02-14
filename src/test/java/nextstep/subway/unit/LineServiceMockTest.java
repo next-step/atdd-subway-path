@@ -23,6 +23,6 @@ public class LineServiceMockTest {
         // lineService.addSection 호출
 
         // then
-        // line.findLineById 메서드를 통해 검증
+        // lineService.findLineById 메서드를 통해 검증
     }
 }
