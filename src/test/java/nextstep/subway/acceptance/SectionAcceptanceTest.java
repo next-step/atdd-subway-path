@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
@@ -15,6 +16,8 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요�
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.utils.AssertionUtils.목록은_다음을_순서대로_포함한다;
+import static nextstep.subway.utils.AssertionUtils.응답코드_200을_반환한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
@@ -56,15 +59,29 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * given:
-     * when :
-     * then :
+     * given: 지하철 노선의 상행 종점역을 하행역으로 갖는 구간을 만들고
+     * when : 지하철 노선에 구간 추가 요청을 하면
+     * then : 노선에 새로운 구간이 추가되고
+     * then : 역 목록 조회시 추가된 역이 순서대로 조회된다.
      */
     @DisplayName("지하철 노선에 새로운 역을 상행 종점역으로 갖는 구간을 등록한다")
     @Test
     void addFirstSection() {
+        // given
+        Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createLineCreateParams(신논현역, 강남역));
 
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+
+        // then
+        응답코드_200을_반환한다(response);
+
+        final List<Long> 조회된_역_목록 = response.jsonPath().getList("stations.id", Long.class);
+        목록은_다음을_순서대로_포함한다(조회된_역_목록, 신논현역, 강남역, 양재역);
     }
+
+
 
     /**
      * given:
