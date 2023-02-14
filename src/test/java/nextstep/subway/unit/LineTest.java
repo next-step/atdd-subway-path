@@ -3,10 +3,10 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.LineMinimumSectionException;
 import nextstep.subway.exception.SectionAlreadyCreateStationException;
 import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
 import nextstep.subway.exception.SectionInsertDistanceTooLargeException;
-import nextstep.subway.exception.SectionUpStationNotMatchException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,6 +24,7 @@ class LineTest {
 
     private Station 강남역;
     private Station 양재역;
+    private Station 양재시민의숲역;
 
     private Section 강남_양재_구간;
 
@@ -36,8 +37,11 @@ class LineTest {
 
         강남역 = new Station("강남역");
         양재역 = new Station("양재역");
+        양재시민의숲역 = new Station("양재시민의숲역");
+
         injectId(강남역, 1L);
         injectId(양재역, 2L);
+        injectId(양재시민의숲역, 4L);
 
 
         강남_양재_구간 = new Section(신분당선, 강남역, 양재역, distance);
@@ -63,7 +67,7 @@ class LineTest {
         신분당선.addSection(강남_양재_구간);
 
         // then
-        assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(강남_양재_구간));
+        노선에_구간이_포함되는지_검증(신분당선, List.of(강남_양재_구간));
     }
 
     @Test
@@ -71,15 +75,13 @@ class LineTest {
     void addSectionForLineHasSection() {
         // given
         신분당선.addSection(강남_양재_구간);
-        Station 양재시민의숲역 = new Station("양재시민의숲역");
-        injectId(양재시민의숲역, 4L);
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
 
         // when
         신분당선.addSection(양재_양재시민의숲_구간);
 
         // then
-        assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(강남_양재_구간, 양재_양재시민의숲_구간));
+        노선에_구간이_포함되는지_검증(신분당선, List.of(강남_양재_구간, 양재_양재시민의숲_구간));
     }
 
     @Test
@@ -88,16 +90,13 @@ class LineTest {
         // given
         신분당선.addSection(강남_양재_구간);
 
-        Station 양재시민의숲역 = new Station("양재시민의숲역");
-        injectId(양재시민의숲역, 4L);
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
         injectId(양재_양재시민의숲_구간, 3L);
         신분당선.addSection(양재_양재시민의숲_구간);
 
         // when, then
         Section 강남_양재시민의숲_구간 = new Section(신분당선, 강남역, 양재시민의숲역, distance);
-        assertThatThrownBy(() -> 신분당선.addSection(강남_양재시민의숲_구간))
-                .isInstanceOf(SectionAlreadyCreateStationException.class);
+        노선에_구간의역이_모두_등록되어있다면_예외(신분당선, 강남_양재시민의숲_구간);
     }
 
     @Test
@@ -113,8 +112,7 @@ class LineTest {
         injectId(등록안된_역_구간, 3L);
 
         // when, then
-        assertThatThrownBy(() -> 신분당선.addSection(등록안된_역_구간))
-                .isInstanceOf(SectionDoesNotHaveAlreadyCreateStationException.class);
+        노선에_구간의역이_존재하지않는다면_예외(신분당선, 등록안된_역_구간);
     }
 
     @Test
@@ -130,22 +128,19 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("Section을 하나만 가지고 있는 Line 삭제 테스트")
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때 예외발생")
     void removeSectionLineHasOneSection() {
         // given
         신분당선.getSections().add(강남_양재_구간);
 
-        // when
-        신분당선.removeSection(양재역);
-
         // then
-        List<Station> 신분당선_지하철 = 신분당선.getStations();
-        assertThat(신분당선_지하철).containsExactlyElementsOf(List.of());
+        assertThatThrownBy(() -> 신분당선.removeSection(양재역))
+                .isInstanceOf(LineMinimumSectionException.class);
     }
 
     @Test
-    @DisplayName("Section을 하나이상 가지고 있는 Line 삭제 테스트")
-    void removeSection() {
+    @DisplayName("Section을 하나이상 가지고 있는 Line 삭제 테스트 (종점삭제)")
+    void removeLastSection() {
         // given
         Station 양재시민의숲역 = new Station("양재시민의숲역");
         injectId(양재시민의숲역, 4L);
@@ -162,6 +157,50 @@ class LineTest {
         SoftAssertions.assertSoftly(softAssertions -> {
             softAssertions.assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(강남_양재_구간));
             softAssertions.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(강남역, 양재역));
+        });
+    }
+
+    @Test
+    @DisplayName("Section을 하나이상 가지고 있는 Line 삭제 테스트 (기점삭제)")
+    void removeFirstSection() {
+        // given
+        Station 양재시민의숲역 = new Station("양재시민의숲역");
+        injectId(양재시민의숲역, 4L);
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
+
+        신분당선.addSection(강남_양재_구간);
+        신분당선.addSection(양재_양재시민의숲_구간);
+
+        // when
+        신분당선.removeSection(강남역);
+
+        // then
+        List<Station> 신분당선_지하철 = 신분당선.getStations();
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(신분당선.getSections()).containsExactlyElementsOf(List.of(양재_양재시민의숲_구간));
+            softAssertions.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(양재역, 양재시민의숲역));
+        });
+    }
+
+    @Test
+    @DisplayName("노선이 가지고 있는 중간구간 삭제 테스트")
+    void removeMidSection() {
+        // given
+        Station 양재시민의숲역 = new Station("양재시민의숲역");
+        injectId(양재시민의숲역, 4L);
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, 15);
+
+        신분당선.addSection(강남_양재_구간);
+        신분당선.addSection(양재_양재시민의숲_구간);
+
+        // when
+        신분당선.removeSection(양재역);
+
+        // then
+        List<Station> 신분당선_지하철 = 신분당선.getStations();
+        SoftAssertions.assertSoftly(sa -> {
+            sa.assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(강남_양재_구간.getDistance() + 양재_양재시민의숲_구간.getDistance());
+            sa.assertThat(신분당선_지하철).containsExactlyElementsOf(List.of(강남역, 양재시민의숲역));
         });
     }
 
@@ -204,7 +243,25 @@ class LineTest {
 
         // when
         // then
-        assertThatThrownBy(() -> 신분당선.addSection(강남_양재_구간))
+        새구간의_거리가_기존구간보다_크면_예외(신분당선, 강남_양재_구간);
+    }
+
+    private void 노선에_구간이_포함되는지_검증(Line 노선, List<Section> 구간들) {
+        assertThat(노선.getSections()).containsExactlyElementsOf(구간들);
+    }
+
+    private void 노선에_구간의역이_모두_등록되어있다면_예외(Line 노선, Section 구간) {
+        assertThatThrownBy(() -> 노선.addSection(구간))
+                .isInstanceOf(SectionAlreadyCreateStationException.class);
+    }
+
+    private void 노선에_구간의역이_존재하지않는다면_예외(Line 노선, Section 구간) {
+        assertThatThrownBy(() -> 노선.addSection(구간))
+                .isInstanceOf(SectionDoesNotHaveAlreadyCreateStationException.class);
+    }
+
+    private void 새구간의_거리가_기존구간보다_크면_예외(Line 노선, Section 구간) {
+        assertThatThrownBy(() -> 노선.addSection(구간))
                 .isInstanceOf(SectionInsertDistanceTooLargeException.class);
     }
 }
