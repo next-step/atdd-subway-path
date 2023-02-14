@@ -37,10 +37,9 @@ public class SectionService {
 	}
 
 	@Transactional
-	public void deleteSectionById(Long lineId, Long downStationId) {
-		Line line = lineRepository.findById(lineId).orElseThrow(() -> new NullPointerException("Line doesn't exist"));
-		Section findSection = sectionRepository.findByDownStation_Id(downStationId);
-
-		line.removeSection(findSection.getDownStation());
+	public void deleteSectionById(Long lineId, Long stationId) {
+		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new NullPointerException("Line doesn't exist"));
+		Station deleteStation = stationRepository.findById(stationId).orElseThrow(() -> new NullPointerException("Station doesn't exist"));
+		findLine.removeSection(deleteStation);
 	}
 }

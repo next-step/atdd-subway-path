@@ -22,4 +22,16 @@ public class SectionSteps {
 
 		return response;
 	}
+
+	public static ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
+		ExtractableResponse<Response> response = RestAssured
+			.given().log().all()
+			.param("stationId", stationId)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().delete("/lines/{id}/sections", lineId)
+			.then().log().all()
+			.extract();
+
+		return response;
+	}
 }

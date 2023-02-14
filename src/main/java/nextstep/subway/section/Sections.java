@@ -61,6 +61,12 @@ public class Sections {
 			.findFirst().orElse(null);
 	}
 
+	private Section findByDownStation(Station downStation) {
+		return this.sections.stream()
+			.filter(s -> s.getDownStation().equals(downStation))
+			.findFirst().orElse(null);
+	}
+
 	private void reRegisterSection(Section oldSection, Section newSection) {
 		checkDistance(oldSection, newSection);
 		oldSection.updateUpStation(newSection.getDownStation(), oldSection.getDistance() - newSection.getDistance());
@@ -77,15 +83,19 @@ public class Sections {
 			throw new IllegalArgumentException("삭제하려는 구간이 노선의 마지막 구간입니다.");
 		}
 
-		if (!getSections().get(getSections().size() - 1).getDownStation().equals(station)) {
-			throw new IllegalArgumentException();
-		}
-
-		getSections().remove(getSections().size() - 1);
+		Section frontSection = findByDownStation(station);
+		Section backSection = findByUpStation(station);
+		mergeSection(frontSection, backSection);
 	}
 
-	private List<Section> getSections() {
-		return sections;
+	private void mergeSection(Section frontSection, Section backSection) {
+		if (frontSection != null && backSection != null) {
+			frontSection.updateDownStation(backSection.getDownStation(), backSection.getDistance());
+			sections.remove(backSection);
+			return;
+		}
+		sections.remove(frontSection);
+		sections.remove(backSection);
 	}
 
 	private List<Station> getAllStation() {

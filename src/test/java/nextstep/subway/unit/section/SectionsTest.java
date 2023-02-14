@@ -43,8 +43,16 @@ class SectionsTest {
 		sections.addSection(구간3);
 	}
 
+	@DisplayName("등록되어 있는 중간 역 삭제하기")
 	@Test
 	void removeSection() {
+		// when
+		sections.removeSection(역1);
+		sections.removeSection(역2);
+
+		// given
+		assertThat(sections.getOrderStation().size()).isEqualTo(2);
+		assertThat(sections.getDistance()).isEqualTo(20);
 	}
 
 	@DisplayName("등록하려는 구간의 역이 이미 다 등록되어 있을 때")
