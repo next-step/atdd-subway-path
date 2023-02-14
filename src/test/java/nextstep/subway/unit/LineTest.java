@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DisplayName("지하철 노선도 테스트")
+@DisplayName("지하철 노선도 삽입 삭제 테스트")
 class LineTest {
 
     Line line;
@@ -38,7 +38,7 @@ class LineTest {
     @Test
     @DisplayName("지하철노선을 추가할 수 있다.")
     void addSection() {
-        Section retriveSection = line.getSections().get(0);
+        Section retriveSection = line.getSectionCollection().get(0);
         assertThat(retriveSection).isEqualTo(section);
     }
 

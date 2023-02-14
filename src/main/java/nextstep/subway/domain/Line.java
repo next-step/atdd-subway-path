@@ -46,8 +46,8 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sectionCollection.getSections();
+    public SectionCollection getSectionCollection() {
+        return sectionCollection;
     }
 
     public void addSections(Section section) {

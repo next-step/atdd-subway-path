@@ -38,9 +38,11 @@ public class SectionCollection {
         return sections.isEmpty();
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public Section get(int index) {
+        return sections.get(index);
     }
+
+
 
     public void addSectionCollection(Section section) {
         addValidation(section);
