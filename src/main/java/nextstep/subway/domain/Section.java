@@ -39,6 +39,15 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public static Section mergedSection(Section upSection, Section downSection) {
+        return new Section(
+            upSection.getLine(),
+            upSection.getUpStation(),
+            downSection.getDownStation(),
+            upSection.getDistance() + downSection.getDistance()
+        );
+    }
+
     private boolean hasIdenticalStations(Station upStation, Station downStation) {
         return (upStation != null && downStation != null) && upStation.equals(downStation);
     }
