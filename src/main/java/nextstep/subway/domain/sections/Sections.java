@@ -46,6 +46,10 @@ public class Sections {
         addBetweenSection(insertLocation, section);
     }
 
+    public void merge(Section section) {
+        sections.add(section);
+    }
+
     private void addBetweenSection(InsertLocation insertLocation, Section section) {
         Section criteriaSection = null;
         Section foreSection = null;
