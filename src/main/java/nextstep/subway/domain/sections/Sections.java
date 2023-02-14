@@ -54,8 +54,7 @@ public class Sections {
 
     public void deleteSection(Long stationId, Line line) {
         validateDeleteSection(stationId);
-        Section sectionWithDownmostStation = findSectionWithDownStation(findDownmostStation(getStations()));
-        ChangeableSections changeableSections = sectionDeleteStrategies.findChangeableSections(this, sectionWithDownmostStation, line);
+        ChangeableSections changeableSections = sectionDeleteStrategies.findChangeableSections(this, stationId, line);
 
         changeableSections.getDeprecatedSections()
             .forEach(sections::remove);

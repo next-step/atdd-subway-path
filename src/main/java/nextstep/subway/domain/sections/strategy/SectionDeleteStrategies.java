@@ -3,22 +3,24 @@ package nextstep.subway.domain.sections.strategy;
 import java.util.List;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import nextstep.subway.domain.sections.Sections;
 
 public class SectionDeleteStrategies {
     private final List<SectionDeleteStrategy> strategies;
 
     public SectionDeleteStrategies() {
-        this.strategies = List.of();
+        this.strategies = List.of(
+            new DownmostSectionDeleteStrategy(),
+            new MiddleSectionDeleteStrategy()
+        );
     }
 
-    public ChangeableSections findChangeableSections(Sections sections, Section downmostSection, Line line) {
+    public ChangeableSections findChangeableSections(Sections sections, Long stationId, Line line) {
         return strategies.stream()
-            .filter(strategy -> strategy.meetCondition(sections, downmostSection))
-            .map(strategy -> strategy.findChangeableSections(sections, downmostSection, line))
+            .filter(strategy -> strategy.meetCondition(sections, stationId))
+            .map(strategy -> strategy.findChangeableSections(sections, stationId, line))
             .findFirst()
-            .orElseGet(() -> new ChangeableSections(List.of(), List.of()));
-        //.orElseThrow(() -> new CannotAddSectionException("던져지면 안되는 예외입니다."));
+            .orElseThrow(() -> new CannotDeleteSectionException("던져지면 안되는 예외입니다."));
     }
 }
