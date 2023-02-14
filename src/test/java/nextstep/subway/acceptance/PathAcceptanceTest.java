@@ -62,9 +62,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 경로 조회를 요청했을 때
-     * Then 출발역과 도착역이 일치하면
-     * And 에러 처리한다.
+     * when 경로 조회를 요청했을 때 출발역과 도착역이 일치하면
+     * and 에러 처리한다.
      */
     @DisplayName("경로 조회를 요청했을 때 출발역과 도착역이 일치하면 에러 처리한다.")
     @Test
@@ -77,9 +76,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 경로 조회를 요청했을 때
-     * Then 출발역과 도착역이 연결되어 있지 않으면
-     * And 에러 처리한다.
+     * when 경로 조회를 요청했을 때 출발역과 도착역이 연결되어 있지 않으면
+     * then 에러 처리한다.
      */
     @DisplayName("경로 조회를 요청했을 때 출발역과 도착역이 연결되어 있지 않으면 에러 처리한다.")
     @Test
@@ -92,9 +90,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 경로 조회를 요청했을 때
-     * Then 존재하지 않은 출발역으로 조회할 경우
-     * And 에러 처리한다.
+     * when 경로 조회를 요청했을 때 존재하지 않은 출발역으로 조회할 경우
+     * then 에러 처리한다.
      */
     @DisplayName("경로 조회를 요청했을 때 존재하지 않은 출발역으로 조회할 경우 에러 처리한다.")
     @Test
@@ -107,9 +104,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 경로 조회를 요청했을 때
-     * Then 존재하지 않은 도착역으로 조회할 경우
-     * And 에러 처리한다.
+     * when 경로 조회를 요청했을 때 존재하지 않은 도착역으로 조회할 경우
+     * then 에러 처리한다.
      */
     @DisplayName("경로 조회를 요청했을 때 존재하지 않은 도착역으로 조회할 경우 에러 처리한다.")
     @Test
