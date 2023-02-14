@@ -14,10 +14,11 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 public class PathFinder {
+    private WeightedMultigraph<Station, DefaultWeightedEdge> graph;
     private DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
     public PathFinder(List<Station> stations, List<Section> sections) {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         stations.forEach(graph::addVertex);
         sections.forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
         dijkstraShortestPath = new DijkstraShortestPath<>(graph);
@@ -27,15 +28,10 @@ public class PathFinder {
         if (source.equals(target)) {
             throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
         }
-        GraphPath<Station, DefaultWeightedEdge> path;
-        try {
-            path = dijkstraShortestPath.getPath(source, target);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+        if (!graph.containsVertex(source) || !graph.containsVertex(target)) {
+            throw new IllegalArgumentException("존재하지 않는 역을 입력하였습니다.");
         }
-        if (path == null) {
-            throw new IllegalArgumentException();
-        }
+        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(source, target);
         List<PathStationResponse> stations = path.getVertexList()
                 .stream()
                 .map(PathStationResponse::new)
