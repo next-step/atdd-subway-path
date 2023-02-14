@@ -13,9 +13,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 관리 - 추가 도메인 테스트")
 public class SectionTest {
@@ -25,9 +24,14 @@ public class SectionTest {
     private Station 역삼역;
     private Station 선릉역;
     private Station 삼성역;
+    private Station 잠실역;
+    private Station 잠실나루역;
     private Section 강남_역삼_구간;
     private Section 역삼_선릉_구간;
     private Section 선릉_삼성_구간;
+    private Section 역삼_삼성_구간;
+    private Section 잠실_잠실나루_구간;
+
 
     @BeforeEach
     void setUp(){
@@ -36,13 +40,19 @@ public class SectionTest {
         역삼역 = new Station("역삼역");
         선릉역 = new Station("선릉역");
         삼성역 = new Station("삼성역");
+        잠실역 = new Station("잠실역");
+        잠실나루역 = new Station("잠실나루역");
+
         강남_역삼_구간 = new Section(이호선, 강남역, 역삼역, 10);
         역삼_선릉_구간 = new Section(이호선, 역삼역, 선릉역, 5);
         선릉_삼성_구간 = new Section(이호선, 선릉역, 삼성역, 5);
+        역삼_삼성_구간 = new Section(이호선, 역삼역, 삼성역, 5);
+        잠실_잠실나루_구간 = new Section(이호선, 잠실역, 잠실나루역, 3);
 
         Sections sections = new Sections();
         List<Section> sectionList = new ArrayList<>();
         sectionList.add(강남_역삼_구간);
+        sectionList.add(역삼_삼성_구간);
 
         ReflectionTestUtils.setField(sections, "sections", sectionList);
 
@@ -53,8 +63,12 @@ public class SectionTest {
         ReflectionTestUtils.setField(역삼역, "id", 2L);
         ReflectionTestUtils.setField(선릉역, "id", 3L);
         ReflectionTestUtils.setField(삼성역, "id", 4L);
+        ReflectionTestUtils.setField(잠실역, "id", 4L);
+        ReflectionTestUtils.setField(잠실나루역, "id", 4L);
+
         ReflectionTestUtils.setField(강남_역삼_구간, "id", 1L);
         ReflectionTestUtils.setField(역삼_선릉_구간, "id", 2L);
+        ReflectionTestUtils.setField(잠실_잠실나루_구간, "id", 3L);
     }
 
 
@@ -64,10 +78,10 @@ public class SectionTest {
         // given
 
         // when - 구간 중간에 새로운 구간을 추가한다. (새로운 구간의 길이는 기존 구간의 길이와 같거나 더 크다)
-        Throwable exception = assertThrows(IllegalArgumentException.class, () -> 이호선.addSection(선릉_삼성_구간));
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> 이호선.addSection(역삼_선릉_구간));
 
         // then - 예외가 발생한다.
-        assertEquals("추가하려는 구간의 상/하행역이 노선에 포함되어 있지 않습니다.", exception.getMessage());
+        assertEquals("추가된 구간이 기존 구간보다 길이가 깁니다.", exception.getMessage());
     }
 
     @Test
@@ -88,7 +102,20 @@ public class SectionTest {
         // given
 
         // when - 상행역, 하행역 모두 노선에 없는 구간을 추가한다.
-
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> 이호선.addSection(잠실_잠실나루_구간));
         // then - 예외가 발생한다.
+        assertEquals("추가하려는 구간의 상/하행역이 노선에 포함되어 있지 않습니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("구간 목록 조회: 구간 정보가 상행 - 하행 순으로 정렬되어 있어야 한다.")
+    void findSections_withSortedSection(){
+        // given
+
+        // when - 노선의 구간 정보를 조회하면
+        List<Station> stations = 이호선.getSortedStations();
+
+        // then - 구간 정보가 상행 <-> 하행 순으로 정렬되어 반환한다
+        assertThat(stations).containsExactly(강남역, 역삼역, 삼성역);
     }
 }

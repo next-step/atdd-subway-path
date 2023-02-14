@@ -23,7 +23,7 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    private Integer distance;
 
     public Section() {
 
@@ -34,5 +34,17 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void updateDistance(Integer integer){
+        this.distance = distance;
+    }
+
+    public void updateDownStation(Station downStation){
+        this.downStation = downStation;
+    }
+
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
     }
 }

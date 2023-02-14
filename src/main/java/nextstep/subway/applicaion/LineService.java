@@ -78,11 +78,7 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = line.getSortedStations();
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))

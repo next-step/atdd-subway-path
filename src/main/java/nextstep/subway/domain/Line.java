@@ -31,6 +31,10 @@ public class Line {
         sections.deleteSectionByIndex(index);
     }
 
+    public List<Station> getSortedStations(){
+        return sections.getSortedStations();
+    }
+
     public Integer getSectionCount(){
         return sections.getSectionSize();
     }
