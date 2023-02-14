@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -89,6 +90,102 @@ class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = PathSteps.지하철_경로_조회_요청(1, 10);
         //then 400 에러를 받는다.
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Nested
+    @DisplayName("역 개수와 상관없이 더 거리의 경로를 선택한다.")
+    class shortestPath{
+        Long a;
+        Long b;
+        @BeforeEach
+        void setUp(){
+            a = 지하철역_생성_요청("a").jsonPath().getLong("id");
+            b= 지하철역_생성_요청("b").jsonPath().getLong("id");
+
+            지하철_노선에_지하철_구간_생성_요청(삼호선, 양재역, a, 5);
+            지하철_노선에_지하철_구간_생성_요청(삼호선, a, b, 5);
+        }
+        @Test
+        @DisplayName("정점의 개수가 많지만 더 가까운 경로가 있다.")
+        void findMoreStationButShorter() {
+            //추가된 마지막 역을 다른 노선에 추가한다. 이때 길이를 더 길게 한다.
+            지하철_노선에_지하철_구간_생성_요청(신분당선, 양재역, b, 15);
+            //when 경로를 조회한다.
+            ExtractableResponse<Response> response = PathSteps.지하철_경로_조회_요청(양재역, b);
+            //then 경로가 더 짧은 역이 조회된다.
+            assertAll(
+                    () -> assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("양재역", "a", "b"),
+                    () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(10)
+            );
+
+        }
+
+        @Test
+        @DisplayName("정점의 개수가 적고 더 가까운 경로가 있다.")
+        void findLessStationButShorter() {
+            //given 추가된 마지막 역을 다른 노선에 추가한다. 이때 길이를 더 짧게 한다.
+            지하철_노선에_지하철_구간_생성_요청(신분당선, 양재역, b, 5);
+            //when 경로를 조회한다.
+            ExtractableResponse<Response> response = PathSteps.지하철_경로_조회_요청(양재역, b);
+            //then 경로가 더 짧은 역이 조회된다.
+            assertAll(
+                    () -> assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("양재역", "b"),
+                    () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(5)
+            );
+
+        }
+
+        @Test
+        @DisplayName("정점의 개수가 같지만 거리가 가까운 경로가 있다.")
+        void findSameStationsButShorter() {
+            //given 역 2개를 생성하고 노선에 추가한다. 다른 노선에 추가된 마지막 역과 새로운 역 1개를 추가한다. 이때 거리를 짧게 한다.
+            Long c= 지하철역_생성_요청("c").jsonPath().getLong("id");
+
+            지하철_노선에_지하철_구간_생성_요청(신분당선, 양재역, c, 3);
+            지하철_노선에_지하철_구간_생성_요청(신분당선, c, b, 3);
+            //when 경로를 조회한다.
+            ExtractableResponse<Response> response = PathSteps.지하철_경로_조회_요청(양재역, b);
+            //then 경로가 더 짧은 역이 조회된다.
+            assertAll(
+                    () -> assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("양재역", "c","b"),
+                    () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(6)
+            );
+
+        }
+    }
+
+    @Nested
+    @DisplayName("환승")
+    class transfer {
+        Long a;
+        Long b;
+        Long c;
+        Long 십호선;
+
+        @BeforeEach
+        void setUp() {
+            a = 지하철역_생성_요청("a").jsonPath().getLong("id");
+            b = 지하철역_생성_요청("b").jsonPath().getLong("id");
+            c = 지하철역_생성_요청("c").jsonPath().getLong("id");
+            십호선 = 지하철_노선_생성_요청("10호선", "black", b, c, 2).jsonPath().getLong("id");
+
+            지하철_노선에_지하철_구간_생성_요청(신분당선, 양재역, a, 3);
+            지하철_노선에_지하철_구간_생성_요청(신분당선, a, b, 3);
+        }
+
+        @Test
+        @DisplayName("두 번 환승한다.")
+        void transferTwice() {
+            //when 교대역에서 C역까지의 경로를 검색한다.
+            ExtractableResponse<Response> response = PathSteps.지하철_경로_조회_요청(교대역, c);
+            //then 환승이 2번 일어난다.
+            assertAll(
+                    () -> assertThat(response.jsonPath().getList("stations.name", String.class))
+                            .containsExactly("교대역", "남부터미널역","양재역","a", "b", "c"),
+                    () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(13)
+            );
+
+        }
     }
 
 
