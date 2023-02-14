@@ -114,4 +114,15 @@ class LineTest {
         assertThat(line.getStations()).containsExactly(시청역, 종각역);
         assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE);
     }
+
+    @DisplayName("구간 삭제 - 중간역이 제거될 경우 재배치를 함")
+    @Test
+    void removeSection_3() {
+        line.addSection(new Section(line, 시청역, 종각역, ADD_SECTION_DISTANCE));
+
+        line.removeSection(시청역);
+
+        assertThat(line.getStations()).containsExactly(서울역, 종각역);
+        assertThat(line.getDistances()).containsExactly(CREATE_LINE_DISTANCE);
+    }
 }

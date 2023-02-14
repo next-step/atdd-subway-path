@@ -205,10 +205,16 @@ public class Sections {
     public void removeSection(Station station) {
         if(hasDownToEndDown(station)) {
             removeLastSection();
+            return;
         }
 
         if(hasUpToBeginUp(station)) {
             removeFirstSection();
+            return;
+        }
+
+        if(hasUpToUp(station) && hasDownToDown(station)) {
+            removeMiddleSection(station);
         }
     }
 
@@ -222,5 +228,21 @@ public class Sections {
 
     private void removeFirstSection() {
         sections.remove(findFirstSection());
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section upToUp = findUpToUp(station).get();
+        Section downToDown = findDownToDown(station).get();
+
+        Line line = upToUp.getLine();
+        int distance = upToUp.getDistance() + downToDown.getDistance();
+        Station upStation = downToDown.getUpStation();
+        Station downStation = upToUp.getDownStation();
+        int order = downToDown.getOrder();
+
+        int indexToInsert = sections.indexOf(downToDown);
+        sections.remove(downToDown);
+        sections.remove(upToUp);
+        sections.add(indexToInsert, new Section(line, upStation, downStation, distance, order));
     }
 }

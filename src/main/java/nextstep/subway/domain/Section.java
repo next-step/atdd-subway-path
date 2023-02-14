@@ -35,6 +35,14 @@ public class Section {
         this.order = getLine().getGreatestOrder() + 1;
     }
 
+    public Section(Line line, Station upStation, Station downStation, int distance, int order) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+        this.order = order;
+    }
+
     public Long getId() {
         return id;
     }
