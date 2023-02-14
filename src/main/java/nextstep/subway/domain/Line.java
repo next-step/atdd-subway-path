@@ -75,4 +75,8 @@ public class Line {
     public void removeLastSection() {
         sections.removeLastSection();
     }
+
+    public void removeSection(Station station) {
+        sections.removeSection(station);
+    }
 }

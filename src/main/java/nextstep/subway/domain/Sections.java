@@ -201,4 +201,14 @@ public class Sections {
         return sections.stream().max(Comparator.comparing(Section::getOrder))
                 .orElseThrow(() -> new EntityNotFoundException("노선에 구간이 없습니다"));
     }
+
+    public void removeSection(Station station) {
+        if(hasDownToEndDown(station)) {
+            removeLastSection();
+        }
+    }
+
+    private boolean hasDownToEndDown(Station downStation) {
+        return findLastSection().getDownStation().equals(downStation);
+    }
 }

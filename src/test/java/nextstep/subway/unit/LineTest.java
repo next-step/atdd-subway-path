@@ -82,7 +82,7 @@ class LineTest {
         assertThat(line.getDistances()).containsExactly(CREATE_LINE_DISTANCE);
     }
 
-    @DisplayName("구간 추가 - 예외 케이스 - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @DisplayName("구간 추가 - 예외 케이스  - 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void addSection_7() {
         Station 강남역 = new Station("강남역");
@@ -91,5 +91,16 @@ class LineTest {
         assertThatThrownBy(() -> line.addSection(new Section(line, 강남역, 역삼역, ADD_SECTION_DISTANCE)))
                 .isInstanceOf(IllegalArgumentException.class);
         assertThat(line.getDistances()).containsExactly(CREATE_LINE_DISTANCE);
+    }
+
+    @DisplayName("구간 삭제 - 종점이 제거될 경우 다음으로 오던 역이 종점이 됨 - 종점 하행역 제거")
+    @Test
+    void removeSection_1() {
+        // 서울 시청 종각
+        line.addSection(new Section(line, 시청역, 종각역, ADD_SECTION_DISTANCE));
+        line.removeSection(종각역);
+
+        assertThat(line.getStations()).containsExactly(서울역, 시청역);
+        assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE);
     }
 }
