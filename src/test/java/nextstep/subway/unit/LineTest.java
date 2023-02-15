@@ -7,6 +7,7 @@ import nextstep.subway.exception.LineMinimumSectionException;
 import nextstep.subway.exception.SectionAlreadyCreateStationException;
 import nextstep.subway.exception.SectionDoesNotHaveAlreadyCreateStationException;
 import nextstep.subway.exception.SectionInsertDistanceTooLargeException;
+import nextstep.subway.fixture.LineFixture;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,47 +16,19 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static nextstep.subway.fixture.SectionFixture.강남_양재_구간;
+import static nextstep.subway.fixture.SectionFixture.양재_양재시민의숲_구간;
+import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
-
-    private Line 신분당선;
-
-    private Station 강남역;
-    private Station 양재역;
-    private Station 양재시민의숲역;
-
-    private Section 강남_양재_구간;
-
+    public static Line 신분당선;
     private int distance = 10;
 
     @BeforeEach
-    void setUp() {
-        신분당선 = new Line("신분당선", "bg-red-900");
-        distance = 10;
-
-        강남역 = new Station("강남역");
-        양재역 = new Station("양재역");
-        양재시민의숲역 = new Station("양재시민의숲역");
-
-        injectId(강남역, 1L);
-        injectId(양재역, 2L);
-        injectId(양재시민의숲역, 4L);
-
-
-        강남_양재_구간 = new Section(신분당선, 강남역, 양재역, distance);
-        injectId(강남_양재_구간, 1L);
-    }
-
-    private static <T> void injectId(Object o, long id) {
-        try {
-            Field idField = o.getClass().getDeclaredField("id");
-            idField.setAccessible(true);
-            idField.set(o, id);
-        } catch (Exception e) {
-            throw new IllegalStateException("private필드 id값 inject중 예외발생", e);
-        }
+    public void setUp() {
+        신분당선 = new Line(LineFixture.신분당선.getName(), LineFixture.신분당선.getColor());
     }
 
     @Test
@@ -75,7 +48,6 @@ class LineTest {
     void addSectionForLineHasSection() {
         // given
         신분당선.addSection(강남_양재_구간);
-        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
 
         // when
         신분당선.addSection(양재_양재시민의숲_구간);
@@ -89,9 +61,6 @@ class LineTest {
     void failWhenLineDownStationDiffSectionUpStation() {
         // given
         신분당선.addSection(강남_양재_구간);
-
-        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
-        injectId(양재_양재시민의숲_구간, 3L);
         신분당선.addSection(양재_양재시민의숲_구간);
 
         // when, then
@@ -142,10 +111,6 @@ class LineTest {
     @DisplayName("Section을 하나이상 가지고 있는 Line 삭제 테스트 (종점삭제)")
     void removeLastSection() {
         // given
-        Station 양재시민의숲역 = new Station("양재시민의숲역");
-        injectId(양재시민의숲역, 4L);
-        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
-
         신분당선.addSection(강남_양재_구간);
         신분당선.addSection(양재_양재시민의숲_구간);
 
@@ -164,10 +129,6 @@ class LineTest {
     @DisplayName("Section을 하나이상 가지고 있는 Line 삭제 테스트 (기점삭제)")
     void removeFirstSection() {
         // given
-        Station 양재시민의숲역 = new Station("양재시민의숲역");
-        injectId(양재시민의숲역, 4L);
-        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, distance);
-
         신분당선.addSection(강남_양재_구간);
         신분당선.addSection(양재_양재시민의숲_구간);
 
@@ -186,10 +147,6 @@ class LineTest {
     @DisplayName("노선이 가지고 있는 중간구간 삭제 테스트")
     void removeMidSection() {
         // given
-        Station 양재시민의숲역 = new Station("양재시민의숲역");
-        injectId(양재시민의숲역, 4L);
-        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, 15);
-
         신분당선.addSection(강남_양재_구간);
         신분당선.addSection(양재_양재시민의숲_구간);
 
@@ -237,7 +194,7 @@ class LineTest {
     void insertStationMiddle() {
         // given
         Station 신논현역 = new Station("신논현역");
-        injectId(신논현역, 3L);
+        injectId(신논현역, 10L);
         Section 신논현_양재_구간 = new Section(신분당선, 신논현역, 양재역, distance);
         신분당선.addSection(신논현_양재_구간);
 
@@ -263,5 +220,15 @@ class LineTest {
     private void 새구간의_거리가_기존구간보다_크면_예외(Line 노선, Section 구간) {
         assertThatThrownBy(() -> 노선.addSection(구간))
                 .isInstanceOf(SectionInsertDistanceTooLargeException.class);
+    }
+
+    private static <T> void injectId(Object o, long id) {
+        try {
+            Field idField = o.getClass().getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(o, id);
+        } catch (Exception e) {
+            throw new IllegalStateException("private필드 id값 inject중 예외발생", e);
+        }
     }
 }
