@@ -13,6 +13,20 @@ public class LineSteps {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        return 지하철_노선_생성_요청(params);
+    }
+
+    public static Long 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+        return 지하철_노선_생성_요청(params).jsonPath().getLong("id");
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         return RestAssured
                 .given().log().all()
                 .body(params)
@@ -39,15 +53,6 @@ public class LineSteps {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines/{id}", id)
-                .then().log().all().extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
-        return RestAssured
-                .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
                 .then().log().all().extract();
     }
 

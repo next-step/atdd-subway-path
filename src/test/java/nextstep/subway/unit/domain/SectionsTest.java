@@ -41,7 +41,7 @@ class SectionsTest {
     @DisplayName("포함된 지하철 목록을 중복없이 가져온다.")
     @Test
     void stations() {
-        assertThat(sections.stations()).containsExactly(강남역, 역삼역, 교대역);
+        assertThat(sections.sortedStations()).containsExactly(강남역, 역삼역, 교대역);
     }
 
     @DisplayName("새로운 구간을 하행 종점에 추가할 수 있다.")
@@ -52,7 +52,7 @@ class SectionsTest {
         sections.add(new Section(line, 교대역, 양재역, 10));
 
         // then
-        assertThat(sections.stations()).containsExactly(강남역, 역삼역, 교대역, 양재역);
+        assertThat(sections.sortedStations()).containsExactly(강남역, 역삼역, 교대역, 양재역);
     }
 
     @DisplayName("새로운 구간을 기존 구간에 추가할 수 있다.")
@@ -63,7 +63,7 @@ class SectionsTest {
         sections.add(new Section(line, 역삼역, 양재역, 5));
 
         // then
-        assertThat(sections.stations()).containsExactly(강남역, 역삼역, 양재역, 교대역);
+        assertThat(sections.sortedStations()).containsExactly(강남역, 역삼역, 양재역, 교대역);
     }
 
     @DisplayName("새로운 구간을 상행 종점에 추가할 수 있다.")
@@ -74,7 +74,7 @@ class SectionsTest {
         sections.add(new Section(line, 양재역, 강남역, 10));
 
         // then
-        assertThat(sections.stations()).containsExactly(양재역, 강남역, 역삼역, 교대역);
+        assertThat(sections.sortedStations()).containsExactly(양재역, 강남역, 역삼역, 교대역);
     }
 
     @DisplayName("겹치는 구간을 추가하는 경우 예외가 발생한다.")
@@ -97,7 +97,7 @@ class SectionsTest {
         sections.remove(교대역.getId());
 
         // then
-        assertThat(sections.stations()).containsExactly(강남역, 역삼역);
+        assertThat(sections.sortedStations()).containsExactly(강남역, 역삼역);
     }
 
     @DisplayName("기존에 있는 첫번째 구간을 삭제할 수 있다.")
@@ -107,7 +107,7 @@ class SectionsTest {
         sections.remove(강남역.getId());
 
         // then
-        assertThat(sections.stations()).containsExactly(역삼역, 교대역);
+        assertThat(sections.sortedStations()).containsExactly(역삼역, 교대역);
     }
 
 
@@ -118,7 +118,7 @@ class SectionsTest {
         sections.remove(역삼역.getId());
 
         // then
-        assertThat(sections.stations()).containsExactly(강남역, 교대역);
+        assertThat(sections.sortedStations()).containsExactly(강남역, 교대역);
     }
 
     @DisplayName("종점역을 제외하고 중간역을 모두 삭제할 수 있다.")
@@ -133,7 +133,7 @@ class SectionsTest {
         sections.remove(교대역.getId());
 
         // then
-        assertThat(sections.stations()).containsExactly(강남역, 사당역);
+        assertThat(sections.sortedStations()).containsExactly(강남역, 사당역);
     }
 
     @DisplayName("존재하지 않는 역을 삭제하는 경우 예외가 발생한다.")
