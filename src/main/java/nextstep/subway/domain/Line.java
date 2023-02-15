@@ -42,7 +42,11 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return sections.stations();
+        return sections.sortedStations();
+    }
+
+    public List<Section> getSections() {
+        return sections.sortedSections();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
