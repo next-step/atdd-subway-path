@@ -1,9 +1,11 @@
 package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
+import nextstep.subway.domain.exception.PathFindException;
 import org.jgrapht.GraphPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,5 +62,21 @@ class PathFinderTest {
                 () -> assertThat(graphPath.getWeight()).isEqualTo(expected),
                 () -> assertThat(graphPath.getVertexList()).containsExactly(남부터미널역, 교대역, 강남역, 양재역, 정자역)
         );
+    }
+
+    /**
+     * 교대역
+     * |
+     * *3호선*
+     * |
+     * 남부터미널역      정자역
+     */
+    @DisplayName("연결되지 않은 역을 기준으로 경로를 찾을 경우 에러 처리한다.")
+    @Test
+    void findNotLinked() {
+        삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 1));
+        PathFinder pathFinder = new PathFinder(List.of(삼호선));
+
+        assertThatThrownBy(() -> pathFinder.find(남부터미널역, 정자역)).isInstanceOf(PathFindException.class);
     }
 }
