@@ -41,24 +41,39 @@ public class Sections {
 
     public void removeSectionByStation(final Station station) {
         validateRemoveSection();
-        if (canMatchUpStation(station)) return;
-        if (canMatchDownStation(station)) return;
-        if (canMatchMiddleStation(station)) return;
+        final Section firstSection = this.sections.get(0);
+        if (canMatchFirstUpStation(firstSection, station)) {
+            this.sections.remove(firstSection);
+            return ;
+        }
+        final Section lastSection = findLastSection();
+        if (canMatchLastDownStation(lastSection, station)) {
+            this.sections.remove(lastSection);
+            return ;
+        }
+        if (canMatchMiddleStation(station)) {
+            return ;
+        }
         validateNoRegisterStation();
     }
 
+    private Section findLastSection() {
+        final int index = this.sections.size() - 1;
+        return this.sections.get(index);
+    }
+
     private void validateNoRegisterStation() {
-        throw new NoRegisterStationException(NO_REGISTER_LINE_STATION);
+        throw new NoRegisterStationException(NO_REMOVE_NOT_REGISTER_LINE_STATION);
     }
 
     private boolean canMatchMiddleStation(final Station station) {
+
         for (int index = 0; index < this.sections.size(); index++) {
             if (canMatchMiddleStation(station, this.sections, index)) {
                 final Section beforeSection = this.sections.get(index);
                 final Section afterSection = this.sections.get(index + 1);
                 this.sections.remove(afterSection);
                 beforeSection.mergeSection(afterSection);
-                this.sections.set(index, beforeSection);
                 return true;
             }
         }
@@ -70,23 +85,12 @@ public class Sections {
         return sections.get(index).matchDownStation(station) && sections.get(index + 1).matchUpStation(station);
     }
 
-    private boolean canMatchDownStation(final Station station) {
-        final int index = this.sections.size() - 1;
-        final Section lastSection = this.sections.get(index);
-        if (lastSection.matchDownStation(station)) {
-            this.sections.remove(lastSection);
-            return true;
-        }
-        return false;
+    private boolean canMatchLastDownStation(final Section lastSection, final Station station) {
+        return lastSection.matchDownStation(station);
     }
 
-    private boolean canMatchUpStation(final Station station) {
-        final Section firstSection = this.sections.get(0);
-        if (firstSection.matchUpStation(station)) {
-            this.sections.remove(firstSection);
-            return true;
-        }
-        return false;
+    private boolean canMatchFirstUpStation(final Section firstSection, final Station station) {
+        return firstSection.matchUpStation(station);
     }
 
     public void addLine(final Line line) {
