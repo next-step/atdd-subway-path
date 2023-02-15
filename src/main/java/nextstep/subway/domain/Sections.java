@@ -42,16 +42,16 @@ public class Sections {
     private void addMiddleStation(Section newSection) {
         for (Section section : sections) {
             if (addStation(section, newSection)) {
-                break;
+                return;
             }
         }
     }
 
     private boolean addStation(Section section, Section newSection) {
-        return sameUpStation(section, newSection) || sameDownStation(section, newSection);
+        return addDownStation(section, newSection) || addUpStation(section, newSection);
     }
 
-    private boolean sameUpStation(Section section, Section newSection) {
+    private boolean addDownStation(Section section, Section newSection) {
         if (section.getUpStation().equals(newSection.getUpStation())) {
             sections.add(section.addStation(newSection.getDownStation(), section.getDistance() - newSection.getDistance()));
             return true;
@@ -60,7 +60,7 @@ public class Sections {
         return false;
     }
 
-    private boolean sameDownStation(Section newSection, Section section) {
+    private boolean addUpStation(Section section, Section newSection) {
         if (section.getDownStation().equals(newSection.getDownStation())) {
             sections.add(section.addStation(newSection.getUpStation(), newSection.getDistance()));
             return true;
@@ -70,26 +70,24 @@ public class Sections {
     }
 
     private void addValidation(Section newSection) {
-        List<Section> containUpStation = new ArrayList<>();
-        List<Section> containDownStation = new ArrayList<>();
+        checkAlreadyEnrollSection(newSection);
+        checkNotFoundSection(newSection);
+    }
 
-        for (Section section : sections) {
-            if (section.isContainStation(newSection.getUpStation())) {
-                containUpStation.add(section);
-            }
-
-            if (section.isContainStation(newSection.getDownStation())) {
-                containDownStation.add(section);
-            }
-        }
-
-        if (!(containUpStation.isEmpty() || containDownStation.isEmpty())) {
-            throw new IllegalArgumentException(ALREADY_ENROLL_STATION);
-        }
-
-        if (containUpStation.isEmpty() && containDownStation.isEmpty()) {
+    private void checkNotFoundSection(Section newSection) {
+        if (!(isContainStation(newSection.getUpStation()) || isContainStation(newSection.getDownStation()))) {
             throw new IllegalArgumentException(NOT_ENROLL_STATION);
         }
+    }
+
+    private void checkAlreadyEnrollSection(Section newSection) {
+        if (isContainStation(newSection.getUpStation()) && isContainStation(newSection.getDownStation())) {
+            throw new IllegalArgumentException(ALREADY_ENROLL_STATION);
+        }
+    }
+
+    private boolean isContainStation(Station newStation) {
+        return sections.stream().anyMatch(section -> section.isContainStation(newStation));
     }
 
     public List<Station> getStations() {
@@ -153,11 +151,37 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        if (!getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        removeValidation(station);
+
+        if (getDownStation().equals(station)) {
+            sections.remove(findSectionByDownStation(station));
+            return;
         }
 
-        sections.remove(sections.size() - 1);
+        if (getUpStation().equals(station)) {
+            sections.remove(findSectionByUpStation(station));
+            return;
+        }
+
+        removeMiddle(station);
+    }
+
+    private void removeMiddle(Station station) {
+        Section section = findSectionByDownStation(station);
+        Section nextSection = findSectionByUpStation(station);
+        nextSection.changeUpStation(section.getUpStation());
+
+        sections.remove(section);
+    }
+
+    private void removeValidation(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException(LESS_THAN_ONE_SECTION);
+        }
+
+        if (!isContainStation(station)) {
+            throw new IllegalArgumentException(NOT_FOUND_STATION);
+        }
     }
 
     public List<Section> getSections() {

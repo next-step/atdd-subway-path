@@ -128,4 +128,76 @@ public class SectionsTest {
         // then
         assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "양재역", "판교역");
     }
+
+    @Test
+    @DisplayName("구간 삭제 실패-등록된 구간이 하나 이하인 노선")
+    void removeSection_lessThanOneSection() {
+        // when
+        // then
+        assertThatThrownBy(() -> 신분당선.removeSection(양재역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(LESS_THAN_ONE_SECTION);
+    }
+
+    @Test
+    @DisplayName("구간 삭제 실패-노선에 등록지 않은 구간")
+    void removeSection_notFoundStation() {
+        // given
+        Station 정자역 = new Station("정자역");
+        Section 강남_정자_구간 = new Section(신분당선, 강남역, 정자역, 6);
+        신분당선.addSection(강남_정자_구간);
+
+        Station 판교역 = new Station("판교역");
+
+        // when
+        // then
+        assertThatThrownBy(() -> 신분당선.removeSection(판교역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(NOT_FOUND_STATION);
+    }
+
+    @Test
+    @DisplayName("하행 종점역 삭제")
+    void removeSection_lastStation() {
+        // given
+        Station 정자역 = new Station("정자역");
+        Section 강남_정자_구간 = new Section(신분당선, 강남역, 정자역, 6);
+        신분당선.addSection(강남_정자_구간);
+
+        // when
+        신분당선.removeSection(양재역);
+
+        // then
+        assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "정자역");
+    }
+
+    @Test
+    @DisplayName("상행 종점역 삭제")
+    void removeSection_frontStation() {
+        // given
+        Station 정자역 = new Station("정자역");
+        Section 강남_정자_구간 = new Section(신분당선, 강남역, 정자역, 6);
+        신분당선.addSection(강남_정자_구간);
+
+        // when
+        신분당선.removeSection(강남역);
+
+        // then
+        assertThat(신분당선.getStations()).extracting("name").containsExactly("정자역", "양재역");
+    }
+
+    @Test
+    @DisplayName("중간역 삭제")
+    void removeSection_middleStation() {
+        // given
+        Station 정자역 = new Station("정자역");
+        Section 강남_정자_구간 = new Section(신분당선, 강남역, 정자역, 6);
+        신분당선.addSection(강남_정자_구간);
+
+        // when
+        신분당선.removeSection(정자역);
+
+        // then
+        assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "양재역");
+    }
 }
