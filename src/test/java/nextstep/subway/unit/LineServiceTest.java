@@ -52,7 +52,7 @@ public class LineServiceTest {
         lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 5));
 
         // then
-        Line resultLine = lineService.findLineById(이호선.getId());
+        Line resultLine = lineRepository.findById(이호선.getId()).orElseThrow(IllegalArgumentException::new);
         assertThat(resultLine.getSections()).extracting(Section::getDownStation).contains(역삼역);
     }
 }

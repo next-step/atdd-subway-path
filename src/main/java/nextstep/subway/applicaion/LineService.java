@@ -29,9 +29,11 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
 
-        Station upStation = stationService.findById(request.getUpStationId());
-        Station downStation = stationService.findById(request.getDownStationId());
-        line.initSection(new Section(line, upStation, downStation, request.getDistance()));
+        if (request.getUpStationId() != null && request.getDownStationId() != null) {
+            Station upStation = stationService.findById(request.getUpStationId());
+            Station downStation = stationService.findById(request.getDownStationId());
+            line.initSection(new Section(line, upStation, downStation, request.getDistance()));
+        }
 
         return createLineResponse(line);
     }
@@ -85,7 +87,7 @@ public class LineService {
         line.deleteSection(stationId);
     }
 
-    public Line findLineById(Long lineId){
+    private Line findLineById(Long lineId){
         return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
     }
 }

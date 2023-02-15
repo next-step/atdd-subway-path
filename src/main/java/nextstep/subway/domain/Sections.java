@@ -23,6 +23,11 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+        if(sections.isEmpty()){
+            sections.add(newSection);
+            return;
+        }
+
         if (isAllStationExist(newSection.getUpStation(), newSection.getDownStation())) {
             throw new IllegalArgumentException("추가하려는 구간의 상/하행역이 이미 노선에 포함되어 있습니다.");
         }
@@ -99,7 +104,12 @@ public class Sections {
             throw new IllegalArgumentException("하행종점역인 경우만 삭제가 가능합니다.");
         }
 
-        sections = sections.stream().filter(e -> e.getDownStation().getId() != stationId).collect(Collectors.toList());
+        for(int i = 0; i < sections.size(); i++){
+            if(sections.get(i).getDownStation().getId() == stationId){
+                sections.remove(i);
+                return;
+            }
+        }
     }
 
     private boolean isLastDownStation(Long stationId) {
