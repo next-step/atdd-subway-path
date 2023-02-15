@@ -19,6 +19,7 @@ public class PathService {
         PathFinder pathFinder = new DijkstraPathFinder(stationService.findAll(), sectionService.findAll());
         Station source = stationService.findById(sourceStationId);
         Station target = stationService.findById(targetStationId);
+        pathFinder.init();
         return pathFinder.findPath(source, target);
     }
 }

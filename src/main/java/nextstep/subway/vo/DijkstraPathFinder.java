@@ -9,7 +9,6 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -22,7 +21,7 @@ public class DijkstraPathFinder extends PathFinder {
         super(stations, sections);
     }
 
-    @PostConstruct
+    @Override
     public void init() {
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         getStations().forEach(graph::addVertex);
@@ -32,6 +31,9 @@ public class DijkstraPathFinder extends PathFinder {
 
     @Override
     public PathResponse findPath(Station source, Station target) {
+        if (graph == null || dijkstraShortestPath == null) {
+            throw new IllegalArgumentException("init 메서드로 먼저 초기화를 해주세요.");
+        }
         if (source.equals(target)) {
             throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
         }
