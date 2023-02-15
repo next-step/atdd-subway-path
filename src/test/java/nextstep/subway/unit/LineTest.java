@@ -67,10 +67,23 @@ class LineTest {
     }
 
     @Test
-    void getStations() {
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우 : 하행 == 상행")
+    void addSection_success3() {
+        // given
+        Line 신분당선 = new Line(1L, "신분당", "RED");
+        신분당선.addSection(광교중앙, 상현, 2);
+
+        // when
+        신분당선.addSection(광교, 광교중앙, 3);
+
+        // then
+        assertThat(신분당선.getSections()).hasSize(2);
+        assertThat(신분당선.getSections().get(0).getUpStation().getId()).isEqualTo(광교.getId());
+        assertThat(신분당선.getSections().get(0).getDownStation().getId()).isEqualTo(광교중앙.getId());
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(3);
+        assertThat(신분당선.getSections().get(1).getUpStation().getId()).isEqualTo(광교중앙.getId());
+        assertThat(신분당선.getSections().get(1).getDownStation().getId()).isEqualTo(상현.getId());
+        assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(2);
     }
 
-    @Test
-    void removeSection() {
-    }
 }
