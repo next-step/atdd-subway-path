@@ -1,8 +1,21 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import java.util.Objects;
 
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,34 +35,41 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    public void updateUpStation(final Station station, final int distance) {
+        this.upStation = station;
+        this.distance = distance;
     }
 
-    public Line getLine() {
-        return line;
+    public void updateDownStation(final Station station, final int distance) {
+        this.downStation = station;
+        this.distance = distance;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return getDistance() == section.getDistance()
+                && Objects.equals(getId(), section.getId())
+                && Objects.equals(getLine(), section.getLine())
+                && Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation());
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getLine(), getUpStation(), getDownStation(), getDistance());
     }
 }

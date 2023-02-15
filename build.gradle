@@ -27,6 +27,10 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:4.5.1'
 
     runtimeOnly 'com.h2database:h2'
+
+    // Lombok: 어노테이션을 통해 보일러플레이트 코드를 줄여주는 라이브러리
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 }
 
 test {
