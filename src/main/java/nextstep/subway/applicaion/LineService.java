@@ -64,13 +64,8 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSectionCount() == 0) {
-            return Collections.emptyList();
-        }
 
-        List<Station> stations = line.getSortedStations();
-
-        return stations.stream()
+        return line.getSortedStations().stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
     }
