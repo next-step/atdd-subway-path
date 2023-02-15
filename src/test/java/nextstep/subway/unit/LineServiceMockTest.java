@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -17,7 +18,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,5 +71,23 @@ public class LineServiceMockTest {
         LineResponse lineResponse = lineService.findById(1L);
         assertThat(lineResponse.getName()).isEqualTo(line.getName());
         assertThat(lineResponse.getStations()).hasSize(line.getStations().size());
+    }
+
+    @Test
+    @DisplayName("지하철 구간을 삭제할 수 있다.")
+    void removeSection() {
+        Station thirdStation = new Station("청계산역");
+        line.addSections(new Section(line, firstStation, secondStation, 10));
+        line.addSections(new Section(line, secondStation, thirdStation, 10));
+        when(lineRepository.findById(any())).thenReturn(Optional.of(line));
+        when(stationService.findById(any())).thenReturn(thirdStation);
+        when(stationService.createStationResponse(firstStation)).thenReturn(new StationResponse(1L, "강남역"));
+        when(stationService.createStationResponse(secondStation)).thenReturn(new StationResponse(2L, "양재역"));
+
+        lineService.deleteSection(line.getId(), thirdStation.getId());
+        LineResponse response = lineService.findById(1L);
+        List<String> names = response.getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
+
+        assertThat(names).containsExactly("강남역", "양재역");
     }
 }

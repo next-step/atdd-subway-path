@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -14,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,5 +61,19 @@ public class LineServiceTest {
         // line.getSections 메서드를 통해 검증
         LineResponse response = lineService.findById(line.getId());
         assertThat(response.getStations()).hasSize(2);
+    }
+
+    @Test
+    void removeSection() {
+        Station thirdStation = new Station("청계산역");
+        stationRepository.save(thirdStation);
+
+        line.addSections(new Section(line, firstStation, secondStation, 10));
+        line.addSections(new Section(line, secondStation, thirdStation, 10));
+
+        lineService.deleteSection(line.getId(), thirdStation.getId());
+
+        List<String> names = lineService.findById(line.getId()).getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
+        assertThat(names).containsExactly("강남역", "판교역");
     }
 }

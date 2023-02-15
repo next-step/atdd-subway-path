@@ -54,12 +54,12 @@ public class Section {
         return distance.getDistance();
     }
 
-    public void updateUpStation(Station updateStation, int distance) {
+    public void divideUpStation(Station updateStation, int distance) {
         this.upStation = updateStation;
         this.distance.decrease(distance);
     }
 
-    public void updateDownStation(Station updateStation, int distance) {
+    public void divideDownStation(Station updateStation, int distance) {
         this.downStation = updateStation;
         this.distance.decrease(distance);
     }

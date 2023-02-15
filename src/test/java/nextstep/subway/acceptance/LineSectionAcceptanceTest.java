@@ -165,6 +165,77 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 신분당선 강남역 - 양재역 - 청계산역이 주어졌을때
+     * When 양재역 제거를 요청하면
+     * Then 강남역 - 청계산역 노선이 남는다.
+     */
+    void removeLineSectionMiddle() {
+        Long 청계산역 = 지하철역_생성_요청("청계산역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 청계산역));
+
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("station.id", Long.class)).containsExactly(강남역, 청계산역);
+    }
+
+    /**
+     * Given 신분당선 강남역 - 양재역 - 청계산역이 주어졌을때
+     * When 청계산역 제거를 요청하면
+     * Then 강남역 - 양재역 노선이 남는다.
+     */
+    void removeLineSectionLast() {
+        Long 청계산역 = 지하철역_생성_요청("청계산역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 청계산역));
+
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 청계산역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("station.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * Given 신분당선 강남역 - 양재역이 주어졌을때
+     * When 양재역 제거를 요청하면
+     * Then 구간이 하나인 노선은 삭제할 수 없어서 에러가 발생한다.
+     */
+    void removeLineSizeOne() {
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 신분당선 강남역 - 양재역이 주어졌을때
+     * When 강남역 제거를 요청하면
+     * Then 구간이 하나인 노선은 삭제할 수 없어서 에러가 발생한다.
+     */
+    void removeLineSizeOne_2() {
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 신분당선 강남역 - 양재역이 주어졌을때
+     * When 존재하지 않는 역 제거를 요청하면
+     * Then 노선에 등록되지 않은 역은 제거할 수 없다는 에러가 발생한다.
+     */
+    void removeLineNotFound() {
+        Long id = 999L;
+        지하철_노선에_지하철_구간_제거_요청(신분당선, id);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("지하철 노선에서 중간 구간을 제거하면 역이 재배치 될 수 있다.")
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

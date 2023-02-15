@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DisplayName("지하철 노선도 테스트")
+@DisplayName("지하철 노선도 삽입 삭제 테스트")
 class LineTest {
 
     Line line;
@@ -37,7 +38,7 @@ class LineTest {
     @Test
     @DisplayName("지하철노선을 추가할 수 있다.")
     void addSection() {
-        Section retriveSection = line.getSections().get(0);
+        Section retriveSection = line.getSectionCollection().get(0);
         assertThat(retriveSection).isEqualTo(section);
     }
 
@@ -123,8 +124,12 @@ class LineTest {
                 .hasMessage(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
     }
 
+    /**
+     * 비즈니스 로직 변경으로 Deprecated
+     */
     @Test
     @DisplayName("지하철 노선의 구간은 하행종점역이 아닌 역은 삭제할 수 없다.")
+    @Disabled
     void removeSectionFail2() {
         Station lastStation = new Station("청계산역");
         section = new Section(line, secondStation, lastStation, 10);
@@ -137,7 +142,7 @@ class LineTest {
 
     @Test
     @DisplayName("지하철 노선의 하행종점역을 삭제할 수 있다.")
-    void removeSection() {
+    void removeSectionLast() {
         Station lastStation = new Station("청계산역");
         section = new Section(line, secondStation, lastStation, 10);
         line.addSections(section);
@@ -149,5 +154,37 @@ class LineTest {
         assertThat(stations).containsAnyOf(firstStation);
         assertThat(stations).containsAnyOf(secondStation);
         assertThat(stations).doesNotContain(lastStation);
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 중간역을 삭제할 수 있다")
+    void removeSectionMiddle() {
+        Station lastStation = new Station("청계산역");
+        section = new Section(line, secondStation, lastStation, 10);
+        line.addSections(section);
+
+        line.removeStation(secondStation);
+        List<String> names = line.getStations().stream().map(Station::getName).collect(Collectors.toList());
+        assertThat(names).containsExactly(firstStation.getName(), lastStation.getName());
+    }
+
+    @Test
+    @DisplayName("지하철 노선이 1개일 때는 삭제할 수 없다.")
+    void removeSectionSizeOne() {
+        assertThatThrownBy(() -> line.removeStation(secondStation))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
+    }
+
+    @Test
+    @DisplayName("없는 구간은 삭제할 수 없다")
+    void removeSectionNotFound() {
+        Station lastStation = new Station("청계산역");
+        section = new Section(line, secondStation, lastStation, 10);
+        line.addSections(section);
+
+        assertThatThrownBy(() -> line.removeStation(new Station("없는역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(ErrorMessage.NOT_CONNECT_STATION.toString());
     }
 }
