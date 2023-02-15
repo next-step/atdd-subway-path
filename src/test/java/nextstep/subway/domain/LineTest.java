@@ -201,7 +201,7 @@ class LineTest {
         // when, then
         assertThatThrownBy(() -> {
             이호선.removeSection(역삼역);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -209,6 +209,6 @@ class LineTest {
         // when, then
         assertThatThrownBy(() -> {
             이호선.removeSection(역삼역);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 }
