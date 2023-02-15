@@ -14,6 +14,14 @@ public class SubwayFixture {
         return new Station(id, name);
     }
 
+    public static Section 구간_생성(String upStationName, String downStationName, int distance) {
+        return 구간_생성(역_생성(upStationName), 역_생성(downStationName), distance);
+    }
+
+    public static Section 구간_생성(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
     public static Section 구간_생성(Line line, String upStationName, String downStationName, int distance) {
         return new Section(line, 역_생성(upStationName), 역_생성(downStationName), distance);
     }
