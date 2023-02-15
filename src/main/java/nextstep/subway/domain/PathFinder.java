@@ -37,7 +37,7 @@ public class PathFinder {
             GraphPath result = path.getPath(source, target);
             validateFindPathSuccess(result);
             return result;
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new PathFindException();
         }
     }
