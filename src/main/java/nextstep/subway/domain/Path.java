@@ -48,7 +48,7 @@ public class Path {
 
     private static List<Station> findAllStations(final List<Line> lines) {
         return lines.stream()
-                .map(Line::getStations)
+                .map(Line::convertToStation)
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
