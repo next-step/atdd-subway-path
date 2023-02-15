@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import nextstep.subway.domain.exception.PathFindException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -38,17 +39,17 @@ public class PathFinder {
 
     public GraphPath find(final Station source, final Station target) {
         try {
-            GraphPath result = path.getPath(source, target);
-            validateFindPathSuccess(result);
-            return result;
+            validateSourceAndTargetIsNotEqual(source, target);
+            return Optional.ofNullable(this.path.getPath(source, target))
+                    .orElseThrow(PathFindException::new);
         } catch (IllegalArgumentException e) {
             throw new PathFindException();
         }
     }
 
-    private void validateFindPathSuccess(final GraphPath graphPath) {
-        if (graphPath == null) {
-            throw new PathFindException();
+    private void validateSourceAndTargetIsNotEqual(final Station source, final Station target) {
+        if (source.equals(target)) {
+            throw new IllegalArgumentException("출발역과 도착역은 같을 수 없습니다.");
         }
     }
 }
