@@ -187,7 +187,7 @@ class SectionsTest {
 
         assertThatThrownBy(() -> 구간들.removeSectionByStation(deleteStation))
                 .isInstanceOf(NoRegisterStationException.class)
-                .hasMessage(NO_REGISTER_LINE_STATION.getMessage());
+                .hasMessage(NO_REMOVE_NOT_REGISTER_LINE_STATION.getMessage());
     }
 
     private static Stream<Arguments> provideDeleteStation() {
