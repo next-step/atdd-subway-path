@@ -16,7 +16,6 @@ public class RemoveInternalSectionStrategy implements SectionsRemoveStrategy {
         sections.remove(frontSection.get());
         sections.remove(backSection.get());
 
-        Section mergeSection = sections.mergeSection(frontSection.get(), backSection.get());
-        sections.merge(mergeSection);
+        sections.merge(frontSection.get(), backSection.get());
     }
 }
