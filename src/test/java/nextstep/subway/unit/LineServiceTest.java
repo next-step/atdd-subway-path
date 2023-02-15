@@ -46,7 +46,7 @@ public class LineServiceTest {
 
     @DisplayName("지하철 노선에 구간 제거하기")
     @Test
-    void removeSection() {
+    void deleteSection() {
         // given
         Station 서울역 = stationRepository.save(new Station("서울역"));
         Station 시청역 = stationRepository.save(new Station("시청역"));
