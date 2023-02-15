@@ -3,9 +3,6 @@ package nextstep.subway.applicaion;
 import java.util.List;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import org.jgrapht.GraphPath;
 import org.springframework.stereotype.Service;
@@ -14,22 +11,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Service
 public class PathService {
-
-    private final LineRepository lineRepository;
     private final StationService stationService;
+    private final PathFinderService pathFinderService;
 
-    public PathService(final LineRepository lineRepository, final StationService stationService) {
-        this.lineRepository = lineRepository;
+    public PathService(
+            final StationService stationService,
+            final PathFinderService pathFinderService
+    ) {
         this.stationService = stationService;
+        this.pathFinderService = pathFinderService;
     }
 
     public PathResponse findPathBy(final long source, final long target) {
         Station sourceStation = stationService.findById(source);
         Station targetStation = stationService.findById(target);
-        List<Line> lines = lineRepository.findAll();
+        return createPathResponse(findPath(sourceStation, targetStation));
+    }
 
-        PathFinder pathFinder = new PathFinder(lines);
-        return createPathResponse(pathFinder.find(sourceStation, targetStation));
+    private GraphPath findPath(final Station sourceStation, final Station targetStation) {
+        pathFinderService.initGraph();
+        return pathFinderService.find(sourceStation, targetStation);
     }
 
     private PathResponse createPathResponse(final GraphPath graphPath) {

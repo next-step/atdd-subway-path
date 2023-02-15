@@ -54,7 +54,8 @@ class PathFinderTest {
         이호선.addSection(new Section(이호선, 교대역, 강남역, 4));
         신분당선.addSection(new Section(신분당선, 강남역, 양재역, 5));
         수인분당선.addSection(new Section(수인분당선, 양재역, 정자역, 9));
-        PathFinder pathFinder = new PathFinder(List.of(삼호선, 이호선, 신분당선, 수인분당선));
+        PathFinder pathFinder = new PathFinder();
+        pathFinder.initGraph(List.of(삼호선, 이호선, 신분당선, 수인분당선));
         Double expected = 19.0;
 
         GraphPath graphPath = pathFinder.find(남부터미널역, 정자역);
@@ -75,7 +76,8 @@ class PathFinderTest {
     @Test
     void findNotLinked() {
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 1));
-        PathFinder pathFinder = new PathFinder(List.of(삼호선));
+        PathFinder pathFinder = new PathFinder();
+        pathFinder.initGraph(List.of(삼호선));
 
         assertThatThrownBy(() -> pathFinder.find(남부터미널역, 정자역)).isInstanceOf(PathFindException.class);
     }
@@ -88,7 +90,8 @@ class PathFinderTest {
     @Test
     void findSourceAndTargetIsEqual() {
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 1));
-        PathFinder pathFinder = new PathFinder(List.of(삼호선));
+        PathFinder pathFinder = new PathFinder();
+        pathFinder.initGraph(List.of(삼호선));
 
         assertThatThrownBy(() -> pathFinder.find(교대역, 교대역)).isInstanceOf(PathFindException.class);
     }
@@ -100,7 +103,8 @@ class PathFinderTest {
     @Test
     void findSourceIsNotExists() {
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 1));
-        PathFinder pathFinder = new PathFinder(List.of(삼호선));
+        PathFinder pathFinder = new PathFinder();
+        pathFinder.initGraph(List.of(삼호선));
 
         assertThatThrownBy(() -> pathFinder.find(정자역, 교대역)).isInstanceOf(PathFindException.class);
     }
@@ -113,7 +117,8 @@ class PathFinderTest {
     @Test
     void findTargetIsNotExists() {
         삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 1));
-        PathFinder pathFinder = new PathFinder(List.of(삼호선));
+        PathFinder pathFinder = new PathFinder();
+        pathFinder.initGraph(List.of(삼호선));
 
         assertThatThrownBy(() -> pathFinder.find(교대역, 정자역)).isInstanceOf(PathFindException.class);
     }

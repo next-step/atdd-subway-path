@@ -8,26 +8,23 @@ import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PathFinder {
 
-    private final DijkstraShortestPath path;
+    private DijkstraShortestPath path;
 
-    public PathFinder(final List<Line> lines) {
+    public void initGraph(final List<Line> lines) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        initGraph(lines, graph);
-        this.path = new DijkstraShortestPath(graph);
-    }
 
-    private void initGraph(
-            final List<Line> lines,
-            final WeightedMultigraph<Station, DefaultWeightedEdge> graph
-    ) {
         lines.stream()
                 .peek(line -> line.getStations().forEach(graph::addVertex))
                 .map(Line::getSections)
                 .flatMap(Collection::stream)
                 .forEach(section -> setEdge(graph, section));
+
+        this.path = new DijkstraShortestPath(graph);
     }
 
     private void setEdge(final WeightedMultigraph<Station, DefaultWeightedEdge> graph, final Section section) {

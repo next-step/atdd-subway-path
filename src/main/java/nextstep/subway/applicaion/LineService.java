@@ -10,6 +10,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class LineService {
         this.stationService = stationService;
     }
 
+    @CacheEvict(value = "graph", allEntries = true)
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
@@ -51,11 +53,13 @@ public class LineService {
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
+    @CacheEvict(value = "graph", allEntries = true)
     @Transactional
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
     }
 
+    @CacheEvict(value = "graph", allEntries = true)
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
@@ -80,6 +84,7 @@ public class LineService {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    @CacheEvict(value = "graph", allEntries = true)
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
