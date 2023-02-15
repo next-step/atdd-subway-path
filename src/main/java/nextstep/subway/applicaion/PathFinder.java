@@ -5,6 +5,7 @@ import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.exception.SubwayRestApiException;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -39,19 +40,21 @@ public class PathFinder {
     }
 
     public Path searchShortPath(Long sourceId, Long targetId) {
-        validation(sourceId, targetId);
-
         DijkstraShortestPath path = new DijkstraShortestPath(graph);
 
-        List<String> stationIds = path.getPath(String.valueOf(sourceId), String.valueOf(targetId)).getVertexList();
-        int weight = (int) path.getPath(String.valueOf(sourceId), String.valueOf(targetId)).getWeight();
+        validation(path, sourceId, targetId);
+
+        GraphPath<Object, Object> graphPath = path.getPath(String.valueOf(sourceId), String.valueOf(targetId));
+
+        List<String> stationIds = graphPath.getVertexList().stream().map(a -> String.valueOf(a)).collect(Collectors.toList());
+        int weight = (int) graphPath.getWeight();
 
         return new Path(stationIds.stream()
                 .map(Long::valueOf)
                 .collect(Collectors.toList()), weight);
     }
 
-    private void validation(Long sourceId, Long targetId) {
+    private void validation(DijkstraShortestPath path, Long sourceId, Long targetId) {
         if (sourceId.equals(targetId)) {
             throw new SubwayRestApiException(ERROR_FOUND_PATH_SAME_SOURCE_TARGET);
         }
@@ -60,7 +63,7 @@ public class PathFinder {
             throw new SubwayRestApiException(ERROR_FOUND_PATH_NO_EXIST_STATION);
         }
 
-        if (!graph.containsEdge(String.valueOf(sourceId), String.valueOf(targetId))) {
+        if (null == path.getPath(String.valueOf(sourceId), String.valueOf(targetId))) {
             throw new SubwayRestApiException(ERROR_FOUND_PATH_NO_CONNECTION_STATION);
         }
     }
