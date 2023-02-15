@@ -22,15 +22,11 @@ public class DijkstraPathFinder extends PathFinder {
     }
 
     @Override
-    public void init() {
+    public PathResponse findPath(Station source, Station target) {
         graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         getStations().forEach(graph::addVertex);
         getSections().forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
         dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-    }
-
-    @Override
-    public PathResponse findPath(Station source, Station target) {
         if (graph == null || dijkstraShortestPath == null) {
             throw new IllegalArgumentException("init 메서드로 먼저 초기화를 해주세요.");
         }

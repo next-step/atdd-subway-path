@@ -16,7 +16,6 @@ public abstract class PathFinder {
         this.sections = sections;
     }
 
-    public abstract void init();
     public abstract PathResponse findPath(Station source, Station target);
 
     protected List<Station> getStations() {
