@@ -42,7 +42,7 @@ public class Path {
         }
     }
 
-    private static void validateFindPathSuccess(final GraphPath graphPath) {
+    private void validateFindPathSuccess(final GraphPath graphPath) {
         if (graphPath == null) {
             throw new PathFindException();
         }

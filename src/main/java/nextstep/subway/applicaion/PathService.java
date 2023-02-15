@@ -30,12 +30,10 @@ public class PathService {
         List<Line> lines = lineRepository.findAll();
 
         Path path = new Path(lines);
-        GraphPath graphPath = path.find(sourceStation, targetStation);
-
-        return createPathResponse(graphPath);
+        return createPathResponse(path.find(sourceStation, targetStation));
     }
 
-    private static void validateSourceAndTargetIsNotEqual(final long source, final long target) {
+    private void validateSourceAndTargetIsNotEqual(final long source, final long target) {
         if (source == target) {
             throw new IllegalArgumentException("출발역과 도착역은 같을 수 없습니다.");
         }
