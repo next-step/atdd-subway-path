@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -9,10 +8,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.PathSteps.지하철_노선에_지하철_최적_경로_조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static nextstep.subway.common.error.SubwayError.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,30 +118,5 @@ class PathAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(지하철_노선에_지하철_최적_경로_조회_응답.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
                 () -> assertThat(jsonPathResponse.getString("message")).isEqualTo(NO_REGISTER_LINE_STATION.getMessage())
         );
-    }
-
-    private ExtractableResponse<Response> 지하철_노선에_지하철_최적_경로_조회_요청(final Long source, final Long target) {
-        return RestAssured.given().log().all()
-                .when().get("/paths?source={source}&target={target}", source, target)
-                .then().log().all().extract();
-    }
-
-    private Map<String, Object> createSectionCreateParams(final Long upStationId, final Long downStationId, final Integer distance) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-        return params;
-    }
-
-    private Map<String, Object> createLineCreateParams(final String name, final String color, final Long upStationId, final Long downStationId, final Integer distance) {
-        Map<String, Object> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", name);
-        lineCreateParams.put("color", color);
-        lineCreateParams.put("upStationId", upStationId);
-        lineCreateParams.put("downStationId", downStationId);
-        lineCreateParams.put("distance", distance);
-        return lineCreateParams;
     }
 }

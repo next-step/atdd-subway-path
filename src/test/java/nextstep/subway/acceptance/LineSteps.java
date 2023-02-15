@@ -128,4 +128,23 @@ public class LineSteps {
                 () -> assertThat(jsonPath.getList("stations")).hasSize(countOfStation)
         );
     }
+
+    public static Map<String, Object> createSectionCreateParams(final Long upStationId, final Long downStationId, final Integer distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
+    }
+
+    public static Map<String, Object> createLineCreateParams(final String name, final String color, final Long upStationId, final Long downStationId, final Integer distance) {
+        Map<String, Object> lineCreateParams;
+        lineCreateParams = new HashMap<>();
+        lineCreateParams.put("name", name);
+        lineCreateParams.put("color", color);
+        lineCreateParams.put("upStationId", upStationId);
+        lineCreateParams.put("downStationId", downStationId);
+        lineCreateParams.put("distance", distance);
+        return lineCreateParams;
+    }
 }

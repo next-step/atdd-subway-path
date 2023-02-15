@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -202,24 +201,5 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(지하철_구간_제거_응답.response().statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
                 () -> assertThat(jsonPathResponse.getString("message")).isEqualTo(NO_REMOVE_NOT_REGISTER_LINE_STATION.getMessage())
         );
-    }
-
-    private Map<String, Object> createLineCreateParams(final String name, final String color, final Long upStationId, final Long downStationId, final Integer distance) {
-        Map<String, Object> lineCreateParams;
-        lineCreateParams = new HashMap<>();
-        lineCreateParams.put("name", name);
-        lineCreateParams.put("color", color);
-        lineCreateParams.put("upStationId", upStationId);
-        lineCreateParams.put("downStationId", downStationId);
-        lineCreateParams.put("distance", distance);
-        return lineCreateParams;
-    }
-
-    private Map<String, Object> createSectionCreateParams(final Long upStationId, final Long downStationId, final Integer distance) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-        return params;
     }
 }
