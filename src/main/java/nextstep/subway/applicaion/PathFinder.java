@@ -21,7 +21,7 @@ import static nextstep.subway.exception.ErrorResponseEnum.ERROR_FOUND_PATH_SAME_
 public class PathFinder {
     private WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
-    public PathFinder() {
+    private PathFinder() {
     }
 
     public void initGraph(List<Line> lines) {
