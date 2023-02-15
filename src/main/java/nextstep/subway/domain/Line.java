@@ -5,6 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -47,10 +48,10 @@ public class Line {
     }
 
     public void update(final String name, final String color) {
-        if (name != null) {
+        if (!name.isEmpty()) {
             this.name = name;
         }
-        if (color != null) {
+        if (!color.isEmpty()) {
             this.color = color;
         }
     }

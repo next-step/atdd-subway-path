@@ -2,8 +2,8 @@ package nextstep.subway.applicaion.dto;
 
 public class UpdateLineRequest {
 
-    private String name;
-    private String color;
+    private String name = "";
+    private String color = "";
 
     private UpdateLineRequest() {
     }
