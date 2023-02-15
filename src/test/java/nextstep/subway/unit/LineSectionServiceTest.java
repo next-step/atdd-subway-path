@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static nextstep.subway.common.error.SubwayError.NO_DELETE_ONE_SECTION;
-import static nextstep.subway.common.error.SubwayError.NO_REGISTER_LINE_STATION;
+import static nextstep.subway.common.error.SubwayError.NO_REMOVE_NOT_REGISTER_LINE_STATION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -126,7 +126,7 @@ class LineSectionServiceTest {
 
         assertThatThrownBy(() -> lineService.deleteSection(saveLine.getId(), 검암역.getId()))
                 .isInstanceOf(NoRegisterStationException.class)
-                .hasMessage(NO_REGISTER_LINE_STATION.getMessage());
+                .hasMessage(NO_REMOVE_NOT_REGISTER_LINE_STATION.getMessage());
     }
 
     private void addSection(final Line saveLine, final Station upStation, final Station downStation, final Integer distance) {
