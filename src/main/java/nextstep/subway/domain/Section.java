@@ -42,6 +42,16 @@ public class Section {
         this.distance = distance;
     }
 
+    public void updateUpStation(final Station station, final int distance) {
+        this.upStation = station;
+        this.distance = distance;
+    }
+
+    public void updateDownStation(final Station station, final int distance) {
+        this.downStation = station;
+        this.distance = distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -51,11 +61,15 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return Objects.equals(getId(), section.getId());
+        return getDistance() == section.getDistance()
+                && Objects.equals(getId(), section.getId())
+                && Objects.equals(getLine(), section.getLine())
+                && Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId());
+        return Objects.hash(getId(), getLine(), getUpStation(), getDownStation(), getDistance());
     }
 }

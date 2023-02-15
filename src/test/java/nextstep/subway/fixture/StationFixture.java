@@ -15,6 +15,7 @@ public enum StationFixture {
     신사역,
     역삼역,
     선릉역,
+    삼성역,
     서울대입구역,
     범계역,
     ;
