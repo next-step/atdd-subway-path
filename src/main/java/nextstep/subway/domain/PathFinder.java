@@ -26,10 +26,14 @@ public class PathFinder {
                 .peek(line -> line.getStations().forEach(graph::addVertex))
                 .map(Line::getSections)
                 .flatMap(Collection::stream)
-                .forEach(section -> graph.setEdgeWeight(
-                        graph.addEdge(section.getUpStation(), section.getDownStation()),
-                        section.getDistance().value()
-                ));
+                .forEach(section -> setEdge(graph, section));
+    }
+
+    private void setEdge(final WeightedMultigraph<Station, DefaultWeightedEdge> graph, final Section section) {
+        graph.setEdgeWeight(
+                graph.addEdge(section.getUpStation(), section.getDownStation()),
+                section.getDistance().value()
+        );
     }
 
     public GraphPath find(final Station source, final Station target) {
