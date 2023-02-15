@@ -17,55 +17,36 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
-    public void addSection(Section section) {
-        if (values.isEmpty()) {
-            values.add(section);
-            return;
-        }
-        if (isAlreadyAdd(section)) {
-            throw new SubwayException(SubwayExceptionMessage.SECTION_ALREADY_ADDED);
-        }
-        if (canAddFirstSection(section)) {
-            values.add(section);
-            return;
-        }
-        if (canAddLastSection(section)) {
-            values.add(section);
-            return;
-        }
-        if (isBetweenUp(section)) {
-            Section includedSection = getIncludedSectionWhenEqualUpStation(section);
-            includedSection.divideUpStation(section);
-            values.add(section);
-            return;
-        }
-        if (isBetweenDown(section)) {
-            Section includedSection = getIncludedSectionWhenEqualDownStation(section);
-            includedSection.divideDownStation(section);
-            values.add(section);
-            return;
-        }
-        throw new SubwayException(SubwayExceptionMessage.SECTION_CANNOT_ADD);
+    public void add(Section section) {
+        values.add(section);
     }
 
-    private boolean isBetweenDown(Section section) {
+    public void addBetweenUp(Section section) {
+        Section includedSection = getIncludedSectionWhenEqualUpStation(section);
+        includedSection.divideUpStation(section);
+        values.add(section);
+    }
+
+    public void addBetweenDown(Section section) {
+        Section includedSection = getIncludedSectionWhenEqualDownStation(section);
+        includedSection.divideDownStation(section);
+        values.add(section);
+    }
+
+    public boolean isBetweenDown(Section section) {
         return contains(section.getDownStation()) && !contains(section.getUpStation());
     }
 
-    private boolean isBetweenUp(Section section) {
+    public boolean isBetweenUp(Section section) {
         return contains(section.getUpStation()) && !contains(section.getDownStation());
     }
 
-    private boolean canAddLastSection(Section section) {
+    public boolean canAddLastSection(Section section) {
         return equalLastStation(section.getUpStation()) && !contains(section.getDownStation());
     }
 
-    private boolean canAddFirstSection(Section section) {
+    public boolean canAddFirstSection(Section section) {
         return equalFirstStation(section.getDownStation()) && !contains(section.getUpStation());
-    }
-
-    private boolean isAlreadyAdd(Section section) {
-        return contains(section.getDownStation()) && contains(section.getUpStation());
     }
 
     private Optional<Section> getAfterSection(Section section) {
@@ -132,41 +113,33 @@ public class Sections {
 
     }
 
-    protected boolean equalLastStation(Station station) {
+    public boolean equalLastStation(Station station) {
         return values.get(values.size() - 1).equalDownStation(station);
     }
 
-    protected boolean equalFirstStation(Station station) {
+    public boolean equalFirstStation(Station station) {
         return values.get(0).equalUpStation(station);
     }
 
-    public void remove(Station station) {
-
-        if (!contains(station)) {
-            throw new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED);
-        }
-        if (size() <= 1) {
-            throw new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE);
-        }
-        if (equalFirstStation(station)) {
+    public void removeFirstStation() {
             values.remove(getFirstSection());
-            return;
-        }
-        if (equalLastStation(station)) {
+    }
+
+    public void removeLastStation() {
             values.remove(getLastSection());
-            return;
-        }
+    }
+
+    public void removeBetween(Station station){
         Section removeSection = values.stream()
                 .filter(section -> section.equalDownStation(station))
                 .findFirst()
-                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED));
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE));
 
         Section updateSection = getAfterSection(removeSection)
-                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_NOT_CONTAINED));
+                .orElseThrow(() -> new SubwayException(SubwayExceptionMessage.STATION_CANNOT_REMOVE));
 
         updateSection.combineUpSection(removeSection);
         values.remove(removeSection);
-
     }
 
     public int size() {

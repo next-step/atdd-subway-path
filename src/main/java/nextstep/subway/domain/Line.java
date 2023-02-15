@@ -1,5 +1,10 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.policy.section.SectionAddPolicies;
+import nextstep.subway.domain.policy.section.SectionAddPolicy;
+import nextstep.subway.domain.policy.section.StationRemovePolices;
+import nextstep.subway.domain.policy.section.StationRemovePolicy;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -12,7 +17,12 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private final Sections sections = new Sections();
+
+    @Transient
+    private final SectionAddPolicies sectionAddPolicies = new SectionAddPolicies();
+    @Transient
+    private final StationRemovePolices stationRemovePolicies = new StationRemovePolices();
 
     public Line() {
     }
@@ -57,7 +67,8 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        sections.addSection(section);
+        SectionAddPolicy policy = sectionAddPolicies.getSuitable(this.sections, section);
+        policy.execute(this.sections, section);
     }
 
     public List<Station> getAllStations() {
@@ -69,6 +80,7 @@ public class Line {
     }
 
     public void remove(Station station) {
-        sections.remove(station);
+        StationRemovePolicy policy = stationRemovePolicies.isSuitable(this.sections, station);
+        policy.execute(sections, station);
     }
 }
