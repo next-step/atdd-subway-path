@@ -1,18 +1,19 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
-import nextstep.subway.exception.CannotDeleteSoleSectionException;
-import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
-import nextstep.subway.exception.SectionWithStationNotExistsException;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
+
+import nextstep.subway.exception.BothSectionStationsNotExistsInLineException;
+import nextstep.subway.exception.CannotDeleteSoleSectionException;
+import nextstep.subway.exception.SectionStationsAlreadyExistsInLineException;
+import nextstep.subway.exception.SectionWithStationNotExistsException;
 
 @Embeddable
 public class Sections {
@@ -146,14 +147,7 @@ public class Sections {
         Section downSection = findSectionByUpStation(station)
             .orElseThrow(() -> new SectionWithStationNotExistsException(station.getName()));
 
-        Section mergedSection = new Section(
-            upSection.getLine(),
-            upSection.getUpStation(),
-            downSection.getDownStation(),
-            upSection.getDistance() + downSection.getDistance()
-        );
-
-        sections.add(mergedSection);
+        sections.add(Section.mergedSection(upSection, downSection));
         sections.removeAll(List.of(upSection, downSection));
     }
 

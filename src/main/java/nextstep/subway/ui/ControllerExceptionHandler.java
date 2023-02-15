@@ -19,7 +19,10 @@ public class ControllerExceptionHandler {
         CannotDeleteSoleSectionException.class,
         InvalidSectionDistanceException.class,
         SectionStationsAlreadyExistsInLineException.class,
-        SectionWithStationNotExistsException.class
+        SectionWithStationNotExistsException.class,
+        IdenticalSourceTargetNotAllowedException.class,
+        StationNotFoundException.class,
+        NonConnectedSourceTargetException.class
     })
     public ResponseEntity<String> handleCustomExceptions(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());

@@ -1,5 +1,11 @@
 package nextstep.subway.applicaion;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -7,11 +13,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,8 +46,12 @@ public class LineService {
         line.addSection(new Section(line, upStation, downStation, distance));
     }
 
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
+
     public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
+        return findAll().stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
