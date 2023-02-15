@@ -55,8 +55,8 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Additional additional, Section section) {
-        sections.add(additional, section);
+    public void addSection(Section section) {
+        sections.add(section);
     }
 
     public void removeSection(Station station) {

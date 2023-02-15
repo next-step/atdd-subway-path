@@ -62,19 +62,7 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(new BackAddSection(), lineId, sectionRequest);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/{lineId}/sections/front")
-    public ResponseEntity<Void> addSectionFront(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(new FrontAddSection(), lineId, sectionRequest);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/{lineId}/sections/middle")
-    public ResponseEntity<Void> addSectionMiddle(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(new MiddleAddSection(), lineId, sectionRequest);
+        lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 

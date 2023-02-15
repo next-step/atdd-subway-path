@@ -33,6 +33,7 @@ public class Section {
     private Station downStation;
 
     private int distance;
+    private static int MIN_DISTANCE = 0;
 
     protected Section() {
 
@@ -49,7 +50,7 @@ public class Section {
     }
 
     private void validations() {
-        if (this.distance <= 0) {
+        if (this.distance <= MIN_DISTANCE) {
             throw new SubwayRestApiException(ERROR_INVAILD_DISTANCE);
         }
     }

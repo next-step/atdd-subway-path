@@ -1,9 +1,5 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.addtional.Additional;
-import nextstep.subway.applicaion.addtional.BackAddSection;
-import nextstep.subway.applicaion.addtional.FrontAddSection;
-import nextstep.subway.applicaion.addtional.MiddleAddSection;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -23,10 +19,6 @@ class LineTest {
     Station 지하철역3 = new Station("지하철역3");
     int distance_5 = 5;
     int distance_7 = 7;
-
-    Additional frontAddSection = new FrontAddSection();
-    Additional backAddSection = new BackAddSection();
-    Additional middleAddSection = new MiddleAddSection();
 
     @Test
     void addSection() {
@@ -180,15 +172,15 @@ class LineTest {
     }
 
     private void 지하철노선_기존구간_앞에_추가(Line line, Section newSection) {
-        line.addSection(frontAddSection, newSection);
+        line.addSection(newSection);
     }
 
     private void 지하철노선_기존구간_중간에_추가(Line line, Section newSection) {
-        line.addSection(middleAddSection, newSection);
+        line.addSection(newSection);
     }
 
     private void 지하철노선_기존구간_뒤에_추가(Line line, Section newSection) {
-        line.addSection(backAddSection, newSection);
+        line.addSection(newSection);
     }
 
     private ListAssert<Station> 지하철노선_구간_지하철역_검증(Line line, Station... stations) {

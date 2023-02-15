@@ -31,7 +31,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(new BackAddSection(), Section.builder()
+            line.addSection(Section.builder()
                     .line(line)
                     .upStation(upStation)
                     .downStation(downStation)
@@ -70,12 +70,12 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Additional additional, Long lineId, SectionRequest sectionRequest) {
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.addSection(additional, Section.builder()
+        line.addSection(Section.builder()
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)

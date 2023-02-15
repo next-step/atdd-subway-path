@@ -1,6 +1,9 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.addtional.Additional;
+import nextstep.subway.applicaion.addtional.BackAddSection;
+import nextstep.subway.applicaion.addtional.FrontAddSection;
+import nextstep.subway.applicaion.addtional.MiddleAddSection;
 import nextstep.subway.exception.SubwayRestApiException;
 
 import javax.persistence.CascadeType;
@@ -25,17 +28,13 @@ public class Sections {
     protected Sections() {
     }
 
-    public void add(Additional additional, Section section) {
+    public void add(Section section) {
+        Additional additional = searchAdditionalSection(section);
         additional.add(this, section);
-//        this.sections.add(section);
     }
 
     public List<Section> getSections() {
-        return sections;
-    }
-
-    public void update(int index, Section section) {
-        this.sections.set(index, section);
+        return this.sections;
     }
 
     public void remove(Station station) {
@@ -166,5 +165,31 @@ public class Sections {
 
     private boolean isNotValidSectionCount() {
         return this.sections.size() <= 1;
+    }
+
+    private Additional searchAdditionalSection(Section section) {
+        if (isPosibleFrontAddSection(section)) {
+            return new FrontAddSection();
+        }
+
+        if (isPosibleMiddleAddSection(section)) {
+            return new MiddleAddSection();
+        }
+
+        return new BackAddSection();
+    }
+
+    private boolean isPosibleFrontAddSection(Section section) {
+        return this.sections.stream()
+                .filter(a -> section.isSameDownStation(a.getUpStation()))
+                .findFirst()
+                .isPresent();
+    }
+
+    private boolean isPosibleMiddleAddSection(Section section) {
+        return this.sections.stream()
+                .filter(a -> section.isSameUpStation(a.getUpStation()))
+                .findFirst()
+                .isPresent();
     }
 }
