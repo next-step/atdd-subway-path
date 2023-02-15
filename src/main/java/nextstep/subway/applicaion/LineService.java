@@ -43,13 +43,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(
-                lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return createLineResponse(findLineById(id));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = findLineById(id);
         line.updateNameAndColor(lineRequest.getName(), lineRequest.getColor());
     }
 
@@ -74,20 +73,19 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLineById(lineId);
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-        Station station = stationService.findById(stationId);
+        Line line = findLineById(lineId);
 
-        if (!line.getSections().get(line.getSectionCount() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
+        line.deleteSection(stationId);
+    }
 
-        line.deleteSectionByIndex(line.getSectionCount() - 1);
+    private Line findLineById(Long lineId){
+        return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
     }
 }

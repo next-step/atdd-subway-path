@@ -94,8 +94,23 @@ public class Sections {
         }
     }
 
-    public void deleteSectionByIndex(Integer index) {
-        sections.remove(index);
+    public void deleteSection(Long stationId) {
+        if(!isLastDownStation(stationId)){
+            throw new IllegalArgumentException("하행종점역인 경우만 삭제가 가능합니다.");
+        }
+
+        sections = sections.stream().filter(e -> e.getDownStation().getId() != stationId).collect(Collectors.toList());
+    }
+
+    private boolean isLastDownStation(Long stationId) {
+        List<Station> stations = getSortedStations();
+        Station lastStation = stations.get(stations.size()-1);
+
+        if(lastStation.getId() == stationId){
+            return true;
+        }
+
+        return false;
     }
 
     public Integer getSectionSize() {

@@ -36,8 +36,8 @@ public class Line {
         sections.addSection(newSection);
     }
 
-    public void deleteSectionByIndex(Integer index) {
-        sections.deleteSectionByIndex(index);
+    public void deleteSection(Long stationId) {
+        sections.deleteSection(stationId);
     }
 
     public List<Station> getSortedStations() {
