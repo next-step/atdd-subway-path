@@ -66,13 +66,15 @@ public class Line {
             return;
         }
 
-        for (Section section : this.sections) {
-            validateSameUpDownStation(upStation, downStation, section);
+        for (int i = 0; i < this.sections.size(); i++) {
+            validateSameUpDownStation(upStation, downStation, sections.get(i));
 
-            if (Objects.equals(section.getUpStation().getId(), upStation.getId())) {
-                int newSectionDistance = getNewSectionDistance(distance, section);
-                this.sections.add(new Section(this, downStation, section.getDownStation(), newSectionDistance));
-                section.modify(this, section.getUpStation(), downStation, distance);
+            if (Objects.equals(sections.get(i).getUpStation().getId(), upStation.getId())) {
+                Station currentUpStation = sections.get(i).getUpStation();
+                Station currentDownStation = sections.get(i).getDownStation();
+                int newSectionDistance = getNewSectionDistance(distance, sections.get(i));
+                sections.get(i).modify(this, currentUpStation, downStation, distance);
+                this.sections.add(i + 1, new Section(this, downStation, currentDownStation, newSectionDistance));
                 return;
             }
         }
