@@ -113,4 +113,15 @@ public class Section {
     public boolean isInSideOverlapOnDownStation(Section section) {
         return isDownStation(section.getDownStation());
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
 }

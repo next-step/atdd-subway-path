@@ -1,4 +1,12 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.sections;
+
+import nextstep.subway.domain.InsertLocation;
+import nextstep.subway.domain.sections.strategy.remove.RemoveHeadSectionStrategy;
+import nextstep.subway.domain.sections.strategy.remove.RemoveInternalSectionStrategy;
+import nextstep.subway.domain.sections.strategy.remove.RemoveTailSectionStrategy;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.sections.strategy.remove.SectionsRemover;
+import nextstep.subway.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,13 +19,16 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
     public static final String EXCEPTION_MESSAGE_MINIMUM_ONE_SECTION_REQUIRED = "지하철노선은 1개 구간 이하로 구성될 수 없습니다.";
-    public static final String EXCEPTION_MESSAGE_CAN_REMOVE_TAIL_STATION = "해당 노선의 하행종점역만 제거할 수 있습니다.";
-    public static final String EXCEPTION_MESSAGE_NEED_ONE_CRITERIA_STATION = "요청한 구간의 모든 역 중 노선에 존재하는 노선이 없어서 구간을 추가할 수 없습니다.";
+    public static final String EXCEPTION_MESSAGE_NEED_CRITERIA_STATION = "요청한 구간의 모든 역 중 노선에 존재하는 역이 없습니다.";
     public static final String EXCEPTION_MESSAGE_ALL_REQUEST_STATIONS_ALREADY_RESISTER = "요청한 구간의 모든 역은 이미 노선에 존재하여 구간을 추가할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @OrderBy("id asc")
     private List<Section> sections = new ArrayList<>();
+
+    public List<Section> getSections() {
+        return sections;
+    }
 
     public void add(Section section) {
         validateAddableSection(section);
@@ -33,6 +44,10 @@ public class Sections {
             return;
         }
         addBetweenSection(insertLocation, section);
+    }
+
+    public void merge(Section frontSection, Section backSection) {
+        sections.add(mergeSection(frontSection, backSection));
     }
 
     private void addBetweenSection(InsertLocation insertLocation, Section section) {
@@ -70,6 +85,17 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    public Optional<Section> findSectionOnDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findFirst();
+    }
+
+    public Optional<Section> findSectionOnUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findFirst();
+    }
 
     private InsertLocation findInsertLocation(Section target) {
         for (int index = 0; index < sections.size(); index++) {
@@ -101,7 +127,13 @@ public class Sections {
 
     private void verifyExistenceCriteriaStation(Section section) {
         if (!sections.isEmpty() && !hasMatchedStation(section)) {
-            throw new IllegalArgumentException(EXCEPTION_MESSAGE_NEED_ONE_CRITERIA_STATION);
+            throw new IllegalArgumentException(EXCEPTION_MESSAGE_NEED_CRITERIA_STATION);
+        }
+    }
+
+    private void verifyExistenceCriteriaStation(Station station) {
+        if (!sections.isEmpty() && !hasMatchedStation(station)) {
+            throw new IllegalArgumentException(EXCEPTION_MESSAGE_NEED_CRITERIA_STATION);
         }
     }
 
@@ -116,6 +148,10 @@ public class Sections {
                 || hasStation(section.getDownStation());
     }
 
+    private boolean hasMatchedStation(Station station) {
+        return hasStation(station);
+    }
+
     private boolean hasAllMatchedStation(Section section) {
         return hasStation(section.getUpStation())
                 && hasStation(section.getDownStation());
@@ -126,36 +162,65 @@ public class Sections {
                 .anyMatch(section -> section.hasStation(station));
     }
 
-    public void remove(Station station) {
+    public void remove(Section section) {
+        sections.remove(section);
+    }
+
+    public void delete(Station station) {
         checkRemovableStation(station);
 
-        sections.remove(sections.size() - 1);
+        SectionsRemover sectionsRemover = new SectionsRemover(this);
+        setRemoverStrategy(station, sectionsRemover);
+
+        sectionsRemover.remove(station);
+    }
+
+    private void setRemoverStrategy(Station station, SectionsRemover sectionsRemover) {
+        if (isHeadSection(station)) {
+            sectionsRemover.setStrategy(new RemoveHeadSectionStrategy());
+        }
+
+        if (isTailSection(station)) {
+            sectionsRemover.setStrategy(new RemoveTailSectionStrategy());
+        }
+
+        if (isInternalSection(station)) {
+            sectionsRemover.setStrategy(new RemoveInternalSectionStrategy());
+        }
+    }
+
+    private boolean isInternalSection(Station station) {
+        Optional<Section> frontSection = findSectionOnDownStation(station);
+        Optional<Section> backSection = findSectionOnUpStation(station);
+        return frontSection.isPresent() && backSection.isPresent();
+    }
+
+    private boolean isHeadSection(Station station) {
+        return findSectionOnDownStation(station).isEmpty();
+    }
+
+    private boolean isTailSection(Station station) {
+        return findSectionOnUpStation(station).isEmpty();
+    }
+
+    public Section mergeSection(Section frontSection, Section backSection) {
+        return new Section(
+                frontSection.getLine(),
+                frontSection.getUpStation(),
+                backSection.getDownStation(),
+                frontSection.getDistance() + backSection.getDistance()
+        );
     }
 
     private void checkRemovableStation(Station station) {
         verifyMinimumSectionCount();
-        verifyTailStation(station);
+        verifyExistenceCriteriaStation(station);
     }
 
     private void verifyMinimumSectionCount() {
         if (sections.size() == 1) {
             throw new IllegalStateException(EXCEPTION_MESSAGE_MINIMUM_ONE_SECTION_REQUIRED);
         }
-    }
-
-    private void verifyTailStation(Station station) {
-        Station tailStation = getTailStation();
-        if (!tailStation.equals(station)) {
-            throw new IllegalArgumentException(EXCEPTION_MESSAGE_CAN_REMOVE_TAIL_STATION);
-        }
-    }
-
-    private Station getTailStation() {
-        return getTailSection().getDownStation();
-    }
-
-    private Section getTailSection() {
-        return sections.get(sections.size() - 1);
     }
 
     public List<Station> getStations() {
@@ -223,5 +288,12 @@ public class Sections {
 
     public int size() {
         return sections.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "sections=" + sections +
+                '}';
     }
 }

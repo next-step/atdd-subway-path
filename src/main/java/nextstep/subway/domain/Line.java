@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.sections.Sections;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -62,7 +64,7 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        sections.remove(station);
+        sections.delete(station);
     }
 
     public List<Station> getStations() {
@@ -71,5 +73,15 @@ public class Line {
 
     public Section getHeadSection() {
         return sections.getHeadSection();
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
     }
 }
