@@ -1,11 +1,6 @@
 package nextstep.subway.domain;
 
-import org.springframework.dao.DataIntegrityViolationException;
-
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 @Entity
 public class Section {
@@ -54,12 +49,8 @@ public class Section {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
 
-    public boolean hasNoneMatchedStation(Section section) {
-        return !this.hasBothMatchedStation(section);
-    }
-
     public Section divideBy(Section section) {
-        if(this.downStation.equals(section.downStation)){
+        if (this.downStation.equals(section.downStation)) {
             return new Section(this.line, this.upStation, section.upStation, this.distance - section.distance);
         }
         return new Section(this.line, section.downStation, this.downStation, this.distance - section.distance);
