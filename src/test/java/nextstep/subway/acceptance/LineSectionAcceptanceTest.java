@@ -200,7 +200,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         final JsonPath jsonPathResponse = 지하철_구간_제거_응답.response().body().jsonPath();
         assertAll(
                 () -> assertThat(지하철_구간_제거_응답.response().statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value()),
-                () -> assertThat(jsonPathResponse.getString("message")).isEqualTo(NO_REGISTER_LINE_STATION.getMessage())
+                () -> assertThat(jsonPathResponse.getString("message")).isEqualTo(NO_REMOVE_NOT_REGISTER_LINE_STATION.getMessage())
         );
     }
 
