@@ -28,75 +28,80 @@ public class Sections {
             return;
         }
 
-        if (isAllStationExist(newSection.getUpStation(), newSection.getDownStation())) {
-            throw new IllegalArgumentException("추가하려는 구간의 상/하행역이 이미 노선에 포함되어 있습니다.");
-        }
+        validateAddSectionRule(newSection);
 
-        if (isAllStationNotExist(newSection.getUpStation(), newSection.getDownStation())) {
-            throw new IllegalArgumentException("추가하려는 구간의 상/하행역이 노선에 포함되어 있지 않습니다.");
-        }
+        List<Station> sortedStations = getSortedStations();
+        Station lastUpStation = sortedStations.get(0);
+        Station lastDownStation = sortedStations.get(sortedStations.size()-1);
 
-        Map<Station, Integer> upStationMap = getUpStationMap();
-        Map<Station, Integer> downStationMap = getDownStationMap();
-
-        Station lastUpStation = new Station();
-        Station lastDownStation = new Station();
-
-        for (Station station : downStationMap.keySet()) {
-            Integer value = upStationMap.getOrDefault(station, 0);
-
-            if (value != 0) upStationMap.put(station, value + 1);
-            else lastDownStation = station;
-        }
-
-        for (Station station : upStationMap.keySet()) {
-            if (upStationMap.getOrDefault(station, 0) == 1) {
-                lastUpStation = station;
-            }
-        }
-
-        if (newSection.getUpStation().equals(lastDownStation)) {
+        if(canAddSectionToUpOrDown(newSection, lastUpStation, lastDownStation)){
             sections.add(newSection);
             return;
         }
 
-        if (newSection.getDownStation().equals(lastUpStation)) {
-            sections.add(0, newSection);
-            return;
+        addSectionToMiddle(newSection);
+    }
+
+    private void addSectionToMiddle(Section newSection) {
+        Section targetSection = sections.stream()
+                .filter(e -> e.getUpStation().getId() == newSection.getUpStation().getId()
+                        || e.getDownStation().getId() == newSection.getDownStation().getId())
+                                        .findFirst()
+                                        .orElseThrow(IllegalArgumentException::new);
+
+        if (targetSection.getDistance() <= newSection.getDistance()) {
+            throw new IllegalArgumentException("추가된 구간이 기존 구간보다 길이가 깁니다.");
         }
 
-        if (!newSection.getUpStation().equals(lastDownStation)
-                && !newSection.getDownStation().equals(lastUpStation)) {
-            Integer sectionIndex = getSectionIndexByUpStation(newSection.getUpStation());
+        sections.add(newSection);
 
-            if (sectionIndex == -1) {
-                sectionIndex = getSectionIndexByDownStation(newSection.getDownStation());
-
-                Section targetSection = sections.get(sectionIndex);
-
-                if (targetSection.getDistance() <= newSection.getDistance()) {
-                    throw new IllegalArgumentException("추가된 구간이 기존 구간보다 길이가 깁니다.");
-                }
-
-                targetSection.updateDistance(
-                        targetSection.getDistance() - newSection.getDistance());
-                targetSection.updateDownStation(newSection.getUpStation());
-                sections.set(sectionIndex, targetSection);
-                sections.add(sectionIndex - 1, newSection);
-                return;
-            }
-
-            Section targetSection = sections.get(sectionIndex);
-
-            if (targetSection.getDistance() <= newSection.getDistance()) {
-                throw new IllegalArgumentException("추가된 구간이 기존 구간보다 길이가 깁니다.");
-            }
-
+        if(targetSection.getUpStation().getId() == newSection.getUpStation().getId()){
             targetSection.updateDistance(targetSection.getDistance() - newSection.getDistance());
             targetSection.updateUpStation(newSection.getDownStation());
-            sections.set(sectionIndex, targetSection);
-            sections.add(sectionIndex, newSection);
+        }else{
+            targetSection.updateDistance(targetSection.getDistance() - newSection.getDistance());
+            targetSection.updateDownStation(newSection.getUpStation());
         }
+
+    }
+
+
+    private boolean canAddSectionToUpOrDown(Section newSection, Station lastUpStation, Station lastDownStation) {
+        if(newSection.getUpStation().equals(lastDownStation) || newSection.getDownStation().equals(lastUpStation)){
+            return true;
+        }
+
+        return false;
+    }
+
+    private void validateAddSectionRule(Section newSection) {
+        if (isAllStationExist(newSection)) {
+            throw new IllegalArgumentException("추가하려는 구간의 상/하행역이 이미 노선에 포함되어 있습니다.");
+        }
+
+        if (isAllStationNotExist(newSection)) {
+            throw new IllegalArgumentException("추가하려는 구간의 상/하행역이 노선에 포함되어 있지 않습니다.");
+        }
+    }
+
+    private boolean isAllStationExist(Section newSection) {
+        List<Station> stations = getStations();
+
+        if (stations.contains(newSection.getUpStation()) && stations.contains(newSection.getDownStation())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isAllStationNotExist(Section newSection) {
+        List<Station> stations = getStations();
+
+        if (!stations.contains(newSection.getUpStation()) && !stations.contains(newSection.getDownStation())) {
+            return true;
+        }
+
+        return false;
     }
 
     public void deleteSection(Long stationId) {
@@ -104,12 +109,7 @@ public class Sections {
             throw new IllegalArgumentException("하행종점역인 경우만 삭제가 가능합니다.");
         }
 
-        for(int i = 0; i < sections.size(); i++){
-            if(sections.get(i).getDownStation().getId() == stationId){
-                sections.remove(i);
-                return;
-            }
-        }
+        sections.remove(sections.size()-1);
     }
 
     private boolean isLastDownStation(Long stationId) {
@@ -136,26 +136,6 @@ public class Sections {
         var downStations = sections.stream().map(Section::getDownStation);
 
         return Stream.concat(upStations, downStations).distinct().collect(Collectors.toList());
-    }
-
-    private boolean isAllStationExist(Station upStation, Station downStation) {
-        List<Station> stations = getStations();
-
-        if (stations.contains(upStation) && stations.contains(downStation)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isAllStationNotExist(Station upStation, Station downStation) {
-        List<Station> stations = getStations();
-
-        if (!stations.contains(upStation) && !stations.contains(downStation)) {
-            return true;
-        }
-
-        return false;
     }
 
     private Map<Station, Integer> getUpStationMap() {
