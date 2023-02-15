@@ -53,6 +53,10 @@ public class Line {
         return this.sections.findAllStationsOrderBy();
     }
 
+    public List<Section> getSectionList() {
+        return sections.getSections();
+    }
+
     public Long getId() {
         return id;
     }
@@ -69,8 +73,12 @@ public class Line {
         return sections;
     }
 
-    public List<Section> getSectionList() {
-        return sections.getSections();
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     @Override
