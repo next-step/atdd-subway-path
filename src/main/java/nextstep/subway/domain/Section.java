@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.exception.line.InvalidDistanceException;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,5 +41,26 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+    public void update(final Section newSection) {
+        updateToNewStation(newSection);
+        updateDistance(newSection.getDistance());
+    }
+
+    private void updateToNewStation(Section newSection) {
+        if (upStation.equals(newSection.getUpStation())) {
+            this.upStation = newSection.getDownStation();
+        } else if(downStation.equals(newSection.getDownStation())) {
+            this.downStation = newSection.getUpStation();
+        } else {
+            throw new AssertionError("validate 실패");
+        }
+    }
+
+    private void updateDistance(final int distance) {
+        if (this.distance <= distance) {
+            throw new InvalidDistanceException();
+        }
+        this.distance -= distance;
     }
 }

@@ -59,7 +59,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.getLine(lineId);
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class LineService {
         Line line = lineRepository.getLine(lineId);
         Station station = stationService.findById(stationId);
 
-        if (!line.getTerminalStation().equals(station)) {
+        if (!station.equals(line.getTerminalStation())) {
             throw new IllegalArgumentException();
         }
 
