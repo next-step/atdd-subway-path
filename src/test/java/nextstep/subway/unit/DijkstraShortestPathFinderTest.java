@@ -9,11 +9,12 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static nextstep.subway.common.error.SubwayError.NO_PATH_CONNECTED;
+import static nextstep.subway.unit.TestFixtureLine.노선_생성;
+import static nextstep.subway.unit.TestFixtureStation.역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -81,18 +82,5 @@ class DijkstraShortestPathFinderTest {
         assertThatThrownBy(() -> pathFinder.findRoute(경로))
                 .isInstanceOf(NoPathConnectedException.class)
                 .hasMessage(NO_PATH_CONNECTED.getMessage());
-    }
-
-
-    private Line 노선_생성(final Long id, final String name, final String color, final Station upStation, final Station downStation, final Integer distance) {
-        final Line line = new Line(name, color, upStation, downStation, distance);
-        ReflectionTestUtils.setField(line, "id", id);
-        return line;
-    }
-
-    private Station 역_생성(final Long id, final String name) {
-        final Station 역 = new Station(name);
-        ReflectionTestUtils.setField(역, "id", id);
-        return 역;
     }
 }

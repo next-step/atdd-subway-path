@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static nextstep.subway.common.error.SubwayError.*;
+import static nextstep.subway.unit.TestFixtureLine.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -195,31 +196,5 @@ class SectionsTest {
                 Arguments.of(검암역.getName(), 검암역),
                 Arguments.of(부평역.getName(), 부평역)
         );
-    }
-
-    private Line 노선_생성(final Long id, final String name, final String color, final Station upStation, Station downStation, final Integer distance) {
-        final Line 노선 = new Line(name, color, upStation, downStation, distance);
-        reflectionById(id, 노선);
-        return 노선;
-    }
-
-    private Line 노선_생성(final Long id, final String name, final String color, final List<Section> sections) {
-        final Line 노선 = new Line(name, color, new Sections(sections));
-        reflectionById(id, 노선);
-        return 노선;
-    }
-
-    private Section 구간_생성(final Long id, final Station upStation, final Station downStation, final Integer distance) {
-        final Section 구간 = new Section(upStation, downStation, distance);
-        reflectionById(id, 구간);
-        return 구간;
-    }
-
-    private Sections 노선_구간들(final Line line) {
-        return new Sections(line.getSections().getSections());
-    }
-
-    private void reflectionById(final Long id, final Object object) {
-        ReflectionTestUtils.setField(object, "id", id);
     }
 }

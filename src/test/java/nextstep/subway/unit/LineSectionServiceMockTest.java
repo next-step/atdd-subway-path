@@ -11,11 +11,11 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
 
+import static nextstep.subway.unit.TestFixtureStation.역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -85,11 +85,5 @@ class LineSectionServiceMockTest {
                 () -> assertThat(stations).hasSize(2),
                 () -> assertThat(stations).containsExactly(강남역, 잠실역)
         );
-    }
-
-    private Station 역_생성(final Long id, final String name) {
-        final Station 역 = new Station(name);
-        ReflectionTestUtils.setField(역, "id", id);
-        return 역;
     }
 }

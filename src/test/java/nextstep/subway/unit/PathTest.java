@@ -8,12 +8,13 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
 import static nextstep.subway.common.error.SubwayError.NO_FIND_SAME_SOURCE_TARGET_STATION;
 import static nextstep.subway.common.error.SubwayError.NO_REGISTER_LINE_STATION;
+import static nextstep.subway.unit.TestFixtureLine.노선_생성;
+import static nextstep.subway.unit.TestFixtureStation.역_생성;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class PathTest {
@@ -69,17 +70,5 @@ class PathTest {
         assertThatThrownBy(() -> Path.of(전체_노선_목록, 부평역, 교대역))
                 .isInstanceOf(NoRegisterStationException.class)
                 .hasMessage(NO_REGISTER_LINE_STATION.getMessage());
-    }
-
-    private Line 노선_생성(final Long id, final String name, final String color, final Station upStation, final Station downStation, final Integer distance) {
-        final Line line = new Line(name, color, upStation, downStation, distance);
-        ReflectionTestUtils.setField(line, "id", id);
-        return line;
-    }
-
-    private Station 역_생성(final Long id, final String name) {
-        final Station 역 = new Station(name);
-        ReflectionTestUtils.setField(역, "id", id);
-        return 역;
     }
 }

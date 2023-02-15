@@ -125,10 +125,6 @@ class PathServiceTest {
         return stationRepository.save(new Station(station));
     }
 
-    private Line createLine(final String name, final String color) {
-        return lineRepository.save(new Line(name, color));
-    }
-
     private Line createLineBySections(final String name, final String color, final List<Section> sections) {
         return lineRepository.save(new Line(name, color, new Sections(sections)));
     }

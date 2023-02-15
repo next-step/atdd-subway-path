@@ -13,11 +13,11 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
 
+import static nextstep.subway.unit.TestFixtureLine.노선_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -99,11 +99,5 @@ class LineServiceMockTest {
 
         final InOrder inOrder = inOrder(lineRepository);
         inOrder.verify(lineRepository, times(1)).deleteById(anyLong());
-    }
-
-    private Line 노선_생성(final Long id, final String name, final String color, final Station upStation, Station downStation, final Integer distance) {
-        final Line 노선 = new Line(name, color, upStation, downStation, distance);
-        ReflectionTestUtils.setField(노선, "id", id);
-        return 노선;
     }
 }

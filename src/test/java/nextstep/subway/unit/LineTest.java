@@ -3,11 +3,12 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
+import static nextstep.subway.unit.TestFixtureLine.구간_생성;
+import static nextstep.subway.unit.TestFixtureLine.노선_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -77,21 +78,5 @@ class LineTest {
                 () -> assertThat(stations).hasSize(2),
                 () -> assertThat(stations).containsExactly(강남역, 양재역)
         );
-    }
-
-    private Line 노선_생성(final Long id, final String name, final String color, final List<Section> sections) {
-        final Line 노선 = new Line(name, color, new Sections(sections));
-        reflectionById(id, 노선);
-        return 노선;
-    }
-
-    private Section 구간_생성(final Long id, final Station upStation, final Station downStation, final Integer distance) {
-        final Section 구간 = new Section(upStation, downStation, distance);
-        reflectionById(id, 구간);
-        return 구간;
-    }
-
-    private void reflectionById(final Long id, final Object object) {
-        ReflectionTestUtils.setField(object, "id", id);
     }
 }
