@@ -106,4 +106,16 @@ class LineTest {
         assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(2);
     }
 
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    void addSection_fail3() {
+        // given
+        Line 신분당선 = new Line(1L, "신분당", "RED");
+        신분당선.addSection(광교, 광교중앙, 3);
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선.addSection(상현, 성복, 3))
+                .isInstanceOf(RuntimeException.class);
+    }
+
 }

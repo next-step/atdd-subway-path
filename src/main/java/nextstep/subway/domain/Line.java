@@ -87,6 +87,8 @@ public class Line {
                 this.sections.add(i + 1, new Section(this, upStation, downStation, distance));
                 return;
             }
+
+            throw new AddSectionException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
         }
     }
 
