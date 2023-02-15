@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -19,15 +20,20 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import nextstep.subway.domain.sections.strategy.ChangeableSections;
 import nextstep.subway.domain.sections.strategy.SectionAddStrategies;
+import nextstep.subway.domain.sections.strategy.SectionDeleteStrategies;
 
 @Embeddable
 public class Sections {
     private static final String BOTH_STATIONS_REGISTERED_EXCEPTION_MESSAGE = "상/하행역이 이미 노선에 모두 등록되어 있습니다.";
     private static final String NONE_OF_STATIONS_EXIST_IN_LINE_EXCEPTION_MESSAGE = "상/하행역 모두 노선에 존재하지 않습니다.";
-
+    private static final String MINIMUM_SECTIONS_REQUIRED_EXCEPTION_MESSAGE = "2개 이상의 구간이 존재할 경우에 한해서 삭제가 가능합니다.";
+    private static final String NOT_EXISTING_DOWN_STATION_EXCEPTION_MESSAGE = "해당 역이 하행역으로 존재하는 구간이 존재하지 않습니다.";
+    private static final String UPMOST_STATION_EXCEPTION_MESSAGE = "최상행역이 속한 구간은 삭제할 수 없습니다.";
     private static final SectionAddStrategies sectionAddStrategies = new SectionAddStrategies();
+    private static final SectionDeleteStrategies sectionDeleteStrategies = new SectionDeleteStrategies();
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
@@ -47,17 +53,27 @@ public class Sections {
         sections.addAll(changeableSections.getAdditionalSections());
     }
 
-    public void deleteSection(Long stationId) {
-        if (!isDownMostStation(stationId)) {
-            throw new IllegalArgumentException();
-        }
+    public void deleteSection(Long stationId, Line line) {
+        validateDeleteSection(stationId);
+        ChangeableSections changeableSections = sectionDeleteStrategies.findChangeableSections(this, stationId, line);
 
-        sections.removeIf(section -> section.isSameDownStation(stationId));
+        changeableSections.getDeprecatedSections()
+            .forEach(sections::remove);
+        sections.addAll(changeableSections.getAdditionalSections());
     }
 
-    private boolean isDownMostStation(Long stationId) {
-        Section lastSection = getValue().get(sections.size() - 1);
-        return lastSection.isSameDownStation(stationId);
+    private void validateDeleteSection(Long stationId) {
+        if (sections.size() <= 1) {
+            throw new CannotDeleteSectionException(MINIMUM_SECTIONS_REQUIRED_EXCEPTION_MESSAGE);
+        }
+
+        if (sections.stream().noneMatch(section -> section.isSameDownStation(stationId))) {
+            throw new CannotDeleteSectionException(NOT_EXISTING_DOWN_STATION_EXCEPTION_MESSAGE);
+        }
+
+        if (getStations().get(0).getId().equals(stationId)) {
+            throw new CannotDeleteSectionException(UPMOST_STATION_EXCEPTION_MESSAGE);
+        }
     }
 
     private void validateAddSection(Section section) {
@@ -119,10 +135,14 @@ public class Sections {
     }
 
     private Station findUpmostStation(List<Station> stations) {
+        return findStation(stations, Section::getDownStation);
+    }
+
+    private Station findStation(List<Station> stations, Function<Section, Station> stationFunction) {
         Map<Station, Boolean> inDegreeMap = new HashMap<>();
         sections.forEach(section -> {
-            Station downStation = section.getDownStation();
-            inDegreeMap.put(downStation, true);
+            Station station = stationFunction.apply(section);
+            inDegreeMap.put(station, true);
         });
 
         Set<Station> stationsWithInDegree = inDegreeMap.keySet();

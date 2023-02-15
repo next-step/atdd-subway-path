@@ -46,7 +46,7 @@ public class Line {
     }
 
     public void deleteSection(Long stationId) {
-        sections.deleteSection(stationId);
+        sections.deleteSection(stationId, this);
     }
 
     public boolean canAddSection(Long upStationId, Long downStationId, int distance) {

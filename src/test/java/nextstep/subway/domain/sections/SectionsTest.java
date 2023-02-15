@@ -17,6 +17,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.CannotAddSectionException;
+import nextstep.subway.domain.exception.CannotDeleteSectionException;
 import nextstep.subway.unit.Fixtures;
 
 class SectionsTest {
@@ -94,10 +95,10 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("노선의 마지막 역이 포함된 역을 제거한다.")
+    @DisplayName("노선의 마지막 역이 포함된 구간을 제거한다.")
     void deleteSection() {
         // when
-        sections.deleteSection(Fixtures.미금역.getId());
+        sections.deleteSection(Fixtures.미금역.getId(), line);
         List<Station> stations = sections.getStations();
 
         // then
@@ -108,11 +109,47 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("노선의 마지막 역이 포함되지 않은 구간을 제거할시, 예외를 던진다.")
-    void deleteInvalidSection() {
+    @DisplayName("노선의 중간 역이 포함된 구간을 제거한다.")
+    void deleteMiddleSection() {
+        // given
+        sections.addSection(Fixtures.createSection(4L, line, Fixtures.미금역, Fixtures.광교역, 10), line);
+
+        // when
+        sections.deleteSection(Fixtures.미금역.getId(), line);
+        List<Station> stations = sections.getStations();
+
         // then
-        assertThatThrownBy(() -> sections.deleteSection(Fixtures.정자역.getId()))
-            .isInstanceOf(IllegalArgumentException.class);
+        assertAll(
+            () -> assertThat(stations).hasSize(3),
+            () -> assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역, Fixtures.광교역)
+        );
+    }
+
+    @Test
+    @DisplayName("노선에 속한 구간이 2개 이상이 아닐 경우 삭제 시도 시 예외를 던진다.")
+    void deleteSectionWhenLineHasLessThanTwoSections() {
+        // given
+        sections.deleteSection(Fixtures.미금역.getId(), line);
+
+        // then
+        assertThatThrownBy(() -> sections.deleteSection(Fixtures.정자역.getId(), line))
+            .isInstanceOf(CannotDeleteSectionException.class);
+    }
+
+    @Test
+    @DisplayName("노선에 속하지 않는 하행역을 삭제하려 할 경우 예외를 던진다.")
+    void deleteNonExistingDownStation() {
+        // then
+        assertThatThrownBy(() -> sections.deleteSection(Fixtures.광교역.getId(), line))
+            .isInstanceOf(CannotDeleteSectionException.class);
+    }
+
+    @Test
+    @DisplayName("노선의 최상행역을 삭제하려 할 경우 예외를 던진다.")
+    void deleteUpmostStation() {
+        // then
+        assertThatThrownBy(() -> sections.deleteSection(Fixtures.판교역.getId(), line))
+            .isInstanceOf(CannotDeleteSectionException.class);
     }
 
     @Test
