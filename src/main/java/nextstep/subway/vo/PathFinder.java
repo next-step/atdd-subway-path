@@ -1,45 +1,28 @@
 package nextstep.subway.vo;
 
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.PathStationResponse;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 
+import java.util.Collections;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
-public class PathFinder {
-    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
-    private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
+public abstract class PathFinder {
+    private List<Station> stations;
+    private List<Section> sections;
 
     public PathFinder(List<Station> stations, List<Section> sections) {
-        graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        stations.forEach(graph::addVertex);
-        sections.forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
-        dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+        this.stations = stations;
+        this.sections = sections;
     }
 
-    public PathResponse findPath(Station source, Station target) {
-        if (source.equals(target)) {
-            throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
-        }
-        if (!graph.containsVertex(source) || !graph.containsVertex(target)) {
-            throw new IllegalArgumentException("존재하지 않는 역을 입력하였습니다.");
-        }
-        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(source, target);
-        if (path == null) {
-            throw new IllegalArgumentException("출발역과 도착역이 이어져있지 않습니다");
-        }
-        List<PathStationResponse> stations = path.getVertexList()
-                .stream()
-                .map(PathStationResponse::new)
-                .collect(toList());
-        long distance = (long) path.getWeight();
-        return new PathResponse(stations, distance);
+    public abstract PathResponse findPath(Station source, Station target);
+
+    protected List<Station> getStations() {
+        return Collections.unmodifiableList(stations);
+    }
+
+    protected List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
     }
 }

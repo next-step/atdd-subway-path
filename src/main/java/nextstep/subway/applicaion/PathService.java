@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.section.SectionRepository;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
+import nextstep.subway.vo.DijkstraPathFinder;
 import nextstep.subway.vo.PathFinder;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ public class PathService {
     private final SectionService sectionService;
 
     public PathResponse findPath(Long sourceStationId, Long targetStationId) {
-        PathFinder pathFinder = new PathFinder(stationService.findAll(), sectionService.findAll());
+        PathFinder pathFinder = new DijkstraPathFinder(stationService.findAll(), sectionService.findAll());
         Station source = stationService.findById(sourceStationId);
         Station target = stationService.findById(targetStationId);
         return pathFinder.findPath(source, target);

@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.dto.PathStationResponse;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.vo.DijkstraPathFinder;
 import nextstep.subway.vo.PathFinder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +57,7 @@ public class PathFinderTest {
     @Test
     @DisplayName("경로 찾기 정상 테스트")
     void test() {
-        PathFinder pathFinder = new PathFinder(stations, sections);
+        PathFinder pathFinder = new DijkstraPathFinder(stations, sections);
         PathResponse response = pathFinder.findPath(신논역, 삼성역);
         assertThat(response.getDistance()).isEqualTo(50L);
         assertThat(response.getStations()).extracting(PathStationResponse::getId).containsExactly(1L, 2L, 3L, 4L, 5L, 6L);
@@ -65,7 +66,7 @@ public class PathFinderTest {
     @Test
     @DisplayName("경로찾기 : 출발역과 도착역이 같은 경우")
     void test1() {
-        PathFinder pathFinder = new PathFinder(stations, sections);
+        PathFinder pathFinder = new DijkstraPathFinder(stations, sections);
         assertThatThrownBy(() -> {
             pathFinder.findPath(신논역, 신논역);
         }).isInstanceOf(IllegalArgumentException.class);
@@ -74,7 +75,7 @@ public class PathFinderTest {
     @Test
     @DisplayName("경로찾기 : 출발역과 도착역이 연결이 되어 있지 않은 경우")
     void test2() {
-        PathFinder pathFinder = new PathFinder(stations, sections);
+        PathFinder pathFinder = new DijkstraPathFinder(stations, sections);
         assertThatThrownBy(() -> {
             pathFinder.findPath(신논역, 개탄역);
         }).isInstanceOf(IllegalArgumentException.class);
@@ -83,7 +84,7 @@ public class PathFinderTest {
     @Test
     @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우")
     void test3() {
-        PathFinder pathFinder = new PathFinder(stations, sections);
+        PathFinder pathFinder = new DijkstraPathFinder(stations, sections);
         assertThatThrownBy(() -> {
             pathFinder.findPath(망해역, 둥섬역);
         }).isInstanceOf(IllegalArgumentException.class);
