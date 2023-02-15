@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ShortestPathStrategy<T, E> {
-    void init(List<T> vertices, List<E> edges);
-    Optional<Path> shortestPath(T source, T target);
-    Set<T> allVertices();
+public interface ShortestPathStrategy<V, E> {
+    void init(List<V> vertices, List<E> edges);
+    Optional<Path> shortestPath(V source, V target);
+    Set<V> allVertices();
 }
