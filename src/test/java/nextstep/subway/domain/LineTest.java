@@ -25,10 +25,6 @@ class LineTest {
 
     private Station 정자역;
 
-    private Section 강남역_양재_구간;
-
-    private Section 양재역_판교_구간;
-
     @BeforeEach
     void setUp() {
         // Given - 초기값 셋팅
@@ -38,8 +34,6 @@ class LineTest {
         정자역 = new Station("정자역");
         신분당선 = new Line("신분당선", "bg-red-600");
 
-        강남역_양재_구간 = new Section(신분당선, 강남역, 양재역, 10);
-        양재역_판교_구간 = new Section(신분당선, 양재역, 판교역, 5);
     }
 
     @DisplayName("지하철 구간 추가 테스트")
