@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
-import org.jgrapht.GraphPath;
 import nextstep.subway.exception.EndStationsAreNotLinkedException;
+import org.jgrapht.GraphPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.LinkedList;

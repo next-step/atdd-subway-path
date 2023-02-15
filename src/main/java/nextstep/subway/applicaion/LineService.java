@@ -1,14 +1,14 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.ui.request.LineRequest;
-import nextstep.subway.ui.response.LineResponse;
-import nextstep.subway.ui.request.SectionRequest;
-import nextstep.subway.ui.response.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.ui.request.LineRequest;
+import nextstep.subway.ui.request.SectionRequest;
+import nextstep.subway.ui.response.LineResponse;
+import nextstep.subway.ui.response.StationResponse;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;

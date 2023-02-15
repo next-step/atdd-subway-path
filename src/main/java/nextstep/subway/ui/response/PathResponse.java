@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PathResponse {
-    private List<StationResponse> stations;
-    private double distance;
+    private final List<StationResponse> stations;
+    private final double distance;
 
     public PathResponse(List<StationResponse> stations, double distance) {
         this.stations = stations;

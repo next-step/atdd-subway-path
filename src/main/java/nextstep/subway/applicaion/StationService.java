@@ -1,10 +1,10 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.ui.request.StationRequest;
-import nextstep.subway.ui.response.StationResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.exception.StationNotFoundException;
+import nextstep.subway.ui.request.StationRequest;
+import nextstep.subway.ui.response.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
