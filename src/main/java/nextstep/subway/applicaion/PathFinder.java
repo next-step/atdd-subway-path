@@ -4,12 +4,17 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
+import nextstep.subway.exception.SubwayRestApiException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.exception.ErrorResponseEnum.ERROR_FOUND_PATH_NO_CONNECTION_STATION;
+import static nextstep.subway.exception.ErrorResponseEnum.ERROR_FOUND_PATH_NO_EXIST_STATION;
+import static nextstep.subway.exception.ErrorResponseEnum.ERROR_FOUND_PATH_SAME_SOURCE_TARGET;
 
 @Component
 public class PathFinder {
@@ -33,7 +38,9 @@ public class PathFinder {
         }
     }
 
-    public Path searchShortPath(Long sourceId, Long targetId){
+    public Path searchShortPath(Long sourceId, Long targetId) {
+        validation(sourceId, targetId);
+
         DijkstraShortestPath path = new DijkstraShortestPath(graph);
 
         List<String> stationIds = path.getPath(String.valueOf(sourceId), String.valueOf(targetId)).getVertexList();
@@ -42,5 +49,19 @@ public class PathFinder {
         return new Path(stationIds.stream()
                 .map(Long::valueOf)
                 .collect(Collectors.toList()), weight);
+    }
+
+    private void validation(Long sourceId, Long targetId) {
+        if (sourceId.equals(targetId)) {
+            throw new SubwayRestApiException(ERROR_FOUND_PATH_SAME_SOURCE_TARGET);
+        }
+
+        if (!graph.containsVertex(String.valueOf(sourceId)) || !graph.containsVertex(String.valueOf(targetId))) {
+            throw new SubwayRestApiException(ERROR_FOUND_PATH_NO_EXIST_STATION);
+        }
+
+        if (!graph.containsEdge(String.valueOf(sourceId), String.valueOf(targetId))) {
+            throw new SubwayRestApiException(ERROR_FOUND_PATH_NO_CONNECTION_STATION);
+        }
     }
 }
