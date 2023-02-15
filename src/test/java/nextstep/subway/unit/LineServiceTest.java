@@ -4,8 +4,6 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.common.DomainException;
-import nextstep.subway.common.DomainExceptionType;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -54,10 +52,7 @@ public class LineServiceTest {
         lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 5));
 
         // then
-        Line resultLine =
-                lineRepository
-                        .findById(이호선.getId())
-                        .orElseThrow(() -> new DomainException(DomainExceptionType.NO_LINE));
+        Line resultLine = lineService.findLineById(이호선.getId());
         assertThat(resultLine.getSections()).extracting(Section::getDownStation).contains(역삼역);
     }
 }

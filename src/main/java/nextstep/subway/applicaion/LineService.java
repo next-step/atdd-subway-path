@@ -85,7 +85,7 @@ public class LineService {
         line.deleteSection(stationId);
     }
 
-    private Line findLineById(Long lineId){
+    public Line findLineById(Long lineId){
         return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
     }
 }

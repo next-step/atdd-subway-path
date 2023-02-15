@@ -22,7 +22,7 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private Integer distance;
+    private int distance;
 
     public Section() {}
 
