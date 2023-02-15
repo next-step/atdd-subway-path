@@ -53,8 +53,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 양재-정자 구간을 추가하고
-     * When 지하철 노선에 같은 구간 길이인 양재-논현 구간을 추가하면
+     * Given 새로운 구간을 추가하고
+     * When 지하철 노선에 길이가 같은 구간을 추가하면
      * Then 예외가 발생한다.
      */
     @DisplayName("지하철 노선에 기존 구간 길이보다 크거나 같은 구간을 등록")
@@ -106,8 +106,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선의 강남-양재 구간에 새로운 역(정자역)을 갖는 강남-정자 구간을 등록하면
-     * Then 강남-정자 구간과 정자-양재 구간이 생성된다.
+     * When 지하철 노선의 구간 사이에 새로운 역을 갖는 구간을 등록하면
+     * Then 2개의 구간이 생성된다.
      */
     @Test
     @DisplayName("기존 구간 사이 새로운 역을 갖는 구간 등록")
@@ -123,8 +123,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선의 상행 종점역을 하행역으로 하는 신논현-강남 구간을 등록하면
-     * Then 신논현역이 지하철 노선의 상행 종점역이 된다.
+     * When 지하철 노선의 상행 종점역을 하행역으로 하는 구간을 등록하면
+     * Then 등록한 역이 지하철 노선의 상행 종점역이 된다.
      */
     @Test
     @DisplayName("노선의 상행 역을 하행역으로 갖는 구간 등록")
@@ -140,8 +140,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선의 하행 종점역을 상행역으로 하는 양재-판교 구간을 등록하면
-     * Then 판교역이 지하철 노선의 하행 종점역이 된다.
+     * When 지하철 노선의 하행 종점역을 상행역으로 하는 구간을 등록하면
+     * Then 등록한 역이 지하철 노선의 하행 종점역이 된다.
      */
     @Test
     @DisplayName("노선의 하행 종점역을 상행역으로 하는 구간 등록")
@@ -213,9 +213,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 양재-정자 구간 추가를 요청 하고
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 하행 종점역 제거를 요청 하면
-     * Then 노선에서 제거되고, 양재역이 하행 종점역이 된다.
+     * Then 노선에서 제거되고, 하행 종점역 전 역이 하행 종점역이 된다.
      */
     @Test
     @DisplayName("하행 종점역 제거")
@@ -230,13 +230,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getLong("stations[-1].id")).isEqualTo(정자역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
     }
 
     /**
-     * Given 지하철 노선에 새로운 양재-정자 구간 추가를 요청 하고
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 상행 종점역 제거를 요청 하면
-     * Then 노선에서 제거되고, 양재역이 하행 종점역이 된다.
+     * Then 노선에서 제거되고, 상행 종점역 다음 역이 상행 종점역이 된다.
      */
     @Test
     @DisplayName("상행 종점역 제거")
@@ -251,13 +251,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getLong("stations[0].id")).isEqualTo(양재역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
     }
 
     /**
-     * Given 지하철 노선에 새로운 양재-정자 구간 추가를 요청 하고
-     * When 중간역인 양재역 제거를 요청 하면
-     * Then 노선에 양재역 구간이 제거되고, 강남-정자 구간으로 재배치 된다.
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 중간역을 제거를 요청 하면
+     * Then 노선에 중간 구간이 제거되고, 남은 구간이 재배치 된다.
      */
     @Test
     @DisplayName("노선의 중간역 제거")
