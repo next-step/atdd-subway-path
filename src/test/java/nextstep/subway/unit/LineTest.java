@@ -1,5 +1,8 @@
 package nextstep.subway.unit;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
+import java.util.List;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -7,11 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-
 
 @DisplayName("노선 도메인 테스트")
 class LineTest {
@@ -25,7 +23,7 @@ class LineTest {
     private Section 역삼_선릉_구간;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         이호선 = new Line("이호선", "#29832");
         강남역 = new Station("강남역");
         역삼역 = new Station("역삼역");
@@ -42,7 +40,6 @@ class LineTest {
         ReflectionTestUtils.setField(강남_역삼_구간, "id", 1L);
         ReflectionTestUtils.setField(역삼_선릉_구간, "id", 2L);
     }
-
 
     @Test
     @DisplayName("구간 추가 테스트")

@@ -1,5 +1,7 @@
 package nextstep.subway.unit;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.common.DomainException;
@@ -12,21 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-
-
 @SpringBootTest
 @Transactional
 @DisplayName("노선 서비스 테스트 (Classist)")
 public class LineServiceTest {
-    @Autowired
-    private StationRepository stationRepository;
-    @Autowired
-    private LineRepository lineRepository;
-    @Autowired
-    private LineService lineService;
+    @Autowired private StationRepository stationRepository;
+    @Autowired private LineRepository lineRepository;
+    @Autowired private LineService lineService;
 
     private Line 이호선;
     private Station 강남역;
@@ -36,9 +30,8 @@ public class LineServiceTest {
     private Section 강남_역삼_구간;
     private Section 역삼_선릉_구간;
 
-
     @BeforeEach
-    void setUp(){
+    void setUp() {
         이호선 = new Line("이호선", "#29832");
         강남역 = new Station("강남역");
         역삼역 = new Station("역삼역");
@@ -47,7 +40,6 @@ public class LineServiceTest {
         강남_역삼_구간 = new Section(이호선, 강남역, 역삼역, 10);
         역삼_선릉_구간 = new Section(이호선, 역삼역, 선릉역, 5);
     }
-
 
     @Test
     @DisplayName("구간 추가 테스트")
@@ -62,8 +54,10 @@ public class LineServiceTest {
         lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 5));
 
         // then
-        Line resultLine = lineRepository.findById(이호선.getId()).orElseThrow(() -> new DomainException(DomainExceptionType.NO_LINE));
+        Line resultLine =
+                lineRepository
+                        .findById(이호선.getId())
+                        .orElseThrow(() -> new DomainException(DomainExceptionType.NO_LINE));
         assertThat(resultLine.getSections()).extracting(Section::getDownStation).contains(역삼역);
     }
-
 }

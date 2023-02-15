@@ -1,5 +1,8 @@
 package nextstep.subway.unit;
 
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.LineResponse;
@@ -17,17 +20,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Optional;
-
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 @DisplayName("노선 서비스 테스트 (Mokist)")
 public class LineServiceMockTest {
-    @Mock
-    private LineRepository lineRepository;
-    @Mock
-    private StationService stationService;
+    @Mock private LineRepository lineRepository;
+    @Mock private StationService stationService;
 
     private Line 이호선;
     private Station 강남역;
@@ -38,7 +35,7 @@ public class LineServiceMockTest {
     private Section 역삼_선릉_구간;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         이호선 = new Line("강이호선", "#29832");
         강남역 = new Station("강남역");
         역삼역 = new Station("역삼역");
@@ -62,14 +59,14 @@ public class LineServiceMockTest {
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
         when(stationService.findById(강남역.getId())).thenReturn(강남역);
         when(stationService.findById(역삼역.getId())).thenReturn(역삼역);
-        when(stationService.createStationResponse(강남역)).thenReturn(new StationResponse(강남역.getId(), 강남역.getName()));
-        when(stationService.createStationResponse(역삼역)).thenReturn(new StationResponse(역삼역.getId(), 역삼역.getName()));
-
+        when(stationService.createStationResponse(강남역))
+                .thenReturn(new StationResponse(강남역.getId(), 강남역.getName()));
+        when(stationService.createStationResponse(역삼역))
+                .thenReturn(new StationResponse(역삼역.getId(), 역삼역.getName()));
 
         // when
         LineService lineService = new LineService(lineRepository, stationService);
         lineService.addSection(이호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 5));
-
 
         // then
         LineResponse resultLine = lineService.findById(이호선.getId());

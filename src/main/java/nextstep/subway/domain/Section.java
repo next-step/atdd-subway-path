@@ -1,8 +1,7 @@
 package nextstep.subway.domain;
 
-import lombok.Getter;
-
 import javax.persistence.*;
+import lombok.Getter;
 
 @Entity
 @Getter
@@ -25,9 +24,7 @@ public class Section {
 
     private Integer distance;
 
-    public Section() {
-
-    }
+    public Section() {}
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
@@ -36,11 +33,11 @@ public class Section {
         this.distance = distance;
     }
 
-    public void updateDistance(Integer integer){
+    public void updateDistance(Integer integer) {
         this.distance = distance;
     }
 
-    public void updateDownStation(Station downStation){
+    public void updateDownStation(Station downStation) {
         this.downStation = downStation;
     }
 
