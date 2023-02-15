@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.CreateLineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,7 @@ public class LineServiceTest {
         // then
         assertThatThrownBy(() -> {
             lineService.findById(이호선.getId());
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @Test

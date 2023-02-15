@@ -38,7 +38,7 @@ public class LineServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository, stationService);
+        lineService = new LineService(stationService, lineRepository);
         이호선 = new Line(1L, "2호선", "bg-green-600");
         신분당선 = new Line(1L, "신분당성", "bg-red-600");
         강남역 = new Station(1L, "강남역");

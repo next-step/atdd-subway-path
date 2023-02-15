@@ -25,7 +25,7 @@ public class LineService {
     private final LineRepository lineRepository;
 
     @Transactional
-    public LineResponse saveLine(CreateLineRequest request) {
+    public LineResponse saveLine(final CreateLineRequest request) {
         final Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             final Station upStation = stationService.findById(request.getUpStationId());
@@ -41,7 +41,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
+    public LineResponse findById(final Long id) {
         final Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.LINE_NOT_FOUND));
         return new LineResponse(line);
@@ -55,14 +55,14 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteLine(Long id) {
+    public void deleteLine(final Long id) {
         final Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.LINE_NOT_FOUND));
         lineRepository.delete(line);
     }
 
     @Transactional
-    public void addSection(Long lineId, AddSectionRequest addSectionRequest) {
+    public void addSection(final Long lineId, final AddSectionRequest addSectionRequest) {
         final Station upStation = stationService.findById(addSectionRequest.getUpStationId());
         final Station downStation = stationService.findById(addSectionRequest.getDownStationId());
         final Line line = lineRepository.findById(lineId)
@@ -72,7 +72,7 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
+    public void deleteSection(final Long lineId, final Long stationId) {
         final Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.LINE_NOT_FOUND));
         final Station station = stationService.findById(stationId);
