@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -56,5 +56,10 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
         line.removeSection(station);
+    }
+
+    public Lines findByStationIds(List<Long> stationIds) {
+        Set<Line> lineSet = lineRepository.findByStationIds(stationIds);
+        return Lines.from(lineSet);
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
@@ -10,6 +11,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +29,10 @@ public class Line {
 
     public static Line of(String name, String color) {
         return new Line(name, color);
+    }
+
+    public static Line of(Long id, String name, String color) {
+        return new Line(id, name, color);
     }
 
     public void update(String name, String color) {
@@ -62,5 +68,9 @@ public class Line {
 
     public boolean isSectionsEmpty() {
         return sections.isEmpty();
+    }
+
+    public void mergeSection(List<Section> result) {
+        sections.merge(result);
     }
 }

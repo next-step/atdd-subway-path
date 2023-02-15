@@ -121,4 +121,12 @@ public class Sections implements Iterable<Section> {
     public boolean isEmpty() {
         return values.isEmpty();
     }
+
+    public void merge(List<Section> list) {
+        list.addAll(copy());
+    }
+
+    public List<Section> copy() {
+        return values.stream().collect(Collectors.toList());
+    }
 }

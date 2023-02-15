@@ -1,14 +1,12 @@
 package nextstep.subway.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.subway.exception.AlreadyAddedLineException;
 
 import javax.persistence.*;
 import java.util.Optional;
 
+@ToString
 @Getter
 @Builder
 @AllArgsConstructor
