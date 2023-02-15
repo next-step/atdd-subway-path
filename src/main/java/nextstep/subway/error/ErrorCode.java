@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    STATION_NOT_FOUND("해당하는 지하철 역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     LINE_NOT_FOUND("해당하는 지하철 노선을 찾을 수 없습니다.", HttpStatus.NOT_FOUND)
     ;
 
