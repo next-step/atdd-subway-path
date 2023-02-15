@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.addtional.Additional;
 import nextstep.subway.exception.SubwayRestApiException;
 
 import javax.persistence.CascadeType;
@@ -7,81 +8,67 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.exception.ErrorResponseEnum.ERROR_ADD_SECTION_INVAILD_DISTANCE;
 import static nextstep.subway.exception.ErrorResponseEnum.ERROR_ADD_SECTION_INVAILD_STATION;
 import static nextstep.subway.exception.ErrorResponseEnum.ERROR_DELETE_SECTION_COUNT_LINE;
-import static nextstep.subway.exception.ErrorResponseEnum.ERROR_DELETE_SECTION_NO_LAST_SECTION_LINE;
-import static nextstep.subway.exception.ErrorResponseEnum.ERROR_NO_FOUND;
+import static nextstep.subway.exception.ErrorResponseEnum.ERROR_DELETE_SECTION_INVAILD_STATION;
 
 
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
-    public void addFront(Section section) {
-        isValidationSection(section);
-
-        Section standardSection = this.sections.stream()
-                .filter(a -> section.isSameDownStation(a.getUpStation()))
-                .findFirst()
-                .orElse(null);;
-
-        this.sections.add(this.sections.indexOf(standardSection), section);
+    public void add(Additional additional, Section section) {
+        additional.add(this, section);
+//        this.sections.add(section);
     }
 
-    public void addMiddle(Section section) {
-        isValidationSection(section);
-
-        Section standardSection = this.sections.stream()
-                .filter(a -> section.isSameUpStation(a.getUpStation()))
-                .findFirst()
-                .orElse(null);
-
-        isValidationSectionDistance(standardSection, section);
-
-        int standardIndex = this.sections.indexOf(standardSection);
-
-        Section newSection = Section.builder()
-                .line(section.getLine())
-                .upStation(section.getDownStation())
-                .downStation(standardSection.getDownStation())
-                .distance(standardSection.getDistance() - section.getDistance())
-                .build();
-
-        standardSection.change(standardSection.getUpStation(), section.getDownStation(), section.getDistance());
-
-        this.sections.set(standardIndex, standardSection);
-        this.sections.add(standardIndex+1, newSection);
+    public List<Section> getSections() {
+        return sections;
     }
 
-    public void addBack(Section section) {
-        isValidationSection(section);
-
-        this.sections.add(section);
+    public void update(int index, Section section) {
+        this.sections.set(index, section);
     }
 
     public void remove(Station station) {
-        Section section = this.sections.stream()
-                .filter(a -> station.equals(a.getDownStation()))
-                .findFirst()
-                .orElse(null);
+        this.validationDeleteSection(station);
 
-        this.validationDeleteSection(section);
+        int deleteIndex = getDeleteSectionIndex(station);
 
-        this.sections.remove(this.sections.size()-1);
+        if (deleteIndex > 0) {
+            Section section = this.sections.get(deleteIndex);
+            Section beforeSection = this.sections.get(getLastIndext(deleteIndex));
+
+            section.change(beforeSection.getUpStation(), section.getDownStation(),beforeSection.getDistance() + section.getDistance());
+
+            this.sections.set(getLastIndext(deleteIndex), section);
+        }
+
+        if (isLastStation(station)) {
+            deleteIndex = getLastIndext(this.sections.size());
+        }
+
+        this.sections.remove(deleteIndex);
     }
 
     public List<Station> getStations() {
-        Section topSection = getTopSection();
-
         List<Station> stations = new ArrayList<>();
+        Optional<Section> opTopSection = getTopSection();
+
+        if (!opTopSection.isPresent()) {
+            return stations;
+        }
+
+        Section topSection = opTopSection.get();
+
         stations.add(topSection.getUpStation());
 
         Station downStation = topSection.getDownStation();
@@ -105,48 +92,23 @@ public class Sections {
         return stations;
     }
 
-    public boolean isEmpty() {
-        return this.sections.size() <= 0 ? true : false;
-    }
-
-    private Section getTopSection() {
-        List<Station> stations = this.sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
+    public Optional<Section> getStandardSectionByDownStation(Section section) {
         return this.sections.stream()
-                .filter(a -> a.isContaionsUpStations(stations) == false)
-                .findFirst()
-                .orElse(null);
+                .filter(a -> section.isSameDownStation(a.getUpStation()))
+                .findFirst();
     }
 
-    private void validationDeleteSection(Section section) {
-        if (null == section) {
-            throw new SubwayRestApiException(ERROR_NO_FOUND);
-        }
-
-        if (this.isNotValidSectionCount()) {
-            throw new SubwayRestApiException(ERROR_DELETE_SECTION_COUNT_LINE);
-        }
-
-        if (!this.isSameLastSection(section)) {
-            throw new SubwayRestApiException(ERROR_DELETE_SECTION_NO_LAST_SECTION_LINE);
-        }
+    public Optional<Section> getStandardSectionByUpStation(Section section) {
+        return this.sections.stream()
+                .filter(a -> section.isSameUpStation(a.getUpStation()))
+                .findFirst();
     }
 
-    private boolean isNotValidSectionCount() {
-        return this.sections.size() <= 1;
+    public int getSectionIndex(Section section) {
+        return this.sections.indexOf(section);
     }
 
-    private boolean isSameLastSection(Section section) {
-        return this.getLastSection().equals(section);
-    }
-
-    private Section getLastSection() {
-        return this.sections.get(this.sections.size()-1);
-    }
-
-    private void isValidationSection(Section section) {
+    public void isValidationSection(Section section) {
         if (this.sections.size() > 0 && isExistUpOrDownStation(section)){
             throw new SubwayRestApiException(ERROR_ADD_SECTION_INVAILD_STATION);
         }
@@ -158,9 +120,51 @@ public class Sections {
         return existStationCnt != 1;
     }
 
-    private void isValidationSectionDistance(Section standardSection, Section section) {
-        if (standardSection.getDistance() <= section.getDistance()) {
-            throw new SubwayRestApiException(ERROR_ADD_SECTION_INVAILD_DISTANCE);
+    private int getDeleteSectionIndex(Station station) {
+        Optional<Section> section = this.sections.stream()
+                .filter(a -> a.isSameUpStation(station))
+                .findFirst();
+
+        if (!section.isPresent()) {
+            return -1;
         }
+
+        return this.sections.indexOf(section.get());
+    }
+
+    private boolean isLastStation(Station station) {
+        return this.sections.get(getLastIndext(this.sections.size())).isSameDownStation(station);
+    }
+
+    private int getLastIndext(int size) {
+        return size - 1;
+    }
+
+    private Optional<Section> getTopSection() {
+        List<Station> stations = this.sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        return this.sections.stream()
+                .filter(a -> a.isContaionsUpStations(stations) == false)
+                .findFirst();
+    }
+
+    private void validationDeleteSection(Station station) {
+        if (this.isNotValidSectionCount()) {
+            throw new SubwayRestApiException(ERROR_DELETE_SECTION_COUNT_LINE);
+        }
+
+        if (!this.isExistStationInLine(station)) {
+            throw new SubwayRestApiException(ERROR_DELETE_SECTION_INVAILD_STATION);
+        }
+    }
+
+    private boolean isExistStationInLine(Station station) {
+        return this.getStations().contains(station);
+    }
+
+    private boolean isNotValidSectionCount() {
+        return this.sections.size() <= 1;
     }
 }

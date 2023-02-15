@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Builder;
+import nextstep.subway.exception.SubwayRestApiException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -11,8 +12,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.List;
 
+import static nextstep.subway.exception.ErrorResponseEnum.ERROR_INVAILD_DISTANCE;
+
 @Entity
-@Builder
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,12 +38,20 @@ public class Section {
 
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
-        this.id = id;
+    @Builder
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+
+        validations();
+    }
+
+    private void validations() {
+        if (this.distance <= 0) {
+            throw new SubwayRestApiException(ERROR_INVAILD_DISTANCE);
+        }
     }
 
     public Long getId() {

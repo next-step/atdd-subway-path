@@ -22,12 +22,12 @@ public class StationService {
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
         Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return createStationResponse(station);
+        return StationResponse.of(station);
     }
 
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
-                .map(this::createStationResponse)
+                .map(a -> StationResponse.of(a))
                 .collect(Collectors.toList());
     }
 
@@ -38,12 +38,5 @@ public class StationService {
 
     public Station findById(Long id) {
         return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-    }
-
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName()
-        );
     }
 }

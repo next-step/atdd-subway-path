@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import lombok.ToString;
+import nextstep.subway.applicaion.dto.StationResponse;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -46,5 +49,13 @@ public class Station {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

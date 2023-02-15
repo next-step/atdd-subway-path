@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.AddTypeEnum;
+import nextstep.subway.applicaion.addtional.Additional;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -8,9 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.List;
-
-import static nextstep.subway.common.AddTypeEnum.FRONT_ADD_SECTION;
-import static nextstep.subway.common.AddTypeEnum.MIDDLE_ADD_SECTION;
 
 @Entity
 public class Line {
@@ -58,18 +55,8 @@ public class Line {
         return sections;
     }
 
-    public void addSection(AddTypeEnum addTypeEnum, Section section) {
-        if (FRONT_ADD_SECTION.equals(addTypeEnum)) {
-            sections.addFront(section);
-            return;
-        }
-
-        if (MIDDLE_ADD_SECTION.equals(addTypeEnum)) {
-            sections.addMiddle(section);
-            return;
-        }
-
-        sections.addBack(section);
+    public void addSection(Additional additional, Section section) {
+        sections.add(additional, section);
     }
 
     public void removeSection(Station station) {
