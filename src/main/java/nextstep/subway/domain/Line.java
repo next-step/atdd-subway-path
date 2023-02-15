@@ -82,6 +82,11 @@ public class Line {
                 this.sections.add(i, new Section(this, upStation, downStation, distance));
                 return;
             }
+
+            if (Objects.equals(sections.get(i).getDownStation().getId(), upStation.getId())) {
+                this.sections.add(i + 1, new Section(this, upStation, downStation, distance));
+                return;
+            }
         }
     }
 
