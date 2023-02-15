@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -73,11 +74,11 @@ public class SectionsTest {
         // when, then
         assertThatThrownBy(() -> {
             sections.add(이호선, 강남역, 선릉역, 10);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
 
         assertThatThrownBy(() -> {
             sections.add(이호선, 강남역, 선릉역, 11);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -89,7 +90,7 @@ public class SectionsTest {
         // when, then
         assertThatThrownBy(() -> {
             sections.add(이호선, 강남역, 선릉역, 3);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -103,7 +104,7 @@ public class SectionsTest {
         // when, then
         assertThatThrownBy(() -> {
             sections.add(이호선, 당산역, 선유도역, 7);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -140,7 +141,7 @@ public class SectionsTest {
         // when, then
         assertThatThrownBy(() -> {
             sections.remove(역삼역);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -148,6 +149,6 @@ public class SectionsTest {
         // when, then
         assertThatThrownBy(() -> {
             sections.remove(역삼역);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 }

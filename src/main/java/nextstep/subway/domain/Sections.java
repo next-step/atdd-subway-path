@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import nextstep.subway.error.ErrorCode;
+import nextstep.subway.error.exception.BusinessException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -80,7 +82,7 @@ public class Sections {
     private void validateUpStationAndDownStation(final Station upStation, final Station downStation) {
         if (new HashSet<>(this.getStations()).containsAll(List.of(upStation, downStation)) ||
                 (!this.getStations().contains(upStation) && !this.getStations().contains(downStation))) {
-            throw new IllegalArgumentException();
+            throw new BusinessException(ErrorCode.INVALID_NEW_SECTION_STATION);
         }
     }
 
@@ -104,7 +106,7 @@ public class Sections {
 
     private void validateNewSectionDistance(final Section section, final int distance) {
         if (section.getDistance() <= distance) {
-            throw new IllegalArgumentException();
+            throw new BusinessException(ErrorCode.INVALID_NEW_SECTION_DISTANCE);
         }
     }
 
@@ -155,10 +157,10 @@ public class Sections {
 
     private void validateBeforeRemoveStation(final Station station) {
         if (sections.size() == MIN_SECTIONS_SIZE) {
-            throw new IllegalArgumentException();
+            throw new BusinessException(ErrorCode.CANNOT_REMOVE_SECTION_WHEN_SECTION_SIZE_IS_MINIMUM);
         }
         if (isExistsStationInLine(station)) {
-            throw new IllegalArgumentException();
+            throw new BusinessException(ErrorCode.REMOVE_STATION_IS_NOT_EXISTS_IN_SECTION);
         }
     }
 
