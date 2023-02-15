@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 
-import org.springframework.dao.DataIntegrityViolationException;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -37,7 +35,7 @@ public class Sections {
                 .findFirst()
                 .ifPresent(origin -> {
                     if (!section.hasShorterDistanceThan(origin)) {
-                        throw new DataIntegrityViolationException(CAN_UPDATE_IF_DISTANCE_SHORTER);
+                        throw new IllegalArgumentException(CAN_UPDATE_IF_DISTANCE_SHORTER);
                     }
                     sections.add(origin.divideBy(section));
                     sections.add(section);
@@ -60,13 +58,13 @@ public class Sections {
                 .filter(origin -> origin.hasBothMatchedStation(section))
                 .findAny()
                 .ifPresent(i -> {
-                    throw new DataIntegrityViolationException(SECTION_ALREADY_EXISTS);
+                    throw new IllegalArgumentException(SECTION_ALREADY_EXISTS);
                 });
 
         sections.stream()
                 .filter(origin -> origin.hasOneMatchedStation(section))
                 .findAny()
-                .orElseThrow(() -> new DataIntegrityViolationException(MATCHED_SECTION_NOT_EXISTS));
+                .orElseThrow(() -> new IllegalArgumentException(MATCHED_SECTION_NOT_EXISTS));
     }
 
     public void delete(Station station) {
