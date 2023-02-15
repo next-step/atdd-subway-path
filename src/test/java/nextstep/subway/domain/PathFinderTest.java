@@ -79,4 +79,20 @@ class PathFinderTest {
 
         assertThatThrownBy(() -> pathFinder.find(남부터미널역, 정자역)).isInstanceOf(PathFindException.class);
     }
+
+    /**
+     * 교대역
+     * |
+     * *3호선*
+     * |
+     * 남부터미널역      정자역
+     */
+    @DisplayName("출발역과 도착역이 같을 경우 에러 처리한다.")
+    @Test
+    void findSourceAndTargetIsEqual() {
+        삼호선.addSection(new Section(삼호선, 교대역, 남부터미널역, 1));
+        PathFinder pathFinder = new PathFinder(List.of(삼호선));
+
+        assertThatThrownBy(() -> pathFinder.find(교대역, 교대역)).isInstanceOf(PathFindException.class);
+    }
 }
