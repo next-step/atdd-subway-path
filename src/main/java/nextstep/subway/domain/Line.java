@@ -1,7 +1,11 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.section.SectionCollection;
+
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -46,20 +50,34 @@ public class Line {
         this.color = color;
     }
 
-    public SectionCollection getSectionCollection() {
-        return sectionCollection;
-    }
-
     public void addSections(Section section) {
-        sectionCollection.addSectionCollection(section);
+        sectionCollection.addSection(section);
     }
 
     public List<Station> getStations() {
-
         return sectionCollection.getStations();
     }
 
     public void removeStation(Station station) {
         sectionCollection.removeSectionCollection(station);
+    }
+
+    public boolean isEmptyStations() {
+        return sectionCollection.isEmpty();
+    }
+
+    public Station getLastStation() {
+        return sectionCollection.getLastStation();
+    }
+    public Station getFirstStation() {
+        return sectionCollection.getFirstStation();
+    }
+
+    public Optional<Section> getUpSection(Station station) {
+        return sectionCollection.getUpSection(station);
+    }
+
+    public Optional<Section> getDownSection(Station station) {
+        return sectionCollection.getDownSection(station);
     }
 }

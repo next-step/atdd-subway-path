@@ -1,11 +1,6 @@
-package nextstep.subway.domain.strategy.remove;
+package nextstep.subway.domain.section;
 
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionCollection;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.strategy.add.AddSectionStrategy;
-import nextstep.subway.domain.strategy.add.BasicAddSection;
-import nextstep.subway.domain.strategy.add.MiddleAddSection;
 
 import java.util.Objects;
 
