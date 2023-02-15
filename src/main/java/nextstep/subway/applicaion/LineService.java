@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+
     private LineRepository lineRepository;
     private StationService stationService;
 
@@ -108,5 +110,10 @@ public class LineService {
         }
 
         line.getSections().remove(line.getSections().size() - 1);
+    }
+
+    @Transactional
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 }
