@@ -22,13 +22,13 @@ import org.springframework.transaction.annotation.Transactional;
 @TestConstructor(autowireMode = AutowireMode.ALL)
 @Transactional
 @SpringBootTest
-class PathServiceTest {
+class PathFinderServiceTest {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private final PathService pathService;
 
-    public PathServiceTest(
+    public PathFinderServiceTest(
             final LineRepository lineRepository,
             final StationRepository stationRepository,
             final PathService pathService

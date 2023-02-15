@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @DisplayName("구간 관련 기능")
 @ExtendWith(value = MockitoExtension.class)
-class PathServiceMockTest {
+class PathFinderServiceMockTest {
 
     @Mock
     private LineRepository lineRepository;

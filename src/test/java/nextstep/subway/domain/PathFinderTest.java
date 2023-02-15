@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("경로 관련 기능")
-class PathTest {
+class PathFinderTest {
 
     private Line 삼호선;
     private Line 이호선;
@@ -52,10 +52,10 @@ class PathTest {
         이호선.addSection(new Section(이호선, 교대역, 강남역, 4));
         신분당선.addSection(new Section(신분당선, 강남역, 양재역, 5));
         수인분당선.addSection(new Section(수인분당선, 양재역, 정자역, 9));
-        Path path = new Path(List.of(삼호선, 이호선, 신분당선, 수인분당선));
+        PathFinder pathFinder = new PathFinder(List.of(삼호선, 이호선, 신분당선, 수인분당선));
         Double expected = 19.0;
 
-        GraphPath graphPath = path.find(남부터미널역, 정자역);
+        GraphPath graphPath = pathFinder.find(남부터미널역, 정자역);
         assertAll(
                 () -> assertThat(graphPath.getWeight()).isEqualTo(expected),
                 () -> assertThat(graphPath.getVertexList()).containsExactly(남부터미널역, 교대역, 강남역, 양재역, 정자역)

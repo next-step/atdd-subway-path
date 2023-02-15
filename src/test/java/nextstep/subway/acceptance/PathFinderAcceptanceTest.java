@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("경로 조회 관련 기능")
-public class PathAcceptanceTest extends AcceptanceTest {
+public class PathFinderAcceptanceTest extends AcceptanceTest {
     private Long 교대역;
     private Long 강남역;
     private Long 양재역;

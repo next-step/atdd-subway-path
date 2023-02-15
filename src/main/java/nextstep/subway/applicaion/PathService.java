@@ -5,7 +5,7 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Path;
+import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import org.jgrapht.GraphPath;
 import org.springframework.stereotype.Service;
@@ -29,8 +29,8 @@ public class PathService {
         Station targetStation = stationService.findById(target);
         List<Line> lines = lineRepository.findAll();
 
-        Path path = new Path(lines);
-        return createPathResponse(path.find(sourceStation, targetStation));
+        PathFinder pathFinder = new PathFinder(lines);
+        return createPathResponse(pathFinder.find(sourceStation, targetStation));
     }
 
     private void validateSourceAndTargetIsNotEqual(final long source, final long target) {
