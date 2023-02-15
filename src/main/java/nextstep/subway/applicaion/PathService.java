@@ -11,15 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class PathService {
-    private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
+    private final StationService stationService;
+    private final SectionService sectionService;
 
     public PathResponse findPath(Long sourceStationId, Long targetStationId) {
-        PathFinder pathFinder = new PathFinder(stationRepository.findAll(), sectionRepository.findAll());
-        Station source = stationRepository.findById(sourceStationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 SourceId 입니다."));
-        Station target = stationRepository.findById(targetStationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 SourceId 입니다."));
+        PathFinder pathFinder = new PathFinder(stationService.findAll(), sectionService.findAll());
+        Station source = stationService.findById(sourceStationId);
+        Station target = stationService.findById(targetStationId);
         return pathFinder.findPath(source, target);
     }
 }
