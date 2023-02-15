@@ -40,8 +40,7 @@ public class PathFinder {
     public GraphPath find(final Station source, final Station target) {
         try {
             validateSourceAndTargetIsNotEqual(source, target);
-            return Optional.ofNullable(this.path.getPath(source, target))
-                    .orElseThrow(PathFindException::new);
+            return Optional.ofNullable(this.path.getPath(source, target)).orElseThrow(PathFindException::new);
         } catch (IllegalArgumentException e) {
             throw new PathFindException();
         }
