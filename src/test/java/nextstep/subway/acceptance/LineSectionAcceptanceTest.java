@@ -161,13 +161,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * Given 지하철 노선에 새로운 구간 추가를 요청하고
+     * When 지하철 노선의 종점 하행역 제거 요청을 하면
+     * Then 다음으로 오던 역이 종점이 된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 구간을 제거 - 종점 하행역 제거")
     @Test
-    void removeLineSection() {
+    void removeLineSection_1() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, ADD_SECTION_DISTANCE));
@@ -175,10 +175,91 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
-        // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청하고
+     * When 지하철 노선의 종점 상행역 제거 요청을 하면
+     * Then 다음으로 오던 역이 종점이 된다
+     */
+    @DisplayName("지하철 노선에 구간을 제거 - 종점 상행역 제거")
+    @Test
+    void removeLineSection_2() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, ADD_SECTION_DISTANCE));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청하고
+     * When 지하철 노선의 중간역 제거 요청을 하면
+     * Then 노선이 재배치된다
+     */
+    @DisplayName("지하철 노선에 구간을 제거 - 중간역이 제거될 경우 노선 재배치")
+    @Test
+    void removeLineSection_3() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, ADD_SECTION_DISTANCE));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+    }
+
+    /**
+     * Given 지하철 노선의 구간이 하나만 있을때
+     * When 지하철 노선의 역중 하나를 제거하면
+     * Then 노선의 구간에 변화가 없다
+     */
+    @DisplayName("지하철 노선에 구간을 제거 - 마지막 구간을 제거하려고 할때")
+    @Test
+    void removeLineSection_4() {
+        // given
+
+        // when
+        ExtractableResponse<Response> removeSectionResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청하고
+     * When 지하철 노선에 없는 역을 제거하면
+     * Then 노선의 구간에 변화가 없다
+     */
+    @DisplayName("지하철 노선에 구간을 제거 - 노선에 등록되지 않은 역을 제거할 때")
+    @Test
+    void removeLineSection_5() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, ADD_SECTION_DISTANCE));
+
+        // when
+        Long 부산역 = 지하철역_생성_요청("부산역").jsonPath().getLong("id");
+
+        ExtractableResponse<Response> removeSectionResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 부산역);
+        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
