@@ -22,6 +22,7 @@ dependencies {
 
     // lombok
     implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     // jgraph
     implementation 'org.jgrapht:jgrapht-core:1.0.1'
