@@ -64,6 +64,13 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(SameStationException.class)
+    protected ResponseEntity<ErrorResponse> handleSameStationException(SameStationException e) {
+        final ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
     @ExceptionHandler(NoPathConnectedException.class)
     protected ResponseEntity<ErrorResponse> handleNoPathConnectedException(NoPathConnectedException e) {
         final ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
