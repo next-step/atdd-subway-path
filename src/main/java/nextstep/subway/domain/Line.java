@@ -76,6 +76,7 @@ public class Line {
 
         return stations;
     }
+
     public void removeSection(Station station) {
         if (!getLastStation().equals(station)) {
             throw new IllegalArgumentException();
