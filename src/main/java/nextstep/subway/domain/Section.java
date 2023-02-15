@@ -79,4 +79,8 @@ public class Section {
     public boolean isDownStation(final Station station) {
         return this.downStation.equals(station);
     }
+
+    public boolean isContainStation(final Station newSection) {
+        return this.upStation.equals(newSection) || this.downStation.equals(newSection);
+    }
 }

@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,43 +56,79 @@ public class Sections {
         /*
          * 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
          */
-        if (!(isContainUpStation(newSection) || isContainDownStation(newSection))) {
+        if ((isContainStation(newSection.getUpStation()) || isContainStation(newSection.getDownStation())) == false) {
             throw new IllegalArgumentException("연결할 수 없는 구간 입니다.");
         }
     }
 
     // 이미 등록된 상행역인지 검증
-    private boolean isAlreadyRegisterUpStation(final Section newSection) {
+    private boolean isAlreadyRegisterUpStation(Section newSection) {
         return sections.stream().anyMatch(section -> section.isSameUpStation(newSection));
     }
 
     // 이미 등록된 하행역인지 검증
-    private boolean isAlreadyRegisterDownStation(final Section newSection) {
+    private boolean isAlreadyRegisterDownStation(Section newSection) {
         return sections.stream().anyMatch(section -> section.isSameDownStation(newSection));
     }
 
-    // 상행역이 포함되어 있는지 검증
-    private boolean isContainDownStation(final Section newSection) {
+    // 해당 역이 포함되어 있는지 검증
+    private boolean isContainStation(Station newSection) {
         return sections.stream()
-                .anyMatch(section -> section.getDownStation().equals(newSection.getUpStation()));
-    }
-
-    // 하행역이 포함되어 있는지 검증
-    private boolean isContainUpStation(final Section newSection) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
+                .anyMatch(section -> section.isContainStation(newSection));
     }
 
     // 등록되어 있는 상행역과 새로운 구간의 하행역이 같은지 검증 (구간 연결 [새로운 구간이 앞으로 붙는경우])
-    private boolean isConnectDownStation(final Section newSection) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStation().equals(newSection.getDownStation()));
+    private boolean isConnectDownStation(Section newSection) {
+        return getUpStation().equals(newSection.getDownStation());
     }
 
     // 등록되어 있는 하행역과 새로운 구간의 상행역이 같은지 검증 (구간연결 [새로운 구간이 뒤로 붙는경우])
-    private boolean isConnectUpStation(final Section newSection) {
-        return sections.stream()
-                .anyMatch(section -> section.getDownStation().equals(newSection.getUpStation()));
+    private boolean isConnectUpStation(Section newSection) {
+        return getDownStation().equals(newSection.getUpStation());
+    }
+
+    private Station getUpStation() {
+        Station cur = null;
+        Section next = sections.get(0);
+
+        while (next != null) {
+            cur = next.getUpStation();
+            next = findSectionByDownStation(next.getUpStation());
+        }
+
+        return cur;
+    }
+
+    private Section findSectionByDownStation(Station downStation) {
+        for (Section section : sections) {
+            if (section.getDownStation().equals(downStation)) {
+                return section;
+            }
+        }
+
+        return null;
+    }
+
+    private Station getDownStation() {
+        Station cur = null;
+        Section next = sections.get(0);
+
+        while (next != null) {
+            cur = next.getDownStation();
+            next = findSectionByUpStation(next.getDownStation());
+        }
+
+        return cur;
+    }
+
+    private Section findSectionByUpStation(Station upStation) {
+        for (Section section : sections) {
+            if (section.getUpStation().equals(upStation)) {
+                return section;
+            }
+        }
+
+        return null;
     }
 
     private void addMiddleStation(Section newSection) {
@@ -123,11 +160,17 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        stations.add(this.getLastDownStation());
+        List<Station> stations = new ArrayList<>();
+        stations.add(getUpStation());
+        Section next = findSectionByUpStation(getUpStation());
+        while (next != null) {
+            stations.add(next.getDownStation());
+            next = findSectionByUpStation(next.getDownStation());
+        }
 
         return stations;
     }
@@ -146,7 +189,7 @@ public class Sections {
 
     public void delete(final Station station) {
         if (sections.size() <= MIN_SECTION_SIZE) {
-            throw new SubwayRuntimeException(SubwayErrorCode.CANNOT_DELETE_LAST_STATION);
+            throw new IllegalArgumentException("구간이 하나인 노선에서는 역을 제거할 수 없습니다.");
         }
 
         Section lastSection = lastSection();
