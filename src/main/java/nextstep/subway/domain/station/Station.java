@@ -27,6 +27,10 @@ public class Station {
         this.name = new Name(name);
     }
 
+    public String getName() {
+        return name.getName();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

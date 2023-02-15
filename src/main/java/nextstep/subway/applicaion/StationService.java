@@ -7,13 +7,14 @@ import nextstep.subway.domain.station.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -39,11 +40,17 @@ public class StationService {
     public StationResponse createStationResponse(Station station) {
         return new StationResponse(
                 station.getId(),
-                station.getName().getName()
+                station.getName()
         );
     }
 
     public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 station Id 입니다."));
     }
+
+    public List<Station> findAll() {
+        return stationRepository.findAll();
+    }
+
 }

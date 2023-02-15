@@ -47,8 +47,12 @@ public class Line {
     }
 
     public void update(LineRequest lineRequest) {
-        this.name = new Name(lineRequest.getName());
-        this.color = lineRequest.getColor();
+        if (lineRequest.getName() != null) {
+            this.name = new Name(lineRequest.getName());
+        }
+        if (lineRequest.getColor() != null) {
+            this.color = lineRequest.getColor();
+        }
     }
 
     public void removeSection(Station station) {
@@ -56,9 +60,6 @@ public class Line {
     }
 
     public String getName() {
-        if (name == null) {
-            return null;
-        }
         return name.getName();
     }
 
