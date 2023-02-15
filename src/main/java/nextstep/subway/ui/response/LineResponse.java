@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.ui.response;
 
 import java.util.List;
 
@@ -31,4 +31,3 @@ public class LineResponse {
         return stations;
     }
 }
-

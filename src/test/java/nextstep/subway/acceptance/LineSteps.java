@@ -3,7 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.ui.response.LineResponse;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
