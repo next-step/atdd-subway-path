@@ -1,10 +1,12 @@
 package nextstep.subway.ui.error.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class BusinessException extends RuntimeException {
 
-	private int status;
+	private HttpStatus status;
 
-	public BusinessException(int status, String message) {
+	public BusinessException(HttpStatus status, String message) {
 		super(message);
 		this.status = status;
 	}
@@ -18,7 +20,7 @@ public class BusinessException extends RuntimeException {
 		super(errorMessage);
 	}
 
-	public int getStatus() {
+	public HttpStatus getStatus() {
 		return status;
 	}
 }

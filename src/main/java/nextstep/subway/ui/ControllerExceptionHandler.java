@@ -23,7 +23,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(value = { BusinessException.class })
     protected ResponseEntity<ErrorResponse> handleConflict(BusinessException e) {
         List<String> errorMessages = List.of(e.getMessage());
-        HttpStatus httpStatus = HttpStatus.valueOf(e.getStatus());
+        HttpStatus httpStatus = e.getStatus();
         ErrorResponse errorResponse = ErrorResponse.of(httpStatus, errorMessages);
         return ResponseEntity.status(httpStatus).body(errorResponse);
     }
