@@ -46,7 +46,7 @@ public class Sections {
             Section section = this.sections.get(deleteIndex);
             Section beforeSection = this.sections.get(getLastIndext(deleteIndex));
 
-            section.change(beforeSection.getUpStation(), section.getDownStation(),beforeSection.getDistance() + section.getDistance());
+            section.change(beforeSection.getUpStation(), section.getDownStation(), beforeSection.addDistance(section.getDistance()));
 
             this.sections.set(getLastIndext(deleteIndex), section);
         }

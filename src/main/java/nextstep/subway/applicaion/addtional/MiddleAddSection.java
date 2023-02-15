@@ -1,5 +1,6 @@
 package nextstep.subway.applicaion.addtional;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 
@@ -24,10 +25,10 @@ public class MiddleAddSection implements Additional {
                 .line(section.getLine())
                 .upStation(section.getDownStation())
                 .downStation(standardSection.getDownStation())
-                .distance(standardSection.getDistance() - section.getDistance())
+                .distance(standardSection.minusDistance(section.getDistance()))
                 .build();
 
-        standardSection.change(standardSection.getUpStation(), section.getDownStation(), section.getDistance());
+        standardSection.change(standardSection.getUpStation(), section.getDownStation(), new Distance(section.getDistance()));
 
         List<Section> sectionList = sections.getSections();
 

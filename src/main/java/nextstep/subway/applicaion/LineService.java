@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.addtional.Additional;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -35,7 +36,7 @@ public class LineService {
                     .line(line)
                     .upStation(upStation)
                     .downStation(downStation)
-                    .distance(request.getDistance())
+                    .distance(new Distance(request.getDistance()))
                     .build());
         }
         return LineResponse.of(line);
@@ -79,7 +80,7 @@ public class LineService {
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(sectionRequest.getDistance())
+                .distance(new Distance(sectionRequest.getDistance()))
                 .build());
     }
 

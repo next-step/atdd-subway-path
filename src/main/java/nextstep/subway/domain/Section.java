@@ -4,6 +4,7 @@ import lombok.Builder;
 import nextstep.subway.exception.SubwayRestApiException;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -32,15 +33,15 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
-    private static int MIN_DISTANCE = 0;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
 
     }
 
     @Builder
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -50,7 +51,7 @@ public class Section {
     }
 
     private void validations() {
-        if (this.distance <= MIN_DISTANCE) {
+        if (this.distance.islessThanMinDistance()) {
             throw new SubwayRestApiException(ERROR_INVAILD_DISTANCE);
         }
     }
@@ -72,10 +73,18 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
-    public void change(Station upStation, Station downStation, int distance) {
+    public Distance minusDistance(int minusDistance) {
+        return this.distance.minus(minusDistance);
+    }
+
+    public Distance addDistance(int addDistance) {
+        return this.distance.add(addDistance);
+    }
+
+    public void change(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;

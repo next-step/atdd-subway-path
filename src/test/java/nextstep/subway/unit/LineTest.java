@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -130,7 +131,7 @@ class LineTest {
                 .line(line)
                 .upStation(지하철역1)
                 .downStation(지하철역2)
-                .distance(distance_5)
+                .distance(new Distance(distance_5))
                 .build();
 
         지하철노선_기존구간_뒤에_추가(line, newSection);
@@ -143,7 +144,7 @@ class LineTest {
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(distance)
+                .distance(new Distance(distance))
                 .build();
     }
 
