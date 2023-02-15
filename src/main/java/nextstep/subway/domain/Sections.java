@@ -7,6 +7,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -54,17 +55,13 @@ public class Sections {
             return;
         }
 
-        sections.stream()
-                .filter(origin -> origin.hasBothMatchedStation(section))
-                .findAny()
-                .ifPresent(i -> {
-                    throw new IllegalArgumentException(SECTION_ALREADY_EXISTS);
-                });
+        if (findAnyBothMatchedStation(section).isPresent()) {
+            throw new IllegalArgumentException(SECTION_ALREADY_EXISTS);
+        }
 
-        sections.stream()
-                .filter(origin -> origin.hasOneMatchedStation(section))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(MATCHED_SECTION_NOT_EXISTS));
+        if (findAnyOneMatchedStation(section).isEmpty()) {
+            throw new IllegalArgumentException(MATCHED_SECTION_NOT_EXISTS);
+        }
     }
 
     public void delete(Station station) {
@@ -128,6 +125,18 @@ public class Sections {
         return sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
+    }
+
+    private Optional<Section> findAnyOneMatchedStation(Section section) {
+        return sections.stream()
+                .filter(origin -> origin.hasOneMatchedStation(section))
+                .findAny();
+    }
+
+    private Optional<Section> findAnyBothMatchedStation(Section section) {
+        return sections.stream()
+                .filter(origin -> origin.hasBothMatchedStation(section))
+                .findAny();
     }
 
     public List<Section> getValues() {
