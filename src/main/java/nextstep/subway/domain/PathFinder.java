@@ -1,32 +1,21 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.domain;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Path;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.NotFoundException;
 import nextstep.subway.domain.exception.SubwayException;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PathFinder {
-    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-    private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+    private final ShortestPathStrategy<Station, Section> shortestPathStrategy;
 
-    public PathFinder(List<Line> lines) {
+    public PathFinder(ShortestPathStrategy<Station, Section> shortestPathStrategy, List<Line> lines) {
         List<Station> allStations = allStations(lines);
         List<Section> sections = getSections(lines);
 
-        allStations.forEach(graph::addVertex);
-        for (Section section : sections) {
-            var edge = graph.addEdge(section.getUpStation(), section.getDownStation());
-            graph.setEdgeWeight(edge, section.getDistance());
-        }
+        this.shortestPathStrategy = shortestPathStrategy;
+        shortestPathStrategy.init(allStations, sections);
     }
 
     private List<Station> allStations(List<Line> lines) {
@@ -46,16 +35,12 @@ public class PathFinder {
         Station sourceStation = findStation(source);
         Station targetStation = findStation(target);
 
-        var path = dijkstraShortestPath.getPath(sourceStation, targetStation);
-        if (path == null) {
-            throw new SubwayException(String.format("%s과 %s이 연결되어있지 않습니다.", sourceStation.getName(), targetStation.getName()));
-        }
-
-        return new Path(path.getVertexList(), path.getWeight());
+        return shortestPathStrategy.shortestPath(sourceStation, targetStation)
+                .orElseThrow(() -> new SubwayException(String.format("%s과 %s이 연결되어있지 않습니다.", sourceStation.getName(), targetStation.getName())));
     }
 
     private Station findStation(Long stationId) {
-        return graph.vertexSet()
+        return shortestPathStrategy.allVertices()
                 .stream()
                 .filter(station -> station.getId().equals(stationId))
                 .findFirst()

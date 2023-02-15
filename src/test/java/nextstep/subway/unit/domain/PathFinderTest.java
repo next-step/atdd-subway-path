@@ -1,6 +1,7 @@
-package nextstep.subway.unit.service;
+package nextstep.subway.unit.domain;
 
-import nextstep.subway.applicaion.PathFinder;
+import nextstep.subway.applicaion.Dikstra;
+import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Station;
@@ -13,10 +14,9 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("[Service] 경로 조회 테스트")
+@DisplayName("[Domain] 경로 조회 테스트")
 class PathFinderTest {
 
     private Station 오금역;
@@ -46,7 +46,7 @@ class PathFinderTest {
         오호선.addSection(오금역, 개롱역, 1);
 
         // when
-        PathFinder pathFinder = new PathFinder(List.of(삼호선, 오호선));
+        PathFinder pathFinder = new PathFinder(new Dikstra(), List.of(삼호선, 오호선));
         Path path = pathFinder.shortestPath(가락시장역.getId(), 개롱역.getId());
 
         // then
@@ -62,7 +62,7 @@ class PathFinderTest {
 
         // when
         // then
-        PathFinder pathFinder = new PathFinder(List.of(삼호선, 오호선));
+        PathFinder pathFinder = new PathFinder(new Dikstra(), List.of(삼호선, 오호선));
         assertThatThrownBy(() -> pathFinder.shortestPath(가락시장역.getId(), 개롱역.getId()))
                 .isInstanceOf(SubwayException.class);
     }
@@ -75,7 +75,7 @@ class PathFinderTest {
 
         // when
         // then
-        PathFinder pathFinder = new PathFinder(List.of(삼호선, 오호선));
+        PathFinder pathFinder = new PathFinder(new Dikstra(), List.of(삼호선, 오호선));
         assertThatThrownBy(() -> pathFinder.shortestPath(오금역.getId(), Long.MAX_VALUE))
                 .isInstanceOf(NotFoundException.class);
     }
