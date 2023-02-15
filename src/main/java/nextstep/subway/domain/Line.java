@@ -68,14 +68,6 @@ public class Line {
         return sections.getStations();
     }
 
-    public Section getLastSection() {
-        return sections.findLastSection();
-    }
-
-    public void removeLastSection() {
-        sections.removeLastSection();
-    }
-
     public void removeSection(Station station) {
         sections.removeSection(station);
     }

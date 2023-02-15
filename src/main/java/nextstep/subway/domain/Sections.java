@@ -85,10 +85,6 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    public void removeLastSection() {
-        sections.remove(findLastSection());
-    }
-
     public Integer[] getDistances() {
         return sections.stream()
                 .map(Section::getDistance)
@@ -252,6 +248,10 @@ public class Sections {
 
     private void removeFirstSection() {
         sections.remove(findFirstSection());
+    }
+
+    private void removeLastSection() {
+        sections.remove(findLastSection());
     }
 
     private void removeMiddleSection(Station station) {
