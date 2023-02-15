@@ -86,6 +86,10 @@ public class LineService {
                 .orElseThrow(() -> new NoExistLineException(NO_FIND_LINE));
     }
 
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
+    }
+
     private Line save(final Line line) {
         final Sections sections = line.getSections();
         sections.addLine(line);
