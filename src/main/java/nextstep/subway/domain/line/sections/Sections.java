@@ -1,7 +1,7 @@
 package nextstep.subway.domain.line.sections;
 
 import nextstep.subway.applicaion.line.sections.addtional.Additional;
-import nextstep.subway.applicaion.line.sections.addtional.SectionBackAdder;
+import nextstep.subway.applicaion.line.sections.addtional.SectionAdder;
 import nextstep.subway.applicaion.line.sections.addtional.SectionFrontAdder;
 import nextstep.subway.applicaion.line.sections.addtional.SectionMiddleAdder;
 import nextstep.subway.domain.section.Distance;
@@ -179,7 +179,7 @@ public class Sections {
             return new SectionMiddleAdder();
         }
 
-        return new SectionBackAdder();
+        return new SectionAdder();
     }
 
     private boolean isPosibleFrontAddSection(Section section) {

@@ -5,7 +5,7 @@ import nextstep.subway.domain.line.sections.Sections;
 
 import java.util.List;
 
-public class SectionBackAdder implements Additional {
+public class SectionAdder implements Additional {
     @Override
     public void add(Sections sections, Section section) {
         sections.isValidationSection(section);
