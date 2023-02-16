@@ -1,9 +1,9 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.Distance;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.section.Distance;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.SubwayRestApiException;
 import org.assertj.core.api.ListAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +49,7 @@ class LineTest {
         지하철노선_구간_지하철역_검증(line, 지하철역1, 지하철역2, 지하철역3);
     }
 
-    @DisplayName("지하철 구간 중간에 새로운 구간을 추가 중 구간길이 검증 실패로 Exception 발생")
+    @DisplayName("지하철 구간 중간에 새로운 구간을 추가 중 구간길이 검증 실패로 Exception 던짐")
     @Test
     void addSectionMiddleException1() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
@@ -59,7 +59,7 @@ class LineTest {
         assertThrows(SubwayRestApiException.class, () -> 지하철노선_기존구간_중간에_추가(line, newSection));
     }
 
-    @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 모두 존재하는 경우 Exception 발생")
+    @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 모두 존재하는 경우 Exception 던짐")
     @Test
     void addSectionMiddleException2() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
@@ -68,7 +68,7 @@ class LineTest {
         assertThrows(SubwayRestApiException.class, () -> 지하철노선_기존구간_중간에_추가(line, newSection));
     }
 
-    @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 노선에 아예 없는 경우 Exception 발생")
+    @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 노선에 아예 없는 경우 Exception 던짐")
     @Test
     void addSectionMiddleException3() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
@@ -107,7 +107,7 @@ class LineTest {
         지하철노선_구간_지하철역_검증(line, 지하철역0, 지하철역1, 지하철역2);
     }
 
-    @DisplayName("지하철 노선에 없는 지하철역을 삭제할 경우 Exception 발생")
+    @DisplayName("지하철 노선에 없는 지하철역을 삭제할 경우 Exception 던짐")
     @Test
     void removeSectionException() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
@@ -115,7 +115,7 @@ class LineTest {
         assertThrows(SubwayRestApiException.class, () -> line.removeSection(new Station("지하철역4")));
     }
 
-    @DisplayName("지하철 노선의 구간이 1개인 상태에서 지하철역을 삭제할 경우 Exception 발생")
+    @DisplayName("지하철 노선의 구간이 1개인 상태에서 지하철역을 삭제할 경우 Exception 던짐")
     @Test
     void removeSectionException2() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1);
