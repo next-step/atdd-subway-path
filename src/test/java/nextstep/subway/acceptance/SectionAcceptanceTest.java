@@ -47,7 +47,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
 		// then
-		지하철_노선_확인(신분당선, 강남역, 양재역, 정자역);
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+		지하철_노선_확인(response, 강남역, 양재역, 정자역);
 	}
 
 	/**
@@ -63,7 +64,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
 
 		// then
-		지하철_노선_확인(신분당선, 강남역, 중간역, 양재역);
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+		지하철_노선_확인(response, 강남역, 중간역, 양재역);
 
 	}
 
@@ -83,7 +85,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
 		// then
-		지하철_노선_확인(신분당선, 양재역, 정자역);
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+		지하철_노선_확인(response, 양재역, 정자역);
 	}
 
 	/**
@@ -96,13 +99,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	void removeMiddleLineSection() {
 		// given
 		Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
 
 		// when
 		지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
 		// then
-		지하철_노선_확인(신분당선, 강남역, 정자역);
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+		지하철_노선_확인(response, 강남역, 정자역);
+		assertThat(response.jsonPath().getList("sections.distance", Integer.class)).containsExactly(20);
+
 	}
 
 	/**
@@ -121,7 +127,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
 		// then
-		지하철_노선_확인(신분당선, 강남역, 양재역);
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+		지하철_노선_확인(response, 강남역, 양재역);
 	}
 
 	private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
@@ -143,8 +150,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		return params;
 	}
 
-	private void 지하철_노선_확인(Long line, Long... stations) {
-		ExtractableResponse<Response> response = 지하철_노선_조회_요청(line);
+	private void 지하철_노선_확인(ExtractableResponse<Response> response, Long... stations) {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stations);
 	}
