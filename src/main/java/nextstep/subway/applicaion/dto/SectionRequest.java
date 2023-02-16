@@ -2,7 +2,9 @@ package nextstep.subway.applicaion.dto;
 
 
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class SectionRequest {
     private Long upStationId;
     private Long downStationId;
