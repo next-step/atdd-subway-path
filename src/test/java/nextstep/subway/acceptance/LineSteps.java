@@ -1,10 +1,14 @@
 package nextstep.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.Assertions;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class LineSteps {
@@ -38,6 +42,34 @@ public class LineSteps {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines/{id}", id)
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(
+            final ExtractableResponse<Response> createResponse,
+            final Map<String, String> params
+    ) {
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(createResponse.header("location"))
+                .then().log().all().extract();
+    }
+
+    public static void 지하철_노선_수정_검증(final ExtractableResponse<Response> createResponse, final String color) {
+        var response = 지하철_노선_조회_요청(createResponse);
+
+        Assertions.assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo(color)
+        );
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_삭제_요청(final ExtractableResponse<Response> createResponse) {
+        return RestAssured
+                .given().log().all()
+                .when().delete(createResponse.header("location"))
                 .then().log().all().extract();
     }
 
