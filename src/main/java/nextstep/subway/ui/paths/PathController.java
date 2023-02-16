@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/paths")
 public class PathController {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
     public PathController(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
