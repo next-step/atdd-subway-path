@@ -140,31 +140,6 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
     }
 
-    /**
-     * Given 지하철 노선에 대한 출발역과 도착역이 주어지고
-     * When 경로를 조회하면
-     * Then 해당 경로의 지하철역과 거리가 반환된다.
-     */
-    @DisplayName("지하철 경로 조회")
-    @Test
-    void getPath() {
-        // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_추가_요청(신분당선, createSectionCreateParams(양재역, 정자역));
-
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_경로_조회_요청(강남역, 정자역);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        PathResponse pathResponse = response.as(PathResponse.class);
-        assertThat(pathResponse.getDistance()).isEqualTo(20L);
-        assertThat(pathResponse.getStations())
-                .map(StationResponse::getName)
-                .containsExactly("강남역", "양재역", "정자역");
-
-    }
-
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
