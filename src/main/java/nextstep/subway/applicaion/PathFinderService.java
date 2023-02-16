@@ -5,7 +5,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
-import org.jgrapht.GraphPath;
+import nextstep.subway.domain.dto.PathDto;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +26,10 @@ public class PathFinderService {
     public void initGraph() {
         List<Line> lines = lineRepository.findAll();
 
-        pathFinder.initGraph(lines);
+        pathFinder.init(lines);
     }
 
-    public GraphPath find(final Station sourceStation, final Station targetStation) {
+    public PathDto find(final Station sourceStation, final Station targetStation) {
         return pathFinder.find(sourceStation, targetStation);
     }
 }

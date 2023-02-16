@@ -4,7 +4,7 @@ import java.util.List;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Station;
-import org.jgrapht.GraphPath;
+import nextstep.subway.domain.dto.PathDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,14 +28,14 @@ public class PathService {
         return createPathResponse(findPath(sourceStation, targetStation));
     }
 
-    private GraphPath findPath(final Station sourceStation, final Station targetStation) {
+    private PathDto findPath(final Station sourceStation, final Station targetStation) {
         pathFinderService.initGraph();
         return pathFinderService.find(sourceStation, targetStation);
     }
 
-    private PathResponse createPathResponse(final GraphPath graphPath) {
-        List<StationResponse> stations = stationService.createStationResponsesBy(graphPath.getVertexList());
-        double distance = graphPath.getWeight();
+    private PathResponse createPathResponse(final PathDto pathDto) {
+        List<StationResponse> stations = stationService.createStationResponsesBy(pathDto.getNodes());
+        double distance = pathDto.getWeight();
         return new PathResponse(stations, distance);
     }
 }
