@@ -34,10 +34,10 @@ class LineTest {
         line.addSection(강남역, 잠실역, 5);
 
         assertAll(
-            ()->assertThat(line.getSections()).hasSize(1),
-            ()->assertThat(line.getStations())
-                    .extracting(Station::getName)
-                    .containsExactlyInAnyOrder("강남역", "잠실역")
+                () -> assertThat(line.getSections()).hasSize(1),
+                () -> assertThat(line.getStations())
+                        .extracting(Station::getName)
+                        .containsExactlyInAnyOrder("강남역", "잠실역")
         );
     }
 
@@ -67,7 +67,8 @@ class LineTest {
     @DisplayName("성공: 지하철역 목록 조회")
     void getStations() {
         // 노선 추가
-        Line line = new Line("이호선", "green", 강남역, 잠실역, 5);
+        Line line = new Line("이호선", "green");
+        line.addSection(강남역, 잠실역, 5);
 
         assertSoftly(softly -> {
             softly.assertThat(line.getSections()).hasSize(1);
