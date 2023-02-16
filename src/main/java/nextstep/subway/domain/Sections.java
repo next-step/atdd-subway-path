@@ -96,7 +96,8 @@ public class Sections {
 
     private boolean isAlreadyRegisteredSection(final Section section) {
         return sectionList.stream()
-                .anyMatch(sec -> sec.equals(section));
+                .anyMatch(sec -> sec.getUpStation().equals(section.getUpStation())
+                        && sec.getDownStation().equals(section.getDownStation()));
     }
 
     // 해당 구간이 상행 종점 구간인지? -> 해당 구간의 상행역은 다른 구간들의 하행역이 아니다

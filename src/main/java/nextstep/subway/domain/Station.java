@@ -32,6 +32,8 @@ public class Station {
             return false;
         }
         Station station = (Station) o;
+// Entity의 특성을 그대로 따라 id만을 가지고 식별자 동등성으로 판별하게 되면.. 다른 로직(sections)들이 너무 먼 길을 돌아갈 것 같습니다..ㅠ
+// 이럴땐 어떻게 해야될까요? VO로 변환하여 구조적 동등성 비교를 해야할까요? 아니면 그냥 아래 방법대로 equals()에 name까지 열어줄까요..
         return Objects.equals(getId(), station.getId()) && Objects.equals(getName(), station.getName());
     }
 
