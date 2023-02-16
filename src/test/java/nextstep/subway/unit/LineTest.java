@@ -2,6 +2,8 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
+import nextstep.subway.ui.error.exception.BusinessException;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -32,22 +34,22 @@ class LineTest {
     void removeSection() {
         // given
         Line line = createLine();
-
+        line.addSection(line.getStations().get(1), new Station("처음역"), 4);
         // when
         line.removeSection(line.getStations().get(1));
-
         // then
-        assertThat(line.getSections()).isEmpty();
+        assertThat(line.getSections()).hasSize(1);
     }
 
     @Test
-    void removeNonLastSection() {
+    void removeSectionWithOneSection() {
         // given
         Line line = createLine();
 
         // when & then
-        assertThatThrownBy(() -> line.removeSection(line.getStations().get(0)))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> line.removeSection(line.getStations().get(1)))
+                .isInstanceOf(BusinessException.class);
+
     }
 
     @Test

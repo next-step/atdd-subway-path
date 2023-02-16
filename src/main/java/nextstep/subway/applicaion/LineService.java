@@ -1,9 +1,6 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -12,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,12 +72,18 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
+        LineResponse response = new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                createStationResponses(line)
-        );
+                createStationResponses(line),
+                createSectionResponses(line));
+        return response;
+
+    }
+
+    private List<SectionResponse> createSectionResponses(Line line) {
+        return SectionResponse.of(line.getSections());
     }
 
     private List<StationResponse> createStationResponses(Line line) {
@@ -103,11 +107,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+        line.removeSection(station);
     }
 
     public Line findLineById(Long id) {
