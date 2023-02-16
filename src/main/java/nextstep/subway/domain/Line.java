@@ -28,8 +28,8 @@ public class Line {
         sections.addSection(newSection);
     }
 
-    public void deleteSection(Long stationId) {
-        sections.deleteSection(stationId);
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
     }
 
     public List<Station> getSortedStations() {

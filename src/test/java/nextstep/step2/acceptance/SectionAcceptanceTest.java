@@ -19,7 +19,6 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     private Long 이호선;
-    private Long 교대역;
     private Long 강남역;
     private Long 역삼역;
     private Long 선릉역;
@@ -32,7 +31,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
         강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         역삼역 = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
         선릉역 = 지하철역_생성_요청("선릉역").jsonPath().getLong("id");

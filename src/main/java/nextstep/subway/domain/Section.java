@@ -38,6 +38,8 @@ public class Section {
         this.distance -= distance;
     }
 
+    public void addDistance(int distance){ this.distance += distance; }
+
     public void updateDownStation(Station downStation) {
         this.downStation = downStation;
     }
