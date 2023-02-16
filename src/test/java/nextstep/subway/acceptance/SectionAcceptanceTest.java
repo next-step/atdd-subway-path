@@ -3,15 +3,19 @@ package nextstep.subway.acceptance;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.신규구간_추가시_상행역과_하행역_모두_노선에_존재하지_않는_역이면_예외_발생;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.기존_구간_사이에_신규_구간을_추가_검증;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.기존구간_사이에_신규구간_추가시_신규구간이_기존구간_사이_길이보다_크거나_같으면_예외_발생;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선_조회시_상행역_부터_하행역_순으로_조회_검증;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.구간_제거시_노선에_구간이_하나면_예외_발생;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선에_등록되지_않은_역을_제거시_예외_발생;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선의_상행_종점으로_신규_구간을_추가_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.노선의_하행_종점으로_신규_구간을_추가_검증;
+import static nextstep.subway.acceptance.SectionAcceptanceAssert.신규구간_추가시_상행역과_하행역_모두_노선에_등록되어_있다면_예외_발생;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_등록_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_구간을_제거_검증;
 import static nextstep.subway.acceptance.SectionAcceptanceAssert.지하철_노선에_중간역을_제거_검증;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +26,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
@@ -89,11 +92,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @ParameterizedTest(name = "sectionDistance : lineDistance + {0}")
         @ValueSource(ints = {10, 11, 15})
         void addSectionDistanceMoreThanExistingSectionDistance(int distance) {
-            // when
-            var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 선릉역, distance));
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            기존구간_사이에_신규구간_추가시_신규구간이_기존구간_사이_길이보다_크거나_같으면_예외_발생(신분당선, 강남역, 선릉역, distance);
         }
 
         /**
@@ -131,25 +130,19 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @DisplayName("신규 구간 추가시 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 에러 처리한다.")
         @Test
         void addLineSectionAlreadyAddedInLine() {
-            // when
-            var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 4));
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            // when & then
+            신규구간_추가시_상행역과_하행역_모두_노선에_등록되어_있다면_예외_발생(신분당선, 강남역, 양재역);
         }
 
         /**
-         * When 신규 구간을 추가를 요청했을 때 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면
+         * When 신규 구간 추가시 노선에 상행역과 하행역 둘다 노선에 포함되어 있지 않으면
          * Then 에러 처리한다.
          */
-        @DisplayName("신규 구간 추가시 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 에러 처리한다.")
+        @DisplayName("신규 구간 추가시 노선에 상행역과 하행역 둘다 노선에 포함되어 있지 않으면 에러 처리한다.")
         @Test
         void addLineSectionNonIncludeInLine() {
-            // when
-            var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(선릉역, 정자역, 4));
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            // when & then
+            신규구간_추가시_상행역과_하행역_모두_노선에_존재하지_않는_역이면_예외_발생(신분당선, 선릉역, 정자역);
         }
     }
 
@@ -200,11 +193,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         @DisplayName("구간이 하나인 노선에서 구간 제거할 경우 에러 처리한다.")
         @Test
         void removeSectionLineHasOnlyOneSection() {
-            // when
-            var response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            // when & then
+            구간_제거시_노선에_구간이_하나면_예외_발생(신분당선, 강남역);
         }
 
         /**
@@ -218,11 +208,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
             // given
             지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 6));
 
-            // when
-            var response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 선릉역);
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            // when & then
+            노선에_등록되지_않은_역을_제거시_예외_발생(신분당선, 선릉역);
         }
     }
 
@@ -237,7 +224,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // given
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 정자역, 6));
 
-        // when, then
+        // when & then
         노선_조회시_상행역_부터_하행역_순으로_조회_검증(신분당선, List.of(강남역, 정자역, 양재역));
     }
 
