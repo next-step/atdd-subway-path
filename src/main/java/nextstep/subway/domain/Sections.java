@@ -63,14 +63,19 @@ public class Sections {
     }
 
     private Section getSectionToAdd(Station requestUpStation, Station requestDownStation) {
-        return sections.stream().filter(section -> {
-            // 상행역 또는 하행역에 추가
-            if (canAddUpOrDownStation(requestUpStation, requestDownStation, section))
-                return true;
+        return sections.stream().filter(section -> isPossibleToAddSection(requestUpStation, requestDownStation, section))
+            .findFirst()
+            .orElseThrow(IllegalAddSectionException::new);
+    }
 
-            // 상행역 하행역 사이 추가
-            return canAddInTheMiddleStation(requestUpStation, section);
-        }).findFirst().orElseThrow(IllegalAddSectionException::new);
+    private static boolean isPossibleToAddSection(Station requestUpStation, Station requestDownStation, Section section) {
+        // 상행역 또는 하행역에 추가
+        if (canAddUpOrDownStation(requestUpStation, requestDownStation, section)) {
+            return true;
+        }
+
+        // 상행역 하행역 사이 추가
+        return canAddInTheMiddleStation(requestUpStation, section);
     }
 
     private static boolean canAddUpOrDownStation(Station requestUpStation, Station requestDownStation, Section section) {
