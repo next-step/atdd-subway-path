@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.7.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
+    id 'com.diffplug.spotless' version '6.11.0'
 }
 
 group = 'nextstep'
@@ -27,6 +28,20 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured:4.5.1'
 
     runtimeOnly 'com.h2database:h2'
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+}
+
+spotless {
+    java {
+        googleJavaFormat().aosp()
+    }
 }
 
 test {
