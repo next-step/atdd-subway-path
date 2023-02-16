@@ -1,8 +1,15 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Line {
@@ -56,6 +63,25 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        // 상행 종점
+        if (isFirstSection(section)) {
+            sections.add(0, section);
+            return;
+        }
+
+        // 하행 종점
+        if (isLastSection(section)) {
+            sections.add(section);
+            return;
+        }
+
+        // 사이
+
         sections.add(section);
     }
 
@@ -68,25 +94,37 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
+        Set<Station> stations = new LinkedHashSet<>();
         for (Section section : sections) {
-            stations.add(section.getDownStation());
             stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
         }
 
-        return stations;
+        return new ArrayList<>(stations);
     }
 
     public void removeSection(Station station) {
-        if (!getLastStation().equals(station)) {
+        if (!isLastStation(station)) {
             throw new IllegalArgumentException();
         }
 
         sections.remove(sections.size() - 1);
     }
 
-    private Station getLastStation() {
-        return sections.get(sections.size() - 1).getDownStation();
+    private boolean isFirstStation(Station station) {
+        return sections.get(0).getUpStation().equals(station);
+    }
+
+    private boolean isLastStation(Station station) {
+        return sections.get(sections.size() - 1).getDownStation().equals(station);
+    }
+
+    private boolean isFirstSection(Section section) {
+        return isFirstStation(section.getDownStation());
+    }
+
+    private boolean isLastSection(Section section) {
+        return isLastStation(section.getUpStation());
     }
 
 }
