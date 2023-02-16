@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -60,6 +61,18 @@ public class Sections {
         changeableSections.getDeprecatedSections()
             .forEach(sections::remove);
         sections.addAll(changeableSections.getAdditionalSections());
+    }
+
+    public List<Section> findSections(Predicate<Section> predicate) {
+        return getValue().stream()
+            .filter(predicate)
+            .collect(toList());
+    }
+
+    public Section findSection(Predicate<Section> predicate) {
+        return findSections(predicate).stream()
+            .findFirst()
+            .orElseThrow();
     }
 
     private void validateDeleteSection(Long stationId) {

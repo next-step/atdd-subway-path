@@ -1,7 +1,5 @@
 package nextstep.subway.domain.sections.strategy;
 
-import static java.util.stream.Collectors.*;
-
 import java.util.List;
 
 import nextstep.subway.domain.Line;
@@ -44,8 +42,6 @@ public class MiddleSectionAddStrategy implements SectionAddStrategy {
     }
 
     private List<Section> getMatchedSections(Sections sections, Section newSection) {
-        return sections.getValue().stream()
-            .filter(section -> section.isSameUpStation(newSection.getUpStation().getId()))
-            .collect(toList());
+        return sections.findSections(section -> section.isSameUpStation(newSection.getUpStation().getId()));
     }
 }
