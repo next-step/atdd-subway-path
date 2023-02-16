@@ -55,15 +55,14 @@ public class Sections {
     public void removeSection(Station station) {
         validateWhenRemoveSection();
 
-        // 타겟 구간 찾기
-        Section targetSection = findSectionByStation(station);
-
         // 마지막 역인지
         if (isLastStation(station)) {
             sections.remove(sections.size() - 1);
             return;
         }
 
+        // 타겟 구간 찾기
+        Section targetSection = findSectionByStation(station);
 
         // 첫 역인지
         if (isFirstSection(targetSection)) {
@@ -76,7 +75,7 @@ public class Sections {
         targetBeforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
         sections.remove(targetSection);
     }
-    
+
     public Section findSectionByStation(Station station) {
         Section targetSection = sections.stream().filter(section -> section.getUpStation().equals(station))
             .findFirst()

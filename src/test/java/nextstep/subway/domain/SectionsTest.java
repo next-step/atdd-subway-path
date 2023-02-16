@@ -37,17 +37,21 @@ class SectionsTest {
     class RemoveSection {
 
         /**
-         * When 역 제거 요청 시
+         * When 마지막 역 제거 요청 시
          * Then 제거가 된다
          */
-        @DisplayName("역 제거 요청 시 구간이 제거가 된다")
+        @DisplayName("마지막역 제거 요청 시 구간이 제거가 된다")
         @Test
-        void 역_제거_요청_시_구간이_제거가_된다() {
+        void 마지막역_제거_요청_시_구간이_제거가_된다() {
+            // Given
+            Station 정자역 = new Station("정자역");
+            givenSections.addSection(신분당선, 양재역, 정자역, 10);
+
             // When
-            givenSections.removeSection(양재역);
+            givenSections.removeSection(정자역);
 
             // Then
-            assertThat(givenSections.isSectionsEmpty()).isTrue();
+            assertThat(givenSections.getOrderedStations()).containsExactly(강남역, 양재역);
         }
 
         /**
