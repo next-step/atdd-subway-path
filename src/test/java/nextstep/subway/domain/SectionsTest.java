@@ -109,6 +109,20 @@ class SectionsTest {
                 .isInstanceOf(IllegalRemoveMinSectionSize.class);
         }
 
+        /**
+         * When 노선의 구간에 해당역이 없는데 제거 요청을하면
+         * Then 제거 할 수 없다
+         */
+        @DisplayName("노선의 구간에 해당역이 없는데 제거 요청을하면 제거 할 수 없다")
+        @Test
+        void 노선의_구간에_해당역이_없는데_제거_요청을하면_제거_할_수_없다() {
+            Station 정자역 = new Station("정자역");
+
+            // When && Then
+            assertThatThrownBy(() -> givenSections.removeSection(정자역))
+                .isInstanceOf(IllegalRemoveMinSectionSize.class);
+        }
+
     }
 
     /**
