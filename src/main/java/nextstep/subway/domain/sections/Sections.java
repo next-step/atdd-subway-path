@@ -123,6 +123,12 @@ public class Sections {
         return ret;
     }
 
+    public int getTotalDistance() {
+        return sections.stream()
+            .map(Section::getDistance)
+            .reduce(0, Integer::sum);
+    }
+
     public List<Section> getValue() {
         List<Station> stations = getStations();
 

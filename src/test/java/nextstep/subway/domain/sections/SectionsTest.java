@@ -113,6 +113,7 @@ class SectionsTest {
     void deleteMiddleSection() {
         // given
         sections.addSection(Fixtures.createSection(4L, line, Fixtures.미금역, Fixtures.광교역, 10), line);
+        int totalDistance = sections.getTotalDistance();
 
         // when
         sections.deleteSection(Fixtures.미금역.getId(), line);
@@ -121,7 +122,8 @@ class SectionsTest {
         // then
         assertAll(
             () -> assertThat(stations).hasSize(3),
-            () -> assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역, Fixtures.광교역)
+            () -> assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역, Fixtures.광교역),
+            () -> assertThat(sections.getTotalDistance()).isEqualTo(totalDistance)
         );
     }
 
