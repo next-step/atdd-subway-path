@@ -1,17 +1,16 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
+import static nextstep.subway.acceptance.StationAcceptanceAssert.지하철역_생성_요청_검증;
+import static nextstep.subway.acceptance.StationAcceptanceAssert.지하철역_제거_요청_검증;
+import static nextstep.subway.acceptance.StationAcceptanceAssert.지하철역_조회_요청_검증;
+import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.acceptance.StationSteps.지하철역_제거_요청;
+import static nextstep.subway.acceptance.StationSteps.지하철역_조회_요청;
+
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-
-import java.util.List;
-
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -27,16 +26,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        지하철역_생성_요청_검증(response, "강남역");
     }
 
     /**
@@ -52,14 +42,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철역_생성_요청("역삼역");
 
         // when
-        ExtractableResponse<Response> stationResponse = RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
+        var stationResponse = 지하철역_조회_요청();
 
         // then
-        List<StationResponse> stations = stationResponse.jsonPath().getList(".", StationResponse.class);
-        assertThat(stations).hasSize(2);
+        지하철역_조회_요청_검증(stationResponse, 2);
     }
 
     /**
@@ -74,19 +60,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
 
         // when
-        String location = createResponse.header("location");
-        RestAssured.given().log().all()
-                .when()
-                .delete(location)
-                .then().log().all()
-                .extract();
+        지하철역_제거_요청(createResponse);
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).doesNotContain("강남역");
+        지하철역_제거_요청_검증("강남역");
     }
 }
