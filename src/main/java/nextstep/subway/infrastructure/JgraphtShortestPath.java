@@ -5,6 +5,7 @@ import nextstep.subway.applicaion.dto.PathResult;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.PathNotFoundException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class JgraphtShortestPathFinder implements PathFinder {
+public class JgraphtShortestPath implements PathFinder {
 
     public PathResult findPath(List<Line> lines, Station srcStation, Station dstStation) {
         List<Section> distinctSections = lines.stream()
@@ -38,6 +39,9 @@ public class JgraphtShortestPathFinder implements PathFinder {
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         GraphPath path = dijkstraShortestPath.getPath(srcStation, dstStation);
+        if (path == null) {
+            throw new PathNotFoundException();
+        }
         List<Station> vertexList = path.getVertexList();
         long weight = (int) path.getWeight();
         return new PathResult(vertexList, weight);
