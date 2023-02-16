@@ -61,7 +61,7 @@ public class Sections {
 
     public Section findSectionByStation(Station station) {
         if (isLastStation(station)) {
-            return sections.get(sections.size() - 1);
+            return getLastStation();
         }
 
         return sections.stream().filter(section -> section.getUpStation().equals(station))
@@ -84,7 +84,11 @@ public class Sections {
     }
 
     private boolean isLastStation(Station targetStation) {
-        return sections.get(sections.size() - 1).getDownStation().equals(targetStation);
+        return getLastStation().getDownStation().equals(targetStation);
+    }
+
+    private Section getLastStation() {
+        return sections.get(sections.size() - 1);
     }
 
     private Section getSectionToAdd(Station requestUpStation, Station requestDownStation) {
