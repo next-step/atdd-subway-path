@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface ShortestPathStrategy<V, E> {
-    void init(List<V> vertices, List<E> edges);
+    void init(List<E> edges);
     Optional<Path> shortestPath(V source, V target);
     Set<V> allVertices();
 }
