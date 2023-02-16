@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.ui.error.exception.ErrorCode.STATION_NOT_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
@@ -129,6 +130,25 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		지하철_노선_확인(response, 강남역, 양재역);
+	}
+
+	/**
+	 * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+	 * When 지하철 노선에 없는 역의 구간 제거를 요청 하면
+	 * Then 노선에 구간제거가 되지 않는다.
+	 */
+	@DisplayName("구간에 등록되지 않는 역을 삭제")
+	@Test
+	void removeNotExistSection() {
+		// given
+		Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+		지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
+
+		Long 신림역 = 지하철역_생성_요청("신림역").jsonPath().getLong("id");
+		ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 신림역);
+		// when
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.jsonPath().getList("errorMessages")).contains(STATION_NOT_EXISTS.getMessage());
 	}
 
 	private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
