@@ -52,4 +52,27 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void increaseDistance(int distance) {
+        this.distance += distance;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Section{");
+        sb.append("line=").append(line);
+        sb.append(", upStation=").append(upStation);
+        sb.append(", downStation=").append(downStation);
+        sb.append(", distance=").append(distance);
+        sb.append('}');
+        return sb.toString();
+    }
 }
