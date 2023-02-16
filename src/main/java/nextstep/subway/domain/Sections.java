@@ -32,6 +32,7 @@ public class Sections {
 
         List<Station> sortedStations = getSortedStations();
         Station lastUpStation = sortedStations.get(0);
+
         Station lastDownStation = sortedStations.get(sortedStations.size()-1);
 
         if(canAddSectionToUpOrDown(newSection, lastUpStation, lastDownStation)){
@@ -43,11 +44,14 @@ public class Sections {
     }
 
     private void addSectionToMiddle(Section newSection) {
-        Section targetSection = sections.stream()
-                .filter(e -> e.getUpStation().getId() == newSection.getUpStation().getId()
-                        || e.getDownStation().getId() == newSection.getDownStation().getId())
-                                        .findFirst()
-                                        .orElseThrow(IllegalArgumentException::new);
+        Section targetSection =
+                sections.stream()
+                        .filter(
+                                e -> e.equalsUpStation(newSection.getUpStation())
+                                        || e.equalsDownStation(newSection.getDownStation()))
+                        .findFirst()
+                        .orElseThrow(IllegalArgumentException::new);
+
 
         if (targetSection.getDistance() <= newSection.getDistance()) {
             throw new IllegalArgumentException("추가된 구간이 기존 구간보다 길이가 깁니다.");
@@ -55,26 +59,25 @@ public class Sections {
 
         sections.add(newSection);
 
-        if(targetSection.getUpStation().getId() == newSection.getUpStation().getId()){
-            targetSection.updateDistance(targetSection.getDistance() - newSection.getDistance());
+
+        if (targetSection.equalsUpStation(newSection.getUpStation())) {
+            targetSection.reduceDistance(newSection.getDistance());
             targetSection.updateUpStation(newSection.getDownStation());
-        }else{
-            targetSection.updateDistance(targetSection.getDistance() - newSection.getDistance());
+        } else {
+            targetSection.reduceDistance(newSection.getDistance());
             targetSection.updateDownStation(newSection.getUpStation());
         }
-
     }
 
-
     private boolean canAddSectionToUpOrDown(Section newSection, Station lastUpStation, Station lastDownStation) {
-        if(newSection.getUpStation().equals(lastDownStation) || newSection.getDownStation().equals(lastUpStation)){
-            return true;
-        }
-
-        return false;
+        return newSection.equalsUpStation(lastDownStation) || newSection.equalsDownStation(lastUpStation);
     }
 
     private void validateAddSectionRule(Section newSection) {
+        if (isNegativeDistance(newSection.getDistance())) {
+            throw new IllegalArgumentException("구간의 거리는 0보다 커야합니다");
+        }
+
         if (isAllStationExist(newSection)) {
             throw new IllegalArgumentException("추가하려는 구간의 상/하행역이 이미 노선에 포함되어 있습니다.");
         }
@@ -87,83 +90,28 @@ public class Sections {
     private boolean isAllStationExist(Section newSection) {
         List<Station> stations = getStations();
 
-        if (stations.contains(newSection.getUpStation()) && stations.contains(newSection.getDownStation())) {
-            return true;
-        }
-
-        return false;
+        return stations.contains(newSection.getUpStation()) && stations.contains(newSection.getDownStation());
     }
 
     private boolean isAllStationNotExist(Section newSection) {
         List<Station> stations = getStations();
 
-        if (!stations.contains(newSection.getUpStation()) && !stations.contains(newSection.getDownStation())) {
-            return true;
-        }
-
-        return false;
+        return !stations.contains(newSection.getUpStation()) && !stations.contains(newSection.getDownStation());
     }
 
     public void deleteSection(Long stationId) {
-        if(!isLastDownStation(stationId)){
+        if (!isLastDownStation(stationId)) {
             throw new IllegalArgumentException("하행종점역인 경우만 삭제가 가능합니다.");
         }
 
-        sections.remove(sections.size()-1);
+        sections.remove(sections.size() - 1);
     }
 
     private boolean isLastDownStation(Long stationId) {
         List<Station> stations = getSortedStations();
-        Station lastStation = stations.get(stations.size()-1);
+        Station lastStation = stations.get(stations.size() - 1);
 
-        if(lastStation.getId() == stationId){
-            return true;
-        }
-
-        return false;
-    }
-
-    public Integer getSectionSize() {
-        return sections.size();
-    }
-
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    private List<Station> getStations() {
-        var upStations = sections.stream().map(Section::getUpStation);
-        var downStations = sections.stream().map(Section::getDownStation);
-
-        return Stream.concat(upStations, downStations).distinct().collect(Collectors.toList());
-    }
-
-    private Map<Station, Integer> getUpStationMap() {
-        return sections.stream().collect(Collectors.toMap(key -> key.getUpStation(), val -> 1));
-    }
-
-    private Map<Station, Integer> getDownStationMap() {
-        return sections.stream().collect(Collectors.toMap(key -> key.getDownStation(), val -> 1));
-    }
-
-    private Integer getSectionIndexByUpStation(Station upStation) {
-        for (int i = 0; i < sections.size(); i++) {
-            if (sections.get(i).getUpStation().equals(upStation)) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    private Integer getSectionIndexByDownStation(Station downStation) {
-        for (int i = 0; i < sections.size(); i++) {
-            if (sections.get(i).getDownStation().equals(downStation)) {
-                return i;
-            }
-        }
-
-        return -1;
+        return lastStation.getId() == stationId;
     }
 
     public List<Station> getSortedStations() {
@@ -193,5 +141,22 @@ public class Sections {
         }
 
         return stations;
+    }
+
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    private List<Station> getStations() {
+        var upStations = sections.stream().map(Section::getUpStation);
+        var downStations = sections.stream().map(Section::getDownStation);
+
+        return Stream.concat(upStations, downStations).distinct().collect(Collectors.toList());
+
+
+    }
+    private boolean isNegativeDistance(int distance) {
+        return distance <= 0;
     }
 }

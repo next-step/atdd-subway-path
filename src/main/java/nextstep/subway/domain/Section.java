@@ -24,7 +24,7 @@ public class Section {
 
     private int distance;
 
-    public Section() {}
+    protected Section() {}
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
@@ -33,8 +33,9 @@ public class Section {
         this.distance = distance;
     }
 
-    public void updateDistance(Integer integer) {
-        this.distance = distance;
+
+    public void reduceDistance(int distance) {
+        this.distance -= distance;
     }
 
     public void updateDownStation(Station downStation) {
@@ -43,5 +44,13 @@ public class Section {
 
     public void updateUpStation(Station upStation) {
         this.upStation = upStation;
+    }
+
+    public boolean equalsUpStation(Station upstation) {
+        return this.getUpStation().getId() == upstation.getId();
+    }
+
+    public boolean equalsDownStation(Station downStation) {
+        return this.getDownStation().getId() == downStation.getId();
     }
 }

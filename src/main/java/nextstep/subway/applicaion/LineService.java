@@ -1,6 +1,5 @@
 package nextstep.subway.applicaion;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.LineRequest;
@@ -32,7 +31,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.initSection(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
 
         return createLineResponse(line);
@@ -51,7 +50,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findLineById(id);
-        line.updateNameAndColor(lineRequest.getName(), lineRequest.getColor());
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional
