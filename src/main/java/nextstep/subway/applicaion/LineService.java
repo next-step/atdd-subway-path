@@ -1,14 +1,16 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.ui.request.LineRequest;
+import nextstep.subway.ui.request.SectionRequest;
+import nextstep.subway.ui.response.LineResponse;
+import nextstep.subway.ui.response.StationResponse;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,14 +21,15 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
     }
 
+    @CacheEvict(value = "findAllLines", allEntries = true)
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
@@ -48,6 +51,7 @@ public class LineService {
         return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException(id)));
     }
 
+    @CacheEvict(value = "findAllLines", allEntries = true)
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
@@ -60,11 +64,13 @@ public class LineService {
         }
     }
 
+    @CacheEvict(value = "findAllLines", allEntries = true)
     @Transactional
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
     }
 
+    @CacheEvict(value = "findAllLines", allEntries = true)
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
@@ -99,5 +105,10 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException(lineId));
         Station station = stationService.findById(stationId);
         line.removeSection(station);
+    }
+
+    @Cacheable(value = "findAllLines")
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
     }
 }
