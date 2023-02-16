@@ -94,7 +94,7 @@ class SectionsTest {
             givenSections.removeSection(강남역);
 
             // then
-            assertThat(givenSections.getOrderedStations()).containsExactly(양재역,정자역);
+            assertThat(givenSections.getOrderedStations()).containsExactly(양재역, 정자역);
             Section 양재역_구간 = givenSections.findSectionByStation(양재역);
             assertThat(양재역_구간.getDistance()).isEqualTo(10);
             assertThat(양재역_구간.getUpStation()).isEqualTo(양재역);
@@ -151,6 +151,25 @@ class SectionsTest {
 
         // Then
         assertThat(stations).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * When 구간에 주어진 역을 조회 요청 시
+     * Then 해당하는 구간을 찾을 수 있다
+     */
+    @DisplayName("구간에 주어진 역을 조회 요청 시 해당하는 구간을 찾을 수 있다")
+    @Test
+    void 구간에_주어진_역을_조회_요청_시_해당하는_구간을_찾을_수_있다() {
+        // When
+        Section sectionByGangNam = givenSections.findSectionByStation(강남역);
+        Section sectionByYangJaeStation = givenSections.findSectionByStation(양재역);
+
+        // Then
+        assertThat(sectionByGangNam.getUpStation()).isEqualTo(강남역);
+        assertThat(sectionByGangNam.getDownStation()).isEqualTo(양재역);
+        assertThat(sectionByYangJaeStation.getUpStation()).isEqualTo(강남역);
+        assertThat(sectionByYangJaeStation.getDownStation()).isEqualTo(양재역);
+
     }
 
     @Nested
