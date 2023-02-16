@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.domain.exception.DuplicateAddSectionException;
 import nextstep.subway.domain.exception.IllegalAddSectionException;
 import nextstep.subway.domain.exception.IllegalDistanceSectionException;
+import nextstep.subway.domain.exception.IllegalRemoveMinSectionSize;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,7 +51,7 @@ class SectionsTest {
         }
 
         /**
-         * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+         * Given 노선에 새로운 구간 추가를 요청 하고
          * When 지하철 노선의 어느 구간이든 제거를 요청 하면
          * Then 노선에 구간이 제거된다
          * Then 거리는 합산이 된다
@@ -71,6 +72,41 @@ class SectionsTest {
             assertThat(강남역_구간.getDistance()).isEqualTo(20);
             assertThat(강남역_구간.getUpStation()).isEqualTo(강남역);
             assertThat(강남역_구간.getDownStation()).isEqualTo(정자역);
+        }
+
+        /**
+         * Given 노선에 새로운 구간 추가를 요청 하고
+         * When 종점을 제거 요청 시
+         * Then 다음으로 오던 역이 종점이 된다
+         */
+        @DisplayName("지하철 노선에 종점을 제거 요청 시 다음으로 오던 역이 종점이 된다")
+        @Test
+        void 지하철_노선에_종점을_제거_요청_시_다음으로_오던_역이_종점이_된다() {
+            // given
+            Station 정자역 = new Station("정자역");
+            givenSections.addSection(신분당선, 양재역, 정자역, 10);
+
+            // when
+            givenSections.removeSection(강남역);
+
+            // then
+            assertThat(givenSections.getOrderedStations()).containsExactly(양재역,정자역);
+            Section 양재역_구간 = givenSections.findSectionByStation(양재역);
+            assertThat(양재역_구간.getDistance()).isEqualTo(10);
+            assertThat(양재역_구간.getUpStation()).isEqualTo(양재역);
+            assertThat(양재역_구간.getDownStation()).isEqualTo(정자역);
+        }
+
+        /**
+         * When 구간이 하나인 노선에서 마지막 구간을 제거할 때
+         * Then 제거 할 수 없다
+         */
+        @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때 제거 할 수 없다")
+        @Test
+        void 구간이_하나인_노선에서_마지막_구간을_제거할_때_제거_할_수_없다() {
+            // When && Then
+            assertThatThrownBy(() -> givenSections.removeSection(강남역))
+                .isInstanceOf(IllegalRemoveMinSectionSize.class);
         }
 
     }
