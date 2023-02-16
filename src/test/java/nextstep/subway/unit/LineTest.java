@@ -35,13 +35,23 @@ class LineTest {
     }
 
     @Test
-    void getStations() {
+    void getStations_case1() {
         // when
         서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
         서울2호선.addSection(new Section(서울2호선, 신촌역, 당산역, 5));
 
         // then
         assertThat(서울2호선.getStations()).containsExactly(신촌역, 당산역, 신도림역, 신림역);
+    }
+
+    @Test
+    void getStations_case2() {
+        // when
+        서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 10));
+
+        // then
+//        assertThat(서울2호선.getStations()).containsExactly(당산역, 신촌역, 신도림역);
+        System.out.println(서울2호선.getStations());
     }
 
     @Test

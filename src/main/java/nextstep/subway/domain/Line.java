@@ -93,7 +93,7 @@ public class Line {
         }
 
         // 사이
-        sections.add(section);
+        addBetweenStations(section);
     }
 
     public int getSectionsCount() {
@@ -105,7 +105,12 @@ public class Line {
             throw new NoSuchElementException();
         }
 
-        return sections.stream().filter(sec -> isFirstStation(sec.getUpStation())).findFirst().orElseThrow(NoSuchElementException::new);
+        if (sections.size() == 1) {
+            return sections.get(0);
+        }
+
+        return sections.stream().filter(sec -> isFirstStation(sec.getUpStation()) && !isLastStation(sec.getDownStation()))
+                .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
     public List<Station> getStations() {
@@ -142,20 +147,12 @@ public class Line {
         return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
     }
 
-    public Station getFirstStation() {
-        return firstStation;
-    }
-
-    public Station getLastStation() {
-        return lastStation;
-    }
-
     private boolean isFirstStation(Station station) {
         return firstStation.equals(station);
     }
 
     private boolean isLastStation(Station station) {
-        return sections.get(sections.size() - 1).getDownStation().equals(station);
+        return lastStation.equals(station);
     }
 
     private boolean isFirstSection(Section section) {
@@ -164,6 +161,26 @@ public class Line {
 
     private boolean isLastSection(Section section) {
         return isLastStation(section.getUpStation());
+    }
+
+    private void addBetweenStations(Section section) {
+        Section originSection =  sections.stream().filter(sec -> sec.getUpStation().equals(section.getUpStation()) || sec.getDownStation().equals(section.getDownStation()))
+                .findFirst().orElseThrow(NoSuchElementException::new);
+
+        removeSection(originSection.getDownStation());
+
+        sections.add(section);
+
+        int newDistance = originSection.getDistance() - section.getDistance();
+        if (originSection.getDownStation().equals(section.getDownStation())) {
+            sections.add(new Section(originSection.getLine(), originSection.getUpStation(), section.getUpStation(), newDistance));
+            return;
+        }
+
+        if (originSection.getUpStation().equals(section.getUpStation())) {
+            sections.add(new Section(originSection.getLine(), section.getDownStation(), originSection.getDownStation(), newDistance));
+            return;
+        }
     }
 
 }

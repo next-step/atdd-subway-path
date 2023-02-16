@@ -88,7 +88,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간 등록 - 정상3 : 기존 구간 사이에 새로운 구간 추가")
     @Test
     void addLineSection_ValidCase3() {
+        // when
+        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역));
 
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 중간역, 양재역);
+        assertThat(response.jsonPath().getInt("length")).isEqualTo(sectionDistance1);
     }
 
     /**
