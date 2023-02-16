@@ -1,53 +1,61 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.List;
 
+import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
+
+@Getter
+@NoArgsConstructor(access = PROTECTED)
 @Entity
 public class Line {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public void update(final String name, final String color) {
+        if (name != null) {
+            this.name = name;
+        }
+        if (color != null) {
+            this.color = color;
+        }
     }
 
-    public void setId(Long id) {
-        this.id = id;
+
+    public void addSection(final Section section) {
+        sections.add(section);
     }
 
-    public String getName() {
-        return name;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Station getTerminalStation() {
+        return sections.getTerminalStation();
     }
 
-    public String getColor() {
-        return color;
+    public void removeSection() {
+        sections.removeLastSection();
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public List<Section> getSections() {
-        return sections;
+    public boolean hasEmptySection() {
+        return sections.isEmpty();
     }
 }

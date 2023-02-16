@@ -7,4 +7,9 @@ import java.util.List;
 public interface LineRepository extends JpaRepository<Line, Long> {
     @Override
     List<Line> findAll();
+
+    default Line getLine(final Long id) {
+        return findById(id)
+                .orElseThrow(IllegalArgumentException::new);
+    }
 }
