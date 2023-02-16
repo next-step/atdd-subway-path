@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -38,7 +39,7 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+    public static LineResponse 지하철_노선_조회_요청(Long id) {
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
                 .when().get("/lines/{id}", id)
@@ -46,7 +47,7 @@ public class LineSteps {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        return response;
+        return response.jsonPath().getObject("$", LineResponse.class);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
