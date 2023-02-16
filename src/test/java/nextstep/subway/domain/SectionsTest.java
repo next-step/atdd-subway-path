@@ -6,6 +6,7 @@ import nextstep.subway.domain.exception.IllegalDistanceSectionException;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -30,30 +31,48 @@ class SectionsTest {
         givenSections = new Sections(Lists.newArrayList(givenSection));
     }
 
-    /**
-     * When 역 제거 요청 시
-     * Then 제거가 된다
-     */
-    @DisplayName("역 제거 요청 시 구간이 제거가 된다")
-    @Test
-    void 역_제거_요청_시_구간이_제거가_된다() {
-        // When
-        givenSections.removeSection(양재역);
+    @Nested
+    @DisplayName("역 제거 요청")
+    class RemoveSection {
 
-        // Then
-        assertThat(givenSections.isSectionsEmpty()).isTrue();
-    }
+        /**
+         * When 역 제거 요청 시
+         * Then 제거가 된다
+         */
+        @DisplayName("역 제거 요청 시 구간이 제거가 된다")
+        @Test
+        void 역_제거_요청_시_구간이_제거가_된다() {
+            // When
+            givenSections.removeSection(양재역);
 
-    /**
-     * When 마지막 구간이 아닌데 구간 제거 요청 시
-     * Then 제거가 안된다
-     */
-    @DisplayName("마지막 구간이 아닌데 구간 제거 요청 시 제거가 안된다")
-    @Test
-    void 마지막_구간이_아닌데_구간_제거_요청_시_제거가_안된다() {
-        // When
-        assertThatThrownBy(() -> givenSections.removeSection(강남역))
-            .isInstanceOf(IllegalArgumentException.class);
+            // Then
+            assertThat(givenSections.isSectionsEmpty()).isTrue();
+        }
+
+        /**
+         * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+         * When 지하철 노선의 어느 구간이든 제거를 요청 하면
+         * Then 노선에 구간이 제거된다
+         * Then 거리는 합산이 된다
+         */
+        @DisplayName("어느 구간이든 제거 할 수 있다")
+        @Test
+        void 지하철_노선에_어느_구간이든_제거_할_수_있다() {
+            // given
+            Station 정자역 = new Station("정자역");
+            givenSections.addSection(신분당선, 양재역, 정자역, 10);
+
+            // when
+            givenSections.removeSection(양재역);
+
+            // then
+            assertThat(givenSections.getOrderedStations()).containsExactly(강남역, 정자역);
+            Section 강남역_구간 = givenSections.findSectionByStation(강남역);
+            assertThat(강남역_구간.getDistance()).isEqualTo(20);
+            assertThat(강남역_구간.getUpStation()).isEqualTo(강남역);
+            assertThat(강남역_구간.getDownStation()).isEqualTo(정자역);
+        }
+
     }
 
     /**
@@ -80,136 +99,142 @@ class SectionsTest {
         assertThat(stations).containsExactly(강남역, 양재역);
     }
 
-    /**
-     * Given 새로운 역을 추가 후
-     * When 새로운 구간에 기존 구간의 상행 종점으로 추가 시
-     * Then 새로운 구간의 하행역은 기존 구간의 상행 종점역 이여야 한다.
-     */
-    @DisplayName("새로운 역을 추가 후 새로운 구간에 기존 구간의 상행 종점으로 추가 시 새로운 구간의 하행역은 기존 구간의 상행 종점역 이여야 한다")
-    @Test
-    void 새로운_역을_추가_후_새로운_구간에_기존_구간의_상행_종점으로_추가_시_새로운_구간의_하행역은_기존_구간의_상행_종점역_이여야_한다() {
-        // Given
-        Station 논현역 = new Station("논현역");
+    @Nested
+    @DisplayName("구간 추가 요청")
+    class addSection {
 
-        // When
-        givenSections.addSection(신분당선, 논현역, 강남역, 7);
+        /**
+         * Given 새로운 역을 추가 후
+         * When 새로운 구간에 기존 구간의 상행 종점으로 추가 시
+         * Then 새로운 구간의 하행역은 기존 구간의 상행 종점역 이여야 한다.
+         */
+        @DisplayName("새로운 역을 추가 후 새로운 구간에 기존 구간의 상행 종점으로 추가 시 새로운 구간의 하행역은 기존 구간의 상행 종점역 이여야 한다")
+        @Test
+        void 새로운_역을_추가_후_새로운_구간에_기존_구간의_상행_종점으로_추가_시_새로운_구간의_하행역은_기존_구간의_상행_종점역_이여야_한다() {
+            // Given
+            Station 논현역 = new Station("논현역");
 
-        // Then
-        List<Section> sections = givenSections.getSections();
-        assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
-        assertThat(sections.get(0).getDistance()).isEqualTo(10);
-        assertThat(sections.get(1).getUpStation()).isEqualTo(논현역);
-        assertThat(sections.get(1).getDownStation()).isEqualTo(강남역);
-        assertThat(sections.get(1).getDistance()).isEqualTo(7);
-    }
+            // When
+            givenSections.addSection(신분당선, 논현역, 강남역, 7);
 
-    /**
-     * Given 새로운 역을 추가 후
-     * When 기존 구간 중간에 새로운 구간 추가 시
-     * Then 추가가 된다
-     * Then 거리가 재조정이 된다
-     */
-    @DisplayName("기존 구간 중간에 새로운 구간을 추가 시 구간이 추가가 된다")
-    @Test
-    void 기존_구간_중간에_새로운_구간을_추가_시_구간이_추가가_된다() {
-        // Given
-        Station 새로운역 = new Station("새로운역");
+            // Then
+            List<Section> sections = givenSections.getSections();
+            assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
+            assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
+            assertThat(sections.get(0).getDistance()).isEqualTo(10);
+            assertThat(sections.get(1).getUpStation()).isEqualTo(논현역);
+            assertThat(sections.get(1).getDownStation()).isEqualTo(강남역);
+            assertThat(sections.get(1).getDistance()).isEqualTo(7);
+        }
 
-        // When
-        givenSections.addSection(신분당선, 강남역, 새로운역, 4);
+        /**
+         * Given 새로운 역을 추가 후
+         * When 기존 구간 중간에 새로운 구간 추가 시
+         * Then 추가가 된다
+         * Then 거리가 재조정이 된다
+         */
+        @DisplayName("기존 구간 중간에 새로운 구간을 추가 시 구간이 추가가 된다")
+        @Test
+        void 기존_구간_중간에_새로운_구간을_추가_시_구간이_추가가_된다() {
+            // Given
+            Station 새로운역 = new Station("새로운역");
 
-        // Then
-        List<Section> sections = givenSections.getSections();
-        assertThat(sections.get(0).getUpStation()).isEqualTo(새로운역);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
-        assertThat(sections.get(0).getDistance()).isEqualTo(6);
-        assertThat(sections.get(1).getUpStation()).isEqualTo(강남역);
-        assertThat(sections.get(1).getDownStation()).isEqualTo(새로운역);
-        assertThat(sections.get(1).getDistance()).isEqualTo(4);
-    }
+            // When
+            givenSections.addSection(신분당선, 강남역, 새로운역, 4);
 
-    /**
-     * Given 새로운 역을 추가 후
-     * When 기존 구간 맨 뒤에 새로운 구간 추가 시
-     * Then 추가가 된다
-     */
-    @DisplayName("기존 구간 맨 뒤에 새로운 구간을 추가 시 구간이 추가가 된다")
-    @Test
-    void 기존_구간_맨_뒤에_새로운_구간을_추가_시_구간이_추가가_된다() {
-        // Given
-        Station 판교역 = new Station("판교역");
+            // Then
+            List<Section> sections = givenSections.getSections();
+            assertThat(sections.get(0).getUpStation()).isEqualTo(새로운역);
+            assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
+            assertThat(sections.get(0).getDistance()).isEqualTo(6);
+            assertThat(sections.get(1).getUpStation()).isEqualTo(강남역);
+            assertThat(sections.get(1).getDownStation()).isEqualTo(새로운역);
+            assertThat(sections.get(1).getDistance()).isEqualTo(4);
+        }
 
-        // When
-        givenSections.addSection(신분당선, 양재역, 판교역, 4);
+        /**
+         * Given 새로운 역을 추가 후
+         * When 기존 구간 맨 뒤에 새로운 구간 추가 시
+         * Then 추가가 된다
+         */
+        @DisplayName("기존 구간 맨 뒤에 새로운 구간을 추가 시 구간이 추가가 된다")
+        @Test
+        void 기존_구간_맨_뒤에_새로운_구간을_추가_시_구간이_추가가_된다() {
+            // Given
+            Station 판교역 = new Station("판교역");
 
-        // Then
-        List<Section> sections = givenSections.getSections();
-        assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
-        assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
-        assertThat(sections.get(0).getDistance()).isEqualTo(10);
-        assertThat(sections.get(1).getUpStation()).isEqualTo(양재역);
-        assertThat(sections.get(1).getDownStation()).isEqualTo(판교역);
-        assertThat(sections.get(1).getDistance()).isEqualTo(4);
-    }
+            // When
+            givenSections.addSection(신분당선, 양재역, 판교역, 4);
 
-    /**
-     * When 기존 구간과 동일한 구간 추가 요청시
-     * Then 추가가 안된다
-     */
-    @DisplayName("기존 구간과 동일한 구간 추가 요청시 추가가 안된다")
-    @Test
-    void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
-        // When && Then
-        assertThatThrownBy(() -> givenSections.addSection(신분당선, 강남역, 양재역, 4))
-            .isInstanceOf(DuplicateAddSectionException.class);
-    }
+            // Then
+            List<Section> sections = givenSections.getSections();
+            assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
+            assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
+            assertThat(sections.get(0).getDistance()).isEqualTo(10);
+            assertThat(sections.get(1).getUpStation()).isEqualTo(양재역);
+            assertThat(sections.get(1).getDownStation()).isEqualTo(판교역);
+            assertThat(sections.get(1).getDistance()).isEqualTo(4);
+        }
 
-    /**
-     * When 기존 구간에 기존 거리보다 새로운 구간의 거리가 같거나 더 클 시
-     * Then 추가가 안된다
-     */
-    @DisplayName("기존 구간에 기존 거리보다 새로운 구간의 거리가 같거나 더 클 시 추가가 안된다")
-    @Test
-    void 기존_구간에_기존_거리보다_새로운_구간의_거리가_더_클_시_추가가_안된다() {
-        // Given
-        Station 판교역 = new Station("판교역");
+        /**
+         * When 기존 구간과 동일한 구간 추가 요청시
+         * Then 추가가 안된다
+         */
+        @DisplayName("기존 구간과 동일한 구간 추가 요청시 추가가 안된다")
+        @Test
+        void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
+            // When && Then
+            assertThatThrownBy(() -> givenSections.addSection(신분당선, 강남역, 양재역, 4))
+                .isInstanceOf(DuplicateAddSectionException.class);
+        }
 
-        // When && Then
-        assertThatThrownBy(() -> givenSections.addSection(신분당선, 강남역, 판교역, 10))
-            .isInstanceOf(IllegalDistanceSectionException.class);
-    }
+        /**
+         * When 기존 구간에 기존 거리보다 새로운 구간의 거리가 같거나 더 클 시
+         * Then 추가가 안된다
+         */
+        @DisplayName("기존 구간에 기존 거리보다 새로운 구간의 거리가 같거나 더 클 시 추가가 안된다")
+        @Test
+        void 기존_구간에_기존_거리보다_새로운_구간의_거리가_더_클_시_추가가_안된다() {
+            // Given
+            Station 판교역 = new Station("판교역");
 
-    /**
-     * When 기존 구간에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면
-     * Then 추가가 안된다
-     */
-    @DisplayName("기존 구간에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가가 안된다")
-    @Test
-    void 기존_구간에_상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가가_안된다() {
-        // Given
-        Station 판교역 = new Station("판교역");
-        Station 수지구청역 = new Station("수지구청역");
+            // When && Then
+            assertThatThrownBy(() -> givenSections.addSection(신분당선, 강남역, 판교역, 10))
+                .isInstanceOf(IllegalDistanceSectionException.class);
+        }
 
-        // When && Then
-        assertThatThrownBy(() -> givenSections.addSection(신분당선, 수지구청역, 판교역, 10))
-            .isInstanceOf(IllegalAddSectionException.class);
-    }
+        /**
+         * When 기존 구간에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면
+         * Then 추가가 안된다
+         */
+        @DisplayName("기존 구간에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가가 안된다")
+        @Test
+        void 기존_구간에_상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가가_안된다() {
+            // Given
+            Station 판교역 = new Station("판교역");
+            Station 수지구청역 = new Station("수지구청역");
 
-    /**
-     * When 기존 구간들에 상행역과 하행역 둘 중 하나도 포함되어있지 않은 구간 요청 시
-     * Then 추가가 안된다
-     */
-    @DisplayName("기존 구간들에 상행역과 하행역 둘 중 하나도 포함되어있지 않은 구간 요청 시 추가가 안된다")
-    @Test
-    void 기존_구간들에_상행역과_하행역_둘_중_하나도_포함되어있지_않은_구간_요청_시_추가가_안된다() {
-        // Given
-        Station 수지구청역 = new Station("수지구청역");
-        Station 판교역 = new Station("판교역");
+            // When && Then
+            assertThatThrownBy(() -> givenSections.addSection(신분당선, 수지구청역, 판교역, 10))
+                .isInstanceOf(IllegalAddSectionException.class);
+        }
 
-        // When && Then
-        assertThatThrownBy(() -> givenSections.addSection(신분당선, 수지구청역, 판교역, 10))
-            .isInstanceOf(IllegalAddSectionException.class);
+        /**
+         * When 기존 구간들에 상행역과 하행역 둘 중 하나도 포함되어있지 않은 구간 요청 시
+         * Then 추가가 안된다
+         */
+        @DisplayName("기존 구간들에 상행역과 하행역 둘 중 하나도 포함되어있지 않은 구간 요청 시 추가가 안된다")
+        @Test
+        void 기존_구간들에_상행역과_하행역_둘_중_하나도_포함되어있지_않은_구간_요청_시_추가가_안된다() {
+            // Given
+            Station 수지구청역 = new Station("수지구청역");
+            Station 판교역 = new Station("판교역");
+
+            // When && Then
+            assertThatThrownBy(() -> givenSections.addSection(신분당선, 수지구청역, 판교역, 10))
+                .isInstanceOf(IllegalAddSectionException.class);
+        }
+
     }
 
 }

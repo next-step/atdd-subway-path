@@ -59,9 +59,7 @@ public class Sections {
         }
 
         // 타겟 구간 찾기
-        Section targetSection = sections.stream().filter(section -> section.getUpStation().equals(station))
-            .findFirst()
-            .orElseThrow(NotFoundSectionsException::new);
+        Section targetSection = findSectionByStation(station);
 
         // 첫 역인지
         if (isFirstSection(targetSection)) {
@@ -73,6 +71,14 @@ public class Sections {
         Section targetBeforeSection = getBeforeSection(targetSection);
         targetBeforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
         sections.remove(targetSection);
+    }
+
+    public Section findSectionByStation(Station station) {
+        Section targetSection = sections.stream().filter(section -> section.getUpStation().equals(station))
+            .findFirst()
+            .orElseThrow(NotFoundSectionsException::new);
+
+        return targetSection;
     }
 
     private Section getBeforeSection(Section targetSection) {
