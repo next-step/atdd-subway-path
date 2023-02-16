@@ -12,10 +12,6 @@ public class StationResponse {
         this.name = name;
     }
 
-    public static StationResponse by(Long id, String name) {
-        return new StationResponse(id, name);
-    }
-
     public Long getId() {
         return id;
     }

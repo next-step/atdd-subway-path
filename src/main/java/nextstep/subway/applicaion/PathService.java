@@ -13,13 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class PathService {
     private final StationService stationService;
     private final PathFinderService pathFinderService;
+    private final StationMapper stationMapper;
 
     public PathService(
             final StationService stationService,
-            final PathFinderService pathFinderService
+            final PathFinderService pathFinderService,
+            final StationMapper stationMapper
     ) {
         this.stationService = stationService;
         this.pathFinderService = pathFinderService;
+        this.stationMapper = stationMapper;
     }
 
     public PathResponse findPathBy(final long source, final long target) {
@@ -34,7 +37,7 @@ public class PathService {
     }
 
     private PathResponse createPathResponse(final PathDto pathDto) {
-        List<StationResponse> stations = stationService.createStationResponsesBy(pathDto.getNodes());
+        List<StationResponse> stations = stationMapper.toResponseFrom(pathDto.getNodes());
         double distance = pathDto.getWeight();
         return new PathResponse(stations, distance);
     }
