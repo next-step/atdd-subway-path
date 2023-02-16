@@ -32,7 +32,6 @@ public class Sections {
     private static final String NONE_OF_STATIONS_EXIST_IN_LINE_EXCEPTION_MESSAGE = "상/하행역 모두 노선에 존재하지 않습니다.";
     private static final String MINIMUM_SECTIONS_REQUIRED_EXCEPTION_MESSAGE = "2개 이상의 구간이 존재할 경우에 한해서 삭제가 가능합니다.";
     private static final String NOT_EXISTING_DOWN_STATION_EXCEPTION_MESSAGE = "해당 역이 하행역으로 존재하는 구간이 존재하지 않습니다.";
-    private static final String UPMOST_STATION_EXCEPTION_MESSAGE = "최상행역이 속한 구간은 삭제할 수 없습니다.";
     private static final SectionAddStrategies sectionAddStrategies = new SectionAddStrategies();
     private static final SectionDeleteStrategies sectionDeleteStrategies = new SectionDeleteStrategies();
 
@@ -76,16 +75,13 @@ public class Sections {
     }
 
     private void validateDeleteSection(Long stationId) {
+        List<Section> sections = getValue();
         if (sections.size() <= 1) {
             throw new CannotDeleteSectionException(MINIMUM_SECTIONS_REQUIRED_EXCEPTION_MESSAGE);
         }
 
-        if (sections.stream().noneMatch(section -> section.isSameDownStation(stationId))) {
+        if (!sections.get(0).isSameUpStation(stationId) && sections.stream().noneMatch(section -> section.isSameDownStation(stationId))) {
             throw new CannotDeleteSectionException(NOT_EXISTING_DOWN_STATION_EXCEPTION_MESSAGE);
-        }
-
-        if (getStations().get(0).getId().equals(stationId)) {
-            throw new CannotDeleteSectionException(UPMOST_STATION_EXCEPTION_MESSAGE);
         }
     }
 

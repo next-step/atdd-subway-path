@@ -11,8 +11,9 @@ public class SectionDeleteStrategies {
 
     public SectionDeleteStrategies() {
         this.strategies = List.of(
-            new DownmostSectionDeleteStrategy(),
-            new MiddleSectionDeleteStrategy()
+            new UpmostSectionDeleteStrategy(),
+            new MiddleSectionDeleteStrategy(),
+            new DownmostSectionDeleteStrategy()
         );
     }
 
