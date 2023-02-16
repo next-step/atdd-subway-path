@@ -6,12 +6,14 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    private Integer length;
     private List<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, Integer length, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
+        this.length = length;
         this.stations = stations;
     }
 
@@ -25,6 +27,10 @@ public class LineResponse {
 
     public String getColor() {
         return color;
+    }
+
+    public Integer getLength() {
+        return length;
     }
 
     public List<StationResponse> getStations() {

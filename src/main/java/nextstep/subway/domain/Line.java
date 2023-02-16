@@ -111,6 +111,14 @@ public class Line {
         sections.remove(sections.size() - 1);
     }
 
+    public int getLength() {
+        if (sections.isEmpty()) {
+            return 0;
+        }
+
+        return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
+    }
+
     private boolean isFirstStation(Station station) {
         return sections.get(0).getUpStation().equals(station);
     }

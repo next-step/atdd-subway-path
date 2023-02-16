@@ -21,6 +21,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
 
+    private Integer sectionDistance1 = 10;
+    private Integer sectionDistance2 = 6;
+
     /**
      * Given 지하철역과 노선 생성을 요청 하고
      */
@@ -52,6 +55,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        assertThat(response.jsonPath().getInt("length")).isEqualTo(sectionDistance1 + sectionDistance2);
+
     }
 
     /**
@@ -137,7 +142,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         lineCreateParams.put("color", "bg-red-600");
         lineCreateParams.put("upStationId", upStationId + "");
         lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", 10 + "");
+        lineCreateParams.put("distance", sectionDistance1 + "");
         return lineCreateParams;
     }
 
@@ -145,7 +150,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", sectionDistance2 + "");
         return params;
     }
 }
