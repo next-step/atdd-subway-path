@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -17,12 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
+    private final LineMapper lineMapper;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService, final LineMapper lineMapper) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.lineMapper = lineMapper;
     }
 
     @CacheEvict(value = "graph", allEntries = true)
@@ -34,17 +35,17 @@ public class LineService {
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
-        return createLineResponse(line);
+        return lineMapper.toResponseFrom(line);
     }
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
+                .map(lineMapper::toResponseFrom)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(findLineById(id));
+        return lineMapper.toResponseFrom(findLineById(id));
     }
 
     @Transactional
@@ -67,21 +68,6 @@ public class LineService {
         Line line = findLineById(lineId);
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
-    }
-
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
-        );
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        return line.getStations().stream()
-                .map(station -> StationResponse.by(station.getId(), station.getName()))
-                .collect(Collectors.toUnmodifiableList());
     }
 
     @CacheEvict(value = "graph", allEntries = true)
