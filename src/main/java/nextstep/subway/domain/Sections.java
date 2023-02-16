@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.IllegalAddSectionException;
+import nextstep.subway.domain.exception.IllegalRemoveMinSectionSize;
 import nextstep.subway.domain.exception.NotFoundSectionsException;
 
 import javax.persistence.CascadeType;
@@ -52,6 +53,8 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        validateWhenRemoveSection();
+
         // 마지막 역인지
         if (isLastStation(station)) {
             sections.remove(sections.size() - 1);
@@ -72,6 +75,8 @@ public class Sections {
         targetBeforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
         sections.remove(targetSection);
     }
+
+
 
     public Section findSectionByStation(Station station) {
         Section targetSection = sections.stream().filter(section -> section.getUpStation().equals(station))
@@ -121,6 +126,12 @@ public class Sections {
 
     private static boolean canAddInTheMiddleStation(Station requestUpStation, Section section) {
         return section.getUpStation().equals(requestUpStation);
+    }
+
+    private void validateWhenRemoveSection() {
+        if (sections.size() == 1) {
+            throw new IllegalRemoveMinSectionSize();
+        }
     }
 
 }
