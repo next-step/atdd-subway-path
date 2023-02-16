@@ -32,4 +32,10 @@ public class PathResponse {
     public List<StationResponse> getStations() {
         return stations;
     }
+
+    public List<Long> getStationIds() {
+        return stations.stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+    }
 }

@@ -3,12 +3,10 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PathService {
@@ -29,12 +27,6 @@ public class PathService {
         Station source = stationService.findById(pathRequest.getSource());
         Station target = stationService.findById(pathRequest.getTarget());
         List<Line> lines = lineService.findAll();
-        Path path = pathFinder.find(lines, source, target);
-        return PathResponse.toResponse(
-                path.getDistance(),
-                path.getRoutes()
-                        .stream()
-                        .map(stationService::findById)
-                        .collect(Collectors.toList()));
+        return pathFinder.find(lines, source, target);
     }
 }

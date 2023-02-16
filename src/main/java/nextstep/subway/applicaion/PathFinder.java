@@ -1,11 +1,11 @@
 package nextstep.subway.applicaion;
 
+import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Station;
 
 import java.util.List;
 
 public interface PathFinder {
-    Path find(List<Line> lines, Station source, Station target);
+    PathResponse find(List<Line> lines, Station source, Station target);
 }
