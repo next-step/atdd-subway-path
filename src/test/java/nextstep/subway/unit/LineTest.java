@@ -33,7 +33,7 @@ class LineTest {
         Section 일구간 = new Section(일호선, 서울역, 용산역, 5);
 
         //when
-        일호선.addSection(일구간);
+        일호선.addSection(서울역, 용산역, 5);
 
         //then
         Assertions.assertThat(일호선.getSections()).containsExactly(일구간);
@@ -48,7 +48,7 @@ class LineTest {
     void getStations() {
         //given
         Section 일구간 = new Section(일호선, 서울역, 용산역, 5);
-        일호선.addSection(일구간);
+        일호선.addSection(서울역, 용산역, 5);
 
         //when
         List<Station> stations = 일호선.getStations();
@@ -66,10 +66,10 @@ class LineTest {
     void removeSection() {
         //given
         Section 일구간 = new Section(일호선, 서울역, 용산역, 5);
-        일호선.addSection(일구간);
+        일호선.addSection(서울역, 용산역, 5);
 
         //when
-        일호선.removeSection();
+        일호선.removeSection(용산역);
 
         //then
         Assertions.assertThat(일호선.getStations()).isEmpty();

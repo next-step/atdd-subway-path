@@ -1,11 +1,14 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+import nextstep.subway.applicaion.dto.LineRequest;
+
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@Getter
 @Entity
 public class Line {
     @Id
@@ -25,40 +28,13 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public void addSection(Section section) {
+    public void addSection(Station upStation, Station downStation, int distance) {
+        Section section = new Section(this, upStation, downStation, distance);
         sections.add(section);
     }
 
     public List<Station> getStations() {
-        if(sections.isEmpty()) {
+        if (sections.isEmpty()) {
             return Collections.emptyList();
         }
         List<Station> stations = new ArrayList<>();
@@ -70,7 +46,19 @@ public class Line {
         return stations;
     }
 
-    public void removeSection() {
+    public void removeSection(Station station) {
+        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
         sections.remove(sections.size() - 1);
+    }
+
+    public void updateNameOrColor(LineRequest request) {
+        if(request.getName() != null) {
+            this.name = request.getName();
+        }
+        if(request.getColor() != null) {
+            this.color = request.getColor();
+        }
     }
 }
