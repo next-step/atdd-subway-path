@@ -20,7 +20,7 @@ import static nextstep.subway.exception.ErrorResponseEnum.ERROR_FOUND_PATH_NO_EX
 import static nextstep.subway.exception.ErrorResponseEnum.ERROR_FOUND_PATH_SAME_SOURCE_TARGET;
 
 public class PathFinder {
-    private static WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+    private static WeightedMultigraph<String, DefaultWeightedEdge> graph;
 
     private PathFinder() {
     }
@@ -32,6 +32,8 @@ public class PathFinder {
     }
 
     private static void initGraph(List<Line> lines) {
+        graph = new WeightedMultigraph<String, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+
         lines.stream()
                 .map(Line::getSections)
                 .forEach(a -> addGraphValue(a));
