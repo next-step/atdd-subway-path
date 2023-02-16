@@ -37,10 +37,10 @@ class SectionTest {
 
         // when
         Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.getSections().add(section);
+        line.addSection(section);
 
         // then
-        assertThat(line.getSections().isAlreadyRegisteredSection(section)).isTrue();
+        assertThat(line.getAllStations()).hasSize(2);
     }
 
     /**
@@ -55,10 +55,10 @@ class SectionTest {
         // given
         Line line = 이호선.엔티티_생성();
         Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.getSections().add(section);
+        line.addSection(section);
 
         // when
-        List<Station> stations = line.getSections().getAllStations();
+        List<Station> stations = line.getAllStations();
 
         // then
         assertThat(stations).hasSize(2);
@@ -74,10 +74,10 @@ class SectionTest {
         // when
         Line line = 이호선.엔티티_생성();
         Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.getSections().add(section);
+        line.addSection(section);
 
         // then
-        assertThatThrownBy(() -> line.getSections().add(section))
+        assertThatThrownBy(() -> line.addSection(section))
                 .isInstanceOf(SectionAlreadyRegisteredException.class);
     }
 
@@ -91,10 +91,10 @@ class SectionTest {
         // when
         Line line = 이호선.엔티티_생성();
         Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.getSections().add(section);
+        line.addSection(section);
 
         // then
-        assertThatThrownBy(() -> line.getSections().add(양재_정자_구간.엔티티_생성(line)))
+        assertThatThrownBy(() -> line.addSection(양재_정자_구간.엔티티_생성(line)))
                 .isInstanceOf(NotRegisteredUpStationAndDownStationException.class);
     }
 
@@ -107,10 +107,10 @@ class SectionTest {
     void newDistanceSameOrLongerThanOriginDistance() {
         Line line = 이호선.엔티티_생성();
         Section 등록된_강남_삼성_구간 = 강남_삼성_구간.엔티티_생성(line);
-        line.getSections().add(등록된_강남_삼성_구간);
+        line.addSection(등록된_강남_삼성_구간);
 
 
-        assertThatThrownBy(() -> line.getSections().add(강남_역삼_비정상_구간.엔티티_생성(line)))
+        assertThatThrownBy(() -> line.addSection(강남_역삼_비정상_구간.엔티티_생성(line)))
                 .isInstanceOf(InvalidDistanceException.class);
     }
 
@@ -124,8 +124,8 @@ class SectionTest {
         // when
         Line line = 이호선.엔티티_생성();
         Section 등록된_강남_삼성_구간 = 강남_삼성_구간.엔티티_생성(line);
-        line.getSections().add(등록된_강남_삼성_구간);
-        line.getSections().add(강남_역삼_구간.엔티티_생성(line));
+        line.addSection(등록된_강남_삼성_구간);
+        line.addSection(강남_역삼_구간.엔티티_생성(line));
 
         // then
         assertThat(등록된_강남_삼성_구간.getUpStation().getName())
@@ -142,8 +142,8 @@ class SectionTest {
         // when
         Line line = 이호선.엔티티_생성();
         Section 등록된_강남_삼성_구간 = 강남_삼성_구간.엔티티_생성(line);
-        line.getSections().add(등록된_강남_삼성_구간);
-        line.getSections().add(역삼_삼성_구간.엔티티_생성(line));
+        line.addSection(등록된_강남_삼성_구간);
+        line.addSection(역삼_삼성_구간.엔티티_생성(line));
 
         // then
         assertThat(등록된_강남_삼성_구간.getDownStation().getName())
@@ -161,12 +161,12 @@ class SectionTest {
         // given
         Line line = 이호선.엔티티_생성();
         Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.getSections().add(section);
+        line.addSection(section);
 
         // when
-        line.getSections().removeLastSection(section.getDownStation());
+        line.removeLastSection(section.getDownStation());
 
         // then
-        assertThat(line.getSections().isEmpty()).isTrue();
+        assertThat(line.isEmptySections()).isTrue();
     }
 }

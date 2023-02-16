@@ -42,7 +42,7 @@ class SectionServiceTest {
         sectionService.addSection(line.getId(), sectionRequest);
 
         // then - line.getSections 메서드를 통해 검증
-        assertThat(line.getSections().getAllStations())
+        assertThat(line.getAllStations())
                 .containsExactly(강남역, 역삼역);
     }
 
@@ -60,7 +60,7 @@ class SectionServiceTest {
         sectionService.deleteSection(line.getId(), 역삼역.getId());
 
         // then - line.getSections 메서드를 통해 검증
-        assertThat(line.getSections().getAllStations())
+        assertThat(line.getAllStations())
                 .doesNotContain(강남역, 역삼역);
     }
 }

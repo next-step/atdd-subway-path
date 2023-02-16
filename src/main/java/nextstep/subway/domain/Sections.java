@@ -18,6 +18,7 @@ public class Sections {
 
     /**
      * 지하철 노선의 구간을 등록합니다.
+     * getter를 제공하지 않음으로써 예외적인 구간 등록을 방지합니다.
      *
      * @param section 등록할 지하철 구간 정보
      */
@@ -62,20 +63,9 @@ public class Sections {
     }
 
     /**
-     * 구간이 이미 등록되어있는 경우에만 true를 반환합니다.
-     *
-     * @param section 비교할 구간
-     * @return 구간이 이미 등록되어 있으면 true, 그렇지 않으면 false
-     */
-    public boolean isAlreadyRegisteredSection(final Section section) {
-        return sectionList.stream()
-                .anyMatch(sec -> sec.equals(section));
-    }
-
-    /**
      * 구간의 길이가 0인 경우에만 true 반환합니다.
      *
-     * @return 구간의 길이가 0이면 true, 그렇지 않으면 false
+     * @return 구간 목록의 길이가 0이면 true, 그렇지 않으면 false
      */
     public boolean isEmpty() {
         return sectionList.isEmpty();
@@ -104,6 +94,11 @@ public class Sections {
         return sectionList.get(sectionList.size() - 1);
     }
 
+    private boolean isAlreadyRegisteredSection(final Section section) {
+        return sectionList.stream()
+                .anyMatch(sec -> sec.equals(section));
+    }
+
     // 해당 구간이 상행 종점 구간인지? -> 해당 구간의 상행역은 다른 구간들의 하행역이 아니다
     private boolean isFinalUpStation(final Section section) {
         return sectionList.stream()
@@ -116,7 +111,7 @@ public class Sections {
             if (isFinalUpStation(section)) {
                 stations.add(section.getUpStation());
                 stations.add(section.getDownStation());
-                break;
+                return;
             }
         }
     }
