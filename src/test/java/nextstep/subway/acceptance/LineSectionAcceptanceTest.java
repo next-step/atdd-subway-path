@@ -65,7 +65,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
-        지하철_노선에_지하철_구간_제거_요청_검증(신분당선, 양재역, 정자역);
+        지하철_노선에_지하철_구간_제거_요청_검증(신분당선, 강남역, 양재역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
