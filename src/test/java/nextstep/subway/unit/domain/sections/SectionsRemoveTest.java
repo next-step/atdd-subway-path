@@ -94,7 +94,7 @@ class SectionsRemoveTest {
     }
 
     @Test
-    void removeInternalSection2() {
+    void removeInternalSectionInManySections() {
         // Given
         Section 상행종착역_뒤_section = new Section(이호선, 강남역, 잠실역, 6);
 
