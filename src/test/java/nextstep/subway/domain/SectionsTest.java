@@ -38,7 +38,7 @@ class SectionsTest {
     @Test
     void 역_제거_요청_시_구간이_제거가_된다() {
         // When
-        givenSections.removeLastSection(양재역);
+        givenSections.removeSection(양재역);
 
         // Then
         assertThat(givenSections.isSectionsEmpty()).isTrue();
@@ -52,7 +52,7 @@ class SectionsTest {
     @Test
     void 마지막_구간이_아닌데_구간_제거_요청_시_제거가_안된다() {
         // When
-        assertThatThrownBy(() -> givenSections.removeLastSection(강남역))
+        assertThatThrownBy(() -> givenSections.removeSection(강남역))
             .isInstanceOf(IllegalArgumentException.class);
     }
 

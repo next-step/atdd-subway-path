@@ -24,7 +24,14 @@ public class Section implements Comparable<Section> {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
+    @Transient
+    private Section nextSection;
+
     private int distance;
+
+    public Section getNextSection() {
+        return nextSection;
+    }
 
     protected Section() {
     }
@@ -66,10 +73,15 @@ public class Section implements Comparable<Section> {
 
     public void changeUpStation(Station requestUpStation, int requestDistance) {
         this.upStation = requestUpStation;
-        changeDistance(requestDistance);
+        minusDistance(requestDistance);
     }
 
-    private void changeDistance(int requestDistance) {
+    public void changeDownStation(Station requestDownStation, int distance) {
+        this.downStation = requestDownStation;
+        this.distance = this.distance + distance;
+    }
+
+    private void minusDistance(int requestDistance) {
         if (this.distance <= requestDistance) {
             throw new IllegalDistanceSectionException();
         }
@@ -98,6 +110,5 @@ public class Section implements Comparable<Section> {
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
     }
-
 
 }

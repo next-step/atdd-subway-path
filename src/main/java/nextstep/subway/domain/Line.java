@@ -69,7 +69,7 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        sections.removeLastSection(station);
+        sections.removeSection(station);
     }
 
 }
