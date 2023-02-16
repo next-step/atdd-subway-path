@@ -26,13 +26,13 @@ class DownmostSectionDeleteStrategyTest {
     @Test
     @DisplayName("구간의 최하행역에 대해서 삭제할 조건을 만족한다.")
     void meetCondition() {
-        assertThat(new DownmostSectionDeleteStrategy().meetCondition(sections, Fixtures.미금역.getId())).isTrue();
+        assertThat(new DownmostSectionDeleteStrategy().isValidCondition(sections, Fixtures.미금역.getId())).isTrue();
     }
 
     @Test
     @DisplayName("구간의 최하행역이 아닐 경우 삭제할 조건을 만족하지 못한다.")
     void invalidCondition() {
-        assertThat(new DownmostSectionDeleteStrategy().meetCondition(sections, Fixtures.정자역.getId())).isFalse();
+        assertThat(new DownmostSectionDeleteStrategy().isValidCondition(sections, Fixtures.정자역.getId())).isFalse();
     }
 
     @Test

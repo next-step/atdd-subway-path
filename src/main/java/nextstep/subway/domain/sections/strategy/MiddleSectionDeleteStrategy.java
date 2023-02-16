@@ -9,7 +9,7 @@ import nextstep.subway.domain.sections.Sections;
 
 public class MiddleSectionDeleteStrategy implements SectionDeleteStrategy {
     @Override
-    public boolean meetCondition(Sections sections, Long stationId) {
+    public boolean isValidCondition(Sections sections, Long stationId) {
         List<Section> sectionsList = sections.getValue();
         if (sectionsList.isEmpty()) {
             return false;
@@ -26,7 +26,7 @@ public class MiddleSectionDeleteStrategy implements SectionDeleteStrategy {
         Section deprecatedNextSection = findSection(sections, section -> section.isSameUpStation(stationId));
 
         Section newSection = new Section(line, deprecatedTargetSection.getUpStation(), deprecatedNextSection.getDownStation(), deprecatedTargetSection.getDistance() + deprecatedNextSection.getDistance());
-    
+
         return new ChangeableSections(List.of(newSection), List.of(deprecatedTargetSection, deprecatedNextSection));
     }
 

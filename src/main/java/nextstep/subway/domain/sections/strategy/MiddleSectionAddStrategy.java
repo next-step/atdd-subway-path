@@ -13,7 +13,7 @@ public class MiddleSectionAddStrategy implements SectionAddStrategy {
     private static final String LONGER_DISTANCE_EXCEPTION_MESSAGE = "새로운 구간의 길이는 본 구간의 길이보다 짧아야 합니다.";
 
     @Override
-    public boolean meetCondition(Sections sections, Section newSection) {
+    public boolean isValidCondition(Sections sections, Section newSection) {
         List<Section> matchedSections = getMatchedSections(sections, newSection);
 
         if (matchedSections.isEmpty()) {

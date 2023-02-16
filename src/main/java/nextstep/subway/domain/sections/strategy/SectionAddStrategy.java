@@ -5,7 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.sections.Sections;
 
 public interface SectionAddStrategy {
-    boolean meetCondition(Sections sections, Section newSection);
+    boolean isValidCondition(Sections sections, Section newSection);
 
     ChangeableSections findChangeableSections(Sections sections, Section newSection, Line line);
 }

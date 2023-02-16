@@ -31,7 +31,7 @@ class DownmostSectionAddStrategyTest {
     void meetCondition() {
         Section newSection = Fixtures.createSection(3L, line, Fixtures.미금역, newStation, 15);
 
-        assertThat(new DownmostSectionAddStrategy().meetCondition(sections, newSection)).isTrue();
+        assertThat(new DownmostSectionAddStrategy().isValidCondition(sections, newSection)).isTrue();
     }
 
     @Test
@@ -39,7 +39,7 @@ class DownmostSectionAddStrategyTest {
     void invalidCondition() {
         Section newSection = Fixtures.createSection(3L, line, newStation, Fixtures.미금역, 15);
 
-        assertThat(new DownmostSectionAddStrategy().meetCondition(sections, newSection)).isFalse();
+        assertThat(new DownmostSectionAddStrategy().isValidCondition(sections, newSection)).isFalse();
     }
 
     @Test

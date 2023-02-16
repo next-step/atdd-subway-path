@@ -27,13 +27,13 @@ class MiddleSectionDeleteStrategyTest {
     @Test
     @DisplayName("구간의 중간역에 해당하는 경우 삭제 조건을 만족한다.")
     void meetCondition() {
-        assertThat(new MiddleSectionDeleteStrategy().meetCondition(sections, Fixtures.미금역.getId())).isTrue();
+        assertThat(new MiddleSectionDeleteStrategy().isValidCondition(sections, Fixtures.미금역.getId())).isTrue();
     }
 
     @Test
     @DisplayName("구간의 최하행역에 해당하는 경우 삭제 조건을 만족하지 않는다.")
     void invalidCondition() {
-        assertThat(new MiddleSectionDeleteStrategy().meetCondition(sections, Fixtures.광교역.getId())).isFalse();
+        assertThat(new MiddleSectionDeleteStrategy().isValidCondition(sections, Fixtures.광교역.getId())).isFalse();
     }
 
     @Test

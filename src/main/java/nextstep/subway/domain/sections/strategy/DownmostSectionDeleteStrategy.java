@@ -8,7 +8,7 @@ import nextstep.subway.domain.sections.Sections;
 
 public class DownmostSectionDeleteStrategy implements SectionDeleteStrategy {
     @Override
-    public boolean meetCondition(Sections sections, Long stationId) {
+    public boolean isValidCondition(Sections sections, Long stationId) {
         List<Section> sectionsList = sections.getValue();
         if (sectionsList.isEmpty()) {
             return false;

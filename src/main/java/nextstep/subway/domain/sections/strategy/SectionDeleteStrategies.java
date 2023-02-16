@@ -18,7 +18,7 @@ public class SectionDeleteStrategies {
 
     public ChangeableSections findChangeableSections(Sections sections, Long stationId, Line line) {
         return strategies.stream()
-            .filter(strategy -> strategy.meetCondition(sections, stationId))
+            .filter(strategy -> strategy.isValidCondition(sections, stationId))
             .map(strategy -> strategy.findChangeableSections(sections, stationId, line))
             .findFirst()
             .orElseThrow(() -> new CannotDeleteSectionException("던져지면 안되는 예외입니다."));
