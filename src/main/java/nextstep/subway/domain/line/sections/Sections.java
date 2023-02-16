@@ -1,9 +1,5 @@
 package nextstep.subway.domain.line.sections;
 
-import nextstep.subway.applicaion.line.sections.addtional.Additional;
-import nextstep.subway.applicaion.line.sections.addtional.SectionAdder;
-import nextstep.subway.applicaion.line.sections.addtional.SectionFrontAdder;
-import nextstep.subway.applicaion.line.sections.addtional.SectionMiddleAdder;
 import nextstep.subway.domain.section.Distance;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
@@ -32,12 +28,66 @@ public class Sections {
     }
 
     public void add(Section section) {
-        Additional additional = searchAdditionalSection(section);
-        additional.add(this, section);
+        isValidationSection(section);
+
+        if (isPosibleFrontAddSection(section)) {
+            addFront(section);
+            return;
+        }
+
+        if (isPosibleMiddleAddSection(section)) {
+            addMiddle(section);
+            return;
+        }
+
+        this.sections.add(section);
+    }
+
+    private void addMiddle(Section section) {
+        Optional<Section> opStandardSection = getStandardSectionByUpStation(section);
+
+        if (!opStandardSection.isPresent()) {
+            return;
+        }
+        Section standardSection = opStandardSection.get();
+
+        int standardIndex = getSectionIndex(standardSection);
+
+        Section newSection = Section.builder()
+                .line(section.getLine())
+                .upStation(section.getDownStation())
+                .downStation(standardSection.getDownStation())
+                .distance(new Distance(standardSection.minusDistance(section.getDistance())))
+                .build();
+
+        standardSection.change(standardSection.getUpStation(), section.getDownStation(), new Distance(section.getDistance()));
+
+        this.sections.set(standardIndex, standardSection);
+        this.sections.add(standardIndex+1, newSection);
+    }
+
+    private void addFront(Section section) {
+        Optional<Section> opStandardSection = getStandardSectionByDownStation(section);
+
+        if (!opStandardSection.isPresent()) {
+            return;
+        }
+
+        Section standardSection = opStandardSection.get();
+
+        this.sections.add(getSectionIndex(standardSection), section);
     }
 
     public List<Section> getSections() {
-        return this.sections;
+        if (this.sections.isEmpty()) {
+            return this.sections;
+        }
+
+        List<Section> sectionList = this.sections.stream()
+                .filter(a -> null != a)
+                .collect(Collectors.toList());
+
+        return sectionList;
     }
 
     public void remove(Station station) {
@@ -117,8 +167,11 @@ public class Sections {
     }
 
     private boolean isExistUpOrDownStation (Section section) {
-        int existStationCnt = this.getStations().stream().filter(a -> a.equals(section.getUpStation())
-                || a.equals(section.getDownStation())).collect(Collectors.toList()).size();
+        int existStationCnt = this.getStations().stream()
+                .filter(a -> a.equals(section.getUpStation()) || a.equals(section.getDownStation()))
+                .collect(Collectors.toList())
+                .size();
+
         return existStationCnt != 1;
     }
 
@@ -168,18 +221,6 @@ public class Sections {
 
     private boolean isNotValidSectionCount() {
         return this.sections.size() <= 1;
-    }
-
-    private Additional searchAdditionalSection(Section section) {
-        if (isPosibleFrontAddSection(section)) {
-            return new SectionFrontAdder();
-        }
-
-        if (isPosibleMiddleAddSection(section)) {
-            return new SectionMiddleAdder();
-        }
-
-        return new SectionAdder();
     }
 
     private boolean isPosibleFrontAddSection(Section section) {

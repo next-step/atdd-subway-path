@@ -2,7 +2,6 @@ package nextstep.subway.applicaion.path;
 
 import nextstep.subway.applicaion.dto.path.PathResponse;
 import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.line.sections.Sections;
 import nextstep.subway.domain.path.Path;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
@@ -33,11 +32,13 @@ public class PathFinder {
     }
 
     private static void initGraph(List<Line> lines) {
-        lines.stream().map(Line::getSections).forEach(a -> addGraphValue(a));
+        lines.stream()
+                .map(Line::getSections)
+                .forEach(a -> addGraphValue(a));
     }
 
-    private static void addGraphValue(Sections sections) {
-        for (Section section : sections.getSections()) {
+    private static void addGraphValue(List<Section> sections) {
+        for (Section section : sections) {
             String vertex1 = String.valueOf(section.getUpStation().getId());
             String vertex2 = String.valueOf(section.getDownStation().getId());
             graph.addVertex(vertex1);
@@ -56,7 +57,10 @@ public class PathFinder {
 
         GraphPath<Object, Object> graphPath = dijkstraShortestPath.getPath(String.valueOf(sourceId), String.valueOf(targetId));
 
-        List<String> stationIds = graphPath.getVertexList().stream().map(a -> String.valueOf(a)).collect(Collectors.toList());
+        List<String> stationIds = graphPath.getVertexList().stream()
+                .map(a -> String.valueOf(a))
+                .collect(Collectors.toList());
+
         int weight = (int) graphPath.getWeight();
 
         Path path = new Path(stationIds.stream()
@@ -69,7 +73,9 @@ public class PathFinder {
 
     private static Station findStation(List<Line> lines, Long stationId) {
         for (Line line : lines) {
-            Optional<Station> opStation = line.getStations().stream().filter(a -> stationId.equals(a.getId())).findFirst();
+            Optional<Station> opStation = line.getStations().stream()
+                    .filter(a -> stationId.equals(a.getId()))
+                    .findFirst();
 
             if (opStation.isPresent()) {
                 return opStation.get();

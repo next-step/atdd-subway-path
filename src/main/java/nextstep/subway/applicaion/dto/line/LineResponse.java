@@ -26,7 +26,10 @@ public class LineResponse {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
-                .stations(line.getStations().stream().map(a -> StationResponse.of(a)).collect(Collectors.toList())).build();
+                .stations(line.getStations().stream()
+                        .map(a -> StationResponse.of(a))
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     public Long getId() {
