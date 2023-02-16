@@ -2,16 +2,17 @@ package nextstep.subway.acceptance;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.PathAcceptanceAssert.경로_조회시_존재하지_않는_역이면_예외_발생;
+import static nextstep.subway.acceptance.PathAcceptanceAssert.경로_조회시_출발역과_도착역이_연결되어_있지_않으면_예외_발생;
+import static nextstep.subway.acceptance.PathAcceptanceAssert.경로_조회시_출발역과_도착역이_일치하면_예외_발생;
 import static nextstep.subway.acceptance.PathAcceptanceAssert.최단_경로_조회_검증;
 import static nextstep.subway.acceptance.PathSteps.최단_경로_조회;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 @DisplayName("경로 조회 관련 기능")
 public class PathFinderAcceptanceTest extends AcceptanceTest {
@@ -66,8 +67,11 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
         List<Long> path = List.of(강남역, 교대역, 남부터미널역);
         long distance = 12L;
 
-        // when, then
-        최단_경로_조회_검증(source, target, path, distance);
+        // when
+        var response = 최단_경로_조회(source, target);
+
+        // then
+        최단_경로_조회_검증(response, path, distance);
     }
 
     /**
@@ -77,9 +81,8 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
     @DisplayName("경로 조회를 요청했을 때 출발역과 도착역이 일치하면 에러 처리한다.")
     @Test
     void findShortestPathIsSourceAndTargetEqual() {
-        var response = 최단_경로_조회(강남역, 강남역);
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        // when & then
+        경로_조회시_출발역과_도착역이_일치하면_예외_발생(강남역, 강남역);
     }
 
     /**
@@ -89,11 +92,8 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
     @DisplayName("경로 조회를 요청했을 때 출발역과 도착역이 연결되어 있지 않으면 에러 처리한다.")
     @Test
     void findShortestPathIsSourceAndTargetNotConnection() {
-        // when
-        var response = 최단_경로_조회(강남역, 죽전역);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        // when & then
+        경로_조회시_출발역과_도착역이_연결되어_있지_않으면_예외_발생(강남역, 죽전역);
     }
 
     /**
@@ -106,11 +106,8 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
         // given
         long 존재하지않는역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
 
-        // when
-        var response = 최단_경로_조회(존재하지않는역, 죽전역);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        // when & then
+        경로_조회시_존재하지_않는_역이면_예외_발생(존재하지않는역, 강남역);
     }
 
     /**
@@ -123,10 +120,7 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
         // given
         long 존재하지않는역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
 
-        // when
-        var response = 최단_경로_조회(강남역, 존재하지않는역);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        // when & then
+        경로_조회시_존재하지_않는_역이면_예외_발생(강남역, 존재하지않는역);
     }
 }
