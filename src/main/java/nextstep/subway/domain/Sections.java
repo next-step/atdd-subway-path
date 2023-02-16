@@ -60,11 +60,13 @@ public class Sections {
     }
 
     public Section findSectionByStation(Station station) {
-        Section targetSection = sections.stream().filter(section -> section.getUpStation().equals(station))
+        if (isLastStation(station)) {
+            return sections.get(sections.size() - 1);
+        }
+
+        return sections.stream().filter(section -> section.getUpStation().equals(station))
             .findFirst()
             .orElseThrow(NotFoundSectionsException::new);
-
-        return targetSection;
     }
 
     public boolean isSectionsEmpty() {
