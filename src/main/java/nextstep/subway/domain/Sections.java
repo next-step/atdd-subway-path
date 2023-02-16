@@ -56,24 +56,7 @@ public class Sections {
         validateWhenRemoveSection();
 
         // 마지막 역인지
-        if (isLastStation(station)) {
-            sections.remove(sections.size() - 1);
-            return;
-        }
-
-        // 타겟 구간 찾기
-        Section targetSection = findSectionByStation(station);
-
-        // 첫 역인지
-        if (isFirstSection(targetSection)) {
-            sections.remove(0);
-            return;
-        }
-
-        // 중간 역 제거
-        Section targetBeforeSection = getBeforeSection(targetSection);
-        targetBeforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
-        sections.remove(targetSection);
+        removeProcess(station);
     }
 
     public Section findSectionByStation(Station station) {
@@ -82,6 +65,10 @@ public class Sections {
             .orElseThrow(NotFoundSectionsException::new);
 
         return targetSection;
+    }
+
+    public boolean isSectionsEmpty() {
+        return sections.isEmpty();
     }
 
     private Section getBeforeSection(Section targetSection) {
@@ -96,10 +83,6 @@ public class Sections {
 
     private boolean isLastStation(Station targetStation) {
         return sections.get(sections.size() - 1).getDownStation().equals(targetStation);
-    }
-
-    public boolean isSectionsEmpty() {
-        return sections.isEmpty();
     }
 
     private Section getSectionToAdd(Station requestUpStation, Station requestDownStation) {
@@ -130,6 +113,40 @@ public class Sections {
         if (sections.size() == 1) {
             throw new IllegalRemoveMinSectionSize();
         }
+    }
+
+    private void removeProcess(Station station) {
+        if (removeLastSection(station)) return;
+
+        // 타겟 구간 찾기
+        Section targetSection = findSectionByStation(station);
+
+        if (removeFirstSection(targetSection)) return;
+
+        // 중간 역 제거
+        removeMiddleSection(targetSection);
+    }
+
+    private void removeMiddleSection(Section targetSection) {
+        Section targetBeforeSection = getBeforeSection(targetSection);
+        targetBeforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
+        sections.remove(targetSection);
+    }
+
+    private boolean removeFirstSection(Section targetSection) {
+        if (isFirstSection(targetSection)) {
+            sections.remove(targetSection);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean removeLastSection(Station station) {
+        if (isLastStation(station)) {
+            sections.remove(sections.size() - 1);
+            return true;
+        }
+        return false;
     }
 
 }
