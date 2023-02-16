@@ -38,7 +38,7 @@ class LineTest {
         // when
         line.removeSection(line.getStations().get(1));
         // then
-        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections()).hasSize(1);
     }
 
     @Test
