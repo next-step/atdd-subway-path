@@ -217,6 +217,27 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
         }
 
+        /**
+         * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+         * When 종점을 제거 요청 시
+         * Then 다음으로 오던 역이 종점이 된다
+         */
+        @DisplayName("지하철 노선에 종점을 제거 요청 시 다음으로 오던 역이 종점이 된다")
+        @Test
+        void 지하철_노선에_종점을_제거_요청_시_다음으로_오던_역이_종점이_된다() {
+            // given
+            Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+            지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+
+            // when
+            지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+            // then
+            ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+        }
+
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
