@@ -102,7 +102,7 @@ class PathServiceTest extends IntegrationUnitTest {
 	@DisplayName("최단경로 검색시 존재하지않은 출발역을 요청한 경우 예외가 발생한다")
 	@Test
 	void 최단경로_검색시_존재하지않은_출발역을_요청한_경우_예외가_발생한다() {
-		assertThatThrownBy(() -> pathService.getPath(존재하지않은역, 교대역.getId()))
+		assertThatThrownBy(() -> pathService.getPath(존재하지않은역_ID, 교대역.getId()))
 			.isInstanceOf(PathSearchException.class)
 			.hasMessage(PathErrorCode.NOT_FOUND_STATION.getMessage());
 	}
@@ -110,7 +110,7 @@ class PathServiceTest extends IntegrationUnitTest {
 	@DisplayName("최단경로 검색시 존재하지않은 도착역을 요청한 경우 예외가 발생한다")
 	@Test
 	void 최단경로_검색시_존재하지않은_도착역을_요청한_경우_예외가_발생한다() {
-		assertThatThrownBy(() -> pathService.getPath(교대역.getId(), 존재하지않은역))
+		assertThatThrownBy(() -> pathService.getPath(교대역.getId(), 존재하지않은역_ID))
 			.isInstanceOf(PathSearchException.class)
 			.hasMessage(PathErrorCode.NOT_FOUND_STATION.getMessage());
 	}

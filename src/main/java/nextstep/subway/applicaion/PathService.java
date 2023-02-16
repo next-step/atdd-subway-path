@@ -31,8 +31,8 @@ public class PathService {
 		Station targetStation = stationRepository.findById(target)
 			.orElseThrow(() -> new PathSearchException(PathErrorCode.NOT_FOUND_STATION));
 
-		PathFinder pathFinder = new PathFinder(lines, sourceStation, targetStation);
-		SubwayPath subwayPath = pathFinder.findPath();
+		PathFinder pathFinder = new PathFinder(lines);
+		SubwayPath subwayPath = pathFinder.findPath(sourceStation, targetStation);
 		return new PathResponse(subwayPath.getStations(), subwayPath.getMinimumDistance());
 	}
 }

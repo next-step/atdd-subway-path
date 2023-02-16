@@ -1,5 +1,6 @@
 package nextstep.subway.applicaion;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jgrapht.GraphPath;
@@ -15,16 +16,17 @@ import nextstep.subway.domain.exception.PathSearchException;
 
 public class PathFinder {
 
-	private final GraphPath<Station, DefaultWeightedEdge> graphPath;
+	private final List<Line> lines;
 
-	public PathFinder(List<Line> lines, Station source, Station target) {
-		validateRequestStation(source, target);
-
-		this.graphPath = makeGraph(lines, source, target);
+	public PathFinder(List<Line> lines) {
+		this.lines = new ArrayList<>(lines);
 	}
 
-	public SubwayPath findPath() {
-		return new SubwayPath(this.graphPath.getVertexList(), this.graphPath.getWeight());
+	public SubwayPath findPath(Station source, Station target) {
+		validateRequestStation(source, target);
+
+		GraphPath<Station, DefaultWeightedEdge> graphPath = makeGraph(this.lines, source, target);
+		return new SubwayPath(graphPath.getVertexList(), graphPath.getWeight());
 	}
 
 	private void validateRequestStation(Station source, Station target) {
