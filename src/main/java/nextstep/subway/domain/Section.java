@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SectionMergeStationIsNotEqualException;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -71,5 +73,12 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id, line, upStation, downStation, distance);
+    }
+
+    public Section merge(Section mergeSection) {
+        if (this.downStation != mergeSection.upStation) {
+            throw new SectionMergeStationIsNotEqualException();
+        }
+        return new Section(line, this.upStation, mergeSection.downStation, this.distance + mergeSection.distance);
     }
 }

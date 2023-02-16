@@ -104,19 +104,16 @@ public class Sections {
 
     public void removeSection(Station station) {
         validateMinimumSectionSize();
-        removeAndCombineSection(station);
-    }
-
-    private void removeAndCombineSection(Station station) {
         List<Section> findSections = findSectionsWithStation(station);
         sections.removeAll(findSections);
         if (isSizeTwo(findSections)) {
             Section upSection = findSections.get(0);
             Section downSection = findSections.get(1);
-            sections.add(new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(),
-                    upSection.getDistance() + downSection.getDistance()));
+            Section mergedSection = upSection.merge(downSection);
+            sections.add(mergedSection);
         }
     }
+
 
     public boolean checkExistStation(Station station) {
         return getStations().stream()
