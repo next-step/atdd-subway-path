@@ -68,7 +68,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간 등록 - 정상2 : 새로운 역이 상행 종점인 구간 추가")
     @Test
     void addLineSection_ValidCase2() {
+        // when
+        Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
 
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신논현역, 강남역, 양재역);
+        assertThat(response.jsonPath().getInt("length")).isEqualTo(sectionDistance1 + sectionDistance2);
     }
 
     /**

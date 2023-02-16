@@ -5,10 +5,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Entity
@@ -18,6 +20,12 @@ public class Line {
     private Long id;
     private String name;
     private String color;
+
+    @ManyToOne
+    private Station firstStation;
+
+    @ManyToOne
+    private Station lastStation;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -65,23 +73,26 @@ public class Line {
     public void addSection(Section section) {
         if (sections.isEmpty()) {
             sections.add(section);
+            firstStation = section.getUpStation();
+            lastStation = section.getDownStation();
             return;
         }
 
         // 상행 종점
         if (isFirstSection(section)) {
             sections.add(0, section);
+            firstStation = section.getUpStation();
             return;
         }
 
         // 하행 종점
         if (isLastSection(section)) {
             sections.add(section);
+            lastStation = section.getDownStation();
             return;
         }
 
         // 사이
-
         sections.add(section);
     }
 
@@ -90,17 +101,29 @@ public class Line {
     }
 
     public Section getFirstSection() {
-        return sections.get(0);
+        if (sections.isEmpty()) {
+            throw new NoSuchElementException();
+        }
+
+        return sections.stream().filter(sec -> isFirstStation(sec.getUpStation())).findFirst().orElseThrow(NoSuchElementException::new);
     }
 
     public List<Station> getStations() {
         Set<Station> stations = new LinkedHashSet<>();
-        for (Section section : sections) {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
+
+        Section currSection = getFirstSection();
+        while (currSection != null) {
+            stations.add(currSection.getUpStation());
+            stations.add(currSection.getDownStation());
+            currSection = nextSection(currSection);
         }
 
         return new ArrayList<>(stations);
+    }
+
+    private Section nextSection(Section currSection) {
+        // 다음 구간 : 현재 구간의 하행역이 상행역인 구간
+        return sections.stream().filter(sec -> sec.getUpStation().equals(currSection.getDownStation())).findFirst().orElse(null);
     }
 
     public void removeSection(Station station) {
@@ -119,8 +142,16 @@ public class Line {
         return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
     }
 
+    public Station getFirstStation() {
+        return firstStation;
+    }
+
+    public Station getLastStation() {
+        return lastStation;
+    }
+
     private boolean isFirstStation(Station station) {
-        return sections.get(0).getUpStation().equals(station);
+        return firstStation.equals(station);
     }
 
     private boolean isLastStation(Station station) {
