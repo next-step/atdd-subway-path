@@ -58,7 +58,7 @@ public class LineServiceTest {
 			() -> assertThat(lineResponse.getId()).isEqualTo(saveLineId),
 			() -> assertThat(lineResponse.getName()).isEqualTo("TEST_LINE"),
 			() -> assertThat(lineResponse.getColor()).isEqualTo("BLACK"),
-			() -> assertThat(lineResponse.getStations().size()).isEqualTo(2)
+			() -> assertThat(lineResponse.getStations()).hasSize(2)
 		);
 	}
 
@@ -72,7 +72,7 @@ public class LineServiceTest {
 		List<LineResponse> lineResponses = lineService.showLines();
 
 		// then
-		assertThat(lineResponses.size()).isEqualTo(2);
+		assertThat(lineResponses).hasSize(2);
 	}
 
 	@DisplayName("등록된 지하철 노선의 정보를 수정할 수 있다")
@@ -96,6 +96,6 @@ public class LineServiceTest {
 		lineService.deleteLineById(line4);
 
 		// then
-		assertThrows(NullPointerException.class, () -> lineService.findLineById(line4));
+		assertThrows(IllegalArgumentException.class, () -> lineService.findLineById(line4));
 	}
 }

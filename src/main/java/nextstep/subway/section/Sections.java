@@ -17,10 +17,10 @@ public class Sections {
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-	public Section  addSection(Section newSection) {
+	public void addSection(Section newSection) {
 		if (isEmptySection()) {
 			this.sections.add(newSection);
-			return newSection;
+			return;
 		}
 		checkExistSection(newSection);
 
@@ -30,11 +30,10 @@ public class Sections {
 		}
 
 		this.sections.add(newSection);
-		return newSection;
 	}
 
 	private boolean isEmptySection() {
-		return this.sections.size() == 0 ? true : false;
+		return this.sections.size() == 0;
 	}
 
 	private void checkExistSection(Section newSection) {
@@ -105,7 +104,8 @@ public class Sections {
 	}
 
 	public List<Station> getOrderStation() {
-		Map<Station, Station> stationMap = this.sections.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+		Map<Station, Station> stationMap = this.sections.stream()
+			.collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 
 		Station upStation = getFirstStation();
 		List<Station> stations = new ArrayList<>();

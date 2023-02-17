@@ -29,7 +29,7 @@ public class StationService {
 
 	@Transactional(readOnly = true)
 	public Station findStationById(Long id) {
-		return stationRepository.findById(id).orElseThrow(() -> new NullPointerException("Station doesn't exist"));
+		return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Station doesn't exist"));
 	}
 
     @Transactional

@@ -20,21 +20,18 @@ public class SectionService {
 
 	@Transactional
 	public void addSection(Long lineId, SectionCreateRequest sectionRequest) {
-		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new NullPointerException("Line doesn't exist"));
+		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("Line doesn't exist"));
 
 		Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
 		Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
 
 		Section newSection = new Section(upStation, downStation, sectionRequest.getDistance());
-		sectionRepository.save(newSection);
-
 		findLine.addSection(newSection);
-		newSection.updateLine(findLine);
 	}
 
 	@Transactional
 	public void deleteSectionById(Long lineId, Long stationId) {
-		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new NullPointerException("Line doesn't exist"));
+		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("Line doesn't exist"));
 		Station deleteStation = stationService.findStationById(stationId);
 		findLine.removeSection(deleteStation);
 	}

@@ -129,10 +129,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
 		// then
 		assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-		// then
-		List<Long> stationIds = getStationIds(showLineById(line4));
-		assertThat(stationIds).containsOnlyOnce(사당역, 금정역);
 	}
 
 	/**

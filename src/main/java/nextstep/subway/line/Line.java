@@ -16,8 +16,8 @@ import nextstep.subway.station.Station;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
 	private String name;
 
@@ -26,19 +26,20 @@ public class Line {
 	@Embedded
 	private Sections sections;
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+	public Line(String name, String color) {
+		this.name = name;
+		this.color = color;
 		this.sections = new Sections();
-    }
+	}
 
 	public void updateLine(String name, String color) {
 		this.name = name;
 		this.color = color;
 	}
 
-	public Section addSection(Section section) {
-		return sections.addSection(section);
+	public void addSection(Section section) {
+		sections.addSection(section);
+		section.updateLine(this);
 	}
 
 	public void removeSection(Station station) {

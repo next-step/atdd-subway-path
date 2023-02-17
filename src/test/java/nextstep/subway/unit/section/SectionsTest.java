@@ -8,6 +8,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import nextstep.subway.section.Section;
 import nextstep.subway.section.Sections;
@@ -51,35 +53,24 @@ class SectionsTest {
 		sections.removeSection(역2);
 
 		// given
-		assertThat(sections.getOrderStation().size()).isEqualTo(2);
+		assertThat(sections.getOrderStation()).hasSize(2);
 		assertThat(sections.getDistance()).isEqualTo(20);
 	}
 
-	@DisplayName("등록하려는 구간의 역이 이미 다 등록되어 있을 때")
+	@DisplayName("예외 발생, 이미 모든 역이 등록되어 있을 때")
 	@Test
 	void existAllStationTest() {
 		// then
 		assertThrows(IllegalArgumentException.class, () -> sections.addSection(구간1));
 	}
 
-	@DisplayName("등록하려는 구간의 역이 이미 다 등록되어 있을 때")
-	@Test
-	void notExistStationTest() {
-		// given
-		Station 역5 = new Station("역5");
-		Station 역6 = new Station("역6");
-		Section 구간5 = new Section(역5, 역6, 10);
-
-		// then
-		assertThrows(IllegalArgumentException.class, () -> sections.addSection(구간5));
-	}
-
-	@DisplayName("등록하려는 구간의 길이가 기존의 길이보다 크거나 같을 때")
-	@Test
-	void checkDistanceTest() {
+	@DisplayName("예외 발생, 등록하려는 구간의 길이가 기존의 길이보다 크거나 같을 때")
+	@ParameterizedTest
+	@ValueSource(ints = {5, 10})
+	void checkDistanceTest(int distance) {
 		// given
 		Station 역2_1 = new Station("역5");
-		Section 구간2_1 = new Section(역2, 역2_1, 5);
+		Section 구간2_1 = new Section(역2, 역2_1, distance);
 
 		// then
 		assertThrows(IllegalArgumentException.class, () -> sections.addSection(구간2_1));

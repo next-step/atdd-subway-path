@@ -52,6 +52,6 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public Line findLineEntityById(Long id) {
-		return lineRepository.findById(id).orElseThrow(() -> new NullPointerException("Line doesn't exist"));
+		return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Line doesn't exist"));
 	}
 }

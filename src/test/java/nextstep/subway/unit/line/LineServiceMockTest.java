@@ -7,8 +7,6 @@ import static org.mockito.Mockito.*;
 import java.util.Optional;
 
 import nextstep.subway.line.LineService;
-import nextstep.subway.section.Section;
-import nextstep.subway.section.SectionRepository;
 import nextstep.subway.section.SectionService;
 import nextstep.subway.section.SectionCreateRequest;
 import nextstep.subway.line.Line;
@@ -19,7 +17,6 @@ import nextstep.subway.station.StationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class LineServiceMockTest {
 
     @Mock private LineRepository lineRepository;
-    @Mock private SectionRepository sectionRepository;
 	@Mock private StationService stationService;
 
 	@InjectMocks private LineService lineService;
@@ -39,7 +35,6 @@ public class LineServiceMockTest {
     void addSection() {
         // given lineRepository, stationService stub 설정을 통해 초기값 셋팅
 		when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("4호선", "#00A5DE")));
-		when(sectionRepository.save(any(Section.class))).then(AdditionalAnswers.returnsFirstArg());
 		when(stationService.findStationById(1L)).thenReturn(new Station("사당역"));
 		when(stationService.findStationById(2L)).thenReturn(new Station("금정역"));
 

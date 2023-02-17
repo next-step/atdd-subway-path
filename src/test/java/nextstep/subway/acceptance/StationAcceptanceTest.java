@@ -46,7 +46,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 		List<String> stationNames = showStation().jsonPath().getList("name", String.class);
 
 		// then
-		assertThat(stationNames.size()).isEqualTo(2);
+		assertThat(stationNames).hasSize(2);
 		assertThat(stationNames).containsAnyOf(stationName1, stationName2);
     }
 
