@@ -49,17 +49,17 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         return createLineResponse(lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new));
+                .orElseThrow(() -> new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage())));
     }
 
     public Line findLine(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION));
+                .orElseThrow(() -> new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage()));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage()));
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());

@@ -71,8 +71,8 @@ class LineServiceMockTest {
         // when
         // then
         assertThatThrownBy(() -> lineService.addSection(1L, new SectionRequest(3L, 2L, 10)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("잘못된 거리 값입니다.");
+                .isInstanceOf(SubwayRuntimeException.class)
+                .hasMessage(SubwayErrorCode.INVALID_SECTION_DISTANCE.getMessage());
     }
 
     @Test
@@ -80,12 +80,10 @@ class LineServiceMockTest {
     void addSection_alreadyEnrollStation() {
         // given
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
-
-        // when
         // then
         assertThatThrownBy(() -> lineService.addSection(1L, new SectionRequest(1L, 2L, 10)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 등록된 구간 입니다.");
+                .isInstanceOf(SubwayRuntimeException.class)
+                .hasMessage(SubwayErrorCode.DUPLICATE_SECTION.getMessage());
     }
 
     @Test
@@ -100,8 +98,8 @@ class LineServiceMockTest {
         // when
         // then
         assertThatThrownBy(() -> lineService.addSection(1L, new SectionRequest(3L, 4L, 6)))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("연결할 수 없는 구간 입니다.");
+                .isInstanceOf(SubwayRuntimeException.class)
+                .hasMessage(SubwayErrorCode.NOT_CONTAIN_STATION.getMessage());
     }
 
     @Test
@@ -164,8 +162,8 @@ class LineServiceMockTest {
         // when
         // then
         assertThatThrownBy(() -> lineService.deleteSection(1L, 2L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("구간이 하나인 노선에서는 역을 제거할 수 없습니다.");
+                .isInstanceOf(SubwayRuntimeException.class)
+                .hasMessage(SubwayErrorCode.CANNOT_DELETE_LAST_STATION.getMessage());
     }
 
     @Test
@@ -181,7 +179,8 @@ class LineServiceMockTest {
         // when
         // then
         assertThatThrownBy(() -> lineService.deleteSection(1L, 4L))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(SubwayRuntimeException.class)
+                .hasMessage(SubwayErrorCode.DELETE_LAST_SECTION.getMessage());
     }
 
     @Test

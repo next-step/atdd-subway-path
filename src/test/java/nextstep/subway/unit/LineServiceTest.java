@@ -7,15 +7,14 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import org.aspectj.lang.annotation.Before;
+import nextstep.subway.exception.SubwayRuntimeException;
+import nextstep.subway.exception.message.SubwayErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -34,8 +33,6 @@ class LineServiceTest {
 
     @Autowired
     private LineService lineService;
-
-    private Sections sections;
 
     private Station 강남역;
 
@@ -60,13 +57,13 @@ class LineServiceTest {
     @Test
     void addSection() {
         // when
-        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 5));
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 판교역.getId(), 5));
 
         // then
         assertAll(
                 () -> assertThat(신분당선.getName()).isEqualTo("신분당선"),
                 () -> assertThat(신분당선.getColor()).isEqualTo("bg-red-600"),
-                () -> assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "양재역", "판교역")
+                () -> assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "판교역", "양재역")
         );
     }
 
@@ -79,8 +76,8 @@ class LineServiceTest {
     void addSectionException() {
         // When & Then
         assertThatThrownBy(() -> 신분당선.addSection(강남역, 양재역, 10))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 등록된 구간 입니다.");
+                .isInstanceOf(SubwayRuntimeException.class)
+                .hasMessage(SubwayErrorCode.DUPLICATE_SECTION.getMessage());
     }
 
     /**
@@ -92,7 +89,7 @@ class LineServiceTest {
     void addSectionException2() {
         // When & Then
         assertThatThrownBy(() -> 신분당선.addSection(강남역, 판교역, 10))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("잘못된 거리 값입니다.");
+                .isInstanceOf(SubwayRuntimeException.class)
+                .hasMessage(SubwayErrorCode.INVALID_SECTION_DISTANCE.getMessage());
     }
 }

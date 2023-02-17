@@ -48,7 +48,7 @@ public class Section {
 
     private void validate(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
-            throw new SubwayRuntimeException(SubwayErrorCode.VALIDATE_SECTION_SAME_STATION);
+            throw new SubwayRuntimeException(SubwayErrorCode.VALIDATE_SECTION_SAME_STATION.getMessage());
         }
     }
 
@@ -62,7 +62,7 @@ public class Section {
 
     private int remainDistance(final int distance) {
         if (distance <= 0 || this.distance <= distance) {
-            throw new IllegalArgumentException("잘못된 거리 값입니다.");
+            throw new SubwayRuntimeException(SubwayErrorCode.INVALID_SECTION_DISTANCE.getMessage());
         }
 
         return this.distance - distance;

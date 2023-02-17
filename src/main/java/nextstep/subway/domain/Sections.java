@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import lombok.Getter;
 import nextstep.subway.exception.SubwayRuntimeException;
 import nextstep.subway.exception.message.SubwayErrorCode;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -10,8 +11,6 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Embeddable
 @Getter
@@ -32,10 +31,7 @@ public class Sections {
 
         addValidate(newSection);
 
-        /*
-         * 기존 구간의 하행역 기준으로 새로운 구간을 등록
-         */
-
+         // 기존 구간의 하행역 기준으로 새로운 구간을 등록
         if (isConnectUpStation(newSection) || isConnectDownStation(newSection)) {
             sections.add(newSection);
             return;
@@ -50,14 +46,14 @@ public class Sections {
          * 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
          */
         if (isAlreadyRegisterUpStation(newSection) && isAlreadyRegisterDownStation(newSection)) {
-            throw new IllegalArgumentException("이미 등록된 구간 입니다.");
+            throw new SubwayRuntimeException(SubwayErrorCode.DUPLICATE_SECTION.getMessage());
         }
 
         /*
          * 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
          */
         if ((isContainStation(newSection.getUpStation()) || isContainStation(newSection.getDownStation())) == false) {
-            throw new IllegalArgumentException("연결할 수 없는 구간 입니다.");
+            throw new SubwayRuntimeException(SubwayErrorCode.NOT_CONTAIN_STATION.getMessage());
         }
     }
 
@@ -91,7 +87,7 @@ public class Sections {
         Station cur = null;
         Section next = sections.get(0);
 
-        while (next != null) {
+        while (!ObjectUtils.isEmpty(next)) {
             cur = next.getUpStation();
             next = findSectionByDownStation(next.getUpStation());
         }
@@ -113,7 +109,7 @@ public class Sections {
         Station cur = null;
         Section next = sections.get(0);
 
-        while (next != null) {
+        while (!ObjectUtils.isEmpty(next)) {
             cur = next.getDownStation();
             next = findSectionByUpStation(next.getDownStation());
         }
@@ -167,16 +163,12 @@ public class Sections {
         List<Station> stations = new ArrayList<>();
         stations.add(getUpStation());
         Section next = findSectionByUpStation(getUpStation());
-        while (next != null) {
+        while (!ObjectUtils.isEmpty(next)) {
             stations.add(next.getDownStation());
             next = findSectionByUpStation(next.getDownStation());
         }
 
         return stations;
-    }
-
-    private Station getLastDownStation() {
-        return sections.get(sections.size() - 1).getDownStation();
     }
 
     public List<Section> getSections() {
@@ -189,12 +181,12 @@ public class Sections {
 
     public void delete(final Station station) {
         if (sections.size() <= MIN_SECTION_SIZE) {
-            throw new IllegalArgumentException("구간이 하나인 노선에서는 역을 제거할 수 없습니다.");
+            throw new SubwayRuntimeException(SubwayErrorCode.CANNOT_DELETE_LAST_STATION.getMessage());
         }
 
         Section lastSection = lastSection();
         if (!lastSection.isDownStation(station)) {
-            throw new SubwayRuntimeException(SubwayErrorCode.ONLY_LAST_SEGMENT_CAN_BE_REMOVED);
+            throw new SubwayRuntimeException(SubwayErrorCode.DELETE_LAST_SECTION.getMessage());
         }
 
         sections.remove(lastSection);

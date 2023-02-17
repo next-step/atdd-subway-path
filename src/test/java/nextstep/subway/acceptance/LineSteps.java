@@ -64,4 +64,8 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
+
+    public static String 에러메시지_추출(ExtractableResponse<Response> response) {
+        return response.jsonPath().get("message");
+    }
 }
