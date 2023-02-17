@@ -38,11 +38,11 @@ public class Section {
     }
 
     public Section split(Section that) {
-        if (isSameUpStation(that) && !isSameDownStation(that)) {
+        if (isSameUpStation(that.upStation) && !isSameDownStation(that.downStation)) {
             return new Section(line, that.getDownStation(), this.downStation, distance.minus(that.distance));
         }
 
-        if (!isSameUpStation(that) && isSameDownStation(that)) {
+        if (!isSameUpStation(that.upStation) && isSameDownStation(that.downStation)) {
             return new Section(line, upStation, that.upStation, distance.minus(that.distance));
         }
 
@@ -50,7 +50,7 @@ public class Section {
     }
 
     public Section merge(Section that) {
-        if (this.downStation.equals(that.upStation)) {
+        if (isSameDownStation(that.upStation)) {
             return new Section(
                     this.line,
                     this.upStation,
@@ -59,7 +59,7 @@ public class Section {
             );
         }
 
-        if (this.upStation.equals(that.downStation)) {
+        if (isSameUpStation(that.downStation)) {
             return new Section(
                     this.line,
                     that.upStation,
@@ -71,12 +71,12 @@ public class Section {
         throw new CanNotMergeSectionException("두 구간이 연결되지 않아 합칠 수 없음");
     }
 
-    private boolean isSameUpStation(Section that) {
-        return this.upStation.equals(that.upStation);
+    private boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
-    private boolean isSameDownStation(Section that) {
-        return this.downStation.equals(that.downStation);
+    private boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public Long getId() {
