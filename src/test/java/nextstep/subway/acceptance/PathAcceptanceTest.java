@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +14,8 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요�
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.PathSteps.지하철_노선_최단거리_조회;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.ui.error.exception.ErrorCode.SAME_SOURCE_AND_TARGET;
+import static nextstep.subway.ui.error.exception.ErrorCode.SECTION_NOT_LONGER_THEN_EXISTING_SECTION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 검색")
@@ -67,7 +70,24 @@ class PathAcceptanceTest extends AcceptanceTest {
 		assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
 	}
 
-	//TODO: 출발역과 도착역이 같은 경우 예외처리 검증
+	/**
+	 * Given 같은 역으로 출발역과 도착역을 제공하고
+	 * When 최단경로 조회를 요청 하면
+	 * Then 최단경로에 있는 역 목록과 경로 구간의 거리가 조회가 되지 않는다.
+	 */
+	@DisplayName("최단경로 조회- 출발역과 도착역이 같은 경우 예외처리 검증")
+	@Test
+	void getPathWithSameStations(){
+		//given
+		Long 출발역 = 교대역;
+		Long 도착역 = 교대역;
+		//when
+		ExtractableResponse<Response> response = 지하철_노선_최단거리_조회(출발역, 도착역);
+		//then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.jsonPath().getList("errorMessages")).contains(SAME_SOURCE_AND_TARGET.getMessage());
+	}
+
 	//TODO: 출발역과 도착역이 연결이 되어 있지 않은 경우 예외처리 검증
 	//TODO: 존재하지 않은 출발역이나 도착역을 조회 할 경우 예외처리 검증
 
