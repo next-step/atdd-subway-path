@@ -289,11 +289,4 @@ public class Sections {
     public int size() {
         return sections.size();
     }
-
-//    @Override
-//    public String toString() {
-//        return "Sections{" +
-//                "sections=" + sections +
-//                '}';
-//    }
 }
