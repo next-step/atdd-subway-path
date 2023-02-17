@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
@@ -15,15 +16,14 @@ import nextstep.subway.applicaion.dto.LineRequest;
 @Entity
 public class Line {
 
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
+        CascadeType.MERGE}, orphanRemoval = true)
+    private final List<Section> sections = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
-        CascadeType.MERGE}, orphanRemoval = true)
-    private final List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -99,17 +99,22 @@ public class Line {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-
-        if (!(obj instanceof Line)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
+        Line line = (Line) o;
+        return Objects.equals(id, line.id)
+            && Objects.equals(name, line.name)
+            && Objects.equals(color, line.color)
+            && Objects.equals(sections, line.sections);
+    }
 
-        Line line = (Line) obj;
-        return name.equals(line.getName())
-            && color.equals(line.getColor());
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, sections);
     }
 }
