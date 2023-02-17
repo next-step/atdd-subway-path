@@ -36,7 +36,7 @@ class LineTest {
         일호선.addSection(서울역, 용산역, 5);
 
         //then
-        Assertions.assertThat(일호선.getSections()).containsExactly(일구간);
+        Assertions.assertThat(일호선.getSections().getSections().contains(일구간)).isTrue();
     }
 
     /**

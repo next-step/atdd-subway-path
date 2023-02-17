@@ -34,7 +34,7 @@ public class LineServiceMockTest {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         given(stationService.findById(any())).willReturn(new Station("서울역"))
-                        .willReturn(new Station("용산역"));
+                .willReturn(new Station("용산역"));
         given(lineRepository.findById(any())).willReturn(Optional.of(new Line("1호선", "bg-color-blue")));
 
         // when
@@ -43,8 +43,7 @@ public class LineServiceMockTest {
 
         // then
         // line.findLineById 메서드를 통해 검증
-        Assertions.assertThat(lineService.findLineById(1L).getSections()).isNotEmpty();
-        Assertions.assertThat(lineService.findLineById(1L).getSections().size()).isEqualTo(1);
+        Assertions.assertThat(lineService.findLineById(1L).getSections().getSections().size()).isEqualTo(1);
         Assertions.assertThat(lineService.findLineById(1L).getStations().size()).isEqualTo(2);
     }
 }

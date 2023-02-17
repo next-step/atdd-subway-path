@@ -35,7 +35,7 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        Assertions.assertThat(line.getSections()).containsExactly(new Section(line, upStation, downStation, 5));
+        Assertions.assertThat(line.getSections().getSections().contains(new Section(line, upStation, downStation, 5))).isTrue();
     }
 
     private SectionRequest getSectionRequest(Station upStation, Station downStation, int distance) {

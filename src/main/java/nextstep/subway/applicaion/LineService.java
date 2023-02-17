@@ -38,7 +38,7 @@ public class LineService {
         return createLineResponse(line);
     }
 
-    public List<LineResponse> showLines() {
+    public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
                 .map(this::createLineResponse)
                 .collect(Collectors.toList());
@@ -81,24 +81,19 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
-        );
+        return LineResponse.builder()
+                .id(line.getId())
+                .name(line.getName())
+                .color(line.getColor())
+                .stations(createStationResponses(line))
+                .build();
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.getSections().getSections().isEmpty()) {
             return Collections.emptyList();
         }
-
-        List<Station> stations = new ArrayList<>();
-        stations.add(line.getSections().get(0).getUpStation());
-        line.getSections().stream()
-                .forEach(section -> stations.add(section.getDownStation()));
-
+        List<Station> stations = new ArrayList<>(line.getStations());
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());

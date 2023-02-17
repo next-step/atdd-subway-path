@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor
 @Entity
 public class Line {
     @Id
@@ -17,11 +19,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
-
-    public Line() {
-    }
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
@@ -30,34 +29,29 @@ public class Line {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         Section section = new Section(this, upStation, downStation, distance);
-        sections.add(section);
+        sections.addSection(section);
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
+        if (sections.getSections().isEmpty()) {
             return Collections.emptyList();
         }
         List<Station> stations = new ArrayList<>();
-        stations.add(sections.get(0).getUpStation());
-        sections.stream()
-                .forEach(section -> {
-                    stations.add(section.getDownStation());
-                });
+        stations.add(sections.getUpStation(0));
+        stations.addAll(sections.getDownStations());
         return stations;
     }
 
     public void removeSection(Station station) {
-        if (!sections.get(sections.size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-        sections.remove(sections.size() - 1);
+        sections.removeStationCheck(station);
+        sections.removeSection();
     }
 
     public void updateNameOrColor(LineRequest request) {
-        if(request.getName() != null) {
+        if (request.getName() != null) {
             this.name = request.getName();
         }
-        if(request.getColor() != null) {
+        if (request.getColor() != null) {
             this.color = request.getColor();
         }
     }
