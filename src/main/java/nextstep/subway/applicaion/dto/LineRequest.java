@@ -27,7 +27,11 @@ public class LineRequest {
         return distance;
     }
 
-    public boolean isSectionInfoExist() {
-        return this.upStationId != null && this.downStationId != null;
+    public boolean isUpStationInfoExist() {
+        return this.upStationId != null;
+    }
+
+    public boolean isDownStationInfoExist() {
+        return this.downStationId != null;
     }
 }
