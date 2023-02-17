@@ -145,7 +145,19 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간 등록 - 예외3: 새로운 구간의 상,하행역 모두 노선에 포함되지 않은 경우")
     @Test
     void addLineSection_InvalidCase3() {
+        // given
+        Long 신림역 = 지하철역_생성_요청("신림역").jsonPath().getLong("id");
+        Long 서울대입구역 = 지하철역_생성_요청("서울대입구역").jsonPath().getLong("id");
 
+        // when
+        var 구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신림역, 서울대입구역, 10));
+
+        // then
+        assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(구간_생성_응답.asString()).isEqualTo(SectionExceptionMessages.NOTHING_EXIST);
+
+        var 노선_조회_응답 = 지하철_노선_조회_요청(신분당선);
+        assertThat(노선_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
     /**

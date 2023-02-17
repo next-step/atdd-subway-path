@@ -197,8 +197,17 @@ public class Line {
     }
 
     private void validateAddSection(Section section) {
-        if (getStations().containsAll(section.stations())) {
+        if (!hasSections()) {
+            return;
+        }
+
+        List<Station> lineStations = getStations();
+        if (lineStations.containsAll(section.stations())) {
             throw new DataIntegrityViolationException(SectionExceptionMessages.ALREADY_EXIST);
+        }
+
+        if (!lineStations.contains(section.getUpStation()) && !lineStations.contains(section.getDownStation())) {
+            throw new DataIntegrityViolationException(SectionExceptionMessages.NOTHING_EXIST);
         }
     }
 
