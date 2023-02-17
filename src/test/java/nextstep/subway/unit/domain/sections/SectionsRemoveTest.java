@@ -60,7 +60,7 @@ class SectionsRemoveTest {
 
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
-        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(6);
+        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance().getValue()).isEqualTo(6);
     }
 
     @Test
@@ -75,7 +75,7 @@ class SectionsRemoveTest {
 
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
-        assertThat(sections.findSectionOnUpStation(잠실역).get().getDistance()).isEqualTo(4);
+        assertThat(sections.findSectionOnUpStation(잠실역).get().getDistance().getValue()).isEqualTo(4);
     }
 
     @Test
@@ -90,7 +90,7 @@ class SectionsRemoveTest {
 
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
-        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(10);
+        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance().getValue()).isEqualTo(10);
     }
 
     @Test
@@ -116,6 +116,6 @@ class SectionsRemoveTest {
         // Then
         assertThat(sections.size()).isEqualTo(beforeSize - 1);
         assertThat(sections.getStations()).containsExactly(논현역, 강남역, 삼성역, 건대입구역);
-        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance()).isEqualTo(10);
+        assertThat(sections.findSectionOnUpStation(강남역).get().getDistance().getValue()).isEqualTo(10);
     }
 }

@@ -1,26 +1,21 @@
 package nextstep.subway.unit.domain;
 
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Path;
-import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.path.SubwayMap;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DisplayName("경로 찾기 관련")
-@Transactional
-public class PathFinderTest {
+class SubwayMapTest {
 
     private Station 교대역;
     private Station 강남역;
@@ -56,25 +51,16 @@ public class PathFinderTest {
         삼호선.addSection(new Section(신분당선, 남부터미널역, 양재역, 3));
     }
 
-    @DisplayName("출발역과 도착역의 최단거리를 조회한다")
+    @DisplayName("전체 지하철 노선도를 그린다.")
     @Test
-    void findPath() {
+    void subwayMap() {
         // Given
         List<Line> lines = List.of(이호선, 신분당선, 삼호선);
-        PathFinder pathFinder = new PathFinder(lines);
 
         // When
-        Path path = pathFinder.findPath(강남역, 남부터미널역);
+        SubwayMap subwayMap = new SubwayMap(lines, new WeightedMultigraph<>(DefaultWeightedEdge.class));
 
         // Then
-        assertThat(path.getStations()).containsExactly(createStationResponse(강남역), createStationResponse(교대역), createStationResponse(남부터미널역));
-        assertThat(path.getDistance()).isEqualTo(12);
-    }
-
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName()
-        );
+        assertThat(subwayMap.getMap().vertexSet()).containsOnly(강남역, 교대역, 양재역, 남부터미널역);
     }
 }

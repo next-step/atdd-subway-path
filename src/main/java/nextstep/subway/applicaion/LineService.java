@@ -100,4 +100,8 @@ public class LineService {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException(lineId));
     }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
 }

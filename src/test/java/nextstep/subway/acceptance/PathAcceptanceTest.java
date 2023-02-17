@@ -106,12 +106,23 @@ class PathAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("출발역과 도착역의 최단거리를 조회한다")
     @Test
-    public void find_shortest_path() {
+    public void find_shortest_path_when_same_line() {
+        // When
+        ExtractableResponse<Response> response = 최단_경로_조회(교대역, 양재역);
+
+        // Then
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("교대역", "남부터미널역", "양재역");
+        assertThat(response.jsonPath().getLong("distance")).isEqualTo(5);
+    }
+
+    @DisplayName("출발역과 도착역의 최단거리를 조회한다")
+    @Test
+    public void find_shortest_path_when_transfer_different_line() {
         // When
         ExtractableResponse<Response> response = 최단_경로_조회(강남역, 남부터미널역);
 
         // Then
-        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "양재역", "남부터미널역");
-        assertThat(response.jsonPath().getLong("distance")).isEqualTo(8);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "교대역", "남부터미널역");
+        assertThat(response.jsonPath().getLong("distance")).isEqualTo(12);
     }
 }

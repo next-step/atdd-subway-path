@@ -57,13 +57,13 @@ public class Sections {
 
         if (insertLocation.isNextHead()) {
             criteriaSection = findSectionOnUpStationOfSection(section);
-            foreSection = new Section(criteriaSection.getLine(), criteriaSection.getUpStation(), section.getDownStation(), section.getDistance());
-            rearSection = new Section(criteriaSection.getLine(), section.getDownStation(), criteriaSection.getDownStation(), criteriaSection.getDistance() - section.getDistance());
+            foreSection = new Section(criteriaSection.getLine(), criteriaSection.getUpStation(), section.getDownStation(), section.getDistance().getValue());
+            rearSection = new Section(criteriaSection.getLine(), section.getDownStation(), criteriaSection.getDownStation(), criteriaSection.getDistance().getValue() - section.getDistance().getValue());
         }
         if (insertLocation.isPrevTail()) {
             criteriaSection = findSectionOnDownStationOfSection(section);
-            foreSection = new Section(criteriaSection.getLine(), criteriaSection.getUpStation(), section.getUpStation(), criteriaSection.getDistance() - section.getDistance());
-            rearSection = new Section(criteriaSection.getLine(), section.getUpStation(), criteriaSection.getDownStation(), section.getDistance());
+            foreSection = new Section(criteriaSection.getLine(), criteriaSection.getUpStation(), section.getUpStation(), criteriaSection.getDistance().getValue() - section.getDistance().getValue());
+            rearSection = new Section(criteriaSection.getLine(), section.getUpStation(), criteriaSection.getDownStation(), section.getDistance().getValue());
         }
 
         sections.remove(criteriaSection);
@@ -208,7 +208,7 @@ public class Sections {
                 frontSection.getLine(),
                 frontSection.getUpStation(),
                 backSection.getDownStation(),
-                frontSection.getDistance() + backSection.getDistance()
+                frontSection.getDistance().getValue() + backSection.getDistance().getValue()
         );
     }
 
@@ -290,10 +290,10 @@ public class Sections {
         return sections.size();
     }
 
-    @Override
-    public String toString() {
-        return "Sections{" +
-                "sections=" + sections +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Sections{" +
+//                "sections=" + sections +
+//                '}';
+//    }
 }

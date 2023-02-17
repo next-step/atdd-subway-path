@@ -59,8 +59,8 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance.getValue();
+    public Distance getDistance() {
+        return distance;
     }
 
     public boolean hasStation(Station station) {
