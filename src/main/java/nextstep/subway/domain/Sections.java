@@ -114,6 +114,10 @@ public class Sections {
             throw new CanNotRemoveSectionException("구간의 개수가 1개 이하인 경우 구간 제거 불가");
         }
 
+        if (!hasStation(station)) {
+            throw new CanNotRemoveSectionException("존재하지 않는 역인 경우 구간 제거 불가");
+        }
+        
         Optional<Section> upperSectionOpt = sections.stream()
                 .filter(it -> it.getDownStation().equals(station))
                 .findFirst();
