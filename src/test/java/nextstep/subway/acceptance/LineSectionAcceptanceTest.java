@@ -73,6 +73,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     *
+     */
+    @DisplayName("제약사항. 현재 구간의 distance 이상의 구간을 추가하면 예외 처리")
+    @Test
+    void addLineSectionByMoreDistance() {
+
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
