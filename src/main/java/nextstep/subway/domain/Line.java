@@ -26,6 +26,7 @@ public class Line {
         this.color = color;
     }
 
+
     public Long getId() {
         return id;
     }
@@ -51,6 +52,11 @@ public class Line {
     }
 
     public void addSections(Section section) {
+        sectionCollection.addSection(section);
+    }
+
+    public void addSections(Station upStation, Station downStation, int distance) {
+        Section section = new Section(this, upStation, downStation, distance);
         sectionCollection.addSection(section);
     }
 
@@ -80,4 +86,5 @@ public class Line {
     public Optional<Section> getDownSection(Station station) {
         return sectionCollection.getDownSection(station);
     }
+
 }
