@@ -28,6 +28,8 @@ class PathAcceptanceTest extends AcceptanceTest {
 	private Long 삼호선;
 	private Long 서울역;
 	private Long 용산역;
+	private Long 안드로메다역;
+	private Long 깐따삐야역;
 
 	/**
 	 * 교대역    --- *2호선* ---   강남역
@@ -109,8 +111,26 @@ class PathAcceptanceTest extends AcceptanceTest {
 		//then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
-	
-	//TODO: 존재하지 않은 출발역이나 도착역을 조회 할 경우 예외처리 검증
+
+	/**
+	 * Given 존재하지 않은 출발역과 도착역을 제공하고
+	 * When 최단경로 조회를 요청 하면
+	 * Then 최단경로에 있는 역 목록과 경로 구간의 거리가 조회가 되지 않는다.
+	 */
+	@DisplayName("최단경로 조회- 존재하지 않은 역의 최단경로를 조회했을때 경우 예외처리 검증")
+	@Test
+	void getPathWithNoExistStations(){
+		//given
+		안드로메다역 = 10L;
+		깐따삐야역 = 11L;
+
+		Long 출발역 = 안드로메다역;
+		Long 도착역 = 깐따삐야역;
+		//when
+		ExtractableResponse<Response> response = 지하철_노선_최단거리_조회(출발역, 도착역);
+		//then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	}
 
 	private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
 		Map<String, String> params = new HashMap<>();
