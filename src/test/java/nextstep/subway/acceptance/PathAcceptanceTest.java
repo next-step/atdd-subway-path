@@ -63,7 +63,7 @@ class PathAcceptanceTest extends AcceptanceTest {
 		//when
 		ExtractableResponse<Response> response = 지하철_노선_최단거리_조회(출발역, 도착역);
 		//then
-		assertThat(response.jsonPath().getList("stations.id")).containsExactly(교대역, 남부터미널역, 양재역);
+		assertThat(response.jsonPath().getList("stations.id")).containsExactly(교대역.intValue(), 남부터미널역.intValue(), 양재역.intValue());
 		assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
 	}
 
