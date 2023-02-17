@@ -21,7 +21,9 @@ import static nextstep.subway.fixture.SectionFixture.강남_역삼_구간;
 import static nextstep.subway.fixture.SectionFixture.강남_역삼_구간_비정상_거리;
 import static nextstep.subway.fixture.SectionFixture.양재_정자_구간;
 import static nextstep.subway.fixture.SectionFixture.역삼_삼성_구간;
+import static nextstep.subway.fixture.SectionFixture.역삼_선릉_구간;
 import static nextstep.subway.fixture.StationFixture.강남역;
+import static nextstep.subway.fixture.StationFixture.선릉역;
 import static nextstep.subway.fixture.StationFixture.역삼역;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -181,22 +183,76 @@ class LineTest {
         }
     }
 
-    // Given 노선을 생성하고
-    // and 구간을 추가하고
-    // When 구간을 삭제하면
-    // Then 구간은 비어있다
-    @DisplayName("지하철 노선의 구간 삭제")
-    @Test
-    void removeSection() {
-        // given
-        Line line = 이호선.엔티티_생성();
-        Section section = 강남_역삼_구간.엔티티_생성(line);
-        line.addSection(section);
+    @Nested
+    @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
+    class 지하철_구간_삭제 {
 
-        // when
-        line.removeLastSection(section.getDownStation());
+        @Nested
+        @DisplayName("지하철 노선의 하행 종점역을 삭제하면")
+        class Context_with_remove_final_downstation {
 
-        // then
-        assertThat(line.isEmptySections()).isTrue();
+            private final Line line = 이호선.엔티티_생성();
+            private final Station 하행_종점역 = 선릉역.엔티티_생성();
+
+            @BeforeEach
+            void setUp() {
+                line.addSection(강남_역삼_구간.엔티티_생성(line));
+                line.addSection(역삼_선릉_구간.엔티티_생성(line));
+            }
+
+            @Test
+            @DisplayName("노선의 역 목록 조회 시 하행 종점역이 삭제되어 반환된다")
+            void it_remove_last_section() throws Exception {
+                line.removeSection(하행_종점역);
+
+                assertThat(line.getAllStations()).doesNotContain(하행_종점역);
+            }
+        }
+
+        @Nested
+        @DisplayName("지하철 노선의 상행 종점역을 삭제하면")
+        class Context_with_remove_final_upstation {
+
+            private final Line line = 이호선.엔티티_생성();
+            private final Station 첫번째_역 = 강남역.엔티티_생성();
+
+            @BeforeEach
+            void setUp() {
+                line.addSection(강남_역삼_구간.엔티티_생성(line));
+                line.addSection(역삼_선릉_구간.엔티티_생성(line));
+            }
+
+            @Test
+            @DisplayName("노선의 역 목록 조회 시 상행 종점역이 삭제되어 반환된다")
+            void it_remove_first_section() throws Exception {
+                line.removeSection(첫번째_역);
+
+                assertThat(line.getAllStations()).doesNotContain(첫번째_역);
+            }
+        }
+
+        @Nested
+        @DisplayName("기존 구간 사이의 역을 삭제하면")
+        class Context_with_remove_middle_station {
+
+            private final Line line = 이호선.엔티티_생성();
+            private final Station 중간_역 = 역삼역.엔티티_생성();
+
+            @BeforeEach
+            void setUp() {
+                line.addSection(강남_역삼_구간.엔티티_생성(1L, line));
+                line.addSection(역삼_선릉_구간.엔티티_생성(2L, line));
+            }
+
+            // 이전 역과 다음 역이 합쳐져 재배치된 구간의 거리는 기존 두 구간의 거리의 합
+            //  -> 해당 테스트를 하기위해 sectionList get메서드 열어야 되나..?
+            @Test
+            @DisplayName("노선의 역 목록 조회 시 중간역이 삭제되어 반환된다")
+            void it_connecting_before_and_after_stations() throws Exception {
+                line.removeSection(중간_역);
+
+                assertThat(line.getAllStations()).doesNotContain(중간_역);
+            }
+        }
     }
 }

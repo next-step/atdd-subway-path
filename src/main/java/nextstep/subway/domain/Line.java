@@ -56,12 +56,12 @@ public class Line {
     }
 
     /**
-     * 지하철 노선의 마지막 구간을 삭제합니다.
+     * 지하철 노선의 구간을 삭제합니다.
      *
-     * @param station 삭제할 지하철 구간의 역 정보
+     * @param station 삭제할 지하철 역 정보
      */
-    public void removeLastSection(final Station station) {
-        this.sections.removeLastSection(station);
+    public void removeSection(final Station station) {
+        this.sections.remove(station);
     }
 
     /**

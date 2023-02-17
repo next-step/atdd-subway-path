@@ -32,6 +32,6 @@ public class SectionService {
         Line line = lineService.findLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        line.removeLastSection(station);
+        line.removeSection(station);
     }
 }

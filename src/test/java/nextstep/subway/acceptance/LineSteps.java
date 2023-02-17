@@ -84,4 +84,14 @@ public class LineSteps {
         assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
                 .containsExactly(역_id_목록);
     }
+
+    public static void 노선에_역이_포함되어_있지않다(ExtractableResponse<Response> 노선_조회_결과, Long... 역_id_목록) {
+        assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
+                .doesNotContain(역_id_목록);
+    }
+
+    public static void 노선에_상행_종점역과_일치한다(ExtractableResponse<Response> 노선_조회_결과, Long 역_id) {
+        assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
+                .first().isEqualTo(역_id);
+    }
 }

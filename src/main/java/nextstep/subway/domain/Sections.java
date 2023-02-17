@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.InvalidDistanceException;
+import nextstep.subway.exception.NotRegisteredStationException;
 import nextstep.subway.exception.NotRegisteredUpStationAndDownStationException;
 import nextstep.subway.exception.SectionAlreadyRegisteredException;
 
@@ -13,6 +14,11 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
+    /*
+       - `CasecadeType.REMOVE` : 부모 엔티티에서 자식 엔티티의 관계를 제거하더라도 DELETE 문이 나가지 않는다.
+       - `orphanRemoval = true` : 부모 엔티티에서 자식 엔티티의 관계를 제거하면 자식은 고아로 취급되어 그대로 사라진다 (DELETE 발생)
+       - 둘의 공통점은 둘 다 모두 부모 엔티티를 삭제하면 자식 엔티티도 함께 삭지된다. (차이점 : 부모 엔티티에서의 자식 관계 제거 가능 여부)
+     */
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sectionList = new ArrayList<>();
 
@@ -48,18 +54,24 @@ public class Sections {
     }
 
     /**
-     * 지하철 노선의 마지막 구간을 삭제합니다.
+     * 지하철 노선의 구간을 삭제합니다.
+     * getter를 제공하지 않음으로써 예외적인 구간 삭제를 방지합니다.
      *
      * @param station 삭제할 지하철 구간의 역 정보
      */
-    public void removeLastSection(final Station station) {
-        Section lastSection = getLastSection();
+    public void remove(final Station station) {
 
-        if (!lastSection.getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        if (isFinalUpStation(station)) {
+            sectionList.remove(0);
+            return;
         }
 
-        sectionList.remove(lastSection);
+        if (isFinalDownStation(station)) {
+            sectionList.remove(sectionList.size() - 1);
+            return;
+        }
+
+        removeBetweenExistingSections(station);
     }
 
     /**
@@ -86,30 +98,10 @@ public class Sections {
     }
 
 
-    private Section getLastSection() {
-        if (isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-
-        return sectionList.get(sectionList.size() - 1);
-    }
-
-    private boolean isAlreadyRegisteredSection(final Section section) {
-        return sectionList.stream()
-                .anyMatch(sec -> sec.getUpStation().equals(section.getUpStation())
-                        && sec.getDownStation().equals(section.getDownStation()));
-    }
-
-    // 해당 구간이 상행 종점 구간인지? -> 해당 구간의 상행역은 다른 구간들의 하행역이 아니다
-    private boolean isFinalUpStation(final Section section) {
-        return sectionList.stream()
-                .noneMatch(sec -> sec.getDownStation().equals(section.getUpStation()));
-    }
-
     // 1. 상행 종점이 상행역인 구간을 먼저 찾는다.
     private void addFirstSection(final List<Station> stations) {
         for (Section section : sectionList) {
-            if (isFinalUpStation(section)) {
+            if (isFinalUpStation(section.getUpStation())) {
                 stations.add(section.getUpStation());
                 stations.add(section.getDownStation());
                 return;
@@ -127,7 +119,25 @@ public class Sections {
         }
     }
 
-    private boolean isNotRegisteredUpStationAndDownStation(List<Station> stations, final Section section) {
+    private boolean isAlreadyRegisteredSection(final Section section) {
+        return sectionList.stream()
+                .anyMatch(sec -> sec.getUpStation().equals(section.getUpStation())
+                        && sec.getDownStation().equals(section.getDownStation()));
+    }
+
+    // 해당 구간의 상행역이 상행 종점역인지? -> 해당 구간의 상행역은 다른 구간들의 하행역이 아니다
+    private boolean isFinalUpStation(final Station station) {
+        return sectionList.stream()
+                .noneMatch(sec -> sec.getDownStation().equals(station));
+    }
+
+    // 해당 구간의 하행역이 하행 종점역인지? -> 해당 구간의 하행역은 다른 구간들의 상행역이 아니다
+    private boolean isFinalDownStation(final Station station) {
+        return sectionList.stream()
+                .noneMatch(sec -> sec.getUpStation().equals(station));
+    }
+
+    private boolean isNotRegisteredUpStationAndDownStation(final List<Station> stations, final Section section) {
         return stations.stream()
                 .noneMatch(station -> station.equals(section.getUpStation()))
                 && stations.stream()
@@ -201,5 +211,35 @@ public class Sections {
 
                     sectionList.add(section);
                 });
+    }
+
+    private void removeBetweenExistingSections(final Station station) {
+        Section beforeSection = findBeforeSection(station);
+        Section afterSection = findAfterSection(station);
+
+        connectingBeforeAndAfterSections(beforeSection, afterSection);
+        sectionList.remove(afterSection);
+    }
+
+    private Section findBeforeSection(final Station station) {
+        return sectionList.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElseThrow(NotRegisteredStationException::new);
+    }
+
+    private Section findAfterSection(final Station station) {
+        return sectionList.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElseThrow(NotRegisteredStationException::new);
+    }
+
+    private void connectingBeforeAndAfterSections(final Section beforeSection,
+                                                  final Section afterSection) {
+        int beforeDistance = beforeSection.getDistance();
+        int afterDistance = afterSection.getDistance();
+
+        beforeSection.updateDownStation(afterSection.getDownStation(), beforeDistance + afterDistance);
     }
 }

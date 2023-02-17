@@ -2,6 +2,7 @@ package nextstep.subway.fixture;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 import static nextstep.subway.fixture.FieldFixture.노선_간_거리;
 import static nextstep.subway.fixture.FieldFixture.노선_상행_종점역_ID;
 import static nextstep.subway.fixture.FieldFixture.노선_하행_종점역_ID;
+import static nextstep.subway.fixture.FieldFixture.식별자_아이디;
 import static nextstep.subway.fixture.StationFixture.강남역;
 import static nextstep.subway.fixture.StationFixture.삼성역;
 import static nextstep.subway.fixture.StationFixture.선릉역;
@@ -61,5 +63,11 @@ public enum SectionFixture {
 
     public Section 엔티티_생성(Line 호선) {
         return new Section(호선, 상행역().엔티티_생성(), 하행역().엔티티_생성(), 구간_거리());
+    }
+
+    public Section 엔티티_생성(Long id, Line 호선) {
+        Section section = new Section(호선, 상행역().엔티티_생성(), 하행역().엔티티_생성(), 구간_거리());
+        ReflectionTestUtils.setField(section, 식별자_아이디.필드명(), id);
+        return section;
     }
 }
