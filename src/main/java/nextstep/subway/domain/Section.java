@@ -1,6 +1,12 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Section {
@@ -51,5 +57,22 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Section)) {
+            return false;
+        }
+
+        Section section = (Section) obj;
+        return line.equals(section.getLine())
+            && upStation.equals(section.getUpStation())
+            && downStation.equals(section.getDownStation())
+            && distance == section.getDistance();
     }
 }

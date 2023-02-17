@@ -1,8 +1,15 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Line {
@@ -12,7 +19,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
+        CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -49,5 +57,48 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public void deleteSection(Station station) {
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+
+        int lastSectionIndex = sections.size() - 1;
+        Station lastSectionDownStation = sections.get(lastSectionIndex).getDownStation();
+
+        if (!lastSectionDownStation.equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(lastSectionIndex);
+    }
+
+    public List<Station> getStations() {
+        return sections.stream()
+            .flatMap(section ->
+                Stream.of(section.getUpStation(), section.getDownStation())
+            )
+            .distinct()
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Line)) {
+            return false;
+        }
+
+        Line line = (Line) obj;
+        return name.equals(line.getName())
+            && color.equals(line.getColor());
     }
 }

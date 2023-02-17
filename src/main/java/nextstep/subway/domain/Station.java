@@ -26,4 +26,18 @@ public class Station {
     public String getName() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof Station)) {
+            return false;
+        }
+
+        Station station = (Station) obj;
+        return name.equals(station.getName());
+    }
 }
