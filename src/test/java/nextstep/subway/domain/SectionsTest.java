@@ -185,4 +185,15 @@ class SectionsTest {
         // when // then
         assertThatThrownBy(() -> sections.remove(강남역)).isInstanceOf(CanNotRemoveSectionException.class);
     }
+    
+    @Test
+    void 구간들에_존재하지_않는_역을_삭제하는_경우_예외가_발생한다() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(강남_양재_구간);
+        sections.addSection(양재_양재시민의숲_구간);
+
+        // when // then
+        assertThatThrownBy(() -> sections.remove(뱅뱅사거리역)).isInstanceOf(CanNotRemoveSectionException.class);
+    }
 }
