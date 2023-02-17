@@ -10,9 +10,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import nextstep.subway.applicaion.dto.LineRequest;
 
 @Entity
 public class Line {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +23,7 @@ public class Line {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
         CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -85,6 +87,15 @@ public class Line {
             )
             .distinct()
             .collect(Collectors.toList());
+    }
+
+    public void update(LineRequest lineRequest) {
+        if (lineRequest.getName() != null) {
+            this.name = lineRequest.getName();
+        }
+        if (lineRequest.getColor() != null) {
+            this.color = lineRequest.getColor();
+        }
     }
 
     @Override
