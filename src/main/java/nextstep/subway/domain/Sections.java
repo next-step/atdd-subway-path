@@ -134,12 +134,12 @@ public class Sections {
 
     private List<Station> getSortedStation() {
         List<Station> stations = new ArrayList<>();
-        Station upStation = getLineUpStation();
+        Station lineUpStation = getLineUpStation();
         Station lineDownStation = getLineDownStation();
-        while (upStation != lineDownStation) {
-            Section upStationSection = findSectionBasedOnUpStationBy(upStation);
+        for (Section station : sections) {
+            Section upStationSection = findSectionBasedOnUpStationBy(lineUpStation);
             stations.add(upStationSection.getUpStation());
-            upStation = upStationSection.getDownStation();
+            lineUpStation = upStationSection.getDownStation();
         }
         stations.add(lineDownStation);
         return stations;
