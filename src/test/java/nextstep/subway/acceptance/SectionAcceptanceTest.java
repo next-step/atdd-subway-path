@@ -8,16 +8,17 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 
+import static nextstep.subway.acceptance.LineSteps.노선_조회가_성공한다;
+import static nextstep.subway.acceptance.LineSteps.노선에_역이_순서대로_포함되어있다;
+import static nextstep.subway.acceptance.LineSteps.노선에_역이_포함되어있다;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
-import static nextstep.subway.fixture.FieldFixture.노선_내_역_아이디;
 import static nextstep.subway.fixture.FieldFixture.식별자_아이디;
 import static nextstep.subway.fixture.LineFixture.이호선;
 import static nextstep.subway.fixture.SectionFixture.강남_양재_구간;
@@ -28,8 +29,6 @@ import static nextstep.subway.fixture.StationFixture.신사역;
 import static nextstep.subway.fixture.StationFixture.양재역;
 import static nextstep.subway.fixture.StationFixture.정자역;
 import static nextstep.subway.utils.JsonPathUtil.Long으로_추출;
-import static nextstep.subway.utils.JsonPathUtil.리스트로_추출;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 인수 테스트")
 class SectionAcceptanceTest extends AcceptanceTest {
@@ -73,10 +72,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 지하철_노선에_지하철_구간_생성_요청(신분당선_id, 양재_정자_구간.요청_데이터_생성(양재역_id, 새로운_역_id));
 
                 ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선_id);
-                assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-                assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
-                        .hasSize(3)
-                        .containsAnyOf(새로운_역_id);
+                노선_조회가_성공한다(노선_조회_결과);
+                노선에_역이_포함되어있다(노선_조회_결과, 새로운_역_id);
             }
         }
 
@@ -97,9 +94,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 지하철_노선에_지하철_구간_생성_요청(신분당선_id, 신사_강남_구간.요청_데이터_생성(새로운_상행_종점역_id, 강남역_id));
 
                 ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선_id);
-                assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-                assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
-                        .containsExactly(새로운_상행_종점역_id, 강남역_id, 양재역_id);
+                노선_조회가_성공한다(노선_조회_결과);
+                노선에_역이_순서대로_포함되어있다(노선_조회_결과, 새로운_상행_종점역_id, 강남역_id, 양재역_id);
             }
         }
     }
@@ -121,7 +117,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선_id);
-        assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class)).containsExactly(강남역_id, 양재역_id);
+        노선_조회가_성공한다(노선_조회_결과);
+        노선에_역이_순서대로_포함되어있다(노선_조회_결과, 강남역_id, 양재역_id);
     }
 }
