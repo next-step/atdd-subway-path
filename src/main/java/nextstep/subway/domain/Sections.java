@@ -114,29 +114,21 @@ public class Sections {
             throw new CanNotRemoveSectionException("구간의 개수가 1개 이하인 경우 구간 제거 불가");
         }
 
-        Optional<Section> upperSection = sections.stream()
+        Optional<Section> upperSectionOpt = sections.stream()
                 .filter(it -> it.getDownStation().equals(station))
                 .findFirst();
 
-        Optional<Section> lowerSection = sections.stream()
+        Optional<Section> lowerSectionOpt = sections.stream()
                 .filter(it -> it.getUpStation().equals(station))
                 .findFirst();
 
-        if (lowerSection.isEmpty()) {
-            sections.remove(upperSection.get());
-            return;
+        upperSectionOpt.ifPresent(section -> sections.remove(section));
+        lowerSectionOpt.ifPresent(section -> sections.remove(section));
+
+        if (upperSectionOpt.isPresent() && lowerSectionOpt.isPresent()) {
+            Section newSection = upperSectionOpt.get().merge(lowerSectionOpt.get());
+            sections.add(newSection);
         }
-
-        if (upperSection.isEmpty()) {
-            sections.remove(lowerSection.get());
-            return;
-        }
-
-        Section newSection = upperSection.get().merge(lowerSection.get());
-
-        sections.remove(upperSection.get());
-        sections.remove(lowerSection.get());
-        sections.add(newSection);
     }
 
     @Override
