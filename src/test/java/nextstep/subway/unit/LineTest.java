@@ -5,8 +5,12 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
+
+import java.security.InvalidParameterException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
@@ -35,6 +39,12 @@ class LineTest {
     }
 
     @Test
+    void addSection_InvalidCase1() {
+        // when - then
+        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 30))).isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
     void getStations_case1() {
         // when
         서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
@@ -50,8 +60,7 @@ class LineTest {
         서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 10));
 
         // then
-//        assertThat(서울2호선.getStations()).containsExactly(당산역, 신촌역, 신도림역);
-        System.out.println(서울2호선.getStations());
+        assertThat(서울2호선.getStations()).containsExactly(당산역, 신촌역, 신도림역);
     }
 
     @Test

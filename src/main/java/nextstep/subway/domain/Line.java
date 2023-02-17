@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.SectionExceptionMessages;
+import org.springframework.dao.DataIntegrityViolationException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -166,6 +169,10 @@ public class Line {
     private void addBetweenStations(Section section) {
         Section originSection =  sections.stream().filter(sec -> sec.getUpStation().equals(section.getUpStation()) || sec.getDownStation().equals(section.getDownStation()))
                 .findFirst().orElseThrow(NoSuchElementException::new);
+
+        if (section.getDistance() >= originSection.getDistance()) {
+            throw new DataIntegrityViolationException(SectionExceptionMessages.INVALID_DISTANCE);
+        }
 
         removeSection(originSection.getDownStation());
 
