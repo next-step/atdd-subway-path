@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.*;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.List;
@@ -48,10 +49,10 @@ public class Line {
     }
 
     public void update(final String name, final String color) {
-        if (!name.isEmpty()) {
+        if (!isNull(name)) {
             this.name = name;
         }
-        if (!color.isEmpty()) {
+        if (!isNull(color)) {
             this.color = color;
         }
     }
@@ -66,5 +67,9 @@ public class Line {
 
     public void removeSection(final Station station) {
         sections.remove(station);
+    }
+
+    private boolean isNull(final String str) {
+        return StringUtils.hasText(str);
     }
 }
