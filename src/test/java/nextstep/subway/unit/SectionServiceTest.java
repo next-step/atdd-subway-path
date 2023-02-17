@@ -38,7 +38,7 @@ class SectionServiceTest {
         Line line = lineRepository.save(이호선.엔티티_생성());
 
         // when - addSection 호출
-        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 강남_역삼_구간.노선_간_거리());
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 강남_역삼_구간.구간_거리());
         sectionService.addSection(line.getId(), sectionRequest);
 
         // then - line.getSections 메서드를 통해 검증
@@ -53,7 +53,7 @@ class SectionServiceTest {
         Station 강남역 = stationRepository.save(StationFixture.강남역.엔티티_생성());
         Station 역삼역 = stationRepository.save(StationFixture.역삼역.엔티티_생성());
         Line line = lineRepository.save(이호선.엔티티_생성());
-        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 강남_역삼_구간.노선_간_거리());
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 강남_역삼_구간.구간_거리());
         sectionService.addSection(line.getId(), sectionRequest);
 
         // when - deleteSection 호출

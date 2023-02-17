@@ -51,7 +51,7 @@ class SectionServiceMockTest {
                 .willReturn(이호선.엔티티_생성());
 
         // when - addSection 호출
-        sectionService.addSection(노선_id, new SectionRequest(상행역_id, 하행역_id, 강남_역삼_구간.노선_간_거리()));
+        sectionService.addSection(노선_id, new SectionRequest(상행역_id, 하행역_id, 강남_역삼_구간.구간_거리()));
 
         // then - 의존성 객체에 대한 행위 검증
         verify(stationService).findById(상행역_id);

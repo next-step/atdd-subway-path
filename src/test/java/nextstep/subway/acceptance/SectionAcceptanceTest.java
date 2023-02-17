@@ -39,7 +39,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Long 양재역_id;
 
     /**
-     * Given 지하철역과 노선 생성을 요청 하고
+     * Given 지하철 역과 노선 생성하고
      */
     @BeforeEach
     public void setUp() {
@@ -48,7 +48,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         강남역_id = Long으로_추출(지하철역_생성_요청(강남역.역_이름()), 식별자_아이디);
         양재역_id = Long으로_추출(지하철역_생성_요청(양재역.역_이름()), 식별자_아이디);
 
-        Map<String, String> 생성_요청_데이터_생성 = 이호선.생성_요청_데이터_생성(강남역_id, 양재역_id, 강남_양재_구간.노선_간_거리());
+        Map<String, String> 생성_요청_데이터_생성 = 이호선.생성_요청_데이터_생성(강남역_id, 양재역_id, 강남_양재_구간.구간_거리());
         신분당선_id = Long으로_추출(지하철_노선_생성_요청(생성_요청_데이터_생성), 식별자_아이디);
     }
 
@@ -57,22 +57,21 @@ class SectionAcceptanceTest extends AcceptanceTest {
     class 구간_등록 {
 
         @Nested
-        @DisplayName("지하철 노선에 새로운 구간 추가를 요청하면")
+        @DisplayName("지하철 노선에 새로운 구간 등록을 요청하면")
         class Context_with_add_new_section {
 
             private Long 새로운_역_id;
 
             @BeforeEach
             void setUp() {
-                // when
                 새로운_역_id = Long으로_추출(지하철역_생성_요청(정자역.역_이름()), 식별자_아이디);
-                지하철_노선에_지하철_구간_생성_요청(신분당선_id, 양재_정자_구간.요청_데이터_생성(양재역_id, 새로운_역_id));
             }
 
             @Test
-            @DisplayName("노선에 새로운 구간이 추가된다")
+            @DisplayName("노선 조회 시 새로운 역이 추가되어 있다")
             void it_registered_section() throws Exception {
-                // then
+                지하철_노선에_지하철_구간_생성_요청(신분당선_id, 양재_정자_구간.요청_데이터_생성(양재역_id, 새로운_역_id));
+
                 ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선_id);
                 assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
                 assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
@@ -82,26 +81,24 @@ class SectionAcceptanceTest extends AcceptanceTest {
         }
 
         @Nested
-        @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+        @DisplayName("구간을 등록할 때 새로운 역이 상행 종점역인 경우")
         class Context_with_add_new_terminal_upstation {
 
             private Long 새로운_상행_종점역_id;
 
             @BeforeEach
             void setUp() {
-                // when
                 새로운_상행_종점역_id = Long으로_추출(지하철역_생성_요청(신사역.역_이름()), 식별자_아이디);
-                지하철_노선에_지하철_구간_생성_요청(신분당선_id, 신사_강남_구간.요청_데이터_생성(새로운_상행_종점역_id, 강남역_id));
             }
 
             @Test
             @DisplayName("노선 목록 조회 시 역 목록은 상행 종점역을 기준으로 정렬되어 반환된다")
             void it_returns_sorted_by_terminal_upstation() throws Exception {
-                // then
+                지하철_노선에_지하철_구간_생성_요청(신분당선_id, 신사_강남_구간.요청_데이터_생성(새로운_상행_종점역_id, 강남역_id));
+
                 ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선_id);
                 assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
                 assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
-                        .hasSize(3)
                         .containsExactly(새로운_상행_종점역_id, 강남역_id, 양재역_id);
             }
         }
