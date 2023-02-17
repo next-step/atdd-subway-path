@@ -72,4 +72,28 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
+
+    public static Long 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(params);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        return response.jsonPath().getLong("id");
+    }
+
+    public static void 지하철_노선에_지하철_구간_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(lineId, params);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 }
