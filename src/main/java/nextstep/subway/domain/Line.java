@@ -34,10 +34,6 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
@@ -59,6 +55,8 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
+        validateDistance(distance);
+
         boolean isUpStationExist = isExistInLine(upStation);
         boolean isDownStationExist = isExistInLine(downStation);
 
@@ -73,6 +71,12 @@ public class Line {
         }
 
         addNewSection(upStation, downStation, distance);
+    }
+
+    private void validateDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("등록하고자 하는 구간의 길이가 0 이거나 음수일 수 없습니다.");
+        }
     }
 
     private void addNewSection(Station upStation, Station downStation, int distance) {

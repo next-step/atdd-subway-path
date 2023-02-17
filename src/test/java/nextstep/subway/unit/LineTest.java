@@ -34,6 +34,14 @@ class LineTest {
         assertThat(신분당선.getSections()).containsExactly(new Section(신분당선, 강남역, 판교역, 10));
     }
 
+    @DisplayName("지하철 노선에 음수, 혹은 0인 거리의 구간은 추가할 수 없다.")
+    @ParameterizedTest
+    @ValueSource(ints = {-1, 0})
+    void addSectionExceptionWhenNegativeDistance(int distance) {
+        // when & then
+        assertThatThrownBy(() -> 신분당선.addSection(강남역, 판교역, distance)).isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("지하철 노선의 역 사이에 새로운 역을 등록한다.")
     @Test
     void addLineSectionWithinSection() {
