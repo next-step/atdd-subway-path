@@ -14,9 +14,7 @@ import nextstep.subway.station.StationService;
 public class SectionService {
 
 	private final StationService stationService;
-
 	private final LineRepository lineRepository;
-	private final SectionRepository sectionRepository;
 
 	@Transactional
 	public void addSection(Long lineId, SectionCreateRequest sectionRequest) {
