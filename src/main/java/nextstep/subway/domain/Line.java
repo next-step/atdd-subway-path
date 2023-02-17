@@ -12,6 +12,7 @@ import static nextstep.subway.domain.validator.SectionValidator.*;
 import static nextstep.subway.domain.validator.SectionValidator.checkDistance;
 
 
+
 @Entity
 public class Line {
 	@Id
