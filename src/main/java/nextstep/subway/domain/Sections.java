@@ -30,7 +30,7 @@ public class Sections {
     }
 
     private boolean isFirstOrEndpoint(Section section) {
-        List<Station> stations = stations();
+        List<Station> stations = sortedStations();
         if (sections.isEmpty()) {
             return true;
         }
@@ -42,7 +42,7 @@ public class Sections {
     }
 
     private void validate(Section section) {
-        List<Station> stations = stations();
+        List<Station> stations = sortedStations();
         if (containAllStations(stations, section)) {
             throw new SubwayException("상행역과 하행역이 이미 노선에 등록되어 있습니다.");
         }
@@ -74,7 +74,7 @@ public class Sections {
                 });
     }
 
-    public List<Station> stations() {
+    public List<Station> sortedStations() {
         List<Section> sections = sortedSections();
         if (sections.isEmpty()) {
             return Collections.emptyList();
@@ -99,7 +99,6 @@ public class Sections {
 
         sections.removeAll(deleteSections);
     }
-
     private List<Section> findSectionsByStationId(long stationId) {
         List<Section> deleteSections = sortedSections().stream()
             .filter(it -> it.hasStationId(stationId))
@@ -112,7 +111,7 @@ public class Sections {
         return deleteSections;
     }
 
-    private List<Section> sortedSections() {
+    public List<Section> sortedSections() {
         List<Section> sortedSections = new ArrayList<>();
         findUpEndSection().ifPresent(upEndSection -> {
             Section nextSection = upEndSection;
