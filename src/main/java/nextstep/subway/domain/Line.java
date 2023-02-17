@@ -34,6 +34,12 @@ public class Line {
         this.color = color;
     }
 
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        addSection(section);
+    }
+
     public Long getId() {
         return id;
     }
