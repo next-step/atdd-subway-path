@@ -6,7 +6,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +27,10 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
+        if (request.isSectionInfoExist()) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(upStation, downStation, request.getDistance());
         }
         return createLineResponse(line);
     }
@@ -86,7 +85,7 @@ public class LineService {
 
     private List<StationResponse> createStationResponses(Line line) {
         return line.getStations().stream()
-                .map(it -> stationService.createStationResponse(it))
+                .map(station -> stationService.createStationResponse(station))
                 .collect(Collectors.toList());
     }
 
