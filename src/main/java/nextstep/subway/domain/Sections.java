@@ -144,11 +144,32 @@ public class Sections {
 
     // 1. 신규 구간의 상행역이 기존 상행역이라면 -> 상행역 기준으로 뒤로 끼워넣기 (A-C -> A-B = A-B-C)
     // 2. 1번이 성립되지 않고, 신규 구간의 하행역이 기존 하행역이라면 -> 하행역 기준으로 앞으로 끼워넣기 (A-C -> B-C = A-B-C)
-    private void addBetweenExistingSections(Section section) {
+    private void addBetweenExistingSections(final Section section) {
+        if (isAlreadyRegisteredUpStation(section.getUpStation())) {
+            addAfterUpStation(section);
+            return;
+        }
+
+        if (isAlreadyRegisteredDownStation(section.getDownStation())) {
+            addBeforeDownStation(section);
+        }
+    }
+
+    private boolean isAlreadyRegisteredUpStation(final Station station) {
+        return sectionList.stream()
+                .anyMatch(sec -> sec.getUpStation().equals(station));
+    }
+
+    private boolean isAlreadyRegisteredDownStation(final Station station) {
+        return sectionList.stream()
+                .anyMatch(sec -> sec.getDownStation().equals(station));
+    }
+
+    private void addAfterUpStation(final Section section) {
         sectionList.stream()
                 .filter(sec -> sec.getUpStation().equals(section.getUpStation()))
                 .findFirst()
-                .ifPresentOrElse(
+                .ifPresent(
                         originSection -> {
                             if (section.getDistance() >= originSection.getDistance()) {
                                 throw new InvalidDistanceException();
@@ -160,21 +181,25 @@ public class Sections {
                             );
 
                             sectionList.add(section);
-                        },
-                        () -> sectionList.stream()
-                                .filter(sec -> sec.getDownStation().equals(section.getDownStation()))
-                                .findFirst()
-                                .ifPresent(originSection -> {
-                                    if (section.getDistance() >= originSection.getDistance()) {
-                                        throw new InvalidDistanceException();
-                                    }
+                        }
+                );
+    }
 
-                                    originSection.updateDownStation(
-                                            section.getUpStation(),
-                                            originSection.getDistance() - section.getDistance()
-                                    );
+    private void addBeforeDownStation(final Section section) {
+        sectionList.stream()
+                .filter(sec -> sec.getDownStation().equals(section.getDownStation()))
+                .findFirst()
+                .ifPresent(originSection -> {
+                    if (section.getDistance() >= originSection.getDistance()) {
+                        throw new InvalidDistanceException();
+                    }
 
-                                    sectionList.add(section);
-                                }));
+                    originSection.updateDownStation(
+                            section.getUpStation(),
+                            originSection.getDistance() - section.getDistance()
+                    );
+
+                    sectionList.add(section);
+                });
     }
 }
