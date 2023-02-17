@@ -1,5 +1,7 @@
 package nextstep.subway.path;
 
+import static nextstep.subway.common.SubwayErrorMsg.*;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +16,7 @@ import nextstep.subway.station.StationResponse;
 
 public class PathFinder {
 
-	DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
+	private DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
 	public PathFinder(List<Station> stations, List<Section> sections) {
 		WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
@@ -25,12 +27,12 @@ public class PathFinder {
 
 	public PathResponse pathSearch(Station source, Station target) {
 		if (source.equals(target)) {
-			throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
+			throw new IllegalArgumentException(PATH_SAME_STATION.isMessage());
 		}
 
 		GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(source, target);
 		if (path == null) {
-			throw new IllegalArgumentException("출발역과 도착역이 연결되지 않았습니다.");
+			throw new IllegalArgumentException(PATH_NO_CONNECT.isMessage());
 		}
 
 		List<Station> shorStationPath = path.getVertexList();

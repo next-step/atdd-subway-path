@@ -1,5 +1,7 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.common.SubwayErrorMsg.*;
+
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.section.SectionService;
 import nextstep.subway.section.SectionCreateRequest;
@@ -52,6 +54,6 @@ public class LineService {
 
 	@Transactional(readOnly = true)
 	public Line findLineEntityById(Long id) {
-		return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Line doesn't exist"));
+		return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_LINE.isMessage()));
 	}
 }

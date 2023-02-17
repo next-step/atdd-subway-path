@@ -1,5 +1,7 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.common.SubwayErrorMsg.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,10 +40,10 @@ public class Sections {
 
 	private void checkExistSection(Section newSection) {
 		if (existAllStation(newSection)) {
-			throw new IllegalArgumentException("등록하려는 구간의 상행역과 하행역이 이미 노선에 등록되어 있습니다.");
+			throw new IllegalArgumentException(SECTIONS_EXIST_ALL_STATION.isMessage());
 		}
 		if (notExistStation(newSection)) {
-			throw new IllegalArgumentException("등록하려는 구간의 상행역과 하행역이 노선에 등록되어 있지 않습니다.");
+			throw new IllegalArgumentException(SECTIONS_NOT_EXIST_STATION.isMessage());
 		}
 	}
 
@@ -72,13 +74,13 @@ public class Sections {
 
 	private void checkDistance(Section oldSection, Section newSection) {
 		if (newSection.getDistance() >= oldSection.getDistance()) {
-			throw new IllegalArgumentException("등록하려는 구간의 길이가 기존 구간의 길이보다 크거나 같습니다.");
+			throw new IllegalArgumentException(SECTIONS_DISTANCE_LENGTH.isMessage());
 		}
 	}
 
 	public void removeSection(Station station) {
 		if (this.sections.size() == 1) {
-			throw new IllegalArgumentException("삭제하려는 구간이 노선의 마지막 구간입니다.");
+			throw new IllegalArgumentException(SECTIONS_LAST_SECTION.isMessage());
 		}
 
 		Section frontSection = findByDownStation(station);

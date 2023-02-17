@@ -1,5 +1,7 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.common.SubwayErrorMsg.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +29,13 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
+	public List<Station> findAllStation() {
+		return stationRepository.findAll();
+	}
+
 	@Transactional(readOnly = true)
 	public Station findStationById(Long id) {
-		return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Station doesn't exist"));
+		return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_STATION.isMessage()));
 	}
 
     @Transactional
