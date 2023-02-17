@@ -16,7 +16,24 @@ public class ControllerExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<Void> exception(BusinessException e) {
-        return ResponseEntity.unprocessableEntity().build();
+    public ResponseEntity<ErrorMessage> exception(BusinessException e) {
+        ErrorMessage errorMessage = ErrorMessage.of(e.getLocalizedMessage());
+        return ResponseEntity.unprocessableEntity().body(errorMessage);
+    }
+}
+
+class ErrorMessage {
+    private String message;
+
+    static ErrorMessage of(String message) {
+        return new ErrorMessage(message);
+    }
+
+    public ErrorMessage(String message) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }
