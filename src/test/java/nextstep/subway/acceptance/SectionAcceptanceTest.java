@@ -127,7 +127,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간 등록 - 예외2: 새로운 구간의 상,하행역 모두 이미 노선에 등록된 경우")
     @Test
     void addLineSection_InvalidCase2() {
+        // when
+        var 구간_생성_응답 = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 강남역, 10));
 
+        // then
+        assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(구간_생성_응답.asString()).isEqualTo(SectionExceptionMessages.ALREADY_EXIST);
+
+        var 노선_조회_응답 = 지하철_노선_조회_요청(신분당선);
+        assertThat(노선_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
     /**

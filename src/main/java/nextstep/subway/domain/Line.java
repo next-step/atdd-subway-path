@@ -74,7 +74,9 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (sections.isEmpty()) {
+        validateAddSection(section);
+
+        if (!hasSections()) {
             sections.add(section);
             firstStation = section.getUpStation();
             lastStation = section.getDownStation();
@@ -104,7 +106,7 @@ public class Line {
     }
 
     public Section getFirstSection() {
-        if (sections.isEmpty()) {
+        if (!hasSections()) {
             throw new NoSuchElementException();
         }
 
@@ -117,6 +119,10 @@ public class Line {
     }
 
     public List<Station> getStations() {
+        if (!hasSections()) {
+            return new ArrayList<>();
+        }
+
         Set<Station> stations = new LinkedHashSet<>();
 
         Section currSection = getFirstSection();
@@ -143,7 +149,7 @@ public class Line {
     }
 
     public int getLength() {
-        if (sections.isEmpty()) {
+        if (!hasSections()) {
             return 0;
         }
 
@@ -187,6 +193,12 @@ public class Line {
         if (originSection.getUpStation().equals(section.getUpStation())) {
             sections.add(new Section(originSection.getLine(), section.getDownStation(), originSection.getDownStation(), newDistance));
             return;
+        }
+    }
+
+    private void validateAddSection(Section section) {
+        if (getStations().containsAll(section.stations())) {
+            throw new DataIntegrityViolationException(SectionExceptionMessages.ALREADY_EXIST);
         }
     }
 

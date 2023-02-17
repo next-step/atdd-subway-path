@@ -3,11 +3,10 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.SectionExceptionMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
-
-import java.security.InvalidParameterException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -41,7 +40,18 @@ class LineTest {
     @Test
     void addSection_InvalidCase1() {
         // when - then
-        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 30))).isInstanceOf(DataIntegrityViolationException.class);
+        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 30)))
+                .isInstanceOf(DataIntegrityViolationException.class).hasMessage(SectionExceptionMessages.INVALID_DISTANCE);
+    }
+
+    @Test
+    void addSection_InvalidCase2() {
+        // when - then
+        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 당산역, 신도림역, 10)))
+                .isInstanceOf(DataIntegrityViolationException.class).hasMessage(SectionExceptionMessages.ALREADY_EXIST);
+
+        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 신도림역, 당산역, 10)))
+                .isInstanceOf(DataIntegrityViolationException.class).hasMessage(SectionExceptionMessages.ALREADY_EXIST);
     }
 
     @Test

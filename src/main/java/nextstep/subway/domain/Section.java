@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -52,6 +53,10 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public List<Station> stations() {
+        return List.of(upStation, downStation);
     }
 
     @Override
