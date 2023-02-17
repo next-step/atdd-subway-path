@@ -5,7 +5,6 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -27,8 +26,12 @@ class LineTest {
         판교역 = new Station("판교역");
     }
 
+
+    /**
+     * 2호선 : 강남역 <--- 5 ---> 잠실역
+     */
     @Test
-    @DisplayName("성공: 구간 추가 a-b & b-c")
+    @DisplayName("성공: 구간 추가")
     void add_Section() {
         Line line = new Line("이호선", "green");
         line.addSection(강남역, 잠실역, 5);
@@ -41,26 +44,32 @@ class LineTest {
         );
     }
 
+    /**
+     * (기존 구간) 강남역 <--- 5 ---> 잠실역
+     * (추가 구간) 삼성역 <--- 3 ---> 판교역
+     */
     @Test
-    @DisplayName("실패: 구간 추가 a-b & c-d")
+    @DisplayName("실패: 일치하는 역이 없는 구간 추가")
     void fail_add_Section() {
         Line line = new Line("이호선", "green");
         line.addSection(강남역, 잠실역, 5);
 
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            line.addSection(삼성역, 판교역, 3);
-        });
+        assertThrows(IllegalArgumentException.class,
+                () -> line.addSection(삼성역, 판교역, 3));
     }
 
+    /**
+     * (기존 구간) 강남역 <--- 5 ---> 잠실역
+     * (추가 구간) 강남역 <--- 3 ---> 잠실역
+     */
     @Test
     @DisplayName("실패: 중복된 구간 추가")
     void fail_add_same_Section() {
         Line line = new Line("이호선", "green");
         line.addSection(강남역, 잠실역, 5);
 
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            line.addSection(강남역, 잠실역, 3);
-        });
+        assertThrows(IllegalArgumentException.class,
+                () -> line.addSection(강남역, 잠실역, 3));
     }
 
     @Test
@@ -78,6 +87,10 @@ class LineTest {
         });
     }
 
+    /**
+     * (기존 구간) 강남역 <--- 5 ---> 삼성역 <--- 10 ---> 잠실역
+     * (삭제 구간) 삼성역 <--- 10 ---> 잠실역
+     */
     @Test
     @DisplayName("성공: 구간 삭제")
     void removeSection() {
