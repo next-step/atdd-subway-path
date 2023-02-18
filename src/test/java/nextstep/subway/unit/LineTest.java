@@ -159,4 +159,23 @@ class LineTest {
                 new Section(신분당선, 강남역, 정자역, 13)
         );
     }
+
+    @DisplayName("지하철 노선에 등록된 상행, 하행 종점역을 제거한다.")
+    @Test
+    void removeLineFirstAndFinalSection() {
+        // given
+        Station 신사역 = new Station("신사역");
+        Station 정자역 = new Station("정자역");
+        신분당선.addSection(신사역, 강남역, 5);
+        신분당선.addSection(판교역, 정자역, 3);
+
+        // when
+        신분당선.removeSection(신사역);
+        신분당선.removeSection(정자역);
+
+        // then
+        assertThat(신분당선.getSections()).containsExactlyInAnyOrder(
+                new Section(신분당선, 강남역, 판교역, 10)
+        );
+    }
 }
