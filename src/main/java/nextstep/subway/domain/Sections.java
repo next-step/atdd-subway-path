@@ -28,7 +28,7 @@ public class Sections {
             return;
         }
         lengthValidateCheck(section);
-        existValidateCheck(section);
+        existsValidateCheck(section);
         notExistsValidateCheck(section);
         int index = -1;
         Section foundSection = null;
@@ -82,11 +82,12 @@ public class Sections {
         }
     }
 
-    private void existValidateCheck(Section newSection) {
+    private void existsValidateCheck(Section newSection) {
         int duplicateCount = 0;
         for(Section oldSection : sections) {
             if(oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
                 duplicateCount++;
+                continue;
             }
             if(oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
                 duplicateCount++;
