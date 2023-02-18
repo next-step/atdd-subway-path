@@ -26,6 +26,13 @@ class LineTest {
         신분당선.addSection(강남역, 판교역, 10);
     }
 
+    @DisplayName("노선에 구간이 존재하는지 확인한다.")
+    @Test
+    void isExistInLine() {
+        assertThat(신분당선.isExistInLine(강남역)).isTrue();
+        assertThat(신분당선.isExistInLine(new Station("강남역"))).isTrue();
+    }
+
     @DisplayName("지하철 노선에 구간을 추가한다.")
     @Test
     void addSection() {
