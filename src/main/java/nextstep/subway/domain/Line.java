@@ -1,19 +1,14 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.exception.SectionExceptionMessages;
-import org.springframework.dao.DataIntegrityViolationException;
-
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Entity
@@ -30,8 +25,8 @@ public class Line {
     @ManyToOne
     private Station lastStation;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
@@ -65,57 +60,31 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 
     public boolean hasSections() {
-        return sections.size() > 0;
+        return sections != null && sections.hasSections();
     }
 
     public void addSection(Section section) {
-        validateAddSection(section);
-
         if (!hasSections()) {
-            sections.add(section);
+            sections = new Sections(section);
             firstStation = section.getUpStation();
             lastStation = section.getDownStation();
             return;
         }
 
-        // 상행 종점
-        if (isFirstSection(section)) {
-            sections.add(0, section);
-            firstStation = section.getUpStation();
-            return;
-        }
-
-        // 하행 종점
-        if (isLastSection(section)) {
-            sections.add(section);
-            lastStation = section.getDownStation();
-            return;
-        }
-
-        // 사이
-        addBetweenStations(section);
+        sections.addSection(this, section);
     }
 
     public int getSectionsCount() {
-        return sections.size();
+        return sections.getSectionsCount();
     }
 
     public Section getFirstSection() {
-        if (!hasSections()) {
-            throw new NoSuchElementException();
-        }
-
-        if (sections.size() == 1) {
-            return sections.get(0);
-        }
-
-        return sections.stream().filter(sec -> isFirstStation(sec.getUpStation()) && !isLastStation(sec.getDownStation()))
-                .findFirst().orElseThrow(NoSuchElementException::new);
+        return sections.getFirstSection(this);
     }
 
     public List<Station> getStations() {
@@ -129,23 +98,14 @@ public class Line {
         while (currSection != null) {
             stations.add(currSection.getUpStation());
             stations.add(currSection.getDownStation());
-            currSection = nextSection(currSection);
+            currSection = sections.getNextSection(currSection);
         }
 
         return new ArrayList<>(stations);
     }
 
-    private Section nextSection(Section currSection) {
-        // 다음 구간 : 현재 구간의 하행역이 상행역인 구간
-        return sections.stream().filter(sec -> sec.getUpStation().equals(currSection.getDownStation())).findFirst().orElse(null);
-    }
-
     public void removeSection(Station station) {
-        if (!isLastStation(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.remove(sections.size() - 1);
+        sections.removeSection(station, lastStation);
     }
 
     public int getLength() {
@@ -153,62 +113,23 @@ public class Line {
             return 0;
         }
 
-        return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
+        return sections.getTotalDistance();
     }
 
-    private boolean isFirstStation(Station station) {
-        return firstStation.equals(station);
+    public Station getFirstStation() {
+        return firstStation;
     }
 
-    private boolean isLastStation(Station station) {
-        return lastStation.equals(station);
+    public Station getLastStation() {
+        return lastStation;
     }
 
-    private boolean isFirstSection(Section section) {
-        return isFirstStation(section.getDownStation());
+    public void changeFirstStation(Station station) {
+        firstStation = station;
     }
 
-    private boolean isLastSection(Section section) {
-        return isLastStation(section.getUpStation());
-    }
-
-    private void addBetweenStations(Section section) {
-        Section originSection =  sections.stream().filter(sec -> sec.getUpStation().equals(section.getUpStation()) || sec.getDownStation().equals(section.getDownStation()))
-                .findFirst().orElseThrow(NoSuchElementException::new);
-
-        if (section.getDistance() >= originSection.getDistance()) {
-            throw new DataIntegrityViolationException(SectionExceptionMessages.INVALID_DISTANCE);
-        }
-
-        removeSection(originSection.getDownStation());
-
-        sections.add(section);
-
-        int newDistance = originSection.getDistance() - section.getDistance();
-        if (originSection.getDownStation().equals(section.getDownStation())) {
-            sections.add(new Section(originSection.getLine(), originSection.getUpStation(), section.getUpStation(), newDistance));
-            return;
-        }
-
-        if (originSection.getUpStation().equals(section.getUpStation())) {
-            sections.add(new Section(originSection.getLine(), section.getDownStation(), originSection.getDownStation(), newDistance));
-            return;
-        }
-    }
-
-    private void validateAddSection(Section section) {
-        if (!hasSections()) {
-            return;
-        }
-
-        List<Station> lineStations = getStations();
-        if (lineStations.containsAll(section.stations())) {
-            throw new DataIntegrityViolationException(SectionExceptionMessages.ALREADY_EXIST);
-        }
-
-        if (!lineStations.contains(section.getUpStation()) && !lineStations.contains(section.getDownStation())) {
-            throw new DataIntegrityViolationException(SectionExceptionMessages.NOTHING_EXIST);
-        }
+    public void changeLastStation(Station station) {
+        lastStation = station;
     }
 
 }
