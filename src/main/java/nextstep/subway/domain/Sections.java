@@ -1,8 +1,8 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.line.InvalidRemoveStationException;
-import nextstep.subway.domain.exception.line.LineHasNotEnoughSectionException;
 import nextstep.subway.domain.exception.line.LineHasBothStationsException;
+import nextstep.subway.domain.exception.line.LineHasNotEnoughSectionException;
 import nextstep.subway.domain.exception.line.NewSectionCouldHaveAnyRegisteredStation;
 
 import javax.persistence.Embeddable;

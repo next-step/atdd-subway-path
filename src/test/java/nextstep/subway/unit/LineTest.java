@@ -109,14 +109,14 @@ class LineTest {
 
     @DisplayName("구간이 없는 노선의 역을 삭제하려하면 오류가 발생한다.")
     @Test
-    void removeException() {
+    void cannotRemoveStationWhenLineHasEmptySection() {
         assertThatThrownBy(() -> line.removeStation(stationA))
                 .isInstanceOf(LineHasNotEnoughSectionException.class);
     }
 
     @DisplayName("구간이 하나인 노선의 역을 삭제하려하면 오류가 발생한다.")
     @Test
-    void removeException2() {
+    void cannotRemoveStationWhenLineHasOnlyOneSection() {
         line.addSection(sectionA);
 
         assertThatThrownBy(() -> line.removeStation(stationA))
@@ -125,7 +125,7 @@ class LineTest {
 
     @DisplayName("노선에 없는 역을 삭제하려하면 오류가 발생한다.")
     @Test
-    void removeException3() {
+    void cannotRemoveStationWhenLineDoesNotHaveThatStation() {
         line.addSection(sectionA);
         line.addSection(sectionB);
 

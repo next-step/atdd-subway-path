@@ -2,7 +2,6 @@ package nextstep.subway.utils;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.ErrorResponse;
 
 import java.util.List;
