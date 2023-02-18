@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,30 +25,42 @@ public class Sections {
             return;
         }
 
-        Section foundSection = null;
-
-        Map<Station, Section> upStationSectionMap = getUpStationSectionMap();
+        Map<Station, Station> upStationDownStationMap = getUpStationDownStationMap();
         Map<Station, Section> downStationSectionMap = getDownStationSectionMap();
 
-        if ((upStationSectionMap.containsKey(section.getUpStation()) ||
-            downStationSectionMap.containsKey(section.getUpStation())) &&
-            (upStationSectionMap.containsKey(section.getDownStation()) ||
-            downStationSectionMap.containsKey(section.getDownStation()))) {
+        List<Station> stations = getStations(upStationDownStationMap, downStationSectionMap);
+
+        if (stations.containsAll(Arrays.asList(section.getUpStation(), section.getDownStation()))) {
             throw new IllegalArgumentException("구간의 역이 모두 이미 노선에 존재하는 경우 등록할 수 없습니다.");
         }
 
-        if (upStationSectionMap.containsKey(section.getUpStation())) {
-            foundSection = upStationSectionMap.get(section.getUpStation());
-        } else if (downStationSectionMap.containsKey(section.getUpStation())) {  // 하행종점
-            sections.add(section);
+        if (addToEitherEnd(section, stations)) {
             return;
+        }
+
+        addInTheMiddle(section, upStationDownStationMap, downStationSectionMap);
+    }
+
+    private boolean addToEitherEnd(Section section, List<Station> stations) {
+        int lastIndex = stations.size() - 1;
+        if (stations.get(0).equals(section.getDownStation()) ||
+            stations.get(lastIndex).equals(section.getUpStation())) {
+            sections.add(section);
+            return true;
+        }
+        return false;
+    }
+
+    private void addInTheMiddle(Section section, Map<Station, Station> upStationDownStationMap,
+        Map<Station, Section> downStationSectionMap) {
+        Section foundSection = null;
+        if (upStationDownStationMap.containsKey(section.getUpStation())) {
+            foundSection = downStationSectionMap.get(
+                upStationDownStationMap.get(section.getUpStation()));
         }
 
         if (downStationSectionMap.containsKey(section.getDownStation())) {
             foundSection = downStationSectionMap.get(section.getDownStation());
-        } else if (upStationSectionMap.containsKey(section.getDownStation())) { // 상행종점
-            sections.add(section);
-            return;
         }
 
         if (foundSection == null) {
@@ -66,6 +79,11 @@ public class Sections {
         Map<Station, Station> upStationDownStationMap = getUpStationDownStationMap();
         Map<Station, Section> downStationSectionMap = getDownStationSectionMap();
 
+        return getStations(upStationDownStationMap, downStationSectionMap);
+    }
+
+    private List<Station> getStations(Map<Station, Station> upStationDownStationMap,
+        Map<Station, Section> downStationSectionMap) {
         Station firstStation = getFirstStation(upStationDownStationMap, downStationSectionMap);
 
         return getOrderedStations(upStationDownStationMap, firstStation);
