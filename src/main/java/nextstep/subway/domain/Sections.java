@@ -122,7 +122,7 @@ public class Sections {
 
 
     private void validateUpStationDistance(Section section) {
-        findUpToUp(section.getUpStation())
+        findUpSection(section.getUpStation())
                 .filter(it -> it.getDistance() <= section.getDistance())
                 .ifPresent(it -> {
                     throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
@@ -130,7 +130,7 @@ public class Sections {
     }
 
     private void validateDownStationDistance(Section section) {
-        findDownToDown(section.getDownStation())
+        findDownSection(section.getDownStation())
                 .filter(it -> it.getDistance() <= section.getDistance())
                 .ifPresent(it -> {
                     throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
@@ -138,11 +138,11 @@ public class Sections {
     }
 
     private boolean hasUpToUp(Station upStation) {
-        return findUpToUp(upStation).isPresent();
+        return findUpSection(upStation).isPresent();
     }
 
     private boolean hasDownToDown(Station downStation) {
-        return findDownToDown(downStation).isPresent();
+        return findDownSection(downStation).isPresent();
     }
 
     private boolean hasDownToBeginUp(Station downStation) {
@@ -156,7 +156,7 @@ public class Sections {
     }
 
     private void addUpToUp(Section section) {
-        findUpToUp(section.getUpStation())
+        findUpSection(section.getUpStation())
                 .ifPresent(it -> {
                     sections.remove(it);
                     sections.add(section);
@@ -165,7 +165,7 @@ public class Sections {
     }
 
     private void addDownToDown(Section section) {
-        findDownToDown(section.getDownStation()).ifPresent(it -> {
+        findDownSection(section.getDownStation()).ifPresent(it -> {
             sections.remove(it);
             sections.add(new Section(section.getLine(), it.getUpStation(), section.getUpStation(), it.getDistance() - section.getDistance()));
             sections.add(section);
@@ -194,15 +194,15 @@ public class Sections {
                 .anyMatch((it) -> station.equals(it.getUpStation()) || station.equals(it.getDownStation()));
     }
 
-    private Optional<Section> findUpToUp(Station upStation) {
+    private Optional<Section> findUpSection(Station station) {
         return sections.stream()
-                .filter(it -> upStation.equals(it.getUpStation()))
+                .filter(it -> station.equals(it.getUpStation()))
                 .findFirst();
     }
 
-    private Optional<Section> findDownToDown(Station downStation) {
+    private Optional<Section> findDownSection(Station station) {
         return sections.stream()
-                .filter(it -> downStation.equals(it.getDownStation()))
+                .filter(it -> station.equals(it.getDownStation()))
                 .findFirst();
     }
 
@@ -255,18 +255,18 @@ public class Sections {
     }
 
     private void removeMiddleSection(Station station) {
-        Section upToUp = findUpToUp(station).get();
-        Section downToDown = findDownToDown(station).get();
+        Section upSection = findUpSection(station).get();
+        Section downSection = findDownSection(station).get();
 
-        Line line = upToUp.getLine();
-        int distance = upToUp.getDistance() + downToDown.getDistance();
-        Station upStation = downToDown.getUpStation();
-        Station downStation = upToUp.getDownStation();
-        int order = downToDown.getOrder();
+        Line line = upSection.getLine();
+        int distance = upSection.getDistance() + downSection.getDistance();
+        Station upStation = downSection.getUpStation();
+        Station downStation = upSection.getDownStation();
+        int order = downSection.getOrder();
 
-        int indexToInsert = sections.indexOf(downToDown);
-        sections.remove(downToDown);
-        sections.remove(upToUp);
+        int indexToInsert = sections.indexOf(downSection);
+        sections.remove(downSection);
+        sections.remove(upSection);
         sections.add(indexToInsert, new Section(line, upStation, downStation, distance, order));
     }
 }
