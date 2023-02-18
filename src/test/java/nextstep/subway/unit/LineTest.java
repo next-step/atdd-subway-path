@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
     private Station 강남역;
@@ -177,5 +178,27 @@ class LineTest {
         assertThat(신분당선.getSections()).containsExactlyInAnyOrder(
                 new Section(신분당선, 강남역, 판교역, 10)
         );
+    }
+
+    @DisplayName("구간 제거 시, 노선에 등록된 구간이 하나라면 구간을 제거할 수 없다.")
+    @Test
+    void removeLineSectionExceptionOnlyOneSection() {
+        // when & then
+        assertAll(
+                () -> assertThatThrownBy(() -> 신분당선.removeSection(강남역)).isInstanceOf(IllegalStateException.class),
+                () -> assertThatThrownBy(() -> 신분당선.removeSection(판교역)).isInstanceOf(IllegalStateException.class)
+        );
+    }
+
+    @DisplayName("구간 제거 시, 노선에 등록된 역이 없다면 구간을 제거할 수 없다.")
+    @Test
+    void removeLineSectionExceptionStationNotInLine() {
+        // given
+        Station 정자역 = new Station("정자역");
+        Station 신사역 = new Station("정자역");
+        신분당선.addSection(판교역, 정자역, 3);
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선.removeSection(신사역)).isInstanceOf(IllegalArgumentException.class);
     }
 }
