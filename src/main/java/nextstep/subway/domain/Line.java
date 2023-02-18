@@ -84,7 +84,7 @@ public class Line {
     }
 
     public Section getFirstSection() {
-        return sections.getFirstSection(this);
+        return sections.getFirstSection();
     }
 
     public List<Station> getStations() {

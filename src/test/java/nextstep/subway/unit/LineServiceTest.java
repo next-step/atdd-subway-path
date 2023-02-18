@@ -44,7 +44,7 @@ public class LineServiceTest {
         Sections sections = line.getSections();
         assertThat(sections.getSectionsCount()).isEqualTo(1);
 
-        Section section = sections.getFirstSection(line);
+        Section section = sections.getFirstSection();
         assertThat(section.getLine()).isEqualTo(line);
         assertThat(section.getUpStation()).isEqualTo(upStation);
         assertThat(section.getDownStation()).isEqualTo(downStation);

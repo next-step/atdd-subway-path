@@ -59,10 +59,28 @@ public class Section {
         return List.of(upStation, downStation);
     }
 
+    public boolean isFirstSection() {
+        return upStation.equals(line.getFirstStation());
+    }
+
+    public boolean isNewFirstSection() {
+        return downStation.equals(line.getFirstStation());
+    }
+
+    public boolean isNewLastSection() {
+        return upStation.equals(line.getLastStation());
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         Section section = (Section) o;
         return Objects.equals(id, section.id) &&
                 Objects.equals(line, section.line);

@@ -33,13 +33,13 @@ public class Sections {
             return;
         }
 
-        if (isNewFirstSection(line, section)) {
+        if (section.isNewFirstSection()) {
             sections.add(section);
             line.changeFirstStation(section.getUpStation());
             return;
         }
 
-        if (isNewLastSection(line, section)) {
+        if (section.isNewLastSection()) {
             sections.add(section);
             line.changeLastStation(section.getDownStation());
             return;
@@ -56,7 +56,7 @@ public class Sections {
         return sections.size();
     }
 
-    public Section getFirstSection(Line line) {
+    public Section getFirstSection() {
         if (!hasSections()) {
             throw new NoSuchElementException();
         }
@@ -66,11 +66,9 @@ public class Sections {
         }
 
         return sections.stream()
-                .filter(sec -> isFirstSection(line, sec))
+                .filter(Section::isFirstSection)
                 .findFirst().orElseThrow(NoSuchElementException::new);
     }
-
-
 
     public Section getNextSection(Section currSection) {
         return sections.stream()
@@ -92,18 +90,6 @@ public class Sections {
         }
 
         return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
-    }
-
-    private boolean isFirstSection(Line line, Section section) {
-        return section.getUpStation().equals(line.getFirstStation());
-    }
-
-    private boolean isNewFirstSection(Line line, Section section) {
-        return section.getDownStation().equals(line.getFirstStation());
-    }
-
-    private boolean isNewLastSection(Line line, Section section) {
-        return section.getUpStation().equals(line.getLastStation());
     }
 
     private void validateAddSection(Line line, Section section) {
