@@ -156,6 +156,30 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 세 구간 추가를 요청 하고
+     * When 지하철 노선의 상행 종점역과 하행 종점역을 제거하면
+     * Then 노선에 두 구간이 제거된다
+     */
+    @DisplayName("지하철 노선에 등록된 상행, 하행 종점역을 제거한다.")
+    @Test
+    void removeLineFirstAndFinalSection() {
+        // given
+        Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신사역, 강남역, 5));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(판교역, 정자역, 3));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 신사역);
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 판교역);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
