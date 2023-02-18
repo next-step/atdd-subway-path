@@ -59,6 +59,12 @@ public class Line {
     public void addSection(Station upStation, Station downStation, int distance) {
         validateDistance(distance);
 
+        updateSection(upStation, downStation, distance);
+
+        this.sections.addNewSection(new Section(this, upStation, downStation, distance));
+    }
+
+    private void updateSection(Station upStation, Station downStation, int distance) {
         boolean isUpStationExist = isExistInLine(upStation);
         boolean isDownStationExist = isExistInLine(downStation);
 
@@ -71,8 +77,6 @@ public class Line {
         if (isDownStationExist) {
             this.sections.updateDownStationBetweenSection(upStation, downStation, distance);
         }
-
-        this.sections.addNewSection(new Section(this, upStation, downStation, distance));
     }
 
     private void validateDistance(int distance) {
