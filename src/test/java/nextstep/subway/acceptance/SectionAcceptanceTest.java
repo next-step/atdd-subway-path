@@ -57,7 +57,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
         assertThat(response.jsonPath().getInt("length")).isEqualTo(sectionDistance1 + sectionDistance2);
-
     }
 
     /**
