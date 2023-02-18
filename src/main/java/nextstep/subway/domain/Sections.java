@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.exception.line.InvalidRemoveStationException;
+import nextstep.subway.domain.exception.line.LineHasNotEnoughSectionException;
 import nextstep.subway.domain.exception.line.LineHasBothStationsException;
 import nextstep.subway.domain.exception.line.NewSectionCouldHaveAnyRegisteredStation;
 
@@ -7,12 +9,12 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static javax.persistence.CascadeType.MERGE;
 import static javax.persistence.CascadeType.PERSIST;
-import static nextstep.subway.domain.Station.DEFAULT_STATION;
 
 @Embeddable
 public class Sections {
@@ -118,17 +120,69 @@ public class Sections {
                 .orElse(null);
     }
 
-    public Station getTerminalStation() {
-        final List<Section> orderedSections = getOrderedSections();
-        if (orderedSections.isEmpty()) {
-            return DEFAULT_STATION;
-        }
-
-        return orderedSections.get(orderedSections.size() - 1).getDownStation();
+    private Section getSectionOrNullByDownStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElse(null);
     }
 
-    public void removeLastSection() {
-        sections.remove(getLastIndex());
+    private Section getLastSection() {
+        final List<Section> orderedSections = getOrderedSections();
+        return orderedSections.get(orderedSections.size() - 1);
+    }
+
+    public Station getTerminalStation() {
+        final Section lastSection = getLastSection();
+        return lastSection.getDownStation();
+    }
+
+    public void removeSection(final Station station) {
+        if (!hasEnoughStations()) {
+            throw new LineHasNotEnoughSectionException();
+        }
+
+        if (!getStations().contains(station)) {
+            throw new InvalidRemoveStationException();
+        }
+
+        final Station firstStation = getFirstStationOrNull();
+        if (station.equals(firstStation)) {
+            sections.remove(getSectionOrNullByUpStation(firstStation));
+            return;
+        }
+
+        if (station.equals(getTerminalStation())) {
+            sections.remove(getLastSection());
+            return;
+        }
+
+        removeMiddleSection(station);
+    }
+
+    private void removeMiddleSection(final Station station) {
+        final Section targetSection = getSectionOrNullByUpStation(station);
+        final Section beforeSection = getSectionOrNullByDownStation(station);
+
+        if (Objects.isNull(targetSection) || Objects.isNull(beforeSection)) {
+            throw new AssertionError("Delete validation is not sufficient!!");
+        }
+
+
+        final Line line = beforeSection.getLine();
+        final Station upStation = beforeSection.getUpStation();
+        final Station downStation = targetSection.getDownStation();
+        final int distance = beforeSection.getDistance() + targetSection.getDistance();
+
+        final Section newSection = new Section(line, upStation, downStation, distance);
+
+        sections.remove(targetSection);
+        sections.remove(beforeSection);
+        sections.add(newSection);
+    }
+
+    private boolean hasEnoughStations() {
+        return sections.size() > 1;
     }
 
     private int getLastIndex() {

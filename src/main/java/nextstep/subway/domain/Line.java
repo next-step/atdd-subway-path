@@ -51,8 +51,8 @@ public class Line {
         return sections.getTerminalStation();
     }
 
-    public void removeSection() {
-        sections.removeLastSection();
+    public void removeStation(final Station station) {
+        sections.removeSection(station);
     }
 
     public boolean hasEmptySection() {

@@ -67,10 +67,6 @@ public class LineService {
         Line line = lineRepository.getLine(lineId);
         Station station = stationService.findById(stationId);
 
-        if (!station.equals(line.getTerminalStation())) {
-            throw new IllegalArgumentException();
-        }
-
-        line.removeSection();
+        line.removeStation(station);
     }
 }
