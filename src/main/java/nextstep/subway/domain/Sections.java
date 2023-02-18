@@ -1,10 +1,9 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.IllegalSectionAddException;
+import nextstep.subway.applicaion.dto.SectionResponse;
+import nextstep.subway.exception.*;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,43 +14,8 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Line line, Station upStation, Station downStation, int distance) {
-        Optional<Section> middleSection = sections.stream()
-                .filter(s -> s.getUpStation().equals(upStation))
-                .findAny();
-        if (middleSection.isPresent()) {
-            Section section = middleSection.get();
-            validateSectionDistance(distance, section);
-            int pos = sections.indexOf(section);
-            sections.remove(section);
-            sections.add(pos, new Section(
-                    line,
-                    upStation,
-                    downStation,
-                    distance
-                    )
-            );
-            sections.add(pos,new Section(
-                    line,
-                    downStation,
-                    section.getDownStation(),
-                    section.getDistance() - distance
-                    )
-            );
-            return ;
-        }
-        sections.add(new Section(
-                line,
-                upStation,
-                downStation,
-                distance)
-        );
-    }
-
-    private static void validateSectionDistance(int distance, Section section) {
-        if (distance > section.getDistance()) {
-            throw new IllegalSectionAddException();
-        }
+    public List<Section> getSections() {
+        return sections;
     }
 
     public List<Station> getStations() {
@@ -59,29 +23,95 @@ public class Sections {
         if (sections.isEmpty()) {
             return stations;
         }
-        stations.add(sections.get(0).getUpStation());
-        sections.stream()
-                .map(section -> section.getDownStation())
-                .forEach(downStation -> stations.add(downStation));
+        Station prev = getUpStation();
+        while(findNextStationOf(prev).isPresent()) {
+            stations.add(prev);
+            prev = findNextStationOf(prev).get();
+        }
+        stations.add(prev);
+
         return stations;
+    }
+
+    public void addSection(Line line, Station upStation, Station downStation, int distance) {
+        Section section = new Section(line, upStation, downStation, distance);
+        validateContainsNotAllStation(upStation, downStation);
+        validateContainsAnyStation(upStation, downStation);
+        if (addableInMiddle(section)) {
+            Section originalSection = sections.stream()
+                    .filter(s-> upStation.equals(s.getUpStation()))
+                    .findFirst().get();
+            Section newSection = new Section(
+                    line, downStation, getDownStation(),
+                    originalSection.getDistance()- distance);
+            sections.remove(originalSection);
+            sections.add(newSection);
+        }
+        sections.add(section);
     }
 
     public void removeSection() {
         sections.remove(sections.size()-1);
     }
 
+    public Station getUpStation() {
+        return sections.stream()
+                .map(section -> section.getUpStation())
+                .filter(upStation -> sections.stream()
+                        .noneMatch(section -> upStation.equals(section.getDownStation())))
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new);
+    }
+
     public Station getDownStation() {
-        return sections.get(sections.size()-1).getDownStation();
+        return sections.stream()
+                .map(section -> section.getDownStation())
+                .filter(downStation -> sections.stream()
+                        .noneMatch(section -> downStation.equals(section.getUpStation())))
+                .findFirst()
+                .orElseThrow(StationNotFoundException::new);
+    }
+
+    private Optional<Station> findNextStationOf(Station prev) {
+        return sections.stream()
+                .filter(section -> prev.equals(section.getUpStation()))
+                .map(section -> section.getDownStation())
+                .findFirst();
     }
 
     public Section getFirstSection() {
-        return sections.get(0);
-    }
-    public Section getLastSection() {
-        return sections.get(sections.size()-1);
+        return sections.stream()
+                .filter(section -> getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(SectionNotFoundException::new);
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public Section getLastSection() {
+        return sections.stream()
+                .filter(section -> getDownStation().equals(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(SectionNotFoundException::new);
+    }
+
+    private void validateContainsNotAllStation(Station upStation, Station downStation) {
+        List<Station> stations = getStations();
+        if (stations.contains(upStation) && stations.contains(downStation)) {
+            throw new SectionContainsAllStationException();
+        }
+    }
+
+    private void validateContainsAnyStation(Station upStation, Station downStation) {
+        List<Station> stations = getStations();
+        if (stations.size() == 0) return;
+        if (!stations.contains(upStation) && !stations.contains(downStation)) {
+            throw new SectionContainsAnyStationException();
+        }
+    }
+
+    private boolean addableInMiddle(Section section) {
+        return sections.stream()
+                .filter(s -> s.getDistance() > section.getDistance())
+                .map(s -> s.getUpStation())
+                .anyMatch(upStation -> upStation.equals(section.getUpStation()));
     }
 }

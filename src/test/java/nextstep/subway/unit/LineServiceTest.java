@@ -3,6 +3,8 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,11 +17,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
-    public static String 강남역_이름 = "강남역";
-    public static String 분당역_이름 = "분당역";
-    public static String 정자역_이름 = "정자역";
-    public static String 신분당선_이름 = "신분당선";
-    public static String 신분당선_색 = "Green";
+
+    private Station 강남역;
+    private Station 분당역;
+
+    private Line 신분당선;
+
+    private SectionRequest 구간_요청;
+
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -28,15 +33,17 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @BeforeEach
+    void setUp() {
+        강남역 = stationRepository.save(new Station("강남역"));
+        분당역 = stationRepository.save(new Station("분당역"));
+        신분당선 = lineRepository.save(new Line("신분당선", "green"));
+        구간_요청 = new SectionRequest(강남역.getId(), 분당역.getId(), 10);
+    }
+
+    @DisplayName("노선 생성 후 첫 구간 추가")
     @Test
     void addSection() {
-        // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Station 강남역 = stationRepository.save(new Station(LineServiceTest.강남역_이름));
-        Station 분당역 = stationRepository.save(new Station(LineServiceTest.분당역_이름));
-        Line 신분당선 = lineRepository.save(new Line(신분당선_이름, 신분당선_색));
-        SectionRequest 구간_요청 = new SectionRequest(강남역.getId(), 분당역.getId(), 10);
-
         // when
         // lineService.addSection 호출
         lineService.addSection(신분당선.getId(), 구간_요청);
@@ -50,24 +57,23 @@ public class LineServiceTest {
         assertThat(새로운_구간.getDistance()).isEqualTo(10);
     }
 
+    @DisplayName("노선 생성 후, 새로운 역 추가")
     @Test
     void addSection2() {
-        //given
-        //초기값 세팇
-        Station 강남역 = stationRepository.save(new Station(강남역_이름));
-        Station 분당역 = stationRepository.save(new Station(분당역_이름));
-        Line 신분당선 = lineRepository.save(new Line(신분당선_이름, 신분당선_색));
-        lineService.addSection(신분당선.getId(),
-                new SectionRequest(강남역.getId(), 분당역.getId(), 10));
+        // when
+        // 첫 구간 추가
+        lineService.addSection(신분당선.getId(), 구간_요청);
 
         //when
         //강남역과 분당역 사이에 정자역 추가
-        Station 정자역 = stationRepository.save(new Station(정자역_이름));
+        Station 정자역 = stationRepository.save(new Station("정자역"));
         lineService.addSection(신분당선.getId(),
                 new SectionRequest(강남역.getId(), 정자역.getId(), 4));
 
         //then
         assertThat(신분당선.getFirstSection().getDistance()).isEqualTo(4);
         assertThat(신분당선.getLastSection().getDistance()).isEqualTo(6);
+        assertThat(신분당선.getDownStation()).isEqualTo(분당역);
+        assertThat(신분당선.getSections()).hasSize(2);
     }
 }

@@ -34,6 +34,15 @@ class LineTest {
         assertThat(이호선.getDownStation()).isEqualTo(광교역);
     }
 
+    @DisplayName("지하철 구간 중간에 추가")
+    @Test
+    void addSection2() {
+        이호선.addSection(강남역, 광교역, 6);
+        assertThat(이호선.getFirstSection().getDistance()).isEqualTo(6);
+        assertThat(이호선.getLastSection().getDistance()).isEqualTo(4);
+        assertThat(이호선.getSections()).hasSize(2);
+    }
+
     @DisplayName("지하철역 목록 생성")
     @Test
     void getStations() {
@@ -49,5 +58,21 @@ class LineTest {
         이호선.removeSection();
         List<Station> stations = 이호선.getStations();
         assertThat(stations).doesNotContain(광교역);
+    }
+
+    @DisplayName("지하철 상행종점역 조회")
+    @Test
+    void getUpStation() {
+        이호선.addSection(정자역, 광교역, 15);
+        Station upStation = 이호선.getUpStation();
+        assertThat(upStation).isEqualTo(강남역);
+    }
+
+    @DisplayName("지하철 하행종점역 조회")
+    @Test
+    void getDownStation() {
+        이호선.addSection(정자역, 광교역, 15);
+        Station downStation = 이호선.getDownStation();
+        assertThat(downStation).isEqualTo(광교역);
     }
 }

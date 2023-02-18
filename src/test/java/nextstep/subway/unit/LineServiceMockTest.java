@@ -35,8 +35,8 @@ public class LineServiceMockTest {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         LineService lineService = new LineService(lineRepository, stationService);
-        when(stationService.findById(any())).thenReturn(new Station(강남역_이름));
-        when(stationService.findById(any())).thenReturn(new Station(분당역_이름));
+        when(stationService.findById(1L)).thenReturn(new Station(강남역_이름));
+        when(stationService.findById(2L)).thenReturn(new Station(분당역_이름));
         when(lineRepository.findById(any())).thenReturn(Optional.of(new Line(신분당선_이름,신분당선_색)));
 
         // when
@@ -46,7 +46,7 @@ public class LineServiceMockTest {
         // then
         // lineService.findLineById 메서드를 통해 검증
         Line line = lineService.findLineById(1L);
-        assertThat(line.getName()).isEqualTo(신분당선_이름);
-        assertThat(line.getColor()).isEqualTo(신분당선_색);
+        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getFirstSection().getDistance()).isEqualTo(10);
     }
 }

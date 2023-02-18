@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.SectionResponse;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +28,11 @@ public class Line {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        add(upStation, downStation, distance);
+        addSection(upStation, downStation, distance);
     }
 
-    private void add(Station upStation, Station downStation, int distance) {
-        sections.add(this, upStation, downStation, distance);
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(this, upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -61,10 +63,6 @@ public class Line {
         return sections.getSections();
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        add(upStation, downStation, distance);
-    }
-
     public List<Station> getStations() {
         return sections.getStations();
     }
@@ -73,13 +71,18 @@ public class Line {
         sections.removeSection();
     }
 
+    public Station getUpStation() {
+        return sections.getUpStation();
+    }
+
+    public Station getDownStation() {
+        return sections.getDownStation();
+    }
     public Section getFirstSection() {
         return sections.getFirstSection();
     }
 
-    public Section getLastSection() { return sections.getLastSection(); }
-
-    public Station getDownStation() {
-        return sections.getDownStation();
+    public Section getLastSection() {
+        return sections.getLastSection();
     }
 }
