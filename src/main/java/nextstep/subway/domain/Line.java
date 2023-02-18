@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.List;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -56,5 +58,9 @@ public class Line {
 	public void addSection(Station upStation, Station downStation, int distance) {
 		this.getSections().addSection(new Section(this, upStation, downStation, distance));
 
+	}
+
+	public List<Station> getStations() {
+		return null;
 	}
 }

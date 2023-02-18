@@ -24,9 +24,19 @@ class LineTest {
 		assertThat(이호선.getSections().getSections()).isNotEmpty();
 	}
 
-	@DisplayName("구간 조회")
+	@DisplayName("노선의 역 조회")
 	@Test
 	void getStations() {
+		// Given
+		Station 강남역 = new Station("강남역");
+		Station 선릉역 = new Station("선릉역");
+		Line 이호선 = new Line("2호선", "green");
+
+		// When
+		이호선.addSection(강남역, 선릉역, 10);
+
+		//Then
+		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역);
 	}
 
 	@DisplayName("구간 삭제")
