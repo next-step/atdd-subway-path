@@ -1,8 +1,6 @@
 package nextstep.subway.ui;
 
-import nextstep.subway.domain.exceptions.CanNotAddSectionException;
-import nextstep.subway.domain.exceptions.CanNotSplitSectionException;
-import nextstep.subway.domain.exceptions.NotPositiveNumberException;
+import nextstep.subway.domain.exceptions.BusinessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,8 +15,9 @@ public class ControllerExceptionHandler {
     }
 
     @ResponseBody
-    @ExceptionHandler({CanNotAddSectionException.class, CanNotSplitSectionException.class, NotPositiveNumberException.class})
-    public ResponseEntity<Void> exception(RuntimeException e) {
-        return ResponseEntity.unprocessableEntity().build();
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorMessage> exception(BusinessException e) {
+        ErrorMessage errorMessage = ErrorMessage.of(e.getLocalizedMessage());
+        return ResponseEntity.unprocessableEntity().body(errorMessage);
     }
 }

@@ -40,8 +40,6 @@ public class LineServiceTest {
         lineService.addSection(lineId, new SectionRequest(1L, 2L, 10));
 
         // then
-        assertThat(line.getSections()).hasSize(1);
-        assertThat(line.getSections().get(0).getUpStation().getName()).isEqualTo("강남역");
-        assertThat(line.getSections().get(0).getDownStation().getName()).isEqualTo("양재역");
+        assertThat(line.getStations()).containsExactly(강남역, 양재역);
     }
 }

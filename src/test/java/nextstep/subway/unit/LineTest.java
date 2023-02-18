@@ -29,12 +29,7 @@ class LineTest {
         신분당선.addSection(강남역, 양재역, 10);
 
         // then
-        assertAll(() -> {
-                    assertThat(신분당선.getSections()).hasSize(1);
-                    assertThat(신분당선.getSections().get(0).getUpStation()).isEqualTo(강남역);
-                    assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(양재역);
-                }
-        );
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
     }
 
     @Test
@@ -60,10 +55,22 @@ class LineTest {
         신분당선.removeSection(양재시민의숲역);
 
         // then
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
+    }
+
+    @Test
+    void 노선에_이름과_색상을_변경한다() {
+        // given
+        String newName = "분당선";
+        String newColor = "yellow";
+
+        // when
+        신분당선.modify(newName, newColor);
+
+        // then
         assertAll(() -> {
-                    assertThat(신분당선.getSections()).hasSize(1);
-                    assertThat(신분당선.getStations()).containsExactly(강남역, 양재역);
-                }
-        );
+            assertThat(신분당선.getName()).isEqualTo(newName);
+            assertThat(신분당선.getColor()).isEqualTo(newColor);
+        });
     }
 }

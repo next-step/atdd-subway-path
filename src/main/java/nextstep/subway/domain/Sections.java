@@ -1,14 +1,12 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exceptions.CanNotAddSectionException;
+import nextstep.subway.domain.exceptions.CanNotRemoveSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,11 +29,11 @@ public class Sections {
         Station newUpStation = newSection.getUpStation();
         Station newDownStation = newSection.getDownStation();
 
-        if (hasStation(newUpStation) && hasStation(newDownStation)) {
+        if (alreadyExistAllStations(newUpStation, newDownStation)) {
             throw new CanNotAddSectionException("상행역과 하행역 모두 이미 존재하여 구간 추가 불가능");
         }
 
-        if (!hasStation(newUpStation) && !hasStation(newDownStation)) {
+        if (notExistAnyStations(newUpStation, newDownStation)) {
             throw new CanNotAddSectionException("상행역과 하행역 모두 존재하지 않아 구간 추가 불가능");
         }
 
@@ -51,13 +49,22 @@ public class Sections {
 
         Section ordinarySection = sections.stream()
                 .filter(it -> it.getUpStation().equals(newUpStation) || it.getDownStation().equals(newDownStation))
-                .findFirst().get();
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("로직 에러. 기존 노선을 찾을 수 없음."));
 
         Section splittedSection = ordinarySection.split(newSection);
 
         sections.remove(ordinarySection);
         sections.add(newSection);
         sections.add(splittedSection);
+    }
+
+    private boolean notExistAnyStations(Station station1, Station station2) {
+        return !hasStation(station1) && !hasStation(station2);
+    }
+
+    private boolean alreadyExistAllStations(Station station1, Station station2) {
+        return hasStation(station1) && hasStation(station2);
     }
 
     private boolean hasStation(Station station) {
@@ -87,7 +94,8 @@ public class Sections {
         while (result.size() != sections.size()) {
             Section section = sections.stream()
                     .filter(it -> it.getUpStation().equals(result.get(result.size() - 1).getDownStation()))
-                    .findFirst().get();
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("로직 에러. Sections 가 불변식을 지키지 못하고 있음. 디버깅 필요"));
             result.add(section);
         }
 
@@ -102,12 +110,29 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Section section = sections.stream()
-                .filter(it -> it.getDownStation().equals(station))
-                .findFirst()
-                .orElseThrow(IllegalArgumentException::new);
+        if (sections.size() <= 1) {
+            throw new CanNotRemoveSectionException("구간의 개수가 1개 이하인 경우 구간 제거 불가");
+        }
 
-        sections.remove(section);
+        if (!hasStation(station)) {
+            throw new CanNotRemoveSectionException("존재하지 않는 역인 경우 구간 제거 불가");
+        }
+        
+        Optional<Section> upperSectionOpt = sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findFirst();
+
+        Optional<Section> lowerSectionOpt = sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findFirst();
+
+        upperSectionOpt.ifPresent(section -> sections.remove(section));
+        lowerSectionOpt.ifPresent(section -> sections.remove(section));
+
+        if (upperSectionOpt.isPresent() && lowerSectionOpt.isPresent()) {
+            Section newSection = upperSectionOpt.get().merge(lowerSectionOpt.get());
+            sections.add(newSection);
+        }
     }
 
     @Override

@@ -30,6 +30,10 @@ public class Distance {
         return new Distance(this.value - that.value);
     }
 
+    public Distance plus(Distance that) {
+        return new Distance(this.value + that.value);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

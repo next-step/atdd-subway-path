@@ -29,4 +29,13 @@ class DistanceTest {
 
         assertThat(five.minus(three)).isEqualTo(two);
     }
+
+    @Test
+    void 거리에_거리를_더할_수_있다() {
+        var five = Distance.of(5);
+        var three = Distance.of(3);
+        var eight = Distance.of(8);
+
+        assertThat(five.plus(three)).isEqualTo(eight);
+    }
 }
