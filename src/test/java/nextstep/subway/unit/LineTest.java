@@ -20,7 +20,10 @@ class LineTest {
     private static final String SEOUL_STATION = "서울역";
     private static final String YONGSAN_STATION = "용산역";
     private static final String HONGDAE_STATION = "홍대역";
+    private static final int DISTANCE_TEN = 10;
     private static final int DISTANCE_FIVE = 5;
+    private static final String SONGPA_STATION = "송파역";
+
     private Line lineOne;
     private Station seoulStation;
     private Station yongSanStation;
@@ -83,7 +86,7 @@ class LineTest {
         Assertions.assertThat(lineOne.getColor()).isEqualTo(red);
     }
 
-    @DisplayName("노선에 구간들을 추가하고 노선을 조회하면 구간에 포함된 지하철역을 알 수 있다")
+    @DisplayName("기존 노선의 마지막 구간의 지하철 역을 추가하고 노선을 조회하면 구간에 포함된 지하철역을 알 수 있다")
     @Test
     void getStations() {
         //given
@@ -95,5 +98,44 @@ class LineTest {
 
         //then
         Assertions.assertThat(stations).containsExactly(sectionOne.getUpStation(), sectionOne.getDownStation());
+    }
+
+    @DisplayName("기존 구간의 상행선에서 출발하는 노선을 생성하고 노선을 조회하면 순서가 변경된 지하철역을 알 수 있다")
+    @Test
+    void getStationsWithChangeOfOrder() {
+        //given
+         Station seoulStation = new Station(SEOUL_STATION);
+         Station yongSanStation = new Station(YONGSAN_STATION);
+         Station hongDaeStation = new Station(HONGDAE_STATION);
+         Station songPaStation = new Station(SONGPA_STATION);
+         Line line = new Line(LINE_ONE, BACKGROUND_COLOR_BLUE);
+         line.addSection(seoulStation, yongSanStation, DISTANCE_TEN);
+         line.addSection(yongSanStation, songPaStation, DISTANCE_TEN);
+
+         //when
+         Section section = new Section(line, seoulStation, hongDaeStation, DISTANCE_FIVE);
+         line.getSections().addSection(section);
+
+         //then
+         Assertions.assertThat(line.getStations()).containsExactly(seoulStation, hongDaeStation, yongSanStation, songPaStation);
+    }
+
+    @DisplayName("정렬되지 않는 구간을 가졌더라도 노선을 조회하면 정렬된 지하철역을 알 수 있다")
+    @Test
+    void getStationsWitUnSortedSection() {
+        //given
+        Station seoulStation = new Station(SEOUL_STATION);
+        Station yongSanStation = new Station(YONGSAN_STATION);
+        Station hongDaeStation = new Station(HONGDAE_STATION);
+        Station songPaStation = new Station(SONGPA_STATION);
+        Line line = new Line(LINE_ONE, BACKGROUND_COLOR_BLUE);
+
+        //when
+        line.addSection(yongSanStation, hongDaeStation, DISTANCE_TEN);
+        line.addSection(hongDaeStation, songPaStation, DISTANCE_TEN);
+        line.addSection(seoulStation, yongSanStation, DISTANCE_TEN);
+
+        //then
+        Assertions.assertThat(line.getStations()).containsExactly(seoulStation, yongSanStation, hongDaeStation, songPaStation);
     }
 }
