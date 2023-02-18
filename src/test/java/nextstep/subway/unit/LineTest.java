@@ -100,7 +100,7 @@ class LineTest {
         Assertions.assertThat(stations).containsExactly(sectionOne.getUpStation(), sectionOne.getDownStation());
     }
 
-    @DisplayName("기존 구간의 상행선에서 출발하는 노선을 생성하고 노선을 조회하면 순서가 변경된 지하철역을 알 수 있다")
+    @DisplayName("기존 구간의 상행선에서 출발하는 구간을 생성하고 노선을 조회하면 순서가 변경된 지하철역을 알 수 있다")
     @Test
     void getStationsWithChangeOfOrder() {
         //given
