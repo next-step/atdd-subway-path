@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.exception.*;
 
 import javax.persistence.*;
@@ -48,6 +47,14 @@ public class Sections {
             sections.add(newSection);
         }
         sections.add(section);
+    }
+
+    private boolean addableInMiddle(Section section) {
+        validateSectionDistance(section);
+        return sections.stream()
+                .filter(s -> s.getDistance() > section.getDistance())
+                .map(s -> s.getUpStation())
+                .anyMatch(upStation -> upStation.equals(section.getUpStation()));
     }
 
     public void removeSection() {
@@ -108,10 +115,10 @@ public class Sections {
         }
     }
 
-    private boolean addableInMiddle(Section section) {
-        return sections.stream()
-                .filter(s -> s.getDistance() > section.getDistance())
-                .map(s -> s.getUpStation())
-                .anyMatch(upStation -> upStation.equals(section.getUpStation()));
+    private void validateSectionDistance(Section section) {
+        if (sections.stream()
+                .anyMatch(s ->s.getDistance() <= section.getDistance())) {
+            throw new InvalidSectionDistanceException();
+        }
     }
 }
