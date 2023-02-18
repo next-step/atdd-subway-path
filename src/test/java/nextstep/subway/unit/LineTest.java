@@ -21,7 +21,7 @@ class LineTest {
 		이호선.addSection(강남역, 선릉역, 10);
 
 		// Then
-		assertThat(이호선.getSections()).isNotEmpty();
+		assertThat(이호선.getSections().getSections()).isNotEmpty();
 	}
 
 	@DisplayName("구간 조회")

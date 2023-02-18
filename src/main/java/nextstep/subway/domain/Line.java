@@ -1,14 +1,10 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 @Entity
 public class Line {
@@ -18,8 +14,8 @@ public class Line {
 	private String name;
 	private String color;
 
-	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-	private List<Section> sections = new ArrayList<>();
+	@Embedded
+	private Sections sections = new Sections();
 
 	public Line() {
 	}
@@ -53,10 +49,12 @@ public class Line {
 		this.color = color;
 	}
 
-	public List<Section> getSections() {
+	public Sections getSections() {
 		return sections;
 	}
 
-	public void addSection(Station 강남역, Station 선릉역, int i) {
+	public void addSection(Station upStation, Station downStation, int distance) {
+		this.getSections().addSection(new Section(this, upStation, downStation, distance));
+
 	}
 }
