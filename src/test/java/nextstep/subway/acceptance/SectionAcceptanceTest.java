@@ -51,7 +51,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
                 createSectionCreateParams(양재역_ID, 정자역_ID, SHORTER_DISTANCE));
 
-        지하철_노선에_지하철_구간_생성됨(지하철_노선에_지하철_구간_생성_응답, 정자역_ID,
+        지하철_노선에_지하철_구간_생성됨(지하철_노선에_지하철_구간_생성_응답,
             new Long[]{강남역_ID, 양재역_ID, 정자역_ID});
     }
 
@@ -67,7 +67,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
                 createSectionCreateParams(정자역_ID, 양재역_ID, SHORTER_DISTANCE));
 
-        지하철_노선에_지하철_구간_생성됨(지하철_노선에_지하철_구간_생성_응답, 정자역_ID,
+        지하철_노선에_지하철_구간_생성됨(지하철_노선에_지하철_구간_생성_응답,
             new Long[]{강남역_ID, 정자역_ID, 양재역_ID});
     }
 
@@ -81,10 +81,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long 정자역_ID = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_응답 =
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
-                createSectionCreateParams(강남역_ID, 정자역_ID, SHORTER_DISTANCE));
+                createSectionCreateParams(양재역_ID, 정자역_ID, SHORTER_DISTANCE));
 
-        지하철_노선에_지하철_구간_생성됨(지하철_노선에_지하철_구간_생성_응답, 정자역_ID,
-            new Long[]{강남역_ID, 정자역_ID, 양재역_ID});
+        지하철_노선에_지하철_구간_생성됨(지하철_노선에_지하철_구간_생성_응답,
+            new Long[]{강남역_ID, 양재역_ID, 정자역_ID});
     }
 
     /**
@@ -132,7 +132,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         예외_발생함(지하철_노선에_지하철_구간_생성_응답);
     }
 
-
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
@@ -151,7 +150,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_제거됨(지하철_노선에_지하철_구간_제거_응답);
     }
 
-    private void 지하철_노선에_지하철_구간_생성됨(ExtractableResponse<Response> response, Long stationId,
+    private void 지하철_노선에_지하철_구간_생성됨(ExtractableResponse<Response> response,
         Long[] orderedStationIds) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(신분당선_ID);
