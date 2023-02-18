@@ -185,10 +185,6 @@ public class Sections {
         return sections.size() > 1;
     }
 
-    private int getLastIndex() {
-        return sections.size() - 1;
-    }
-
     public boolean isEmpty() {
         return sections.isEmpty();
     }

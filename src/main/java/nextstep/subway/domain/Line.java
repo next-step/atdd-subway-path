@@ -47,10 +47,6 @@ public class Line {
         return sections.getStations();
     }
 
-    public Station getTerminalStation() {
-        return sections.getTerminalStation();
-    }
-
     public void removeStation(final Station station) {
         sections.removeSection(station);
     }
