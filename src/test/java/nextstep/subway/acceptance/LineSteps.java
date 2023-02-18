@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.LineRequest;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -64,4 +65,19 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(final LineRequest lineRequest) {
+        return RestAssured
+                    .given()
+                        .body(lineRequest)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when()
+                        .post("/lines")
+                    .then()
+                    .extract();
+    }
+
+
+
+
 }
