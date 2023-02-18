@@ -63,4 +63,7 @@ public class Line {
 	public List<Station> getStations() {
 		return this.sections.getStations();
 	}
+
+	public void removeSection(Station station) {
+	}
 }
