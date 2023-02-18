@@ -186,4 +186,23 @@ public class SectionsTest {
                 }).isInstanceOf(InvalidValueException.class)
                 .hasMessage(ErrorCode.NOT_EXISTS_STATIONS_OF_NEW_SECTION.getErrorMessage());
     }
+
+    @DisplayName("데이터베이스로 조회된 정렬되지 않는 Section 리스트를 정리해서 VO 객체로 반환한다")
+    @Test
+    void addSectionAtFirst() {
+        //given
+        Station songPaStation = new Station(SONGPA_STATION);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
+        Section startSection = new Section(lineOne, songPaStation, seoulStation, DISTANCE_TEN);
+
+        //when
+        Sections sections = new Sections();
+        sections.addSection(sectionOne);
+        sections.addSection(sectionTwo);
+        sections.addSection(startSection);
+
+        //then
+        Assertions.assertThat(sections.getSections()).containsExactly(startSection, sectionOne, sectionTwo);
+    }
 }

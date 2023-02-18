@@ -17,6 +17,8 @@ import java.util.Map;
 @Embeddable
 public class Sections {
 
+    private static final String ADD_IN_THE_MIDDLE = "addInTheMiddle";
+    private static final String ADD_AT_THE_BEGINNING = "addAtTheBeginning";
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
 
@@ -30,14 +32,24 @@ public class Sections {
         notExistsValidateCheck(section);
         int index = -1;
         Section foundSection = null;
+        String status = null;
         for (int i = 0; i < sections.size(); i++) {
+            if(sections.get(0).getUpStation().equals(section.getDownStation())) {
+                status = ADD_AT_THE_BEGINNING;
+                break;
+            }
             if (sections.get(i).getUpStation().equals(section.getUpStation())) {
                 index = i;
                 foundSection = sections.get(i);
+                status = ADD_IN_THE_MIDDLE;
                 break;
             }
         }
-        if (foundSection != null) {
+        if (ADD_AT_THE_BEGINNING.equals(status)) {
+            sections.add(0, section);
+            return;
+        }
+        if (foundSection != null && ADD_IN_THE_MIDDLE.equals(status)) {
             splitAndSaveSections(index, section.getDownStation(), section.getDistance(), foundSection);
             return;
         }
@@ -52,8 +64,7 @@ public class Sections {
     public SectionsVO sort() {
         Map<Station, Integer> stationCount = countStations();
         Station firstStation = findStartStation(stationCount);
-        SectionsVO sectionsVO = makeSortedSections(firstStation);
-        return sectionsVO;
+        return makeSortedSections(firstStation);
     }
 
     private void notExistsValidateCheck(Section newSection) {
