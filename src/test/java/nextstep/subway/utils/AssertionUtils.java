@@ -2,6 +2,7 @@ package nextstep.subway.utils;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.ErrorResponse;
 
 import java.util.List;
@@ -25,6 +26,10 @@ public class AssertionUtils {
     // list
     public static <T> void 목록은_다음을_순서대로_포함한다(final List<T> list, final T... obj) {
         assertThat(list).containsExactly(obj);
+    }
+
+    public static <T> void 목록은_다음을_포함하지_않는다(final List<T> list, final T... obj) {
+        assertThat(list).doesNotContain(obj);
     }
 
     // error
