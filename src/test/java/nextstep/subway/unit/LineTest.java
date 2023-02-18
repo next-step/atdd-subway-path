@@ -118,12 +118,17 @@ class LineTest {
     @DisplayName("구간 삭제 - 중간역이 제거될 경우 재배치를 함")
     @Test
     void removeSection_3() {
+        Station 종로3가 = new Station("종로3가");
+
         line.addSection(new Section(line, 시청역, 종각역, ADD_SECTION_DISTANCE));
+        line.addSection(new Section(line, 종각역, 종로3가, 3));
 
         line.removeSection(시청역);
+        line.removeSection(종각역);
 
-        assertThat(line.getStations()).containsExactly(서울역, 종각역);
-        assertThat(line.getDistances()).containsExactly(15);
+
+        assertThat(line.getStations()).containsExactly(서울역, 종로3가);
+        assertThat(line.getDistances()).containsExactly(18);
     }
 
     @DisplayName("구간 삭제 - 예외 케이스 - 구간이 하나인 노선에서 마지막 구간을 제거할 때")

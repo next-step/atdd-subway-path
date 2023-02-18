@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -252,15 +253,25 @@ public class Sections {
         Section upSection = findUpSection(station).get();
         Section downSection = findDownSection(station).get();
 
-        Line line = upSection.getLine();
-        int distance = upSection.getDistance() + downSection.getDistance();
-        Station upStation = downSection.getUpStation();
-        Station downStation = upSection.getDownStation();
-        int order = downSection.getOrder();
+        Section newSection = new Section(
+                upSection.getLine(),
+                downSection.getUpStation(),
+                upSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance(),
+                downSection.getOrder()
+        );
 
-        int indexToInsert = sections.indexOf(downSection);
         sections.remove(downSection);
         sections.remove(upSection);
-        sections.add(indexToInsert, new Section(line, upStation, downStation, distance, order));
+        sections.add(newSection);
+
+        resetOrders();
+    }
+
+    private void resetOrders() {
+        sections.sort(Comparator.comparingInt(Section::getOrder));
+
+        IntStream.range(0, sections.size())
+                .forEach(index -> sections.get(index).setOrder(index+1));
     }
 }

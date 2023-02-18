@@ -75,10 +75,7 @@ public class Section {
         order = 1;
     }
 
-    public void subtractDistance(int distance) {
-        if(this.distance <= distance) {
-            throw new IllegalArgumentException("기존의 구간 길이보다 작아질 수 없습니다");
-        }
-        this.distance -= distance;
+    public void setOrder(int order) {
+        this.order = order;
     }
 }
