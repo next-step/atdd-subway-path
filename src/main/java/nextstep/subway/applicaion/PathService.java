@@ -17,6 +17,7 @@ public class PathService {
 
     private final StationService stationService;
     private final LineRepository lineRepository;
+    private final PathFinder pathFinder;
 
 
     @Transactional(readOnly = true)
@@ -27,6 +28,6 @@ public class PathService {
         final Station source = stationService.findById(pathRequest.getSource());
         final Station target = stationService.findById(pathRequest.getTarget());
 
-        return PathFinder.findShortestPath(lines, source, target);
+        return pathFinder.findPath(lines, source, target);
     }
 }
