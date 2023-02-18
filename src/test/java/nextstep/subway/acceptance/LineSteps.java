@@ -3,10 +3,15 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static nextstep.subway.fixture.FieldFixture.노선_내_역_아이디;
+import static nextstep.subway.utils.JsonPathUtil.리스트로_추출;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSteps {
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
@@ -63,5 +68,34 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
+    }
+
+
+    public static void 노선_조회가_성공한다(ExtractableResponse<Response> 노선_조회_결과) {
+        assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 노선에_역이_포함되어있다(ExtractableResponse<Response> 노선_조회_결과, Long... 역_id_목록) {
+        assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
+                .containsAnyOf(역_id_목록);
+    }
+
+    public static void 노선에_역이_순서대로_포함되어있다(ExtractableResponse<Response> 노선_조회_결과, Long... 역_id_목록) {
+        assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
+                .containsExactly(역_id_목록);
+    }
+
+    public static void 노선에_역이_포함되어_있지않다(ExtractableResponse<Response> 노선_조회_결과, Long... 역_id_목록) {
+        assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
+                .doesNotContain(역_id_목록);
+    }
+
+    public static void 노선에_상행_종점역과_일치한다(ExtractableResponse<Response> 노선_조회_결과, Long 역_id) {
+        assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
+                .first().isEqualTo(역_id);
+    }
+
+    public static void 구간_제거가_실패한다(ExtractableResponse<Response> 구간_제거_결과, HttpStatus 응답_코드) {
+        assertThat(구간_제거_결과.statusCode()).isEqualTo(응답_코드.value());
     }
 }

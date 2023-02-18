@@ -17,6 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,15 +62,11 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return getDistance() == section.getDistance()
-                && Objects.equals(getId(), section.getId())
-                && Objects.equals(getLine(), section.getLine())
-                && Objects.equals(getUpStation(), section.getUpStation())
-                && Objects.equals(getDownStation(), section.getDownStation());
+        return Objects.equals(getId(), section.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getLine(), getUpStation(), getDownStation(), getDistance());
+        return Objects.hash(getId());
     }
 }

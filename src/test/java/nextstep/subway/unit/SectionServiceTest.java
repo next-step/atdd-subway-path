@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+
 import static nextstep.subway.fixture.LineFixture.이호선;
 import static nextstep.subway.fixture.SectionFixture.강남_역삼_구간;
+import static nextstep.subway.fixture.SectionFixture.역삼_선릉_구간;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -29,6 +32,9 @@ class SectionServiceTest {
     @Autowired
     private SectionService sectionService;
 
+    @Autowired
+    private EntityManager entityManager;
+
     @DisplayName("지하철 구간 추가")
     @Test
     void addSection() {
@@ -38,11 +44,11 @@ class SectionServiceTest {
         Line line = lineRepository.save(이호선.엔티티_생성());
 
         // when - addSection 호출
-        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 강남_역삼_구간.노선_간_거리());
+        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 강남_역삼_구간.구간_거리());
         sectionService.addSection(line.getId(), sectionRequest);
 
         // then - line.getSections 메서드를 통해 검증
-        assertThat(line.getSections().getAllStations())
+        assertThat(line.getAllStations())
                 .containsExactly(강남역, 역삼역);
     }
 
@@ -52,15 +58,17 @@ class SectionServiceTest {
         // given - stationRepository와 lineRepository를 활용하여 초기값 셋팅 후 구간 추가
         Station 강남역 = stationRepository.save(StationFixture.강남역.엔티티_생성());
         Station 역삼역 = stationRepository.save(StationFixture.역삼역.엔티티_생성());
+        Station 선릉역 = stationRepository.save(StationFixture.선릉역.엔티티_생성());
         Line line = lineRepository.save(이호선.엔티티_생성());
-        SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 강남_역삼_구간.노선_간_거리());
-        sectionService.addSection(line.getId(), sectionRequest);
+        sectionService.addSection(line.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 강남_역삼_구간.구간_거리()));
+        sectionService.addSection(line.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 역삼_선릉_구간.구간_거리()));
+
+        entityManager.persist(line);
 
         // when - deleteSection 호출
         sectionService.deleteSection(line.getId(), 역삼역.getId());
 
         // then - line.getSections 메서드를 통해 검증
-        assertThat(line.getSections().getAllStations())
-                .doesNotContain(강남역, 역삼역);
+        assertThat(line.getAllStations()).doesNotContain(역삼역);
     }
 }
