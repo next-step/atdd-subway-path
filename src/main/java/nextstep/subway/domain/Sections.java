@@ -4,6 +4,7 @@ import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.NotRegisteredStationException;
 import nextstep.subway.exception.NotRegisteredUpStationAndDownStationException;
 import nextstep.subway.exception.SectionAlreadyRegisteredException;
+import nextstep.subway.exception.SingleSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -60,6 +61,14 @@ public class Sections {
      * @param station 삭제할 지하철 구간의 역 정보
      */
     public void remove(final Station station) {
+
+        if (sectionList.size() < 2) {
+            throw new SingleSectionException();
+        }
+
+        if (isRegisteredStation(station)) {
+            throw new NotRegisteredStationException();
+        }
 
         if (isFinalUpStation(station)) {
             sectionList.remove(0);
@@ -241,5 +250,10 @@ public class Sections {
         int afterDistance = afterSection.getDistance();
 
         beforeSection.updateDownStation(afterSection.getDownStation(), beforeDistance + afterDistance);
+    }
+
+    private boolean isRegisteredStation(final Station station) {
+        return getAllStations().stream()
+                .noneMatch(sta -> sta.equals(station));
     }
 }

@@ -4,8 +4,10 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.InvalidDistanceException;
+import nextstep.subway.exception.NotRegisteredStationException;
 import nextstep.subway.exception.NotRegisteredUpStationAndDownStationException;
 import nextstep.subway.exception.SectionAlreadyRegisteredException;
+import nextstep.subway.exception.SingleSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -23,6 +25,7 @@ import static nextstep.subway.fixture.SectionFixture.양재_정자_구간;
 import static nextstep.subway.fixture.SectionFixture.역삼_삼성_구간;
 import static nextstep.subway.fixture.SectionFixture.역삼_선릉_구간;
 import static nextstep.subway.fixture.StationFixture.강남역;
+import static nextstep.subway.fixture.StationFixture.범계역;
 import static nextstep.subway.fixture.StationFixture.선릉역;
 import static nextstep.subway.fixture.StationFixture.역삼역;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -252,6 +255,46 @@ class LineTest {
                 line.removeSection(중간_역);
 
                 assertThat(line.getAllStations()).doesNotContain(중간_역);
+            }
+        }
+
+        @Nested
+        @DisplayName("구간이 하나인 노선에서 역을 삭제하면")
+        class Context_with_remove_station_on_line_with_only_one_section {
+
+            private final Line line = 이호선.엔티티_생성();
+
+            @BeforeEach
+            void setUp() {
+                line.addSection(강남_역삼_구간.엔티티_생성(line));
+            }
+
+            @Test
+            @DisplayName("SingleSectionException 예외를 던진다")
+            void it_returns_exception() throws Exception {
+                assertThatThrownBy(() -> line.removeSection(강남역.엔티티_생성()))
+                        .isInstanceOf(SingleSectionException.class);
+
+            }
+        }
+
+        @Nested
+        @DisplayName("등록되지 않은 역을 삭제하면")
+        class Context_with_remove_not_registered_station {
+
+            private final Line line = 이호선.엔티티_생성();
+
+            @BeforeEach
+            void setUp() {
+                line.addSection(강남_역삼_구간.엔티티_생성(line));
+                line.addSection(역삼_선릉_구간.엔티티_생성(line));
+            }
+
+            @Test
+            @DisplayName("NotRegisteredStationException 예외를 던진다")
+            void it_returns_exception() throws Exception {
+                assertThatThrownBy(() -> line.removeSection(범계역.엔티티_생성()))
+                        .isInstanceOf(NotRegisteredStationException.class);
             }
         }
     }

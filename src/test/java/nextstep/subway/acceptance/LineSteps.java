@@ -94,4 +94,8 @@ public class LineSteps {
         assertThat(리스트로_추출(노선_조회_결과, 노선_내_역_아이디, Long.class))
                 .first().isEqualTo(역_id);
     }
+
+    public static void 구간_제거가_실패한다(ExtractableResponse<Response> 구간_제거_결과, HttpStatus 응답_코드) {
+        assertThat(구간_제거_결과.statusCode()).isEqualTo(응답_코드.value());
+    }
 }

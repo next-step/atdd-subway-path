@@ -8,9 +8,11 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.Map;
 
+import static nextstep.subway.acceptance.LineSteps.구간_제거가_실패한다;
 import static nextstep.subway.acceptance.LineSteps.노선_조회가_성공한다;
 import static nextstep.subway.acceptance.LineSteps.노선에_상행_종점역과_일치한다;
 import static nextstep.subway.acceptance.LineSteps.노선에_역이_순서대로_포함되어있다;
@@ -27,6 +29,7 @@ import static nextstep.subway.fixture.SectionFixture.강남_양재_구간;
 import static nextstep.subway.fixture.SectionFixture.신사_강남_구간;
 import static nextstep.subway.fixture.SectionFixture.양재_정자_구간;
 import static nextstep.subway.fixture.StationFixture.강남역;
+import static nextstep.subway.fixture.StationFixture.범계역;
 import static nextstep.subway.fixture.StationFixture.신사역;
 import static nextstep.subway.fixture.StationFixture.양재역;
 import static nextstep.subway.fixture.StationFixture.정자역;
@@ -106,11 +109,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
     class 구간_삭제 {
 
-        /**
-         * Given 지하철 구간이 2개인 노선이 주어지고 (A-B, B-C)
-         * When 지하철 구간의 하행 종점역을 삭제하면 (A-B-C -> C 삭제)
-         * Then 노선 목록 조회 시 해당 역은 역 목록에서 조회되지 않는다
-         */
         @Nested
         @DisplayName("지하철 구간의 하행 종점역을 삭제하면")
         class Context_with_remove_final_downstation {
@@ -134,12 +132,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
             }
         }
 
-
-        /**
-         * Given 지하철 구간이 2개인 노선이 주어지고 (A-B, B-C)
-         * When 지하철 구간의 상행 종점역을 삭제하면 (A-B-C -> A 삭제)
-         * Then 노선 목록 조회 시 상행 종점역은 기존 최상위 구간의 하행 종점역으로 수정된다 ("B"-C)
-         */
         @Nested
         @DisplayName("지하철 구간의 상행 종점역을 삭제하면")
         class Context_with_remove_final_upstation {
@@ -160,13 +152,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 노선에_역이_포함되어_있지않다(노선_조회_결과, 기존_상행_종점역_id);
             }
         }
-
-
-        /**
-         * Given 지하철 구간이 2개인 노선이 주어지고 (A-B, B-C)
-         * When 지하철 구간의 중간 역을 삭제하면 (A-B-C -> B 삭제)
-         * Then 노선 목록 조회 시 역 목록은 상행 종점역을 기준으로 정렬되어 반환된다 (재배치) (A-C)
-         */
 
         @Nested
         @DisplayName("지하철 구간의 중간 역을 삭제하면")
@@ -191,15 +176,37 @@ class SectionAcceptanceTest extends AcceptanceTest {
             }
         }
 
-        /**
-         * When 노선에 등록되어 있지 않은 역을 삭제하면
-         * Then 409 에러 코드를 응답한다
-         */
+        @Nested
+        @DisplayName("노선에 등록되어 있지 않은 역을 삭제하면")
+        class Context_with_remove_not_reigstered_station {
 
+            private Long 등록되지_않은_역_id;
 
-        /**
-         * When 구간이 하나인 노선에서 마지막 역을 삭제하면
-         * Then 409 에러 코드를 응답한다
-         */
+            @BeforeEach
+            void setUp() {
+                Long 새로운_하행역_id = Long으로_추출(지하철역_생성_요청(정자역.역_이름()), 식별자_아이디);
+                지하철_노선에_지하철_구간_생성_요청(신분당선_id, 양재_정자_구간.요청_데이터_생성(기존_하행_종점역_id, 새로운_하행역_id));
+                등록되지_않은_역_id = Long으로_추출(지하철역_생성_요청(범계역.역_이름()), 식별자_아이디);
+            }
+
+            @Test
+            @DisplayName("404 에러 코드를 응답한다")
+            void it_responses_409() throws Exception {
+                ExtractableResponse<Response> 구간_제거_결과 = 지하철_노선에_지하철_구간_제거_요청(신분당선_id, 등록되지_않은_역_id);
+                구간_제거가_실패한다(구간_제거_결과, HttpStatus.NOT_FOUND);
+            }
+        }
+
+        @Nested
+        @DisplayName("구간이 하나인 노선에서 역을 삭제하면")
+        class Context_with_remove_station_on_line_with_only_one_section {
+
+            @Test
+            @DisplayName("409 에러 코드를 응답한다")
+            void it_responses_409() throws Exception {
+                ExtractableResponse<Response> 구간_제거_결과 = 지하철_노선에_지하철_구간_제거_요청(신분당선_id, 기존_하행_종점역_id);
+                구간_제거가_실패한다(구간_제거_결과, HttpStatus.CONFLICT);
+            }
+        }
     }
 }
