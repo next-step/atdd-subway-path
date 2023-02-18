@@ -43,12 +43,12 @@ public class Line {
         return color;
     }
 
-    public void update(Line line) {
-        if (line.getName() != null) {
-            this.name = line.getName();
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
         }
-        if (line.getColor() != null) {
-            this.color = line.getColor();
+        if (color != null) {
+            this.color = color;
         }
     }
 
