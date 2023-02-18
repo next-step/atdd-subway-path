@@ -49,10 +49,10 @@ public class Section {
     }
 
     public boolean equalsUpStation(Station upstation) {
-        return this.getUpStation().getId() == upstation.getId();
+        return this.getUpStation().getId().equals(upstation.getId());
     }
 
     public boolean equalsDownStation(Station downStation) {
-        return this.getDownStation().getId() == downStation.getId();
+        return this.getDownStation().getId().equals(downStation.getId());
     }
 }
