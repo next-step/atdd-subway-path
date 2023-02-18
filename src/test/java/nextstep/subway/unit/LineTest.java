@@ -1,12 +1,9 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.addtional.Additional;
-import nextstep.subway.applicaion.addtional.BackAddSection;
-import nextstep.subway.applicaion.addtional.FrontAddSection;
-import nextstep.subway.applicaion.addtional.MiddleAddSection;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.section.Distance;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.section.Section;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.SubwayRestApiException;
 import org.assertj.core.api.ListAssert;
 import org.junit.jupiter.api.DisplayName;
@@ -24,10 +21,6 @@ class LineTest {
     int distance_5 = 5;
     int distance_7 = 7;
 
-    Additional frontAddSection = new FrontAddSection();
-    Additional backAddSection = new BackAddSection();
-    Additional middleAddSection = new MiddleAddSection();
-
     @Test
     void addSection() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_5);
@@ -40,7 +33,7 @@ class LineTest {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_5);
 
         Section newSection = createSection(line, 지하철역0, 지하철역1, distance_5);
-        지하철노선_기존구간_앞에_추가(line, newSection);
+        지하철노선_기존구간_추가(line, newSection);
 
         지하철노선_구간_지하철역_검증(line, 지하철역0, 지하철역1, 지하철역3);
     }
@@ -51,37 +44,37 @@ class LineTest {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
 
         Section newSection = createSection(line, 지하철역1, 지하철역2, distance_5);
-        지하철노선_기존구간_중간에_추가(line, newSection);
+        지하철노선_기존구간_추가(line, newSection);
 
         지하철노선_구간_지하철역_검증(line, 지하철역1, 지하철역2, 지하철역3);
     }
 
-    @DisplayName("지하철 구간 중간에 새로운 구간을 추가 중 구간길이 검증 실패로 Exception 발생")
+    @DisplayName("지하철 구간 중간에 새로운 구간을 추가 중 구간길이 검증 실패로 Exception 던짐")
     @Test
     void addSectionMiddleException1() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
 
         Section newSection = createSection(line, 지하철역1, 지하철역2, distance_7);
 
-        assertThrows(SubwayRestApiException.class, () -> 지하철노선_기존구간_중간에_추가(line, newSection));
+        assertThrows(SubwayRestApiException.class, () -> 지하철노선_기존구간_추가(line, newSection));
     }
 
-    @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 모두 존재하는 경우 Exception 발생")
+    @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 모두 존재하는 경우 Exception 던짐")
     @Test
     void addSectionMiddleException2() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
         Section newSection = createSection(line, 지하철역1, 지하철역3, distance_5);
 
-        assertThrows(SubwayRestApiException.class, () -> 지하철노선_기존구간_중간에_추가(line, newSection));
+        assertThrows(SubwayRestApiException.class, () -> 지하철노선_기존구간_추가(line, newSection));
     }
 
-    @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 노선에 아예 없는 경우 Exception 발생")
+    @DisplayName("지하철 구간 중간에 새로운 구간 지하철역이 노선에 아예 없는 경우 Exception 던짐")
     @Test
     void addSectionMiddleException3() {
         Line line = 지하철노선_생성_기존구간_추가(지하철역1, 지하철역3, distance_7);
         Section newSection = createSection(line, new Station("지하철역4"), new Station("지하철역5"), distance_5);
 
-        assertThrows(SubwayRestApiException.class, () -> 지하철노선_기존구간_중간에_추가(line, newSection));
+        assertThrows(SubwayRestApiException.class, () -> 지하철노선_기존구간_추가(line, newSection));
     }
 
     @Test
@@ -114,7 +107,7 @@ class LineTest {
         지하철노선_구간_지하철역_검증(line, 지하철역0, 지하철역1, 지하철역2);
     }
 
-    @DisplayName("지하철 노선에 없는 지하철역을 삭제할 경우 Exception 발생")
+    @DisplayName("지하철 노선에 없는 지하철역을 삭제할 경우 Exception 던짐")
     @Test
     void removeSectionException() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1, 지하철역2, 지하철역3);
@@ -122,7 +115,7 @@ class LineTest {
         assertThrows(SubwayRestApiException.class, () -> line.removeSection(new Station("지하철역4")));
     }
 
-    @DisplayName("지하철 노선의 구간이 1개인 상태에서 지하철역을 삭제할 경우 Exception 발생")
+    @DisplayName("지하철 노선의 구간이 1개인 상태에서 지하철역을 삭제할 경우 Exception 던짐")
     @Test
     void removeSectionException2() {
         Line line = 지하철노선_생성_기존구간_추가_2(distance_5, 지하철역0, 지하철역1);
@@ -138,10 +131,10 @@ class LineTest {
                 .line(line)
                 .upStation(지하철역1)
                 .downStation(지하철역2)
-                .distance(distance_5)
+                .distance(new Distance(distance_5))
                 .build();
 
-        지하철노선_기존구간_뒤에_추가(line, newSection);
+        지하철노선_기존구간_추가(line, newSection);
 
         지하철노선_구간_지하철역_검증(line, 지하철역1, 지하철역2);
     }
@@ -151,7 +144,7 @@ class LineTest {
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(distance)
+                .distance(new Distance(distance))
                 .build();
     }
 
@@ -159,7 +152,7 @@ class LineTest {
         Line line = new Line("지하철노선", "bg-red-600");
         Section section = createSection(line, upStation, downStation, distance);
 
-        지하철노선_기존구간_뒤에_추가(line, section);
+        지하철노선_기존구간_추가(line, section);
 
         return line;
     }
@@ -176,19 +169,11 @@ class LineTest {
 
     private void 지하철구간_추가(Line line, Station upStation, Station downStation, int distance) {
         Section section = createSection(line, upStation, downStation, distance);
-        지하철노선_기존구간_뒤에_추가(line, section);
+        line.addSection(section);
     }
 
-    private void 지하철노선_기존구간_앞에_추가(Line line, Section newSection) {
-        line.addSection(frontAddSection, newSection);
-    }
-
-    private void 지하철노선_기존구간_중간에_추가(Line line, Section newSection) {
-        line.addSection(middleAddSection, newSection);
-    }
-
-    private void 지하철노선_기존구간_뒤에_추가(Line line, Section newSection) {
-        line.addSection(backAddSection, newSection);
+    private void 지하철노선_기존구간_추가(Line line, Section newSection) {
+        line.addSection(newSection);
     }
 
     private ListAssert<Station> 지하철노선_구간_지하철역_검증(Line line, Station... stations) {
