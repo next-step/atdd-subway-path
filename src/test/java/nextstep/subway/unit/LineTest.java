@@ -54,7 +54,7 @@ class LineTest {
         line.addSection(new Section(line, 종각역, 서울역, ADD_SECTION_DISTANCE));
 
         assertThat(line.getStations()).containsExactly(종각역, 서울역, 시청역);
-        assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE, ADD_SECTION_DISTANCE);
+        assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE, CREATE_LINE_DISTANCE);
     }
 
     @DisplayName("구간 추가 - 새로운 역을 하행 종점으로 등록할 경우")
@@ -63,7 +63,7 @@ class LineTest {
         line.addSection(new Section(line, 시청역, 종각역, ADD_SECTION_DISTANCE));
 
         assertThat(line.getStations()).containsExactly(서울역, 시청역, 종각역);
-        assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE, ADD_SECTION_DISTANCE);
+        assertThat(line.getDistances()).containsExactly(CREATE_LINE_DISTANCE, ADD_SECTION_DISTANCE);
     }
 
     @DisplayName("구간 추가 - 예외 케이스 - 역 사이에 새로운 역을 등록하는 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
@@ -101,7 +101,7 @@ class LineTest {
         line.removeSection(종각역);
 
         assertThat(line.getStations()).containsExactly(서울역, 시청역);
-        assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE);
+        assertThat(line.getDistances()).containsExactly(CREATE_LINE_DISTANCE);
     }
 
     @DisplayName("구간 삭제 - 종점이 제거될 경우 다음으로 오던 역이 종점이 됨 - 종점 상행역 제거")
@@ -147,6 +147,6 @@ class LineTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
         assertThat(line.getStations()).containsExactly(서울역, 시청역, 종각역);
-        assertThat(line.getDistances()).containsExactly(ADD_SECTION_DISTANCE, ADD_SECTION_DISTANCE);
+        assertThat(line.getDistances()).containsExactly(CREATE_LINE_DISTANCE, ADD_SECTION_DISTANCE);
     }
 }

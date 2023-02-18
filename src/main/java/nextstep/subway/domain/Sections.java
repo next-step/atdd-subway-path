@@ -173,9 +173,6 @@ public class Sections {
     }
 
     private void addDownToBeginUp(Section section) {
-        Section firstSection = findFirstSection();
-        firstSection.subtractDistance(section.getDistance());
-
         sections.forEach(Section::increaseOrder);
 
         section.beginOrder();
@@ -183,9 +180,6 @@ public class Sections {
     }
 
     private void addUpToEndDown(Section section) {
-        Section lastSection = findLastSection();
-        lastSection.subtractDistance(section.getDistance());
-
         sections.add(section);
     }
 
