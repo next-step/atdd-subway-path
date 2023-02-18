@@ -3,11 +3,13 @@ package nextstep.subway.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.domain.VO.SectionsVO;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -36,15 +38,17 @@ public class Line {
         if (sections.getSections().isEmpty()) {
             return Collections.emptyList();
         }
+        SectionsVO sortedSections = sections.sort();
         List<Station> stations = new ArrayList<>();
-        stations.add(sections.getUpStation(0));
-        stations.addAll(sections.getDownStations());
+        stations.add(sortedSections.getSections().get(0).getUpStation());
+        stations.addAll(sortedSections.getSections().stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList()));
         return stations;
     }
 
     public void removeSection(Station station) {
-        sections.removeStationCheck(station);
-        sections.removeSection();
+        sections.removeSection(station);
     }
 
     public void updateNameOrColor(LineRequest request) {
