@@ -106,10 +106,6 @@ public class LineServiceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 때, 기존 역 사이 길이보다 크거나 같다.")
     @Test
     void addLongerSection() {
-        // when
-        // 첫 구간 추가
-        lineService.addSection(신분당선.getId(), 구간_요청);
-
         //when
         //강남역과 분당역 사이에 정자역 추가 요청
         Station 정자역 = stationRepository.save(new Station("정자역"));
@@ -124,10 +120,6 @@ public class LineServiceTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있을 때 예외 발생.")
     @Test
     void addSectionContainsAllStation() {
-        // when
-        // 첫 구간 추가
-        lineService.addSection(신분당선.getId(), 구간_요청);
-
         //when
         //새로운 노선이 기존의 역을 모두 포함
         SectionRequest 새로운_요청 = new SectionRequest(강남역.getId(), 분당역.getId(), 10);
@@ -141,10 +133,6 @@ public class LineServiceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 예외 발생.")
     @Test
     void addSectionContainsNoStation() {
-        // when
-        // 첫 구간 추가
-        lineService.addSection(신분당선.getId(), 구간_요청);
-
         //when
         //새로운 노선이 기존의 역을 모두 포함
         Station 정자역 = stationRepository.save(new Station("정자역"));

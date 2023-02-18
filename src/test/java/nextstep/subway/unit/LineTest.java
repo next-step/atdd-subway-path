@@ -27,14 +27,14 @@ class LineTest {
         이호선 = new Line("2호선", "green", 강남역, 정자역, 10);
     }
 
-    @DisplayName("지하철 구간 추가")
+    @DisplayName("지하철역 하행 종점역으로 추가")
     @Test
     void addSection() {
         이호선.addSection(정자역, 광교역, 15);
         assertThat(이호선.getDownStation()).isEqualTo(광교역);
     }
 
-    @DisplayName("지하철 구간 중간에 추가")
+    @DisplayName("지하철 구간 중간에 새로운 지하철역 추가")
     @Test
     void addSection2() {
         이호선.addSection(강남역, 광교역, 6);
@@ -43,12 +43,27 @@ class LineTest {
         assertThat(이호선.getSections()).hasSize(2);
     }
 
+    @DisplayName("상행 종점역으로 추가")
+    @Test
+    void addSection3() {
+        이호선.addSection(정자역, 광교역, 6);
+        assertThat(이호선.getUpStation()).isEqualTo(강남역);
+    }
+
     @DisplayName("지하철역 목록 생성")
     @Test
     void getStations() {
         이호선.addSection(정자역, 광교역, 15);
         List<Station> stations = 이호선.getStations();
         assertThat(stations).containsExactly(Arrays.array(강남역, 정자역, 광교역));
+    }
+
+    @DisplayName("지하철역 목록 생성, 중간에 추가할 때")
+    @Test
+    void getStations2() {
+        이호선.addSection(강남역, 광교역, 5);
+        List<Station> stations = 이호선.getStations();
+        assertThat(stations).containsExactly(Arrays.array(강남역, 광교역, 정자역));
     }
 
     @DisplayName("지하철 구간 삭제")

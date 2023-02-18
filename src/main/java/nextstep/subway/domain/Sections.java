@@ -37,6 +37,7 @@ public class Sections {
         validateContainsNotAllStation(upStation, downStation);
         validateContainsAnyStation(upStation, downStation);
         if (addableInMiddle(section)) {
+            validateSectionDistance(section);
             Section originalSection = sections.stream()
                     .filter(s-> upStation.equals(s.getUpStation()))
                     .findFirst().get();
@@ -50,7 +51,6 @@ public class Sections {
     }
 
     private boolean addableInMiddle(Section section) {
-        validateSectionDistance(section);
         return sections.stream()
                 .filter(s -> s.getDistance() > section.getDistance())
                 .map(s -> s.getUpStation())
