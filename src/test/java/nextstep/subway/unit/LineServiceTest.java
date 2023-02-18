@@ -33,6 +33,7 @@ public class LineServiceTest {
 
     private Station upStation;
     private Station downStation;
+    private Station deleteStation;
     private Line line;
     private final int distance = 10;
 
@@ -40,6 +41,7 @@ public class LineServiceTest {
     void setUp() {
         upStation = new Station("upStation");
         downStation = new Station("downStation");
+        deleteStation = new Station("deleteStation");
 
         line = new Line("line", "color");
     }
@@ -77,15 +79,17 @@ public class LineServiceTest {
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         stationRepository.save(upStation);
         stationRepository.save(downStation);
+        stationRepository.save(deleteStation);
         lineRepository.save(line);
         lineService.addSection(line.getId(), new SectionRequest(upStation.getId(), downStation.getId(), distance));
+        lineService.addSection(line.getId(), new SectionRequest(downStation.getId(), deleteStation.getId(), distance));
 
         // when
         // lineService.deleteSection 호출
-        lineService.deleteSection(line.getId(), downStation.getId());
+        lineService.deleteSection(line.getId(), deleteStation.getId());
 
         // then
-        // line.hasEmptySection 메서드를 통해 검증
-        assertThat(line.hasEmptySection()).isTrue();
+        // line.getStations 메서드를 통해 검증
+        assertThat(line.getStations()).containsExactly(upStation, downStation);
     }
 }

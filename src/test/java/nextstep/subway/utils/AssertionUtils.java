@@ -27,6 +27,10 @@ public class AssertionUtils {
         assertThat(list).containsExactly(obj);
     }
 
+    public static <T> void 목록은_다음을_포함하지_않는다(final List<T> list, final T... obj) {
+        assertThat(list).doesNotContain(obj);
+    }
+
     // error
     public static void 에러메시지는_다음과_같다(ExtractableResponse<Response> response, String message) {
         ErrorResponse errorResponse = response.as(ErrorResponse.class);

@@ -36,9 +36,11 @@ public class LineServiceMockTest {
 
     private Long upStationId;
     private Long downStationId;
+    private Long deleteStationId;
     private Long lineId;
     private Station upStation;
     private Station downStation;
+    private Station deleteStation;
     private Line line;
     private final int distance = 10;
 
@@ -46,10 +48,13 @@ public class LineServiceMockTest {
     void setUp() {
         upStationId = 1L;
         downStationId = 2L;
+        deleteStationId = 3L;
+
         lineId = 1L;
 
         upStation = new Station("upStation");
         downStation = new Station("downStation");
+        deleteStation = new Station("deleteStation");
         line = new Line("line", "color");
     }
 
@@ -87,21 +92,19 @@ public class LineServiceMockTest {
         // lineService.addSection 호출
         given(stationService.findById(upStationId)).willReturn(upStation);
         given(stationService.findById(downStationId)).willReturn(downStation);
+        given(stationService.findById(deleteStationId)).willReturn(deleteStation);
         given(lineRepository.getLine(lineId)).willReturn(line);
 
         lineService.addSection(lineId, new SectionRequest(upStationId, downStationId, distance));
+        lineService.addSection(lineId, new SectionRequest(downStationId, deleteStationId, distance));
 
         // when
         // lineService.deleteSection 호출
-        lineService.deleteSection(lineId, downStationId);
+        lineService.deleteSection(lineId, deleteStationId);
 
         // then
         // lineService.findLineById 메서드를 통해 검증
         final LineResponse lineResponse = lineService.findById(lineId);
-        assertAll(
-                () -> assertThat(lineResponse.getName()).isEqualTo(line.getName()),
-                () -> assertThat(lineResponse.getColor()).isEqualTo(line.getColor()),
-                () -> assertThat(lineResponse.getStations()).isEmpty()
-        );
+        assertThat(lineResponse.getStations()).hasSize(2);
     }
 }
