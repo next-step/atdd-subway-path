@@ -81,7 +81,7 @@ public class LineServiceTest {
     @Test
     void addSection3() {
         //when
-        //강남역과 분당역 사이에 정자역 추가
+        //정자역을 상행 종점역에 등록
         Station 정자역 = stationRepository.save(new Station("정자역"));
         lineService.addSection(신분당선.getId(),
                 new SectionRequest(분당역.getId(), 정자역.getId(), 4));
@@ -94,7 +94,7 @@ public class LineServiceTest {
     @Test
     void addSection4() {
         //when
-        //강남역과 분당역 사이에 정자역 추가
+        //정자역을 하행 종점역에 등록
         Station 정자역 = stationRepository.save(new Station("정자역"));
         lineService.addSection(신분당선.getId(),
                 new SectionRequest(정자역.getId(), 강남역.getId(), 4));
@@ -102,7 +102,6 @@ public class LineServiceTest {
         //then
         assertThat(신분당선.getUpStation()).isEqualTo(정자역);
     }
-
 
     @DisplayName("역 사이에 새로운 역을 등록할 때, 기존 역 사이 길이보다 크거나 같다.")
     @Test
