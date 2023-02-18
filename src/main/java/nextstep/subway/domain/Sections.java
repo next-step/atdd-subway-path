@@ -126,10 +126,6 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    private Map<Station, Section> getUpStationSectionMap() {
-        return sections.stream().collect(Collectors.toMap(Section::getUpStation, s -> s));
-    }
-
     private Map<Station, Section> getDownStationSectionMap() {
         return sections.stream().collect(Collectors.toMap(Section::getDownStation, s -> s));
     }
