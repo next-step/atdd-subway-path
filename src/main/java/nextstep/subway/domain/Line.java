@@ -104,22 +104,29 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        validateRemoveSection();
+        validateOnlyOneSection();
 
         Optional<Section> firstSection =  this.sections.findSectionByDownStation(station);
         Optional<Section> secondSection =  this.sections.findSectionByUpStation(station);
 
         validateStationInLine(firstSection.isEmpty() && secondSection.isEmpty());
 
-        if (firstSection.isPresent() && secondSection.isPresent()) {
-            this.sections.addMergeSection(this, firstSection.get(), secondSection.get());
-        }
+        mergeSection(firstSection, secondSection);
+        removeSection(firstSection, secondSection);
+    }
 
+    private void removeSection(Optional<Section> firstSection, Optional<Section> secondSection) {
         firstSection.ifPresent(section -> this.sections.removeSection(section));
         secondSection.ifPresent(section -> this.sections.removeSection(section));
     }
 
-    private void validateRemoveSection() {
+    private void mergeSection(Optional<Section> firstSection, Optional<Section> secondSection) {
+        if (firstSection.isPresent() && secondSection.isPresent()) {
+            this.sections.addMergeSection(this, firstSection.get(), secondSection.get());
+        }
+    }
+
+    private void validateOnlyOneSection() {
         if (this.sections.isOnlyOne()) {
             throw new IllegalStateException("등록된 구간이 딱 한개면 구간을 삭제할 수 없습니다.");
         }
