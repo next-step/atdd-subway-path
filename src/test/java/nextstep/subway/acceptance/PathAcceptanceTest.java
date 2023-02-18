@@ -66,10 +66,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.contentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
 
-        List<Long> ids = response.jsonPath().getList("stations.id", Long.class);
+        List<Long> ids = response.jsonPath().getList("stationResponse.id", Long.class);
 
-        assertThat(ids).containsExactly(교대역, 강남역, 양재역);
-        assertThat(response.jsonPath().getInt("distance")).isEqualTo(20);
+        assertThat(ids).containsExactly(교대역, 남부터미널역, 양재역);
+        assertThat(response.jsonPath().getDouble("distance")).isEqualTo(5);
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {

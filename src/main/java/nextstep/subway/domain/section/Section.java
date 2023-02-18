@@ -3,10 +3,12 @@ package nextstep.subway.domain.section;
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 
 @Entity
+@BatchSize(size = 100)
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

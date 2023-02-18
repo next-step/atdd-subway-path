@@ -87,4 +87,7 @@ public class Line {
         return sectionCollection.getDownSection(station);
     }
 
+    public List<Section> getSections() {
+        return sectionCollection.getSections();
+    }
 }

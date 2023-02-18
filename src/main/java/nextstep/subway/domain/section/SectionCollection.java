@@ -36,6 +36,9 @@ public class SectionCollection {
     public Section get(int index) {
         return sections.get(index);
     }
+    public List<Section> getSections() {
+        return this.sections;
+    }
 
 
 
