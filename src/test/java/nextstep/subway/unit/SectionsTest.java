@@ -51,6 +51,20 @@ public class SectionsTest {
   }
 
   @Test
+  void 구간_상행역에_구간_추가() {
+    Sections sections = new Sections();
+    Section section1 = 신규_구간_생성(역삼역, 선릉역, 10);
+    Section section2 = 신규_구간_생성(강남역, 역삼역, 20);
+    sections.addSection(line, section1);
+    sections.addSection(line, section2);
+
+    List<Station> stations = sections.getStations();
+
+    assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
+        .containsExactly(강남역.getName(), 역삼역.getName(), 선릉역.getName());
+  }
+
+  @Test
   void 구간_내_역_조회() {
     Sections sections = new Sections();
     Section section1 = 신규_구간_생성(강남역, 역삼역, 10);
