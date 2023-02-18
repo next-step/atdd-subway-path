@@ -95,7 +95,7 @@ public class Line {
         }
     }
 
-    private boolean isExistInLine(Station station) {
+    public boolean isExistInLine(Station station) {
         return getStations().stream().anyMatch(station::equals);
     }
 
