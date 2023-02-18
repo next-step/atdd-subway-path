@@ -19,6 +19,8 @@ public class SectionsTest {
     private static final String YONGSAN_STATION = "용산역";
     private static final String HONGDAE_STATION = "홍대역";
     private static final String SONGPA_STATION = "송파역";
+    private static final String GANGNAM_STATION = "강남역";
+    private static final String SHINSA_STATION = "신사역";
     private static final int DISTANCE_TEN = 10;
     private static final int DISTANCE_FIVE = 5;
 
@@ -70,7 +72,7 @@ public class SectionsTest {
 
     @DisplayName("추가하는 구간이 기존의 구간의 역 사이의 길이보다 크거나 같으면 InvalidValueException이 발생한다")
     @Test
-    void addSectionWithInvalidValueException() {
+    void addSectionLengthValidate() {
         //given
         Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_FIVE);
         Section sectionTwo = new Section(lineOne, seoulStation, hongDaeStation, DISTANCE_TEN);
@@ -141,5 +143,47 @@ public class SectionsTest {
         //then
         SectionsVO sortedSections = sections.sort();
         Assertions.assertThat(sortedSections.getSections()).containsExactly(sectionOne, sectionTwo, sectionThree);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 InvalidValueException이 발생한다")
+    @Test
+    void addSectionValidateWithAlreadyExists() {
+        //given
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
+        Section wrongSection = new Section(lineOne, hongDaeStation, seoulStation, DISTANCE_TEN);
+
+        //when
+        Sections sections = new Sections();
+        sections.addSection(sectionOne);
+        sections.addSection(sectionTwo);
+
+        //then
+        Assertions.assertThatThrownBy(() -> {
+                    sections.addSection(wrongSection);
+                }).isInstanceOf(InvalidValueException.class)
+                .hasMessage(ErrorCode.ALREADY_EXISTED_STATIONS_OF_NEW_SECTION.getErrorMessage());
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 InvalidValueException이 발생한다")
+    @Test
+    void addSectionValidateWithNoExists() {
+        //given
+        Station gangnamStation = new Station(GANGNAM_STATION);
+        Station sinsaStation = new Station(SHINSA_STATION);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
+        Section wrongSection = new Section(lineOne, gangnamStation, sinsaStation, DISTANCE_TEN);
+
+        //when
+        Sections sections = new Sections();
+        sections.addSection(sectionOne);
+        sections.addSection(sectionTwo);
+
+        //then
+        Assertions.assertThatThrownBy(() -> {
+                    sections.addSection(wrongSection);
+                }).isInstanceOf(InvalidValueException.class)
+                .hasMessage(ErrorCode.NOT_EXISTS_STATIONS_OF_NEW_SECTION.getErrorMessage());
     }
 }

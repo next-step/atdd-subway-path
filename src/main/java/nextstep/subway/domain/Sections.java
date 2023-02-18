@@ -25,8 +25,9 @@ public class Sections {
             sections.add(section);
             return;
         }
-        addSectionValidate(section);
-
+        lengthValidateCheck(section);
+        existValidateCheck(section);
+        notExistsValidateCheck(section);
         int index = -1;
         Section foundSection = null;
         for (int i = 0; i < sections.size(); i++) {
@@ -55,7 +56,37 @@ public class Sections {
         return sectionsVO;
     }
 
-    private void addSectionValidate(Section newSection) {
+    private void notExistsValidateCheck(Section newSection) {
+        int existsCount = 0;
+        for(Section oldSection : sections) {
+            if(oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
+                existsCount++;
+            }
+            if(oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
+                existsCount++;
+            }
+        }
+        if(existsCount != 1) {
+            throw new InvalidValueException(ErrorCode.NOT_EXISTS_STATIONS_OF_NEW_SECTION);
+        }
+    }
+
+    private void existValidateCheck(Section newSection) {
+        int duplicateCount = 0;
+        for(Section oldSection : sections) {
+            if(oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
+                duplicateCount++;
+            }
+            if(oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
+                duplicateCount++;
+            }
+        }
+        if(duplicateCount == 2) {
+            throw new InvalidValueException(ErrorCode.ALREADY_EXISTED_STATIONS_OF_NEW_SECTION);
+        }
+    }
+
+    private void lengthValidateCheck(Section newSection) {
         for (Section oldSection : sections) {
             if (oldSection.getUpStation().equals(newSection.getUpStation())) {
                 if (oldSection.getDistance() <= newSection.getDistance()) {
