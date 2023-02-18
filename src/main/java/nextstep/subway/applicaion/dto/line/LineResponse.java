@@ -3,6 +3,7 @@ package nextstep.subway.applicaion.dto.line;
 import lombok.Builder;
 import nextstep.subway.applicaion.dto.station.StationResponse;
 import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.station.Station;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,10 +27,14 @@ public class LineResponse {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
-                .stations(line.getStations().stream()
-                        .map(a -> StationResponse.of(a))
-                        .collect(Collectors.toList()))
+                .stations(createStationResponse(line.getStations()))
                 .build();
+    }
+
+    private static List<StationResponse> createStationResponse(List<Station> stations) {
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

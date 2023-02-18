@@ -54,13 +54,11 @@ public class PathFinderTest {
         lines.add(이호선);
         lines.add(삼호선);
         lines.add(신분당선);
-
-//        pathFinder = new PathFinder();
     }
 
     @Test
     void searchShortPath(){
-        PathResponse path = pathFinder.findPath(lines, 교대역.getId(), 양재역.getId());
+        PathResponse path = pathFinder.findPath(lines, 교대역, 양재역);
 
         assertThat(path.getStations().stream().map(StationResponse::getId).collect(Collectors.toList())).containsExactly(교대역.getId(), 남부터미널역.getId(), 양재역.getId());
         assertThat(path.getDistance()).isEqualTo(5);
@@ -70,7 +68,7 @@ public class PathFinderTest {
     @Test
     void searchShortPathException(){
 
-        assertThrows(SubwayRestApiException.class, () -> pathFinder.findPath(lines, 교대역.getId(), 교대역.getId()));
+        assertThrows(SubwayRestApiException.class, () -> pathFinder.findPath(lines, 교대역, 교대역));
     }
 
     @DisplayName("노선에 출발역 또는 도착역이 없는 경우 Exception 던짐")
@@ -78,8 +76,8 @@ public class PathFinderTest {
     void searchShortPathException2(){
         Station 없는지하철역 = new Station(5L, "없는지하철역");
 
-        assertAll(() -> assertThrows(SubwayRestApiException.class, () -> pathFinder.findPath(lines, 교대역.getId(), 없는지하철역.getId())),
-                () -> assertThrows(SubwayRestApiException.class, () -> pathFinder.findPath(lines, 없는지하철역.getId(), 교대역.getId())));
+        assertAll(() -> assertThrows(SubwayRestApiException.class, () -> pathFinder.findPath(lines, 교대역, 없는지하철역)),
+                () -> assertThrows(SubwayRestApiException.class, () -> pathFinder.findPath(lines, 없는지하철역, 교대역)));
     }
 
     @DisplayName("출발역과 도착역이 연결되어있지 않는 경우 Exception 던짐")
@@ -91,7 +89,7 @@ public class PathFinderTest {
         Line 사호선 = 지하철노선_기존구간_추가(new Line(4L,"사호선", "black"), 오이도역, 사당역, distance_3);
         lines.add(사호선);
 
-        assertThrows(SubwayRestApiException.class, () -> pathFinder.findPath(lines, 교대역.getId(), 사당역.getId()));
+        assertThrows(SubwayRestApiException.class, () -> pathFinder.findPath(lines, 교대역, 사당역));
     }
 
     private Line 지하철노선_기존구간_추가(Line line, Station upStation, Station downStation, int distance) {

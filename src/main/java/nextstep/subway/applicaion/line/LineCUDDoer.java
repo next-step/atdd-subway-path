@@ -1,6 +1,5 @@
 package nextstep.subway.applicaion.line;
 
-import nextstep.subway.applicaion.station.StationService;
 import nextstep.subway.applicaion.dto.line.LineRequest;
 import nextstep.subway.applicaion.dto.line.LineResponse;
 import nextstep.subway.domain.line.Line;
@@ -21,6 +20,7 @@ public class LineCUDDoer extends LineService{
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
+
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(IllegalArgumentException::new);
             Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(IllegalArgumentException::new);
@@ -39,12 +39,7 @@ public class LineCUDDoer extends LineService{
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
-        }
+        line.change(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional

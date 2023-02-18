@@ -6,9 +6,9 @@ import java.util.List;
 
 public class Path {
     private List<Station> stations;
-    private int distance;
+    private double distance;
 
-    public Path(List<Station> stations, int distance) {
+    public Path(List<Station> stations, double distance) {
         this.stations = stations;
         this.distance = distance;
     }
@@ -17,7 +17,7 @@ public class Path {
         return stations;
     }
 
-    public int getDistance() {
+    public double getDistance() {
         return distance;
     }
 }
