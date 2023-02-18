@@ -42,8 +42,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * When 새로운 역을 하행 종점으로 등록할 경우
      * Then 새로운 두 개의 구간이 생성된다.
-     *   - 추가된 역이 해당 노선의 하행 종점역이 된다.
-     *   - 노선의 총 길이 = 기존 구간 길이 + 새로운 구간 길이
      */
     @DisplayName("지하철 구간 등록 - 정상1 : 새로운 역이 하행 종점인 구간 추가")
     @Test
@@ -62,8 +60,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * When 새로운 역을 상행 종점으로 등록할 경우
      * Then 새로운 두 개의 구간이 생성된다.
-     *   - 추가된 역이 해당 노선의 상행 종점역이 된다.
-     *   - 노선의 총 길이 = 기존 구간 길이 + 새로운 구간 길이
      */
     @DisplayName("지하철 구간 등록 - 정상2 : 새로운 역이 상행 종점인 구간 추가")
     @Test
@@ -80,10 +76,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 생성된 구간의 상행역 또는 하행역을 기준으로 그 사이에 새로운 구간을 추가하면
-     *   - 단, 새로운 구간의 길이는 기존 구간의 길이보다 작아야한다.
-     * Then 새로운 두 개의 구간이 생성된다. (상행역 - 추가된역 & 추가된역 - 하행역)
-     *   - 노선의 총 길이 = 기존 구간의 길이
+     * When 구간 사이에 새로운 구간을 추가하면
+     * Then 새로운 두 개의 구간이 생성된다.
      */
     @DisplayName("지하철 구간 등록 - 정상3 : 기존 구간 사이에 새로운 구간 추가")
     @Test
@@ -100,7 +94,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 생성된 구간의 상행역 또는 하행역을 기준으로 그 사이에 새로운 구간을 추가하면
+     * When 구간 사이에 새로운 구간을 추가하면
      *    - 단, 새로운 구간의 길이는 기존 구간의 길이보다 크거나 같다.
      * Then 구간이 추가되지 않는다.
      */
