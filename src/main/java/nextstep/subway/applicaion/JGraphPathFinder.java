@@ -25,15 +25,19 @@ public class JGraphPathFinder implements PathFinder {
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         try {
             final GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(source, target);
-            if (path == null) {
-                throw new InvalidPathException();
-            }
-            if (path.getWeight() <= 0.0) {
-                throw new SourceAndTargetCannotBeSameException();
-            }
+            validatePath(path);
             return PathResponse.of(path);
         } catch (IllegalArgumentException e) {
             throw new StationNotRegisteredException();
+        }
+    }
+
+    private static void validatePath(final GraphPath<Station, DefaultWeightedEdge> path) {
+        if (path == null) {
+            throw new InvalidPathException();
+        }
+        if (path.getWeight() <= 0.0) {
+            throw new SourceAndTargetCannotBeSameException();
         }
     }
 
