@@ -41,7 +41,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 구간을 등록")
     @Test
-    void addLineSection() {
+    void 노선에_구간_등록이_된다() {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
@@ -54,12 +54,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * When 하행 종점 제거를 요청 하면
+     * Then 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("하행 종점 제거를 요청 하면 제거된다")
     @Test
-    void removeLineSection() {
+    void 하행_종점_제거를_요청_하면_제거된다() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));

@@ -110,7 +110,8 @@ class SectionsTest {
         void 구간이_하나인_노선에서_마지막_구간을_제거할_때_제거_할_수_없다() {
             // When && Then
             assertThatThrownBy(() -> givenSections.removeSection(강남역))
-                .isInstanceOf(IllegalRemoveMinSectionSize.class);
+                .isInstanceOf(IllegalRemoveMinSectionSize.class)
+                .hasMessage("하나의 노선에 하나의 구간은 있어야합니다");
         }
 
         /**
@@ -124,7 +125,8 @@ class SectionsTest {
 
             // When && Then
             assertThatThrownBy(() -> givenSections.removeSection(정자역))
-                .isInstanceOf(IllegalRemoveMinSectionSize.class);
+                .isInstanceOf(IllegalRemoveMinSectionSize.class)
+                .hasMessage("하나의 노선에 하나의 구간은 있어야합니다");
         }
 
     }
@@ -154,22 +156,31 @@ class SectionsTest {
     }
 
     /**
-     * When 구간에 주어진 역을 조회 요청 시
-     * Then 해당하는 구간을 찾을 수 있다
+     * When 구간에 상행역 조회 시
+     * Then 조회가 가능하다
      */
-    @DisplayName("구간에 주어진 역을 조회 요청 시 해당하는 구간을 찾을 수 있다")
+    @DisplayName("구간에 상행역 조회 요청 시 조회가 가능하다")
     @Test
-    void 구간에_주어진_역을_조회_요청_시_해당하는_구간을_찾을_수_있다() {
+    void 구간에_상행역_조회_요청_시_조회가_가능하다() {
         // When
         Section sectionByGangNam = givenSections.findSectionByStation(강남역);
+
+        // Then
+        assertThat(sectionByGangNam).isEqualTo(givenSection);
+    }
+
+    /**
+     * When 구간에 하행역 조회 시
+     * Then 조회가 가능하다
+     */
+    @DisplayName("구간에 하행역 조회 요청 시 조회가 가능하다")
+    @Test
+    void 구간에_하행역_조회_요청_시_조회가_가능하다() {
+        // When
         Section sectionByYangJaeStation = givenSections.findSectionByStation(양재역);
 
         // Then
-        assertThat(sectionByGangNam.getUpStation()).isEqualTo(강남역);
-        assertThat(sectionByGangNam.getDownStation()).isEqualTo(양재역);
-        assertThat(sectionByYangJaeStation.getUpStation()).isEqualTo(강남역);
-        assertThat(sectionByYangJaeStation.getDownStation()).isEqualTo(양재역);
-
+        assertThat(sectionByYangJaeStation).isEqualTo(givenSection);
     }
 
     @Nested
@@ -189,15 +200,11 @@ class SectionsTest {
 
             // When
             givenSections.addSection(신분당선, 논현역, 강남역, 7);
+            Section sectionByNonhyeon = givenSections.findSectionByStation(논현역);
 
             // Then
             List<Section> sections = givenSections.getSections();
-            assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
-            assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
-            assertThat(sections.get(0).getDistance()).isEqualTo(10);
-            assertThat(sections.get(1).getUpStation()).isEqualTo(논현역);
-            assertThat(sections.get(1).getDownStation()).isEqualTo(강남역);
-            assertThat(sections.get(1).getDistance()).isEqualTo(7);
+            assertThat(sections).containsExactly(givenSection, sectionByNonhyeon);
         }
 
         /**
@@ -241,12 +248,10 @@ class SectionsTest {
 
             // Then
             List<Section> sections = givenSections.getSections();
-            assertThat(sections.get(0).getUpStation()).isEqualTo(강남역);
-            assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
-            assertThat(sections.get(0).getDistance()).isEqualTo(10);
-            assertThat(sections.get(1).getUpStation()).isEqualTo(양재역);
-            assertThat(sections.get(1).getDownStation()).isEqualTo(판교역);
-            assertThat(sections.get(1).getDistance()).isEqualTo(4);
+            Section sectionByPangyo = givenSections.findSectionByStation(판교역);
+
+            // Then
+            assertThat(sections).containsExactly(givenSection, sectionByPangyo);
         }
 
         /**
@@ -258,7 +263,8 @@ class SectionsTest {
         void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
             // When && Then
             assertThatThrownBy(() -> givenSections.addSection(신분당선, 강남역, 양재역, 4))
-                .isInstanceOf(DuplicateAddSectionException.class);
+                .isInstanceOf(DuplicateAddSectionException.class)
+                .hasMessage("이미 추가되어있는 구간 요청입니다.");
         }
 
         /**
@@ -273,7 +279,8 @@ class SectionsTest {
 
             // When && Then
             assertThatThrownBy(() -> givenSections.addSection(신분당선, 강남역, 판교역, 10))
-                .isInstanceOf(IllegalDistanceSectionException.class);
+                .isInstanceOf(IllegalDistanceSectionException.class)
+                .hasMessage("잘못된 구간 사이 거리 요청입니다.");
         }
 
         /**
@@ -289,7 +296,8 @@ class SectionsTest {
 
             // When && Then
             assertThatThrownBy(() -> givenSections.addSection(신분당선, 수지구청역, 판교역, 10))
-                .isInstanceOf(IllegalAddSectionException.class);
+                .isInstanceOf(IllegalAddSectionException.class)
+                .hasMessage("역을 추가 할 수 없습니다");
         }
 
         /**
@@ -305,7 +313,8 @@ class SectionsTest {
 
             // When && Then
             assertThatThrownBy(() -> givenSections.addSection(신분당선, 수지구청역, 판교역, 10))
-                .isInstanceOf(IllegalAddSectionException.class);
+                .isInstanceOf(IllegalAddSectionException.class)
+                .hasMessage("역을 추가 할 수 없습니다");
         }
 
     }

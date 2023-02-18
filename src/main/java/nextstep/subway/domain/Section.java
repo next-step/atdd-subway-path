@@ -24,14 +24,7 @@ public class Section implements Comparable<Section> {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Transient
-    private Section nextSection;
-
     private int distance;
-
-    public Section getNextSection() {
-        return nextSection;
-    }
 
     protected Section() {
     }
