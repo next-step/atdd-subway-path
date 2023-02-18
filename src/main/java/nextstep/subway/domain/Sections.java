@@ -26,7 +26,7 @@ public class Sections {
             return;
         }
 
-        validate(section);
+        addValidate(section);
 
         if (isMiddelSection(section)) {
             updateOldSection(section);
@@ -52,7 +52,7 @@ public class Sections {
         return getFirstStationOrNull().equals(section.getDownStation());
     }
 
-    private void validate(final Section section) {
+    private void addValidate(final Section section) {
         final List<Station> stations = getStations();
         final boolean hasUpStation = hasStation(stations, section.getUpStation());
         final boolean hasDownStation = hasStation(stations, section.getDownStation());
