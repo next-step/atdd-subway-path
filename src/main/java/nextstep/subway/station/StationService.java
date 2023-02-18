@@ -1,23 +1,18 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.station;
 
-import nextstep.subway.applicaion.dto.StationRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-@Transactional(readOnly = true)
-public class StationService {
-    private StationRepository stationRepository;
+import lombok.RequiredArgsConstructor;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
+@Service
+@RequiredArgsConstructor
+public class StationService {
+
+    private final StationRepository stationRepository;
 
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
@@ -25,25 +20,24 @@ public class StationService {
         return createStationResponse(station);
     }
 
+	@Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
                 .map(this::createStationResponse)
                 .collect(Collectors.toList());
     }
 
+	@Transactional(readOnly = true)
+	public Station findStationById(Long id) {
+		return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Station doesn't exist"));
+	}
+
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName()
-        );
-    }
-
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    private StationResponse createStationResponse(Station station) {
+        return new StationResponse(station);
     }
 }
