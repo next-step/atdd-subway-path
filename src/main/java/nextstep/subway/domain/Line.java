@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import org.springframework.util.Assert;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +20,6 @@ public class Line {
     }
 
     public Line(String name, String color) {
-        Assert.notNull(name, "노선 이름은 null 일 수 없습니다.");
-        Assert.notNull(color, "노선 색은 null 일 수 없습니다.");
         this.name = name;
         this.color = color;
     }
@@ -47,8 +43,12 @@ public class Line {
     }
 
     public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
+        if (line.getName() != null) {
+            this.name = line.getName();
+        }
+        if (line.getColor() != null) {
+            this.color = line.getColor();
+        }
     }
 
     public List<Section> getSections() {
