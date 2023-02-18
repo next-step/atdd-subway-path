@@ -15,8 +15,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -52,7 +52,7 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
@@ -64,38 +64,20 @@ public class Line {
         validateSection(isUpStationExist, isDownStationExist);
 
         if (isUpStationExist) {
-            updateUpStationBetweenSection(upStation, downStation, distance);
+            this.sections.updateUpStationBetweenSection(upStation, downStation, distance);
         }
 
         if (isDownStationExist) {
-            updateDownStationBetweenSection(upStation, downStation, distance);
+            this.sections.updateDownStationBetweenSection(upStation, downStation, distance);
         }
 
-        addNewSection(upStation, downStation, distance);
+        this.sections.addNewSection(new Section(this, upStation, downStation, distance));
     }
 
     private void validateDistance(int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException("등록하고자 하는 구간의 길이가 0 이거나 음수일 수 없습니다.");
         }
-    }
-
-    private void addNewSection(Station upStation, Station downStation, int distance) {
-        this.sections.add(new Section(this, upStation, downStation, distance));
-    }
-
-    private void updateUpStationBetweenSection(Station upStation, Station downStation, int distance) {
-        this.sections.stream()
-                .filter(section -> section.equalUpStation(upStation))
-                .findFirst()
-                .ifPresent(section -> section.updateUpStation(downStation, distance));
-    }
-
-    private void updateDownStationBetweenSection(Station upStation, Station downStation, int distance) {
-        this.sections.stream()
-                .filter(section -> section.equalDownStation(downStation))
-                .findFirst()
-                .ifPresent(section -> section.updateDownStation(upStation, distance));
     }
 
     private void validateSection(boolean isUpStationExist, boolean isDownStationExist) {
@@ -130,49 +112,14 @@ public class Line {
         }
 
         List<Station> stations = new ArrayList<>();
-        Station station = findFirstUpStation();
+        Station station = this.sections.findFirstUpStation();
         stations.add(station);
 
-        while (isPresentNextSection(station)) {
-            Section nextSection = findNextSection(station);
+        while (this.sections.isPresentNextSection(station)) {
+            Section nextSection = this.sections.findNextSection(station);
             station = nextSection.getDownStation();
             stations.add(station);
         }
         return stations;
-    }
-
-    private Section findNextSection(Station station) {
-        return this.sections.stream()
-                .filter(section -> section.equalUpStation(station))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-    }
-
-    private Station findFirstUpStation() {
-        Station upStation = this.sections.get(0).getUpStation();
-
-        while (isPresentPrevSection(upStation)) {
-            Section prevSection = findPrevSection(upStation);
-            upStation = prevSection.getUpStation();
-        }
-
-        return upStation;
-    }
-
-    private boolean isPresentNextSection(Station station) {
-        return this.sections.stream()
-                .anyMatch(section -> section.equalUpStation(station));
-    }
-
-    private boolean isPresentPrevSection(Station upStation) {
-        return this.sections.stream()
-                .anyMatch(section -> section.equalDownStation(upStation));
-    }
-
-    private Section findPrevSection(Station upStation) {
-        return this.sections.stream()
-                .filter(section -> section.equalDownStation(upStation))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
     }
 }
