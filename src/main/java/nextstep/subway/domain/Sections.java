@@ -35,4 +35,12 @@ public class Sections {
 	private int getLastIndexOfSections() {
 		return sections.size() - 1;
 	}
+
+	public boolean isLastDownStation(Station station) {
+		return sections.get(getLastIndexOfSections()).getDownStation().equals(station);
+	}
+
+	public void removeLastSection() {
+		sections.remove(getLastIndexOfSections());
+	}
 }

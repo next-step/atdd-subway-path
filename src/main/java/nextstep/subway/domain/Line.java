@@ -65,5 +65,10 @@ public class Line {
 	}
 
 	public void removeSection(Station station) {
+		if (!sections.isLastDownStation(station)) {
+			throw new IllegalArgumentException();
+		}
+
+		sections.removeLastSection();
 	}
 }
