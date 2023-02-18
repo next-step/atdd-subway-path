@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import lombok.Getter;
 import nextstep.subway.domain.VO.SectionsVO;
+import nextstep.subway.global.error.exception.ErrorCode;
+import nextstep.subway.global.error.exception.InvalidValueException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -23,7 +25,7 @@ public class Sections {
             sections.add(section);
             return;
         }
-        // TODO - 유효성 검사
+        addSectionValidate(section);
 
         int index = -1;
         Section foundSection = null;
@@ -42,13 +44,30 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        removeStationCheck(station);
+        removeSectionValidate(station);
         sections.remove(sections.size() - 1);
     }
 
-    private void removeStationCheck(Station station) {
+    public SectionsVO sort() {
+        Map<Station, Integer> stationCount = countStations();
+        Station firstStation = findStartStation(stationCount);
+        SectionsVO sectionsVO = makeSortedSections(firstStation);
+        return sectionsVO;
+    }
+
+    private void addSectionValidate(Section newSection) {
+        for (Section oldSection : sections) {
+            if (oldSection.getUpStation().equals(newSection.getUpStation())) {
+                if (oldSection.getDistance() <= newSection.getDistance()) {
+                    throw new InvalidValueException(ErrorCode.NEW_SECTION_LENGTH_MUST_BE_SMALLER_THAN_EXISTING_SECTION_LENGTH);
+                }
+            }
+        }
+    }
+
+    private void removeSectionValidate(Station station) {
         if (!(sections.get(sections.size() - 1).getUpStation().equals(station) || sections.get(sections.size() - 1).getDownStation().equals(station))) {
-            throw new IllegalArgumentException("노선의 마지막 역이 아닙니다.");
+            throw new InvalidValueException(ErrorCode.NOT_STATION_OF_END_SECTION);
         }
     }
 
@@ -59,13 +78,6 @@ public class Sections {
         sections.remove(oldSection);
         sections.add(index, new Section(oldSection.getLine(), oldUpStation, newDownStation, newSectionDistance));
         sections.add(index + 1, new Section(oldSection.getLine(), newDownStation, oldDownStation, oldDistance - newSectionDistance));
-    }
-
-    public SectionsVO sort() {
-        Map<Station, Integer> stationCount = countStations();
-        Station firstStation = findStartStation(stationCount);
-        SectionsVO sectionsVO = makeSortedSections(firstStation);
-        return sectionsVO;
     }
 
     private SectionsVO makeSortedSections(Station firstStation) {
