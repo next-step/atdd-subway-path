@@ -61,6 +61,6 @@ public class Line {
 	}
 
 	public List<Station> getStations() {
-		return null;
+		return this.sections.getStations();
 	}
 }
