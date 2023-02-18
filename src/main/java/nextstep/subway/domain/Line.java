@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -61,7 +62,7 @@ public class Line {
         boolean isUpStationExist = isExistInLine(upStation);
         boolean isDownStationExist = isExistInLine(downStation);
 
-        validateSection(isUpStationExist, isDownStationExist);
+        validateAddSection(isUpStationExist, isDownStationExist);
 
         if (isUpStationExist) {
             this.sections.updateUpStationBetweenSection(upStation, downStation, distance);
@@ -80,7 +81,7 @@ public class Line {
         }
     }
 
-    private void validateSection(boolean isUpStationExist, boolean isDownStationExist) {
+    private void validateAddSection(boolean isUpStationExist, boolean isDownStationExist) {
         if (this.sections.isEmpty()) {
             return;
         }
@@ -99,12 +100,33 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        if (!this.getSections().get(this.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        validateRemoveSection();
+
+        Optional<Section> firstSection =  this.sections.findSectionByDownStation(station);
+        Optional<Section> secondSection =  this.sections.findSectionByUpStation(station);
+
+        validateStationInLine(firstSection.isEmpty() && secondSection.isEmpty());
+
+        if (firstSection.isPresent() && secondSection.isPresent()) {
+            this.sections.addMergeSection(this, firstSection.get(), secondSection.get());
         }
 
-        this.getSections().remove(this.getSections().size() - 1);
+        firstSection.ifPresent(section -> this.sections.removeSection(section));
+        secondSection.ifPresent(section -> this.sections.removeSection(section));
     }
+
+    private void validateRemoveSection() {
+        if (this.sections.isOnlyOne()) {
+            throw new IllegalStateException("등록된 구간이 딱 한개면 구간을 삭제할 수 없습니다.");
+        }
+    }
+
+    private void validateStationInLine(boolean isStationNotInLine) {
+        if (isStationNotInLine) {
+            throw new IllegalArgumentException("노선에 등록되어있지 않은 역은 제거할 수 없습니다.");
+        }
+    }
+
 
     public List<Station> getStations() {
         if (this.sections.isEmpty()) {

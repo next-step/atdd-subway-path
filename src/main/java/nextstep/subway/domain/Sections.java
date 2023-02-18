@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -70,5 +71,32 @@ public class Sections {
                 .filter(section -> section.equalDownStation(upStation))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
+
+    public Optional<Section> findSectionByDownStation(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst();
+    }
+
+    public Optional<Section> findSectionByUpStation(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findFirst();
+    }
+
+    public void removeSection(Section removeSection) {
+        this.sections.removeIf(section -> section == removeSection);
+    }
+
+    public void addMergeSection(Line line, Section firstSection, Section secondSection) {
+        Station newUpStation = firstSection.getUpStation();
+        Station newDownStation = secondSection.getDownStation();
+        int newDistance = firstSection.getDistance() + secondSection.getDistance();
+        this.sections.add(new Section(line, newUpStation, newDownStation, newDistance));
+    }
+
+    public boolean isOnlyOne() {
+        return this.sections.size() == 1;
     }
 }
