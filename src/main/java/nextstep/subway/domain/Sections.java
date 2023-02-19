@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 @Getter
@@ -31,7 +32,7 @@ public class Sections {
 
         addValidate(newSection);
 
-         // 기존 구간의 하행역 기준으로 새로운 구간을 등록
+        // 기존 구간의 하행역 기준으로 새로운 구간을 등록
         if (isConnectUpStation(newSection) || isConnectDownStation(newSection)) {
             sections.add(newSection);
             return;
@@ -83,48 +84,29 @@ public class Sections {
         return getDownStation().equals(newSection.getUpStation());
     }
 
-    private Station getUpStation() {
-        Station cur = null;
-        Section next = sections.get(0);
-
-        while (!ObjectUtils.isEmpty(next)) {
-            cur = next.getUpStation();
-            next = findSectionByDownStation(next.getUpStation());
-        }
-
-        return cur;
-    }
-
-    private Section findSectionByDownStation(Station downStation) {
-        for (Section section : sections) {
-            if (section.getDownStation().equals(downStation)) {
-                return section;
-            }
-        }
-
-        return null;
+    public Station getUpStation() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .filter(upStation -> sections.stream()
+                        .noneMatch(section -> upStation.equals(section.getDownStation())))
+                .findFirst()
+                .orElseThrow(() -> new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage()));
     }
 
     private Station getDownStation() {
-        Station cur = null;
-        Section next = sections.get(0);
-
-        while (!ObjectUtils.isEmpty(next)) {
-            cur = next.getDownStation();
-            next = findSectionByUpStation(next.getDownStation());
-        }
-
-        return cur;
+        return sections.stream()
+                .map(Section::getDownStation)
+                .filter(downStation -> sections.stream()
+                        .noneMatch(section -> downStation.equals(section.getUpStation())))
+                .findFirst()
+                .orElseThrow(() -> new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage()));
     }
 
-    private Section findSectionByUpStation(Station upStation) {
-        for (Section section : sections) {
-            if (section.getUpStation().equals(upStation)) {
-                return section;
-            }
-        }
-
-        return null;
+    private Optional<Station> findNextStationOf(Station prev) {
+        return sections.stream()
+                .filter(section -> prev.equals(section.getUpStation()))
+                .map(Section::getDownStation)
+                .findFirst();
     }
 
     private void addMiddleStation(Section newSection) {
@@ -156,17 +138,16 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        if (sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
         List<Station> stations = new ArrayList<>();
-        stations.add(getUpStation());
-        Section next = findSectionByUpStation(getUpStation());
-        while (!ObjectUtils.isEmpty(next)) {
-            stations.add(next.getDownStation());
-            next = findSectionByUpStation(next.getDownStation());
+        if (sections.isEmpty()) {
+            return stations;
         }
+        Station prev = getUpStation();
+        while (findNextStationOf(prev).isPresent()) {
+            stations.add(prev);
+            prev = findNextStationOf(prev).get();
+        }
+        stations.add(prev);
 
         return stations;
     }
