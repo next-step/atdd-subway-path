@@ -240,20 +240,21 @@ class LineTest {
 
             private final Line line = 이호선.엔티티_생성();
             private final Station 중간_역 = 역삼역.엔티티_생성();
+            private final Section 기존_상행_구간 = 강남_역삼_구간.엔티티_생성(1L, line);
 
             @BeforeEach
             void setUp() {
-                line.addSection(강남_역삼_구간.엔티티_생성(1L, line));
+                line.addSection(기존_상행_구간);
                 line.addSection(역삼_선릉_구간.엔티티_생성(2L, line));
             }
 
-            // 이전 역과 다음 역이 합쳐져 재배치된 구간의 거리는 기존 두 구간의 거리의 합
-            //  -> 해당 테스트를 하기위해 sectionList get메서드 열어야 되나..?
             @Test
-            @DisplayName("노선의 역 목록 조회 시 중간역이 삭제되어 반환된다")
+            @DisplayName("기존 상행 구간의 하행역은 기존 하행 구간의 하행역으로, 구간의 거리는 기존 앞 뒤 구간의 합으로 변경된다")
             void it_connecting_before_and_after_stations() throws Exception {
                 line.removeSection(중간_역);
 
+                assertThat(기존_상행_구간.getDownStation()).isEqualTo(선릉역.엔티티_생성());
+                assertThat(기존_상행_구간.getDistance()).isEqualTo(강남_역삼_구간.구간_거리() + 역삼_선릉_구간.구간_거리());
                 assertThat(line.getAllStations()).doesNotContain(중간_역);
             }
         }

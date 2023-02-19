@@ -14,20 +14,19 @@ import java.util.Objects;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class Line {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
 
-    @Getter
     private String name;
 
-    @Getter
     private String color;
 
     @Embedded
+    @Getter(AccessLevel.NONE)
     private final Sections sections = new Sections();
 
     public Line(final String name, final String color) {
