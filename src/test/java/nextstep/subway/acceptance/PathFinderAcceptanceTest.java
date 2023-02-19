@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
-import static nextstep.subway.acceptance.PathFinderAssertUtil.지하철_경로_조회_같은역으로_조회_예외;
-import static nextstep.subway.acceptance.PathFinderAssertUtil.지하철_경로_조회_검증;
+import static nextstep.subway.acceptance.PathFinderAssertUtil.*;
 import static nextstep.subway.acceptance.PathFinderSteps.지하철_경로_조회;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 
@@ -85,6 +84,16 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
      * When 출발역과 도착역이 연결되어있지 않은 경로를 조회하면
      * Then 예외가 발생한다.
      */
+    @Test
+    @DisplayName("출발역과 도착역이 연결되지 않은 경로 조회")
+    void findPath_notLinkedStation() {
+        // given
+        // when
+        var response = 지하철_경로_조회(강남역, 보정역);
+
+        // then
+        지하철_경로_조회_연결되지역을_조회_예외(response);
+    }
 
     /**
      * Given 지하철 노선과 구간 생성을 요청하고
