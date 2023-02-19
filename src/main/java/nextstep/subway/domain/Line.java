@@ -70,6 +70,6 @@ public class Line {
     }
 
     private boolean isNull(final String str) {
-        return StringUtils.hasText(str);
+        return !StringUtils.hasText(str);
     }
 }
