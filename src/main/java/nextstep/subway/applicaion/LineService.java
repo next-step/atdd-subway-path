@@ -102,6 +102,6 @@ public class LineService {
     }
 
     public List<Line> findAll() {
-        return null;
+        return lineRepository.findAll();
     }
 }
