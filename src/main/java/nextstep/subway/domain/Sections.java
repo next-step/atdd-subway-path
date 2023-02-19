@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import lombok.Getter;
 
@@ -112,11 +113,60 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        int lastIndex = sections.size() - 1;
-        if (!sections.get(lastIndex).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        if (sections.size() < 2) {
+            throw new IllegalArgumentException("구간이 두개 미만이면 삭제 할 수 없습니다.");
         }
-        sections.remove(lastIndex);
+
+        Map<Station, Station> upStationDownStationMap = getUpStationDownStationMap();
+        Map<Station, Section> downStationSectionMap = getDownStationSectionMap();
+
+        List<Station> stations = getStations(upStationDownStationMap, downStationSectionMap);
+
+        if (removeToEitherEnd(stations, station, upStationDownStationMap, downStationSectionMap)) {
+            return;
+        }
+
+        if (removeInTheMiddle(station, upStationDownStationMap, downStationSectionMap)) {
+            return;
+        }
+
+        throw new EntityNotFoundException("노선에 해당 역이 존재하지 않습니다.");
+    }
+
+    private boolean removeToEitherEnd(List<Station> stations, Station station,
+        Map<Station, Station> upStationDownStationMap,
+        Map<Station, Section> downStationSectionMap) {
+        if (stations.get(0).equals(station)) {
+            sections.remove(downStationSectionMap.get(upStationDownStationMap.get(station)));
+            return true;
+        }
+        int lastIndex = stations.size() - 1;
+        if (stations.get(lastIndex).equals(station)) {
+            sections.remove(downStationSectionMap.get(station));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean removeInTheMiddle(Station station,
+        Map<Station, Station> upStationDownStationMap,
+        Map<Station, Section> downStationSectionMap) {
+        if (downStationSectionMap.containsKey(station)) {
+            Section downStationSection = downStationSectionMap.get(station);
+            Section upStationSection = downStationSectionMap
+                .get(upStationDownStationMap.get(station));
+            mergeSections(downStationSection, upStationSection);
+            return true;
+        }
+        return false;
+    }
+
+    private void mergeSections(Section downStationSection, Section upStationSection) {
+        sections.add(new Section(downStationSection.getLine(),
+            downStationSection.getUpStation(), upStationSection.getDownStation(),
+            downStationSection.getDistance() + upStationSection.getDistance()));
+        sections.remove(downStationSection);
+        sections.remove(upStationSection);
     }
 
     public Section get(int index) {
