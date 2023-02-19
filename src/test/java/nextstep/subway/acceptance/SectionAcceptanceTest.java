@@ -137,7 +137,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 노선에 구간을 제거 - 마지막역")
     @Test
     void removeLineSection() {
         Long 정자역_ID = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
@@ -147,7 +147,43 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 =
             지하철_노선에_지하철_구간_제거_요청(신분당선_ID, 정자역_ID);
 
-        지하철_노선에_지하철_구간_제거됨(지하철_노선에_지하철_구간_제거_응답);
+        지하철_노선에_지하철_구간_제거됨(지하철_노선에_지하철_구간_제거_응답, 강남역_ID, 양재역_ID);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @DisplayName("지하철 노선에 구간을 제거 - 중간역")
+    @Test
+    void removeLineSectionThatIsInMiddle() {
+        Long 정자역_ID = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
+            createSectionCreateParams(양재역_ID, 정자역_ID, SHORTER_DISTANCE));
+
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 =
+            지하철_노선에_지하철_구간_제거_요청(신분당선_ID, 양재역_ID);
+
+        지하철_노선에_지하철_구간_제거됨(지하철_노선에_지하철_구간_제거_응답, 강남역_ID, 정자역_ID);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 첫 구간 제거를 요청 하면
+     * Then 노선에 구간이 제거된다
+     */
+    @DisplayName("지하철 노선에 구간을 제거 - 첫번째역")
+    @Test
+    void removeLineSectionAtFirst() {
+        Long 정자역_ID = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
+            createSectionCreateParams(양재역_ID, 정자역_ID, SHORTER_DISTANCE));
+
+        ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_응답 =
+            지하철_노선에_지하철_구간_제거_요청(신분당선_ID, 강남역_ID);
+
+        지하철_노선에_지하철_구간_제거됨(지하철_노선에_지하철_구간_제거_응답, 양재역_ID, 정자역_ID);
     }
 
     private void 지하철_노선에_지하철_구간_생성됨(ExtractableResponse<Response> response,
@@ -159,12 +195,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .containsExactly(orderedStationIds);
     }
 
-    private void 지하철_노선에_지하철_구간_제거됨(ExtractableResponse<Response> response) {
+    private void 지하철_노선에_지하철_구간_제거됨(ExtractableResponse<Response> response,
+        Long stationId1, Long stationId2) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(신분당선_ID);
         assertThat(지하철_노선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(지하철_노선_조회_응답.jsonPath().getList("stations.id", Long.class))
-            .containsExactly(강남역_ID, 양재역_ID);
+            .containsExactly(stationId1, stationId2);
     }
 
     private void 예외_발생함(ExtractableResponse<Response> response, HttpStatus status) {
