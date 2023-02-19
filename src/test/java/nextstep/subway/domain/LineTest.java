@@ -164,6 +164,12 @@ class LineTest {
         // then
         final List<Station> stations = 이호선.getStations();
         assertThat(stations).containsExactly(강남역, 선릉역);
+
+        assertThat(이호선.getSections().stream()
+                .filter(section -> section.getUpStation().equals(강남역))
+                .filter(section -> section.getDownStation().equals(선릉역))
+                .findFirst().get()
+                .getDistance()).isEqualTo(20);
     }
 
     @DisplayName("마지막 구간을 제거하려고 하는 경우, 오류 발생")
