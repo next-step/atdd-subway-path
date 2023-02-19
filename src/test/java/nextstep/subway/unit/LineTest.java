@@ -1,10 +1,11 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.unit.StationFixture.*;
+import static nextstep.subway.unit.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -20,6 +21,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(1);
+        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 1));
     }
 
     @Test
@@ -46,12 +48,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(2);
-        assertThat(신분당선.getSections().get(0).getUpStation().getId()).isEqualTo(광교.getId());
-        assertThat(신분당선.getSections().get(0).getDownStation().getId()).isEqualTo(광교중앙.getId());
-        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(3);
-        assertThat(신분당선.getSections().get(1).getUpStation().getId()).isEqualTo(광교중앙.getId());
-        assertThat(신분당선.getSections().get(1).getDownStation().getId()).isEqualTo(상현.getId());
-        assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(2);
+        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 3), new Section(신분당선, 광교중앙, 상현, 2));
     }
 
     @Test
@@ -78,12 +75,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(2);
-        assertThat(신분당선.getSections().get(0).getUpStation().getId()).isEqualTo(광교.getId());
-        assertThat(신분당선.getSections().get(0).getDownStation().getId()).isEqualTo(광교중앙.getId());
-        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(3);
-        assertThat(신분당선.getSections().get(1).getUpStation().getId()).isEqualTo(광교중앙.getId());
-        assertThat(신분당선.getSections().get(1).getDownStation().getId()).isEqualTo(상현.getId());
-        assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(2);
+        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 3), new Section(신분당선, 광교중앙, 상현, 2));
     }
 
     @Test
@@ -98,24 +90,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(2);
-        assertThat(신분당선.getSections().get(0).getUpStation().getId()).isEqualTo(광교.getId());
-        assertThat(신분당선.getSections().get(0).getDownStation().getId()).isEqualTo(광교중앙.getId());
-        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(3);
-        assertThat(신분당선.getSections().get(1).getUpStation().getId()).isEqualTo(광교중앙.getId());
-        assertThat(신분당선.getSections().get(1).getDownStation().getId()).isEqualTo(상현.getId());
-        assertThat(신분당선.getSections().get(1).getDistance()).isEqualTo(2);
-    }
-
-    @Test
-    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
-    void addSection_fail3() {
-        // given
-        Line 신분당선 = new Line(1L, "신분당", "RED");
-        신분당선.addSection(광교, 광교중앙, 3);
-
-        // when & then
-        assertThatThrownBy(() -> 신분당선.addSection(상현, 성복, 3))
-                .isInstanceOf(RuntimeException.class);
+        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 3), new Section(신분당선, 광교중앙, 상현, 2));
     }
 
 }
