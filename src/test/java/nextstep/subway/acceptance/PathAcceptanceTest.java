@@ -3,6 +3,9 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.domain.Line;
+import nextstep.subway.exception.CustomException;
+import nextstep.subway.exception.ErrorResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,5 +63,53 @@ class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(pathResponse.getStationResponse()).hasSize(3);
         assertThat(pathResponse.getDistance()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("최단 거리를 조회한다.")
+    void paths_Given_출발역과_도착역이_같은_경우_When_두_역_사이의_최단_경로를_조회하면_Then_BadRequest() {
+        //when
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, 교대역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
+        assertThat(errorResponse.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorResponse.getMessage()).isEqualTo(CustomException.SAME_STATION_CAN_NOT_SEARCH_PATH);
+    }
+
+    @Test
+    @DisplayName("최단 거리를 조회한다.")
+    void paths_Given_존재하지_않은_출발역이나_도착역을_조회_할_경우_When_두_역_사이의_최단_경로를_조회하면_Then_BadRequest() {
+        //given
+        Long invalidStationId = 100L;
+
+        //when
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, invalidStationId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
+        assertThat(errorResponse.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorResponse.getMessage()).isEqualTo(CustomException.PATH_MUST_CONTAIN_STATION);
+    }
+
+    @Test
+    @DisplayName("최단 거리를 조회한다.")
+    void paths_Given_출발역과_도착역이_연결이_되어_있지_않은_경우_When_두_역_사이의_최단_경로를_조회하면_Then_BadRequest() {
+        //given
+        Long 뚝섬역 = 지하철역_생성_요청("뚝섬역").jsonPath().getLong("id");
+        Long 성수역 = 지하철역_생성_요청("성수역").jsonPath().getLong("id");
+        Long 칠호선 = 지하철_노선_생성_요청("7호선", "yellow").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(칠호선, createSectionCreateParams(뚝섬역, 성수역, 10));
+
+        //when
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, 뚝섬역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ErrorResponse errorResponse = response.jsonPath().getObject(".", ErrorResponse.class);
+        assertThat(errorResponse.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(errorResponse.getMessage()).isEqualTo(CustomException.DOES_NOT_CONNECTED_SOURCE_TO_TARGET);
     }
 }

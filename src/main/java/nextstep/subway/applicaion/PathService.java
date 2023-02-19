@@ -10,6 +10,7 @@ import org.jgrapht.GraphPath;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +33,10 @@ public class PathService {
         PathFinder pathFinder = new PathFinder(lines);
 
         GraphPath<String, String> shotestGraph = pathFinder.getShortestPath(source, target);
+
+        if(Objects.isNull(shotestGraph)) {
+            throw new CustomException(CustomException.DOES_NOT_CONNECTED_SOURCE_TO_TARGET);
+        }
 
         List<StationResponse> stations = shotestGraph.getVertexList().stream()
                 .map(s -> stationService.findById(Long.valueOf(s)))

@@ -15,6 +15,7 @@ public class CustomException extends RuntimeException{
     public static final String PATH_MUST_CONTAIN_STATION = "경로 조회에는 조회하려는 역이 등록되어있어야 합니다.";
 
     public static final String SAME_STATION_CAN_NOT_SEARCH_PATH = "출발역과 도착역이 같은 경우 경로를 조회 할 수 없습니다.";
+    public static final String DOES_NOT_CONNECTED_SOURCE_TO_TARGET = "출발역과 도착역이 이어져있지 않아 경로를 조회 할 수 없습니다.";
 
 
     public CustomException(String message) {
