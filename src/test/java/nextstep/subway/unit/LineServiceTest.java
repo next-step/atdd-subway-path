@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -103,13 +101,27 @@ public class LineServiceTest {
         assertThat(신분당선.getUpStation()).isEqualTo(정자역);
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 때, 기존 역 사이 길이보다 크거나 같다.")
+    @DisplayName("역 사이에 새로운 역을 등록할 때, 추가된 구간이 기존 구간과 같으면 오류가 발생한다.")
     @Test
     void addLongerSection() {
         //when
         //강남역과 분당역 사이에 정자역 추가 요청
         Station 정자역 = stationRepository.save(new Station("정자역"));
         SectionRequest 새로운_요청 = new SectionRequest(강남역.getId(), 정자역.getId(), 10);
+
+        //then
+        assertThatThrownBy(()->
+                lineService.addSection(신분당선.getId(), 새로운_요청)
+        ).isInstanceOf(InvalidSectionDistanceException.class);
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 때, 추가된 구간이 기존 구간보다 크면 오류가 발생한다.")
+    @Test
+    void addLongerSection2() {
+        //when
+        //강남역과 분당역 사이에 정자역 추가 요청
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        SectionRequest 새로운_요청 = new SectionRequest(강남역.getId(), 정자역.getId(), 15);
 
         //then
         assertThatThrownBy(()->

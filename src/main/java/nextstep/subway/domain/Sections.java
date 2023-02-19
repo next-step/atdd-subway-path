@@ -52,7 +52,6 @@ public class Sections {
 
     private boolean addableInMiddle(Section section) {
         return sections.stream()
-                .filter(s -> s.getDistance() > section.getDistance())
                 .map(s -> s.getUpStation())
                 .anyMatch(upStation -> upStation.equals(section.getUpStation()));
     }
