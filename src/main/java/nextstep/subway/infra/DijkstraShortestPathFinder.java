@@ -25,6 +25,10 @@ public class DijkstraShortestPathFinder implements PathFinder {
 
     @Override
     public PathResponse find(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new IllegalArgumentException(SAME_STATION);
+        }
+
         return null;
     }
 }
