@@ -107,7 +107,7 @@ public class Sections {
             targetSection = getSectionByDownStation(targetStation);
         }
 
-        sections.remove(targetSection);
+        sections.remove(targetSection.get());
     }
 
     private void deleteMiddle(Station targetStation) {

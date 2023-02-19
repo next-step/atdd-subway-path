@@ -21,7 +21,6 @@ public class SectionTest {
 
 
     private Line 이호선;
-    private Line 삼호선;
     private Station 강남역;
     private Station 역삼역;
     private Station 선릉역;
@@ -32,8 +31,6 @@ public class SectionTest {
      */
     @BeforeEach
     void setUp() {
-        이호선 = new Line("이호선", "#29832");
-        삼호선 = new Line("삼호선", "#29122");
         강남역 = new Station("강남역");
         역삼역 = new Station("역삼역");
         선릉역 = new Station("선릉역");
@@ -43,35 +40,27 @@ public class SectionTest {
         ReflectionTestUtils.setField(역삼역, "id", 2L);
         ReflectionTestUtils.setField(선릉역, "id", 3L);
         ReflectionTestUtils.setField(강남_역삼_구간, "id", 1L);
-
-        Sections sections1 = new Sections();
-        Sections sections2 = new Sections();
-
-        List<Section> sectionList1 = new ArrayList<>();
-        List<Section> sectionList2 = new ArrayList<>();
-        sectionList1.add(강남_역삼_구간);
-
-        ReflectionTestUtils.setField(sections1, "sections", sectionList1);
-        ReflectionTestUtils.setField(sections2, "sections", sectionList2);
-
-        ReflectionTestUtils.setField(이호선, "id", 1L);
-        ReflectionTestUtils.setField(이호선, "sections", sections1);
-
-        ReflectionTestUtils.setField(삼호선, "id", 2L);
-        ReflectionTestUtils.setField(삼호선, "sections", sections2);
     }
 
     /**
      * When 구간이 없는 노선에서 역 삭제를 시도하면
-     * Given 예외를 발생시킨다.
+     * Then 예외를 발생시킨다.
      */
     @Test
     @DisplayName("구간 제거: 삭제할 역이 노선에 존재하지 않는 경우")
     void deleteSection_fail_noSectionInLine() {
+        // given
+        이호선 = new Line("이호선", "#29832");
+        Sections 이호선_구간_일급_컬렉션 = new Sections();
+        List<Section> 이호선_구간_리스트 = new ArrayList<>();
+
+        ReflectionTestUtils.setField(이호선_구간_일급_컬렉션, "sections", 이호선_구간_리스트);
+        ReflectionTestUtils.setField(이호선, "id", 1L);
+        ReflectionTestUtils.setField(이호선, "sections", 이호선_구간_일급_컬렉션);
 
         try {
             // when
-            삼호선.deleteSection(강남역);
+            이호선.deleteSection(강남역);
 
         } catch(Exception e) {
             // then
@@ -81,11 +70,21 @@ public class SectionTest {
 
     /**
      * When 노선에 존재하지 않는 역을 삭제하면
-     * Given 예외를 발생시킨다.
+     * Then 예외를 발생시킨다.
      */
     @Test
     @DisplayName("구간 제거: 삭제할 역이 노선에 존재하지 않는 경우")
     void deleteSection_fail_stationNotExist() {
+        // given
+        이호선 = new Line("이호선", "#29832");
+
+        Sections 이호선_구간_일급_컬렉션 = new Sections();
+        List<Section> 이호선_구간_리스트 = new ArrayList<>();
+        이호선_구간_리스트.add(강남_역삼_구간);
+
+        ReflectionTestUtils.setField(이호선_구간_일급_컬렉션, "sections", 이호선_구간_리스트);
+        ReflectionTestUtils.setField(이호선, "id", 1L);
+        ReflectionTestUtils.setField(이호선, "sections", 이호선_구간_일급_컬렉션);
 
         try {
             // when
@@ -99,11 +98,21 @@ public class SectionTest {
 
     /**
      * When 1개 남은 구간을 삭제할 경우
-     * Given 삭제에 성공한다.
+     * Then 삭제에 성공한다.
      */
     @Test
     @DisplayName("구간 제거: 구간이 1개일 경우")
     void deleteSection_success_oneSectionExist() {
+        // given
+        이호선 = new Line("이호선", "#29832");
+
+        Sections 이호선_구간_일급_컬렉션 = new Sections();
+        List<Section> 이호선_구간_리스트 = new ArrayList<>();
+        이호선_구간_리스트.add(강남_역삼_구간);
+
+        ReflectionTestUtils.setField(이호선_구간_일급_컬렉션, "sections", 이호선_구간_리스트);
+        ReflectionTestUtils.setField(이호선, "id", 1L);
+        ReflectionTestUtils.setField(이호선, "sections", 이호선_구간_일급_컬렉션);
 
         // when
         이호선.deleteSection(강남역);
