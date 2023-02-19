@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.dto.PathResponse;
 import nextstep.subway.infra.DijkstraShortestPathFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static nextstep.subway.common.constants.ErrorConstant.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -118,5 +120,26 @@ public class PathFinderTest {
         assertThatThrownBy(() -> pathFinder.find(교대역, 보정역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(NOT_LINKED_STATION);
+    }/**
+     * 교대역    --- *2호선* ---   강남역
+     * |                        |
+     * *3호선*                   *신분당선*
+     * |                        |
+     * 남부터미널역  --- *3호선* --- 양재역
+     */
+    @Test
+    @DisplayName("최단거리 경로조회")
+    void findPath() {
+        // given
+        pathFinder.init(List.of(이호선, 삼호선, 신분당선));
+
+        // when
+        PathResponse response = pathFinder.find(교대역, 양재역);
+
+        // then
+        assertAll(
+                () -> assertThat(response.getStations()).containsExactly(교대역, 남부터미널역, 양재역),
+                () -> assertThat(response.getDistance()).isEqualTo(5)
+        );
     }
 }

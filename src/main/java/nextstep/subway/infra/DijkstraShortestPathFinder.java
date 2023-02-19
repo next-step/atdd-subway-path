@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.dto.PathResponse;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -42,12 +43,11 @@ public class DijkstraShortestPathFinder implements PathFinder {
     public PathResponse find(Station source, Station target) {
         validationFindStation(source, target);
 
-        Optional.ofNullable(path.getPath(source, target))
+        return Optional.ofNullable(path.getPath(source, target))
+                .map(this::createPathResponse)
                 .orElseThrow(() -> {
                     throw new IllegalArgumentException(NOT_LINKED_STATION);
                 });
-
-        return null;
     }
 
     private void validationFindStation(Station source, Station target) {
@@ -75,5 +75,9 @@ public class DijkstraShortestPathFinder implements PathFinder {
         }
 
         throw new IllegalArgumentException(NOT_FOUND_STATION);
+    }
+
+    private PathResponse createPathResponse(GraphPath<Station, DefaultWeightedEdge> t) {
+        return new PathResponse(t.getVertexList(), t.getWeight());
     }
 }
