@@ -43,7 +43,8 @@ class SectionTest {
         // When && Then
         Station 신사역 = new Station("신사역");
         assertThatThrownBy(() -> givenSection.changeUpStation(신사역, 10))
-            .isInstanceOf(IllegalDistanceSectionException.class);
+            .isInstanceOf(IllegalDistanceSectionException.class)
+            .hasMessage("잘못된 구간 사이 거리 요청입니다.");
     }
 
     /**
@@ -55,7 +56,8 @@ class SectionTest {
     void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
         // When && Then
         assertThatThrownBy(() -> givenSection.makeNext(신분당선, 강남역, 양재역, 10))
-            .isInstanceOf(DuplicateAddSectionException.class);
+            .isInstanceOf(DuplicateAddSectionException.class)
+            .hasMessage("이미 추가되어있는 구간 요청입니다.");
     }
 
     /**
@@ -81,7 +83,8 @@ class SectionTest {
     @Test
     void 동일한_구간_생성_요청_시_만들어지지_않는다() {
         assertThatThrownBy(() -> givenSection.makeNext(신분당선, 강남역, 양재역, 5))
-            .isInstanceOf(DuplicateAddSectionException.class);
+            .isInstanceOf(DuplicateAddSectionException.class)
+            .hasMessage("이미 추가되어있는 구간 요청입니다.");
     }
 
     /**
@@ -101,7 +104,7 @@ class SectionTest {
         int compareByDownSection = 상행역_구간.compareTo(givenSection);
 
         // Then
-        assertThat(compareByUpSection).as("하행역 구간일 경우 0").isEqualTo(0);
+        assertThat(compareByUpSection).as("하행역 구간일 경우 0").isZero();
         assertThat(compareByDownSection).as("상행역 구간일 경우 -1").isEqualTo(-1);
     }
 

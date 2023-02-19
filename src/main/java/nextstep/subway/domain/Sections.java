@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.IllegalAddSectionException;
+import nextstep.subway.domain.exception.IllegalRemoveMinSectionSize;
+import nextstep.subway.domain.exception.NotFoundSectionsException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -12,6 +14,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+
+    private static final int MINIMUM_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -50,39 +54,111 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public void removeLastSection(Station station) {
-        if (!isLastStation(station)) {
-            throw new IllegalArgumentException();
+    public void removeSection(Station station) {
+        validateWhenRemoveSection();
+
+        // 마지막 역인지
+        removeProcess(station);
+    }
+
+    public Section findSectionByStation(Station station) {
+        if (isLastStation(station)) {
+            return getLastStation();
         }
 
-        this.sections.remove(sections.size() - 1);
+        return sections.stream().filter(section -> section.getUpStation().equals(station))
+            .findFirst()
+            .orElseThrow(NotFoundSectionsException::new);
     }
 
     public boolean isSectionsEmpty() {
         return sections.isEmpty();
     }
 
-    private Section getSectionToAdd(Station requestUpStation, Station requestDownStation) {
-        return sections.stream().filter(section -> {
-            // 상행역 또는 하행역에 추가
-            if (canAddUpOrDownStation(requestUpStation, requestDownStation, section))
-                return true;
-
-            // 상행역 하행역 사이 추가
-            return canAddInTheMiddleStation(requestUpStation, section);
-        }).findFirst().orElseThrow(IllegalAddSectionException::new);
+    private Section getBeforeSection(Section targetSection) {
+        return sections.stream().filter(section -> section.getDownStation().equals(targetSection.getUpStation()))
+            .findFirst()
+            .orElseThrow(NotFoundSectionsException::new);
     }
 
-    private static boolean canAddUpOrDownStation(Station requestUpStation, Station requestDownStation, Section section) {
+    private boolean isFirstSection(Section targetSection) {
+        return sections.get(0).equals(targetSection);
+    }
+
+    private boolean isLastStation(Station targetStation) {
+        return getLastStation().getDownStation().equals(targetStation);
+    }
+
+    private Section getLastStation() {
+        return sections.get(sections.size() - MINIMUM_SECTION_SIZE);
+    }
+
+    private Section getSectionToAdd(Station requestUpStation, Station requestDownStation) {
+        return sections.stream().filter(section -> isPossibleToAddSection(requestUpStation, requestDownStation, section))
+            .findFirst()
+            .orElseThrow(IllegalAddSectionException::new);
+    }
+
+    private boolean isPossibleToAddSection(Station requestUpStation, Station requestDownStation, Section section) {
+        // 상행역 또는 하행역에 추가
+        if (canAddUpOrDownStation(requestUpStation, requestDownStation, section)) {
+            return true;
+        }
+
+        // 상행역 하행역 사이 추가
+        return canAddInTheMiddleStation(requestUpStation, section);
+    }
+
+    private boolean canAddUpOrDownStation(Station requestUpStation, Station requestDownStation, Section section) {
         return section.getUpStation().equals(requestDownStation) || section.getDownStation().equals(requestUpStation);
     }
 
-    private static boolean canAddInTheMiddleStation(Station requestUpStation, Section section) {
+    private boolean canAddInTheMiddleStation(Station requestUpStation, Section section) {
         return section.getUpStation().equals(requestUpStation);
     }
 
-    private boolean isLastStation(Station station) {
-        return sections.get(sections.size() - 1).getDownStation().equals(station);
+    private void validateWhenRemoveSection() {
+        if (sections.size() == MINIMUM_SECTION_SIZE) {
+            throw new IllegalRemoveMinSectionSize();
+        }
+    }
+
+    private void removeProcess(Station station) {
+        if (removeLastSection(station)) {
+            return;
+        }
+
+        // 타겟 구간 찾기
+        Section targetSection = findSectionByStation(station);
+
+        if (removeFirstSection(targetSection)) {
+            return;
+        }
+
+        // 중간 역 제거
+        removeMiddleSection(targetSection);
+    }
+
+    private void removeMiddleSection(Section targetSection) {
+        Section targetBeforeSection = getBeforeSection(targetSection);
+        targetBeforeSection.changeDownStation(targetSection.getDownStation(), targetSection.getDistance());
+        sections.remove(targetSection);
+    }
+
+    private boolean removeFirstSection(Section targetSection) {
+        if (isFirstSection(targetSection)) {
+            sections.remove(targetSection);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean removeLastSection(Station station) {
+        if (isLastStation(station)) {
+            sections.remove(sections.size() - MINIMUM_SECTION_SIZE);
+            return true;
+        }
+        return false;
     }
 
 }

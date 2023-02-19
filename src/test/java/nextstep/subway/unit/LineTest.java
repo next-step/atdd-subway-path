@@ -18,9 +18,10 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class LineTest {
 
+    private final Station 양재역 = new Station("양재역");
+    private final Station 강남역 = new Station("강남역");
+
     private Line line;
-    Station 양재역 = new Station("양재역");
-    Station 강남역 = new Station("강남역");
 
     @BeforeEach
     void setUp() {
@@ -112,7 +113,8 @@ class LineTest {
     void 기존_구간과_동일한_구간_추가_요청시_추가가_안된다() {
         // When && Then
         assertThatThrownBy(() -> line.addSection(강남역, 양재역, 4))
-            .isInstanceOf(DuplicateAddSectionException.class);
+            .isInstanceOf(DuplicateAddSectionException.class)
+            .hasMessage("이미 추가되어있는 구간 요청입니다.");
     }
 
     /**
@@ -127,7 +129,8 @@ class LineTest {
 
         // When && Then
         assertThatThrownBy(() -> line.addSection(강남역, 판교역, 10))
-            .isInstanceOf(IllegalDistanceSectionException.class);
+            .isInstanceOf(IllegalDistanceSectionException.class)
+            .hasMessage("잘못된 구간 사이 거리 요청입니다.");
     }
 
     /**
@@ -143,7 +146,8 @@ class LineTest {
 
         // When && Then
         assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10))
-            .isInstanceOf(IllegalAddSectionException.class);
+            .isInstanceOf(IllegalAddSectionException.class)
+            .hasMessage("역을 추가 할 수 없습니다");
     }
 
     /**
@@ -159,7 +163,8 @@ class LineTest {
 
         // When && Then
         assertThatThrownBy(() -> line.addSection(수지구청역, 판교역, 10))
-            .isInstanceOf(IllegalAddSectionException.class);
+            .isInstanceOf(IllegalAddSectionException.class)
+            .hasMessage("역을 추가 할 수 없습니다");
     }
 
     // When 라인에 해당하는 역들을 요청 시
@@ -172,10 +177,6 @@ class LineTest {
 
         // Then
         assertThat(stations).containsExactly(강남역, 양재역);
-    }
-
-    @Test
-    void removeSection() {
     }
 
 }
