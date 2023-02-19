@@ -48,11 +48,37 @@ public class Section {
         this.upStation = upStation;
     }
 
-    public boolean equalsUpStation(Station upstation) {
-        return this.getUpStation().getId().equals(upstation.getId());
+    public boolean equalsUpStation(Section section) {
+        return this.getUpStation().getId().equals(section.getUpStation().getId());
     }
 
-    public boolean equalsDownStation(Station downStation) {
-        return this.getDownStation().getId().equals(downStation.getId());
+    public boolean equalsUpStation(Station station) {
+        return this.getUpStation().getId().equals(station.getId());
+    }
+
+    public boolean equalsDownStation(Section section) {
+        return this.getDownStation().getId().equals(section.getDownStation().getId());
+    }
+
+    public boolean equalsDownStation(Station station) {
+        return this.getDownStation().getId().equals(station.getId());
+    }
+
+    public boolean equalsUpOrDownStation(Section newSection){
+        return this.equalsUpStation(newSection) || this.equalsDownStation(newSection);
+    }
+
+    public boolean isLessThan(Section newSection){
+        return this.getDistance() <= newSection.getDistance();
+    }
+
+    public void divideSection(Section newSection){
+        if(this.equalsUpStation(newSection)){
+            this.reduceDistance(newSection.getDistance());
+            this.updateUpStation(newSection.getDownStation());
+        }else if(this.equalsDownStation(newSection)){
+            this.reduceDistance(newSection.getDistance());
+            this.updateDownStation(newSection.getUpStation());
+        }
     }
 }

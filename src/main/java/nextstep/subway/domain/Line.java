@@ -25,11 +25,11 @@ public class Line {
     }
 
     public void addSection(Section newSection) {
-        sections.addSection(newSection);
+        sections.add(newSection);
     }
 
     public void deleteSection(Station station) {
-        sections.deleteSection(station);
+        sections.delete(station);
     }
 
     public List<Station> getSortedStations() {
