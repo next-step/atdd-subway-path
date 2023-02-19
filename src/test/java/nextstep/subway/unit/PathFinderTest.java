@@ -11,8 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nextstep.subway.common.constants.ErrorConstant.NOT_FOUND_STATION;
 import static nextstep.subway.common.constants.ErrorConstant.SAME_STATION;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class PathFinderTest {
 
@@ -71,5 +73,33 @@ public class PathFinderTest {
         assertThatThrownBy(() -> pathFinder.find(강남역, 강남역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SAME_STATION);
+    }
+
+    /**
+     * 교대역    --- *2호선* ---   강남역
+     * |
+     * *3호선*                    죽전역     보정역
+     * |
+     * 남부터미널역  --- *3호선* --- 양재역
+     */
+    @Test
+    @DisplayName("경로조회 실패-존재하지 않은 출발역이나 도착역")
+    void findPath_notFoundSourceTarget() {
+        // given
+        pathFinder.init(List.of(이호선, 삼호선));
+
+        // when
+        // then
+        assertAll(
+                () -> assertThatThrownBy(() -> pathFinder.find(강남역, 보정역))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage(NOT_FOUND_STATION),
+                () -> assertThatThrownBy(() -> pathFinder.find(죽전역, 양재역))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage(NOT_FOUND_STATION),
+                () -> assertThatThrownBy(() -> pathFinder.find(죽전역, 보정역))
+                        .isInstanceOf(IllegalArgumentException.class)
+                        .hasMessage(NOT_FOUND_STATION)
+        );
     }
 }

@@ -26,6 +26,10 @@ public class Line {
         sections.removeSection(station);
     }
 
+    public boolean isContainStation(Station station) {
+        return sections.isContainStation(station);
+    }
+
     public Line() {
     }
 

@@ -7,4 +7,5 @@ public class ErrorConstant {
     public static final String NOT_ENROLL_STATION = "상행 역과 하행 역 둘 중 하나도 포함되어 있지 않으면 등록할 수 없습니다.";
     public static final String LESS_THAN_ONE_SECTION = "노선에 등록된 구간이 하나 이하일 경우 구간을 제거할 수 없습니다.";
     public static final String NOT_FOUND_STATION = "역을 찾을 수 없습니다.";
+    public static final String SAME_STATION = "출발역과 도착역이 같은 경우 경로를 조회할 수 없습니다.";
 }
