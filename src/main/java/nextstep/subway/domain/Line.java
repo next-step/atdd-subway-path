@@ -71,4 +71,13 @@ public class Line {
 
 		sections.removeLastSection();
 	}
+
+	public void updateLine(String name, String color) {
+		if (name != null) {
+			this.setName(name);
+		}
+		if (color != null) {
+			this.setColor(color);
+		}
+	}
 }
