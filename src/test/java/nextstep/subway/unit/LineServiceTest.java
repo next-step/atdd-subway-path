@@ -31,6 +31,7 @@ public class LineServiceTest {
 	private Station 선릉역;
 	private Station 역삼역;
 	private SectionRequest 강남역_선릉역_구간_생성_요청_데이터;
+	private SectionRequest 선릉역_역삼역_구간_생성_요청_데이터;
 
 	@BeforeEach
 	void setUp() {
@@ -45,6 +46,7 @@ public class LineServiceTest {
 		lineRepository.save(이호선);
 
 		강남역_선릉역_구간_생성_요청_데이터 = new SectionRequest(강남역.getId(), 선릉역.getId(), 10);
+		선릉역_역삼역_구간_생성_요청_데이터 = new SectionRequest(선릉역.getId(), 역삼역.getId(), 10);
 	}
 
 	@DisplayName("구간 추가")
@@ -65,6 +67,20 @@ public class LineServiceTest {
 
 		// when
 		lineService.findById(이호선.getId());
+
+		// then
+		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역);
+	}
+
+	@DisplayName("노선의 구간 삭제")
+	@Test
+	void deleteSection() {
+		// given
+		이호선.addSection(강남역, 선릉역, 10);
+		lineService.addSection(이호선.getId(), 선릉역_역삼역_구간_생성_요청_데이터);
+
+		// when
+		lineService.deleteSection(이호선.getId(), 역삼역.getId());
 
 		// then
 		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역);
