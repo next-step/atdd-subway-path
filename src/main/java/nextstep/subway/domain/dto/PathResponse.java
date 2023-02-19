@@ -8,9 +8,9 @@ import java.util.List;
 public class PathResponse {
 
     private List<Station> stations = new ArrayList<>();
-    private int distance;
+    private double distance;
 
-    public PathResponse(List<Station> stations, int distance) {
+    public PathResponse(List<Station> stations, double distance) {
         this.stations.addAll(stations);
         this.distance = distance;
     }
@@ -19,7 +19,7 @@ public class PathResponse {
         return stations;
     }
 
-    public int getDistance() {
+    public double getDistance() {
         return distance;
     }
 }

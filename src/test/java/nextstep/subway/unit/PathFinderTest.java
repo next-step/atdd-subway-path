@@ -11,8 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nextstep.subway.common.constants.ErrorConstant.NOT_FOUND_STATION;
-import static nextstep.subway.common.constants.ErrorConstant.SAME_STATION;
+import static nextstep.subway.common.constants.ErrorConstant.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -101,5 +100,23 @@ public class PathFinderTest {
                         .isInstanceOf(IllegalArgumentException.class)
                         .hasMessage(NOT_FOUND_STATION)
         );
+    }
+
+
+    /**
+     * 교대역    --- *2호선* ---   강남역
+     * 죽전역  --- *수인분당선* --- 보정역
+     */
+    @Test
+    @DisplayName("경로조회 실패-연결되지 않은 출발역이나 도착역")
+    void findPath_notLinkedSourceTarget() {
+        // given
+        pathFinder.init(List.of(이호선, 수인분당선));
+
+        // when
+        // then
+        assertThatThrownBy(() -> pathFinder.find(교대역, 보정역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(NOT_LINKED_STATION);
     }
 }
