@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
 public class PathService {
 
     private final StationService stationService;
@@ -26,6 +25,7 @@ public class PathService {
         this.lineService = lineService;
     }
 
+    @Transactional(readOnly = true)
     public PathResponse findShortestPath(Long departureStationId, Long DestinationStationId) {
         Station departureStation = stationService.findById(departureStationId);
         Station destinationStation = stationService.findById(DestinationStationId);
