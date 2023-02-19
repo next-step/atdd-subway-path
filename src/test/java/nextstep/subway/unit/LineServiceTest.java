@@ -56,4 +56,17 @@ public class LineServiceTest {
 		// then
 		assertThat(이호선.getSections().getSections()).isNotEmpty();
 	}
+
+	@DisplayName("노선의 역 조회")
+	@Test
+	void findById() {
+		// given
+		이호선.addSection(강남역, 선릉역, 10);
+
+		// when
+		lineService.findById(이호선.getId());
+
+		// then
+		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역);
+	}
 }

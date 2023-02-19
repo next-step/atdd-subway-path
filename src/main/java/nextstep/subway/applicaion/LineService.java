@@ -13,7 +13,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 @Service
@@ -88,13 +87,7 @@ public class LineService {
 			return Collections.emptyList();
 		}
 
-		List<Station> stations = line.getSections().getSections().stream()
-			.map(Section::getDownStation)
-			.collect(Collectors.toList());
-
-		stations.add(0, line.getSections().getSections().get(0).getUpStation());
-
-		return stations.stream()
+		return line.getStations().stream()
 			.map(it -> stationService.createStationResponse(it))
 			.collect(Collectors.toList());
 	}
