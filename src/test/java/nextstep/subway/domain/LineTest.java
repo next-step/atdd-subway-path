@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -24,6 +25,7 @@ class LineTest {
         선릉역 = new Station("선릉역");
     }
 
+    @DisplayName("노선 정보 수정")
     @Test
     void update() {
         // when
@@ -34,6 +36,7 @@ class LineTest {
         assertThat(이호선.getColor()).isEqualTo("bg-red-600");
     }
 
+    @DisplayName("두 역 사이에 구간 추가")
     @Test
     void addSectionBetweenStations() {
         // when
@@ -54,6 +57,7 @@ class LineTest {
                 .getDistance()).isEqualTo(1);
     }
 
+    @DisplayName("상행종점역에 대한 구간 추가")
     @Test
     void addSectionWithLastUpStation() {
         // when
@@ -64,6 +68,7 @@ class LineTest {
         assertThat(이호선.getStations()).containsExactly(선릉역, 강남역, 역삼역);
     }
 
+    @DisplayName("하행종점역에 대한 구간 추가")
     @Test
     void addSectionWithLastDownStation() {
         // when
@@ -74,6 +79,7 @@ class LineTest {
         assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역);
     }
 
+    @DisplayName("두 역 사이에 구간을 추가할 때, 기존 구간보다 길이가 같거나 길 경우, 오류 발생")
     @Test
     void cannotAddSectionBetweenStationsWithInvalidDistance() {
         // given
@@ -89,6 +95,7 @@ class LineTest {
         }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("추가하려는 구간의 상행역과 하행역 모두 노선에 존재할 경우, 오류 발생")
     @Test
     void cannotAddSectionUpStationAndDownStationIsAlreadyExists() {
         // given
@@ -101,6 +108,7 @@ class LineTest {
         }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("추가하려는 구간의 상행역과 하행역 모두 노선에 존재하지 않을 경우, 오류 발생")
     @Test
     void cannotAddSectionUpStationAndDownStationDoesNotContainInLine() {
         // given
@@ -115,6 +123,7 @@ class LineTest {
         }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("노선의 역 목록 조회")
     @Test
     void getStations() {
         // given
@@ -127,6 +136,7 @@ class LineTest {
         assertThat(stations).containsExactly(강남역, 역삼역);
     }
 
+    @DisplayName("마지막 구간 제거")
     @Test
     void removeLastSection() {
         // given
@@ -141,6 +151,7 @@ class LineTest {
         assertThat(stations).containsExactly(강남역, 역삼역);
     }
 
+    @DisplayName("중간 구간 제거")
     @Test
     void removeMiddleSection() {
         // given
@@ -155,6 +166,7 @@ class LineTest {
         assertThat(stations).containsExactly(강남역, 선릉역);
     }
 
+    @DisplayName("마지막 구간을 제거하려고 하는 경우, 오류 발생")
     @Test
     void cannotRemoveLastRemainingSection() {
         // given
@@ -166,6 +178,7 @@ class LineTest {
         }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("노선에 존재하지 않는 역을 제거하려고 할 경우, 오류 발생")
     @Test
     void cannotRemoveSectionWithNotContainsStation() {
         // when, then

@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class SectionsTest {
         선릉역 = new Station(1L, "선릉역");
     }
 
+    @DisplayName("두 역 사이에 구간 추가")
     @Test
     void addSectionBetweenStations() {
         // when
@@ -46,6 +48,7 @@ public class SectionsTest {
                 .getDistance()).isEqualTo(1);
     }
 
+    @DisplayName("첫 구간으로 구간 추가")
     @Test
     void addSectionWithLastUpStation() {
         // when
@@ -56,6 +59,7 @@ public class SectionsTest {
         assertThat(sections.getStations()).containsExactly(선릉역, 강남역, 역삼역);
     }
 
+    @DisplayName("마지막 구간으로 구간 추가")
     @Test
     void addSectionWithLastDownStation() {
         // when
@@ -66,6 +70,7 @@ public class SectionsTest {
         assertThat(sections.getStations()).containsExactly(강남역, 역삼역, 선릉역);
     }
 
+    @DisplayName("역 사이에 구간을 추가할 때, 기존 구간의 길이보다 같거나 긴 구간을 추가할 경우 에러 발생")
     @Test
     void cannotAddSectionBetweenStationsWithInvalidDistance() {
         // given
@@ -81,6 +86,7 @@ public class SectionsTest {
         }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("추가하려는 구간의 상행역과 하행역 모두 지하철 노선에 이미 등록되어있을 경우 에러 발생")
     @Test
     void cannotAddSectionUpStationAndDownStationIsAlreadyExists() {
         // given
@@ -93,6 +99,7 @@ public class SectionsTest {
         }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("추가하려는 구간의 상행역과 하행역 모두 지하철 노선에 등록되어있지 않은 경우 에러 발생")
     @Test
     void cannotAddSectionUpStationAndDownStationDoesNotContainInLine() {
         // given
@@ -107,6 +114,7 @@ public class SectionsTest {
         }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("지하철 노선의 역 목록 조회")
     @Test
     void getStations() {
         // given
@@ -119,6 +127,7 @@ public class SectionsTest {
         assertThat(stations).containsAnyOf(강남역, 역삼역);
     }
 
+    @DisplayName("마지막 구간 제거")
     @Test
     void removeLastSection() {
         // given
@@ -133,6 +142,7 @@ public class SectionsTest {
         assertThat(stations).containsOnly(강남역, 역삼역);
     }
 
+    @DisplayName("마지막으로 남은 구간을 제거하려고 할 경우 에러 발생")
     @Test
     void cannotRemoveLastRemainingSection() {
         // given
@@ -144,6 +154,7 @@ public class SectionsTest {
         }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("제거하려는 구간의 역이 지하철 노선에 포함되어있지 않은 경우 에러 발생")
     @Test
     void cannotRemoveSectionWithNotContainsStation() {
         // when, then
