@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
@@ -95,10 +97,16 @@ class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void exception_when_not_exist_station() {
         // Given
-        Long 부산역 = 지하철역_생성_요청("부산역").jsonPath().getLong("id");
+        List<Long> 존재하는역들 = List.of(교대역, 강남역, 양재역, 남부터미널역);
+
+        Random randomGenerator = new Random();
+        long 존재하지_않는_역 = randomGenerator.longs()
+                .filter(id -> !존재하는역들.contains(id))
+                .findFirst()
+                .getAsLong();
 
         // When
-        ExtractableResponse<Response> response = 최단_경로_조회(강남역, 부산역);
+        ExtractableResponse<Response> response = 최단_경로_조회(강남역, 존재하지_않는_역);
 
         // Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
