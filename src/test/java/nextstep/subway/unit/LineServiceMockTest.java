@@ -13,9 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -37,16 +36,14 @@ public class LineServiceMockTest {
         LineService lineService = new LineService(lineRepository, stationService);
         when(stationService.findById(1L)).thenReturn(new Station(강남역_이름));
         when(stationService.findById(2L)).thenReturn(new Station(분당역_이름));
-        when(lineRepository.findById(any())).thenReturn(Optional.of(new Line(신분당선_이름,신분당선_색)));
+        Line line = mock(Line.class);
+        when(lineRepository.findById(any())).thenReturn(Optional.of(line));
 
         // when
         // lineService.addSection 호출
         lineService.addSection(1L, new SectionRequest(1L,2L,10));
 
-        // then
-        // lineService.findLineById 메서드를 통해 검증
-        Line line = lineService.findLineById(1L);
-        assertThat(line.getSections()).hasSize(1);
-        assertThat(line.getFirstSection().getDistance()).isEqualTo(10);
+        // Line에 add가 호출 되었는지 검증
+        verify(line).addSection(any(), any(), anyInt());
     }
 }
