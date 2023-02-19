@@ -3,15 +3,12 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.domain.Line;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.ErrorResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSectionAcceptanceTest.createSectionCreateParams;
 import static nextstep.subway.acceptance.LineSteps.*;

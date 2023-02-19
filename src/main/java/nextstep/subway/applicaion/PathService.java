@@ -4,7 +4,6 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.PathFinder;
-import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
 import org.jgrapht.GraphPath;
 import org.springframework.stereotype.Service;
