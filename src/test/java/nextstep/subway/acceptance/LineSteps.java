@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.useDefaultRepresentation;
 
 public class LineSteps extends Steps {
 
@@ -64,6 +66,12 @@ public class LineSteps extends Steps {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청함(final Long id) {
+        final ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
+        응답_코드_검증(response, HttpStatus.OK);
+        return response;
+    }
+
     public static void 지하철_노선_수정_요청(final ExtractableResponse<Response> createResponse, final String color) {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);
@@ -110,6 +118,12 @@ public class LineSteps extends Steps {
                 .body(params)
                 .when().post("/lines/{lineId}/sections", lineId)
                 .then().log().all().extract();
+    }
+
+    public static void 지하철_노선에_역들이_순차적으로_존재하는지_확인(final Long lineId, final Long... stationIds) {
+        final ExtractableResponse<Response> response = 지하철_노선_조회_요청함(lineId);
+        final List<Long> 지하철_노선의_역들 = response.jsonPath().getList("stations.id", Long.class);
+        assertThat(지하철_노선의_역들).containsExactly(stationIds);
     }
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_요청(Long lineId, Long stationId) {

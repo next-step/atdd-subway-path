@@ -10,6 +10,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,7 +39,7 @@ public class LineServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository, stationService);
+        lineService = new LineService(stationService, lineRepository);
         이호선 = new Line(1L, "2호선", "bg-green-600");
         신분당선 = new Line(1L, "신분당성", "bg-red-600");
         강남역 = new Station(1L, "강남역");
@@ -46,6 +47,7 @@ public class LineServiceMockTest {
         선릉역 = new Station(3L, "선릉역");
     }
 
+    @DisplayName("노선 저장")
     @Test
     void saveLine() {
         // given
@@ -59,6 +61,7 @@ public class LineServiceMockTest {
         assertThat(lineResponse.getId()).isNotNull();
     }
 
+    @DisplayName("노선 목록 조회")
     @Test
     void showLines() {
         // given
@@ -71,6 +74,7 @@ public class LineServiceMockTest {
         assertThat(lineResponses).hasSize(2);
     }
 
+    @DisplayName("ID 로 노선 상세 조회")
     @Test
     void findById() {
         // given
@@ -83,6 +87,7 @@ public class LineServiceMockTest {
         assertThat(lineResponse.getId()).isEqualTo(이호선.getId());
     }
 
+    @DisplayName("노선 정보 수정")
     @Test
     void updateLine() {
         // given
@@ -98,6 +103,7 @@ public class LineServiceMockTest {
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
     }
 
+    @DisplayName("구간 추가")
     @Test
     void addSection() {
         // given
@@ -116,6 +122,7 @@ public class LineServiceMockTest {
         assertThat(lineResponse.getStations()).hasSize(2);
     }
 
+    @DisplayName("구간 삭제")
     @Test
     void deleteSection() {
         // given

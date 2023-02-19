@@ -6,7 +6,9 @@ import nextstep.subway.applicaion.dto.CreateLineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +43,7 @@ public class LineServiceTest {
         선릉역 = createStation("선릉역");
     }
 
+    @DisplayName("노선 저장")
     @Test
     void saveLine() {
         // given
@@ -54,6 +57,7 @@ public class LineServiceTest {
         assertThat(삼호선.getStations()).containsExactly(강남역, 역삼역);
     }
 
+    @DisplayName("노선 목록 조회")
     @Test
     void showLines() {
         // when
@@ -66,6 +70,7 @@ public class LineServiceTest {
         assertThat(lineNames).containsAnyOf("2호선");
     }
 
+    @DisplayName("ID 로 노선 상세 조회")
     @Test
     void findById() {
         // when
@@ -75,6 +80,7 @@ public class LineServiceTest {
         assertThat(lineResponse.getName()).isEqualTo("2호선");
     }
 
+    @DisplayName("노선 정보 수정")
     @Test
     void updateLine() {
         // given
@@ -89,6 +95,7 @@ public class LineServiceTest {
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
     }
 
+    @DisplayName("노선 삭제")
     @Test
     void deleteLine() {
         // when
@@ -97,9 +104,10 @@ public class LineServiceTest {
         // then
         assertThatThrownBy(() -> {
             lineService.findById(이호선.getId());
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(BusinessException.class);
     }
 
+    @DisplayName("구간 추가")
     @Test
     void addSection() {
         // when
@@ -110,6 +118,7 @@ public class LineServiceTest {
         assertThat(sections).containsAnyOf(new Section(이호선, 강남역, 역삼역, 10));
     }
 
+    @DisplayName("구간 삭제")
     @Test
     void deleteSection() {
         // given

@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
+import nextstep.subway.error.ErrorCode;
+import nextstep.subway.error.exception.BusinessException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -9,11 +11,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 @Getter
 public class Sections {
 
+    private static final int MIN_SECTIONS_SIZE = 1;
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
@@ -51,16 +55,34 @@ public class Sections {
     }
 
     void remove(final Station station) {
-        if (!getLastDownSection().getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        validateBeforeRemoveStation(station);
+
+        final List<Section> sections = this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station) ||
+                        section.getDownStation().equals(station))
+                .collect(Collectors.toList());
+        if (sections.size() > 1) {
+            final Section firstSection = sections.stream()
+                    .filter(section -> section.getDownStation().equals(station))
+                    .findFirst().get();
+            final Section secondSection = sections.stream()
+                    .filter(section -> section.getUpStation().equals(station))
+                    .findFirst().get();
+            this.sections.remove(firstSection);
+            this.sections.remove(secondSection);
+            this.sections.add(new Section(firstSection.getLine(),
+                    firstSection.getUpStation(),
+                    secondSection.getDownStation(),
+                    firstSection.getDistance() + secondSection.getDistance()));
+            return;
         }
-        sections.remove(sections.size() - 1);
+        this.sections.remove(getSection(station));
     }
 
     private void validateUpStationAndDownStation(final Station upStation, final Station downStation) {
         if (new HashSet<>(this.getStations()).containsAll(List.of(upStation, downStation)) ||
                 (!this.getStations().contains(upStation) && !this.getStations().contains(downStation))) {
-            throw new IllegalArgumentException();
+            throw new BusinessException(ErrorCode.INVALID_NEW_SECTION_STATION);
         }
     }
 
@@ -84,7 +106,7 @@ public class Sections {
 
     private void validateNewSectionDistance(final Section section, final int distance) {
         if (section.getDistance() <= distance) {
-            throw new IllegalArgumentException();
+            throw new BusinessException(ErrorCode.INVALID_NEW_SECTION_DISTANCE);
         }
     }
 
@@ -124,5 +146,25 @@ public class Sections {
             return null;
         }
         return findSection.get();
+    }
+
+    private Section getSection(final Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station) ||
+                        section.getDownStation().equals(station))
+                .findFirst().get();
+    }
+
+    private void validateBeforeRemoveStation(final Station station) {
+        if (sections.size() == MIN_SECTIONS_SIZE) {
+            throw new BusinessException(ErrorCode.CANNOT_REMOVE_SECTION_WHEN_SECTION_SIZE_IS_MINIMUM);
+        }
+        if (isExistsStationInLine(station)) {
+            throw new BusinessException(ErrorCode.REMOVE_STATION_IS_NOT_EXISTS_IN_SECTION);
+        }
+    }
+
+    private boolean isExistsStationInLine(final Station station) {
+        return !getStations().contains(station);
     }
 }

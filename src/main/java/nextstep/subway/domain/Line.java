@@ -1,13 +1,12 @@
 package nextstep.subway.domain;
 
 import lombok.*;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -50,10 +49,10 @@ public class Line {
     }
 
     public void update(final String name, final String color) {
-        if (name != null) {
+        if (!isNull(name)) {
             this.name = name;
         }
-        if (color != null) {
+        if (!isNull(color)) {
             this.color = color;
         }
     }
@@ -66,7 +65,11 @@ public class Line {
         return sections.getStations();
     }
 
-    public void removeLastSection(final Station station) {
+    public void removeSection(final Station station) {
         sections.remove(station);
+    }
+
+    private boolean isNull(final String str) {
+        return !StringUtils.hasText(str);
     }
 }
