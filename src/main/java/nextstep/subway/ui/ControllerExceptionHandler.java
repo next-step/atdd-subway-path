@@ -8,7 +8,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ControllerExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(DataIntegrityViolationException e) {
+    public ResponseEntity<Void> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgsException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
 }

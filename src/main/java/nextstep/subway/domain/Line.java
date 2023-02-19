@@ -24,14 +24,6 @@ public class Line {
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-
-        Section section = new Section(this, upStation, downStation, distance);
-        this.sections.addSection(section);
-    }
-
     public Long getId() {
         return id;
     }
@@ -76,11 +68,7 @@ public class Line {
         return sections.getStations();
     }
 
-    public Section getLastSection() {
-        return sections.findLastSection();
-    }
-
-    public void removeLastSection() {
-        sections.removeLastSection();
+    public void removeSection(Station station) {
+        sections.removeSection(station);
     }
 }

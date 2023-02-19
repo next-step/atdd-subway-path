@@ -35,6 +35,14 @@ public class Section {
         this.order = getLine().getGreatestOrder() + 1;
     }
 
+    public Section(Line line, Station upStation, Station downStation, int distance, int order) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+        this.order = order;
+    }
+
     public Long getId() {
         return id;
     }
@@ -67,10 +75,7 @@ public class Section {
         order = 1;
     }
 
-    public void subtractDistance(int distance) {
-        if(this.distance <= distance) {
-            throw new IllegalArgumentException("기존의 구간 길이보다 작아질 수 없습니다");
-        }
-        this.distance -= distance;
+    public void setOrder(int order) {
+        this.order = order;
     }
 }

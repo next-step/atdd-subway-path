@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -63,12 +64,26 @@ public class Sections {
                 .orElse(new Section()).getOrder();
     }
 
-    public boolean isEmpty() {
-        return sections.isEmpty();
+    public void removeSection(Station station) {
+        validateRemoveSection(station);
+
+        if(hasDownToEndDown(station)) {
+            removeLastSection();
+            return;
+        }
+
+        if(hasUpToBeginUp(station)) {
+            removeFirstSection();
+            return;
+        }
+
+        if(hasUpToUp(station) && hasDownToDown(station)) {
+            removeMiddleSection(station);
+        }
     }
 
-    public void removeLastSection() {
-        sections.remove(sections.size() - 1);
+    public boolean isEmpty() {
+        return sections.isEmpty();
     }
 
     public Integer[] getDistances() {
@@ -108,7 +123,7 @@ public class Sections {
 
 
     private void validateUpStationDistance(Section section) {
-        findUpToUp(section.getUpStation())
+        findUpSection(section.getUpStation())
                 .filter(it -> it.getDistance() <= section.getDistance())
                 .ifPresent(it -> {
                     throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
@@ -116,7 +131,7 @@ public class Sections {
     }
 
     private void validateDownStationDistance(Section section) {
-        findDownToDown(section.getDownStation())
+        findDownSection(section.getDownStation())
                 .filter(it -> it.getDistance() <= section.getDistance())
                 .ifPresent(it -> {
                     throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
@@ -124,11 +139,11 @@ public class Sections {
     }
 
     private boolean hasUpToUp(Station upStation) {
-        return findUpToUp(upStation).isPresent();
+        return findUpSection(upStation).isPresent();
     }
 
     private boolean hasDownToDown(Station downStation) {
-        return findDownToDown(downStation).isPresent();
+        return findDownSection(downStation).isPresent();
     }
 
     private boolean hasDownToBeginUp(Station downStation) {
@@ -142,7 +157,7 @@ public class Sections {
     }
 
     private void addUpToUp(Section section) {
-        findUpToUp(section.getUpStation())
+        findUpSection(section.getUpStation())
                 .ifPresent(it -> {
                     sections.remove(it);
                     sections.add(section);
@@ -151,7 +166,7 @@ public class Sections {
     }
 
     private void addDownToDown(Section section) {
-        findDownToDown(section.getDownStation()).ifPresent(it -> {
+        findDownSection(section.getDownStation()).ifPresent(it -> {
             sections.remove(it);
             sections.add(new Section(section.getLine(), it.getUpStation(), section.getUpStation(), it.getDistance() - section.getDistance()));
             sections.add(section);
@@ -159,9 +174,6 @@ public class Sections {
     }
 
     private void addDownToBeginUp(Section section) {
-        Section firstSection = findFirstSection();
-        firstSection.subtractDistance(section.getDistance());
-
         sections.forEach(Section::increaseOrder);
 
         section.beginOrder();
@@ -169,9 +181,6 @@ public class Sections {
     }
 
     private void addUpToEndDown(Section section) {
-        Section lastSection = findLastSection();
-        lastSection.subtractDistance(section.getDistance());
-
         sections.add(section);
     }
 
@@ -180,15 +189,15 @@ public class Sections {
                 .anyMatch((it) -> station.equals(it.getUpStation()) || station.equals(it.getDownStation()));
     }
 
-    private Optional<Section> findUpToUp(Station upStation) {
+    private Optional<Section> findUpSection(Station station) {
         return sections.stream()
-                .filter(it -> upStation.equals(it.getUpStation()))
+                .filter(it -> station.equals(it.getUpStation()))
                 .findFirst();
     }
 
-    private Optional<Section> findDownToDown(Station downStation) {
+    private Optional<Section> findDownSection(Station station) {
         return sections.stream()
-                .filter(it -> downStation.equals(it.getDownStation()))
+                .filter(it -> station.equals(it.getDownStation()))
                 .findFirst();
     }
 
@@ -200,5 +209,69 @@ public class Sections {
     public Section findLastSection() {
         return sections.stream().max(Comparator.comparing(Section::getOrder))
                 .orElseThrow(() -> new EntityNotFoundException("노선에 구간이 없습니다"));
+    }
+
+    private void validateRemoveSection(Station station) {
+        if(isEmpty()) {
+            throw new IllegalArgumentException("노선에 구간이 없습니다");
+        }
+
+        if(hasOnlyOneSection()) {
+            throw new IllegalArgumentException("노선에 구간이 하나밖에 없습니다");
+        }
+
+        if(notRegisteredStation(station)) {
+            throw new IllegalArgumentException("노선에 등록되지 않은 역입니다");
+        }
+    }
+
+    private boolean notRegisteredStation(Station station) {
+        return !this.getStations().contains(station);
+    }
+
+    private boolean hasOnlyOneSection() {
+        return sections.size() == 1;
+    }
+
+    private boolean hasDownToEndDown(Station downStation) {
+        return findLastSection().getDownStation().equals(downStation);
+    }
+
+    private boolean hasUpToBeginUp(Station upStation) {
+        return findFirstSection().getUpStation().equals(upStation);
+    }
+
+    private void removeFirstSection() {
+        sections.remove(findFirstSection());
+    }
+
+    private void removeLastSection() {
+        sections.remove(findLastSection());
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section upSection = findUpSection(station).get();
+        Section downSection = findDownSection(station).get();
+
+        Section newSection = new Section(
+                upSection.getLine(),
+                downSection.getUpStation(),
+                upSection.getDownStation(),
+                upSection.getDistance() + downSection.getDistance(),
+                downSection.getOrder()
+        );
+
+        sections.remove(downSection);
+        sections.remove(upSection);
+        sections.add(newSection);
+
+        resetOrders();
+    }
+
+    private void resetOrders() {
+        sections.sort(Comparator.comparingInt(Section::getOrder));
+
+        IntStream.range(0, sections.size())
+                .forEach(index -> sections.get(index).setOrder(index+1));
     }
 }
