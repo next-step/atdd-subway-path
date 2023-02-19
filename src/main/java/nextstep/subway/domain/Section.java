@@ -39,9 +39,26 @@ public class Section {
         Long downStationId,
         int distance
     ) {
+        this(
+            null,
+            line,
+            upStationId,
+            downStationId,
+            distance
+        );
+    }
+
+    public Section(
+        Long id,
+        Line line,
+        Long upStationId,
+        Long downStationId,
+        int distance
+    ) {
         if (upStationId == null || downStationId == null || distance == 0) {
             throw new IllegalArgumentException();
         }
+        this.id = id;
         this.line = line;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
@@ -52,12 +69,34 @@ public class Section {
         return this.downStationId.equals(stationId);
     }
 
-    public boolean isConnectable(Section other) {
+    public boolean containsStation(Section other) {
+        return containsUpStation(other) || containsDownStation(other);
+    }
+
+    public boolean containsUpStation(Section other) {
+        return this.upStationId.equals(other.upStationId) || this.downStationId.equals(other.upStationId);
+    }
+
+    public boolean containsDownStation(Section other) {
+        return this.upStationId.equals(other.downStationId) || this.downStationId.equals(other.downStationId);
+    }
+
+    public boolean isDownConnected(Section other) {
         return this.downStationId.equals(other.upStationId);
     }
 
-    public boolean containsLastStation(Section other) {
-        return this.upStationId.equals(other.downStationId) || this.downStationId.equals(other.downStationId);
+    public Section nextSection(Section other) {
+        if (this.distance <= other.distance) {
+            throw new IllegalArgumentException(
+                String.format("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음 Section: %s", other)
+            );
+        }
+        return new Section(
+            this.line,
+            other.downStationId,
+            this.downStationId,
+            this.distance - other.distance
+        );
     }
 
     public Long getId() {
@@ -95,5 +134,16 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+            "id=" + id +
+            ", line=" + line +
+            ", upStationId=" + upStationId +
+            ", downStationId=" + downStationId +
+            ", distance=" + distance +
+            '}';
     }
 }
