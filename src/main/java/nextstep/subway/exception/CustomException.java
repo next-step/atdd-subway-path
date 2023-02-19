@@ -12,6 +12,10 @@ public class CustomException extends RuntimeException{
     public static final String CAN_NOT_ADD_SECTION_CAUSE_DISTANCE = "추가되는 구간이 기존 구간보다 길이가 깁니다.";
 
     public static final String INVALID_STATIONS_IN_LINE_MSG = "노선에 등록된 역 정보가 유효하지 않습니다.";
+    public static final String PATH_MUST_CONTAIN_STATION = "경로 조회에는 조회하려는 역이 등록되어있어야 합니다.";
+
+    public static final String SAME_STATION_CAN_NOT_SEARCH_PATH = "출발역과 도착역이 같은 경우 경로를 조회 할 수 없습니다.";
+
 
     public CustomException(String message) {
         super(message);
