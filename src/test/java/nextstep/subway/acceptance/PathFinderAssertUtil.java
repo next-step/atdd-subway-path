@@ -4,8 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.common.constants.ErrorConstant.NOT_LINKED_STATION;
-import static nextstep.subway.common.constants.ErrorConstant.SAME_STATION;
+import static nextstep.subway.common.constants.ErrorConstant.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -25,6 +24,10 @@ public class PathFinderAssertUtil {
 
     public static void 지하철_경로_조회_연결되지역을_조회_예외(ExtractableResponse<Response> response) {
         지하철_경로_조회_예외(response, NOT_LINKED_STATION);
+    }
+
+    public static void 지하철_경로_조회_존재하지않는역으로_조회_예외(ExtractableResponse<Response> response) {
+        지하철_경로_조회_예외(response, NOT_FOUND_STATION);
     }
 
     private static void 지하철_경로_조회_예외(ExtractableResponse<Response> response, String message) {

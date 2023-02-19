@@ -100,4 +100,14 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
      * When 존재하지 않는 출발역이나 도착역을 조회하면
      * Then 예외가 발생한다.
      */
+    @Test
+    @DisplayName("존재하지 않는 출발역이나 도착역 경로 조회")
+    void findPath_notFoundStation() {
+        // given
+        // when
+        var response = 지하철_경로_조회(죽전역, 보정역);
+
+        // then
+        지하철_경로_조회_존재하지않는역으로_조회_예외(response);
+    }
 }
