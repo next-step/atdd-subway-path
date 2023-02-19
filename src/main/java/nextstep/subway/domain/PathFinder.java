@@ -14,9 +14,9 @@ public class PathFinder {
     private DijkstraShortestPath dijkstraShortestPath;
 
     public PathFinder(List<Line> lines) {
-        this.graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         lines.stream().forEach(this::registLine);
-        dijkstraShortestPath = new DijkstraShortestPath(graph);
+        dijkstraShortestPath = new DijkstraShortestPath<>(graph);
     }
 
     public GraphPath<String, String> getShortestPath(Long source, Long target) {
