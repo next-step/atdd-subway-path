@@ -75,29 +75,14 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                createStationResponses(line),
-                createSectionsResponse(line)
+                createStationResponses(line)
         );
-    }
-
-    private List<SectionResponse> createSectionsResponse(Line line) {
-        return line.getSections().stream()
-                .map(it -> createSectionResponse(it))
-                .collect(Collectors.toList());
     }
 
     private List<StationResponse> createStationResponses(Line line) {
         return line.getStations().stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
-    }
-
-    private SectionResponse createSectionResponse(Section section) {
-        return new SectionResponse(
-                section.getUpStation().getId(),
-                section.getDownStation().getId(),
-                section.getDistance()
-        );
     }
 
     @Transactional
