@@ -1,9 +1,12 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,23 +36,32 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
     }
 
-    public Line getLine() {
-        return line;
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public void updateWhenSectionAddedInMiddle(Section section) {
+        if (distance <= section.getDistance()) {
+            throw new IllegalArgumentException("구간의 길이가 너무 깁니다.");
+        }
+        if (section.getUpStation().equals(upStation)) {
+            updateWhenSectionAddedInMiddle(section.getDownStation(), downStation,
+                distance - section.getDistance());
+        }
+        if (section.getDownStation().equals(downStation)) {
+            updateWhenSectionAddedInMiddle(upStation, section.getUpStation(),
+                distance - section.getDistance());
+        }
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    private void updateWhenSectionAddedInMiddle(Station upStation, Station downStation,
+        int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 }
