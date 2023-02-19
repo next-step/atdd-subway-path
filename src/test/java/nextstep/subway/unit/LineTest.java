@@ -41,7 +41,7 @@ class LineTest {
         List<Station> stations = line.getStations();
 
         // then
-        assertThat(stations).extracting("name").containsExactly("내방역", "고속터미널역");
+        assertThat(stations).extracting("name").containsExactly("내방역", "고속터미널역", "반포역");
     }
 
     @Test

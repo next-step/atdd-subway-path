@@ -14,6 +14,7 @@ import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_한다;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
@@ -62,13 +63,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addLineSection_BetweenExistingSection() {
         // when
         Long 신사역 = 지하철역_생성_한다("신사역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신사역, 6L));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신사역, 6));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 신사역, 양재역);
-        assertThat(response.jsonPath().getList("sections.distance", Long.class)).containsOnly(6L, 4L);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 신사역, 양재역),
+                () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(16)
+        );
     }
 
     /**
@@ -80,7 +83,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addLineSection_BetweenExistingSection_WithLongerDistance() {
         // when
         Long 신사역 = 지하철역_생성_한다("신사역").jsonPath().getLong("id");
-        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신사역, 11L));
+        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 신사역, 11));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -94,10 +97,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection_AlreadyExistsUpAndDownStation() {
         // when
-        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 10L));
+        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 10));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     /**
@@ -108,10 +111,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection_NotIncludedUpAndDownStation() {
         // when
-        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 10L));
+        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 10));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     /**
@@ -154,7 +157,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Long distance) {
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
