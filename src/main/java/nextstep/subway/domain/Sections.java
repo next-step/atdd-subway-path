@@ -20,6 +20,7 @@ public class Sections {
 
     private static final String ADD_IN_THE_MIDDLE = "addInTheMiddle";
     private static final String ADD_AT_THE_BEGINNING = "addAtTheBeginning";
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
 
@@ -35,11 +36,11 @@ public class Sections {
         Section foundSection = null;
         String status = null;
         for (int i = 0; i < sections.size(); i++) {
-            if(sections.get(0).getUpStation().equals(section.getDownStation())) {
+            if(downStationOfNewSectionIsFirstUpStationOfFirstSection(section)) {
                 status = ADD_AT_THE_BEGINNING;
                 break;
             }
-            if (sections.get(i).getUpStation().equals(section.getUpStation())) {
+            if (upStationOfNewSectionIsUpStationOfSections(i, section)) {
                 index = i;
                 foundSection = sections.get(i);
                 status = ADD_IN_THE_MIDDLE;
@@ -76,6 +77,14 @@ public class Sections {
 
     public boolean hasSection() {
         return !sections.isEmpty();
+    }
+
+    private boolean downStationOfNewSectionIsFirstUpStationOfFirstSection(Section section) {
+        return sections.get(0).getUpStation().equals(section.getDownStation());
+    }
+
+    private boolean upStationOfNewSectionIsUpStationOfSections(int i, Section section) {
+        return sections.get(i).getUpStation().equals(section.getUpStation());
     }
 
     private void notExistsValidateCheck(Section newSection) {
