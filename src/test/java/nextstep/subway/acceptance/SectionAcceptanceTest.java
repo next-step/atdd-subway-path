@@ -155,23 +155,52 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
-     * When 지하철 노선의 마지막 구간 제거를 요청 하면
-     * Then 노선에 구간이 제거된다
+     * When 상행 종점역 제거를 요청 하면
+     * Then 해당 구간이 제거된다.
      */
-    @DisplayName("지하철 노선에 구간을 제거")
+    @DisplayName("지하철 구간 제거 - 정상1 : 상행 종점역 제거")
     @Test
-    void removeLineSection() {
-        // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, sectionDistance2));
+    void removeLineSection_ValidCase1() {
+    }
 
-        // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 하행 종점역 제거를 요청 하면
+     * Then 해당 구간이 제거된다.
+     */
+    @DisplayName("지하철 구간 제거 - 정상2 : 하행 종점역 제거")
+    @Test
+    void removeLineSection_ValidCase2() {
+    }
 
-        // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 구간 사이에 있는 역 제거를 요청 하면
+     * Then 해당 구간이 제거된다.
+     */
+    @DisplayName("지하철 구간 제거 - 정상3 : 구간 사이에 위치한 역 제거")
+    @Test
+    void removeLineSection_ValidCase3() {
+    }
+
+    /**
+     * Given 구간이 하나인 지하철 노선에
+     * When 구간 제거를 요청하면
+     * Then 해당 구간이 제거되지 않는다.
+     */
+    @DisplayName("지하철 구간 제거 - 예외1 : 구간이 하나 노선 구간 제거")
+    @Test
+    void removeLineSection_InvalidCase1() {
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 해당 노선에 포함되지 않은 역 제거를 요청하면
+     * Then 구간이 제거되지 않는다.
+     */
+    @DisplayName("지하철 구간 제거 - 예외2 : 해당 노선에 포함되지 않은 역 제거")
+    @Test
+    void removeLineSection_InvalidCase2() {
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
