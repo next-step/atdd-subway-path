@@ -1,17 +1,47 @@
 package nextstep.subway.unit;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class LineTest {
-    @Test
-    void addSection() {
-    }
 
-    @Test
-    void getStations() {
-    }
+    private Line line;
+    private long 강남역Id = 1L;
+    private long 역삼역Id = 2L;
 
-    @Test
-    void removeSection() {
+    @DisplayName("section 삭제")
+    @Nested
+    class removeSection {
+
+        private final long 삼성역Id = 3L;
+        private final Section section1 = new Section(line, 강남역Id, 역삼역Id, 10);
+        private final Section section2 = new Section(line, 역삼역Id, 삼성역Id, 8);
+
+        @Test
+        void 구간이_하나인_경우_삭제할_수_없다() {
+            line = new Line("이호선", "초록색", section1);
+            assertThatIllegalArgumentException()
+                .isThrownBy(() -> line.removeSection(역삼역Id));
+        }
+
+        @Test
+        void 하행_종점역이_아닌_경우_삭제할_수_없다() {
+            line = new Line("이호선", "초록색", section1, section2);
+            assertThatIllegalArgumentException()
+                .isThrownBy(() -> line.removeSection(역삼역Id));
+        }
+
+        @Test
+        void 하행_종점역인_경우_삭제할_수_있다() {
+            line = new Line("이호선", "초록색", section1, section2);
+
+            assertDoesNotThrow(() -> line.removeSection(삼성역Id));
+        }
     }
 }

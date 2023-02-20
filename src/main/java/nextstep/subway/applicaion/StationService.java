@@ -1,5 +1,6 @@
 package nextstep.subway.applicaion;
 
+import java.util.Collection;
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Station;
@@ -36,10 +37,20 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
+    public List<StationResponse> createStationResponses(Collection<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
+        return stationRepository.findAllById(ids).stream()
+            .map(it -> createStationResponse(it))
+            .collect(Collectors.toList());
+    }
+
+    private StationResponse createStationResponse(Station station) {
         return new StationResponse(
-                station.getId(),
-                station.getName()
+            station.getId(),
+            station.getName()
         );
     }
 
