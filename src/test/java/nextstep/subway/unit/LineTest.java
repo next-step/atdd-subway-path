@@ -25,7 +25,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(1);
-        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 1));
+        assertThat(신분당선.getStations()).containsExactly(광교, 광교중앙);
     }
 
     @Test
@@ -52,7 +52,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(2);
-        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 3), new Section(신분당선, 광교중앙, 상현, 2));
+        assertThat(신분당선.getStations()).containsExactly(광교, 광교중앙, 상현);
     }
 
     @Test
@@ -67,7 +67,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(2);
-        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 2), new Section(신분당선, 광교중앙, 상현, 3));
+        assertThat(신분당선.getStations()).containsExactly(광교, 광교중앙, 상현);
     }
 
     @Test
@@ -94,7 +94,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(2);
-        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 3), new Section(신분당선, 광교중앙, 상현, 2));
+        assertThat(신분당선.getStations()).containsExactly(광교, 광교중앙, 상현);
     }
 
     @Test
@@ -109,7 +109,7 @@ class LineTest {
 
         // then
         assertThat(신분당선.getSections()).hasSize(2);
-        assertThat(신분당선.getSections()).contains(new Section(신분당선, 광교, 광교중앙, 3), new Section(신분당선, 광교중앙, 상현, 2));
+        assertThat(신분당선.getStations()).containsExactly(광교, 광교중앙, 상현);
     }
 
     @Test
@@ -134,7 +134,6 @@ class LineTest {
     void getStations() {
         // given
         Line 신분당선 = new Line(1L, "신분당", "RED");
-        신분당선.addSection(null, 광교, 3);
         신분당선.addSection(광교, 광교중앙, 2);
         신분당선.addSection(광교중앙, 상현, 2);
 

@@ -7,7 +7,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -65,7 +64,8 @@ public class Sections {
 
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
-        Section nextSection = findUpStationIsNullSection();
+        Section nextSection = findFirstSection();
+        stations.add(nextSection.getUpStation());
         while (nextSection != null) {
             stations.add(nextSection.getDownStation());
             nextSection = findSectionByNextUpStation(nextSection.getDownStation());
@@ -80,11 +80,15 @@ public class Sections {
                 .orElse(null);
     }
 
-    private Section findUpStationIsNullSection() {
+    private Section findFirstSection() {
+        List<Station> downStationList = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
         return sections.stream()
-                .filter(section -> section.getUpStation() == null)
+                .filter(section -> !downStationList.contains(section.getUpStation()))
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new RuntimeException("첫 번째 역을 찾을 수 없습니다."));
     }
 
     private void validateSectionDistance(Section section, Section oldSection) {
