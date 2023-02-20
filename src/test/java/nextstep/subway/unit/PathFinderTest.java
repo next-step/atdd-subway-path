@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.domain.DijkstraPathFinder;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CustomException;
@@ -53,9 +53,9 @@ class PathFinderTest {
      */
     @Test
     void getShortestPath() {
-        PathFinder pathFinder = new PathFinder(Lists.newArrayList(이호선, 삼호선));
+        DijkstraPathFinder dijkstraPathFinder = new DijkstraPathFinder(Lists.newArrayList(이호선, 삼호선));
 
-        var graph = pathFinder.getShortestPath(역삼역.getId(), 선정릉역.getId());
+        var graph = dijkstraPathFinder.getShortestPath(역삼역.getId(), 선정릉역.getId());
 
         assertThat(graph.getVertexList()).hasSize(3);
         assertThat((int)graph.getWeight()).isEqualTo(22);
@@ -63,11 +63,11 @@ class PathFinderTest {
 
     @Test
     void getShortestPath_등록되지_않은_역을_대상으로_경로_조회() {
-        PathFinder pathFinder = new PathFinder(Lists.newArrayList(이호선, 삼호선));
+        DijkstraPathFinder dijkstraPathFinder = new DijkstraPathFinder(Lists.newArrayList(이호선, 삼호선));
         Long invalidStationId = 5L;
 
         assertThatThrownBy(() -> {
-            pathFinder.getShortestPath(역삼역.getId(), invalidStationId);
+            dijkstraPathFinder.getShortestPath(역삼역.getId(), invalidStationId);
         }).isInstanceOf(CustomException.class)
                 .hasMessageContaining(CustomException.PATH_MUST_CONTAIN_STATION);
     }

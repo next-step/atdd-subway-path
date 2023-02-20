@@ -2,14 +2,13 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.domain.DijkstraPathFinder;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.PathFinder;
 import nextstep.subway.exception.CustomException;
 import org.jgrapht.GraphPath;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,13 +28,10 @@ public class PathService {
         }
 
         List<Line> lines = lineService.getLines();
-        PathFinder pathFinder = new PathFinder(lines);
+        DijkstraPathFinder pathFinder = new DijkstraPathFinder(lines);
+        // <-> KshortestPathFinder.class
 
         GraphPath<Long, String> shotestGraph = pathFinder.getShortestPath(source, target);
-
-        if(Objects.isNull(shotestGraph)) {
-            throw new CustomException(CustomException.DOES_NOT_CONNECTED_SOURCE_TO_TARGET);
-        }
 
         List<StationResponse> stations = shotestGraph.getVertexList().stream()
                 .map(s -> stationService.findById(s))
