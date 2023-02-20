@@ -1,8 +1,11 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -49,5 +52,35 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public void removeSection(Station station) {
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("구간이 존재하지 않습니다.");
+        }
+
+        if (!this.sections.get(this.sections.size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.remove(sections.size() - 1);
+    }
+
+    public List<Station> getStations() {
+        if (this.sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+        //
+        List<Station> stations = this.sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
+
+        stations.add(0, this.sections.get(0).getUpStation());
+        //
+        return stations;
     }
 }
