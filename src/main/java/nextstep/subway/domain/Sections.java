@@ -9,9 +9,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
@@ -36,7 +36,7 @@ public class Sections {
         Section foundSection = null;
         String status = null;
         for (int i = 0; i < sections.size(); i++) {
-            if(downStationOfNewSectionIsFirstUpStationOfFirstSection(section)) {
+            if (downStationOfNewSectionIsFirstUpStationOfFirstSection(section)) {
                 status = ADD_AT_THE_BEGINNING;
                 break;
             }
@@ -64,9 +64,7 @@ public class Sections {
     }
 
     public List<Station> getSortedStations() {
-        Map<Station, Integer> stationCount = countStations();
-        SectionsVO sortedSections = makeSortedSections(findStartStation(stationCount));
-
+        SectionsVO sortedSections = getSortedSections();
         List<Station> stations = new ArrayList<>();
         stations.add(sortedSections.findFirstUpStation());
         stations.addAll(sortedSections.getSections().stream()
@@ -89,31 +87,31 @@ public class Sections {
 
     private void notExistsValidateCheck(Section newSection) {
         int existsCount = 0;
-        for(Section oldSection : sections) {
-            if(oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
+        for (Section oldSection : sections) {
+            if (oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
                 existsCount++;
             }
-            if(oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
+            if (oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
                 existsCount++;
             }
         }
-        if(existsCount != 1) {
+        if (existsCount != 1) {
             throw new InvalidValueException(ErrorCode.NOT_EXISTS_STATIONS_OF_NEW_SECTION);
         }
     }
 
     private void existsValidateCheck(Section newSection) {
         int duplicateCount = 0;
-        for(Section oldSection : sections) {
-            if(oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
+        for (Section oldSection : sections) {
+            if (oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
                 duplicateCount++;
                 continue;
             }
-            if(oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
+            if (oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
                 duplicateCount++;
             }
         }
-        if(duplicateCount == 2) {
+        if (duplicateCount == 2) {
             throw new InvalidValueException(ErrorCode.ALREADY_EXISTED_STATIONS_OF_NEW_SECTION);
         }
     }
@@ -143,49 +141,19 @@ public class Sections {
         sections.add(index + 1, new Section(oldSection.getLine(), newDownStation, oldDownStation, oldDistance - newSectionDistance));
     }
 
-    private SectionsVO makeSortedSections(Station firstStation) {
-        boolean result = false;
+    private SectionsVO getSortedSections() {
         SectionsVO sectionsVO = new SectionsVO();
-        while (!result) {
-            for (Section section : sections) {
-                if (section.getUpStation().equals(firstStation)) {
-                    firstStation = section.getDownStation();
-                    sectionsVO.add(section);
-                    break;
+        Collections.sort(sections, new Comparator<Section>() {
+            @Override
+            public int compare(Section s1, Section s2) {
+                if (s1.getDownStation().equals(s2.getUpStation())) {
+                    return -1;
                 }
-                if (sectionsVO.getSections().size() == sections.size()) {
-                    result = true;
-                    break;
-                }
+                return 0;
             }
-        }
+        });
+        sections
+                .forEach(sectionsVO::add);
         return sectionsVO;
-    }
-
-    private Station findStartStation(Map<Station, Integer> stationCount) {
-        List<Station> stations = new ArrayList<>();
-        for (Map.Entry<Station, Integer> entry : stationCount.entrySet()) {
-            if (entry.getValue() == 1) {
-                stations.add(entry.getKey());
-            }
-        }
-        Station firstStation = null;
-        for (Station station : stations) {
-            for (Section section : sections) {
-                if (section.getUpStation().equals(station)) {
-                    firstStation = station;
-                }
-            }
-        }
-        return firstStation;
-    }
-
-    private Map<Station, Integer> countStations() {
-        Map<Station, Integer> stationCount = new HashMap<>();
-        for (Section section : sections) {
-            stationCount.put(section.getUpStation(), stationCount.getOrDefault(section.getUpStation(), 0) + 1);
-            stationCount.put(section.getDownStation(), stationCount.getOrDefault(section.getDownStation(), 0) + 1);
-        }
-        return stationCount;
     }
 }
