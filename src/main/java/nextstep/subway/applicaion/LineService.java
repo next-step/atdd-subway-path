@@ -8,10 +8,10 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,8 +39,8 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+            .map(this::createLineResponse)
+            .collect(Collectors.toList());
     }
 
     public Line findLineById(Long id) {
@@ -80,19 +80,19 @@ public class LineService {
 
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
+            line.getId(),
+            line.getName(),
+            line.getColor(),
+            createStationResponses(line)
         );
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        List<Station> stations = line.getStations();
 
-        return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
+        return line.getSortedStations()
+            .stream()
+            .map(it -> stationService.createStationResponse(it))
+            .collect(Collectors.toList());
     }
 
     @Transactional

@@ -49,6 +49,14 @@ public class Section {
         return downStation;
     }
 
+    public void setUpStation(Station newStation){
+        this.upStation = newStation;
+    }
+
+    public void setDownStation(Station newStation){
+        this.downStation = newStation;
+    }
+
     public int getDistance() {
         return distance;
     }
