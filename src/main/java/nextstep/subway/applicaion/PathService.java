@@ -31,14 +31,14 @@ public class PathService {
         List<Line> lines = lineService.getLines();
         PathFinder pathFinder = new PathFinder(lines);
 
-        GraphPath<String, String> shotestGraph = pathFinder.getShortestPath(source, target);
+        GraphPath<Long, String> shotestGraph = pathFinder.getShortestPath(source, target);
 
         if(Objects.isNull(shotestGraph)) {
             throw new CustomException(CustomException.DOES_NOT_CONNECTED_SOURCE_TO_TARGET);
         }
 
         List<StationResponse> stations = shotestGraph.getVertexList().stream()
-                .map(s -> stationService.findById(Long.valueOf(s)))
+                .map(s -> stationService.findById(s))
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 

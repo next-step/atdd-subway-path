@@ -10,7 +10,7 @@ import java.util.List;
 
 public class PathFinder {
 
-    private WeightedMultigraph<String, DefaultWeightedEdge> graph;
+    private WeightedMultigraph<Long, DefaultWeightedEdge> graph;
     private DijkstraShortestPath dijkstraShortestPath;
 
     public PathFinder(List<Line> lines) {
@@ -19,9 +19,9 @@ public class PathFinder {
         dijkstraShortestPath = new DijkstraShortestPath<>(graph);
     }
 
-    public GraphPath<String, String> getShortestPath(Long source, Long target) {
+    public GraphPath<Long, String> getShortestPath(Long source, Long target) {
         try {
-            return dijkstraShortestPath.getPath(String.valueOf(source), String.valueOf(target));
+            return dijkstraShortestPath.getPath(source, target);
         } catch (IllegalArgumentException e) {
             //예외 번역
             throw new CustomException(CustomException.PATH_MUST_CONTAIN_STATION);
@@ -31,7 +31,7 @@ public class PathFinder {
     private void registLine(Line line) {
         //역 등록
         line.getStations().stream()
-                        .map(station -> String.valueOf(station.getId()))
+                        .map(station -> station.getId())
                         .forEach(graph::addVertex);
 
         //구간 등록
@@ -40,8 +40,8 @@ public class PathFinder {
                     .forEach(section ->
                             graph.setEdgeWeight(
                                     graph.addEdge(
-                                        String.valueOf(section.getUpStation().getId()),
-                                        String.valueOf(section.getDownStation().getId())),
+                                        section.getUpStation().getId(),
+                                        section.getDownStation().getId()),
                                     section.getDistance()));
     }
 }
