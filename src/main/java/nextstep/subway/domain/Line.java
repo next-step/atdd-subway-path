@@ -38,13 +38,7 @@ public class Line {
         if (sections.getSections().isEmpty()) {
             return Collections.emptyList();
         }
-        SectionsVO sortedSections = sections.sort();
-        List<Station> stations = new ArrayList<>();
-        stations.add(sortedSections.getSections().get(0).getUpStation());
-        stations.addAll(sortedSections.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList()));
-        return stations;
+        return sections.getSortedStations();
     }
 
     public void removeSection(Station station) {

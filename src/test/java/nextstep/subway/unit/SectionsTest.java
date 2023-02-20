@@ -4,13 +4,14 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.VO.SectionsVO;
 import nextstep.subway.global.error.exception.ErrorCode;
 import nextstep.subway.global.error.exception.InvalidValueException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 public class SectionsTest {
     private static final String LINE_ONE = "1호선";
@@ -141,8 +142,8 @@ public class SectionsTest {
         sections.addSection(sectionOne);
 
         //then
-        SectionsVO sortedSections = sections.sort();
-        Assertions.assertThat(sortedSections.getSections()).containsExactly(sectionOne, sectionTwo, sectionThree);
+        List<Station> sortedStations = sections.getSortedStations();
+        Assertions.assertThat(sortedStations).containsExactly(seoulStation, yongSanStation, hongDaeStation, songPaStation);
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 InvalidValueException이 발생한다")

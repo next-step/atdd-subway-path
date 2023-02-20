@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Getter
 @Embeddable
@@ -61,10 +62,16 @@ public class Sections {
         sections.remove(sections.size() - 1);
     }
 
-    public SectionsVO sort() {
+    public List<Station> getSortedStations() {
         Map<Station, Integer> stationCount = countStations();
-        Station firstStation = findStartStation(stationCount);
-        return makeSortedSections(firstStation);
+        SectionsVO sortedSections = makeSortedSections(findStartStation(stationCount));
+
+        List<Station> stations = new ArrayList<>();
+        stations.add(sortedSections.findFirstUpStation());
+        stations.addAll(sortedSections.getSections().stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList()));
+        return stations;
     }
 
     public boolean hasSection() {
