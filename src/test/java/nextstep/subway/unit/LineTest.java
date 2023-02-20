@@ -87,19 +87,20 @@ class LineTest {
                 .isInstanceOf(DataIntegrityViolationException.class).hasMessage(SectionExceptionMessages.NOTHING_EXIST);
     }
 
-    @DisplayName("구간 제거 - 정상 : 해당 역을 포함한 구간이 제거된다.")
+    @DisplayName("구간 제거 - 정상1 : 상행 종점역 제거")
     @Test
     void removeSection() {
         // given
         서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
         assertThat(서울2호선.getSectionsCount()).isEqualTo(2);
+        assertThat(서울2호선.getStations()).containsExactly(당산역, 신도림역, 신림역);
 
         // when
-        서울2호선.removeSection(신도림역);
+        서울2호선.removeSection(당산역);
 
         // then
         assertThat(서울2호선.getSectionsCount()).isEqualTo(1);
-        assertThat(서울2호선.getStations()).containsExactly(당산역, 신림역);
+        assertThat(서울2호선.getStations()).containsExactly(신도림역, 신림역);
     }
 
 }

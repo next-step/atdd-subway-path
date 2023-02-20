@@ -80,7 +80,14 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        sections.remove(sections.size() - 1);
+        if (station.equals(firstStation)) {
+            Section firstSection = getFirstSection();
+            firstStation = firstSection.getDownStation();
+            sections.remove(firstSection);
+            return;
+        }
+
+        sections.remove(station);
     }
 
     public int getTotalDistance() {
