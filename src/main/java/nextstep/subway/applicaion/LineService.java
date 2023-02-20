@@ -43,6 +43,10 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id).get();
+    }
+
     public LineResponse findById(Long id) {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
