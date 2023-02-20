@@ -50,12 +50,7 @@ public class Sections {
             return;
         }
 
-        final Section section = downSection.get();
-        elements.remove(section);
-
-        final Section nextSection = section.nextSection(other);
-        elements.add(nextSection);
-        elements.add(other);
+        downSection.ifPresent(it -> addMiddleSection(other, it));
     }
 
     private Optional<Section> findUpSection(Section other) {
@@ -70,6 +65,14 @@ public class Sections {
                 .filter(it::isDownConnected)
                 .findFirst()
         );
+    }
+
+    private void addMiddleSection(Section other, Section downSection) {
+        elements.remove(downSection);
+
+        final Section nextSection = downSection.nextSection(other);
+        elements.add(nextSection);
+        elements.add(other);
     }
 
     private void validSection(Section other) {
