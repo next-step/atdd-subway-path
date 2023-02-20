@@ -4,10 +4,11 @@ public class StationResponse {
     private Long id;
     private String name;
 
-    public StationResponse() {
+    public static StationResponse of(Long id, String name) {
+        return new StationResponse(id, name);
     }
 
-    public StationResponse(Long id, String name) {
+    private StationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
     }
