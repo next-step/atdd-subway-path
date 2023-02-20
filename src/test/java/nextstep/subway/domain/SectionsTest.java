@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class SectionsTest {
@@ -56,9 +55,9 @@ class SectionsTest {
         final Sections sections = new Sections(역삼역_삼성역, 삼성역_잠실역, 잠실역_건대역);
         sections.add(강남역_역삼역);
 
-        assertThat(sections.getElements())
-            .containsAll(
-                List.of(
+        assertThat(sections)
+            .isEqualTo(
+                new Sections(
                     강남역_역삼역,
                     역삼역_삼성역,
                     삼성역_잠실역,
@@ -72,9 +71,9 @@ class SectionsTest {
         final Sections sections = new Sections(강남역_역삼역, 역삼역_삼성역, 삼성역_잠실역);
         sections.add(잠실역_건대역);
 
-        assertThat(sections.getElements())
-            .containsAll(
-                List.of(
+        assertThat(sections)
+            .isEqualTo(
+                new Sections(
                     강남역_역삼역,
                     역삼역_삼성역,
                     삼성역_잠실역,
@@ -88,9 +87,9 @@ class SectionsTest {
         final Sections sections = new Sections(강남역_역삼역, 역삼역_삼성역, 삼성역_잠실역, 잠실역_건대역);
         sections.add(삼성역_잠실새내역);
 
-        assertThat(sections.getElements())
-            .containsAll(
-                List.of(
+        assertThat(sections)
+            .isEqualTo(
+                new Sections(
                     강남역_역삼역,
                     역삼역_삼성역,
                     삼성역_잠실새내역,
@@ -98,5 +97,66 @@ class SectionsTest {
                     잠실역_건대역
                 )
             );
+    }
+
+    @Test
+    void 구간이_하나만_존재하면_삭제할_수_없다() {
+        final Sections sections = new Sections(강남역_역삼역);
+
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> sections.remove(역삼역));
+    }
+
+    @Test
+    void 중간_구간을_제거할_수_있다() {
+        final Sections sections = new Sections(강남역_역삼역, 역삼역_삼성역, 삼성역_잠실새내역, 잠실새내역_잠실역);
+        sections.remove(잠실새내역);
+
+        assertThat(sections)
+            .isEqualTo(
+                new Sections(
+                    강남역_역삼역,
+                    역삼역_삼성역,
+                    삼성역_잠실역
+                )
+            );
+    }
+
+    @Test
+    void 첫_구간을_제거할_수_있다() {
+        final Sections sections = new Sections(강남역_역삼역, 역삼역_삼성역, 삼성역_잠실새내역, 잠실새내역_잠실역);
+        sections.remove(강남역);
+
+        assertThat(sections)
+            .isEqualTo(
+                new Sections(
+                    역삼역_삼성역,
+                    삼성역_잠실새내역,
+                    잠실새내역_잠실역
+                )
+            );
+    }
+
+    @Test
+    void 마지막_구간을_제거할_수_있다() {
+        final Sections sections = new Sections(강남역_역삼역, 역삼역_삼성역, 삼성역_잠실새내역, 잠실새내역_잠실역);
+        sections.remove(잠실역);
+
+        assertThat(sections)
+            .isEqualTo(
+                sections(
+                    강남역_역삼역,
+                    역삼역_삼성역,
+                    삼성역_잠실새내역
+                )
+            );
+    }
+
+    private Sections sections(Section... elements) {
+        final Sections sections = new Sections();
+        for (Section element : elements) {
+            sections.add(element);
+        }
+        return sections;
     }
 }
