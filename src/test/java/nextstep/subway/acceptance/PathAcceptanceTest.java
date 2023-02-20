@@ -3,12 +3,16 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.exception.CustomException;
 import nextstep.subway.exception.ErrorResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.acceptance.LineSectionAcceptanceTest.createSectionCreateParams;
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -54,11 +58,13 @@ class PathAcceptanceTest extends AcceptanceTest {
     void paths_When_두_역_사이의_최단_경로를_조회하면_Then_최단_경로를_조회한다() {
         //when
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, 양재역);
+        var pathResponse = response.as(PathResponse.class);
 
         //then
-        var pathResponse = response.as(PathResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(pathResponse.getStationResponse()).hasSize(3);
+        assertThat(pathResponse.getStationResponse().stream().map(StationResponse::getName).collect(Collectors.toList()))
+                .containsExactlyElementsOf(List.of("교대역", "남부터미널역", "양재역"));
         assertThat(pathResponse.getDistance()).isEqualTo(5);
     }
 
