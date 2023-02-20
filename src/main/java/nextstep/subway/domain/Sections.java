@@ -19,7 +19,8 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
 
-    public void add(Section section) {
+    public void add(Line line, Station upStation, Station downStation, int distance) {
+        Section section = new Section(line, upStation, downStation, distance);
         if (isEmpty()) {
             sections.add(section);
             return;

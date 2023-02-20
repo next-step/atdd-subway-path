@@ -2,12 +2,10 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;

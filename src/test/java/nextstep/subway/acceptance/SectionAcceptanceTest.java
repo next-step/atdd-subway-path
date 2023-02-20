@@ -99,7 +99,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
                 createSectionCreateParams(강남역_ID, 정자역_ID, LONGER_DISTANCE));
 
-        예외_발생함(지하철_노선에_지하철_구간_생성_응답);
+        예외_발생함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -113,7 +113,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
                 createSectionCreateParams(강남역_ID, 양재역_ID, SHORTER_DISTANCE));
 
-        예외_발생함(지하철_노선에_지하철_구간_생성_응답);
+        예외_발생함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -129,7 +129,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
                 createSectionCreateParams(정자역_ID, 신사역_ID, SHORTER_DISTANCE));
 
-        예외_발생함(지하철_노선에_지하철_구간_생성_응답);
+        예외_발생함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -160,15 +160,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 지하철_노선에_지하철_구간_제거됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(신분당선_ID);
         assertThat(지하철_노선_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(지하철_노선_조회_응답.jsonPath().getList("stations.id", Long.class))
             .containsExactly(강남역_ID, 양재역_ID);
     }
 
-    private void 예외_발생함(ExtractableResponse<Response> response) {
+    private void 예외_발생함(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(response.statusCode())
-            .isEqualTo(HttpStatus.BAD_REQUEST.value());
+            .isEqualTo(status.value());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
