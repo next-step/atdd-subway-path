@@ -49,7 +49,7 @@ public class Sections {
 		}
 		if (!stations.isEmpty() && !stations.contains(section.getUpStation()) && !stations.contains(
 			section.getDownStation())) {
-			throw new CannotCreateSectionException(ErrorMessage.ALREADY_EXISTED_STATION);
+			throw new CannotCreateSectionException(ErrorMessage.SHOULD_BE_INCLUDE_UP_STATION_OR_DOWN_STATION);
 		}
 	}
 
