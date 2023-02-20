@@ -67,6 +67,10 @@ public class Sections {
         return makeSortedSections(firstStation);
     }
 
+    public boolean hasSection() {
+        return !sections.isEmpty();
+    }
+
     private void notExistsValidateCheck(Section newSection) {
         int existsCount = 0;
         for(Section oldSection : sections) {

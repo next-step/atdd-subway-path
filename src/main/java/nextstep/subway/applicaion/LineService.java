@@ -90,7 +90,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().getSections().isEmpty()) {
+        if (!line.hasSection()) {
             return Collections.emptyList();
         }
         List<Station> stations = new ArrayList<>(line.getStations());

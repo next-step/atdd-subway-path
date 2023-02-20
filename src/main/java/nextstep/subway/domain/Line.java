@@ -59,4 +59,8 @@ public class Line {
             this.color = request.getColor();
         }
     }
+
+    public boolean hasSection() {
+        return sections.hasSection();
+    }
 }
