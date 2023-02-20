@@ -43,6 +43,10 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id).get();
+    }
+
     public LineResponse findById(Long id) {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
@@ -69,8 +73,9 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Section section = new Section(line, upStation, downStation, sectionRequest.getDistance());
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(section);
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -83,15 +88,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = line.getStations();
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
@@ -102,11 +99,6 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
-
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+        line.removeSection(station);
     }
 }
