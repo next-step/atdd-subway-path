@@ -243,6 +243,20 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간 제거 - 예외2 : 해당 노선에 포함되지 않은 역 제거")
     @Test
     void removeLineSection_InvalidCase2() {
+        // given
+        Long 미포함역 = 지하철역_생성_요청("미포함역").jsonPath().getLong("id");
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, sectionDistance2));
+
+        // when
+        var 구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 미포함역);
+
+        // then
+        assertThat(구간_제거_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(구간_제거_응답.asString()).isEqualTo(SectionExceptionMessages.CANNOT_FIND_SECTION);
+
+        var 노선_조회_응답 = 지하철_노선_조회_요청(신분당선);
+        assertThat(노선_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

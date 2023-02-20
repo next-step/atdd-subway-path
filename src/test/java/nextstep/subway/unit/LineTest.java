@@ -147,4 +147,17 @@ class LineTest {
                 .hasMessage(SectionExceptionMessages.CANNOT_REMOVE_SECTION_WHEN_LINE_HAS_ONLY_ONE);
     }
 
+    @DisplayName("구간 제거 - 예외2 : 노선에 없는 구간 제거")
+    @Test
+    void removeSection_InvalidCase2() {
+        // given
+        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
+        assertThat(서울2호선.getSectionsCount()).isGreaterThan(1);
+
+        // when - then
+        assertThatThrownBy(() -> 서울2호선.removeSection(신촌역))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessage(SectionExceptionMessages.CANNOT_FIND_SECTION);
+    }
+
 }

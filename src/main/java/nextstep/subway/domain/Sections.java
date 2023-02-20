@@ -82,7 +82,7 @@ public class Sections {
     private Section getStationIncludeSection(Station station) {
         return sections.stream()
                 .filter(sec -> sec.getUpStation().equals(station) || sec.getDownStation().equals(station))
-                .findFirst().orElseThrow(NoSuchElementException::new);
+                .findFirst().orElseThrow(() -> new DataIntegrityViolationException(SectionExceptionMessages.CANNOT_FIND_SECTION));
     }
 
     public void removeSection(Station station) {
