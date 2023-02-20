@@ -5,8 +5,9 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.sections.Sections;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.sections.Sections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,8 +64,7 @@ public class LineServiceMockTest {
         lineService.addSection(1L, sectionRequest);
 
         // then
-        Sections sections = lineService.findLineById(1L)
-                .getSections();
+        Sections sections = lineService.findLineById(1L).getSections();
         assertThat(sections.size()).isEqualTo(1);
     }
 }
