@@ -77,7 +77,6 @@ public class LineServiceMockTest {
         lineService.addSection(신분당선.getId(), 신분당선_구간_리퀘스트);
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
         /**
          * 요구사항 : lineService.findLineById 메서드를 통해 검증
          * */
