@@ -26,4 +26,12 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
+
+    public boolean isUpStationInfoExist() {
+        return this.upStationId != null;
+    }
+
+    public boolean isDownStationInfoExist() {
+        return this.downStationId != null;
+    }
 }
