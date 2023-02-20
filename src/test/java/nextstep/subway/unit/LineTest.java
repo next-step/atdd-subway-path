@@ -135,4 +135,16 @@ class LineTest {
         assertThat(서울2호선.getStations()).containsExactly(당산역, 신림역);
     }
 
+    @DisplayName("구간 제거 - 예외1 : 구간 하나만 있는데 제거")
+    @Test
+    void removeSection_InvalidCase1() {
+        // given
+        assertThat(서울2호선.getSectionsCount()).isEqualTo(1);
+
+        // when - then
+        assertThatThrownBy(() -> 서울2호선.removeSection(당산역))
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .hasMessage(SectionExceptionMessages.CANNOT_REMOVE_SECTION_WHEN_LINE_HAS_ONLY_ONE);
+    }
+
 }

@@ -76,9 +76,7 @@ public class Sections {
             return sections.get(0);
         }
 
-        return sections.stream()
-                .filter(sec -> sec.getUpStation().equals(firstStation))
-                .findFirst().orElseThrow(NoSuchElementException::new);
+        return getStationIncludeSection(firstStation);
     }
 
     private Section getStationIncludeSection(Station station) {
@@ -88,6 +86,8 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        validateRemoveSection();
+
         if (station.equals(firstStation)) {
             Section section = getStationIncludeSection(firstStation);
             firstStation = section.getDownStation();
@@ -129,6 +129,12 @@ public class Sections {
 
         if (!lineStations.contains(section.getUpStation()) && !lineStations.contains(section.getDownStation())) {
             throw new DataIntegrityViolationException(SectionExceptionMessages.NOTHING_EXIST);
+        }
+    }
+
+    private void validateRemoveSection() {
+        if (getSectionsCount() == 1) {
+            throw new DataIntegrityViolationException(SectionExceptionMessages.CANNOT_REMOVE_SECTION_WHEN_LINE_HAS_ONLY_ONE);
         }
     }
 

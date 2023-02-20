@@ -224,6 +224,15 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간 제거 - 예외1 : 구간이 하나 노선 구간 제거")
     @Test
     void removeLineSection_InvalidCase1() {
+        // when
+        var 구간_제거_응답 = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(구간_제거_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(구간_제거_응답.asString()).isEqualTo(SectionExceptionMessages.CANNOT_REMOVE_SECTION_WHEN_LINE_HAS_ONLY_ONE);
+
+        var 노선_조회_응답 = 지하철_노선_조회_요청(신분당선);
+        assertThat(노선_조회_응답.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
     /**
