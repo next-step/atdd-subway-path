@@ -1,10 +1,10 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.UpdateLineRequest;
+import nextstep.subway.applicaion.dto.AddSectionRequest;
 import nextstep.subway.applicaion.dto.CreateLineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.AddSectionRequest;
+import nextstep.subway.applicaion.dto.UpdateLineRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
