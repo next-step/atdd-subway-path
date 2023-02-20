@@ -1,10 +1,7 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.section;
 
 import nextstep.subway.common.ErrorMessage;
-import nextstep.subway.domain.strategy.add.AddSectionFactory;
-import nextstep.subway.domain.strategy.add.AddSectionStrategy;
-import nextstep.subway.domain.strategy.remove.RemoveSectionFactory;
-import nextstep.subway.domain.strategy.remove.RemoveSectionStrategy;
+import nextstep.subway.domain.Station;
 import org.springframework.util.ObjectUtils;
 
 import javax.persistence.CascadeType;
@@ -18,6 +15,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class SectionCollection {
+
+    private final int REMOVE_MIN_SIZE = 2;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -34,25 +33,20 @@ public class SectionCollection {
                 .orElseThrow(() -> new IllegalStateException(ErrorMessage.INVALID_SECTION_STATE.toString()));
     }
 
-    public boolean isEmpty() {
-        return sections.isEmpty();
-    }
-
     public Section get(int index) {
         return sections.get(index);
     }
+    public List<Section> getSections() {
+        return this.sections;
+    }
 
 
 
-    public void addSectionCollection(Section section) {
+    public void addSection(Section section) {
         addValidation(section);
         AddSectionFactory addSectionFactory = new AddSectionFactory();
         AddSectionStrategy addSectionStrategy = addSectionFactory.createAddSection(this, section);
         addSectionStrategy.addSection(this, section);
-    }
-
-    public void addSection(Section section) {
-        this.sections.add(section);
     }
 
     private void addValidation(Section section) {
@@ -91,6 +85,9 @@ public class SectionCollection {
                 .orElseThrow(() -> new IllegalStateException(ErrorMessage.INVALID_SECTION_STATE.toString()));
     }
 
+    void addSectionElement(Section section) {
+        this.sections.add(section);
+    }
 
 
 
@@ -135,11 +132,15 @@ public class SectionCollection {
     }
 
     private void removeValidation(Station station, Optional<Section> upSection, Optional<Section> downSection) {
-        if (ObjectUtils.isEmpty(sections) || sections.size() < 2) {
+        if (ObjectUtils.isEmpty(sections) || sections.size() < REMOVE_MIN_SIZE) {
             throw new IllegalStateException(ErrorMessage.ENOUGH_NOT_SECTION_SIZE.toString());
         }
         if (upSection.isEmpty() && downSection.isEmpty()) {
             throw new IllegalArgumentException(ErrorMessage.NOT_CONNECT_STATION.toString());
         }
+    }
+
+    public boolean isEmpty() {
+        return sections.isEmpty();
     }
 }

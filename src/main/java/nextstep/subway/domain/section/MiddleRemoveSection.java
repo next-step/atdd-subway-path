@@ -1,11 +1,7 @@
-package nextstep.subway.domain.strategy.remove;
+package nextstep.subway.domain.section;
 
 import nextstep.subway.common.ErrorMessage;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionCollection;
 import nextstep.subway.domain.Station;
-
-import java.util.Optional;
 
 public class MiddleRemoveSection implements RemoveSectionStrategy{
     @Override

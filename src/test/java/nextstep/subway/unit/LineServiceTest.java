@@ -6,7 +6,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;

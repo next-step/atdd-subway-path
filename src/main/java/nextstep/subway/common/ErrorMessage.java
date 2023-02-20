@@ -10,6 +10,10 @@ public enum ErrorMessage {
     NOT_FOUND_UP_STATION("존재하지 않는 상행역입니다."),
     NOT_FOUND_DOWN_STATION("존재하지 않는 하행역입니다."),
     INVALID_DISTANCE("지하철 구간의 간격이 잘못되었습니다."),
+    DUPLICATED_PATH_FIND("출발역과 도착역이 같습니다."),
+    NOT_CONNECT_PATH("출발역과 도착역이 연결되어 있지 않습니다."),
+    NOT_FOUND_SOURCE("존재하지 않은 출발역 입니다."),
+    NOT_FOUND_TARGET("존재하지 않은 도착역 입니다."),
     ;
 
     private final String message;

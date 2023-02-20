@@ -1,21 +1,20 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.strategy.add.AddSectionFactory;
-import nextstep.subway.domain.strategy.add.AddSectionStrategy;
-import nextstep.subway.domain.strategy.add.BasicAddSection;
-import nextstep.subway.domain.strategy.add.MiddleAddSection;
-import nextstep.subway.domain.strategy.remove.BasicRemoveSection;
-import nextstep.subway.domain.strategy.remove.MiddleRemoveSection;
-import nextstep.subway.domain.strategy.remove.RemoveSectionFactory;
-import nextstep.subway.domain.strategy.remove.RemoveSectionStrategy;
+import nextstep.subway.domain.section.AddSectionFactory;
+import nextstep.subway.domain.section.AddSectionStrategy;
+import nextstep.subway.domain.section.BasicAddSection;
+import nextstep.subway.domain.section.MiddleAddSection;
+import nextstep.subway.domain.section.BasicRemoveSection;
+import nextstep.subway.domain.section.MiddleRemoveSection;
+import nextstep.subway.domain.section.RemoveSectionFactory;
+import nextstep.subway.domain.section.RemoveSectionStrategy;
+import nextstep.subway.domain.section.SectionCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.awt.print.Pageable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -27,6 +26,7 @@ public class AddSectionTest {
     Station secondStation;
     Section section;
 
+    SectionCollection sectionCollection = new SectionCollection();
     AddSectionFactory addSectionFactory = new AddSectionFactory();
     RemoveSectionFactory removeSectionFactory = new RemoveSectionFactory();
 
@@ -38,7 +38,7 @@ public class AddSectionTest {
         secondStation = new Station("판교역");
         section = new Section(line, firstStation, secondStation, 10);
 
-        line.addSections(section);
+        sectionCollection.addSection(section);
     }
 
     @Test
@@ -49,8 +49,8 @@ public class AddSectionTest {
         Section firstSection = new Section(line, thirdStation, firstStation, 10);
         Section lastSection = new Section(line, secondStation, fourth, 10);
 
-        AddSectionStrategy firstAddSection = addSectionFactory.createAddSection(line.getSectionCollection(), firstSection);
-        AddSectionStrategy lastAddSection = addSectionFactory.createAddSection(line.getSectionCollection(), lastSection);
+        AddSectionStrategy firstAddSection = addSectionFactory.createAddSection(sectionCollection, firstSection);
+        AddSectionStrategy lastAddSection = addSectionFactory.createAddSection(sectionCollection, lastSection);
 
         assertThat(firstAddSection).isInstanceOf(BasicAddSection.class);
         assertThat(lastAddSection).isInstanceOf(BasicAddSection.class);
@@ -62,7 +62,7 @@ public class AddSectionTest {
         Station thirdStation = new Station("청계산역");
         Section middleSection = new Section(line, firstStation, thirdStation, 2);
 
-        AddSectionStrategy addSection = addSectionFactory.createAddSection(line.getSectionCollection(), middleSection);
+        AddSectionStrategy addSection = addSectionFactory.createAddSection(sectionCollection, middleSection);
 
         assertThat(addSection).isInstanceOf(MiddleAddSection.class);
     }
@@ -72,11 +72,11 @@ public class AddSectionTest {
     void basicRemoveSectionCreateTest() {
         Station thirdStation = new Station("청계산역");
         Station fourth = new Station("논현역");
-        line.addSections(new Section(line, secondStation, thirdStation, 10));
-        line.addSections(new Section(line, thirdStation, fourth, 10));
+        sectionCollection.addSection(new Section(line, secondStation, thirdStation, 10));
+        sectionCollection.addSection(new Section(line, thirdStation, fourth, 10));
 
-        RemoveSectionStrategy lastRemove = removeSectionFactory.createRemoveSectionStrategy(line.getSectionCollection(), fourth);
-        RemoveSectionStrategy firstRemove = removeSectionFactory.createRemoveSectionStrategy(line.getSectionCollection(), firstStation);
+        RemoveSectionStrategy lastRemove = removeSectionFactory.createRemoveSectionStrategy(sectionCollection, fourth);
+        RemoveSectionStrategy firstRemove = removeSectionFactory.createRemoveSectionStrategy(sectionCollection, firstStation);
 
         assertThat(lastRemove).isInstanceOf(BasicRemoveSection.class);
         assertThat(firstRemove).isInstanceOf(BasicRemoveSection.class);
@@ -86,9 +86,9 @@ public class AddSectionTest {
     @DisplayName("중간의 지하철을 삭제할 시 중간 삭제 전략이 생성된다.")
     void middleRemoveSectionCreateTest() {
         Station thirdStation = new Station("청계산역");
-        line.addSections(new Section(line, secondStation, thirdStation, 10));
+        sectionCollection.addSection(new Section(line, secondStation, thirdStation, 10));
 
-        RemoveSectionStrategy removeSectionStrategy = removeSectionFactory.createRemoveSectionStrategy(line.getSectionCollection(), secondStation);
+        RemoveSectionStrategy removeSectionStrategy = removeSectionFactory.createRemoveSectionStrategy(sectionCollection, secondStation);
 
         assertThat(removeSectionStrategy).isInstanceOf(MiddleRemoveSection.class);
     }

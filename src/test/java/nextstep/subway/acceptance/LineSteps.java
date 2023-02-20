@@ -28,6 +28,26 @@ public class LineSteps {
         return response;
     }
 
+    public static Long 지하철_노선_생성_요청(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
+
+        var response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        return response.jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         var response = RestAssured
                 .given().log().all()

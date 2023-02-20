@@ -1,10 +1,12 @@
 package nextstep.study;
 
+import nextstep.subway.domain.Station;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -53,5 +55,27 @@ class JgraphtTest {
                     assertThat(it.getVertexList()).startsWith(source);
                     assertThat(it.getVertexList()).endsWith(target);
                 });
+    }
+
+    @Test
+    @DisplayName("Jgraph Station 테스트")
+    void jGraphVerStation() {
+        Station 신림역 = new Station("신림역");
+        Station 강남역 = new Station("강남역");
+        Station 청계산역 = new Station("청계산역");
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+
+        graph.addVertex(신림역);
+        graph.addVertex(강남역);
+        graph.addVertex(청계산역);
+        graph.setEdgeWeight(graph.addEdge(신림역, 강남역), 20);
+        graph.setEdgeWeight(graph.addEdge(강남역, 청계산역), 40);
+
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        List<Station> shortestPath = dijkstraShortestPath.getPath(신림역, 청계산역).getVertexList();
+        List<Station> paths = new KShortestPaths(graph, 100).getPaths(신림역, 청계산역);
+
+        assertThat(shortestPath).hasSize(3);
+        assertThat(paths).hasSize(1);
     }
 }

@@ -1,7 +1,5 @@
-package nextstep.subway.domain.strategy.add;
+package nextstep.subway.domain.section;
 
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionCollection;
 import nextstep.subway.domain.Station;
 
 public class MiddleAddSection implements AddSectionStrategy {

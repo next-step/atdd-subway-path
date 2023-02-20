@@ -1,9 +1,6 @@
-package nextstep.subway.domain.strategy.remove;
+package nextstep.subway.domain.section;
 
-import nextstep.subway.domain.SectionCollection;
 import nextstep.subway.domain.Station;
-
-import java.util.Objects;
 
 public class BasicRemoveSection implements RemoveSectionStrategy{
     @Override
