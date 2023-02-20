@@ -18,6 +18,8 @@ public enum StationFixture {
     삼성역,
     서울대입구역,
     범계역,
+    교대역,
+    남부터미널역,
     ;
 
     public String 역_이름() {

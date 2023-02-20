@@ -13,6 +13,7 @@ import static nextstep.subway.fixture.FieldFixture.노선_하행_종점역_ID;
 
 public enum LineFixture {
     이호선("2호선", "green"),
+    삼호선("3호선", "orange"),
     사호선("4호선", "blue"),
     신분당선("신분당선", "red"),
     ;

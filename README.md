@@ -5,6 +5,7 @@
 ## 미션 피드백 링크
 - Step 1 : [https://github.com/next-step/atdd-subway-path/pull/481](https://github.com/next-step/atdd-subway-path/pull/481)
 - Step 2 : [https://github.com/next-step/atdd-subway-path/pull/514](https://github.com/next-step/atdd-subway-path/pull/514)
+- Step 3 : [https://github.com/next-step/atdd-subway-path/pull/525](https://github.com/next-step/atdd-subway-path/pull/525)
 
 ## 미션 관련 ERD
 - ERD Cloud - https://www.erdcloud.com/d/tquYyrSeEHaqpZThG
@@ -33,6 +34,16 @@
     - [x]  중간역이 제거될 경우 재배치
         - A - B - C 구간에서 B 제거 → A - C 로 재배치
         - 거리는 두 구간의 거리의 합 (A-B 거리 + B-C 거리)
-- [ ]  구간 삭제 예외
-    - [ ]  노선에 등록되어 있지 않은 역은 제거 불가
-    - [ ]  구간이 하나인 노선에서 구간 제거 불가
+- [x]  구간 삭제 예외
+    - [x]  노선에 등록되어 있지 않은 역은 제거 불가
+    - [x]  구간이 하나인 노선에서 구간 제거 불가
+
+### STEP 3
+
+- [ ] 경로 조회 기능
+  - [ ] 출발역 id와 도착역 id로 요청하면 출발역 <-> 도착역까지의 경로에 있는 역 목록이 검색됨 (stations)
+  - [ ] 조회한 경로 구간의 총 거리 (distance)
+- [ ] 경로 조회 예외
+  - [ ] 출발역과 도착역이 같은 경우
+  - [ ] 출발역과 도착역이 연결이 되어 있지 않은 경우
+  - [ ] 존재하지 않은 출발역이나 도착역을 조회할 경우
