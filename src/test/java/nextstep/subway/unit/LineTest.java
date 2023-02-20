@@ -89,7 +89,7 @@ class LineTest {
 
     @DisplayName("구간 제거 - 정상1 : 상행 종점역 제거")
     @Test
-    void removeSection() {
+    void removeSection_ValidCase1() {
         // given
         서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
         assertThat(서울2호선.getSectionsCount()).isEqualTo(2);
@@ -101,6 +101,22 @@ class LineTest {
         // then
         assertThat(서울2호선.getSectionsCount()).isEqualTo(1);
         assertThat(서울2호선.getStations()).containsExactly(신도림역, 신림역);
+    }
+
+    @DisplayName("구간 제거 - 정상2 : 하행 종점역 제거")
+    @Test
+    void removeSection_ValidCase2() {
+        // given
+        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
+        assertThat(서울2호선.getSectionsCount()).isEqualTo(2);
+        assertThat(서울2호선.getStations()).containsExactly(당산역, 신도림역, 신림역);
+
+        // when
+        서울2호선.removeSection(신림역);
+
+        // then
+        assertThat(서울2호선.getSectionsCount()).isEqualTo(1);
+        assertThat(서울2호선.getStations()).containsExactly(당산역, 신도림역);
     }
 
 }

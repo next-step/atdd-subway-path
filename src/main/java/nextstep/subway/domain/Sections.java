@@ -79,11 +79,28 @@ public class Sections {
                 .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
+    public Section getLastSection() {
+        if (getSectionsCount() == 1) {
+            return sections.get(0);
+        }
+
+        return sections.stream()
+                .filter(sec -> sec.getDownStation().equals(lastStation))
+                .findFirst().orElseThrow(NoSuchElementException::new);
+    }
+
     public void removeSection(Station station) {
         if (station.equals(firstStation)) {
             Section firstSection = getFirstSection();
             firstStation = firstSection.getDownStation();
             sections.remove(firstSection);
+            return;
+        }
+
+        if (station.equals(lastStation)) {
+            Section lastSection = getLastSection();
+            lastStation = lastSection.getUpStation();
+            sections.remove(lastSection);
             return;
         }
 
@@ -94,11 +111,11 @@ public class Sections {
         return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
     }
 
-    public boolean isNewFirstSection(Section section) {
+    private boolean isNewFirstSection(Section section) {
         return section.getDownStation().equals(firstStation);
     }
 
-    public boolean isNewLastSection(Section section) {
+    private boolean isNewLastSection(Section section) {
         return section.getUpStation().equals(lastStation);
     }
 
