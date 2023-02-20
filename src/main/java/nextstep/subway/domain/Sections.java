@@ -149,24 +149,9 @@ public class Sections {
                 .filter(s -> isBetweenSection(s, section))
                 .findFirst().orElseThrow(NoSuchElementException::new);
 
-        if (section.getDistance() >= originSection.getDistance()) {
-            throw new DataIntegrityViolationException(SectionExceptionMessages.INVALID_DISTANCE);
-        }
+        sections.addAll(originSection.divide(section));
 
-        removeSection(originSection.getDownStation());
-
-        sections.add(section);
-
-        int newDistance = originSection.getDistance() - section.getDistance();
-        if (originSection.getDownStation().equals(section.getDownStation())) {
-            sections.add(new Section(originSection.getLine(), originSection.getUpStation(), section.getUpStation(), newDistance));
-            return;
-        }
-
-        if (originSection.getUpStation().equals(section.getUpStation())) {
-            sections.add(new Section(originSection.getLine(), section.getDownStation(), originSection.getDownStation(), newDistance));
-            return;
-        }
+        sections.remove(originSection);
     }
 
     private void removeBetweenSection(Station station) {
@@ -175,8 +160,7 @@ public class Sections {
         sections.remove(section);
         sections.remove(nextSection);
 
-        int newDistance = section.getDistance()+nextSection.getDistance();
-        addSection(new Section(section.getLine(), section.getUpStation(), nextSection.getDownStation(), newDistance));
+        addSection(section.merge(nextSection));
     }
 
     private boolean isBetweenSection(Section origin, Section target) {
