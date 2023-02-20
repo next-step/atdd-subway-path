@@ -42,14 +42,8 @@ public class Sections {
 
         validSection(other);
 
-        final Optional<Section> upSection = elements.stream()
-            .filter(it -> it.containsUpStation(other))
-            .findFirst();
-        final Optional<Section> downSection = upSection.flatMap(
-            it -> elements.stream()
-                .filter(it::isDownConnected)
-                .findFirst()
-        );
+        final Optional<Section> upSection = findUpSection(other);
+        final Optional<Section> downSection = findNextSection(upSection);
 
         if (upSection.isEmpty() || downSection.isEmpty()) {
             elements.add(other);
@@ -62,6 +56,20 @@ public class Sections {
         final Section nextSection = section.nextSection(other);
         elements.add(nextSection);
         elements.add(other);
+    }
+
+    private Optional<Section> findUpSection(Section other) {
+        return elements.stream()
+            .filter(it -> it.containsUpStation(other))
+            .findFirst();
+    }
+
+    private Optional<Section> findNextSection(Optional<Section> upSection) {
+        return upSection.flatMap(
+            it -> elements.stream()
+                .filter(it::isDownConnected)
+                .findFirst()
+        );
     }
 
     private void validSection(Section other) {
