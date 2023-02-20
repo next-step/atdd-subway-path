@@ -2,14 +2,10 @@ package nextstep.subway.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.domain.VO.SectionsVO;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
@@ -45,12 +41,12 @@ public class Line {
         sections.removeSection(station);
     }
 
-    public void updateNameOrColor(LineRequest request) {
-        if (request.getName() != null) {
-            this.name = request.getName();
+    public void updateNameOrColor(String name, String color) {
+        if (name != null) {
+            this.name = name;
         }
-        if (request.getColor() != null) {
-            this.color = request.getColor();
+        if (color != null) {
+            this.color = color;
         }
     }
 

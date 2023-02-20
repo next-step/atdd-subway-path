@@ -1,6 +1,5 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -70,20 +69,12 @@ class LineTest {
     @DisplayName("노선의 이름이나 색깔을 변경할 수 있다")
     @Test
     void updateNameOrColor() {
-        //given
-        String lineTwo = LINE_TWO;
-        String red = BACKGROUND_COLOR_RED;
-        LineRequest lineRequest = LineRequest.builder()
-                .name(lineTwo)
-                .color(red)
-                .build();
-
         //when
-        lineOne.updateNameOrColor(lineRequest);
+        lineOne.updateNameOrColor(LINE_TWO, BACKGROUND_COLOR_RED);
 
         //then
-        Assertions.assertThat(lineOne.getName()).isEqualTo(lineTwo);
-        Assertions.assertThat(lineOne.getColor()).isEqualTo(red);
+        Assertions.assertThat(lineOne.getName()).isEqualTo(LINE_TWO);
+        Assertions.assertThat(lineOne.getColor()).isEqualTo(BACKGROUND_COLOR_RED);
     }
 
     @DisplayName("기존 노선의 마지막 구간의 지하철 역을 추가하고 노선을 조회하면 구간에 포함된 지하철역을 알 수 있다")
@@ -104,20 +95,20 @@ class LineTest {
     @Test
     void getStationsWithChangeOfOrder() {
         //given
-         Station seoulStation = new Station(SEOUL_STATION);
-         Station yongSanStation = new Station(YONGSAN_STATION);
-         Station hongDaeStation = new Station(HONGDAE_STATION);
-         Station songPaStation = new Station(SONGPA_STATION);
-         Line line = new Line(LINE_ONE, BACKGROUND_COLOR_BLUE);
-         line.addSection(seoulStation, yongSanStation, DISTANCE_TEN);
-         line.addSection(yongSanStation, songPaStation, DISTANCE_TEN);
+        Station seoulStation = new Station(SEOUL_STATION);
+        Station yongSanStation = new Station(YONGSAN_STATION);
+        Station hongDaeStation = new Station(HONGDAE_STATION);
+        Station songPaStation = new Station(SONGPA_STATION);
+        Line line = new Line(LINE_ONE, BACKGROUND_COLOR_BLUE);
+        line.addSection(seoulStation, yongSanStation, DISTANCE_TEN);
+        line.addSection(yongSanStation, songPaStation, DISTANCE_TEN);
 
-         //when
-         Section section = new Section(line, seoulStation, hongDaeStation, DISTANCE_FIVE);
-         line.getSections().addSection(section);
+        //when
+        Section section = new Section(line, seoulStation, hongDaeStation, DISTANCE_FIVE);
+        line.getSections().addSection(section);
 
-         //then
-         Assertions.assertThat(line.getStations()).containsExactly(seoulStation, hongDaeStation, yongSanStation, songPaStation);
+        //then
+        Assertions.assertThat(line.getStations()).containsExactly(seoulStation, hongDaeStation, yongSanStation, songPaStation);
     }
 
     @DisplayName("정렬되지 않는 구간을 가졌더라도 노선을 조회하면 정렬된 지하철역을 알 수 있다")
