@@ -38,7 +38,6 @@ class LineTest {
 		// When
 		이호선.addSection(강남역, 선릉역, 10);
 		이호선.addSection(교대역, 강남역, 10);
-
 		// Then
 		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역, 교대역);
 	}
@@ -55,7 +54,6 @@ class LineTest {
 		// When
 		이호선.addSection(강남역, 선릉역, 10);
 		이호선.addSection(선릉역, 삼성역, 10);
-
 		// Then
 		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역, 삼성역);
 	}
@@ -70,7 +68,6 @@ class LineTest {
 
 		// When
 		이호선.addSection(강남역, 선릉역, 10);
-
 		// Then
 		assertThat(이호선.getSections().getSections()).isNotEmpty();
 	}
