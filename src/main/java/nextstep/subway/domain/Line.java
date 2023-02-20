@@ -63,7 +63,7 @@ public class Line {
             throw new IllegalArgumentException("구간이 존재하지 않습니다.");
         }
 
-        if (!this.sections.get(this.sections.size() - 1).getDownStation().equals(station)) {
+        if (!getLastSection().getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
@@ -74,13 +74,16 @@ public class Line {
         if (this.sections.isEmpty()) {
             return Collections.emptyList();
         }
-        //
+
         List<Station> stations = this.sections.stream()
-            .map(Section::getDownStation)
+            .map(Section::getUpStation)
             .collect(Collectors.toList());
 
-        stations.add(0, this.sections.get(0).getUpStation());
-        //
+        stations.add(getLastSection().getDownStation());
         return stations;
+    }
+
+    private Section getLastSection() {
+        return this.sections.get(sections.size() - 1);
     }
 }
