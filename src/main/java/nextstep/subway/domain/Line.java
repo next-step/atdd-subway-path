@@ -26,6 +26,7 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
     }
 
     public Long getId() {
@@ -61,35 +62,18 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (!hasSections()) {
-            sections = new Sections(section);
-            return;
-        }
-
         sections.addSection(section);
     }
 
     public int getSectionsCount() {
-        if (!hasSections()) {
-            return 0;
-        }
-
         return sections.getSectionsCount();
     }
 
     public Section getFirstSection() {
-        if (!hasSections()) {
-            throw new NoSuchElementException();
-        }
-
         return sections.getFirstSection();
     }
 
     public List<Station> getStations() {
-        if (!hasSections()) {
-            return new ArrayList<>();
-        }
-
         return sections.getStations();
     }
 
@@ -98,10 +82,6 @@ public class Line {
     }
 
     public int getLength() {
-        if (!hasSections()) {
-            return 0;
-        }
-
         return sections.getTotalDistance();
     }
 

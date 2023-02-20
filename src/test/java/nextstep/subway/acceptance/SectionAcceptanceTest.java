@@ -203,6 +203,17 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 구간 제거 - 정상3 : 구간 사이에 위치한 역 제거")
     @Test
     void removeLineSection_ValidCase3() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, sectionDistance2));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
     }
 
     /**

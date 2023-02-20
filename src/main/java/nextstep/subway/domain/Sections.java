@@ -26,16 +26,18 @@ public class Sections {
     private Station lastStation;
 
     public Sections() {
-    }
 
-    public Sections(Section section) {
-        sections.add(section);
-        firstStation = section.getUpStation();
-        lastStation = section.getDownStation();
     }
 
     public void addSection(Section section) {
         validateAddSection(section);
+
+        if (sections.isEmpty()) {
+            sections.add(section);
+            firstStation = section.getUpStation();
+            lastStation = section.getDownStation();
+            return;
+        }
 
         if (isNewFirstSection(section)) {
             sections.add(section);
@@ -79,32 +81,28 @@ public class Sections {
                 .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
-    public Section getLastSection() {
-        if (getSectionsCount() == 1) {
-            return sections.get(0);
-        }
-
+    private Section getStationIncludeSection(Station station) {
         return sections.stream()
-                .filter(sec -> sec.getDownStation().equals(lastStation))
+                .filter(sec -> sec.getUpStation().equals(station) || sec.getDownStation().equals(station))
                 .findFirst().orElseThrow(NoSuchElementException::new);
     }
 
     public void removeSection(Station station) {
         if (station.equals(firstStation)) {
-            Section firstSection = getFirstSection();
-            firstStation = firstSection.getDownStation();
-            sections.remove(firstSection);
+            Section section = getStationIncludeSection(firstStation);
+            firstStation = section.getDownStation();
+            sections.remove(section);
             return;
         }
 
         if (station.equals(lastStation)) {
-            Section lastSection = getLastSection();
-            lastStation = lastSection.getUpStation();
-            sections.remove(lastSection);
+            Section section = getStationIncludeSection(lastStation);
+            lastStation = section.getUpStation();
+            sections.remove(section);
             return;
         }
 
-        sections.remove(station);
+        removeBetweenSection(station);
     }
 
     public int getTotalDistance() {
@@ -120,6 +118,10 @@ public class Sections {
     }
 
     private void validateAddSection(Section section) {
+        if (sections.isEmpty()) {
+            return;
+        }
+
         List<Station> lineStations = getStations();
         if (lineStations.containsAll(section.stations())) {
             throw new DataIntegrityViolationException(SectionExceptionMessages.ALREADY_EXIST);
@@ -159,6 +161,16 @@ public class Sections {
             sections.add(new Section(originSection.getLine(), section.getDownStation(), originSection.getDownStation(), newDistance));
             return;
         }
+    }
+
+    private void removeBetweenSection(Station station) {
+        Section section = getStationIncludeSection(station);
+        Section nextSection = getNextSection(section);
+        sections.remove(section);
+        sections.remove(nextSection);
+
+        int newDistance = section.getDistance()+nextSection.getDistance();
+        addSection(new Section(section.getLine(), section.getUpStation(), nextSection.getDownStation(), newDistance));
     }
 
     private boolean isBetweenSection(Section origin, Section target) {
