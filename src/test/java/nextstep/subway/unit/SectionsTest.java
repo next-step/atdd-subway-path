@@ -4,6 +4,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.fixture.DistanceFixtures;
+import nextstep.subway.fixture.StationFixtures;
 import nextstep.subway.global.error.exception.ErrorCode;
 import nextstep.subway.global.error.exception.InvalidValueException;
 import org.assertj.core.api.Assertions;
@@ -16,14 +18,6 @@ import java.util.List;
 public class SectionsTest {
     private static final String LINE_ONE = "1호선";
     private static final String BACKGROUND_COLOR_BLUE = "bg-color-blue";
-    private static final String SEOUL_STATION = "서울역";
-    private static final String YONGSAN_STATION = "용산역";
-    private static final String HONGDAE_STATION = "홍대역";
-    private static final String SONGPA_STATION = "송파역";
-    private static final String GANGNAM_STATION = "강남역";
-    private static final String SHINSA_STATION = "신사역";
-    private static final int DISTANCE_TEN = 10;
-    private static final int DISTANCE_FIVE = 5;
 
     private Line lineOne;
     private Station seoulStation;
@@ -33,16 +27,16 @@ public class SectionsTest {
     @BeforeEach
     void setUp() {
         lineOne = new Line(LINE_ONE, BACKGROUND_COLOR_BLUE);
-        seoulStation = new Station(SEOUL_STATION);
-        yongSanStation = new Station(YONGSAN_STATION);
-        hongDaeStation = new Station(HONGDAE_STATION);
+        seoulStation = new Station(StationFixtures.SEOUL_STATION);
+        yongSanStation = new Station(StationFixtures.YONGSAN_STATION);
+        hongDaeStation = new Station(StationFixtures.HONGDAE_STATION);
     }
 
     @DisplayName("구간의 일급 컬렉션인 Sections에 구간을 추가할 수 있다")
     @Test
     void addSectionWithSizeZero() {
         //given
-        Section section = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
+        Section section = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
 
         //when
         Sections sections = new Sections();
@@ -56,8 +50,8 @@ public class SectionsTest {
     @Test
     void addSection() {
         //given
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
-        Section sectionTwo = new Section(lineOne, seoulStation, hongDaeStation, DISTANCE_FIVE);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, seoulStation, hongDaeStation, DistanceFixtures.DISTANCE_FIVE);
 
         //when
         Sections sections = new Sections();
@@ -75,8 +69,8 @@ public class SectionsTest {
     @Test
     void addSectionLengthValidate() {
         //given
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_FIVE);
-        Section sectionTwo = new Section(lineOne, seoulStation, hongDaeStation, DISTANCE_TEN);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_FIVE);
+        Section sectionTwo = new Section(lineOne, seoulStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
 
         //when
         Sections sections = new Sections();
@@ -93,8 +87,8 @@ public class SectionsTest {
     @Test
     void removeSection() {
         //given
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
-        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
 
         //when
         Sections sections = new Sections();
@@ -111,8 +105,8 @@ public class SectionsTest {
     @Test
     void removeSectionWithException() {
         //given
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
-        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
 
         //when
         Sections sections = new Sections();
@@ -130,10 +124,10 @@ public class SectionsTest {
     @Test
     void sort() {
         //given
-        Station songPaStation = new Station(SONGPA_STATION);
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
-        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
-        Section sectionThree = new Section(lineOne, hongDaeStation, songPaStation, DISTANCE_TEN);
+        Station songPaStation = new Station(StationFixtures.SONGPA_STATION);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionThree = new Section(lineOne, hongDaeStation, songPaStation, DistanceFixtures.DISTANCE_TEN);
 
         //when
         Sections sections = new Sections();
@@ -150,9 +144,9 @@ public class SectionsTest {
     @Test
     void addSectionValidateWithAlreadyExists() {
         //given
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
-        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
-        Section wrongSection = new Section(lineOne, hongDaeStation, seoulStation, DISTANCE_TEN);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
+        Section wrongSection = new Section(lineOne, hongDaeStation, seoulStation, DistanceFixtures.DISTANCE_TEN);
 
         //when
         Sections sections = new Sections();
@@ -170,11 +164,11 @@ public class SectionsTest {
     @Test
     void addSectionValidateWithNoExists() {
         //given
-        Station gangnamStation = new Station(GANGNAM_STATION);
-        Station sinsaStation = new Station(SHINSA_STATION);
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
-        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
-        Section wrongSection = new Section(lineOne, gangnamStation, sinsaStation, DISTANCE_TEN);
+        Station gangnamStation = new Station(StationFixtures.GANGNAM_STATION);
+        Station sinsaStation = new Station(StationFixtures.SHINSA_STATION);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
+        Section wrongSection = new Section(lineOne, gangnamStation, sinsaStation, DistanceFixtures.DISTANCE_TEN);
 
         //when
         Sections sections = new Sections();
@@ -192,10 +186,10 @@ public class SectionsTest {
     @Test
     void addSectionAtFirst() {
         //given
-        Station songPaStation = new Station(SONGPA_STATION);
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_TEN);
-        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DISTANCE_TEN);
-        Section startSection = new Section(lineOne, songPaStation, seoulStation, DISTANCE_TEN);
+        Station songPaStation = new Station(StationFixtures.SONGPA_STATION);
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
+        Section startSection = new Section(lineOne, songPaStation, seoulStation, DistanceFixtures.DISTANCE_TEN);
 
         //when
         Sections sections = new Sections();
