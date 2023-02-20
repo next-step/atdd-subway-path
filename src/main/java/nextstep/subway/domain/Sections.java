@@ -1,14 +1,17 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.CannotCreateSectionException;
+import nextstep.subway.exception.CannotFindFinalStation;
 import nextstep.subway.exception.CannotFindSectionException;
 import nextstep.subway.exception.ErrorMessage;
 
@@ -27,14 +30,16 @@ public class Sections {
 	public void addSection(Section section) {
 		validateSection(section);
 
-		this.sections.add(section);
-
-		if (hasNewMiddleStationConnectedUpStation(section.getUpStation())) {
+		if (hasNewMiddleStationConnectedUpStation(section)) {
 			addSectionHasNewMiddleStationConnectedUpStation(section);
+			return;
 		}
-		if (hasNewMiddleStationConnectedDownStation(section.getDownStation())) {
+		if (hasNewMiddleStationConnectedDownStation(section)) {
 			addSectionHasNewMiddleStationConnectedDownStation(section);
+			return;
 		}
+
+		this.sections.add(section);
 	}
 
 	private void validateSection(Section section) {
@@ -42,7 +47,8 @@ public class Sections {
 		if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
 			throw new CannotCreateSectionException(ErrorMessage.SHOULD_EXIST_NEW_STATION);
 		}
-		if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+		if (!stations.isEmpty() && !stations.contains(section.getUpStation()) && !stations.contains(
+			section.getDownStation())) {
 			throw new CannotCreateSectionException(ErrorMessage.ALREADY_EXISTED_STATION);
 		}
 	}
@@ -69,28 +75,30 @@ public class Sections {
 		sections.remove(existingSection);
 	}
 
-	private boolean hasNewMiddleStationConnectedUpStation(Station upStation) {
-		return getUpStation().equals(upStation);
+	private boolean hasNewMiddleStationConnectedUpStation(Section section) {
+		return !sections.isEmpty() && getFinalUpStation(getDownStations()).equals(section.getUpStation());
 	}
 
-	private boolean hasNewMiddleStationConnectedDownStation(Station downStation) {
-		return getDownStation().equals(downStation);
+	private boolean hasNewMiddleStationConnectedDownStation(Section section) {
+		return !sections.isEmpty() && getFinalDownStation(getUpStations()).equals(section.getDownStation());
 	}
 
 	public List<Station> getStations() {
-		Station upStation = getUpStation();
-		Station downStation = getDownStation();
+		if (sections.isEmpty()) {
+			return Collections.emptyList();
+		}
+		Station finalUpStation = getFinalUpStation(getDownStations());
+		Station finalDownStation = getFinalDownStation(getUpStations());
 
 		List<Station> stations = new ArrayList<>();
+		stations.add(finalUpStation);
 
-		stations.add(upStation);
-		while (true) {
-			Section section = findSectionByUpStation(upStation);
-			stations.add(section.getDownStation());
-			if (section.getDownStation().equals(downStation)) {
-				break;
-			}
+		Section nextSection = findSectionByUpStation(finalUpStation);
+		while (!nextSection.getDownStation().equals(finalDownStation)) {
+			stations.add(nextSection.getDownStation());
+			nextSection = findSectionByUpStation(nextSection.getDownStation());
 		}
+		stations.add(finalDownStation);
 
 		return stations;
 	}
@@ -106,50 +114,31 @@ public class Sections {
 			() -> new CannotFindSectionException(ErrorMessage.CANNOT_FIND_SECTION));
 	}
 
-	private Station getDownStation() {
-		Station station = sections.get(0).getDownStation();
-
-		Optional<Station> downStation = findDownStation(station);
-
-		while (downStation.isPresent()) {
-			station = downStation.get();
-			downStation = findDownStation(station);
-		}
-
-		return station;
+	private List<Station> getUpStations() {
+		return sections.stream()
+			.map(Section::getUpStation)
+			.collect(Collectors.toList());
 	}
 
-	private Station getUpStation() {
-		Station station = sections.get(0).getUpStation();
-
-		Optional<Station> upStation = findUpStation(station);
-
-		while (upStation.isPresent()) {
-			station = upStation.get();
-			upStation = findUpStation(station);
-		}
-
-		return station;
+	private List<Station> getDownStations() {
+		return sections.stream()
+			.map(Section::getDownStation)
+			.collect(Collectors.toList());
 	}
 
-	private Optional<Station> findUpStation(Station station) {
-		Station upStation = null;
-		for (Section section : sections) {
-			if (section.getDownStation().equals(station)) {
-				upStation = section.getDownStation();
-			}
-		}
-		return Optional.ofNullable(upStation);
+	private Station getFinalUpStation(List<Station> downStations) {
+		return getUpStations().stream()
+			.filter(station -> !downStations.contains(station))
+			.findFirst()
+			.orElseThrow(() -> new CannotFindFinalStation(ErrorMessage.CANNOT_FIND_FINAL_DOWN_STATION));
 	}
 
-	private Optional<Station> findDownStation(Station station) {
-		Station downStation = null;
-		for (Section section : sections) {
-			if (section.getUpStation().equals(station)) {
-				downStation = section.getUpStation();
-			}
-		}
-		return Optional.ofNullable(downStation);
+	private Station getFinalDownStation(List<Station> upStations) {
+		return getDownStations().stream()
+			.filter(station -> !upStations.contains(station))
+			.findFirst()
+			.orElseThrow(() -> new CannotFindFinalStation(ErrorMessage.CANNOT_FIND_FINAL_UP_STATION));
+
 	}
 
 	private int getLastIndexOfSections() {

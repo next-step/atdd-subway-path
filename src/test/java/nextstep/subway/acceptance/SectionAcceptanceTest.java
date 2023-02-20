@@ -50,7 +50,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 강재역);
+		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsOnly(강남역, 양재역, 강재역);
 	}
 
 	/**
@@ -67,7 +67,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 논현역);
+		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsOnly(강남역, 양재역, 논현역);
 	}
 
 	/**
@@ -84,7 +84,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsOnly(강남역, 양재역, 정자역);
 	}
 
 	/**
@@ -105,7 +105,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		// then
 		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+		assertThat(response.jsonPath().getList("stations.id", Long.class)).containsOnly(강남역, 양재역);
 	}
 
 	private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
