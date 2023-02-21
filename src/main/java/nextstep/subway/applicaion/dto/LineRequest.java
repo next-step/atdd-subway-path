@@ -27,6 +27,6 @@ public class LineRequest {
         return distance;
     }
 
-    public LineRequest() {
+    private LineRequest() {
     }
 }

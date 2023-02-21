@@ -7,6 +7,7 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +49,7 @@ public class LineService {
     }
 
     public Line findLineById(Long id) {
-        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return lineRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id, "Line id"));
     }
 
     @Transactional
