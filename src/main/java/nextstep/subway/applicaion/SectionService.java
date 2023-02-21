@@ -26,4 +26,9 @@ public class SectionService {
             .collect(Collectors.toList());
     }
 
+    public List<SectionResponse> findAllSections() {
+        return sectionRepository.findAll().stream().map(section -> new SectionResponse(section.getId(), StationResponse.from(section.getUpStation()), StationResponse.from(section.getDownStation()), section.getDistance()))
+            .collect(Collectors.toList());
+    }
+
 }

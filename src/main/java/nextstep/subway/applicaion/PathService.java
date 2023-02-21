@@ -1,56 +1,40 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineSectionResponse;
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
+import nextstep.subway.domain.Path;
+import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 
 @Service
 public class PathService {
 
     private final StationService stationService;
-    private final LineService lineService;
+    private final SectionService sectionService;
 
-    public PathService(StationService stationService, LineService lineService) {
+    public PathService(StationService stationService, SectionService sectionService) {
         this.stationService = stationService;
-        this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     public PathResponse getPaths(Long source, Long target) {
-        List<LineSectionResponse> lineSectionResponses = lineService.getAllLineSections();
+        List<StationResponse> allStations = stationService.findAllStations();
+        List<SectionResponse> allSections = sectionService.findAllSections();
 
-        WeightedMultigraph<StationResponse, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        Path path = new Path(allStations, allSections);
 
-        List<StationResponse> stations = stationService.findAllStations();
-        stations.forEach(graph::addVertex);
+        StationResponse sourceStation = loadStationResponse(source);
+        StationResponse targetStation = loadStationResponse(target);
 
-        StationResponse sourceStation = stations.stream().filter(stationResponse -> stationResponse.getId().equals(source)).findFirst().orElseThrow(IllegalAccessError::new);
-        StationResponse targetStation = stations.stream().filter(stationResponse -> stationResponse.getId().equals(target)).findFirst().orElseThrow(IllegalAccessError::new);
+        return path.findPath(sourceStation, targetStation);
+    }
 
-        HashSet<StationResponse> set = new HashSet<>();
-
-        lineSectionResponses.forEach(lineSectionResponse ->
-            lineSectionResponse.getSectionResponses().forEach(sectionResponse -> {
-                set.add(sectionResponse.getUpStation());
-                set.add(sectionResponse.getDownStation());
-            }));
-
-        set.forEach(graph::addVertex);
-
-        lineSectionResponses.forEach(lineSectionResponse -> lineSectionResponse.getSectionResponses()
-            .forEach(sectionResponse -> graph.setEdgeWeight(graph.addEdge(sectionResponse.getUpStation(), sectionResponse.getDownStation()), sectionResponse.getDistance())));
-
-        DijkstraShortestPath<StationResponse, DefaultWeightedEdge> stationPath = new DijkstraShortestPath<>(graph);
-
-        List<StationResponse> stationResponses = stationPath.getPath(sourceStation, targetStation).getVertexList();
-        int pathWeight = (int) (stationPath.getPathWeight(sourceStation, targetStation));
-        return new PathResponse(stationResponses, pathWeight);
+    private StationResponse loadStationResponse(Long source) {
+        Station sourceStation = stationService.findById(source);
+        return stationService.createStationResponse(sourceStation);
     }
 
 }
