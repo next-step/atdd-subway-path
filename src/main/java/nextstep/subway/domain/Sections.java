@@ -115,6 +115,10 @@ public class Sections {
             sections.add(new Section(downSection.getLine(), downSection.getUpStation(), upSection.getDownStation(), distance));
             sections.removeAll(List.of(downSection, upSection));
         }
+
+        if (downSection != null && upSection == null) {
+            sections.remove(downSection);
+        }
     }
 
     private Section getUpSection(Station station) {

@@ -146,7 +146,7 @@ class LineTest {
 
     @Test
     @DisplayName("중간역이 제거될 경우")
-    void delete_success() {
+    void delete_success1() {
         // given
         Line 신분당선 = new Line(1L, "신분당", "RED");
         신분당선.addSection(광교, 광교중앙, 2);
@@ -159,6 +159,22 @@ class LineTest {
         // then
         assertThat(stations).containsExactly(광교, 상현);
         assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("종점이 제거될 경우")
+    void delete_success2() {
+        // given
+        Line 신분당선 = new Line(1L, "신분당", "RED");
+        신분당선.addSection(광교, 광교중앙, 2);
+        신분당선.addSection(광교중앙, 상현, 2);
+
+        // when
+        신분당선.delete(상현);
+        List<Station> stations = 신분당선.getStations();
+
+        // then
+        assertThat(stations).containsExactly(광교, 광교중앙);
     }
 
 }
