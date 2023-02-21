@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.SectionRequest;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,5 +52,20 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(SectionRequest sectionRequest, StationService stationService){
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+
+        this.getSections().add(new Section(this, upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    public void deleteSection(Station station){
+        if (!this.getSections().get(this.getSections().size() - 1).getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
+        }
+
+        this.getSections().remove(this.getSections().size() - 1);
     }
 }
