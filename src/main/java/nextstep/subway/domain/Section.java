@@ -35,6 +35,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public boolean containsUpStation(Section section) {
+        return this.getUpStation().equals(section.getUpStation()) || this.getDownStation().equals(section.getUpStation());
+    }
+
+    public boolean containsDownStation(Section section) {
+        return this.getUpStation().equals(section.getDownStation()) || this.getDownStation().equals(section.getDownStation());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

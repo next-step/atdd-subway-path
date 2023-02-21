@@ -88,10 +88,10 @@ public class Sections {
     private void notExistsValidateCheck(Section newSection) {
         int existsCount = 0;
         for (Section oldSection : sections) {
-            if (oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
+            if (oldSection.containsUpStation(newSection)) {
                 existsCount++;
             }
-            if (oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
+            if (oldSection.containsDownStation(newSection)) {
                 existsCount++;
             }
         }
