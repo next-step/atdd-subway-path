@@ -8,22 +8,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-public class KshortestPathFinder extends AbstractPathFinder {
+public class KshortestPathFinder implements PathFinder {
     private KShortestPaths kShortestPaths;
 
     public KshortestPathFinder(List<Line> lines) {
-        super(lines);
+        lines.forEach(this::registLine);
         kShortestPaths = new KShortestPaths(graph, 100);
     }
 
-    public GraphPath<Long, String> getShortestPath(Long source, Long target) {
-        List<GraphPath<Long, String>> paths = new ArrayList<>();
-        try {
-            paths = kShortestPaths.getPaths(source, target);
-        }  catch (IllegalArgumentException e) {
-            //예외 번역
-            throw new CustomException(CustomException.PATH_MUST_CONTAIN_STATION);
-        }
+    @Override
+    public GraphPath<Long, String> getPath(Long source, Long target) {
+        List<GraphPath<Long, String>> paths = kShortestPaths.getPaths(source, target);
 
         GraphPath<Long, String> shortestPath =  paths.stream()
                 .min(Comparator.comparingInt(path -> path.getVertexList().size()))

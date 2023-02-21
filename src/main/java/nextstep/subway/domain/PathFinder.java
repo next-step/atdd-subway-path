@@ -1,19 +1,16 @@
 package nextstep.subway.domain;
 
+import org.jgrapht.GraphPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
 
-public abstract class AbstractPathFinder {
-    protected WeightedMultigraph<Long, DefaultWeightedEdge> graph;
+public interface PathFinder {
+    WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+    GraphPath<Long, String> getPath(Long source, Long target);
 
-    public AbstractPathFinder(List<Line> lines) {
-        this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        lines.forEach(this::registLine);
-    }
-
-    private void registLine(Line line) {
+    default void registLine(Line line) {
         //역 등록
         line.getStations().stream()
                 .map(station -> station.getId())

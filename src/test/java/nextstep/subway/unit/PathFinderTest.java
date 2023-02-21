@@ -1,9 +1,6 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.DijkstraPathFinder;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.exception.CustomException;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,23 +49,27 @@ class PathFinderTest {
      * 강남역 -- 역삼역 -- 선릉역
      */
     @Test
-    void getShortestPath() {
-        DijkstraPathFinder dijkstraPathFinder = new DijkstraPathFinder(Lists.newArrayList(이호선, 삼호선));
+    void getShortestPath_with_DijkstraPathFinder() {
+        PathFinder pathFinder = new DijkstraPathFinder(Lists.newArrayList(이호선, 삼호선));
 
-        var graph = dijkstraPathFinder.getShortestPath(역삼역.getId(), 선정릉역.getId());
+        var graph = pathFinder.getPath(역삼역.getId(), 선정릉역.getId());
 
         assertThat(graph.getVertexList()).hasSize(3);
         assertThat((int)graph.getWeight()).isEqualTo(22);
     }
 
+    /**
+     *                 선정릉역
+     *                  |
+     * 강남역 -- 역삼역 -- 선릉역
+     */
     @Test
-    void getShortestPath_등록되지_않은_역을_대상으로_경로_조회() {
-        DijkstraPathFinder dijkstraPathFinder = new DijkstraPathFinder(Lists.newArrayList(이호선, 삼호선));
-        Long invalidStationId = 5L;
+    void getShortestPath_with_KshortestPathFinder() {
+        PathFinder pathFinder = new KshortestPathFinder(Lists.newArrayList(이호선, 삼호선));
 
-        assertThatThrownBy(() -> {
-            dijkstraPathFinder.getShortestPath(역삼역.getId(), invalidStationId);
-        }).isInstanceOf(CustomException.class)
-                .hasMessageContaining(CustomException.PATH_MUST_CONTAIN_STATION);
+        var graph = pathFinder.getPath(역삼역.getId(), 선정릉역.getId());
+
+        assertThat(graph.getVertexList()).hasSize(3);
+        assertThat((int)graph.getWeight()).isEqualTo(22);
     }
 }
