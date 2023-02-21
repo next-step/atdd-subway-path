@@ -69,6 +69,10 @@ public class Section {
         return this.downStationId.equals(stationId);
     }
 
+    public boolean isSameUpStation(Long stationId) {
+        return this.upStationId.equals(stationId);
+    }
+
     public boolean containsStation(Section other) {
         return containsUpStation(other) || containsDownStation(other);
     }
@@ -96,6 +100,15 @@ public class Section {
             other.downStationId,
             this.downStationId,
             this.distance - other.distance
+        );
+    }
+
+    public Section mergeSection(Section other) {
+        return new Section(
+            line,
+            this.upStationId,
+            other.downStationId,
+            this.distance + other.distance
         );
     }
 
@@ -128,12 +141,15 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return distance == section.distance &&
+            Objects.equals(line, section.line) &&
+            Objects.equals(upStationId, section.upStationId) &&
+            Objects.equals(downStationId, section.downStationId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(line, upStationId, downStationId, distance);
     }
 
     @Override

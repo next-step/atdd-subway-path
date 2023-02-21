@@ -1,11 +1,10 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -19,19 +18,19 @@ public class Sections {
         cascade = {CascadeType.PERSIST, CascadeType.MERGE},
         orphanRemoval = true
     )
-    private List<Section> elements = new ArrayList<>();
+    private Set<Section> elements = new HashSet<>();
 
     protected Sections() {
     }
 
-    public Sections(List<Section> elements) {
+    public Sections(Set<Section> elements) {
         this.elements = elements;
     }
 
     public Sections(Section... elements) {
         this(
             Arrays.stream(elements)
-                .collect(Collectors.toList())
+                .collect(Collectors.toSet())
         );
     }
 
@@ -43,24 +42,35 @@ public class Sections {
 
         validSection(other);
 
-        final Optional<Section> upSection = elements.stream()
-            .filter(it -> it.containsUpStation(other))
-            .findFirst();
-        final Optional<Section> downSection = upSection.flatMap(
-            it -> elements.stream()
-                .filter(it::isDownConnected)
-                .findFirst()
-        );
+        final Optional<Section> upSection = findUpSection(other);
+        final Optional<Section> downSection = findNextSection(upSection);
 
         if (upSection.isEmpty() || downSection.isEmpty()) {
             elements.add(other);
             return;
         }
 
-        final Section section = downSection.get();
-        elements.remove(section);
+        downSection.ifPresent(it -> addMiddleSection(other, it));
+    }
 
-        final Section nextSection = section.nextSection(other);
+    private Optional<Section> findUpSection(Section other) {
+        return elements.stream()
+            .filter(it -> it.containsUpStation(other))
+            .findFirst();
+    }
+
+    private Optional<Section> findNextSection(Optional<Section> upSection) {
+        return upSection.flatMap(
+            it -> elements.stream()
+                .filter(it::isDownConnected)
+                .findFirst()
+        );
+    }
+
+    private void addMiddleSection(Section other, Section downSection) {
+        elements.remove(downSection);
+
+        final Section nextSection = downSection.nextSection(other);
         elements.add(nextSection);
         elements.add(other);
     }
@@ -84,24 +94,35 @@ public class Sections {
 
     public void remove(Long stationId) {
         if (elements.size() == 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("구간이 하나인 경우 삭제할 수 없음");
         }
 
-        final Section lastSection = findLastSection();
+        final Optional<Section> upSection = findUpSectionByStationId(stationId);
+        upSection.ifPresent(it -> elements.remove(it));
 
-        if (lastSection.isSameDownStation(stationId)) {
-            elements.remove(lastSection);
-            return;
+        final Optional<Section> downSection = findDownSectionByStationId(stationId);
+        downSection.ifPresent(it -> elements.remove(it));
+
+        if (downSection.isPresent() && upSection.isPresent()) {
+            final Section section = upSection.get().mergeSection(downSection.get());
+            elements.add(section);
         }
-        throw new IllegalArgumentException();
     }
 
-    private Section findLastSection() {
-        return elements.get(elements.size() - 1);
+    private Optional<Section> findUpSectionByStationId(Long stationId) {
+        return elements.stream()
+            .filter(it -> it.isSameDownStation(stationId))
+            .findFirst();
     }
 
-    public List<Section> getElements() {
-        return Collections.unmodifiableList(elements);
+    private Optional<Section> findDownSectionByStationId(Long stationId) {
+        return elements.stream()
+            .filter(it -> it.isSameUpStation(stationId))
+            .findFirst();
+    }
+
+    public Set<Section> getElements() {
+        return elements;
     }
 
     @Override
