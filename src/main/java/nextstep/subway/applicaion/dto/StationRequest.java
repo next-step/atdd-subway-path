@@ -7,6 +7,6 @@ public class StationRequest {
         return name;
     }
 
-    public StationRequest() {
+    private StationRequest() {
     }
 }

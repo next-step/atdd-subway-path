@@ -50,12 +50,8 @@ public class Line {
         return sections;
     }
 
-    public void setSections(Sections sections) {
-        this.sections = sections;
-    }
-
     public void addSection(Station upStation, Station downStation, int distance) {
-        sections.addSection(this, upStation, downStation, distance);
+        sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public List<Station> getStations() {
