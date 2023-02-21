@@ -223,6 +223,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(lineResponse.jsonPath().getList(PATH_STATIONS_ID, Long.class)).containsExactly(강남역, 정자역, 송파역);
     }
 
+    /**
+     * when 지하철 노선의 한 개 밖에 없는 구간에 지하철 역을 제거하면
+     * then 삭제되지 않고 예외가 발생한다.
+     */
+    @Test
+    void 지하철_노선의_구간이_한_개라면_삭제할_수_없다() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getList(PATH_ERROR_MESSAGES, String.class)).containsExactly(ErrorCode.CAN_NOT_REMOVE_ONLY_ONE_SECTION.getErrorMessage());
+    }
+
     private Map<String, String> createLineCreateParams(String lineName, String lineColor, Long upStationId, Long downStationId, int distance) {
         Map<String, String> lineCreateParams = new HashMap<>();
         lineCreateParams.put(PARAM_NAME, lineName);

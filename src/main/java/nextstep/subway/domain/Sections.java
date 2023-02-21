@@ -58,6 +58,9 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        if (sections.size() == 1) {
+            throw new InvalidValueException(ErrorCode.CAN_NOT_REMOVE_ONLY_ONE_SECTION);
+        }
         if (removableFirstStation(station)) {
             sections.remove(0);
             return;

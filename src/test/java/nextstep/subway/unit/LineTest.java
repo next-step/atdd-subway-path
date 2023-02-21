@@ -55,15 +55,18 @@ class LineTest {
     @Test
     void removeSection() {
         //given
+        Station hongdaeStation = new Station(HONGDAE_STATION);
         Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DISTANCE_FIVE);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongdaeStation, DISTANCE_FIVE);
         lineOne.addSection(sectionOne.getUpStation(), sectionOne.getDownStation(), sectionOne.getDistance());
+        lineOne.addSection(sectionTwo.getUpStation(), sectionTwo.getDownStation(), sectionTwo.getDistance());
 
         //when
-        lineOne.removeSection(yongSanStation);
+        lineOne.removeSection(hongdaeStation);
 
         //then
-        Assertions.assertThat(lineOne.getSections().getSections()).doesNotContain(sectionOne);
-        Assertions.assertThat(lineOne.getStations()).isEmpty();
+        Assertions.assertThat(lineOne.getSections().getSections()).doesNotContain(sectionTwo);
+        Assertions.assertThat(lineOne.getStations().size()).isEqualTo(2);
     }
 
     @DisplayName("노선의 이름이나 색깔을 변경할 수 있다")
