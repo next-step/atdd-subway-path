@@ -112,15 +112,21 @@ public class Sections {
         Section downSection = getDownSection(station);
         Section upSection = getUpSection(station);
         validateStation(downSection, upSection);
+        deleteMiddleSection(downSection, upSection);
+        deleteEndSection(downSection, upSection);
+    }
 
+    private void deleteEndSection(Section downSection, Section upSection) {
+        if (downSection != null && upSection == null) {
+            sections.remove(downSection);
+        }
+    }
+
+    private void deleteMiddleSection(Section downSection, Section upSection) {
         if (downSection != null && upSection != null) {
             int distance = downSection.getDistance() + upSection.getDistance();
             sections.add(new Section(downSection.getLine(), downSection.getUpStation(), upSection.getDownStation(), distance));
             sections.removeAll(List.of(downSection, upSection));
-        }
-
-        if (downSection != null && upSection == null) {
-            sections.remove(downSection);
         }
     }
 

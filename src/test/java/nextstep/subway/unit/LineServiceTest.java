@@ -41,4 +41,21 @@ public class LineServiceTest {
         // then
         assertThat(신분당선.getStations()).containsExactly(광교역, 광교중앙역);
     }
+
+    @Test
+    void deleteSection() {
+        // given
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "RED"));
+        Station 광교역 = stationRepository.save(광교);
+        Station 광교중앙역 = stationRepository.save(광교중앙);
+        Station 상현 = stationRepository.save(StationFixture.상현);
+        lineService.addSection(신분당선.getId(), new SectionRequest(광교역.getId(), 광교중앙역.getId(), 5));
+        lineService.addSection(신분당선.getId(), new SectionRequest(광교중앙역.getId(), 상현.getId(), 5));
+
+        // when
+        lineService.deleteSection(신분당선.getId(), 광교중앙역.getId());
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(광교역, 상현);
+    }
 }
