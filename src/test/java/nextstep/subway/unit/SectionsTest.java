@@ -78,4 +78,60 @@ class SectionsTest {
             sections.add(new Section(이호선, 잠실역, 잠실나루, 5));
         });
     }
+
+    @DisplayName("성공: 지하철 마지막역 삭제 요청")
+    @Test
+    void success_delete_last_station() {
+        Sections sections = new Sections();
+        sections.add(new Section(이호선, 강남역, 삼성역, 10));
+        sections.add(new Section(이호선, 삼성역, 잠실역, 5));
+        sections.delete(잠실역);
+
+        assertThat(sections.getStations()).contains(강남역, 삼성역);
+    }
+
+    @DisplayName("성공: 지하철 시작역 삭제 요청")
+    @Test
+    void success_delete_first_station() {
+        Sections sections = new Sections();
+        sections.add(new Section(이호선, 강남역, 삼성역, 10));
+        sections.add(new Section(이호선, 삼성역, 잠실역, 5));
+        sections.delete(강남역);
+
+        assertThat(sections.getStations()).contains(삼성역, 잠실역);
+    }
+
+    @DisplayName("성공: 지하철 중간역 삭제 요청")
+    @Test
+    void success_delete_middle_station() {
+        Sections sections = new Sections();
+        sections.add(new Section(이호선, 강남역, 삼성역, 10));
+        sections.add(new Section(이호선, 삼성역, 잠실역, 5));
+        sections.delete(삼성역);
+
+        assertThat(sections.getStations()).contains(강남역, 잠실역);
+    }
+
+    @DisplayName("실패: 지하철 구간이 하나일때 삭제 요청")
+    @Test
+    void fail_delete_one_section() {
+        Sections sections = new Sections();
+        sections.add(new Section(이호선, 강남역, 삼성역, 10));
+        sections.add(new Section(이호선, 삼성역, 잠실역, 5));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            sections.delete(잠실나루);
+        });
+    }
+
+    @DisplayName("실패: 존재하지 않는 역 삭제 요청")
+    @Test
+    void fail_delete_not_exist_station() {
+        Sections sections = new Sections();
+        sections.add(new Section(이호선, 강남역, 삼성역, 10));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            sections.delete(삼성역);
+        });
+    }
 }
