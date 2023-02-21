@@ -153,7 +153,25 @@ public class Sections {
     public void removeSection(Station station) {
         validateRemoveSection(station);
 
-        sections.remove(getLastSection());
+        if (getLastStation().equals(station)) {
+            sections.remove(findSectionByDownStation(station));
+            return;
+        }
+
+        if (getFirstStation().equals(station)) {
+            sections.remove(findSectionByUpStation(station));
+            return;
+        }
+
+        removeMiddleSection(station);
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section section = findSectionByDownStation(station);
+        Section nextSection = findSectionByUpStation(station);
+        nextSection.modifyUpStation(section.getUpStation());
+
+        sections.remove(section);
     }
 
     private void validateRemoveSection(Station station) {
@@ -165,9 +183,21 @@ public class Sections {
             throw new EntityCannotRemoveException("If there is less than one registered section, you cannot delete it.");
         }
 
-        if (!getStations().contains(station)) {
-            throw new EntityNotFoundException("Station not registered on the line.");
+        if (!isContainsStation(station)) {
+            throw new EntityNotFoundException("Unregistered Station");
         }
+    }
+
+    private Section findSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(upStation.getId(), "UpStation"));
+    }
+
+    private Section findSectionByDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(downStation.getId(), "DownStation"));
     }
 
     public Section getLastSection() {
