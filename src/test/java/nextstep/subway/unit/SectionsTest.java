@@ -83,7 +83,39 @@ public class SectionsTest {
                 .hasMessage(ErrorCode.NEW_SECTION_LENGTH_MUST_BE_SMALLER_THAN_EXISTING_SECTION_LENGTH.getErrorMessage());
     }
 
-    @DisplayName("노선의 마지막 구간의 지하철역 객체로 구간을 삭제할 수 있다")
+    @DisplayName("노선의 마지막 구간의 지하철역 하행역을 삭제할 수 있다")
+    @Test
+    void removeLastSection() {
+        //given
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
+
+        //when
+        Sections sections = new Sections();
+        sections.addSection(sectionOne);
+        sections.addSection(sectionTwo);
+        //then
+        sections.removeSection(sectionTwo.getDownStation());
+        Assertions.assertThat(sections.getSections()).containsExactly(sectionOne);
+    }
+
+    @DisplayName("노선의 첫 번째 구간의 상행역 삭제할 수 있다")
+    @Test
+    void removeFirstSection() {
+        //given
+        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
+        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
+
+        //when
+        Sections sections = new Sections();
+        sections.addSection(sectionOne);
+        sections.addSection(sectionTwo);
+        //then
+        sections.removeSection(sectionOne.getUpStation());
+        Assertions.assertThat(sections.getSections()).containsExactly(sectionTwo);
+    }
+
+    @DisplayName("노선의 중간 구간의 지하철 역을 삭제하면 두 구간의 상행역과 하행역을 잇는 새로운 구간이 추가된다")
     @Test
     void removeSection() {
         //given
@@ -95,7 +127,7 @@ public class SectionsTest {
         sections.addSection(sectionOne);
         sections.addSection(sectionTwo);
         //then
-        sections.removeSection(sectionTwo.getUpStation());
+        sections.removeSection(sectionOne.getDownStation());
         Section newSection = new Section(sectionOne.getLine(), sectionOne.getUpStation(), sectionTwo.getDownStation(), sectionOne.getDistance() + sectionTwo.getDistance());
         Assertions.assertThat(sections.getSections()).containsExactly(newSection);
     }
