@@ -144,4 +144,21 @@ class LineTest {
         assertThat(stations).containsExactly(광교, 광교중앙, 상현);
     }
 
+    @Test
+    @DisplayName("중간역이 제거될 경우")
+    void delete_success() {
+        // given
+        Line 신분당선 = new Line(1L, "신분당", "RED");
+        신분당선.addSection(광교, 광교중앙, 2);
+        신분당선.addSection(광교중앙, 상현, 2);
+
+        // when
+        신분당선.delete(광교중앙);
+        List<Station> stations = 신분당선.getStations();
+
+        // then
+        assertThat(stations).containsExactly(광교, 상현);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(4);
+    }
+
 }

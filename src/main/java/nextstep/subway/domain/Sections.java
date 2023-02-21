@@ -105,4 +105,27 @@ public class Sections {
                     throw new AddSectionException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
                 });
     }
+
+    public void delete(Station station) {
+        Section downSection = getDownSection(station);
+        Section upSection = getUpSection(station);
+
+        if (downSection != null && upSection != null) {
+            int distance = downSection.getDistance() + upSection.getDistance();
+            sections.add(new Section(downSection.getLine(), downSection.getUpStation(), upSection.getDownStation(), distance));
+            sections.removeAll(List.of(downSection, upSection));
+        }
+    }
+
+    private Section getUpSection(Station station) {
+        return sections.stream().filter(section -> section.getUpStation() == station)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section getDownSection(Station station) {
+        return sections.stream().filter(section -> section.getDownStation() == station)
+                .findFirst()
+                .orElse(null);
+    }
 }

@@ -69,8 +69,7 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = sectionRequest.getUpStationId() != null ? stationService.findById(sectionRequest.getUpStationId()) : null;
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineNotFoundException("노선을 찾을 수 없습니다."));
+        Line line = findLineById(lineId);
         line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
@@ -101,13 +100,13 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLineById(lineId);
         Station station = stationService.findById(stationId);
+        line.delete(station);
+    }
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("노선을 찾을 수 없습니다."));
     }
 }
