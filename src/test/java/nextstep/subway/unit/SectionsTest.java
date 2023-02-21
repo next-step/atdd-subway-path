@@ -36,7 +36,7 @@ public class SectionsTest {
         assertThat(sections.getDownStation()).isEqualTo(정자역);
     }
 
-    @DisplayName("구간을 두 개 추가하고, 역을 검증")
+    @DisplayName("구간을 두 개 추가하고, 역 리스트를 가져오는 기능을 검증")
     @Test
     void getStations() {
         sections.addSection(이호선, 강남역, 정자역, 10);
