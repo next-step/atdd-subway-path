@@ -69,13 +69,11 @@ public class LineController {
     }
 
     private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
+        return LineResponse.of(line.getId(),
                 line.getName(),
                 line.getColor(),
                 line.getLength(),
-                createStationResponses(line)
-        );
+                createStationResponses(line));
     }
 
     private List<StationResponse> createStationResponses(Line line) {

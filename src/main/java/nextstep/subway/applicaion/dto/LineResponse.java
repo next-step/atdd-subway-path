@@ -9,7 +9,11 @@ public class LineResponse {
     private Integer length;
     private List<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, Integer length, List<StationResponse> stations) {
+    public static LineResponse of(Long id, String name, String color, Integer length, List<StationResponse> stations) {
+        return new LineResponse(id, name, color, length, stations);
+    }
+
+    private LineResponse(Long id, String name, String color, Integer length, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
