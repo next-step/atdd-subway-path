@@ -28,7 +28,7 @@ public class LineSectionResponse {
         return color;
     }
 
-    public List<SectionResponse> getSections() {
+    public List<SectionResponse> getSectionResponses() {
         return sections;
     }
 

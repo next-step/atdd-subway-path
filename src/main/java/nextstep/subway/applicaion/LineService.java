@@ -8,6 +8,7 @@ import nextstep.subway.domain.exception.NotFoundLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,6 +107,18 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
         List<SectionResponse> sectionResponse = sectionService.showSections(line);
         return new LineSectionResponse(line.getId(), line.getName(), line.getColor(), sectionResponse);
+    }
+
+    public List<LineSectionResponse> getAllLineSections() {
+        List<Line> lines = lineRepository.findAll();
+        List<LineSectionResponse> lineSectionResponses = new ArrayList<>();
+
+        lines.forEach(line -> {
+            List<SectionResponse> sectionResponse = sectionService.showSections(line);
+            lineSectionResponses.add(new LineSectionResponse(line.getId(), line.getName(), line.getColor(), sectionResponse));
+        });
+
+        return lineSectionResponses;
     }
 
 }

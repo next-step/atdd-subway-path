@@ -1,5 +1,7 @@
 package nextstep.subway.applicaion.dto;
 
+import java.util.List;
+
 public class SectionResponse {
 
     private final Long id;
@@ -29,4 +31,9 @@ public class SectionResponse {
     public Integer getDistance() {
         return distance;
     }
+
+    public List<StationResponse> getStations() {
+        return List.of(this.upStation, this.downStation);
+    }
+
 }
