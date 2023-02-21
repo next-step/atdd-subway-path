@@ -100,6 +100,7 @@ class SectionTest {
 
         // Then
         assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "판교역");
+        assertThat(신분당선.getDistance()).isEqualTo(10);
     }
 
     @DisplayName("지하철 구간 삭제 테스트 - 위치에 상관없이 [상행 종점역 삭제]")

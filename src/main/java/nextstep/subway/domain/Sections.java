@@ -211,4 +211,10 @@ public class Sections {
                 .findFirst()
                 .orElse(null);
     }
+
+    public int getDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
+    }
 }
