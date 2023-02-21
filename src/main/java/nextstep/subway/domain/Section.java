@@ -1,7 +1,13 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+import java.util.Objects;
+
+@Getter
+@NoArgsConstructor
 @Entity
 public class Section {
     @Id
@@ -22,10 +28,6 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -33,23 +35,16 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(getId(), section.getId()) && Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(getDistance(), section.getDistance()) && Objects.equals(getLine(), section.getLine());
     }
 
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUpStation(), getDownStation(), getDistance(), getLine());
     }
 }
