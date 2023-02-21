@@ -35,6 +35,8 @@ public class DijkstraShortestPathFinder implements PathFinder {
                 });
 
         path = new DijkstraShortestPath<>(graph);
+
+        this.lines.clear();
         this.lines.addAll(lines);
     }
 
