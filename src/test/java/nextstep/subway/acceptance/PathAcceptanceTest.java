@@ -106,7 +106,7 @@ class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("경로 조회 시 존재하지 않은 도착역을 조회 할 경우 조회가 안된다")
     @Test
     void 경로_조회_시_존재하지_않은_도착역을_조회_할_경우_조회가_안된다() {
-        long notExistStationId = Integer.MAX_VALUE;;
+        long notExistStationId = Integer.MAX_VALUE;
 
         // When
         ExtractableResponse<Response> response = 경로_조회_요청(교대역, notExistStationId);
