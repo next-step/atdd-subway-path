@@ -31,7 +31,6 @@ public class DijkstraShortestPathFinder implements PathFinder {
                     line.getStations().forEach(graph::addVertex);
                     return line.getSections().stream();
                 }).forEach(section -> {
-                    graph.addVertex(section.getUpStation());
                     graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
                 });
 
