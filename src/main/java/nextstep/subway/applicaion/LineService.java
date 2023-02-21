@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -47,6 +48,7 @@ public class LineService {
         return lineRepository.findById(id).get();
     }
 
+    @Transactional
     public LineResponse findById(Long id) {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
@@ -79,12 +81,18 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
+        System.out.println(line.getSections());
         return new LineResponse(
             line.getId(),
             line.getName(),
             line.getColor(),
+            createSectionResponses(line.getSections()),
             createStationResponses(line)
         );
+    }
+
+    private List<SectionResponse> createSectionResponses(List<Section> sections) {
+        return sections.stream().map(SectionResponse::new).collect(Collectors.toList());
     }
 
     private List<StationResponse> createStationResponses(Line line) {

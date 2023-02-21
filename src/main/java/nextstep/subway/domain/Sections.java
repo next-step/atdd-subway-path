@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,11 +20,38 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        if (sections.isEmpty() || isEndSection(newSection)) {
+        addValidation(newSection);
+        addByPosition(newSection);
+    }
+
+    private void addByPosition(Section newSection) {
+        if (isEndSection(newSection) || sections.isEmpty()) {
             sections.add(newSection);
             return;
         }
         addMiddle(newSection);
+    }
+
+    private void addValidation(Section newSection) {
+        for (Section section : sections) {
+            isAlreadyExistSection(newSection, section);
+            isDistanceIssueSection(newSection, section);
+        }
+    }
+
+    private void isDistanceIssueSection(Section newSection, Section section) {
+        if (isSectionInMiddle(newSection, section)) {
+            if (newSection.getDistance() >= section.getDistance()) {
+                throw new SectionException("구간 길이 조정이 필요합니다.");
+            }
+        }
+    }
+
+    private void isAlreadyExistSection(Section newSection, Section section) {
+        if (section.getDownStation() == newSection.getDownStation()
+            && section.getUpStation() == newSection.getUpStation()) {
+            throw new SectionException("동일한 구간은 등록할 수 없습니다.");
+        }
     }
 
     private void addMiddle(Section newSection) {
