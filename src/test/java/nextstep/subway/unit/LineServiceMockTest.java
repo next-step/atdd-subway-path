@@ -70,7 +70,5 @@ public class LineServiceMockTest {
 
         // then
         LineResponse resultLine = lineService.findById(이호선.getId());
-        System.out.println(resultLine.getName());
-        System.out.println(resultLine.getStations().toString());
     }
 }

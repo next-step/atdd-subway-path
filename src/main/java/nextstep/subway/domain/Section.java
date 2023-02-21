@@ -24,7 +24,7 @@ public class Section {
 
     private int distance;
 
-    public Section() {}
+    protected Section() {}
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
@@ -33,9 +33,12 @@ public class Section {
         this.distance = distance;
     }
 
-    public void updateDistance(Integer integer) {
-        this.distance = distance;
+
+    public void reduceDistance(int distance) {
+        this.distance -= distance;
     }
+
+    public void addDistance(int distance){ this.distance += distance; }
 
     public void updateDownStation(Station downStation) {
         this.downStation = downStation;
@@ -43,5 +46,39 @@ public class Section {
 
     public void updateUpStation(Station upStation) {
         this.upStation = upStation;
+    }
+
+    public boolean equalsUpStation(Section section) {
+        return this.getUpStation().getId().equals(section.getUpStation().getId());
+    }
+
+    public boolean equalsUpStation(Station station) {
+        return this.getUpStation().getId().equals(station.getId());
+    }
+
+    public boolean equalsDownStation(Section section) {
+        return this.getDownStation().getId().equals(section.getDownStation().getId());
+    }
+
+    public boolean equalsDownStation(Station station) {
+        return this.getDownStation().getId().equals(station.getId());
+    }
+
+    public boolean equalsUpOrDownStation(Section newSection){
+        return this.equalsUpStation(newSection) || this.equalsDownStation(newSection);
+    }
+
+    public boolean isLessThan(Section newSection){
+        return this.getDistance() <= newSection.getDistance();
+    }
+
+    public void divideSection(Section newSection){
+        if(this.equalsUpStation(newSection)){
+            this.reduceDistance(newSection.getDistance());
+            this.updateUpStation(newSection.getDownStation());
+        }else if(this.equalsDownStation(newSection)){
+            this.reduceDistance(newSection.getDistance());
+            this.updateDownStation(newSection.getUpStation());
+        }
     }
 }
