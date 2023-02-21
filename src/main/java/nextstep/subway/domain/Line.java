@@ -26,12 +26,22 @@ public class Line {
         sections.removeSection(station);
     }
 
+    public boolean isContainStation(Station station) {
+        return sections.isContainStation(station);
+    }
+
     public Line() {
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        addSection(section);
     }
 
     public Long getId() {

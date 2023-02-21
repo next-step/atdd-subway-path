@@ -86,7 +86,7 @@ public class Sections {
         }
     }
 
-    private boolean isContainStation(Station newStation) {
+    public boolean isContainStation(Station newStation) {
         return sections.stream().anyMatch(section -> section.isContainStation(newStation));
     }
 
