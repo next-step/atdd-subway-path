@@ -68,7 +68,7 @@ class LineTest {
         신분당선.addSection(양재역, 판교역, 5);
 
         // when
-        신분당선.deleteSection(판교역);
+        신분당선.deleteSection(판교역.getId());
 
         // then
         assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "양재역");

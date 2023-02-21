@@ -163,7 +163,7 @@ class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> lineService.deleteSection(1L, 2L))
                 .isInstanceOf(SubwayRuntimeException.class)
-                .hasMessage(SubwayErrorCode.CANNOT_DELETE_LAST_STATION.getMessage());
+                .hasMessage(SubwayErrorCode.CANNOT_DELETE_STATION.getMessage());
     }
 
     @Test

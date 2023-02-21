@@ -22,12 +22,12 @@ class SectionTest {
 
     @BeforeEach
     void setup() {
-        신논현 = new Station("신논현");
-        강남역 = new Station("강남역");
-        양재역 = new Station("양재역");
-        판교역 = new Station("판교역");
-        정자역 = new Station("정자역");
-        미금역 = new Station("미금역");
+        신논현 = new Station(1L,"신논현");
+        강남역 = new Station(2L,"강남역");
+        양재역 = new Station(3L,"양재역");
+        판교역 = new Station(4L,"판교역");
+        정자역 = new Station(5L,"정자역");
+        미금역 = new Station(6L,"미금역");
         신분당선 = new Line("신분당선", "bg-red-600");
         신분당선.addSection(강남역, 판교역, 10);
     }
@@ -87,5 +87,44 @@ class SectionTest {
         assertThatThrownBy(() -> 신분당선.addSection(미금역, 정자역, 10))
                 .isInstanceOf(SubwayRuntimeException.class)
                 .hasMessage(SubwayErrorCode.NOT_CONTAIN_STATION.getMessage());
+    }
+
+    @DisplayName("지하철 구간 삭제 테스트 - 위치에 상관없이 [중간역 삭제]")
+    @Test
+    void deleteSectionTest() {
+        // Given
+        신분당선.addSection(강남역, 양재역, 4);
+
+        // When
+        신분당선.deleteSection(양재역.getId());
+
+        // Then
+        assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "판교역");
+    }
+
+    @DisplayName("지하철 구간 삭제 테스트 - 위치에 상관없이 [상행 종점역 삭제]")
+    @Test
+    void deleteSectionTest2() {
+        // Given
+        신분당선.addSection(강남역, 양재역, 4);
+
+        // When
+        신분당선.deleteSection(강남역.getId());
+
+        // Then
+        assertThat(신분당선.getStations()).extracting("name").containsExactly("양재역", "판교역");
+    }
+
+    @DisplayName("지하철 구간 삭제 테스트 - 위치에 상관없이 [하행 종점역 삭제]")
+    @Test
+    void deleteSectionTest3() {
+        // Given
+        신분당선.addSection(강남역, 양재역, 4);
+
+        // When
+        신분당선.deleteSection(판교역.getId());
+
+        // Then
+        assertThat(신분당선.getStations()).extracting("name").containsExactly("강남역", "양재역");
     }
 }

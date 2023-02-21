@@ -97,7 +97,6 @@ public class LineService {
     @Transactional
     public void deleteSection(final Long lineId, final Long stationId) {
         Line line = findLine(lineId);
-        Station station = stationService.findById(stationId);
-        line.deleteSection(station);
+        line.deleteSection(stationId);
     }
 }

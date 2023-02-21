@@ -3,15 +3,15 @@ package nextstep.subway.domain;
 import lombok.Getter;
 import nextstep.subway.exception.SubwayRuntimeException;
 import nextstep.subway.exception.message.SubwayErrorCode;
-import org.springframework.util.ObjectUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 @Getter
@@ -53,7 +53,7 @@ public class Sections {
         /*
          * 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
          */
-        if ((isContainStation(newSection.getUpStation()) || isContainStation(newSection.getDownStation())) == false) {
+        if (!(isContainStation(newSection.getUpStation()) || isContainStation(newSection.getDownStation()))) {
             throw new SubwayRuntimeException(SubwayErrorCode.NOT_CONTAIN_STATION.getMessage());
         }
     }
@@ -156,20 +156,59 @@ public class Sections {
         return sections;
     }
 
-    private Section lastSection() {
-        return sections.get(sections.size() - 1);
+    public void delete(Long stationId) {
+        if (sections.size() <= MIN_SECTION_SIZE) {
+            throw new SubwayRuntimeException(SubwayErrorCode.CANNOT_DELETE_STATION.getMessage());
+        }
+
+        List<Section> deleteSections = findSectionByStationId(stationId);
+
+        if (deleteSections.size() == 2) {
+            Section mergedSection = Section.merge(deleteSections.get(0), deleteSections.get(1));
+            sections.add(mergedSection);
+        }
+        sections.removeAll(deleteSections);
     }
 
-    public void delete(final Station station) {
-        if (sections.size() <= MIN_SECTION_SIZE) {
-            throw new SubwayRuntimeException(SubwayErrorCode.CANNOT_DELETE_LAST_STATION.getMessage());
+    private List<Section> findSectionByStationId(long stationId) {
+        List<Section> deleteSections = sortedSections().stream()
+                .filter(it -> it.hasStationId(stationId))
+                .collect(Collectors.toList());
+
+        if (deleteSections.isEmpty()) {
+            throw new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage());
         }
 
-        Section lastSection = lastSection();
-        if (!lastSection.isDownStation(station)) {
-            throw new SubwayRuntimeException(SubwayErrorCode.DELETE_LAST_SECTION.getMessage());
-        }
+        return deleteSections;
+    }
 
-        sections.remove(lastSection);
+    private List<Section> sortedSections() {
+        List<Section> sortedSections = new ArrayList<>();
+        findUpEndSection().ifPresent(upEndSection -> {
+            Section nextSection = upEndSection;
+            while (nextSection != null) {
+                sortedSections.add(nextSection);
+                nextSection = nextOf(nextSection);
+            }
+        });
+
+        return sortedSections;
+    }
+
+    private Optional<Section> findUpEndSection() {
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        return sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst();
+    }
+
+    private Section nextOf(Section section) {
+        return sections.stream()
+                .filter(it -> it.getUpStation() == section.getDownStation())
+                .findFirst()
+                .orElse(null);
     }
 }
