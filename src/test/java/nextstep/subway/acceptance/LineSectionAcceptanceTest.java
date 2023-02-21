@@ -2,7 +2,9 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.fixture.StationFixtures;
 import nextstep.subway.global.error.exception.ErrorCode;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,27 +15,16 @@ import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.fixture.DistanceFixtures.*;
+import static nextstep.subway.fixture.LineFixtures.BACKGROUND_COLOR_BLUE;
+import static nextstep.subway.fixture.LineFixtures.SHINBUNDANG_LINE;
+import static nextstep.subway.fixture.ParamFixtures.*;
+import static nextstep.subway.fixture.PathFixtures.*;
+import static nextstep.subway.fixture.StationFixtures.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
-    private static final String GANGNAM_STATION = "강남역";
-    private static final String YANGJAE_STATION = "양재역";
-    private static final String JUNGJA_STATION = "정자역";
-    private static final String SONGPA_STATION = "송파역";
-    private static final String PATH_ID = "id";
-    private static final String PATH_STATIONS_ID = "stations.id";
-    private static final int DISTANCE_TEN = 10;
-    private static final int DISTANCE_FIVE = 5;
-    private static final String SHINBUNDANG_LINE = "신분당선";
-    private static final String BACKGROUND_COLOR_BLUE = "bg-color-blue";
-    private static final String PARAM_NAME = "name";
-    private static final String PARAM_COLOR = "color";
-    private static final String PARAM_UP_STATION_ID = "upStationId";
-    private static final String PARAM_DOWN_STATION_ID = "downStationId";
-    private static final String PARAM_DISTANCE = "distance";
-    private static final int DISTANCE_TWENTY = 20;
-
     private Long 신분당선;
     private Long 강남역;
     private Long 양재역;
@@ -59,7 +50,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선의_마지막_부분에_구간을_추가한다() {
         //given
-        Long 정자역 = 지하철역_생성_요청(JUNGJA_STATION).jsonPath().getLong(PATH_ID);
+        Long 정자역 = 지하철역_생성_요청(YANGJAE_STATION).jsonPath().getLong(PATH_ID);
 
         // when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, DISTANCE_FIVE));
@@ -127,7 +118,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getList("errorMessages", String.class)).containsExactly(ErrorCode.NEW_SECTION_LENGTH_MUST_BE_SMALLER_THAN_EXISTING_SECTION_LENGTH.getErrorMessage());
+        assertThat(response.jsonPath().getList(PATH_ERROR_MESSAGES, String.class)).containsExactly(ErrorCode.NEW_SECTION_LENGTH_MUST_BE_SMALLER_THAN_EXISTING_SECTION_LENGTH.getErrorMessage());
     }
 
     /**
@@ -147,7 +138,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getList("errorMessages", String.class)).containsExactly(ErrorCode.ALREADY_EXISTED_STATIONS_OF_NEW_SECTION.getErrorMessage());
+        assertThat(response.jsonPath().getList(PATH_ERROR_MESSAGES, String.class)).containsExactly(ErrorCode.ALREADY_EXISTED_STATIONS_OF_NEW_SECTION.getErrorMessage());
     }
 
     /**
@@ -160,23 +151,23 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void 추가할_구간의_상행역과_하행역이_모두_노선에_포함되어_있지_않는_경우_예외가_발생한다() {
         //given
         Long 정자역 = 지하철역_생성_요청(JUNGJA_STATION).jsonPath().getLong(PATH_ID);
-        Long 송파역 = 지하철역_생성_요청(SONGPA_STATION).jsonPath().getLong(PATH_ID);
+        Long 송파역 = 지하철역_생성_요청(StationFixtures.SONGPA_STATION).jsonPath().getLong(PATH_ID);
 
         //when
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 송파역, DISTANCE_TWENTY));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getList("errorMessages", String.class)).containsExactly(ErrorCode.NOT_EXISTS_STATIONS_OF_NEW_SECTION.getErrorMessage());
+        assertThat(response.jsonPath().getList(PATH_ERROR_MESSAGES, String.class)).containsExactly(ErrorCode.NOT_EXISTS_STATIONS_OF_SECTION.getErrorMessage());
     }
 
     /**
      * given 지하철역과 구간 생성을 요청 하고
-     * when 지하철 노선의 마지막 구간 제거를 요청 하면
-     * then 노선에 구간이 제거된다
+     * when 지하철 노선의 마지막 구간에 위치한 지하철 역을 제거하면
+     * then 노선에 구간과 함께 지하철 역이 제거된다
      */
     @Test
-    void 지하철_노선에_구간을_삭제한다() {
+    void 지하철_노선의_마지막_구간의_지하철_역을_삭제한다() {
         //given
         Long 정자역 = 지하철역_생성_요청(JUNGJA_STATION).jsonPath().getLong(PATH_ID);
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, DISTANCE_FIVE));
@@ -192,22 +183,44 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * given 지하철역과 구간 생성을 요청 하고
-     * when 지하철 노선의 마지막 구간이 아닌 구간을 삭제하면
-     * then INVALID_VALUE_EXCEPTION_ERROR -
-     * then NOT_STATION_OF_END_SECTION 에러가 발생한다
+     * when 지하철 노선의 첫 번째 구간에 위치한 지하철 역을 제거하면
+     * then 노선에 구간과 함께 지하철 역이 제거된다
      */
     @Test
-    void 지하철_노선의_마지막_구간이_아닌_구간을_삭제하면_예외가_발생한다() {
+    void 지하철_노선의_처음_구간의_지하철_역을_삭제한다() {
         //given
         Long 정자역 = 지하철역_생성_요청(JUNGJA_STATION).jsonPath().getLong(PATH_ID);
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, DISTANCE_FIVE));
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+        ExtractableResponse<Response> sectionResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+        ExtractableResponse<Response> lineResponse = 지하철_노선_조회_요청(신분당선);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getList("errorMessages", String.class)).containsExactly(ErrorCode.NOT_STATION_OF_END_SECTION.getErrorMessage());
+        assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        Assertions.assertThat(lineResponse.jsonPath().getList(PATH_STATIONS_ID, Long.class)).containsExactly(양재역, 정자역);
+    }
+
+    /**
+     * given 지하철역과 구간 생성을 요청 하고
+     * when 지하철 노선의 중간에 위치한 구간에 지하철 역을 제거하면
+     * then 지하철 역을 포함 두 구간이 삭제 되고 두 구간의 상행역, 하행역을 잇는 새로운 구간이 노선에 추가된다.
+     */
+    @Test
+    void 지하철_노선의_중간_구간의_지하철_역을_삭제한다() {
+        //given
+        Long 정자역 = 지하철역_생성_요청(JUNGJA_STATION).jsonPath().getLong(PATH_ID);
+        Long 송파역 = 지하철역_생성_요청(SONGPA_STATION).jsonPath().getLong(PATH_ID);
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, DISTANCE_FIVE));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 송파역, DISTANCE_FIVE));
+
+        //when
+        ExtractableResponse<Response> sectionResponse = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+        ExtractableResponse<Response> lineResponse = 지하철_노선_조회_요청(신분당선);
+
+        //then
+        assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        Assertions.assertThat(lineResponse.jsonPath().getList(PATH_STATIONS_ID, Long.class)).containsExactly(강남역, 정자역, 송파역);
     }
 
     private Map<String, String> createLineCreateParams(String lineName, String lineColor, Long upStationId, Long downStationId, int distance) {

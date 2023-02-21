@@ -94,30 +94,10 @@ public class SectionsTest {
         Sections sections = new Sections();
         sections.addSection(sectionOne);
         sections.addSection(sectionTwo);
-
         //then
         sections.removeSection(sectionTwo.getUpStation());
-        Assertions.assertThat(sections.getSections()).containsExactly(sectionOne);
-        Assertions.assertThat(sections.getSections()).doesNotContain(sectionTwo);
-    }
-
-    @DisplayName("노선의 마지막 구간의 지하철역이 아닌 객체로 구간을 삭제하면 InvalidValueException이 발생한다")
-    @Test
-    void removeSectionWithException() {
-        //given
-        Section sectionOne = new Section(lineOne, seoulStation, yongSanStation, DistanceFixtures.DISTANCE_TEN);
-        Section sectionTwo = new Section(lineOne, yongSanStation, hongDaeStation, DistanceFixtures.DISTANCE_TEN);
-
-        //when
-        Sections sections = new Sections();
-        sections.addSection(sectionOne);
-        sections.addSection(sectionTwo);
-
-        //then
-        Assertions.assertThatThrownBy(() -> {
-                    sections.removeSection(sectionOne.getUpStation());
-                }).isInstanceOf(InvalidValueException.class)
-                .hasMessage(ErrorCode.NOT_STATION_OF_END_SECTION.getErrorMessage());
+        Section newSection = new Section(sectionOne.getLine(), sectionOne.getUpStation(), sectionTwo.getDownStation(), sectionOne.getDistance() + sectionTwo.getDistance());
+        Assertions.assertThat(sections.getSections()).containsExactly(newSection);
     }
 
     @DisplayName("데이터베이스로 조회된 정렬되지 않는 Section 리스트를 정리해서 VO 객체로 반환한다")
@@ -179,7 +159,7 @@ public class SectionsTest {
         Assertions.assertThatThrownBy(() -> {
                     sections.addSection(wrongSection);
                 }).isInstanceOf(InvalidValueException.class)
-                .hasMessage(ErrorCode.NOT_EXISTS_STATIONS_OF_NEW_SECTION.getErrorMessage());
+                .hasMessage(ErrorCode.NOT_EXISTS_STATIONS_OF_SECTION.getErrorMessage());
     }
 
     @DisplayName("데이터베이스로 조회된 정렬되지 않는 Section 리스트를 정리해서 VO 객체로 반환한다")

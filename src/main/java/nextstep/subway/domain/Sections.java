@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 @Getter
 @Embeddable
 public class Sections {
-
     private static final String ADD_IN_THE_MIDDLE = "addInTheMiddle";
     private static final String ADD_AT_THE_BEGINNING = "addAtTheBeginning";
 
@@ -59,8 +58,27 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        removeSectionValidate(station);
-        sections.remove(sections.size() - 1);
+        if (removableFirstStation(station)) {
+            sections.remove(0);
+            return;
+        }
+        if (removableLastStation(station)) {
+            sections.remove(sections.size() - 1);
+            return;
+        }
+        for (int i = 0; i < sections.size(); i++) {
+            if (sections.get(i).getUpStation().equals(station)) {
+                Line line = sections.get(i).getLine();
+                Station newUpStation = sections.get(i - 1).getUpStation();
+                Station newDownStation = sections.get(i).getDownStation();
+                int priorDistance = sections.get(i - 1).getDistance();
+                int nextDistance = sections.get(i).getDistance();
+                sections.remove(i - 1);
+                sections.remove(i - 1);
+                sections.add(i - 1, new Section(line, newUpStation, newDownStation, priorDistance + nextDistance));
+                return;
+            }
+        }
     }
 
     public List<Station> getSortedStations() {
@@ -81,6 +99,14 @@ public class Sections {
         return sections.get(0).getUpStation().equals(section.getDownStation());
     }
 
+    private boolean removableFirstStation(Station station) {
+        return sections.get(0).getUpStation().equals(station);
+    }
+
+    private boolean removableLastStation(Station station) {
+        return sections.get(sections.size() - 1).getDownStation().equals(station);
+    }
+
     private boolean equalsUpStationOfSections(int i, Section section) {
         return sections.get(i).getUpStation().equals(section.getUpStation());
     }
@@ -96,18 +122,18 @@ public class Sections {
             }
         }
         if (existsCount != 1) {
-            throw new InvalidValueException(ErrorCode.NOT_EXISTS_STATIONS_OF_NEW_SECTION);
+            throw new InvalidValueException(ErrorCode.NOT_EXISTS_STATIONS_OF_SECTION);
         }
     }
 
     private void existsValidateCheck(Section newSection) {
         int duplicateCount = 0;
         for (Section oldSection : sections) {
-            if (oldSection.getUpStation().equals(newSection.getUpStation()) || oldSection.getDownStation().equals(newSection.getUpStation())) {
+            if (oldSection.containsUpStation(newSection)) {
                 duplicateCount++;
                 continue;
             }
-            if (oldSection.getUpStation().equals(newSection.getDownStation()) || oldSection.getDownStation().equals(newSection.getDownStation())) {
+            if (oldSection.containsDownStation(newSection)) {
                 duplicateCount++;
             }
         }
