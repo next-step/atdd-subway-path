@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.exception.CantNotFindPathSameSourceTargetStationException;
+import nextstep.subway.domain.exception.NotFoundPathException;
 import nextstep.subway.domain.exception.NotFoundSourceAndTargetStationException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -32,6 +33,8 @@ public class Path {
             return new PathResponse(vertexList, pathWeight);
         } catch (IllegalArgumentException e) {
             throw new NotFoundSourceAndTargetStationException();
+        } catch (NullPointerException npe) {
+            throw new NotFoundPathException();
         }
     }
 
