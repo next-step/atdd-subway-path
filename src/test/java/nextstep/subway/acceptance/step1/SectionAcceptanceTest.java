@@ -124,6 +124,94 @@ public class SectionAcceptanceTest {
         assertThat(HttpStatus.INTERNAL_SERVER_ERROR.value()).isEqualTo((status));
     }
 
+    /**
+     * given 노선에 두개의 구간이 존재할 때,
+     * when 중간 역을 삭제하면
+     * then 하나의 구간만 남는다.
+     */
+    @Test
+    @Sql(
+        scripts = "/sql/insert-additional-section.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @DisplayName("중간 구간 삭제 테스트")
+    void remove_Middle_Section() {
+        // given Sql 대체
+
+        // when
+        구간삭제(이호선_ID, 2L);
+
+        // then
+        List<String> stations = 역_이름_조회();
+        assertThat(stations).containsExactly("교대역", "역삼역");
+    }
+
+
+    /**
+     * given 노선에 2개의 구간이 존재할 때,
+     * when 종점(상행선 or 하행선)을 삭제하면
+     * then 하나의 구간만 남는다.
+     */
+    @Test
+    @Sql(
+        scripts = "/sql/insert-additional-section.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @DisplayName("끝 구간 삭제 테스트")
+    void remove_End_Section() {
+        // given Sql 대체
+
+        // when
+        구간삭제(이호선_ID, 1L);
+
+        // then
+        List<String> stations = 역_이름_조회();
+        assertThat(stations).containsExactly("강남역", "역삼역");
+    }
+
+    /**
+     * given 노선에 하나의 구간만 있을 때,
+     * when 구간을 삭제하면
+     * then 예외를 던진다.
+     */
+    @Test
+    @Sql(
+        scripts = "/sql/insert-additional-section.sql",
+        executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @DisplayName("삭제 예외 케이스 테스트")
+    void remove_Exception() {
+        // given Sql 대체
+        구간삭제(이호선_ID, 1L);
+
+        // when
+        int status = 구간삭제(이호선_ID, 2L).jsonPath().getInt("status");
+
+        // then
+        assertThat(status).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private ExtractableResponse<Response> 구간삭제(Long lineId, Long stationId) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("stationId", stationId);
+
+        ExtractableResponse<Response> response =
+            RestAssured.given()
+                // .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .log()
+                .all()
+                .when()
+                .delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
+                .then()
+                .log()
+                .all()
+                .extract();
+
+        return response;
+    }
+
     private ExtractableResponse<Response> 구간추가(
         Long lineId, Long upStationId, Long downStationId, Integer distance) {
 
