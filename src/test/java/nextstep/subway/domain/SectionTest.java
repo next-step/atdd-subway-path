@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionTest {
 
@@ -31,8 +32,10 @@ class SectionTest {
         givenSection.changeUpStation(신사역, 5);
 
         // Then
-        assertThat(givenSection.getDistance()).isEqualTo(5);
-        assertThat(givenSection.getUpStation()).isEqualTo(신사역);
+        assertAll(
+            () -> assertThat(givenSection.getDistance()).isEqualTo(5),
+            () -> assertThat(givenSection.getUpStation()).isEqualTo(신사역)
+        );
     }
 
     // When 상행역 변경시 기존 역과 역사이의 길이보다 크거나 같으면
@@ -69,10 +72,8 @@ class SectionTest {
         Station 신사역 = new Station("신사역");
         Section actual = givenSection.makeNext(신분당선, 신사역, 강남역, 5);
 
-        assertThat(actual.getDistance()).isEqualTo(5);
-        assertThat(actual.getUpStation()).isEqualTo(신사역);
-        assertThat(actual.getDownStation()).isEqualTo(강남역);
-        assertThat(actual.getLine()).isEqualTo(신분당선);
+
+        assertThat(actual).isEqualTo(new Section(신분당선, 신사역, 강남역, 5));
     }
 
     /**
@@ -104,8 +105,10 @@ class SectionTest {
         int compareByDownSection = 상행역_구간.compareTo(givenSection);
 
         // Then
-        assertThat(compareByUpSection).as("하행역 구간일 경우 0").isZero();
-        assertThat(compareByDownSection).as("상행역 구간일 경우 -1").isEqualTo(-1);
+        assertAll(
+            () -> assertThat(compareByUpSection).as("하행역 구간일 경우 0").isZero(),
+            () -> assertThat(compareByDownSection).as("상행역 구간일 경우 -1").isEqualTo(-1)
+        );
     }
 
 }

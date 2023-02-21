@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class PathTest {
 
@@ -69,8 +70,10 @@ class PathTest {
         PathResponse pathResponse = path.findPath(교대역, 양재역);
 
         // Then
-        assertThat(pathResponse.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
-        assertThat(pathResponse.getDistance()).isEqualTo(4);
+        assertAll(
+            () -> assertThat(pathResponse.getStations()).containsExactly(교대역, 남부터미널역, 양재역),
+            () -> assertThat(pathResponse.getDistance()).isEqualTo(4)
+        );
     }
 
     /**
@@ -81,7 +84,8 @@ class PathTest {
     void 경로_조회_시_출발_역과_도착_역이_같은_경우_조회가_안된다() {
         // When && Then
         assertThatThrownBy(() -> path.findPath(교대역, 교대역))
-            .isInstanceOf(CantNotFindPathSameSourceTargetStationException.class);
+            .isInstanceOf(CantNotFindPathSameSourceTargetStationException.class)
+            .hasMessage("출발역과 도착역이 동일하면 안됩니다.");
     }
 
     /**
@@ -100,7 +104,8 @@ class PathTest {
 
         // When && Then
         assertThatThrownBy(() -> path.findPath(교대역, 철산역))
-            .isInstanceOf(NotFoundPathException.class);
+            .isInstanceOf(NotFoundPathException.class)
+            .hasMessage("경로를 찾을 수 없습니다");
     }
 
     /**
@@ -115,7 +120,8 @@ class PathTest {
 
         // When
         assertThatThrownBy(() -> path.findPath(교대역, 철산역))
-            .isInstanceOf(NotFoundSourceAndTargetStationException.class);
+            .isInstanceOf(NotFoundSourceAndTargetStationException.class)
+            .hasMessage("경로 조회 시 출발역과 도착역을 찾을 수 없습니다.");
     }
 
     /**
@@ -130,7 +136,8 @@ class PathTest {
 
         // When
         assertThatThrownBy(() -> path.findPath(철산역, 교대역))
-            .isInstanceOf(NotFoundSourceAndTargetStationException.class);
+            .isInstanceOf(NotFoundSourceAndTargetStationException.class)
+            .hasMessage("경로 조회 시 출발역과 도착역을 찾을 수 없습니다.");
     }
 
     private void 경로에_새로운_구간_추가(StationResponse up, StationResponse down, Integer distance) {

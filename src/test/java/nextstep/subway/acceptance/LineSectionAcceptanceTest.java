@@ -16,6 +16,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -55,12 +56,15 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getString("id")).isEqualTo("1");
-            assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
-            assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
-            assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "양재역", "정자역");
+
+            assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getString("id")).isEqualTo("1"),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선"),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600"),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역),
+                () -> assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "양재역", "정자역")
+            );
         }
 
         /**
@@ -93,8 +97,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신사역, 강남역, 양재역);
+
+            assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신사역, 강남역, 양재역)
+            );
         }
 
         /**
@@ -110,8 +117,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 판교역);
+            assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 판교역)
+            );
         }
 
         /**
@@ -159,14 +168,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
 
-        private void 노선에_새로운_구간이_추가되며_길이가_재_정의_된다(Long 정자역, ExtractableResponse<Response> lineResponse) {
+        private void 노선에_새로운_구간이_추가되며_길이가_재_정의_된다(Long other, ExtractableResponse<Response> lineResponse) {
             assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
             List<SectionResponse> sections = lineResponse.jsonPath().getList("sections", SectionResponse.class);
-            assertThat(sections.get(0).getUpStation().getId()).isEqualTo(정자역);
+            assertThat(sections.get(0).getUpStation().getId()).isEqualTo(other);
             assertThat(sections.get(0).getDownStation().getId()).isEqualTo(양재역);
             assertThat(sections.get(0).getDistance()).isEqualTo(6);
             assertThat(sections.get(1).getUpStation().getId()).isEqualTo(강남역);
-            assertThat(sections.get(1).getDownStation().getId()).isEqualTo(정자역);
+            assertThat(sections.get(1).getDownStation().getId()).isEqualTo(other);
             assertThat(sections.get(1).getDistance()).isEqualTo(4);
         }
     }
@@ -192,8 +201,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+            assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역)
+            );
         }
 
         /**
@@ -213,8 +224,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
+            assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역)
+            );
         }
 
         /**
@@ -234,8 +247,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
             // then
             ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역);
+            assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 정자역));
         }
 
     }

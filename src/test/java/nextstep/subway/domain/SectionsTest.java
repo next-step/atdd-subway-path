@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
 
@@ -73,9 +74,7 @@ class SectionsTest {
             // then
             assertThat(givenSections.getOrderedStations()).containsExactly(강남역, 정자역);
             Section 강남역_구간 = givenSections.findSectionByStation(강남역);
-            assertThat(강남역_구간.getDistance()).isEqualTo(20);
-            assertThat(강남역_구간.getUpStation()).isEqualTo(강남역);
-            assertThat(강남역_구간.getDownStation()).isEqualTo(정자역);
+            assertThat(강남역_구간).isEqualTo(new Section(신분당선, 강남역, 정자역, 20));
         }
 
         /**
@@ -96,9 +95,7 @@ class SectionsTest {
             // then
             assertThat(givenSections.getOrderedStations()).containsExactly(양재역, 정자역);
             Section 양재역_구간 = givenSections.findSectionByStation(양재역);
-            assertThat(양재역_구간.getDistance()).isEqualTo(10);
-            assertThat(양재역_구간.getUpStation()).isEqualTo(양재역);
-            assertThat(양재역_구간.getDownStation()).isEqualTo(정자역);
+            assertThat(양재역_구간).isEqualTo(new Section(신분당선, 양재역, 정자역, 10));
         }
 
         /**
@@ -224,12 +221,15 @@ class SectionsTest {
 
             // Then
             List<Section> sections = givenSections.getSections();
-            assertThat(sections.get(0).getUpStation()).isEqualTo(새로운역);
-            assertThat(sections.get(0).getDownStation()).isEqualTo(양재역);
-            assertThat(sections.get(0).getDistance()).isEqualTo(6);
-            assertThat(sections.get(1).getUpStation()).isEqualTo(강남역);
-            assertThat(sections.get(1).getDownStation()).isEqualTo(새로운역);
-            assertThat(sections.get(1).getDistance()).isEqualTo(4);
+
+            assertAll(
+                () -> assertThat(sections.get(0).getUpStation()).isEqualTo(새로운역),
+                () -> assertThat(sections.get(0).getDownStation()).isEqualTo(양재역),
+                () -> assertThat(sections.get(0).getDistance()).isEqualTo(6),
+                () -> assertThat(sections.get(1).getUpStation()).isEqualTo(강남역),
+                () -> assertThat(sections.get(1).getDownStation()).isEqualTo(새로운역),
+                () -> assertThat(sections.get(1).getDistance()).isEqualTo(4)
+            );
         }
 
         /**
