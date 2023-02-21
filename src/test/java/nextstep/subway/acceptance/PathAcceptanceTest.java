@@ -99,6 +99,37 @@ class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    /**
+     * When 존재하지 않은 도착역을 조회 할 경우
+     * Then 조회가 안된다
+     */
+    @DisplayName("경로 조회 시 존재하지 않은 도착역을 조회 할 경우 조회가 안된다")
+    @Test
+    void 경로_조회_시_존재하지_않은_도착역을_조회_할_경우_조회가_안된다() {
+        long notExistStationId = Integer.MAX_VALUE;;
+
+        // When
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, notExistStationId);
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * When 존재하지 않은 출발역을 조회 할 경우
+     * Then 조회가 안된다
+     */
+    @DisplayName("경로 조회 시 존재하지 않은 출발역 조회 할 경우 조회가 안된다")
+    @Test
+    void 경로_조회_시_존재하지_않은_출발역을_조회_할_경우_조회가_안된다() {
+        // When
+        long notExistStationId = Integer.MAX_VALUE;
+        ExtractableResponse<Response> response = 경로_조회_요청(notExistStationId, 교대역);
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private ExtractableResponse<Response> 경로_조회_요청(Long source, Long target) {
         HashMap<String, Long> parms = new HashMap<>();
         parms.put("source", source);
