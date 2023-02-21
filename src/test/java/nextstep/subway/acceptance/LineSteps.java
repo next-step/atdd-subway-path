@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,6 +26,24 @@ public class LineSteps extends Steps {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
+    }
+
+    public static Long 지하철_노선_생성_요청(final String name, final String color, final long upStationId,
+                                                             final long downStationId, final int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        final ExtractableResponse<Response> response = RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract();
+        return response.jsonPath().getLong("id");
     }
 
     public static void 지하철_노선이_정상적으로_추가되었는지_확인(final ExtractableResponse<Response> response, final String name) {
