@@ -66,6 +66,20 @@ class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
     }
 
+    /**
+     * When 경로 조회 시 출발 역과 도착 역이 같은 경우
+     * Then 조회가 안된다
+     */
+    @DisplayName("경로 조회 시 출발 역과 도착 역이 같은 경우 조회가 안된다")
+    @Test
+    void 경로_조회_시_출발_역과_도착_역이_같은_경우_조회가_안된다() {
+        // When
+        ExtractableResponse<Response> response = 경로_조회_요청(교대역, 교대역);
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private ExtractableResponse<Response> 경로_조회_요청(Long source, Long target) {
         HashMap<String, Long> parms = new HashMap<>();
         parms.put("source", source);
