@@ -34,8 +34,8 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean hasShorterDistanceThan(Section origin) {
-        return this.distance < origin.distance;
+    public boolean hasShorterDistanceThan(Section section) {
+        return this.distance < section.distance;
     }
 
     public boolean hasOneMatchedStation(Section section) {
@@ -49,11 +49,27 @@ public class Section {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
 
+    public boolean hasStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
     public Section divideBy(Section section) {
         if (this.downStation.equals(section.downStation)) {
             return new Section(this.line, this.upStation, section.upStation, this.distance - section.distance);
         }
         return new Section(this.line, section.downStation, this.downStation, this.distance - section.distance);
+    }
+
+    public Section merge(Section section) {
+        return new Section(this.line, this.upStation, section.getDownStation(), this.distance + section.distance);
+    }
+
+    public boolean isDownStationEqualTo(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isUpStationEqualTo(Station station) {
+        return this.upStation.equals(station);
     }
 
     public Long getId() {
