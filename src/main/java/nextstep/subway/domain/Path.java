@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.domain.exception.CantNotFindPathSameSourceTargetStationException;
+import nextstep.subway.domain.exception.NotFoundSourceAndTargetStationException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -22,9 +24,21 @@ public class Path {
     }
 
     public PathResponse findPath(StationResponse sourceStation, StationResponse targetStation) {
-        List<StationResponse> vertexList = stationPath.getPath(sourceStation, targetStation).getVertexList();
-        int pathWeight = (int) stationPath.getPathWeight(sourceStation, targetStation);
-        return new PathResponse(vertexList, pathWeight);
+        validatePath(sourceStation, targetStation);
+
+        try {
+            List<StationResponse> vertexList = stationPath.getPath(sourceStation, targetStation).getVertexList();
+            int pathWeight = (int) stationPath.getPathWeight(sourceStation, targetStation);
+            return new PathResponse(vertexList, pathWeight);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundSourceAndTargetStationException();
+        }
+    }
+
+    private void validatePath(StationResponse sourceStation, StationResponse targetStation) {
+        if (sourceStation.equals(targetStation)) {
+            throw new CantNotFindPathSameSourceTargetStationException();
+        }
     }
 
     private DijkstraShortestPath<StationResponse, DefaultWeightedEdge> process() {
