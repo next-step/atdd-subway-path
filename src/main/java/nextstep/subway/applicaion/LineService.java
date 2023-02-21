@@ -8,6 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,11 +67,11 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station upStation = sectionRequest.getUpStationId() != null ? stationService.findById(sectionRequest.getUpStationId()) : null;
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineNotFoundException("노선을 찾을 수 없습니다."));
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
