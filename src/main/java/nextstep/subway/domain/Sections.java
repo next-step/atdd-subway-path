@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.AddSectionException;
+import nextstep.subway.exception.DeleteSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -107,8 +108,10 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        validateSectionSize();
         Section downSection = getDownSection(station);
         Section upSection = getUpSection(station);
+        validateStation(downSection, upSection);
 
         if (downSection != null && upSection != null) {
             int distance = downSection.getDistance() + upSection.getDistance();
@@ -118,6 +121,18 @@ public class Sections {
 
         if (downSection != null && upSection == null) {
             sections.remove(downSection);
+        }
+    }
+
+    private void validateStation(Section downSection, Section upSection) {
+        if (downSection == null && upSection == null) {
+            throw new DeleteSectionException("노선에 등록되지 않은 역은 삭제할 수 없습니다.");
+        }
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() == 1) {
+            throw new DeleteSectionException("구간이 하나인 경우 삭제할 수 없습니다.");
         }
     }
 

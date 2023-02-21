@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.AddSectionException;
+import nextstep.subway.exception.DeleteSectionException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -175,6 +176,29 @@ class LineTest {
 
         // then
         assertThat(stations).containsExactly(광교, 광교중앙);
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때")
+    void delete_fail1() {
+        // given
+        Line 신분당선 = new Line(1L, "신분당", "RED");
+        신분당선.addSection(광교, 광교중앙, 2);
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선.delete(광교중앙)).isInstanceOf(DeleteSectionException.class);
+    }
+
+    @Test
+    @DisplayName("노선에 등록되지 않은 역을 제거할 때")
+    void delete_fail2() {
+        // given
+        Line 신분당선 = new Line(1L, "신분당", "RED");
+        신분당선.addSection(광교, 광교중앙, 2);
+        신분당선.addSection(광교중앙, 상현, 2);
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선.delete(성복)).isInstanceOf(DeleteSectionException.class);
     }
 
 }
