@@ -36,11 +36,11 @@ public class Sections {
         Section foundSection = null;
         String status = null;
         for (int i = 0; i < sections.size(); i++) {
-            if (downStationOfNewSectionIsFirstUpStationOfFirstSection(section)) {
+            if (addableFirstSection(section)) {
                 status = ADD_AT_THE_BEGINNING;
                 break;
             }
-            if (upStationOfNewSectionIsUpStationOfSections(i, section)) {
+            if (equalsUpStationOfSections(i, section)) {
                 index = i;
                 foundSection = sections.get(i);
                 status = ADD_IN_THE_MIDDLE;
@@ -77,11 +77,11 @@ public class Sections {
         return !sections.isEmpty();
     }
 
-    private boolean downStationOfNewSectionIsFirstUpStationOfFirstSection(Section section) {
+    private boolean addableFirstSection(Section section) {
         return sections.get(0).getUpStation().equals(section.getDownStation());
     }
 
-    private boolean upStationOfNewSectionIsUpStationOfSections(int i, Section section) {
+    private boolean equalsUpStationOfSections(int i, Section section) {
         return sections.get(i).getUpStation().equals(section.getUpStation());
     }
 
