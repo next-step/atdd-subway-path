@@ -18,11 +18,12 @@ public class DijkstraPathFinder implements PathFinder{
 
     @Override
     public GraphPath<Long, String> getPath(Long source, Long target) {
-        try {
-            return dijkstraShortestPath.getPath(source, target);
-        } catch (IllegalArgumentException e) {
-            //예외 번역
-            throw new CustomException(CustomException.PATH_MUST_CONTAIN_STATION);
+        GraphPath<Long, String> path = dijkstraShortestPath.getPath(source, target);
+
+        if(Objects.isNull(path)) {
+            throw new CustomException(CustomException.DOES_NOT_CONNECTED_SOURCE_TO_TARGET);
         }
+
+        return path;
     }
 }
