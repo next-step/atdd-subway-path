@@ -203,6 +203,83 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 종점이 제거되면
+     * Then 다음으로 오던 역이 종점이 된다.
+     */
+    @DisplayName("지하철 노선의 종점을 제거")
+    @Test
+    void removeLineSection_WithLastEndSection() {
+        // given
+        Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class).get(response.jsonPath().getList("stations.id", Long.class).size() - 1)).isEqualTo(강남역)
+        );
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간역이 제거되면
+     * Then 지하철 역을 재배치 하고, 거리는 두 구간의 합이다.
+     */
+    @DisplayName("지하철 노선의 중간역을 제거")
+    @Test
+    void removeLineSection_WithMiddleSection() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역),
+                () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(강남역_양재역_거리 + 6)
+        );
+    }
+
+    /**
+     * When 지하철 노선의 구간이 하나일때 제거 요청을 하면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("지하철 노선의 구간이 하나일 때 제거")
+    @Test
+    void removeLineSection_WithOnlyOneSection() {
+        // when
+        var response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철 노선에 구간이 하나도 등록되어 있지 않으면
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("지하철 노선의 구간이 비어있을 때 제거")
+    @Test
+    void removeLineSection_WithEmptySection() {
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+        var response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

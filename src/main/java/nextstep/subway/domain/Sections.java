@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.EntityAlreadyExistsException;
+import nextstep.subway.domain.exception.EntityCannotRemoveException;
 import nextstep.subway.domain.exception.EntityNotFoundException;
 
 import javax.persistence.CascadeType;
@@ -150,15 +151,23 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        if (sections.size() < 2) {
-            throw new IllegalArgumentException("If there is less than one registered section, you cannot delete it.");
-        }
-
-        if (!getLastSection().isDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
+        validateRemoveSection(station);
 
         sections.remove(getLastSection());
+    }
+
+    private void validateRemoveSection(Station station) {
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("There are no sections on the line.");
+        }
+
+        if (sections.size() < 2) {
+            throw new EntityCannotRemoveException("If there is less than one registered section, you cannot delete it.");
+        }
+
+        if (!getStations().contains(station)) {
+            throw new EntityNotFoundException("Station not registered on the line.");
+        }
     }
 
     public Section getLastSection() {
