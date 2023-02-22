@@ -3,6 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,8 @@ public class SectionService {
             .collect(Collectors.toList());
     }
 
-    public List<SectionResponse> findAllSections() {
-        return sectionRepository.findAll().stream().map(section -> new SectionResponse(section.getId(), StationResponse.from(section.getUpStation()), StationResponse.from(section.getDownStation()), section.getDistance()))
-            .collect(Collectors.toList());
+    public List<Section> findAllSections() {
+        return sectionRepository.findAll();
     }
 
 }

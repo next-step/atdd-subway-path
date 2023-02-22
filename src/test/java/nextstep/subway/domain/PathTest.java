@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.exception.CantNotFindPathSameSourceTargetStationException;
 import nextstep.subway.domain.exception.NotFoundPathException;
@@ -19,15 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 class PathTest {
 
-    private StationResponse 교대역;
-    private StationResponse 양재역;
-    private StationResponse 강남역;
-    private StationResponse 남부터미널역;
-    private List<StationResponse> stationResponses;
-    private List<SectionResponse> sectionResponses;
+    private Station 교대역;
+    private Station 양재역;
+    private Station 강남역;
+    private Station 남부터미널역;
+    private List<Station> stations;
+    private List<Section> sections;
     private Path path;
-    private long stationId;
-    private long sectionId;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -38,24 +35,28 @@ class PathTest {
      */
     @BeforeEach
     public void setUp() {
-        stationId = 0L;
-        sectionId = 0L;
+        교대역 = new Station("교대역");
+        강남역 = new Station("강남역");
+        양재역 = new Station("양재역");
+        남부터미널역 = new Station("남부터미널역");
 
-        교대역 = new StationResponse(stationId++, "교대역");
-        강남역 = new StationResponse(stationId++, "강남역");
-        양재역 = new StationResponse(stationId++, "양재역");
-        남부터미널역 = new StationResponse(stationId++, "남부터미널역");
 
-        SectionResponse 이호선 = new SectionResponse(sectionId++, 교대역, 강남역, 10);
-        SectionResponse 신분당선 = new SectionResponse(sectionId++, 강남역, 양재역, 10);
-        SectionResponse 삼호선_교대_남부 = new SectionResponse(sectionId++, 교대역, 남부터미널역, 2);
-        SectionResponse 삼호선_남부_양재 = new SectionResponse(sectionId++, 남부터미널역, 양재역, 2);
+        Line 신분당선 = new Line("신분당선", "red");
+        Line 이호선 = new Line("이호선", "red");
+        Line 삼호선 = new Line("신분당선", "red");
 
-        stationResponses = new ArrayList<>();
-        stationResponses.addAll(List.of(교대역, 강남역, 양재역, 남부터미널역));
-        sectionResponses = new ArrayList<>();
-        sectionResponses.addAll(List.of(이호선, 신분당선, 삼호선_교대_남부, 삼호선_남부_양재));
-        path = new Path(stationResponses, sectionResponses);
+
+        stations = new ArrayList<>();
+        stations.addAll(List.of(교대역, 강남역, 양재역, 남부터미널역));
+        sections = new ArrayList<>();
+        sections.addAll(
+            List.of(
+                new Section(이호선, 교대역, 강남역, 10),
+                new Section(신분당선, 강남역, 양재역, 10),
+                new Section(삼호선, 교대역, 남부터미널역, 2),
+                new Section(삼호선, 남부터미널역, 양재역, 2))
+        );
+        path = new Path(stations, sections);
     }
 
 
@@ -71,7 +72,7 @@ class PathTest {
 
         // Then
         assertAll(
-            () -> assertThat(pathResponse.getStations()).containsExactly(교대역, 남부터미널역, 양재역),
+            () -> assertThat(pathResponse.getStations()).containsExactly(StationResponse.from(교대역), StationResponse.from(남부터미널역), StationResponse.from(양재역)),
             () -> assertThat(pathResponse.getDistance()).isEqualTo(4)
         );
     }
@@ -97,8 +98,8 @@ class PathTest {
     @Test
     void 경로_조회_시_출발역과_도착역이_연결이_되어_있지_않은_경우_조회가_안된다() {
         // Given
-        StationResponse 철산역 = new StationResponse(stationId++, "철산역");
-        StationResponse 남구로역 = new StationResponse(stationId++, "남구로역");
+        Station 철산역 = new Station("철산역");
+        Station 남구로역 = new Station("남구로역");
 
         경로에_새로운_구간_추가(철산역, 남구로역, 12);
 
@@ -116,7 +117,7 @@ class PathTest {
     @Test
     void 경로_조회_시_존재하지_않은_도착역을_조회_할_경우_조회가_안된다() {
         // Given
-        StationResponse 철산역 = new StationResponse(stationId++, "철산역");
+        Station 철산역 = new Station("철산역");
 
         // When
         assertThatThrownBy(() -> path.findPath(교대역, 철산역))
@@ -132,7 +133,7 @@ class PathTest {
     @Test
     void 경로_조회_시_존재하지_않은_출발역을_조회_할_경우_조회가_안된다() {
         // Given
-        StationResponse 철산역 = new StationResponse(stationId++, "철산역");
+        Station 철산역 = new Station("철산역");
 
         // When
         assertThatThrownBy(() -> path.findPath(철산역, 교대역))
@@ -140,12 +141,12 @@ class PathTest {
             .hasMessage("경로 조회 시 출발역과 도착역을 찾을 수 없습니다.");
     }
 
-    private void 경로에_새로운_구간_추가(StationResponse up, StationResponse down, Integer distance) {
-        SectionResponse sectionResponse = new SectionResponse(sectionId++, up, down, distance);
-        stationResponses.add(up);
-        stationResponses.add(down);
-        sectionResponses.add(sectionResponse);
-        path = new Path(stationResponses, sectionResponses);
+    private void 경로에_새로운_구간_추가(Station up, Station down, Integer distance) {
+        Section section = new Section(new Line(), up, down, distance);
+        stations.add(up);
+        stations.add(down);
+        sections.add(section);
+        path = new Path(stations, sections);
     }
 
 }
