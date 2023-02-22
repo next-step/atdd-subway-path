@@ -2,7 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
-import org.junit.jupiter.api.Assertions;
+import nextstep.subway.domain.exception.EntityCannotRemoveException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
     @Test
@@ -25,7 +26,7 @@ class LineTest {
         line.addSection(upStation, downStation, distance);
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(line.getSections()).isNotNull(),
                 () -> assertThat(line.getSections().getStations()).containsExactly(upStation, downStation)
         );
@@ -55,7 +56,7 @@ class LineTest {
         line.removeSection(lastStation);
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> assertThat(line.getStations()).extracting("name").containsExactly("내방역", "고속터미널역"),
                 () -> assertThat(line.getSections().getLastSection().getDownStation()).isNotEqualTo(lastStation),
                 () -> assertThat(line.getSections().getLastSection().getDownStation()).extracting("name").isEqualTo("고속터미널역")
@@ -67,15 +68,16 @@ class LineTest {
     void removeSection_WithException() {
         // given
         Line line = createLine();
-        Station lastStation = line.getSections().getLastSection().getUpStation();
-        Station realLastStation = line.getSections().getLastSection().getDownStation();
+        Station 마지막_구간_상행역 = line.getSections().getLastSection().getUpStation();
+        Station 마지막_구간_하행역 = line.getSections().getLastSection().getDownStation();
 
+        line.removeSection(마지막_구간_상행역);
+
+        // when
         // then
-        assertThatThrownBy(() -> line.removeSection(lastStation)).isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> {
-            line.removeSection(realLastStation);
-            line.removeSection(lastStation);
-        }).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> line.removeSection(마지막_구간_하행역))
+                .isInstanceOf(EntityCannotRemoveException.class)
+                .hasMessage("If there is less than one registered section, you cannot delete it.");
     }
 
     private Line createLine() {

@@ -14,7 +14,7 @@ public class Line {
     @Embedded
     private Sections sections = new Sections();
 
-    public Line() {
+    private Line() {
     }
 
     public Line(String name, String color) {
@@ -22,47 +22,43 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
-        return id;
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public Sections getSections() {
         return sections;
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
-        sections.addSection(new Section(this, upStation, downStation, distance));
-    }
-
     public List<Station> getStations() {
         return sections.getStations();
     }
 
-    public void removeSection(Station station) {
-        sections.removeSection(station);
-    }
-
     public int getDistance() {
         return sections.getDistance();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void removeSection(Station station) {
+        sections.removeSection(station);
     }
 }
