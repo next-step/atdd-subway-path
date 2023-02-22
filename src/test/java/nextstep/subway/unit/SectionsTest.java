@@ -59,4 +59,14 @@ public class SectionsTest {
         Section section = sections.getSections().get(0);
         assertThat(sections.getDownStation()).isEqualTo(section.getDownStation());
     }
+
+    @DisplayName("구간 삭제")
+    @Test
+    void removeSection() {
+        sections.addSection(이호선, 강남역, 정자역, 10);
+        sections.addSection(이호선, 정자역, 광교역, 10);
+        sections.removeSection(이호선,정자역);
+        assertThat(sections.getStations()).containsExactly(강남역, 광교역);
+        assertThat(sections.getFirstSection().getDistance()).isEqualTo(20);
+    }
 }
