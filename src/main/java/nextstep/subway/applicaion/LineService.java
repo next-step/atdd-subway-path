@@ -109,16 +109,4 @@ public class LineService {
         return new LineSectionResponse(line.getId(), line.getName(), line.getColor(), sectionResponse);
     }
 
-    public List<LineSectionResponse> getAllLineSections() {
-        List<Line> lines = lineRepository.findAll();
-        List<LineSectionResponse> lineSectionResponses = new ArrayList<>();
-
-        lines.forEach(line -> {
-            List<SectionResponse> sectionResponse = sectionService.showSections(line);
-            lineSectionResponses.add(new LineSectionResponse(line.getId(), line.getName(), line.getColor(), sectionResponse));
-        });
-
-        return lineSectionResponses;
-    }
-
 }
