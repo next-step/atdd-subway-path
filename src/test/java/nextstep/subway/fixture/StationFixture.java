@@ -2,10 +2,12 @@ package nextstep.subway.fixture;
 
 
 import nextstep.subway.domain.Station;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static nextstep.subway.fixture.FieldFixture.식별자_아이디;
 import static nextstep.subway.fixture.FieldFixture.역_이름;
 
 public enum StationFixture {
@@ -18,6 +20,8 @@ public enum StationFixture {
     삼성역,
     서울대입구역,
     범계역,
+    교대역,
+    남부터미널역,
     ;
 
     public String 역_이름() {
@@ -32,5 +36,11 @@ public enum StationFixture {
 
     public Station 엔티티_생성() {
         return new Station(역_이름());
+    }
+
+    public Station 엔티티_생성(Long id) {
+        Station station = new Station(역_이름());
+        ReflectionTestUtils.setField(station, 식별자_아이디.필드명(), id);
+        return station;
     }
 }

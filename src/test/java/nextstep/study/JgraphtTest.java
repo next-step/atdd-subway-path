@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 class JgraphtTest {
-    @Test
+    @Test // 최단 경로 목록 반환
     void getDijkstraShortestPath() {
         String source = "v3";
         String target = "v1";

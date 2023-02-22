@@ -89,4 +89,8 @@ public class LineService {
             line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
     }
+
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
+    }
 }
