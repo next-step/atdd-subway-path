@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -222,7 +223,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class).get(response.jsonPath().getList("stations.id", Long.class).size() - 1)).isEqualTo(강남역)
+                () -> assertThat(getLastStationId(response.jsonPath().getList("stations.id", Long.class))).isEqualTo(강남역)
         );
     }
 
@@ -305,5 +306,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
         params.put("downStationId", downStationId + "");
         params.put("distance", distance + "");
         return params;
+    }
+
+    private Long getLastStationId(List<Long> list) {
+        return list.get(list.size() - 1);
     }
 }
