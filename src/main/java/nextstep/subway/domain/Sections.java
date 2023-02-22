@@ -60,6 +60,9 @@ public class Sections {
         if (station.equals(getDownStation())) {
             sections.remove(getLastSection());
         }
+        if (station.equals(getUpStation())) {
+            sections.remove(getFirstSection());
+        }
     }
 
     public Station getUpStation() {
