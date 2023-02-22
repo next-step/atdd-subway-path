@@ -26,4 +26,7 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
+
+    private LineRequest() {
+    }
 }
