@@ -95,6 +95,41 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
     }
 
+    /**
+     * Given 지하철 구간이 하나인 노선 생성
+     * When 지하철 구간 제거 요청
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 제거 요청시 오류 발생")
+    @Test
+    void deleteStationInOneSection() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 노선에 포함돼 있지 않은 지하철 역 삭제를 요청시
+     * Then 오류가 발생한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 제거 요청시 오류 발생")
+    @Test
+    void deleteStationNotInSection() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        Long 분당역 = 지하철역_생성_요청("분당역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 분당역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
