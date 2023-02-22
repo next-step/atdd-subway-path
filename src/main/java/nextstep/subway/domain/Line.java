@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,50 +55,9 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        validateDistance(distance);
-
-        updateSection(upStation, downStation, distance);
-
-        this.sections.addNewSection(new Section(this, upStation, downStation, distance));
-    }
-
-    private void updateSection(Station upStation, Station downStation, int distance) {
-        boolean isUpStationExist = isExistInLine(upStation);
-        boolean isDownStationExist = isExistInLine(downStation);
-
-        validateAddSection(isUpStationExist, isDownStationExist);
-
-        if (isUpStationExist) {
-            this.sections.updateUpStationBetweenSection(upStation, downStation, distance);
-        }
-
-        if (isDownStationExist) {
-            this.sections.updateDownStationBetweenSection(upStation, downStation, distance);
-        }
-    }
-
-    private void validateDistance(int distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException("등록하고자 하는 구간의 길이가 0 이거나 음수일 수 없습니다.");
-        }
-    }
-
-    private void validateAddSection(boolean isUpStationExist, boolean isDownStationExist) {
-        if (this.sections.isEmpty()) {
-            return;
-        }
-
-        if (isUpStationExist && isDownStationExist) {
-            throw new IllegalArgumentException("이미 등록된 구간입니다.");
-        }
-
-        if (!isUpStationExist && !isDownStationExist) {
-            throw new IllegalArgumentException("등록할 구간의 상행역과 하행역이 노선에 포함되어 있지 않아 등록할 수 없습니다.");
-        }
-    }
-
-    public boolean isExistInLine(Station station) {
-        return getStations().stream().anyMatch(station::equals);
+        Section section = new Section(this, upStation, downStation, distance);
+        this.sections.updateSection(section);
+        this.sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public void removeSection(Station station) {
@@ -138,21 +95,7 @@ public class Line {
         }
     }
 
-
     public List<Station> getStations() {
-        if (this.sections.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = new ArrayList<>();
-        Station station = this.sections.findFirstUpStation();
-        stations.add(station);
-
-        while (this.sections.isPresentNextSection(station)) {
-            Section nextSection = this.sections.findNextSection(station);
-            station = nextSection.getDownStation();
-            stations.add(station);
-        }
-        return stations;
+        return this.sections.getStations();
     }
 }
