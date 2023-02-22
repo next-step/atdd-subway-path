@@ -67,8 +67,8 @@ public class Line {
         return sections.getStations();
     }
 
-    public void removeSection() {
-        sections.removeSection();
+    public void removeSection(Station station) {
+        sections.removeSection(this, station);
     }
 
     public Station getUpStation() {

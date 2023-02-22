@@ -56,8 +56,10 @@ public class Sections {
                 .anyMatch(upStation -> upStation.equals(section.getUpStation()));
     }
 
-    public void removeSection() {
-        sections.remove(sections.size()-1);
+    public void removeSection(Line line, Station station) {
+        if (station.equals(getDownStation())) {
+            sections.remove(getLastSection());
+        }
     }
 
     public Station getUpStation() {

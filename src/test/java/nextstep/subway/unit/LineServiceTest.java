@@ -170,4 +170,18 @@ public class LineServiceTest {
         lineService.deleteSection(신분당선.getId(), 분당역.getId());
         assertThat(신분당선.getStations()).containsExactly(강남역,정자역);
     }
+
+    @DisplayName("상행 종점역 삭제")
+    @Test
+    void removeUpStation() {
+        //when
+        //강남역과 분당역 사이에 정자역 추가
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        lineService.addSection(신분당선.getId(),
+                new SectionRequest(강남역.getId(), 정자역.getId(), 4));
+        //Then
+        //상행 종점역을 삭제
+        lineService.deleteSection(신분당선.getId(), 강남역.getId());
+        assertThat(신분당선.getStations()).containsExactly(정자역,분당역);
+    }
 }
