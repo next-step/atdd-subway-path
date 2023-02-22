@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.AddSectionException;
+import nextstep.subway.exception.DeleteSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -9,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.domain.SubwayConstant.ONE_SECTION;
+
 @Embeddable
 public class Sections {
 
@@ -16,6 +19,10 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
+    }
+
+    public Sections(List<Section> sections) {
+        this.sections = new ArrayList<>(sections);
     }
 
     public List<Section> getSections() {
@@ -104,5 +111,52 @@ public class Sections {
                 .ifPresent(oldSection -> {
                     throw new AddSectionException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없습니다.");
                 });
+    }
+
+    public void delete(Station station) {
+        validateSectionSize();
+        Section downSection = getDownSection(station);
+        Section upSection = getUpSection(station);
+        validateStation(downSection, upSection);
+        deleteMiddleSection(downSection, upSection);
+        deleteEndSection(downSection, upSection);
+    }
+
+    private void deleteEndSection(Section downSection, Section upSection) {
+        if (downSection != null && upSection == null) {
+            sections.remove(downSection);
+        }
+    }
+
+    private void deleteMiddleSection(Section downSection, Section upSection) {
+        if (downSection != null && upSection != null) {
+            int distance = downSection.getDistance() + upSection.getDistance();
+            sections.add(new Section(downSection.getLine(), downSection.getUpStation(), upSection.getDownStation(), distance));
+            sections.removeAll(List.of(downSection, upSection));
+        }
+    }
+
+    private void validateStation(Section downSection, Section upSection) {
+        if (downSection == null && upSection == null) {
+            throw new DeleteSectionException("노선에 등록되지 않은 역은 삭제할 수 없습니다.");
+        }
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() == ONE_SECTION) {
+            throw new DeleteSectionException("구간이 하나인 경우 삭제할 수 없습니다.");
+        }
+    }
+
+    private Section getUpSection(Station station) {
+        return sections.stream().filter(section -> section.getUpStation() == station)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Section getDownSection(Station station) {
+        return sections.stream().filter(section -> section.getDownStation() == station)
+                .findFirst()
+                .orElse(null);
     }
 }
