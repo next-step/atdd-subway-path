@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.domain.SubwayConstant.ONE_SECTION;
+
 @Embeddable
 public class Sections {
 
@@ -141,7 +143,7 @@ public class Sections {
     }
 
     private void validateSectionSize() {
-        if (sections.size() == 1) {
+        if (sections.size() == ONE_SECTION) {
             throw new DeleteSectionException("구간이 하나인 경우 삭제할 수 없습니다.");
         }
     }
