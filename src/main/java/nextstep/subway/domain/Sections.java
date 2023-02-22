@@ -34,14 +34,14 @@ public class Sections {
     }
 
     private void validateNotContainStation(Section section) {
-        if (!hasStations(section)) {
+        if (!anyMatchStation(section)) {
             throw new IllegalArgumentException("등록할 구간의 상행역과 하행역이 노선에 포함되어 있지 않아 등록할 수 없습니다.");
         }
     }
 
-    private boolean hasStations(Section section) {
+    public boolean anyMatchStation(Section section) {
         return this.sections.stream()
-                .anyMatch(it -> it.hasAnyStation(section));
+                .anyMatch(it -> it.anyMatchStation(section));
     }
 
     private void validateContainSection(Section section) {
@@ -53,6 +53,11 @@ public class Sections {
     private boolean hasSection(Section section) {
         return this.sections.stream()
                 .anyMatch(it -> it.equals(section));
+    }
+
+    public boolean hasStation(Station station) {
+        return this.sections.stream()
+                .anyMatch(section -> section.hasStation(station));
     }
 
     public void addSection(Section section) {
@@ -109,6 +114,13 @@ public class Sections {
                 .filter(section -> section.equalDownStation(upStation))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
+
+    public List<Section> findSectionsByStation(Station station) {
+        List<Section> findSections = new ArrayList<>();
+        findSectionByDownStation(station).ifPresent(findSections::add);
+        findSectionByUpStation(station).ifPresent(findSections::add);
+        return findSections;
     }
 
     public Optional<Section> findSectionByDownStation(Station station) {

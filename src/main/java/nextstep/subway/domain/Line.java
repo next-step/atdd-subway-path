@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 public class Line {
@@ -62,25 +61,22 @@ public class Line {
 
     public void removeSection(Station station) {
         validateOnlyOneSection();
+        validateStationInLine(station);
 
-        Optional<Section> firstSection =  this.sections.findSectionByDownStation(station);
-        Optional<Section> secondSection =  this.sections.findSectionByUpStation(station);
+        List<Section> findSections = this.sections.findSectionsByStation(station);
 
-        validateStationInLine(firstSection.isEmpty() && secondSection.isEmpty());
-
-        mergeSection(firstSection, secondSection);
-        removeSection(firstSection, secondSection);
+        mergeSection(findSections);
+        removeSections(findSections);
     }
 
-    private void removeSection(Optional<Section> firstSection, Optional<Section> secondSection) {
-        firstSection.ifPresent(section -> this.sections.removeSection(section));
-        secondSection.ifPresent(section -> this.sections.removeSection(section));
-    }
-
-    private void mergeSection(Optional<Section> firstSection, Optional<Section> secondSection) {
-        if (firstSection.isPresent() && secondSection.isPresent()) {
-            this.sections.addMergeSection(this, firstSection.get(), secondSection.get());
+    private void mergeSection(List<Section> findSections) {
+        if (findSections.size() == 2) {
+            this.sections.addMergeSection(this, findSections.get(0), findSections.get(1));
         }
+    }
+
+    private void removeSections(List<Section> findSections) {
+        findSections.forEach(section -> this.sections.removeSection(section));
     }
 
     private void validateOnlyOneSection() {
@@ -89,8 +85,8 @@ public class Line {
         }
     }
 
-    private void validateStationInLine(boolean isStationNotInLine) {
-        if (isStationNotInLine) {
+    private void validateStationInLine(Station station) {
+        if (!this.sections.hasStation(station)) {
             throw new IllegalArgumentException("노선에 등록되어있지 않은 역은 제거할 수 없습니다.");
         }
     }

@@ -55,11 +55,15 @@ public class Section {
         return distance;
     }
 
+    public boolean hasStation(Station station) {
+        return equalUpStation(station) || equalDownStation(station);
+    }
+
     public boolean hasStation(Section section) {
         return equalUpStation(section.upStation) || equalDownStation(section.downStation);
     }
 
-    public boolean hasAnyStation(Section section) {
+    public boolean anyMatchStation(Section section) {
         return equalUpStation(section.upStation) || equalUpStation(section.downStation)
                 || equalDownStation(section.upStation) || equalDownStation(section.downStation);
     }
