@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.IllegalSectionRemoveException;
 import nextstep.subway.exception.InvalidSectionDistanceException;
 import nextstep.subway.exception.SectionContainsAllStationException;
 import nextstep.subway.exception.SectionContainsAnyStationException;
@@ -206,16 +207,16 @@ public class LineServiceTest {
         //when Then
         assertThatThrownBy(() ->
                 lineService.deleteSection(신분당선.getId(), 강남역.getId())
-        ).isInstanceOf(new IllegalSectionRemoveException("구간이 하나인 노선에서 구간을 삭제할 수 없습니다."));
+        ).isInstanceOf(IllegalSectionRemoveException.class);
     }
 
     @DisplayName("구간에 포함돼 있지 않은 역 삭제 요청시 예외 발생")
     @Test
-    void removeStationInOneSection() {
+    void removeStationNotInSection() {
         //when Then
         assertThatThrownBy(() ->
                 lineService.deleteSection(신분당선.getId(), 강남역.getId())
-        ).isInstanceOf(new IllegalSectionRemoveException("구간이 포함돼 있지 않은 역은 삭제할 수 없습니다."));
+        ).isInstanceOf(IllegalSectionRemoveException.class);
     }
 
 }
