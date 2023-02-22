@@ -63,6 +63,22 @@ public class Sections {
         if (station.equals(getUpStation())) {
             sections.remove(getFirstSection());
         }
+
+        Section firstSection = sections.stream()
+                .filter(s -> s.getDownStation().equals(station))
+                .findFirst().orElseThrow(StationNotFoundException::new);
+        Section secondSection = sections.stream()
+                .filter(s -> s.getUpStation().equals(station))
+                .findFirst().orElseThrow(StationNotFoundException::new);
+        Section newSection = new Section(
+                line,
+                firstSection.getUpStation(),
+                secondSection.getDownStation(),
+                firstSection.getDistance()+ secondSection.getDistance());
+        sections.remove(firstSection);
+        sections.remove(secondSection);
+        sections.add(newSection);
+
     }
 
     public Station getUpStation() {

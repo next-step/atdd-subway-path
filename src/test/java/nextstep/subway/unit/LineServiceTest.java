@@ -197,5 +197,6 @@ public class LineServiceTest {
         //상행 종점역을 삭제
         lineService.deleteSection(신분당선.getId(), 정자역.getId());
         assertThat(신분당선.getStations()).containsExactly(강남역,분당역);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(10);
     }
 }
