@@ -14,14 +14,10 @@ import java.util.List;
 
 public class Path {
 
-    private final List<StationResponse> stationResponses;
-    private final List<SectionResponse> sectionResponses;
     private final DijkstraShortestPath<StationResponse, DefaultWeightedEdge> stationPath;
 
     public Path(List<StationResponse> stationResponses, List<SectionResponse> sectionResponses) {
-        this.stationResponses = stationResponses;
-        this.sectionResponses = sectionResponses;
-        this.stationPath = process();
+        this.stationPath = process(stationResponses, sectionResponses);
     }
 
     public PathResponse findPath(StationResponse sourceStation, StationResponse targetStation) {
@@ -44,7 +40,7 @@ public class Path {
         }
     }
 
-    private DijkstraShortestPath<StationResponse, DefaultWeightedEdge> process() {
+    private DijkstraShortestPath<StationResponse, DefaultWeightedEdge> process(List<StationResponse> stationResponses, List<SectionResponse> sectionResponses) {
         WeightedMultigraph<StationResponse, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
         stationResponses.forEach(graph::addVertex);
