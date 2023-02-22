@@ -199,4 +199,23 @@ public class LineServiceTest {
         assertThat(신분당선.getStations()).containsExactly(강남역,분당역);
         assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(10);
     }
+
+    @DisplayName("구간이 하나인 노선에서 구간 삭제 요청시 예외 발생")
+    @Test
+    void removeStationInOneSection() {
+        //when Then
+        assertThatThrownBy(() ->
+                lineService.deleteSection(신분당선.getId(), 강남역.getId())
+        ).isInstanceOf(new IllegalSectionRemoveException("구간이 하나인 노선에서 구간을 삭제할 수 없습니다."));
+    }
+
+    @DisplayName("구간에 포함돼 있지 않은 역 삭제 요청시 예외 발생")
+    @Test
+    void removeStationInOneSection() {
+        //when Then
+        assertThatThrownBy(() ->
+                lineService.deleteSection(신분당선.getId(), 강남역.getId())
+        ).isInstanceOf(new IllegalSectionRemoveException("구간이 포함돼 있지 않은 역은 삭제할 수 없습니다."));
+    }
+
 }
