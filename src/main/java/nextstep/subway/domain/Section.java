@@ -33,14 +33,6 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section addStation(Station station, int distance) {
-        this.distance = this.distance - distance;
-        Station downStation = this.downStation;
-        this.downStation = station;
-
-        return new Section(line, station, downStation, distance);
-    }
-
     public Long getId() {
         return id;
     }
@@ -69,7 +61,11 @@ public class Section {
         return upStation.equals(station);
     }
 
-    public void modifyUpStation(Station station) {
-        upStation = station;
+    public Section addStation(Station station, int distance) {
+        this.distance = this.distance - distance;
+        Station downStation = this.downStation;
+        this.downStation = station;
+
+        return new Section(line, station, downStation, distance);
     }
 }
