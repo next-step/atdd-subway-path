@@ -2,6 +2,7 @@ package nextstep.subway.fixture;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.HashMap;
@@ -75,5 +76,9 @@ public enum SectionFixture {
         Section section = new Section(호선, 상행역().엔티티_생성(), 하행역().엔티티_생성(), 구간_거리());
         ReflectionTestUtils.setField(section, 식별자_아이디.필드명(), id);
         return section;
+    }
+
+    public Section 엔티티_생성(Line 호선, Station 상행역, Station 하행역) {
+        return new Section(호선, 상행역, 하행역, 구간_거리());
     }
 }

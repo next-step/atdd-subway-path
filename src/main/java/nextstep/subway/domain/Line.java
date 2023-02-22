@@ -45,6 +45,19 @@ public class Line {
         updateColor(color);
     }
 
+    private void updateName(final String name) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+    }
+
+    private void updateColor(final String color) {
+        if (color != null && !color.isBlank()) {
+            this.color = color;
+        }
+    }
+
+
     /**
      * 지하철 노선의 구간을 등록합니다.
      *
@@ -81,17 +94,13 @@ public class Line {
         return this.sections.getAllStations();
     }
 
-
-    private void updateName(final String name) {
-        if (name != null && !name.isBlank()) {
-            this.name = name;
-        }
-    }
-
-    private void updateColor(final String color) {
-        if (color != null && !color.isBlank()) {
-            this.color = color;
-        }
+    /**
+     * 지하철 구간 목록을 조회합니다.
+     *
+     * @return 지하철 구간 목록 반환
+     */
+    List<Section> getSections() { // 접근 권한 최소화 -> getSectionList를 열고 싶지 않으땐 어떻게..?
+        return this.sections.getSectionList();
     }
 
     @Override

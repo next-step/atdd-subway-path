@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
 import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.NotRegisteredStationException;
 import nextstep.subway.exception.NotRegisteredUpStationAndDownStationException;
@@ -12,6 +13,8 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PACKAGE;
+
 @Embeddable
 public class Sections {
 
@@ -21,6 +24,7 @@ public class Sections {
        - 둘의 공통점은 둘 다 모두 부모 엔티티를 삭제하면 자식 엔티티도 함께 삭제된다. (차이점 : 부모 엔티티에서의 자식 관계 제거 가능 여부)
      */
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @Getter(PACKAGE)
     private final List<Section> sectionList = new ArrayList<>();
 
     /**

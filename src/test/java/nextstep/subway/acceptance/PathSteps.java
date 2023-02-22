@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
 import static nextstep.subway.fixture.FieldFixture.경로_내_역_아이디_목록;
@@ -17,7 +18,8 @@ public class PathSteps {
         return given().log().all()
                 .queryParam(경로_조회_출발지_아이디.필드명(), sourceId)
                 .queryParam(경로_조회_도착지_아이디.필드명(), targetId)
-                .when().get("")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/paths")
                 .then().log().all().extract();
     }
 
@@ -26,7 +28,7 @@ public class PathSteps {
     }
 
     public static void 경로에_역이_순서대로_포함되어있다(ExtractableResponse<Response> 지하철_경로_조회_결과, Long... 역_id_목록) {
-        assertThat(지하철_경로_조회_결과.jsonPath().getList(경로_내_역_아이디_목록.필드명()))
+        assertThat(지하철_경로_조회_결과.jsonPath().getList(경로_내_역_아이디_목록.필드명(), Long.class))
                 .containsExactly(역_id_목록);
     }
 
