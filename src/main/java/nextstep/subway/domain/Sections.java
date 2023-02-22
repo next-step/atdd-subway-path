@@ -19,6 +19,10 @@ public class Sections {
     public Sections() {
     }
 
+    public Sections(List<Section> sections) {
+        this.sections = new ArrayList<>(sections);
+    }
+
     public List<Section> getSections() {
         return sections;
     }
