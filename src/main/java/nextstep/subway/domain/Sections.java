@@ -57,11 +57,15 @@ public class Sections {
     }
 
     public void removeSection(Line line, Station station) {
+        validateNotOneSection();
+        validateContainStation(station);
         if (station.equals(getDownStation())) {
             sections.remove(getLastSection());
+            return;
         }
         if (station.equals(getUpStation())) {
             sections.remove(getFirstSection());
+            return;
         }
 
         Section firstSection = sections.stream()
@@ -78,7 +82,6 @@ public class Sections {
         sections.remove(firstSection);
         sections.remove(secondSection);
         sections.add(newSection);
-
     }
 
     public Station getUpStation() {
@@ -139,6 +142,19 @@ public class Sections {
         if (sections.stream()
                 .anyMatch(s ->s.getDistance() <= section.getDistance())) {
             throw new InvalidSectionDistanceException();
+        }
+    }
+
+    private void validateNotOneSection() {
+        if (sections.size() == 1) {
+            throw new IllegalSectionRemoveException("구간이 하나인 노선에 삭제 요청을 할 수 없습니다.");
+        }
+    }
+
+    private void validateContainStation(Station station) {
+        List<Station> stations = getStations();
+        if (!stations.contains(station)) {
+            throw new IllegalSectionRemoveException("해당 노선에 요청하신 역이 존재하지 않습니다.");
         }
     }
 }

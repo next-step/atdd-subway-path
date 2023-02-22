@@ -213,9 +213,15 @@ public class LineServiceTest {
     @DisplayName("구간에 포함돼 있지 않은 역 삭제 요청시 예외 발생")
     @Test
     void removeStationNotInSection() {
-        //when Then
+        //when
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        lineService.addSection(신분당선.getId(),
+                new SectionRequest(강남역.getId(), 정자역.getId(), 4));
+        Station 논현역 = stationRepository.save(new Station("논현역"));
+
+        //Then
         assertThatThrownBy(() ->
-                lineService.deleteSection(신분당선.getId(), 강남역.getId())
+                lineService.deleteSection(신분당선.getId(), 논현역.getId())
         ).isInstanceOf(IllegalSectionRemoveException.class);
     }
 
