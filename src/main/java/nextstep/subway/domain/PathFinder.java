@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.PathOriginSameAsTargetException;
+import nextstep.subway.exception.PathTargetNotLinkedException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -33,6 +35,15 @@ public class PathFinder {
      * @return 최단 경로 정보 반환
      */
     public ShortestPath findShortestPathWithDijkstra(final Station source, final Station target) {
-        return ShortestPath.from(dijkstraShortestPath.getPath(source, target));
+
+        if (source.equals(target)) {
+            throw new PathOriginSameAsTargetException();
+        }
+
+        try {
+            return ShortestPath.from(dijkstraShortestPath.getPath(source, target));
+        } catch (IllegalArgumentException e) {
+            throw new PathTargetNotLinkedException();
+        }
     }
 }
