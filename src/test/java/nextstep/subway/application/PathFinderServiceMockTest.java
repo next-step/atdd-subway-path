@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
-public class PathServiceMockTest {
+public class PathFinderServiceMockTest {
 
     @Autowired
     private PathService pathService;

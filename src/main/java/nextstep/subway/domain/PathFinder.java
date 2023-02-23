@@ -10,16 +10,16 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class Path {
+public class PathFinder {
 
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
     private final DijkstraShortestPath dijkstraShortestPath;
 
-    private Path() {
+    private PathFinder() {
         dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
 
-    public Path(final List<Line> lines) {
+    public PathFinder(final List<Line> lines) {
         init(lines);
         this.dijkstraShortestPath = new DijkstraShortestPath(graph);
     }

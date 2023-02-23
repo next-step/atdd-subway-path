@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Path;
+import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +24,9 @@ public class PathService {
         final Station sourceStation = stationService.findById(sourceStationId);
         final Station targetStation = stationService.findById(targetStationId);
 
-        final Path path = new Path(lineRepository.findAll());
-        final List<Station> shortestPath = path.findShortestPath(sourceStation, targetStation);
-        final int distance = path.findShortestPathDistance(sourceStation, targetStation);
+        final PathFinder pathFinder = new PathFinder(lineRepository.findAll());
+        final List<Station> shortestPath = pathFinder.findShortestPath(sourceStation, targetStation);
+        final int distance = pathFinder.findShortestPathDistance(sourceStation, targetStation);
 
         final List<StationResponse> stationResponses = shortestPath.stream()
                 .map(StationResponse::new)

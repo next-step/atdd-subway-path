@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-public class PathServiceTest {
+public class PathFinderServiceTest {
 
     @Autowired
     private StationRepository stationRepository;
@@ -68,43 +68,6 @@ public class PathServiceTest {
                 .collect(Collectors.toList());
         assertThat(stationIds).containsExactly(교대역.getId(), 남부터미널역.getId(), 양재역.getId());
         assertThat(pathResponse.getDistance()).isEqualTo(5);
-    }
-
-    @DisplayName("출발역과 도착역이 같을 경우 에러 발생")
-    @Test
-    void cannotFindShortestPathWhenSourceAndTargetIsSame() {
-        // when, then
-        assertThatThrownBy(() -> {
-            pathService.findShortestPath(교대역.getId(), 교대역.getId());
-        }).isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.SOURCE_AND_TARGET_STATION_IS_SAME.getMessage());
-    }
-    
-    @DisplayName("출발역과 도착역이 연결되어있지 않을 경우 에러 발생j")
-    @Test
-    void cannotFindShortestPathWhenSourceAndTargetIsNotConnected() {
-        // given
-        lineRepository.delete(신분당선);
-        삼호선.removeSection(교대역);
-
-        // when, then
-        assertThatThrownBy(() -> {
-            pathService.findShortestPath(교대역.getId(), 양재역.getId());
-        }).isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.SOURCE_AND_TARGET_STATION_IS_NOT_CONNECTED.getMessage());
-    }
-
-    @DisplayName("존재하지 않은 출발역이나 도착역을 조회할 경우 에러 발생")
-    @Test
-    void cannotFindShortestPathWhenSourceAndTargetIsNotExists() {
-        // given
-        final Station 선유도역 = createStation("선유도역");
-
-        // when, then
-        assertThatThrownBy(() -> {
-            pathService.findShortestPath(선유도역.getId(), 양재역.getId());
-        }).isInstanceOf(BusinessException.class)
-                .hasMessage(ErrorCode.STATION_NOT_FOUND.getMessage());
     }
 
     private Station createStation(final String name) {

@@ -16,7 +16,7 @@ import static nextstep.subway.acceptance.PathSteps.최단거리가_정상적으�
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 
 @DisplayName("지하철 경로 검색")
-class PathAcceptanceTest extends AcceptanceTest {
+class PathFinderAcceptanceTest extends AcceptanceTest {
 
     private Long 교대역;
     private Long 강남역;
