@@ -7,6 +7,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.error.ErrorCode;
+import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -56,8 +59,6 @@ public class PathServiceTest {
     @DisplayName("최단 경로 조회")
     @Test
     void findShortestPath() {
-        // given
-
         // when
         final PathResponse pathResponse = pathService.findShortestPath(교대역.getId(), 양재역.getId());
 
@@ -72,31 +73,38 @@ public class PathServiceTest {
     @DisplayName("출발역과 도착역이 같을 경우 에러 발생")
     @Test
     void cannotFindShortestPathWhenSourceAndTargetIsSame() {
-        // given
-
-        // when
-
-        // then
+        // when, then
+        assertThatThrownBy(() -> {
+            pathService.findShortestPath(교대역.getId(), 교대역.getId());
+        }).isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.SOURCE_AND_TARGET_STATION_IS_SAME.getMessage());
     }
     
     @DisplayName("출발역과 도착역이 연결되어있지 않을 경우 에러 발생j")
     @Test
     void cannotFindShortestPathWhenSourceAndTargetIsNotConnected() {
         // given
-        
-        // when
-    
-        // then
+        lineRepository.delete(신분당선);
+        삼호선.removeSection(교대역);
+
+        // when, then
+        assertThatThrownBy(() -> {
+            pathService.findShortestPath(교대역.getId(), 양재역.getId());
+        }).isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.SOURCE_AND_TARGET_STATION_IS_NOT_CONNECTED.getMessage());
     }
 
-    @DisplayName("존재하지 않은 출발역이나 도착역을 조히할 경우 에러 발생")
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회할 경우 에러 발생")
     @Test
     void cannotFindShortestPathWhenSourceAndTargetIsNotExists() {
         // given
-        
-        // when
-    
-        // then
+        final Station 선유도역 = createStation("선유도역");
+
+        // when, then
+        assertThatThrownBy(() -> {
+            pathService.findShortestPath(선유도역.getId(), 양재역.getId());
+        }).isInstanceOf(BusinessException.class)
+                .hasMessage(ErrorCode.STATION_NOT_FOUND.getMessage());
     }
 
     private Station createStation(final String name) {
