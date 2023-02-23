@@ -19,12 +19,17 @@ public class Line {
 	@Embedded
 	private Sections sections = new Sections();
 
-	public Line() {
+	protected Line() {
 	}
 
 	public Line(String name, String color) {
 		this.name = name;
 		this.color = color;
+	}
+
+	public Line(String name, String color, Station upStation, Station downStation, int distance) {
+		this(name, color);
+		this.addSection(upStation, downStation, distance);
 	}
 
 	public Long getId() {

@@ -28,10 +28,10 @@ public class LineService {
 
 	@Transactional
 	public LineResponse saveLine(LineRequest request) {
-		Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
 		Station upStation = stationService.findById(request.getUpStationId());
 		Station downStation = stationService.findById(request.getDownStationId());
-		line.addSection(upStation, downStation, request.getDistance());
+		Line line = lineRepository.save(
+			new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
 
 		return createLineResponse(line);
 	}
