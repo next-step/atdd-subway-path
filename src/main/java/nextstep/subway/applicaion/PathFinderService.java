@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class PathService {
+public class PathFinderService {
 
     private final LineRepository lineRepository;
     private final StationService stationService;

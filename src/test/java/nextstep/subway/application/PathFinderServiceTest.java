@@ -1,14 +1,12 @@
 package nextstep.subway.application;
 
-import nextstep.subway.applicaion.PathService;
+import nextstep.subway.applicaion.PathFinderService;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.error.ErrorCode;
-import nextstep.subway.error.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,7 +29,7 @@ public class PathFinderServiceTest {
     @Autowired
     private LineRepository lineRepository;
     @Autowired
-    private PathService pathService;
+    private PathFinderService pathFinderService;
     private Station 교대역;
     private Station 강남역;
     private Station 양재역;
@@ -60,7 +58,7 @@ public class PathFinderServiceTest {
     @Test
     void findShortestPath() {
         // when
-        final PathResponse pathResponse = pathService.findShortestPath(교대역.getId(), 양재역.getId());
+        final PathResponse pathResponse = pathFinderService.findShortestPath(교대역.getId(), 양재역.getId());
 
         // then
         final List<Long> stationIds = pathResponse.getStations().stream()

@@ -1,6 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.applicaion.PathService;
+import nextstep.subway.applicaion.PathFinderService;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 public class PathFinderServiceMockTest {
 
     @Autowired
-    private PathService pathService;
+    private PathFinderService pathFinderService;
     @MockBean
     private StationRepository stationRepository;
     @MockBean
@@ -66,7 +66,7 @@ public class PathFinderServiceMockTest {
         when(lineRepository.findAll()).thenReturn(Lists.newArrayList(이호선, 신분당선, 삼호선));
 
         // when
-        final PathResponse pathResponse = pathService.findShortestPath(교대역.getId(), 양재역.getId());
+        final PathResponse pathResponse = pathFinderService.findShortestPath(교대역.getId(), 양재역.getId());
 
         // then
         final List<Long> stationIds = pathResponse.getStations().stream()
