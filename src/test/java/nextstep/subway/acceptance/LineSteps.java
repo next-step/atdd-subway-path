@@ -64,4 +64,12 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
+
+    public static ExtractableResponse<Response> 경로_조회_요청(Long source, Long target) {
+
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/paths?source={source}&target={target}", source, target)
+                .then().log().all().extract();
+    }
 }
