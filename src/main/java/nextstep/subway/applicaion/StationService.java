@@ -26,10 +26,14 @@ public class StationService {
         return createStationResponse(station);
     }
 
-    public List<StationResponse> findAllStations() {
-        return stationRepository.findAll().stream()
+    public List<StationResponse> findAllStationResponses() {
+        return findAllStations().stream()
             .map(this::createStationResponse)
             .collect(Collectors.toList());
+    }
+
+    public List<Station> findAllStations() {
+        return stationRepository.findAll();
     }
 
     @Transactional

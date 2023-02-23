@@ -36,7 +36,14 @@ public class Sections {
     private static final SectionDeleteStrategies sectionDeleteStrategies = new SectionDeleteStrategies();
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private final List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
+
+    public Sections() {
+    }
+
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
 
     public void addSection(Section section, Line line) {
         if (sections.isEmpty()) {

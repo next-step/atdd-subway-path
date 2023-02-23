@@ -10,7 +10,7 @@ public class PathSteps {
             .given().log().all()
             .queryParam("source", source)
             .queryParam("target", target)
-            .when().get("/lines/paths")
+            .when().get("/paths")
             .then().log().all().extract();
     }
 }

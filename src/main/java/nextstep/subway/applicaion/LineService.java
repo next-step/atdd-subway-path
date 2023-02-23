@@ -1,7 +1,9 @@
 package nextstep.subway.applicaion;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +41,7 @@ public class LineService {
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
             .map(this::createLineResponse)
-            .collect(Collectors.toList());
+            .collect(toList());
     }
 
     public LineResponse findById(Long id) {
@@ -65,7 +67,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
-        // lineRepository.save(line);
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -76,5 +77,13 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         line.deleteSection(stationId);
+    }
+
+    public List<Section> findAllSections() {
+        return lineRepository.findAll().stream()
+            .map(Line::getSections)
+            .flatMap(Collection::stream)
+            .distinct()
+            .collect(toList());
     }
 }

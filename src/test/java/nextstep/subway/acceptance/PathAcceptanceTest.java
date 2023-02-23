@@ -59,7 +59,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 최단거리_경로_조회(교대역, 양재역);
 
         assertAll(
-            () -> assertThat(response.jsonPath().getList("stations.id")).containsExactly(교대역, 남부터미널역, 양재역),
+            () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역),
             () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(5)
         );
     }
@@ -73,7 +73,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void getShortestPathWithSameStation() {
         ExtractableResponse<Response> response = 최단거리_경로_조회(교대역, 교대역);
 
-        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -87,7 +87,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> response = 최단거리_경로_조회(교대역, 무인도역);
 
-        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -102,8 +102,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response2 = 최단거리_경로_조회(존재하지_않는_역, 교대역);
 
         assertAll(
-            () -> assertThat(response1.statusCode()).isNotEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response2.statusCode()).isNotEqualTo(HttpStatus.OK.value())
+            () -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+            () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value())
         );
     }
 
