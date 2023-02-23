@@ -16,7 +16,7 @@ import nextstep.subway.station.StationResponse;
 
 public class PathFinder {
 
-	private DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
+	private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
 	public PathFinder(List<Station> stations, List<Section> sections) {
 		WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);

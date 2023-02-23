@@ -15,9 +15,9 @@ public class PathService {
 	private final StationService stationService;
 
 	public PathResponse pathSearch(Long source, Long target) {
-		PathFinder pathFinder = new PathFinder(stationService.findAllStation(), sectionRepository.findAll());
 		Station sourceStation = stationService.findStationById(source);
 		Station targetStation = stationService.findStationById(target);
+		PathFinder pathFinder = new PathFinder(stationService.findAllStation(), sectionRepository.findAll());
 		return pathFinder.pathSearch(sourceStation, targetStation);
 	}
 }
