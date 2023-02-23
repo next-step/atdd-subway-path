@@ -12,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Path {
 
-    private final static WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
     private final DijkstraShortestPath dijkstraShortestPath;
 
     private Path() {
