@@ -8,6 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CannotCreateSectionException;
 import nextstep.subway.exception.ErrorMessage;
@@ -29,6 +31,26 @@ class LineTest {
 
 		// Then
 		assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역);
+	}
+
+	@DisplayName("구간 추가 - 새로운 역이 상행 종점역과 하행 종점역 사이로 하는 구간 생성 - 기존 구간의 거리 변경 검증")
+	@Test
+	void addSectionBetweenUpStationAndDownStation_assertDistance() {
+		// Given
+		Station 강남역 = new Station("강남역");
+		Station 선릉역 = new Station("선릉역");
+		Station 역삼역 = new Station("역삼역");
+		Line 이호선 = new Line("2호선", "green");
+
+		// When
+		이호선.addSection(강남역, 선릉역, 10);
+		이호선.addSection(강남역, 역삼역, 9);
+
+		Sections 이호선_구간_리스트 = 이호선.getSections();
+		Section 역삼역_선릉역_구간 = 이호선_구간_리스트.getSections().get(1);
+
+		// Then
+		assertThat(역삼역_선릉역_구간.getDistance()).isEqualTo(1);
 	}
 
 	@DisplayName("구간 추가 예외 - 새로운 역이 상행 종점역과 하행 종점역 사이로 하는 구간의 길이가 기존 구간의 길이보다 크거나 같은 경우 예외 발생")
