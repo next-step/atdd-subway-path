@@ -1,12 +1,15 @@
 package nextstep.subway.domain;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.error.ErrorCode;
+import nextstep.subway.error.exception.BusinessException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @RequiredArgsConstructor
@@ -25,10 +28,12 @@ public class PathFinder {
     }
 
     public List<Station> findShortestPath(final Station sourceStation, final Station targetStation) {
+        validateBeforeFindPath(sourceStation, targetStation);
         return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
     }
 
     public int findShortestPathDistance(final Station sourceStation, final Station targetStation) {
+        validateBeforeFindPath(sourceStation, targetStation);
         return (int) dijkstraShortestPath.getPath(sourceStation, targetStation).getWeight();
     }
 
@@ -38,6 +43,18 @@ public class PathFinder {
             stations.forEach(graph::addVertex);
             final List<Section> sections = line.getSections();
             sections.forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
+        }
+    }
+
+    private void validateBeforeFindPath(final Station source, final Station target) {
+        if (source.equals(target)) {
+            throw new BusinessException(ErrorCode.SOURCE_AND_TARGET_STATION_IS_SAME);
+        }
+        if (!graph.vertexSet().contains(source) | !graph.vertexSet().contains(target)) {
+            throw new BusinessException(ErrorCode.STATION_NOT_FOUND);
+        }
+        if (Objects.isNull(dijkstraShortestPath.getPath(source, target))) {
+            throw new BusinessException(ErrorCode.SOURCE_AND_TARGET_STATION_IS_NOT_CONNECTED);
         }
     }
 }
