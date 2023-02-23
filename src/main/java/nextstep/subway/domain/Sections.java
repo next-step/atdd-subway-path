@@ -11,7 +11,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.CannotCreateSectionException;
-import nextstep.subway.exception.CannotFindFinalStation;
+import nextstep.subway.exception.CannotFindFinalStationException;
 import nextstep.subway.exception.CannotFindSectionException;
 import nextstep.subway.exception.ErrorMessage;
 
@@ -130,14 +130,14 @@ public class Sections {
 		return getUpStations().stream()
 			.filter(station -> !downStations.contains(station))
 			.findFirst()
-			.orElseThrow(() -> new CannotFindFinalStation(ErrorMessage.CANNOT_FIND_FINAL_DOWN_STATION));
+			.orElseThrow(() -> new CannotFindFinalStationException(ErrorMessage.CANNOT_FIND_FINAL_DOWN_STATION));
 	}
 
 	private Station getFinalDownStation(List<Station> upStations) {
 		return getDownStations().stream()
 			.filter(station -> !upStations.contains(station))
 			.findFirst()
-			.orElseThrow(() -> new CannotFindFinalStation(ErrorMessage.CANNOT_FIND_FINAL_UP_STATION));
+			.orElseThrow(() -> new CannotFindFinalStationException(ErrorMessage.CANNOT_FIND_FINAL_UP_STATION));
 
 	}
 
