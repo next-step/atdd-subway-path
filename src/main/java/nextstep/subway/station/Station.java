@@ -1,52 +1,27 @@
-package nextstep.subway.section;
+package nextstep.subway.station;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.Line;
-import nextstep.subway.station.Station;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Section {
+@AllArgsConstructor
+public class Station {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "line_id")
-    private Line line;
+	private String name;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
-    private int distance;
-
-    public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
-	public void updateUpStation(Station upStation, int newDistance) {
-		this.upStation = upStation;
-		this.distance = newDistance;
-	}
-
-	public void updateDownStation(Station downstation, int newDistance) {
-		this.downStation = downstation;
-		this.distance += newDistance;
-	}
-
-	public void updateLine(Line line) {
-		this.line = line;
+	public Station(String name) {
+		this.name = name;
 	}
 }
