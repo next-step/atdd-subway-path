@@ -13,7 +13,7 @@ public class Station {
     private Long id;
     private String name;
 
-    private Station() {
+    public Station() {
     }
 
     public Station(String name) {

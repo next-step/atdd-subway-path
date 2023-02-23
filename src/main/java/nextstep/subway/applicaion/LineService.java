@@ -57,10 +57,10 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
         if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
+            line.setLineName(lineRequest.getName());
         }
         if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
+            line.setLineColor(lineRequest.getColor());
         }
     }
 

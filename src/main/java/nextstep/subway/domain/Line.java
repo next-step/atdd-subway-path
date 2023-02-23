@@ -14,7 +14,7 @@ public class Line {
     @Embedded
     private Sections sections = new Sections();
 
-    private Line() {
+    public Line() {
     }
 
     public Line(String name, String color) {
@@ -50,11 +50,11 @@ public class Line {
         return sections.getDistance();
     }
 
-    public void setName(String name) {
+    public void setLineName(String name) {
         this.name = name;
     }
 
-    public void setColor(String color) {
+    public void setLineColor(String color) {
         this.color = color;
     }
 
