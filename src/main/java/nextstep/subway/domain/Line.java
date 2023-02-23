@@ -3,12 +3,15 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.error.ErrorCode;
+import nextstep.subway.error.exception.BusinessException;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,12 +56,9 @@ public class Line {
     }
 
     public void update(final String name, final String color) {
-        if (!isNull(name)) {
-            this.name = name;
-        }
-        if (!isNull(color)) {
-            this.color = color;
-        }
+        final String[] updateFields = validateBeforeUpdate(name, color);
+        this.name = updateFields[0];
+        this.color = updateFields[1];
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
@@ -75,5 +75,18 @@ public class Line {
 
     private boolean isNull(final String str) {
         return !StringUtils.hasText(str);
+    }
+
+    private String[] validateBeforeUpdate(final String name, final String color) {
+        final String[] updateFields = new String[2];
+        updateFields[0] = name;
+        updateFields[1] = color;
+        if (isNull(name)) {
+            updateFields[0] = this.name;
+        }
+        if (isNull(color)) {
+            updateFields[1] = this.color;
+        }
+        return updateFields;
     }
 }

@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    SOME_LINE_UPDATE_FIELD_IS_NULL("노선 업데이트 정보는 null일 수 없습니다", HttpStatus.BAD_REQUEST),
+
     STATION_NOT_FOUND("해당하는 지하철 역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     LINE_NOT_FOUND("해당하는 지하철 노선을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
