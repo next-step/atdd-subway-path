@@ -28,7 +28,7 @@ class LineTest {
 		이호선.addSection(강남역, 역삼역, 9);
 
 		// Then
-		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역, 역삼역);
+		assertThat(이호선.getStations()).containsExactly(강남역, 역삼역, 선릉역);
 	}
 
 	@DisplayName("구간 추가 예외 - 새로운 역이 상행 종점역과 하행 종점역 사이로 하는 구간의 길이가 기존 구간의 길이보다 크거나 같은 경우 예외 발생")
@@ -101,7 +101,7 @@ class LineTest {
 		이호선.addSection(강남역, 선릉역, 10);
 		이호선.addSection(교대역, 강남역, 10);
 		// Then
-		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역, 교대역);
+		assertThat(이호선.getStations()).containsExactly(교대역, 강남역, 선릉역);
 	}
 
 	@DisplayName("구간 추가 - 새로운 역이 하행 종점역으로 하는 구간 생성")
@@ -117,7 +117,7 @@ class LineTest {
 		이호선.addSection(강남역, 선릉역, 10);
 		이호선.addSection(선릉역, 삼성역, 10);
 		// Then
-		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역, 삼성역);
+		assertThat(이호선.getStations()).containsExactly(강남역, 선릉역, 삼성역);
 	}
 
 	@DisplayName("구간 추가 - 노선이 생성 되는 경우")
@@ -146,7 +146,7 @@ class LineTest {
 		이호선.addSection(강남역, 선릉역, 10);
 
 		// Then
-		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역);
+		assertThat(이호선.getStations()).containsExactly(강남역, 선릉역);
 	}
 
 	@DisplayName("구간 삭제")
@@ -165,6 +165,6 @@ class LineTest {
 		이호선.removeSection(삼성역);
 
 		// Then
-		assertThat(이호선.getStations()).containsOnly(강남역, 선릉역);
+		assertThat(이호선.getStations()).containsExactly(강남역, 선릉역);
 	}
 }
