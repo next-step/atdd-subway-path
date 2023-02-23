@@ -65,8 +65,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 
 		// then
 		List<String> lineNames = showResponse.jsonPath().getList("name", String.class);
-		assertThat(lineNames).hasSize(2);
-		assertThat(lineNames).containsAnyOf("4호선", "1호선");
+		assertThat(lineNames).hasSize(2).containsAnyOf("4호선", "1호선");
 	}
 
 	/**

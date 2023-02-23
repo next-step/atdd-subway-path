@@ -1,5 +1,7 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.common.SubwayErrorMsg.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +16,11 @@ import nextstep.subway.station.StationService;
 public class SectionService {
 
 	private final StationService stationService;
-
 	private final LineRepository lineRepository;
-	private final SectionRepository sectionRepository;
 
 	@Transactional
 	public void addSection(Long lineId, SectionCreateRequest sectionRequest) {
-		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("Line doesn't exist"));
+		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_LINE.isMessage()));
 
 		Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
 		Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
@@ -31,7 +31,7 @@ public class SectionService {
 
 	@Transactional
 	public void deleteSectionById(Long lineId, Long stationId) {
-		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException("Line doesn't exist"));
+		Line findLine = lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_LINE.isMessage()));
 		Station deleteStation = stationService.findStationById(stationId);
 		findLine.removeSection(deleteStation);
 	}
