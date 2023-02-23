@@ -52,3 +52,58 @@
 - [x] 중간역이 제거될 경우 재배치를 함
 - [x] 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
 - [x] 거리는 두 구간의 거리의 합으로 정함
+
+## 🚀 3단계 - 경로 조회 기능
+
+### 요구사항 설명
+
+#### 요청 / 응답 포맷
+
+Request
+
+* source: 출발역 id
+* target: 도착역 id
+
+```Request
+HTTP/1.1 200 
+Request method:	GET### 기능 요구사항
+Request URI:	http://localhost:55494/paths?source=1&target=3
+Headers: 	Accept=application/json- [ ] 요구사항 설명에서 제공되는 추가된 요구사항을 기반으로 경로 조회 기능을 구현하세요.
+                Content-Type=application/json; charset=UTF-8
+```
+
+```Response
+HTTP/1.1 200 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Sat, 09 May 2020 14:54:11 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+    "stations": [
+        {
+            "id": 1,
+            "name": "교대역"
+        },
+        {
+            "id": 4,
+            "name": "남부터미널역"
+        },
+        {
+            "id": 3,
+            "name": "양재역"
+        }
+    ],
+    "distance": 5
+}
+```
+
+- [ ] 추가된 요구사항을 정의한 인수 조건을 도출하세요.
+- [ ] 인수 조건을 검증하는 인수 테스트를 작성하세요.
+
+### 예외상황
+
+- [ ] 출발역과 도착역이 같은 경우
+- [ ] 출발역과 도착역이 연결이 되어 있지 않은 경우
+- [ ] 존재하지 않은 출발역이나 도착역을 조회 할 경우
