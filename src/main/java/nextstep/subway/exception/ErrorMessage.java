@@ -10,7 +10,8 @@ public enum ErrorMessage {
 	DISTANCE_OF_SECTION_MUST_BE_POSITIVE("구간의 거리는 양수이어야 합니다."),
 	CANNOT_FIND_FINAL_DOWN_STATION("하행 종점역을 찾을 수 없습니다."),
 	CANNOT_FIND_FINAL_UP_STATION("상행 종점역을 찾을 수 없습니다."),
-	CANNOT_FIND_SECTION("구간을 찾을 수 없습니다.");
+	CANNOT_FIND_SECTION("구간을 찾을 수 없습니다."),
+	CANNOT_REMOVE_NO_LAST_DOWN_STATION("마지막 역이 아니면 삭제할 수 없습니다.");
 
 	private final String message;
 

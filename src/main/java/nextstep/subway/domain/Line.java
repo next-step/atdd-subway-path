@@ -8,6 +8,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import nextstep.subway.exception.CannotRemoveSectionException;
+import nextstep.subway.exception.ErrorMessage;
+
 @Entity
 public class Line {
 	@Id
@@ -70,7 +73,7 @@ public class Line {
 
 	public void removeSection(Station station) {
 		if (!sections.isLastDownStation(station)) {
-			throw new IllegalArgumentException();
+			throw new CannotRemoveSectionException(ErrorMessage.CANNOT_REMOVE_NO_LAST_DOWN_STATION);
 		}
 
 		sections.removeLastSection();
