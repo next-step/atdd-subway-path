@@ -19,8 +19,8 @@ public class Path {
         dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
 
-    public Path(final LineRepository lineRepository) {
-        init(lineRepository);
+    public Path(final List<Line> lines) {
+        init(lines);
         this.dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
 
@@ -32,8 +32,7 @@ public class Path {
         return (int) dijkstraShortestPath.getPath(sourceStation, targetStation).getWeight();
     }
 
-    private void init(final LineRepository lineRepository) {
-        final List<Line> lines = lineRepository.findAll();
+    private void init(final List<Line> lines) {
         for (final Line line : lines) {
             final List<Station> stations = line.getStations();
             stations.forEach(graph::addVertex);

@@ -24,7 +24,7 @@ public class PathService {
         final Station sourceStation = stationService.findById(sourceStationId);
         final Station targetStation = stationService.findById(targetStationId);
 
-        final Path path = new Path(lineRepository);
+        final Path path = new Path(lineRepository.findAll());
         final List<Station> shortestPath = path.findShortestPath(sourceStation, targetStation);
         final int distance = path.findShortestPathDistance(sourceStation, targetStation);
 
