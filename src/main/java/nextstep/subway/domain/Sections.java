@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.EntityAlreadyExistsException;
+import nextstep.subway.domain.exception.EntityCannotRemoveException;
 import nextstep.subway.domain.exception.EntityNotFoundException;
 
 import javax.persistence.CascadeType;
@@ -62,48 +63,11 @@ public class Sections {
         return false;
     }
 
-    private void validateDistance(Station oldStation, Section newSection) {
-        if (checkedDistance(oldStation, newSection)) {
-            throw new IllegalArgumentException("The length of the section you want to register is greater than or equal to the length of the existing section");
-        }
-    }
-
-    private boolean checkedDistance(Station upStation, Section newSection) {
-        Section oldSection = getSectionByUpStation(upStation);
-        return newSection.getDistance() >= oldSection.getDistance();
-    }
-
     private Section getSectionByUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(upStation.getId(), "Station Id"));
-    }
-
-    private boolean isFirstEndSection(Section newSection) {
-        return getFirstSection().isUpStation(newSection.getDownStation());
-    }
-
-    private boolean isLastEndSection(Section newSection) {
-        return getLastSection().isDownStation(newSection.getUpStation());
-    }
-
-    private void validateAddSection(Section newSection) {
-        if (isContainsStation(newSection.getUpStation()) && isContainsStation(newSection.getDownStation())) {
-            throw new EntityAlreadyExistsException("Both stations already exist on the line.");
-        }
-
-        if (!isContainsStation(newSection.getUpStation()) && !isContainsStation(newSection.getDownStation())) {
-            throw new EntityNotFoundException(String.format("Either station should be included."));
-        }
-    }
-
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public boolean isEmpty() {
-        return sections.isEmpty();
     }
 
     public List<Station> getStations() {
@@ -149,18 +113,6 @@ public class Sections {
                 .orElseThrow(() -> new EntityNotFoundException("DownStation"));
     }
 
-    public void removeSection(Station station) {
-        if (sections.size() < 2) {
-            throw new IllegalArgumentException("If there is less than one registered section, you cannot delete it.");
-        }
-
-        if (!getLastSection().isDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        sections.remove(getLastSection());
-    }
-
     public Section getLastSection() {
         return sections.get(sections.size() - 1);
     }
@@ -169,13 +121,96 @@ public class Sections {
         return sections.get(0);
     }
 
+    public int getDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance).sum();
+    }
+
+    private Section findSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(upStation.getId(), "UpStation"));
+    }
+
+    private Section findSectionByDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findFirst().orElseThrow(() -> new EntityNotFoundException(downStation.getId(), "DownStation"));
+    }
+
     private boolean isContainsStation(Station station) {
         List<Station> stations = getStations();
         return stations.contains(station);
     }
 
-    public int getDistance() {
-        return sections.stream()
-                .mapToInt(Section::getDistance).sum();
+    public boolean isEmpty() {
+        return sections.isEmpty();
+    }
+
+    private boolean isFirstEndSection(Section newSection) {
+        return getFirstSection().isUpStation(newSection.getDownStation());
+    }
+
+    private boolean isLastEndSection(Section newSection) {
+        return getLastSection().isDownStation(newSection.getUpStation());
+    }
+
+    private boolean checkedDistance(Station upStation, Section newSection) {
+        Section oldSection = getSectionByUpStation(upStation);
+        return newSection.getDistance() >= oldSection.getDistance();
+    }
+
+    private void validateAddSection(Section newSection) {
+        if (isContainsStation(newSection.getUpStation()) && isContainsStation(newSection.getDownStation())) {
+            throw new EntityAlreadyExistsException("Both stations already exist on the line.");
+        }
+
+        if (!isContainsStation(newSection.getUpStation()) && !isContainsStation(newSection.getDownStation())) {
+            throw new EntityNotFoundException(String.format("Either station should be included."));
+        }
+    }
+
+    private void validateRemoveSection(Station station) {
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("There are no sections on the line.");
+        }
+
+        if (sections.size() < 2) {
+            throw new EntityCannotRemoveException("If there is less than one registered section, you cannot delete it.");
+        }
+
+        if (!isContainsStation(station)) {
+            throw new EntityNotFoundException("Unregistered Station");
+        }
+    }
+
+    private void validateDistance(Station oldStation, Section newSection) {
+        if (checkedDistance(oldStation, newSection)) {
+            throw new IllegalArgumentException("The length of the section you want to register is greater than or equal to the length of the existing section");
+        }
+    }
+
+    public void removeSection(Station station) {
+        validateRemoveSection(station);
+
+        if (getLastStation().equals(station)) {
+            sections.remove(findSectionByDownStation(station));
+            return;
+        }
+
+        if (getFirstStation().equals(station)) {
+            sections.remove(findSectionByUpStation(station));
+            return;
+        }
+
+        removeMiddleSection(station);
+    }
+
+    private void removeMiddleSection(Station station) {
+        Section section = findSectionByDownStation(station);
+        Section nextSection = findSectionByUpStation(station);
+        nextSection.modifyUpStation(section);
+
+        sections.remove(section);
     }
 }

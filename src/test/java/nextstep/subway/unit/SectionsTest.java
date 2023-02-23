@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.EntityAlreadyExistsException;
+import nextstep.subway.domain.exception.EntityCannotRemoveException;
 import nextstep.subway.domain.exception.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -122,19 +123,64 @@ public class SectionsTest {
         // when
         // then
         assertThatThrownBy(() -> 칠호선.removeSection(신대방삼거리역))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(EntityCannotRemoveException.class)
                 .hasMessage("If there is less than one registered section, you cannot delete it.");
     }
 
     @Test
-    @DisplayName("노선에 등록지 않은 구간 삭제")
+    @DisplayName("노선에 등록되지 않은 구간 삭제")
     void removeSection_notFoundStation() {
         // given
         Station 보라매역 = new Station("보라매역");
+        Station 건대입구역 = new Station("건대입구역");
+        칠호선.addSection(신대방삼거리역, 보라매역, 5);
 
         // when
         // then
-        assertThatThrownBy(() -> 칠호선.removeSection(보라매역))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> 칠호선.removeSection(건대입구역))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Unregistered Station does not exist.");
+    }
+
+    @Test
+    @DisplayName("하행 종점역 삭제")
+    void removeSection_WithLastEndStation() {
+        // given
+        Station 보라매역 = new Station("보라매역");
+        칠호선.addSection(신대방삼거리역, 보라매역, 5);
+
+        // when
+        칠호선.removeSection(신대방삼거리역);
+
+        // then
+        assertThat(칠호선.getStations()).extracting("name").containsExactly("상도역", "보라매역");
+    }
+
+    @Test
+    @DisplayName("상행 종점역 삭제")
+    void removeSection_WithFirstEndStation() {
+        // given
+        Station 보라매역 = new Station("보라매역");
+        칠호선.addSection(신대방삼거리역, 보라매역, 5);
+
+        // when
+        칠호선.removeSection(상도역);
+
+        // then
+        assertThat(칠호선.getStations()).extracting("name").containsExactly("신대방삼거리역", "보라매역");
+    }
+
+    @Test
+    @DisplayName("중간역 삭제")
+    void removeSection_WithMiddleStation() {
+        // given
+        Station 보라매역 = new Station("보라매역");
+        칠호선.addSection(신대방삼거리역, 보라매역, 5);
+
+        // when
+        칠호선.removeSection(신대방삼거리역);
+
+        // then
+        assertThat(칠호선.getStations()).extracting("name").containsExactly("상도역", "보라매역");
     }
 }
