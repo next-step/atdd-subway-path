@@ -80,7 +80,7 @@ public class Section {
         return this.upStation.equals(newSection) || this.downStation.equals(newSection);
     }
 
-    public static Section merge(Section upSection, Section downSection) {
+    public Section merge(Section upSection, Section downSection) {
         if (upSection.downStation != downSection.upStation) {
             throw new SubwayRuntimeException(SubwayErrorCode.NOT_CONNECTED_SECTION.getMessage());
         }
@@ -89,6 +89,10 @@ public class Section {
     }
 
     public boolean hasStationId(final long stationId) {
+        if (upStation.getId() == null || downStation.getId() == null) {
+            throw new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage());
+        }
+
         return upStation.getId() == stationId || downStation.getId() == stationId;
     }
 }

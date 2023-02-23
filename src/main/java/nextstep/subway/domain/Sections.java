@@ -8,7 +8,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -164,14 +163,19 @@ public class Sections {
         List<Section> deleteSections = findSectionByStationId(stationId);
 
         if (deleteSections.size() == 2) {
-            Section mergedSection = Section.merge(deleteSections.get(0), deleteSections.get(1));
+            Section mergedSection = merge(deleteSections.get(0), deleteSections.get(1));
             sections.add(mergedSection);
         }
         sections.removeAll(deleteSections);
     }
 
+    private Section merge(Section prevSection, Section nextSection) {
+        return prevSection.merge(prevSection, nextSection);
+    }
+
     private List<Section> findSectionByStationId(long stationId) {
         List<Section> deleteSections = sortedSections().stream()
+                // 삭제할 역이 포함된 구간을 찾음
                 .filter(it -> it.hasStationId(stationId))
                 .collect(Collectors.toList());
 
@@ -184,10 +188,14 @@ public class Sections {
 
     private List<Section> sortedSections() {
         List<Section> sortedSections = new ArrayList<>();
+        // 상행역이 없는 역을 찾는다.
         findUpEndSection().ifPresent(upEndSection -> {
             Section nextSection = upEndSection;
+            // 상행역이 없는 역부터 하행역이 없는 역까지 순서대로 정렬한다.
             while (nextSection != null) {
+                // 정렬된 역 목록에 추가한다.
                 sortedSections.add(nextSection);
+                // 다음 역을 찾는다.
                 nextSection = nextOf(nextSection);
             }
         });
@@ -196,18 +204,22 @@ public class Sections {
     }
 
     private Optional<Section> findUpEndSection() {
+        // 상행 종점 찾기
         List<Station> downStations = sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
 
         return sections.stream()
+                // 상행역이 하행역 목록에 없는 구간을 찾는다.
                 .filter(section -> !downStations.contains(section.getUpStation()))
                 .findFirst();
     }
 
     private Section nextOf(Section section) {
         return sections.stream()
+                // 다음 구간의 상행역이 현재 구간의 하행역과 같은 구간을 찾는다.
                 .filter(it -> it.getUpStation() == section.getDownStation())
+                // 찾은 구간이 없으면 null을 반환한다.
                 .findFirst()
                 .orElse(null);
     }

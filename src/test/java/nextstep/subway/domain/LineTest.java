@@ -26,10 +26,10 @@ class LineTest {
     @BeforeEach
     void setUp() {
         // Given - 초기값 셋팅
-        강남역 = new Station("강남역");
-        양재역 = new Station("양재역");
-        판교역 = new Station("판교역");
-        정자역 = new Station("정자역");
+        강남역 = new Station(1L,"강남역");
+        양재역 = new Station(2L,"양재역");
+        판교역 = new Station(3L,"판교역");
+        정자역 = new Station(4L,"정자역");
         신분당선 = new Line("신분당선", "bg-red-600");
     }
 

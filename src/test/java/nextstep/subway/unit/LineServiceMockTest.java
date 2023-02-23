@@ -41,8 +41,8 @@ class LineServiceMockTest {
     void setUp() {
         // given
         when(lineRepository.findById(1L)).thenReturn(Optional.of(new Line("신분당선", "bg-red-600")));
-        when(stationService.findById(1L)).thenReturn(new Station("강남역"));
-        when(stationService.findById(2L)).thenReturn(new Station("양재역"));
+        when(stationService.findById(1L)).thenReturn(new Station(1L,"강남역"));
+        when(stationService.findById(2L)).thenReturn(new Station(2L,"양재역"));
     }
 
 
@@ -171,7 +171,6 @@ class LineServiceMockTest {
     void removeSection_notFoundStation() {
         // given
         when(stationService.findById(3L)).thenReturn(new Station("정자역"));
-        when(stationService.findById(4L)).thenReturn(new Station("판교역"));
 
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
         lineService.addSection(1L, new SectionRequest(3L, 2L, 6));
@@ -180,14 +179,14 @@ class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> lineService.deleteSection(1L, 4L))
                 .isInstanceOf(SubwayRuntimeException.class)
-                .hasMessage(SubwayErrorCode.DELETE_LAST_SECTION.getMessage());
+                .hasMessage(SubwayErrorCode.NOT_FOUND_STATION.getMessage());
     }
 
     @Test
     @DisplayName("하행 종점역 삭제")
     void removeSection_lastStation() {
         // given
-        when(stationService.findById(3L)).thenReturn(new Station("정자역"));
+        when(stationService.findById(3L)).thenReturn(new Station(3L,"정자역"));
 
         lineService.addSection(1L, new SectionRequest(1L, 2L, 10));
         lineService.addSection(1L, new SectionRequest(3L, 2L, 6));
