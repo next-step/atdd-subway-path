@@ -1,10 +1,11 @@
 package nextstep.subway.domain;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Line {
@@ -14,8 +15,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -49,8 +50,12 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
+    }
+
+    public List<Section> getSectionList() {
+        return sections.getSections();
     }
 
     public void addSection(Section section) {
@@ -58,20 +63,15 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-            .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-            .distinct()
-            .collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public void removeSection(Station station) {
-        for (int i = 0; i < sections.size(); i++) {
-            Section section = sections.get(i);
-            if (section.getUpStation() == station || section.getDownStation() == station) {
-                sections.remove(i);
-                break;
-            }
-        }
+        sections.removeStation(station);
+    }
+
+    public void removeStation(Station station) {
+        sections.removeStation(station);
     }
 
     @Override

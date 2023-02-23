@@ -24,7 +24,7 @@ class LineTest {
         line.addSection(section);
 
         // Then
-        assertThat(line.getSections())
+        assertThat(line.getSectionList())
             .isNotEmpty()
             .contains(section);
     }
@@ -73,11 +73,11 @@ class LineTest {
         line.removeSection(station3);
 
         // Then
-        assertThat(line.getSections())
+        assertThat(line.getSectionList())
             .isNotEmpty()
             .hasSize(1);
 
-        assertThat(line.getSections())
+        assertThat(line.getSectionList())
             .containsOnly(section1);
 
         assertThat(line.getStations())
