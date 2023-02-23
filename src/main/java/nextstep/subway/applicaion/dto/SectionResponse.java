@@ -1,5 +1,9 @@
 package nextstep.subway.applicaion.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.List;
+
 public class SectionResponse {
 
     private final Long id;
@@ -29,4 +33,10 @@ public class SectionResponse {
     public Integer getDistance() {
         return distance;
     }
+
+    @JsonIgnore
+    public List<StationResponse> getStations() {
+        return List.of(this.upStation, this.downStation);
+    }
+
 }
