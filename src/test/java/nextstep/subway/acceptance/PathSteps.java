@@ -27,7 +27,7 @@ public class PathSteps extends Steps {
 
     static void 최단거리가_정상적으로_검색되었는지_확인(final ExtractableResponse<Response> response, final int distance, final Long... stations) {
         응답_코드_검증(response, HttpStatus.OK);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stations);
         assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
-        assertThat(response.jsonPath().getList("id", Long.class)).containsExactly(stations);
     }
 }
