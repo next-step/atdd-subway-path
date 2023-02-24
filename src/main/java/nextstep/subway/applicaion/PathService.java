@@ -1,5 +1,8 @@
 package nextstep.subway.applicaion;
 
+import static java.util.stream.Collectors.*;
+
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,9 +26,18 @@ public class PathService {
         Station sourceStation = stationService.findById(source);
         Station targetStation = stationService.findById(target);
 
-        List<Station> allStations = stationService.findAllStations();
         List<Section> allSections = lineService.findAllSections();
+        List<Station> allStations = getAllStations(allSections);
 
         return PathResponse.createResponse(new SubwayMap(allStations, allSections).findShortestPath(sourceStation, targetStation));
     }
+
+    private List<Station> getAllStations(List<Section> sections) {
+        return sections.stream()
+            .map(section -> List.of(section.getUpStation(), section.getDownStation()))
+            .flatMap(Collection::stream)
+            .distinct()
+            .collect(toList());
+    }
+
 }
