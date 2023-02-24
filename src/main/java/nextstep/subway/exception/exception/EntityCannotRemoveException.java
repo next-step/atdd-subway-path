@@ -1,4 +1,4 @@
-package nextstep.subway.domain.exception;
+package nextstep.subway.exception.exception;
 
 public class EntityCannotRemoveException extends RuntimeException {
 

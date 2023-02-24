@@ -7,7 +7,7 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.exception.EntityNotFoundException;
+import nextstep.subway.exception.exception.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +42,10 @@ public class LineService {
         return lineRepository.findAll().stream()
                 .map(this::createLineResponse)
                 .collect(Collectors.toList());
+    }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
     }
 
     public LineResponse findById(Long id) {

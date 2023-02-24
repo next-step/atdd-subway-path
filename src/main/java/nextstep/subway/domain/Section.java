@@ -26,11 +26,20 @@ public class Section {
     public Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    private Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+        this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this(null, line, upStation, downStation, distance);
+    }
+
+    public Section(Station upStation, Station downStation, int distance) {
+        this(null, upStation, downStation, distance);
     }
 
     public Section addStation(Station station, int distance) {

@@ -6,13 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.PathSteps.지하철_경로_조회;
+import static nextstep.subway.acceptance.PathFinderSteps.지하철_경로_조회;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 경로 조회 기능")
-public class PathAcceptanceTest extends AcceptanceTest {
+public class PathFinderAcceptanceTest extends AcceptanceTest {
     private Long 교대역;
     private Long 강남역;
     private Long 양재역;

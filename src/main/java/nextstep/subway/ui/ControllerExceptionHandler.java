@@ -1,8 +1,8 @@
 package nextstep.subway.ui;
 
-import nextstep.subway.domain.exception.EntityAlreadyExistsException;
-import nextstep.subway.domain.exception.EntityCannotRemoveException;
-import nextstep.subway.domain.exception.EntityNotFoundException;
+import nextstep.subway.exception.exception.EntityAlreadyExistsException;
+import nextstep.subway.exception.exception.EntityCannotRemoveException;
+import nextstep.subway.exception.exception.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

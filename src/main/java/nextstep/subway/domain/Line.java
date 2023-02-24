@@ -12,14 +12,24 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private Sections sections;
 
     public Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(Long id, String name, String color, Sections sections) {
+        this.id = id;
         this.name = name;
         this.color = color;
+        this.sections = sections;
+    }
+
+    public Line(String name, String color) {
+        this(null, name, color, new Sections());
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this(null, name, color, new Sections(List.of(new Section(upStation, downStation, distance))));
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {

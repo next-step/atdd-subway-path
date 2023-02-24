@@ -2,7 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.exception.EntityCannotRemoveException;
+import nextstep.subway.exception.exception.EntityCannotRemoveException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
