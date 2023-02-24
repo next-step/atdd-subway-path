@@ -3,15 +3,16 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.dto.SectionResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,14 +40,15 @@ public class LineService {
 
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+            .map(this::createLineResponse)
+            .collect(Collectors.toList());
     }
 
     public Line findLineById(Long id) {
         return lineRepository.findById(id).get();
     }
 
+    @Transactional
     public LineResponse findById(Long id) {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
@@ -80,19 +82,24 @@ public class LineService {
 
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
+            line.getId(),
+            line.getName(),
+            line.getColor(),
+            createSectionResponses(line.getSections()),
+            createStationResponses(line)
         );
     }
 
-    private List<StationResponse> createStationResponses(Line line) {
-        List<Station> stations = line.getStations();
+    private List<SectionResponse> createSectionResponses(List<Section> sections) {
+        return sections.stream().map(SectionResponse::new).collect(Collectors.toList());
+    }
 
-        return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
+    private List<StationResponse> createStationResponses(Line line) {
+
+        return line.getSortedStations()
+            .stream()
+            .map(it -> stationService.createStationResponse(it))
+            .collect(Collectors.toList());
     }
 
     @Transactional

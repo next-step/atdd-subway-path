@@ -57,8 +57,7 @@ class LineTest {
         List<Station> stations = 이호선.getStations();
 
         // then
-        assertThat(stations.get(0)).isEqualTo(구간1.getUpStation());
-        assertThat(stations.get(1)).isEqualTo(구간1.getDownStation());
+        assertThat(stations).contains(강남역, 역삼역);
     }
 
     /**
@@ -77,7 +76,7 @@ class LineTest {
         이호선.removeSection(구간1.getDownStation());
 
         // then
-        List<Station> stations = 이호선.getStations(); // 애초에 여기가 털렸네.
+        List<Station> stations = 이호선.getStations();
         assertThat(stations).isEmpty();
     }
 
