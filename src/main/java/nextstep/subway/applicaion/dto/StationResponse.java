@@ -8,6 +8,9 @@ public class StationResponse {
         return new StationResponse(id, name);
     }
 
+    public StationResponse() {
+    }
+
     private StationResponse(Long id, String name) {
         this.id = id;
         this.name = name;

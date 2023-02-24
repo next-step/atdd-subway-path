@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.SectionExceptionMessages;
+import nextstep.subway.domain.policy.AddSectionPolicy;
+import nextstep.subway.domain.policy.AddSectionPolicyFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.CascadeType;
@@ -8,9 +10,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Embeddable
@@ -32,26 +34,8 @@ public class Sections {
     public void addSection(Section section) {
         validateAddSection(section);
 
-        if (sections.isEmpty()) {
-            sections.add(section);
-            firstStation = section.getUpStation();
-            lastStation = section.getDownStation();
-            return;
-        }
-
-        if (isNewFirstSection(section)) {
-            sections.add(section);
-            firstStation = section.getUpStation();
-            return;
-        }
-
-        if (isNewLastSection(section)) {
-            sections.add(section);
-            lastStation = section.getDownStation();
-            return;
-        }
-
-        addBetweenSection(section);
+        AddSectionPolicy policy = AddSectionPolicyFactory.of(this, sections, section, firstStation, lastStation);
+        policy.execute();
     }
 
     public int getSectionsCount() {
@@ -60,6 +44,14 @@ public class Sections {
 
     public boolean isEmpty(){
         return sections.size() == 0;
+    }
+
+    public void changeFirstStation(Station station) {
+        firstStation = station;
+    }
+
+    public void changeLastStation(Station station) {
+        lastStation = station;
     }
 
     public List<Station> getStations() {
@@ -113,12 +105,8 @@ public class Sections {
         return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
     }
 
-    private boolean isNewFirstSection(Section section) {
-        return section.getDownStation().equals(firstStation);
-    }
-
-    private boolean isNewLastSection(Section section) {
-        return section.getUpStation().equals(lastStation);
+    public List<Section> getAllSections() {
+        return Collections.unmodifiableList(sections);
     }
 
     private void validateAddSection(Section section) {
@@ -148,16 +136,6 @@ public class Sections {
                 .findFirst().orElse(null);
     }
 
-    private void addBetweenSection(Section section) {
-        Section originSection =  sections.stream()
-                .filter(s -> isBetweenSection(s, section))
-                .findFirst().orElseThrow(NoSuchElementException::new);
-
-        sections.addAll(originSection.divide(section));
-
-        sections.remove(originSection);
-    }
-
     private void removeBetweenSection(Station station) {
         Section section = getStationIncludeSection(station);
         Section nextSection = getNextSection(section);
@@ -165,16 +143,6 @@ public class Sections {
         sections.remove(nextSection);
 
         addSection(section.merge(nextSection));
-    }
-
-    private boolean isBetweenSection(Section origin, Section target) {
-        return origin.getUpStation().equals(target.getUpStation())
-                || origin.getDownStation().equals(target.getDownStation());
-    }
-
-
-    public List<Section> getAllSections() {
-        return sections;
     }
 
 }
