@@ -58,6 +58,10 @@ public class Sections {
         return sections.size();
     }
 
+    public boolean isEmpty(){
+        return sections.size() == 0;
+    }
+
     public List<Station> getStations() {
         Set<Station> stations = new LinkedHashSet<>();
 
@@ -168,5 +172,9 @@ public class Sections {
                 || origin.getDownStation().equals(target.getDownStation());
     }
 
+
+    public List<Section> getAllSections() {
+        return sections;
+    }
 
 }

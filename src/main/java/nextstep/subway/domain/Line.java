@@ -56,7 +56,7 @@ public class Line {
     }
 
     public boolean hasSections() {
-        return sections != null && sections.getSectionsCount() > 0;
+        return !sections.isEmpty();
     }
 
     public void addSection(Section section) {
@@ -65,6 +65,10 @@ public class Line {
 
     public int getSectionsCount() {
         return sections.getSectionsCount();
+    }
+
+    public List<Section> getAllSections() {
+        return sections.getAllSections();
     }
 
     public Section getFirstSection() {
