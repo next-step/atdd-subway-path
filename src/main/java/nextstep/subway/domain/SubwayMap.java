@@ -16,21 +16,16 @@ public class SubwayMap {
 
     private final List<Station> stations;
     private final List<Section> sections;
+    private final WeightedMultigraph<Station, SectionEdge> graph;
 
     public SubwayMap(List<Station> stations, List<Section> sections) {
         this.stations = stations;
         this.sections = sections;
+
+        this.graph = createGraph();
     }
 
     public SubwayPath findShortestPath(Station source, Station target) {
-        WeightedMultigraph<Station, SectionEdge> graph = new WeightedMultigraph<>(SectionEdge.class);
-
-        stations.forEach(graph::addVertex);
-        sections.forEach(section -> {
-            SectionEdge sectionEdge = new SectionEdge(section);
-            graph.addEdge(section.getUpStation(), section.getDownStation(), sectionEdge);
-            graph.setEdgeWeight(sectionEdge, section.getDistance());
-        });
 
         DijkstraShortestPath<Station, SectionEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, SectionEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
@@ -41,6 +36,19 @@ public class SubwayMap {
                 .map(SectionEdge::getSection)
                 .collect(Collectors.toList())
         ), source);
+    }
+
+    private WeightedMultigraph<Station, SectionEdge> createGraph() {
+        WeightedMultigraph<Station, SectionEdge> graph = new WeightedMultigraph<>(SectionEdge.class);
+
+        stations.forEach(graph::addVertex);
+        sections.forEach(section -> {
+            SectionEdge sectionEdge = new SectionEdge(section);
+            graph.addEdge(section.getUpStation(), section.getDownStation(), sectionEdge);
+            graph.setEdgeWeight(sectionEdge, section.getDistance());
+        });
+
+        return graph;
     }
 
     private void validateStationsAreConnected(GraphPath<Station, SectionEdge> shortestPath) {
