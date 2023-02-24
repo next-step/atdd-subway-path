@@ -1,8 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.exception.EntityAlreadyExistsException;
-import nextstep.subway.exception.exception.EntityCannotRemoveException;
-import nextstep.subway.exception.exception.EntityNotFoundException;
+import nextstep.subway.exception.EntityAlreadyExistsException;
+import nextstep.subway.exception.EntityCannotRemoveException;
+import nextstep.subway.exception.EntityNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -145,7 +145,7 @@ public class Sections {
                 .findFirst().orElseThrow(() -> new EntityNotFoundException(downStation.getId(), "DownStation"));
     }
 
-    private boolean isContainsStation(Station station) {
+    public boolean isContainsStation(Station station) {
         List<Station> stations = getStations();
         return stations.contains(station);
     }
@@ -219,5 +219,9 @@ public class Sections {
         nextSection.modifyUpStation(section);
 
         sections.remove(section);
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

@@ -71,4 +71,8 @@ public class Line {
     public void removeSection(Station station) {
         sections.removeSection(station);
     }
+
+    public boolean isContainsStation(Station station) {
+        return sections.isContainsStation(station);
+    }
 }

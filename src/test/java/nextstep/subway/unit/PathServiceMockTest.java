@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
+import nextstep.subway.infra.DijkstraShortestPathFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +28,8 @@ public class PathServiceMockTest {
     private StationService stationService;
     @Mock
     private PathFinder pathFinder;
+    @Mock
+    private DijkstraShortestPathFinder dijkstraShortestPath;
 
     private Station 교대역;
     private Station 강남역;
@@ -35,9 +38,7 @@ public class PathServiceMockTest {
     private Line 이호선;
     private Line 신분당선;
     private Line 삼호선;
-
-    private List<Line> 모든_라인;
-
+    private List<Line> 전체_노선_목록;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -57,10 +58,9 @@ public class PathServiceMockTest {
         이호선 = new Line("2호선", "green", 교대역, 강남역, 10);
         신분당선 = new Line("신분당선", "red", 강남역, 양재역, 10);
         삼호선 = new Line("3호선", "orange", 교대역, 남부터미널역, 2);
-
         삼호선.addSection(남부터미널역, 양재역, 3);
 
-        모든_라인 = List.of(이호선, 삼호선, 신분당선);
+        전체_노선_목록 = List.of(이호선, 신분당선, 삼호선);
 
         when(stationService.findById(1L)).thenReturn(강남역);
         when(stationService.findById(2L)).thenReturn(남부터미널역);
@@ -69,7 +69,7 @@ public class PathServiceMockTest {
     @Test
     void findPath() {
         // given
-        when(pathFinder.find(모든_라인, 강남역, 남부터미널역)).thenReturn(new PathResponse(List.of(강남역, 교대역, 남부터미널역), 12));
+        when(pathFinder.find(전체_노선_목록, 강남역, 남부터미널역)).thenReturn(new PathResponse(List.of(강남역, 교대역, 남부터미널역), 12));
 
         // when
         PathResponse path = pathFinderService.findPath(1L, 3L);

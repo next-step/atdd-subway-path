@@ -2,11 +2,11 @@ package nextstep.subway.applicaion.dto;
 
 import nextstep.subway.domain.Station;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PathResponse {
-    private final List<Station> stations = Collections.EMPTY_LIST;
+    private final List<Station> stations = new ArrayList<>();
     private final int distance;
 
     public PathResponse(List<Station> stations, int distance) {

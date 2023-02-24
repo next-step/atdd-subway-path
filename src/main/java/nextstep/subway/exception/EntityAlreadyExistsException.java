@@ -1,4 +1,4 @@
-package nextstep.subway.exception.exception;
+package nextstep.subway.exception;
 
 public class EntityAlreadyExistsException extends RuntimeException {
 
