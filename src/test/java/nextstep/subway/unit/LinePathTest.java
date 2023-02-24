@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 경로 도메인 객체 단위 테스트")
 class LinePathTest {
@@ -40,9 +39,9 @@ class LinePathTest {
         지하철경로 = new LinePath(List.of(서울1호선, 서울2호선, 서울9호선));
     }
 
-    @DisplayName("구간 추가 - 정상1 : 새로운 노선에 구간을 추가")
+    @DisplayName("출발역과 도착역 사이의 최단경로 조회")
     @Test
-    void addSection_case1() {
+    void getShortestDistance() {
         // when-then
         assertThat(지하철경로.getShortestDistance(당산역, 구로역)).isEqualTo(25);
         assertThat(지하철경로.getShortestDistance(당산역, 신도림역)).isEqualTo(15);
