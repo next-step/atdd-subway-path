@@ -10,7 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -18,7 +17,6 @@ import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청
 import static nextstep.subway.fixture.DistanceFixtures.*;
 import static nextstep.subway.fixture.LineFixtures.BACKGROUND_COLOR_BLUE;
 import static nextstep.subway.fixture.LineFixtures.SHINBUNDANG_LINE;
-import static nextstep.subway.fixture.ParamFixtures.*;
 import static nextstep.subway.fixture.PathFixtures.*;
 import static nextstep.subway.fixture.StationFixtures.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -235,23 +233,5 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.jsonPath().getList(PATH_ERROR_MESSAGES, String.class)).containsExactly(ErrorCode.CAN_NOT_REMOVE_ONLY_ONE_SECTION.getErrorMessage());
-    }
-
-    private Map<String, String> createLineCreateParams(String lineName, String lineColor, Long upStationId, Long downStationId, int distance) {
-        Map<String, String> lineCreateParams = new HashMap<>();
-        lineCreateParams.put(PARAM_NAME, lineName);
-        lineCreateParams.put(PARAM_COLOR, lineColor);
-        lineCreateParams.put(PARAM_UP_STATION_ID, String.valueOf(upStationId));
-        lineCreateParams.put(PARAM_DOWN_STATION_ID, String.valueOf(downStationId));
-        lineCreateParams.put(PARAM_DISTANCE, String.valueOf(distance));
-        return lineCreateParams;
-    }
-
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put(PARAM_UP_STATION_ID, String.valueOf(upStationId));
-        params.put(PARAM_DOWN_STATION_ID, String.valueOf(downStationId));
-        params.put(PARAM_DISTANCE, String.valueOf(distance));
-        return params;
     }
 }
