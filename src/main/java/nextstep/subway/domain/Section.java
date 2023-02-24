@@ -117,23 +117,23 @@ public class Section {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Section)) return false;
 
         Section section = (Section) o;
 
-        if (distance != section.distance) return false;
-        if (!Objects.equals(id, section.id)) return false;
-        if (!Objects.equals(line, section.line)) return false;
-        if (!Objects.equals(upStation, section.upStation)) return false;
-        return Objects.equals(downStation, section.downStation);
+        if (distance != section.getDistance()) return false;
+        if (!Objects.equals(id, section.getId())) return false;
+        if (!line.equals(section.getLine())) return false;
+        if (!upStation.equals(section.getUpStation())) return false;
+        return downStation.equals(section.getDownStation());
     }
 
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (line != null ? line.hashCode() : 0);
-        result = 31 * result + (upStation != null ? upStation.hashCode() : 0);
-        result = 31 * result + (downStation != null ? downStation.hashCode() : 0);
+        result = 31 * result + line.hashCode();
+        result = 31 * result + upStation.hashCode();
+        result = 31 * result + downStation.hashCode();
         result = 31 * result + distance;
         return result;
     }
