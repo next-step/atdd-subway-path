@@ -7,7 +7,5 @@ import nextstep.subway.domain.Station;
 import java.util.List;
 
 public interface PathFinder {
-    void init(List<Line> lines);
-
-    PathResponse find(Station source, Station target);
+    PathResponse find(List<Line> lines, Station source, Station target);
 }

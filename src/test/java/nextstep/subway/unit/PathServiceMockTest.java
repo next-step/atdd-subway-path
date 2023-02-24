@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.PathFinder;
-import nextstep.subway.applicaion.PathFinderService;
+import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Line;
@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class PathFinderServiceMockTest {
+public class PathServiceMockTest {
     @InjectMocks
-    private PathFinderService pathFinderService;
+    private PathService pathFinderService;
     @Mock
     private StationService stationService;
     @Mock
@@ -35,6 +35,8 @@ public class PathFinderServiceMockTest {
     private Line 이호선;
     private Line 신분당선;
     private Line 삼호선;
+
+    private List<Line> 모든_라인;
 
 
     /**
@@ -58,6 +60,8 @@ public class PathFinderServiceMockTest {
 
         삼호선.addSection(남부터미널역, 양재역, 3);
 
+        모든_라인 = List.of(이호선, 삼호선, 신분당선);
+
         when(stationService.findById(1L)).thenReturn(강남역);
         when(stationService.findById(2L)).thenReturn(남부터미널역);
     }
@@ -65,7 +69,7 @@ public class PathFinderServiceMockTest {
     @Test
     void findPath() {
         // given
-        when(pathFinder.find(강남역, 남부터미널역)).thenReturn(new PathResponse(List.of(강남역, 교대역, 남부터미널역), 12));
+        when(pathFinder.find(모든_라인, 강남역, 남부터미널역)).thenReturn(new PathResponse(List.of(강남역, 교대역, 남부터미널역), 12));
 
         // when
         PathResponse path = pathFinderService.findPath(1L, 3L);

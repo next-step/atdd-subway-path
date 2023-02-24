@@ -9,12 +9,7 @@ import java.util.List;
 
 public class DijkstraShortestPath implements PathFinder {
     @Override
-    public void init(List<Line> lines) {
-        
-    }
-
-    @Override
-    public PathResponse find(Station source, Station target) {
+    public PathResponse find(List<Line> lines, Station source, Station target) {
         return null;
     }
 }
