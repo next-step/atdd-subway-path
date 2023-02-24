@@ -10,6 +10,9 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
 
+    private static final int ZERO = 0;
+    private static final int ONE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -56,8 +59,40 @@ public class Sections {
                 .anyMatch(upStation -> upStation.equals(section.getUpStation()));
     }
 
-    public void removeSection() {
-        sections.remove(sections.size()-1);
+    public void removeSection(Line line, Station station) {
+        validateNotOneSection();
+        validateContainStation(station);
+
+        if (station.equals(getDownStation())) {
+            sections.remove(getLastSection());
+            return;
+        }
+        if (station.equals(getUpStation())) {
+            sections.remove(getFirstSection());
+            return;
+        }
+
+        removeMiddleStation(line, station);
+    }
+
+    private void removeMiddleStation(Line line, Station station) {
+        Section firstSection = sections.stream()
+                .filter(s -> s.getDownStation().equals(station))
+                .findFirst().orElseThrow(StationNotFoundException::new);
+        Section secondSection = sections.stream()
+                .filter(s -> s.getUpStation().equals(station))
+                .findFirst().orElseThrow(StationNotFoundException::new);
+        Section newSection = new Section(
+                line,
+                firstSection.getUpStation(),
+                secondSection.getDownStation(),
+                firstSection.getDistance() + secondSection.getDistance());
+        sections.remove(firstSection);
+        sections.remove(secondSection);
+        sections.add(newSection);
+    }
+
+    private void removeIfTerminalStation(Station station) {
     }
 
     public Station getUpStation() {
@@ -108,7 +143,7 @@ public class Sections {
 
     private void validateContainsAnyStation(Station upStation, Station downStation) {
         List<Station> stations = getStations();
-        if (stations.size() == 0) return;
+        if (stations.size() == ZERO) return;
         if (!stations.contains(upStation) && !stations.contains(downStation)) {
             throw new SectionContainsAnyStationException();
         }
@@ -118,6 +153,19 @@ public class Sections {
         if (sections.stream()
                 .anyMatch(s ->s.getDistance() <= section.getDistance())) {
             throw new InvalidSectionDistanceException();
+        }
+    }
+
+    private void validateNotOneSection() {
+        if (sections.size() == ONE) {
+            throw new IllegalSectionRemoveException("구간이 하나인 노선에 삭제 요청을 할 수 없습니다.");
+        }
+    }
+
+    private void validateContainStation(Station station) {
+        List<Station> stations = getStations();
+        if (!stations.contains(station)) {
+            throw new IllegalSectionRemoveException("해당 노선에 요청하신 역이 존재하지 않습니다.");
         }
     }
 }

@@ -70,7 +70,7 @@ class LineTest {
     @Test
     void removeSection() {
         이호선.addSection(정자역, 광교역, 15);
-        이호선.removeSection();
+        이호선.removeSection(광교역);
         List<Station> stations = 이호선.getStations();
         assertThat(stations).doesNotContain(광교역);
     }

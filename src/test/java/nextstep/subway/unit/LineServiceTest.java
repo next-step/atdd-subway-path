@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.IllegalSectionRemoveException;
 import nextstep.subway.exception.InvalidSectionDistanceException;
 import nextstep.subway.exception.SectionContainsAllStationException;
 import nextstep.subway.exception.SectionContainsAnyStationException;
@@ -156,4 +157,75 @@ public class LineServiceTest {
                 lineService.addSection(신분당선.getId(), 새로운_요청)
         ).isInstanceOf(SectionContainsAnyStationException.class);
     }
+
+    @DisplayName("하행 종점역 삭제")
+    @Test
+    void removeDownStation() {
+        //when
+        //강남역과 분당역 사이에 정자역 추가
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        lineService.addSection(신분당선.getId(),
+                new SectionRequest(강남역.getId(), 정자역.getId(), 4));
+        //Then
+        //하행 종점역을 삭제
+        lineService.deleteSection(신분당선.getId(), 분당역.getId());
+        assertThat(신분당선.getStations()).containsExactly(강남역,정자역);
+    }
+
+    @DisplayName("상행 종점역 삭제")
+    @Test
+    void removeUpStation() {
+        //Given
+        //강남역과 분당역 사이에 정자역 추가
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        lineService.addSection(신분당선.getId(),
+                new SectionRequest(강남역.getId(), 정자역.getId(), 4));
+
+        //When
+        //상행 종점역을 삭제
+        lineService.deleteSection(신분당선.getId(), 강남역.getId());
+
+        //Then
+        assertThat(신분당선.getStations()).containsExactly(정자역,분당역);
+    }
+
+    @DisplayName("중간역 삭제")
+    @Test
+    void removeMiddleStation() {
+        //when
+        //강남역과 분당역 사이에 정자역 추가
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        lineService.addSection(신분당선.getId(),
+                new SectionRequest(강남역.getId(), 정자역.getId(), 4));
+        //Then
+        //중간역을 삭제
+        lineService.deleteSection(신분당선.getId(), 정자역.getId());
+        assertThat(신분당선.getStations()).containsExactly(강남역,분당역);
+        assertThat(신분당선.getSections().get(0).getDistance()).isEqualTo(10);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 구간 삭제 요청시 예외 발생")
+    @Test
+    void removeStationInOneSection() {
+        //when Then
+        assertThatThrownBy(() ->
+                lineService.deleteSection(신분당선.getId(), 강남역.getId())
+        ).isInstanceOf(IllegalSectionRemoveException.class);
+    }
+
+    @DisplayName("구간에 포함돼 있지 않은 역 삭제 요청시 예외 발생")
+    @Test
+    void removeStationNotInSection() {
+        //when
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        lineService.addSection(신분당선.getId(),
+                new SectionRequest(강남역.getId(), 정자역.getId(), 4));
+        Station 논현역 = stationRepository.save(new Station("논현역"));
+
+        //Then
+        assertThatThrownBy(() ->
+                lineService.deleteSection(신분당선.getId(), 논현역.getId())
+        ).isInstanceOf(IllegalSectionRemoveException.class);
+    }
+
 }
