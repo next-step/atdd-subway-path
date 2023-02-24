@@ -32,8 +32,7 @@ public class DijkstraShortestPathFinder implements PathFinder {
 
         GraphPath graphPath = dijkstraShortestPath.getPath(source, target);
         validateNotConnected(graphPath);
-
-        return null;
+        return PathResponse.of(graphPath.getVertexList(), dijkstraShortestPath.getPathWeight(source, target));
     }
 
     private void setGraph(Section section) {

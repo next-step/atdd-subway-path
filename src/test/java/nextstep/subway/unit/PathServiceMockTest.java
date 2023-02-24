@@ -1,12 +1,12 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.PathFinder;
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
-import nextstep.subway.infra.DijkstraShortestPathFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,13 +23,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class PathServiceMockTest {
     @InjectMocks
-    private PathService pathFinderService;
+    private PathService pathService;
+    @Mock
+    private LineService lineService;
     @Mock
     private StationService stationService;
     @Mock
     private PathFinder pathFinder;
-    @Mock
-    private DijkstraShortestPathFinder dijkstraShortestPath;
 
     private Station 교대역;
     private Station 강남역;
@@ -64,19 +64,22 @@ public class PathServiceMockTest {
 
         when(stationService.findById(1L)).thenReturn(강남역);
         when(stationService.findById(2L)).thenReturn(남부터미널역);
+        when(lineService.findAll()).thenReturn(전체_노선_목록);
     }
 
     @Test
     void findPath() {
         // given
-        when(pathFinder.find(전체_노선_목록, 강남역, 남부터미널역)).thenReturn(new PathResponse(List.of(강남역, 교대역, 남부터미널역), 12));
+        when(pathFinder.find(전체_노선_목록, 강남역, 남부터미널역)).thenReturn(PathResponse.of(List.of(강남역, 교대역, 남부터미널역), 12));
 
         // when
-        PathResponse path = pathFinderService.findPath(1L, 3L);
+        PathResponse path = pathService.findPath(1L, 2L);
 
+        // then
         assertAll(() -> {
-            assertThat(path.getDistance()).isEqualTo(10);
-            assertThat(path.getStations()).containsExactly(강남역, 교대역, 남부터미널역);
-        });
+                    assertThat(path.getDistance()).isEqualTo(12);
+                    assertThat(path.getStations()).containsExactly(강남역, 교대역, 남부터미널역);
+                }
+        );
     }
 }

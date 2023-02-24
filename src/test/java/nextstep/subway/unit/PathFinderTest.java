@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.PathFinder;
+import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.EntityNotFoundException;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class PathFinderTest {
     private PathFinder pathFinder;
@@ -85,10 +88,25 @@ public class PathFinderTest {
     void findPath_WithNotConnectedStation() {
         // given
         전체_노선_목록 = List.of(이호선, 신분당선, 삼호선, 수인분당선);
+
         // when
         // then
         assertThatThrownBy(() -> pathFinder.find(전체_노선_목록, 죽전역, 강남역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Unconnected station.");
+    }
+
+    @Test
+    @DisplayName("최단거리 경로로 조회")
+    void findPath() {
+        // when
+        PathResponse response = pathFinder.find(전체_노선_목록, 교대역, 양재역);
+
+        // then
+        assertAll(() -> {
+                    assertThat(response.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
+                    assertThat(response.getDistance()).isEqualTo(5);
+                }
+        );
     }
 }
