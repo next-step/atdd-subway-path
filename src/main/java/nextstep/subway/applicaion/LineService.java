@@ -81,7 +81,6 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-        System.out.println(line.getSections());
         return new LineResponse(
             line.getId(),
             line.getName(),
