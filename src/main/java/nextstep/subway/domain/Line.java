@@ -54,6 +54,10 @@ public class Line {
         return sections;
     }
 
+    public int getDistance() {
+        return sections.getDistance();
+    }
+
     public void addSection(Station upStation, Station downStation, int distance) {
         Section section = new Section(this, upStation, downStation, distance);
         sections.add(section);
@@ -63,8 +67,7 @@ public class Line {
         return sections.getStations();
     }
 
-
-    public void deleteSection(final Station station) {
-        sections.delete(station);
+    public void deleteSection(final Long stationId) {
+        sections.delete(stationId);
     }
 }

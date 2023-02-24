@@ -2,7 +2,6 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.exception.SubwayRuntimeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,19 +10,24 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
+    private Long 은하철도 = 999L;
+
 
     private Long 강남역;
     private Long 양재역;
     private Long 판교역;
     private Long 정자역;
+    private Long 은하철도_어느역 = 999_1L;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -109,6 +113,32 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에 등록되어 있지 않은 구간을 제거
+     * Then 노선에 구간이 제거되지 않는다.
+     */
+    @DisplayName("지하철 노선 구간제거 - 예외 케이스 [등록되어 있지 않은 구간을 제거]")
+    @Test
+    void removeLineSectionException() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(은하철도, 정자역);
+        // when
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철 노선에 등록되어 있지 않은 구간을 제거
+     * Then 노선에 구간이 제거되지 않는다.
+     */
+    @DisplayName("지하철 노선 구간제거 - 예외 케이스 [등록되어 있지 역을 제거]")
+    @Test
+    void removeLineSectionException2() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 은하철도_어느역);
+        // when
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {

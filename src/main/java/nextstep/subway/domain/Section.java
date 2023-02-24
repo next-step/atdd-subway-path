@@ -76,11 +76,23 @@ public class Section {
         return this.downStation.equals(newSection.downStation);
     }
 
-    public boolean isDownStation(final Station station) {
-        return this.downStation.equals(station);
-    }
-
     public boolean isContainStation(final Station newSection) {
         return this.upStation.equals(newSection) || this.downStation.equals(newSection);
+    }
+
+    public Section merge(Section upSection, Section downSection) {
+        if (upSection.downStation != downSection.upStation) {
+            throw new SubwayRuntimeException(SubwayErrorCode.NOT_CONNECTED_SECTION.getMessage());
+        }
+
+        return new Section(upSection.line, upSection.upStation, downSection.downStation, upSection.distance + downSection.distance);
+    }
+
+    public boolean hasStationId(final long stationId) {
+        if (upStation.getId() == null || downStation.getId() == null) {
+            throw new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage());
+        }
+
+        return upStation.getId() == stationId || downStation.getId() == stationId;
     }
 }
