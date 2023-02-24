@@ -28,7 +28,7 @@ public class Sections {
     }
 
     private void addByPosition(Section newSection) {
-        if (isEndSection(newSection) || sections.isEmpty()) {
+        if (sections.isEmpty() || isEndSection(newSection)) {
             sections.add(newSection);
             return;
         }

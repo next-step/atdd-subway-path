@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.SectionException;
 import nextstep.subway.domain.Station;
 
 class LineTest {
@@ -19,12 +21,14 @@ class LineTest {
     private Line 이호선;
     private Station 강남역;
     private Station 역삼역;
+    private Station 선릉역;
 
     @BeforeEach
     void setUp() {
         이호선 = new Line("2호선", "bg-color-green");
         강남역 = new Station("강남역");
         역삼역 = new Station("역삼역");
+        선릉역 = new Station("선릉역");
     }
 
     /**
@@ -61,23 +65,41 @@ class LineTest {
     }
 
     /**
-     * when 노선의 구간이 주어졌을 때,
+     * when 노선의 구간이 1개 일 때,
      * given 해당 구간을 삭제하면
-     * then 구간이 조회되지 않는다.
+     * then 예외를 던진다.
      */
     @Test
-    @DisplayName("구간 삭제 테스트")
-    void removeSection() {
+    @DisplayName("구간 삭제 예외 테스트: 구간이 1개일 때")
+    void removeSectionWhenOneSectionLeft() {
         // given
         Section 구간1 = 이호선_구간1_생성();
         이호선.addSection(구간1);
 
         // when
+        assertThrows(SectionException.class, () -> 이호선.removeSection(구간1.getDownStation()));
+    }
+
+    /**
+     * given 구간이 2개 이상일 때,
+     * when 구간을 1개 삭제하면
+     * then 하나의 구간만 남는다.
+     */
+    @Test
+    @DisplayName("구간 삭제 테스트: 구간이 2개 이상일 때")
+    void removeSectionWhenMoreThanTwoSectionsExist() {
+        // given
+        Section 구간1 = 이호선_구간1_생성();
+        Section 구간2 = 이호선_구간2_생성();
+        이호선.addSection(구간1);
+        이호선.addSection(구간2);
+
+        // when
         이호선.removeSection(구간1.getDownStation());
 
         // then
-        List<Station> stations = 이호선.getStations();
-        assertThat(stations).isEmpty();
+        List<Section> 이호선_구간 = 이호선.getSections();
+        assertThat(이호선_구간.size()).isEqualTo(1);
     }
 
     /**
@@ -98,6 +120,9 @@ class LineTest {
 
     private Section 이호선_구간1_생성() {
         return new Section(이호선, 강남역, 역삼역, 10);
+    }
+    private Section 이호선_구간2_생성() {
+        return new Section(이호선, 역삼역, 선릉역, 10);
     }
 
 }
