@@ -115,7 +115,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * When 노선에 포함돼 있지 않은 지하철 역 삭제를 요청시
      * Then 오류가 발생한다.
      */
-    @DisplayName("구간이 하나인 노선에서 제거 요청시 오류 발생")
+    @DisplayName("노선에 포함돼 있지 않은 지하철역 삭제 요청시 오류 발생")
     @Test
     void deleteStationNotInSection() {
         // given

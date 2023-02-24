@@ -10,6 +10,9 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
 
+    private static final int ZERO = 0;
+    private static final int ONE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -59,6 +62,7 @@ public class Sections {
     public void removeSection(Line line, Station station) {
         validateNotOneSection();
         validateContainStation(station);
+
         if (station.equals(getDownStation())) {
             sections.remove(getLastSection());
             return;
@@ -68,6 +72,10 @@ public class Sections {
             return;
         }
 
+        removeMiddleStation(line, station);
+    }
+
+    private void removeMiddleStation(Line line, Station station) {
         Section firstSection = sections.stream()
                 .filter(s -> s.getDownStation().equals(station))
                 .findFirst().orElseThrow(StationNotFoundException::new);
@@ -78,10 +86,13 @@ public class Sections {
                 line,
                 firstSection.getUpStation(),
                 secondSection.getDownStation(),
-                firstSection.getDistance()+ secondSection.getDistance());
+                firstSection.getDistance() + secondSection.getDistance());
         sections.remove(firstSection);
         sections.remove(secondSection);
         sections.add(newSection);
+    }
+
+    private void removeIfTerminalStation(Station station) {
     }
 
     public Station getUpStation() {
@@ -132,7 +143,7 @@ public class Sections {
 
     private void validateContainsAnyStation(Station upStation, Station downStation) {
         List<Station> stations = getStations();
-        if (stations.size() == 0) return;
+        if (stations.size() == ZERO) return;
         if (!stations.contains(upStation) && !stations.contains(downStation)) {
             throw new SectionContainsAnyStationException();
         }
@@ -146,7 +157,7 @@ public class Sections {
     }
 
     private void validateNotOneSection() {
-        if (sections.size() == 1) {
+        if (sections.size() == ONE) {
             throw new IllegalSectionRemoveException("구간이 하나인 노선에 삭제 요청을 할 수 없습니다.");
         }
     }
