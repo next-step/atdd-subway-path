@@ -64,7 +64,7 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
         assertAll(() -> {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
-            assertThat(response.jsonPath().getList("station.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
         });
     }
 
