@@ -1,5 +1,10 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.DuplicatedDownStationException;
+import nextstep.subway.exception.NotEqualLastStationException;
+import nextstep.subway.exception.NotLastStationException;
+import nextstep.subway.exception.SingleSectionException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -14,6 +19,18 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        if (!isLastStation(section.getUpStation())) {
+            throw new NotEqualLastStationException();
+        }
+
+        if (containsStation(section.getDownStation())) {
+            throw new DuplicatedDownStationException();
+        }
         sections.add(section);
     }
 
@@ -28,11 +45,17 @@ public class Sections {
         return stations;
     }
 
-    public void remove() {
+    public void remove(Station station) {
+        if (!isLastStation(station)) {
+            throw new NotLastStationException();
+        }
+        if (isSingleSection()) {
+            throw new SingleSectionException();
+        }
         sections.remove(getLastStationIndex());
     }
 
-    public boolean isEmpty() {
+    private boolean isEmpty() {
         return this.sections.isEmpty();
     }
 
@@ -40,11 +63,11 @@ public class Sections {
         return getLastStation().equals(station);
     }
 
-    public Station getLastStation() {
+    private Station getLastStation() {
         return sections.get(getLastStationIndex()).getDownStation();
     }
 
-    public boolean containsStation(Station station) {
+    private boolean containsStation(Station station) {
         return getStations().contains(station);
     }
 

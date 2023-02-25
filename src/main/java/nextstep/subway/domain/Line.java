@@ -28,26 +28,12 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        if (sections.isEmpty()) {
-            sections.add(new Section(this, upStation, downStation, distance));
-            return;
-        }
-
-        if (!sections.isLastStation(upStation)) {
-            throw new NotEqualLastStationException();
-        }
-
-        if (sections.containsStation(downStation)) {
-            throw new DuplicatedDownStationException();
-        }
         sections.add(new Section(this, upStation, downStation, distance));
     }
-
 
     public int getSumDistance() {
         return sections.calcDistance();
     }
-
 
     public List<Station> getAllStations() {
         return sections.getStations();
@@ -66,13 +52,7 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        if (!sections.isLastStation(station)) {
-            throw new NotLastStationException();
-        }
-        if (sections.isSingleSection()) {
-            throw new SingleSectionException();
-        }
-        sections.remove();
+        sections.remove(station);
     }
 
     public void setName(String name) {
