@@ -72,11 +72,14 @@ public class Line {
 	}
 
 	public void removeSection(Station station) {
-		if (!sections.isLastDownStation(station)) {
-			throw new CannotRemoveSectionException(ErrorMessage.CANNOT_REMOVE_NO_LAST_DOWN_STATION);
+		if (sections.hasSingleSection()) {
+			throw new CannotRemoveSectionException(ErrorMessage.CANNOT_REMOVE_SINGLE_SECTION);
+		}
+		if (sections.notContains(station)) {
+			throw new CannotRemoveSectionException(ErrorMessage.CANNOT_REMOVE_NO_EXISTED_STATION);
 		}
 
-		sections.removeLastSection();
+		sections.removeSection(station);
 	}
 
 	public void updateLine(String name, String color) {

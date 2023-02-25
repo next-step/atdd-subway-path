@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -42,8 +42,47 @@ public class Sections {
 		this.sections.add(section);
 	}
 
+	public void removeSection(Station station) {
+		if (isMiddleStation(station)) {
+			final Section frontSection = findSectionByDownStation(station);
+			final Section backSection = findSectionByUpStation(station);
+			final Station upStation = frontSection.getUpStation();
+			final Station downStation = backSection.getDownStation();
+			sections.remove(frontSection);
+			sections.remove(backSection);
+			connect(frontSection.getLine(), upStation, downStation,
+				frontSection.getDistance() + backSection.getDistance());
+		}
+
+		if (isFinalUpStation(station)) {
+			final Section section = findSectionByUpStation(station);
+			sections.remove(section);
+		}
+		if (isFinalDownStation(station)) {
+			final Section section = findSectionByDownStation(station);
+			sections.remove(section);
+		}
+	}
+
+	private void connect(Line line, Station upStation, Station downStation, int distance) {
+		sections.add(new Section(line, upStation, downStation, distance));
+	}
+
+	private boolean isFinalDownStation(Station station) {
+		return Objects.equals(station, getFinalDownStation());
+	}
+
+	private boolean isFinalUpStation(Station station) {
+		return Objects.equals(station, getFinalUpStation());
+	}
+
+	private boolean isMiddleStation(Station station) {
+		return !isFinalUpStation(station) && !isFinalDownStation(station);
+
+	}
+
 	private void validateSection(Section section) {
-		List<Station> stations = getStations();
+		final List<Station> stations = getStations();
 		if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
 			throw new CannotCreateSectionException(ErrorMessage.SHOULD_EXIST_NEW_STATION);
 		}
@@ -54,7 +93,7 @@ public class Sections {
 	}
 
 	private void addSectionHasNewMiddleStationConnectedUpStation(Section newSection) {
-		Section existingSection = findSectionByUpStation(newSection.getUpStation());
+		final Section existingSection = findSectionByUpStation(newSection.getUpStation());
 
 		sections.add(new Section(newSection.getLine(), newSection.getUpStation(), newSection.getDownStation(),
 			newSection.getDistance()));
@@ -65,7 +104,7 @@ public class Sections {
 	}
 
 	private void addSectionHasNewMiddleStationConnectedDownStation(Section newSection) {
-		Section existingSection = findSectionByUpStation(newSection.getUpStation());
+		final Section existingSection = findSectionByUpStation(newSection.getUpStation());
 
 		sections.add(new Section(newSection.getLine(), newSection.getUpStation(), newSection.getDownStation(),
 			newSection.getDistance()));
@@ -76,21 +115,21 @@ public class Sections {
 	}
 
 	private boolean hasNewMiddleStationConnectedUpStation(Section section) {
-		return !sections.isEmpty() && getFinalUpStation(getDownStations()).equals(section.getUpStation());
+		return !sections.isEmpty() && getFinalUpStation().equals(section.getUpStation());
 	}
 
 	private boolean hasNewMiddleStationConnectedDownStation(Section section) {
-		return !sections.isEmpty() && getFinalDownStation(getUpStations()).equals(section.getDownStation());
+		return !sections.isEmpty() && getFinalDownStation().equals(section.getDownStation());
 	}
 
 	public List<Station> getStations() {
 		if (sections.isEmpty()) {
 			return Collections.emptyList();
 		}
-		Station finalUpStation = getFinalUpStation(getDownStations());
-		Station finalDownStation = getFinalDownStation(getUpStations());
+		final Station finalUpStation = getFinalUpStation();
+		final Station finalDownStation = getFinalDownStation();
 
-		List<Station> stations = new ArrayList<>();
+		final List<Station> stations = new ArrayList<>();
 		stations.add(finalUpStation);
 
 		Section nextSection = findSectionByUpStation(finalUpStation);
@@ -104,14 +143,17 @@ public class Sections {
 	}
 
 	private Section findSectionByUpStation(Station station) {
-		Section section = null;
-		for (Section next : sections) {
-			if (next.getUpStation().equals(station)) {
-				section = next;
-			}
-		}
-		return Optional.ofNullable(section).orElseThrow(
-			() -> new CannotFindSectionException(ErrorMessage.CANNOT_FIND_SECTION));
+		return sections.stream()
+			.filter(section -> section.getUpStation().equals(station))
+			.findFirst()
+			.orElseThrow(() -> new CannotFindSectionException(ErrorMessage.CANNOT_FIND_SECTION));
+	}
+
+	private Section findSectionByDownStation(Station station) {
+		return sections.stream()
+			.filter(section -> section.getDownStation().equals(station))
+			.findFirst()
+			.orElseThrow(() -> new CannotFindSectionException(ErrorMessage.CANNOT_FIND_SECTION));
 	}
 
 	private List<Station> getUpStations() {
@@ -126,14 +168,16 @@ public class Sections {
 			.collect(Collectors.toList());
 	}
 
-	private Station getFinalUpStation(List<Station> downStations) {
+	private Station getFinalUpStation() {
+		final List<Station> downStations = getDownStations();
 		return getUpStations().stream()
 			.filter(station -> !downStations.contains(station))
 			.findFirst()
 			.orElseThrow(() -> new CannotFindFinalStationException(ErrorMessage.CANNOT_FIND_FINAL_DOWN_STATION));
 	}
 
-	private Station getFinalDownStation(List<Station> upStations) {
+	private Station getFinalDownStation() {
+		final List<Station> upStations = getUpStations();
 		return getDownStations().stream()
 			.filter(station -> !upStations.contains(station))
 			.findFirst()
@@ -141,15 +185,11 @@ public class Sections {
 
 	}
 
-	private int getLastIndexOfSections() {
-		return sections.size() - 1;
+	public boolean hasSingleSection() {
+		return sections.size() == 1;
 	}
 
-	public boolean isLastDownStation(Station station) {
-		return sections.get(getLastIndexOfSections()).getDownStation().equals(station);
-	}
-
-	public void removeLastSection() {
-		sections.remove(getLastIndexOfSections());
+	public boolean notContains(Station station) {
+		return !getStations().contains(station);
 	}
 }

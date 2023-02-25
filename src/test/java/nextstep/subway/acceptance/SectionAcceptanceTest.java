@@ -10,8 +10,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
@@ -157,14 +155,12 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	 * Then 노선에 구간이 제거된다
 	 */
 	@DisplayName("지하철 노선에 구간을 제거 - 구간이 하나인 노선에서 종점역을 삭제하는 경우 예외를 던진다.")
-	@ValueSource(longs = {0L, 1L})
-	@ParameterizedTest
-	void removeLineSection_fail_when_line_has_only_one_section(Long 종점역_ID) {
+	@Test
+	void removeLineSection_fail_when_line_has_only_one_section() {
 		// when
-		지하철_노선에_지하철_구간_제거_요청(신분당선, 종점역_ID);
+		ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
 		// then
-		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
@@ -183,10 +179,9 @@ class SectionAcceptanceTest extends AcceptanceTest {
 		Long 도심역 = 지하철역_생성_요청("도심역").jsonPath().getLong("id");
 
 		// when
-		지하철_노선에_지하철_구간_제거_요청(신분당선, 도심역);
+		ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 도심역);
 
 		// then
-		ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 	}
 
