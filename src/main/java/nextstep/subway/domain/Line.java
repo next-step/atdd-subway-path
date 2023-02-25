@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.DuplicatedDownStationException;
 import nextstep.subway.exception.NotEqualLastStationException;
+import nextstep.subway.exception.NotLastStationException;
+import nextstep.subway.exception.SingleSectionException;
 
 import javax.persistence.*;
 import java.util.List;
@@ -61,6 +63,16 @@ public class Line {
 
     public String getName() {
         return name;
+    }
+
+    public void removeSection(Station station) {
+        if (!sections.isLastStation(station)) {
+            throw new NotLastStationException();
+        }
+        if (sections.isSingleSection()) {
+            throw new SingleSectionException();
+        }
+        sections.remove();
     }
 
     public void setName(String name) {
