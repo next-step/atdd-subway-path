@@ -14,7 +14,6 @@ public enum ErrorCode {
     STATIONS_NOT_CONNECTED(HttpStatus.BAD_REQUEST.value(), "출발역과 도착역이 연결이 되어 있지 않은 경우에는 경로를 찾을 수 없습니다"),
     NOT_EXISTS_STATIONS(HttpStatus.BAD_REQUEST.value(), "존재하지 않은 출발역이나 도착역을 조회 할 경우에는 경로를 찾을 수 없습니다");
 
-
     private int status;
     private String errorMessage;
 
