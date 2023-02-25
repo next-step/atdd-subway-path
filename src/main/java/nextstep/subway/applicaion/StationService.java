@@ -54,6 +54,14 @@ public class StationService {
         );
     }
 
+    public StationResponse findStationById(Long id) {
+        final Station station = findById(id);
+        return new StationResponse(
+            station.getId(),
+            station.getName()
+        );
+    }
+
     public Station findById(Long id) {
         return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
