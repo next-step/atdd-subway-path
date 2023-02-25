@@ -13,7 +13,7 @@ public class PathFinder {
 
     private DijkstraShortestPath dijkstraShortestPath;
 
-    public PathFinder(DijkstraShortestPath dijkstraShortestPath) {
+    private PathFinder(DijkstraShortestPath dijkstraShortestPath) {
         this.dijkstraShortestPath = dijkstraShortestPath;
     }
 
