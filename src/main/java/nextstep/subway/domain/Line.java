@@ -4,7 +4,6 @@ import nextstep.subway.exception.DuplicatedDownStationException;
 import nextstep.subway.exception.NotEqualLastStationException;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,6 +44,11 @@ public class Line {
 
     public int getSumDistance() {
         return sections.calcDistance();
+    }
+
+
+    public List<Station> getAllStations() {
+        return sections.getStations();
     }
 
     public Long getId() {
