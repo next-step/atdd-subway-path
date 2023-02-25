@@ -11,14 +11,15 @@ public class SectionDeleteStrategies {
 
     public SectionDeleteStrategies() {
         this.strategies = List.of(
-            new DownmostSectionDeleteStrategy(),
-            new MiddleSectionDeleteStrategy()
+            new UpmostSectionDeleteStrategy(),
+            new MiddleSectionDeleteStrategy(),
+            new DownmostSectionDeleteStrategy()
         );
     }
 
     public ChangeableSections findChangeableSections(Sections sections, Long stationId, Line line) {
         return strategies.stream()
-            .filter(strategy -> strategy.meetCondition(sections, stationId))
+            .filter(strategy -> strategy.isValidCondition(sections, stationId))
             .map(strategy -> strategy.findChangeableSections(sections, stationId, line))
             .findFirst()
             .orElseThrow(() -> new CannotDeleteSectionException("던져지면 안되는 예외입니다."));

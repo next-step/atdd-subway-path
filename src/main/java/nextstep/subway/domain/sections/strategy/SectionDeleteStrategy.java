@@ -4,7 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.sections.Sections;
 
 public interface SectionDeleteStrategy {
-    boolean meetCondition(Sections sections, Long stationId);
+    boolean isValidCondition(Sections sections, Long stationId);
 
     ChangeableSections findChangeableSections(Sections sections, Long stationId, Line line);
 }

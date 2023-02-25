@@ -113,6 +113,7 @@ class SectionsTest {
     void deleteMiddleSection() {
         // given
         sections.addSection(Fixtures.createSection(4L, line, Fixtures.미금역, Fixtures.광교역, 10), line);
+        int totalDistance = sections.getTotalDistance();
 
         // when
         sections.deleteSection(Fixtures.미금역.getId(), line);
@@ -121,7 +122,22 @@ class SectionsTest {
         // then
         assertAll(
             () -> assertThat(stations).hasSize(3),
-            () -> assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역, Fixtures.광교역)
+            () -> assertThat(stations).containsExactly(Fixtures.판교역, Fixtures.정자역, Fixtures.광교역),
+            () -> assertThat(sections.getTotalDistance()).isEqualTo(totalDistance)
+        );
+    }
+
+    @Test
+    @DisplayName("노선의 최상행역을 삭제한다.")
+    void deleteUpmostStation() {
+        // when
+        sections.deleteSection(Fixtures.판교역.getId(), line);
+        List<Station> stations = sections.getStations();
+
+        // then
+        assertAll(
+            () -> assertThat(stations).hasSize(2),
+            () -> assertThat(stations).containsExactly(Fixtures.정자역, Fixtures.미금역)
         );
     }
 
@@ -141,14 +157,6 @@ class SectionsTest {
     void deleteNonExistingDownStation() {
         // then
         assertThatThrownBy(() -> sections.deleteSection(Fixtures.광교역.getId(), line))
-            .isInstanceOf(CannotDeleteSectionException.class);
-    }
-
-    @Test
-    @DisplayName("노선의 최상행역을 삭제하려 할 경우 예외를 던진다.")
-    void deleteUpmostStation() {
-        // then
-        assertThatThrownBy(() -> sections.deleteSection(Fixtures.판교역.getId(), line))
             .isInstanceOf(CannotDeleteSectionException.class);
     }
 

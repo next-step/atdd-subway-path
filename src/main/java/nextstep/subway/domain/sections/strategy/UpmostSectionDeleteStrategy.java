@@ -6,7 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.sections.Sections;
 
-public class DownmostSectionDeleteStrategy implements SectionDeleteStrategy {
+public class UpmostSectionDeleteStrategy implements SectionDeleteStrategy {
     @Override
     public boolean isValidCondition(Sections sections, Long stationId) {
         List<Section> sectionsList = sections.getValue();
@@ -14,14 +14,14 @@ public class DownmostSectionDeleteStrategy implements SectionDeleteStrategy {
             return false;
         }
 
-        return sectionsList.get(sectionsList.size() - 1).isSameDownStation(stationId);
+        return sectionsList.get(0).isSameUpStation(stationId);
     }
 
     @Override
     public ChangeableSections findChangeableSections(Sections sections, Long stationId, Line line) {
         List<Section> sectionsList = sections.getValue();
 
-        Section deprecatedSection = sectionsList.get(sectionsList.size() - 1);
+        Section deprecatedSection = sectionsList.get(0);
 
         return new ChangeableSections(List.of(), List.of(deprecatedSection));
     }

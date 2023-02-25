@@ -35,7 +35,7 @@ class MiddleSectionAddStrategyTest {
     void meetCondition() {
         Section newSection = Fixtures.createSection(3L, line, Fixtures.판교역, newStation, 7);
 
-        assertThat(new MiddleSectionAddStrategy().meetCondition(sections, newSection)).isTrue();
+        assertThat(new MiddleSectionAddStrategy().isValidCondition(sections, newSection)).isTrue();
     }
 
     @ParameterizedTest(name = "새로운 구간의 길이가 본 구간의 길이보다 같거나 클 경우 조건을 만족하지 않는다; {0}")
@@ -43,7 +43,7 @@ class MiddleSectionAddStrategyTest {
     void distanceLongerThanLineSection(int distance) {
         Section newSection = Fixtures.createSection(3L, line, Fixtures.판교역, newStation, distance);
 
-        assertThatThrownBy(() -> new MiddleSectionAddStrategy().meetCondition(sections, newSection))
+        assertThatThrownBy(() -> new MiddleSectionAddStrategy().isValidCondition(sections, newSection))
             .isInstanceOf(CannotAddSectionException.class)
             .hasMessageContaining("새로운 구간의 길이는 본 구간의 길이보다 짧아야 합니다");
     }
@@ -53,7 +53,7 @@ class MiddleSectionAddStrategyTest {
     void notSameUpStation() {
         Section newSection = Fixtures.createSection(3L, line, newStation, Fixtures.판교역, 5);
 
-        assertThat(new MiddleSectionAddStrategy().meetCondition(sections, newSection)).isFalse();
+        assertThat(new MiddleSectionAddStrategy().isValidCondition(sections, newSection)).isFalse();
     }
 
     @Test

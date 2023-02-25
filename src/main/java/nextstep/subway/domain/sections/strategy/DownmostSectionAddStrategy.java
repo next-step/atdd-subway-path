@@ -8,7 +8,7 @@ import nextstep.subway.domain.sections.Sections;
 
 public class DownmostSectionAddStrategy implements SectionAddStrategy {
     @Override
-    public boolean meetCondition(Sections sections, Section newSection) {
+    public boolean isValidCondition(Sections sections, Section newSection) {
         List<Section> sectionsList = sections.getValue();
         if (sectionsList.isEmpty()) {
             return false;
