@@ -27,7 +27,21 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("지하철 노선의 역들을 조회할 수 있다.")
     void getStations() {
+        //given
+        Line line = new Line("2호선", "green");
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 삼성역 = new Station("삼성역");
+        line.addSection(강남역, 역삼역, 10);
+        line.addSection(역삼역, 삼성역, 5);
+
+        //when
+        List<Station> result = line.getAllStations();
+
+        //then
+        assertThat(result).containsExactly(강남역, 역삼역, 삼성역);
     }
 
     @Test

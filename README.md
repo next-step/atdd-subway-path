@@ -11,7 +11,7 @@
 > - [ ] 지하철 구간 관련 단위 테스트를 완성하세요.
 >  - [ ] 구간 단위 테스트 (LineTest)
 >    - [x] addSection()
->    - [ ] getStations()
+>    - [x] getStations()
 >    - [ ] removeSection()
 >  - [ ] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
 >  - [ ] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
