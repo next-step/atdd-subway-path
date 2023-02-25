@@ -185,4 +185,8 @@ public class Sections {
                 .forEach(sectionsVO::add);
         return sectionsVO;
     }
+
+    public boolean isContainStation(Station station) {
+        return sections.stream().anyMatch(section -> section.isContainStation(station));
+    }
 }

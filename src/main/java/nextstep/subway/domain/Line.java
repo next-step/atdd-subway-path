@@ -53,4 +53,8 @@ public class Line {
     public boolean hasSection() {
         return sections.hasSection();
     }
+
+    public boolean isContainStation(Station station) {
+        return sections.isContainStation(station);
+    }
 }
