@@ -4,6 +4,7 @@ import nextstep.subway.ui.PathResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,8 +50,6 @@ class PathFinderTest {
     @Test
     void 최단경로_조회() {
         // given
-        PathFinder pathFinder = new PathFinder();
-
         Line 삼호선 = new Line("3호선", "주황");
         삼호선.addSection(교대역, 남부터미널역, 3);
         삼호선.addSection(남부터미널역, 양재역, 3);
@@ -60,6 +59,8 @@ class PathFinderTest {
 
         Line 신분당선 = new Line("신분당선", "빨강");
         신분당선.addSection(강남역, 양재역, 10);
+
+        PathFinder pathFinder = PathFinder.create(List.of(삼호선, 이호선, 신분당선));
 
         // when
         PathResponse result = pathFinder.findShortestPath(교대역, 양재역);
