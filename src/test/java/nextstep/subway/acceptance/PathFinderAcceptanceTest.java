@@ -96,7 +96,7 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
 
         // then
         assertAll(() -> {
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
         });
     }
 

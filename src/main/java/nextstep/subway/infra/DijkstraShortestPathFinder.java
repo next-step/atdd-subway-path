@@ -2,10 +2,13 @@ package nextstep.subway.infra;
 
 import nextstep.subway.applicaion.PathFinder;
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.EntityNotFoundException;
+import nextstep.subway.exception.InvalidInputException;
+import nextstep.subway.exception.StationsNotConnectedException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Component
 public class DijkstraShortestPathFinder implements PathFinder {
@@ -32,7 +36,16 @@ public class DijkstraShortestPathFinder implements PathFinder {
 
         GraphPath graphPath = dijkstraShortestPath.getPath(source, target);
         validateNotConnected(graphPath);
-        return PathResponse.of(graphPath.getVertexList(), dijkstraShortestPath.getPathWeight(source, target));
+
+        List<Station> vertexList = graphPath.getVertexList();
+        double distance = graphPath.getWeight();
+
+        List<StationResponse> stations = vertexList.stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
+
+
+        return new PathResponse(stations, distance);
     }
 
     private void setGraph(Section section) {
@@ -43,7 +56,7 @@ public class DijkstraShortestPathFinder implements PathFinder {
 
     private void validatePathFinder(List<Line> lines, Station source, Station target) {
         if (Objects.equals(source, target)) {
-            throw new IllegalArgumentException("The departure and arrival stations must not be the same.");
+            throw new InvalidInputException("The departure and arrival stations must not be the same.");
         }
 
         checkExistStationsInLines(lines, source, target);
@@ -51,7 +64,7 @@ public class DijkstraShortestPathFinder implements PathFinder {
 
     private void validateNotConnected(GraphPath graphPath) {
         if (Objects.isNull(graphPath)) {
-            throw new IllegalArgumentException("Unconnected station.");
+            throw new StationsNotConnectedException("Unconnected station.");
         }
     }
 
