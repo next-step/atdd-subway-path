@@ -35,9 +35,23 @@ public class DijkstraPathFinder implements PathFinder {
 
     @Override
     public Path findShortestPath(Station source, Station target) {
-        List<Station> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
+        if (source.equals(target)) {
+            throw new SameStationPathException("");
+        }
+
+        List<Station> shortestPath = getPath(source, target);
         int shortestDistance = (int) dijkstraShortestPath.getPathWeight(source, target);
 
         return Path.create(shortestPath, shortestDistance);
+    }
+
+    private List<Station> getPath(Station source, Station target) {
+        try {
+            return dijkstraShortestPath.getPath(source, target).getVertexList();
+        } catch (IllegalArgumentException e) {
+            throw new CanNotFindStationInPathException("출발역이나 도착역이 존재하지 않습니다");
+        } catch (NullPointerException e) {
+            throw new NotExistsPathException("출발역과 도착역이 연결이 되어 있지 않습니");
+        }
     }
 }
