@@ -117,22 +117,20 @@ public class Sections {
         if (!hasStation(station)) {
             throw new CanNotRemoveSectionException("존재하지 않는 역인 경우 구간 제거 불가");
         }
-        
-        Optional<Section> upperSectionOpt = sections.stream()
-                .filter(it -> it.getDownStation().equals(station))
-                .findFirst();
 
-        Optional<Section> lowerSectionOpt = sections.stream()
-                .filter(it -> it.getUpStation().equals(station))
-                .findFirst();
+        List<Section> list = this.sections.stream()
+                .filter(it -> it.getDownStation().equals(station) || it.getUpStation().equals(station))
+                .collect(Collectors.toList());
 
-        upperSectionOpt.ifPresent(section -> sections.remove(section));
-        lowerSectionOpt.ifPresent(section -> sections.remove(section));
-
-        if (upperSectionOpt.isPresent() && lowerSectionOpt.isPresent()) {
-            Section newSection = upperSectionOpt.get().merge(lowerSectionOpt.get());
-            sections.add(newSection);
+        if (list.size() == 1) {
+            sections.remove(list.get(0));
+            return;
         }
+
+        Section newSection = list.get(0).merge(list.get(1));
+
+        sections.removeAll(list);
+        sections.add(newSection);
     }
 
     @Override
