@@ -86,6 +86,24 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
+
+    /**
+     * When 존재하지 않는 역을 지하철 노선에서 제거하는 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("존재하지 않는 역을 지하철 노선에서 제거")
+    @Test
+    void removeNotExistsStation1() {
+        // given
+        Long 존재하지_않는_역 = Long.MAX_VALUE;
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 존재하지_않는_역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
+    }
+
     /**
      * Given 지하철 노선에 구간이 하나만 존재할 때
      * When 역을 제거하는 경우
