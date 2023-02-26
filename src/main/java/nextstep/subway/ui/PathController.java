@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.domain.*;
+import nextstep.subway.infra.DijkstraPathFinder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,7 +26,7 @@ public class PathController {
         Station targetStation = stationRepository.findById(target).orElseThrow(IllegalArgumentException::new);
 
         List<Line> allLines = lineRepository.findAll();
-        PathFinder pathFinder = PathFinder.create(allLines);
+        PathFinder pathFinder = DijkstraPathFinder.create(allLines);
         Path path = pathFinder.findShortestPath(sourceStation, targetStation);
 
         return ResponseEntity.ok(PathResponse.from(path));
