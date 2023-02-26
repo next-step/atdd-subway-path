@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.ui.PathResponse;
+import nextstep.subway.infra.DijkstraPathFinder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,13 +60,13 @@ class PathFinderTest {
         Line 신분당선 = new Line("신분당선", "빨강");
         신분당선.addSection(강남역, 양재역, 10);
 
-        PathFinder pathFinder = PathFinder.create(List.of(삼호선, 이호선, 신분당선));
+        PathFinder pathFinder = DijkstraPathFinder.create(List.of(삼호선, 이호선, 신분당선));
 
         // when
-        PathResponse result = pathFinder.findShortestPath(교대역, 양재역);
+        Path result = pathFinder.findShortestPath(교대역, 양재역);
 
         assertAll(() -> {
-            assertThat(result.getDistance()).isEqualTo(6);
+            assertThat(result.getDistance()).isEqualTo(Distance.of(6));
             assertThat(result.getStations().stream().map(s -> s.getName()).collect(Collectors.toList())).containsExactly(교대역_이름, 남부터미널역_이름, 양재역_이름);
         });
     }

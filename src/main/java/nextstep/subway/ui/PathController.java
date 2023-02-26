@@ -26,8 +26,8 @@ public class PathController {
 
         List<Line> allLines = lineRepository.findAll();
         PathFinder pathFinder = PathFinder.create(allLines);
-        PathResponse pathResponse = pathFinder.findShortestPath(sourceStation, targetStation);
+        Path path = pathFinder.findShortestPath(sourceStation, targetStation);
 
-        return ResponseEntity.ok(pathResponse);
+        return ResponseEntity.ok(PathResponse.from(path));
     }
 }
