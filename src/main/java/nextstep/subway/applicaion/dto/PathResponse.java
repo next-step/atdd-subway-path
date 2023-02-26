@@ -1,6 +1,5 @@
-package nextstep.subway.ui;
+package nextstep.subway.applicaion.dto;
 
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Path;
 
 import java.util.List;
