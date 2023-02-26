@@ -55,4 +55,8 @@ public class Section {
     public int hashCode() {
         return Objects.hash(getId(), getUpStation(), getDownStation(), getDistance(), getLine());
     }
+
+    public boolean isContainStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
 }

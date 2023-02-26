@@ -98,4 +98,8 @@ public class LineService {
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
     }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
 }
