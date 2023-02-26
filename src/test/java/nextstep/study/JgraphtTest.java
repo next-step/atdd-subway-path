@@ -1,15 +1,15 @@
 package nextstep.study;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+
+import java.util.List;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 class JgraphtTest {
@@ -30,6 +30,44 @@ class JgraphtTest {
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
 
         assertThat(shortestPath.size()).isEqualTo(3);
+    }
+
+    @Test
+    void notConnect() {
+        String source = "v3";
+        String target = "v1";
+
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        graph.addVertex("v1");
+        graph.addVertex("v2");
+        graph.addVertex("v3");
+        graph.addVertex("v4");
+        graph.setEdgeWeight(graph.addEdge("v1", "v2"), 2);
+        graph.setEdgeWeight(graph.addEdge("v3", "v4"), 2);
+
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        final GraphPath path = dijkstraShortestPath.getPath(source, target);
+
+        assertThat(path).isNull();
+    }
+
+    @Test
+    void notContain() {
+        String source = "v3";
+        String target = "v1";
+
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        graph.addVertex("v1");
+        graph.addVertex("v2");
+        graph.addVertex("v3");
+        graph.addVertex("v4");
+        graph.setEdgeWeight(graph.addEdge("v1", "v2"), 2);
+        graph.setEdgeWeight(graph.addEdge("v3", "v4"), 2);
+
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        assertThatIllegalArgumentException()
+            .isThrownBy(() -> dijkstraShortestPath.getPath("v5", target));
+
     }
 
     @Test
