@@ -12,16 +12,20 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CannotCreateSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 import nextstep.subway.exception.ErrorMessage;
 import nextstep.subway.exception.InvalidArgumentException;
 
 class LineTest {
+	private Station 강남역;
+	private Station 선릉역;
+
 	@DisplayName("구간 추가 - 새로운 역이 상행 종점역과 하행 종점역 사이로 하는 구간 생성")
 	@Test
 	void addSectionBetweenUpStationAndDownStation() {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 		Station 역삼역 = new Station("역삼역");
 		Line 이호선 = new Line("2호선", "green");
 
@@ -37,8 +41,8 @@ class LineTest {
 	@Test
 	void addSectionBetweenUpStationAndDownStation_assertDistance() {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 		Station 역삼역 = new Station("역삼역");
 		Line 이호선 = new Line("2호선", "green");
 
@@ -58,8 +62,8 @@ class LineTest {
 	@ValueSource(ints = {10, 11, 12})
 	void addSectionBetweenUpStationAndDownStation_fail(int distance) {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 		Station 역삼역 = new Station("역삼역");
 		Line 이호선 = new Line("2호선", "green");
 
@@ -76,8 +80,8 @@ class LineTest {
 	@Test
 	void addSection_fail_should_be_include_station_or_down_station() {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 		Station 삼성역 = new Station("삼성역");
 		Station 교대역 = new Station("교대역");
 
@@ -96,8 +100,8 @@ class LineTest {
 	@Test
 	void addSection_fail_should_exist_new_station() {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 
 		Line 이호선 = new Line("2호선", "green");
 
@@ -114,8 +118,8 @@ class LineTest {
 	@Test
 	void addSectionToUpStation() {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 		Station 교대역 = new Station("교대역");
 		Line 이호선 = new Line("2호선", "green");
 
@@ -130,8 +134,8 @@ class LineTest {
 	@Test
 	void addSectionToDownStation() {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 		Station 삼성역 = new Station("삼성역");
 		Line 이호선 = new Line("2호선", "green");
 
@@ -146,8 +150,8 @@ class LineTest {
 	@Test
 	void addSection() {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 		Line 이호선 = new Line("2호선", "green");
 
 		// When
@@ -171,12 +175,12 @@ class LineTest {
 		assertThat(이호선.getStations()).containsExactly(강남역, 선릉역);
 	}
 
-	@DisplayName("구간 삭제")
+	@DisplayName("구간 삭제 - 하행 종점 역을 삭제")
 	@Test
-	void removeSection() {
+	void removeSectionByFinalDownStation() {
 		// Given
-		Station 강남역 = new Station("강남역");
-		Station 선릉역 = new Station("선릉역");
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
 		Station 삼성역 = new Station("삼성역");
 
 		Line 이호선 = new Line("2호선", "green");
@@ -188,5 +192,94 @@ class LineTest {
 
 		// Then
 		assertThat(이호선.getStations()).containsExactly(강남역, 선릉역);
+	}
+
+	@DisplayName("구간 삭제 - 상행 종점 역을 삭제")
+	@Test
+	void removeSectionByFinalUpStation() {
+		// Given
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
+		Station 삼성역 = new Station("삼성역");
+
+		Line 이호선 = new Line("2호선", "green");
+		이호선.addSection(강남역, 선릉역, 10);
+		이호선.addSection(선릉역, 삼성역, 20);
+
+		// When
+		이호선.removeSection(강남역);
+
+		// Then
+		assertThat(이호선.getStations()).containsExactly(선릉역, 삼성역);
+	}
+
+	@DisplayName("구간 삭제 - 가운데 역을 삭제")
+	@Test
+	void removeSectionByMiddleStation() {
+		// Given
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
+		Station 삼성역 = new Station("삼성역");
+
+		Line 이호선 = new Line("2호선", "green");
+		이호선.addSection(강남역, 선릉역, 10);
+		이호선.addSection(선릉역, 삼성역, 20);
+
+		// When
+		이호선.removeSection(선릉역);
+
+		// Then
+		assertThat(이호선.getStations()).containsExactly(강남역, 삼성역);
+	}
+
+	@DisplayName("구간 삭제 - 가운데 역을 삭제 - 새로운 구간의 거리 검증")
+	@Test
+	void removeSectionByMiddleStation_then_assert_new_section_distance() {
+		// Given
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
+		Station 삼성역 = new Station("삼성역");
+
+		Line 이호선 = new Line("2호선", "green");
+		이호선.addSection(강남역, 선릉역, 10);
+		이호선.addSection(선릉역, 삼성역, 20);
+
+		// When
+		이호선.removeSection(선릉역);
+
+		// Then
+		int 새로운_구간_거리 = 이호선.getSections().getSections().get(0).getDistance();
+		assertThat(새로운_구간_거리).isEqualTo(30);
+	}
+
+	@DisplayName("구간 삭제 예외 - 존재하지 않는 역을 삭제하면 예외 발생")
+	@Test
+	void removeSection_fail_not_existed_station() {
+		// Given
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
+		Station 삼성역 = new Station("삼성역");
+		Station 도심역 = new Station("도심역");
+
+		Line 이호선 = new Line("2호선", "green");
+		이호선.addSection(강남역, 선릉역, 10);
+		이호선.addSection(선릉역, 삼성역, 20);
+
+		// Then
+		assertThatThrownBy(() -> 이호선.removeSection(도심역)).isInstanceOf(CannotRemoveSectionException.class);
+	}
+
+	@DisplayName("구간 삭제 예외 - 노선에 구간이 하나일 때 삭제하면 예외 발생")
+	@Test
+	void removeSection_fail_when_line_has_only_one_section() {
+		// Given
+		강남역 = new Station("강남역");
+		선릉역 = new Station("선릉역");
+
+		Line 이호선 = new Line("2호선", "green");
+		이호선.addSection(강남역, 선릉역, 10);
+
+		// Then
+		assertThatThrownBy(() -> 이호선.removeSection(선릉역)).isInstanceOf(CannotRemoveSectionException.class);
 	}
 }
