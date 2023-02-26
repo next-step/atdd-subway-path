@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,13 +23,12 @@ import java.util.stream.Collectors;
 @Transactional
 @SpringBootTest
 class PathServiceTest {
-    private Station gyodaeStation;
-    private Station gangnamStation;
-    private Station yangjaeStation;
-    private Station nambuTerminalStation;
     private Line lineTwo;
     private Line lineShinbundang;
     private Line lineThree;
+
+    @Autowired
+    private StationRepository stationRepository;
 
     @Autowired
     private LineRepository lineRepository;
@@ -45,10 +45,10 @@ class PathServiceTest {
      */
     @BeforeEach
     void setUp() {
-        gyodaeStation = new Station("교대역");
-        gangnamStation = new Station("강남역");
-        yangjaeStation = new Station("양재역");
-        nambuTerminalStation = new Station("남부터미널역");
+        Station gyodaeStation = stationRepository.save(new Station("교대역"));
+        Station gangnamStation = stationRepository.save(new Station("강남역"));
+        Station yangjaeStation = stationRepository.save(new Station("양재역"));
+        Station nambuTerminalStation = stationRepository.save(new Station("남부터미널역"));
 
         lineTwo = new Line("2호선", "green");
         lineTwo.addSection(gyodaeStation, gangnamStation, 10);
@@ -72,7 +72,7 @@ class PathServiceTest {
         lineRepository.save(lineShinbundang);
 
         //when
-        PathResponse shortestPath = pathService.getShortestPath(1L, 3L);
+        PathResponse shortestPath = pathService.getShortestPath(2L, 4L);
 
         //then
         List<String> StationNames = getStationNames(shortestPath);
