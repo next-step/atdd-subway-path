@@ -1,8 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.exception.EntityAlreadyExistsException;
-import nextstep.subway.domain.exception.EntityCannotRemoveException;
-import nextstep.subway.domain.exception.EntityNotFoundException;
+import nextstep.subway.exception.EntityAlreadyExistsException;
+import nextstep.subway.exception.EntityCannotRemoveException;
+import nextstep.subway.exception.EntityNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -14,6 +14,13 @@ import java.util.stream.Collectors;
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
+
+    public Sections() {
+    }
+
+    public Sections(List<Section> sections) {
+        this.sections = new ArrayList<>(sections);
+    }
 
     public void addSection(Section newSection) {
         if (sections.isEmpty()) {
@@ -138,7 +145,7 @@ public class Sections {
                 .findFirst().orElseThrow(() -> new EntityNotFoundException(downStation.getId(), "DownStation"));
     }
 
-    private boolean isContainsStation(Station station) {
+    public boolean isContainsStation(Station station) {
         List<Station> stations = getStations();
         return stations.contains(station);
     }
@@ -212,5 +219,9 @@ public class Sections {
         nextSection.modifyUpStation(section);
 
         sections.remove(section);
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

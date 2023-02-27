@@ -27,7 +27,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     // given
     private Long 장승배기역;
     private Long 상도역;
-    private int 강남역_양재역_거리 = 10;
+    private int distance = 10;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -54,7 +54,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addLineSection() {
         // when
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, distance));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -80,7 +80,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 신사역, 양재역),
                 () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(10),
-                () -> assertThat(강남역_양재역_거리 - 강남역_신사역_거리).isEqualTo(4)
+                () -> assertThat(distance - 강남역_신사역_거리).isEqualTo(4)
         );
     }
 
@@ -93,7 +93,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void addLineSection_BetweenExistingSection_WithLastUpStation() {
         // when
         Long 신논현역 = 지하철역_생성_한다("신논현역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, 6));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, distance));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -193,7 +193,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeLineSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, distance));
 
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
@@ -214,7 +214,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeLineSection_WithLastEndSection() {
         // given
         Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역, distance));
 
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
@@ -237,7 +237,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeLineSection_WithMiddleSection() {
         // given
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
         // when
         지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
@@ -247,8 +247,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역),
-                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역),
-                () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(강남역_양재역_거리 + 6)
+                () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance + 6)
         );
     }
 
@@ -288,24 +287,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
         lineCreateParams.put("color", "bg-red-600");
         lineCreateParams.put("upStationId", upStationId + "");
         lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", 강남역_양재역_거리 + "");
+        lineCreateParams.put("distance", distance + "");
         return lineCreateParams;
-    }
-
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
-        return params;
-    }
-
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId + "");
-        params.put("downStationId", downStationId + "");
-        params.put("distance", distance + "");
-        return params;
     }
 
     private Long getLastStationId(List<Long> list) {

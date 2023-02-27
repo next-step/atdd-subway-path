@@ -1,8 +1,6 @@
 package nextstep.subway.ui;
 
-import nextstep.subway.domain.exception.EntityAlreadyExistsException;
-import nextstep.subway.domain.exception.EntityCannotRemoveException;
-import nextstep.subway.domain.exception.EntityNotFoundException;
+import nextstep.subway.exception.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,5 +31,15 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgsException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<Void> handleInvalidInputException(InvalidInputException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(StationsNotConnectedException.class)
+    public ResponseEntity<Void> handleStationsNotConnectedException(StationsNotConnectedException e) {
+        return ResponseEntity.notFound().build();
     }
 }

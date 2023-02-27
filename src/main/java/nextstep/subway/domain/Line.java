@@ -12,14 +12,24 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private Sections sections;
 
-    private Line() {
+    public Line() {
+    }
+
+    private Line(Long id, String name, String color, Sections sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(null, name, color, new Sections());
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this(null, name, color, new Sections(List.of(new Section(upStation, downStation, distance))));
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
@@ -50,15 +60,19 @@ public class Line {
         return sections.getDistance();
     }
 
-    public void setName(String name) {
+    public void setLineName(String name) {
         this.name = name;
     }
 
-    public void setColor(String color) {
+    public void setLineColor(String color) {
         this.color = color;
     }
 
     public void removeSection(Station station) {
         sections.removeSection(station);
+    }
+
+    public boolean isContainsStation(Station station) {
+        return sections.isContainsStation(station);
     }
 }
