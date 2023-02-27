@@ -195,7 +195,7 @@ class LineTest {
     void removeLineSectionExceptionStationNotInLine() {
         // given
         Station 정자역 = new Station("정자역");
-        Station 신사역 = new Station("정자역");
+        Station 신사역 = new Station("신사역");
         신분당선.addSection(판교역, 정자역, 3);
 
         // when & then
