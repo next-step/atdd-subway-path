@@ -1,15 +1,21 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.PathSteps.구간_조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static org.assertj.core.api.Assertions.*;
 
 public class PathAcceptanceTest extends AcceptanceTest {
 
@@ -43,48 +49,16 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * When 지하철 경로를 조회한다.
      * Then 최단 구간이 조회 된다.
      */
-    @DisplayName("경로 조회 성공")
+    @DisplayName("경로 조회")
     @Test
     void getPath_success() {
-        // given
-
         // when
+        ExtractableResponse<Response> response = 구간_조회_요청(교대역, 양재역);
 
         // then
-
-    }
-
-    @DisplayName("경로 조회 실패 : 출발역과 도착역이 같은 경우")
-    @Test
-    void getPath_fail1() {
-        // given
-
-        // when
-
-        // then
-
-    }
-
-    @DisplayName("경로 조회 실패 : 출발역과 도착역이 연결이 되어 있지 않은 경우")
-    @Test
-    void getPath_fail2() {
-        // given
-
-        // when
-
-        // then
-
-    }
-
-    @DisplayName("경로 조회 실패 : 존재하지 않은 출발역이나 도착역을 조회할 경우")
-    @Test
-    void getPath_fail3() {
-        // given
-
-        // when
-
-        // then
-
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.name")).contains("교대역", "남부터미널역", "양재역");
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
