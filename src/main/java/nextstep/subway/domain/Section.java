@@ -69,11 +69,11 @@ public class Section {
     }
 
     public boolean equalDownStation(Station station) {
-        return this.downStation == station;
+        return this.downStation.equals(station);
     }
 
     public boolean equalUpStation(Station station) {
-        return this.upStation == station;
+        return this.upStation.equals(station);
     }
 
     public void updateStation(Section section) {

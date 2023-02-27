@@ -136,7 +136,7 @@ public class Sections {
     }
 
     public void removeSection(Section removeSection) {
-        this.sections.removeIf(section -> section == removeSection);
+        this.sections.removeIf(section -> section.equals(removeSection));
     }
 
     public void addMergeSection(Line line, Section firstSection, Section secondSection) {

@@ -21,7 +21,7 @@ public class SubwayGraph extends WeightedMultigraph<Station, SectionEdge> {
     }
 
     private void validateStation(Station sourceStation, Station targetStation) {
-        if (sourceStation == targetStation) {
+        if (sourceStation.equals(targetStation)) {
             throw new IllegalArgumentException("출발역과 도착역이 같은 경우 경로 조회를 할 수 없습니다.");
         }
     }
