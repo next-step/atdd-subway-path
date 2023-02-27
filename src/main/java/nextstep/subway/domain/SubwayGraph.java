@@ -15,8 +15,8 @@ public class SubwayGraph extends WeightedMultigraph<Station, SectionEdge> {
 
     public SubwayPath findSubwayPath(Station sourceStation, Station targetStation) {
         validateStation(sourceStation, targetStation);
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(this);
-        GraphPath path = dijkstraShortestPath.getPath(sourceStation, targetStation);
+        DijkstraShortestPath<Station, SectionEdge> dijkstraShortestPath = new DijkstraShortestPath<>(this);
+        GraphPath<Station, SectionEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
         return getSubwayPath(path);
     }
 
@@ -26,7 +26,7 @@ public class SubwayGraph extends WeightedMultigraph<Station, SectionEdge> {
         }
     }
 
-    private SubwayPath getSubwayPath(GraphPath path) {
+    private SubwayPath getSubwayPath(GraphPath<Station, SectionEdge> path) {
         List<Station> stations = path.getVertexList();
         List<SectionEdge> sectionEdges = path.getEdgeList();
         return new SubwayPath(stations, sectionEdges);
