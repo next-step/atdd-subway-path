@@ -7,25 +7,20 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
-
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Station firstStation;
-
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Station lastStation;
 
     public Sections() {
 
@@ -34,7 +29,7 @@ public class Sections {
     public void addSection(Section section) {
         validateAddSection(section);
 
-        AddSectionPolicy policy = AddSectionPolicyFactory.of(this, sections, section, firstStation, lastStation);
+        AddSectionPolicy policy = AddSectionPolicyFactory.of(this, sections, section);
         policy.execute();
     }
 
@@ -43,15 +38,7 @@ public class Sections {
     }
 
     public boolean isEmpty(){
-        return sections.size() == 0;
-    }
-
-    public void changeFirstStation(Station station) {
-        firstStation = station;
-    }
-
-    public void changeLastStation(Station station) {
-        lastStation = station;
+        return sections.isEmpty();
     }
 
     public List<Station> getStations() {
@@ -72,7 +59,27 @@ public class Sections {
             return sections.get(0);
         }
 
-        return getStationIncludeSection(firstStation);
+        return getStationIncludeSection(getFirstStation());
+    }
+
+    public Station getFirstStation() {
+        Set<Station> allDownStations = sections.stream().map(Section::getDownStation).collect(Collectors.toSet());
+
+        return sections.stream()
+                .filter(sec -> !allDownStations.contains(sec.getUpStation()))
+                .findAny()
+                .map(Section::getUpStation)
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    public Station getLastStation() {
+        Set<Station> allUpStations = sections.stream().map(Section::getUpStation).collect(Collectors.toSet());
+
+        return sections.stream()
+                .filter(sec -> !allUpStations.contains(sec.getDownStation()))
+                .findAny()
+                .map(Section::getDownStation)
+                .orElseThrow(NoSuchElementException::new);
     }
 
     private Section getStationIncludeSection(Station station) {
@@ -84,16 +91,14 @@ public class Sections {
     public void removeSection(Station station) {
         validateRemoveSection();
 
-        if (station.equals(firstStation)) {
-            Section section = getStationIncludeSection(firstStation);
-            firstStation = section.getDownStation();
+        if (station.equals(getFirstStation())) {
+            Section section = getStationIncludeSection(getFirstStation());
             sections.remove(section);
             return;
         }
 
-        if (station.equals(lastStation)) {
-            Section section = getStationIncludeSection(lastStation);
-            lastStation = section.getUpStation();
+        if (station.equals(getLastStation())) {
+            Section section = getStationIncludeSection(getLastStation());
             sections.remove(section);
             return;
         }
