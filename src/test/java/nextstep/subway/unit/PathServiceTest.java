@@ -47,7 +47,7 @@ public class PathServiceTest {
         when(lineService.findAllLine()).thenReturn(List.of(이호선, 신분당선, 삼호선));
         when(stationService.findById(1L)).thenReturn(new Station("교대역"));
         when(stationService.findById(2L)).thenReturn(new Station("강남역"));
-        when(stationService.findById(3L)).thenReturn( new Station("양재역"));
+        when(stationService.findById(3L)).thenReturn(new Station("양재역"));
         when(stationService.findById(4L)).thenReturn(new Station("남부터미널역"));
 
         //When :

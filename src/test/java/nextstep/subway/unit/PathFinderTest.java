@@ -43,12 +43,12 @@ public class PathFinderTest {
         삼호선.addSection(남부터미널역, 양재역, 3);
     }
 
-    @DisplayName("")
+    @DisplayName("pathFinder의 findPath 검증")
     @Test
     void findPath() {
         List<Line> lines = List.of(이호선, 신분당선, 삼호선);
         PathFinder pathFinder = new PathFinder(lines);
-        Path path = pathFinder.findPath(교대역.getId(), 양재역.getId());
+        Path path = pathFinder.findPath(교대역, 양재역);
         assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(path.getDistance()).isEqualTo(5);
     }

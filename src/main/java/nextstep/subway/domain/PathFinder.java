@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.PathResponse;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -37,13 +38,18 @@ public class PathFinder {
         lines.stream()
                 .map(line -> line.getSections())
                 .forEach(sections -> sections.stream()
-                        .forEach(section -> graph.addEdge(
-                                section.getUpStation(), section.getDownStation(), section.getDistance())
+                        .forEach(section -> graph.setEdgeWeight(
+                                graph.addEdge(section.getUpStation(), section.getDownStation()),
+                                section.getDistance())
                         )
                 );
     }
 
-    public Path findPath(Long sourceId, Long targetId) {
-
+    public Path findPath(Station source, Station target) {
+        GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
+        return new Path(
+                shortestPath.getVertexList(),
+                (int) shortestPath.getWeight()
+        );
     }
 }
