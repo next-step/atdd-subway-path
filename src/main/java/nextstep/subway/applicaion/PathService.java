@@ -18,7 +18,6 @@ public class PathService {
 
     @Transactional(readOnly = true)
     public PathResponse getPath(Long source, Long target) {
-        return new PathFinder(lineService.findLines(), stationService.findById(source), stationService.findById(target))
-                .toPathResponse();
+        return new PathResponse(new PathFinder(lineService.findLines(), stationService.findById(source), stationService.findById(target)));
     }
 }

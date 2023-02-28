@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.PathResponse;
-import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.exception.PathFinderException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -12,8 +10,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PathFinder {
 
@@ -76,12 +72,5 @@ public class PathFinder {
         if (sourceStation == targetStation) {
             throw new PathFinderException("출발역과 도착역은 같을 수 없습니다.");
         }
-    }
-
-    public PathResponse toPathResponse() {
-        List<StationResponse> stations = this.stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(Collectors.toList());
-        return new PathResponse(stations, this.distance);
     }
 }
