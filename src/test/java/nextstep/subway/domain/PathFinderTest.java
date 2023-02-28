@@ -49,7 +49,7 @@ public class PathFinderTest {
         assertThat(stations).containsExactly(교대역, 남부터미널역, 양재역);
     }
 
-    @DisplayName("")
+    @DisplayName("최단 경로의 거리 조회")
     @Test
     void findShortestPathDistance() {
         // when
