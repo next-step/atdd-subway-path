@@ -90,8 +90,9 @@ public class LineSteps extends Steps {
         return response;
     }
 
-    public static void 지하철_노선_수정_요청(final ExtractableResponse<Response> createResponse, final String color) {
+    public static void 지하철_노선_수정_요청(final ExtractableResponse<Response> createResponse, final String name, final String color) {
         Map<String, String> params = new HashMap<>();
+        params.put("name", name);
         params.put("color", color);
 
         RestAssured

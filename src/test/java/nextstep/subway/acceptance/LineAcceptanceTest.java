@@ -73,7 +73,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청("2호선", "green");
 
         // when
-        지하철_노선_수정_요청(지하철_노선_생성_응답, "red");
+        지하철_노선_수정_요청(지하철_노선_생성_응답, "신분당선", "red");
 
         // then
         지하철_노선이_정상적으로_수정되었는지_확인(지하철_노선_생성_응답, "red");
