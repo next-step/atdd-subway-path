@@ -6,13 +6,12 @@ import java.util.List;
 
 public class SubwayPath {
     private List<Station> stations;
-    private List<SectionEdge> sectionEdges;
+    private int totalDistance;
 
-    public SubwayPath(List<Station> stations, List<SectionEdge> sectionEdges) {
+    public SubwayPath(List<Station> stations, int totalDistance) {
         Assert.notNull(stations, "stations must not be null");
-        Assert.notNull(sectionEdges, "sectionEdges must not be null");
         this.stations = stations;
-        this.sectionEdges = sectionEdges;
+        this.totalDistance = totalDistance;
     }
 
     public List<Station> getStations() {
@@ -20,8 +19,6 @@ public class SubwayPath {
     }
 
     public int totalDistance() {
-        return this.sectionEdges.stream()
-                .mapToInt(SectionEdge::distance)
-                .sum();
+        return this.totalDistance;
     }
 }

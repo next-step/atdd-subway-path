@@ -3,7 +3,6 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.SubwayGraph;
 import nextstep.subway.domain.SubwayPath;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,10 +14,12 @@ import java.util.List;
 public class PathService {
     private LineService lineService;
     private StationService stationService;
+    private PathFinder pathFinder;
 
-    public PathService(LineService lineService, StationService stationService) {
+    public PathService(LineService lineService, StationService stationService, PathFinder pathFinder) {
         this.lineService = lineService;
         this.stationService = stationService;
+        this.pathFinder = pathFinder;
     }
 
     public PathResponse findPath(Long source, Long target) {
@@ -26,9 +27,7 @@ public class PathService {
         Station targetStation = stationService.findById(target);
         List<Line> lines = lineService.findAllLines();
 
-        SubwayGraph subwayGraph = SubwayGraph.of(lines);
-
-        SubwayPath subwayPath = subwayGraph.findSubwayPath(sourceStation, targetStation);
+        SubwayPath subwayPath = pathFinder.findPath(lines, sourceStation, targetStation);
         return PathResponse.of(subwayPath);
     }
 }
