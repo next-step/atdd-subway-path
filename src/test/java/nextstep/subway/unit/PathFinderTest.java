@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.exception.PathFinderException;
 import org.junit.jupiter.api.DisplayName;
@@ -26,11 +27,12 @@ public class PathFinderTest {
         삼호선.addSection(남부터미널, 양재, 3);
 
         // when
-        PathFinder pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선), 교대, 양재);
+        PathFinder pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선));
+        Path path = pathFinder.getShortestPath(교대, 양재);
 
         // then
-        assertThat(pathFinder.getStations()).contains(교대, 남부터미널, 양재);
-        assertThat(pathFinder.getDistance()).isEqualTo(5);
+        assertThat(path.getStations()).contains(교대, 남부터미널, 양재);
+        assertThat(path.getDistance()).isEqualTo(5);
     }
 
     @DisplayName("경로 조회 실패 : 출발역과 도착역이 같은 경우")
@@ -46,7 +48,8 @@ public class PathFinderTest {
         삼호선.addSection(남부터미널, 양재, 3);
 
         // when & then
-        assertThatThrownBy(() -> new PathFinder(List.of(이호선, 신분당선, 삼호선), 교대, 교대))
+        PathFinder pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선));
+        assertThatThrownBy(() -> pathFinder.getShortestPath(교대, 교대))
                 .isInstanceOf(PathFinderException.class);
     }
 
@@ -63,7 +66,8 @@ public class PathFinderTest {
         삼호선.addSection(남부터미널, 양재, 3);
 
         // when & then
-        assertThatThrownBy(() -> new PathFinder(List.of(이호선, 신분당선, 삼호선), 교대, 성복))
+        PathFinder pathFinder = new PathFinder(List.of(이호선, 신분당선, 삼호선));
+        assertThatThrownBy(() -> pathFinder.getShortestPath(교대, 성복))
                 .isInstanceOf(PathFinderException.class);
     }
 }

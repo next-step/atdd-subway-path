@@ -13,24 +13,15 @@ import java.util.Set;
 
 public class PathFinder {
 
-    private List<Station> stations;
+    private DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
-    private int distance;
-
-    public List<Station> getStations() {
-        return stations;
+    public PathFinder(DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath) {
+        this.dijkstraShortestPath = dijkstraShortestPath;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
-    public PathFinder(List<Line> lines, Station sourceStation, Station targetStation) {
-        validateSourceAndTarget(sourceStation, targetStation);
+    public PathFinder(List<Line> lines) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = drawGraph(lines);
-        GraphPath<Station, DefaultWeightedEdge> shortestPath = getShortestPath(graph, sourceStation, targetStation);
-        this.stations = shortestPath.getVertexList();
-        this.distance = (int) shortestPath.getWeight();
+        this.dijkstraShortestPath = getDijkstraShortestPath(graph);
     }
 
     private WeightedMultigraph<Station, DefaultWeightedEdge> drawGraph(List<Line> lines) {
@@ -60,9 +51,15 @@ public class PathFinder {
         }
     }
 
-    private GraphPath<Station, DefaultWeightedEdge> getShortestPath(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Station sourceStation, Station targetStation) {
+    private DijkstraShortestPath<Station, DefaultWeightedEdge> getDijkstraShortestPath(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+        return new DijkstraShortestPath<>(graph);
+    }
+
+    public Path getShortestPath(Station sourceStation, Station targetStation) {
+        validateSourceAndTarget(sourceStation, targetStation);
         try {
-            return new DijkstraShortestPath<>(graph).getPath(sourceStation, targetStation);
+            GraphPath<Station, DefaultWeightedEdge> shortestPathPath = this.dijkstraShortestPath.getPath(sourceStation, targetStation);
+            return new Path(shortestPathPath.getVertexList(), (int) shortestPathPath.getWeight());
         } catch (IllegalArgumentException e) {
             throw new PathFinderException("출발역과 도착역이 연결되어 있지 않거나 존재하지 않은 출발역이나 도착역 입니다.");
         }

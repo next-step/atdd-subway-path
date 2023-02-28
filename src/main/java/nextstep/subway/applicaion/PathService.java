@@ -1,6 +1,7 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.PathFinder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,8 @@ public class PathService {
 
     @Transactional(readOnly = true)
     public PathResponse getPath(Long source, Long target) {
-        return new PathResponse(new PathFinder(lineService.findLines(), stationService.findById(source), stationService.findById(target)));
+        PathFinder pathFinder = new PathFinder(lineService.findLines());
+        Path path = pathFinder.getShortestPath(stationService.findById(source), stationService.findById(target));
+        return new PathResponse(path);
     }
 }
