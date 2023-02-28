@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.exception.PathIllegalStationException;
+import nextstep.subway.exception.PathNotSameStationException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -46,10 +47,21 @@ public class PathFinder {
     }
 
     public Path findPath(Station source, Station target) {
-        GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
-        return new Path(
-                shortestPath.getVertexList(),
-                (int) shortestPath.getWeight()
-        );
+        validateNotSameStation(source, target);
+        try {
+            GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
+            return new Path(
+                    shortestPath.getVertexList(),
+                    (int) shortestPath.getWeight()
+            );
+        } catch (IllegalArgumentException e) {
+            throw new PathIllegalStationException();
+        }
+    }
+
+    private void validateNotSameStation(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new PathNotSameStationException();
+        }
     }
 }
