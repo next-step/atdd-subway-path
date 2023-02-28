@@ -52,7 +52,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * Then 경로를 지나는 역 목록을 응답받는다.
      * Then 거리를 응답받는다.
      */
-    @DisplayName("")
+    @DisplayName("경로 요청시 경로와 최단거리 반환")
     @Test
     void getPath() {
         //When
