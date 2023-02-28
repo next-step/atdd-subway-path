@@ -1,8 +1,9 @@
 package nextstep.subway.domain;
 
-import lombok.RequiredArgsConstructor;
 import nextstep.subway.error.ErrorCode;
 import nextstep.subway.error.exception.BusinessException;
+import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -15,22 +16,24 @@ import java.util.Objects;
 public class PathFinder {
 
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
-    private final DijkstraShortestPath dijkstraShortestPath;
+    private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
     public PathFinder(final List<Line> lines) {
         init(lines);
         graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-        dijkstraShortestPath = new DijkstraShortestPath(graph);
+        dijkstraShortestPath = new DijkstraShortestPath<Station, DefaultWeightedEdge>(graph);
     }
 
     public List<Station> findShortestPath(final Station sourceStation, final Station targetStation) {
-        validateBeforeFindPath(sourceStation, targetStation);
-        return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+        final GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
+        validateBeforeFindPath(sourceStation, targetStation, path);
+        return path.getVertexList();
     }
 
     public int findShortestPathDistance(final Station sourceStation, final Station targetStation) {
-        validateBeforeFindPath(sourceStation, targetStation);
-        return (int) dijkstraShortestPath.getPath(sourceStation, targetStation).getWeight();
+        final GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
+        validateBeforeFindPath(sourceStation, targetStation, path);
+        return (int) path.getWeight();
     }
 
     private void init(final List<Line> lines) {
@@ -42,14 +45,14 @@ public class PathFinder {
         }
     }
 
-    private void validateBeforeFindPath(final Station source, final Station target) {
+    private void validateBeforeFindPath(final Station source, final Station target, final GraphPath<Station, DefaultWeightedEdge> path) {
         if (source.equals(target)) {
             throw new BusinessException(ErrorCode.SOURCE_AND_TARGET_STATION_IS_SAME);
         }
         if (!graph.vertexSet().contains(source) | !graph.vertexSet().contains(target)) {
             throw new BusinessException(ErrorCode.STATION_NOT_FOUND);
         }
-        if (Objects.isNull(dijkstraShortestPath.getPath(source, target))) {
+        if (Objects.isNull(path)) {
             throw new BusinessException(ErrorCode.SOURCE_AND_TARGET_STATION_IS_NOT_CONNECTED);
         }
     }
