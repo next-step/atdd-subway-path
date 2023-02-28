@@ -20,6 +20,7 @@ public class PathService {
     }
 
     public PathResponse findPath(Long sourceId, Long targetId) {
-        return new PathResponse(new ArrayList<>(), 1L);
+        PathFinder pathFinder = new PathFinder(lineService.findAllLine());
+        return pathFinder.findPath(sourceId, targetId);
     }
 }
