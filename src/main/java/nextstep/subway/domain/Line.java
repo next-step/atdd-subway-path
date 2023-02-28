@@ -56,9 +56,9 @@ public class Line {
     }
 
     public void update(final String name, final String color) {
-        final String[] updateFields = validateBeforeUpdate(name, color);
-        this.name = updateFields[0];
-        this.color = updateFields[1];
+        validateBeforeUpdate(name, color);
+        this.name = name;
+        this.color = color;
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
@@ -73,20 +73,9 @@ public class Line {
         sections.remove(station);
     }
 
-    private boolean isNull(final String str) {
-        return !StringUtils.hasText(str);
-    }
-
-    private String[] validateBeforeUpdate(final String name, final String color) {
-        final String[] updateFields = new String[2];
-        updateFields[0] = name;
-        updateFields[1] = color;
-        if (isNull(name)) {
-            updateFields[0] = this.name;
+    private void validateBeforeUpdate(final String name, final String color) {
+        if (!StringUtils.hasText(name) || !StringUtils.hasText(color)) {
+            throw new BusinessException(ErrorCode.SOME_LINE_UPDATE_FIELD_IS_NULL);
         }
-        if (isNull(color)) {
-            updateFields[1] = this.color;
-        }
-        return updateFields;
     }
 }
