@@ -15,16 +15,18 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class PathFinder {
 
-    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
     private final DijkstraShortestPath dijkstraShortestPath;
 
     private PathFinder() {
+        graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
         dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
 
     public PathFinder(final List<Line> lines) {
         init(lines);
-        this.dijkstraShortestPath = new DijkstraShortestPath(graph);
+        graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+        dijkstraShortestPath = new DijkstraShortestPath(graph);
     }
 
     public List<Station> findShortestPath(final Station sourceStation, final Station targetStation) {
