@@ -95,4 +95,7 @@ public class LineService {
     public Line findLineById(Long id) {
         return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
+
+    public Object findAllLine() {
+    }
 }
