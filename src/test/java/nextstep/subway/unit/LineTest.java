@@ -28,8 +28,7 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("구간을 추가 테스트")
-    void addSection() {
+    void 구간을_추가한다() {
         // given
         Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
 
@@ -41,8 +40,7 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("노선의 역 목록 테스트")
-    void getStations() {
+    void 노선의_역_목록을_반환한다() {
         // given
         Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
         Section 역삼_삼성_구간 = new Section(강남_2호선, 역삼역, 삼성역, 12);
@@ -50,15 +48,14 @@ class LineTest {
         강남_2호선.addSection(역삼_삼성_구간);
 
         // when
-        List<Station> stations = 강남_2호선.getStations();
+        List<Station> 역_목록 = 강남_2호선.getStations();
 
         // then
-        assertThat(stations).containsExactly(강남역, 역삼역, 삼성역);
+        assertThat(역_목록).containsExactly(강남역, 역삼역, 삼성역);
     }
 
     @Test
-    @DisplayName("노선에 구간이 비어 있는 경우 구간을 삭제 할 수 없다")
-    void removeSectionFailBySectionsIsEmpty() {
+    void 노선에_구간이_비어있는_경우_구간을_삭제_할_수_없다() {
         assertThatThrownBy(() -> 강남_2호선.removeSection())
                 .isInstanceOf(SectionBadRequestException.class)
                 .hasMessage("구간이 존재하지 않습니다.");
