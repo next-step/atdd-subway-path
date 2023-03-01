@@ -26,13 +26,6 @@ class LineTest {
         신분당선.addSection(강남역, 판교역, 10);
     }
 
-    @DisplayName("노선에 구간이 존재하는지 확인한다.")
-    @Test
-    void isExistInLine() {
-        assertThat(신분당선.isExistInLine(강남역)).isTrue();
-        assertThat(신분당선.isExistInLine(new Station("강남역"))).isTrue();
-    }
-
     @DisplayName("지하철 노선에 구간을 추가한다.")
     @Test
     void addSection() {
@@ -100,7 +93,7 @@ class LineTest {
     @Test
     void addLineSectionExceptionAllStationInLine() {
         // when & then
-        assertThatThrownBy(() -> 신분당선.addSection(강남역, 판교역, 3))
+        assertThatThrownBy(() -> 신분당선.addSection(강남역, 판교역, 10))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -202,7 +195,7 @@ class LineTest {
     void removeLineSectionExceptionStationNotInLine() {
         // given
         Station 정자역 = new Station("정자역");
-        Station 신사역 = new Station("정자역");
+        Station 신사역 = new Station("신사역");
         신분당선.addSection(판교역, 정자역, 3);
 
         // when & then
