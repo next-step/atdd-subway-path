@@ -109,4 +109,8 @@ public class LineService {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException("노선을 찾을 수 없습니다."));
     }
+
+    public List<Line> findLines() {
+        return lineRepository.findAll();
+    }
 }
