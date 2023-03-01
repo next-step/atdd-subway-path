@@ -1,6 +1,5 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
@@ -26,14 +25,21 @@ public class PathService {
         this.lineRepository = lineRepository;
     }
 
-    public PathResponse searchPath(PathRequest request) {
-        Station source = stationService.findById(request.getSource());
-        Station target = stationService.findById(request.getTarget());
+    public PathResponse searchPath(Long source, Long target) {
+        if(source == target){
+            throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
+        }
+
+        Station sourceStation = stationService.findById(source);
+        Station targetStation = stationService.findById(target);
 
         DijkstraShortestPath map = getSubwayMap();
 
-        Integer distance = (int) map.getPathWeight(source.getId(), target.getId());
-        List<StationResponse> path = findPath(map, source.getId(), target.getId());
+
+            int distance = calculateDistance(map, sourceStation.getId(), targetStation.getId());
+            List<StationResponse> path = findPath(map, sourceStation.getId(), targetStation.getId());
+
+
 
         return new PathResponse(distance, path);
     }
@@ -81,5 +87,17 @@ public class PathService {
         }
 
         return pathWithStationResponse;
+    }
+
+    private int calculateDistance(DijkstraShortestPath map, Long source, Long target){
+        int distance = 0;
+
+        try {
+            distance = (int) map.getPathWeight(source, target);
+        }catch(Exception e) {
+            throw new IllegalArgumentException("연결되지 않은 역입니다.");
+        }
+
+        return distance;
     }
 }

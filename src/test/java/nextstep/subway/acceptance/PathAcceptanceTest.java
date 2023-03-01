@@ -1,5 +1,7 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,13 +9,14 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.PathSteps.지하철_경로_조회_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 경로 조회 기능")
 public class PathAcceptanceTest extends AcceptanceTest{
-
 
     private Long 교대역;
     private Long 강남역;
@@ -23,6 +26,7 @@ public class PathAcceptanceTest extends AcceptanceTest{
     private Long 신분당선;
     private Long 삼호선;
     private Long 범계역;
+    private Long 존재하지않는역;
 
     /**
      * Given
@@ -42,6 +46,7 @@ public class PathAcceptanceTest extends AcceptanceTest{
         양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
         범계역 = 지하철역_생성_요청("범계역").jsonPath().getLong("id");
+        존재하지않는역 = 999L;
 
         이호선 = 지하철_노선_생성_요청("2호선", "green").jsonPath().getLong("id");
         신분당선 = 지하철_노선_생성_요청("신분당선", "red").jsonPath().getLong("id");
@@ -62,9 +67,13 @@ public class PathAcceptanceTest extends AcceptanceTest{
     @Test
     void searchPath(){
         // when
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(교대역, 남부터미널역);
 
         // then
-
+        assertAll(
+                () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(4),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(교대역, 남부터미널역)
+        );
     }
 
     /**
@@ -76,9 +85,10 @@ public class PathAcceptanceTest extends AcceptanceTest{
     @Test
     void searchPathWithSourceSameAsTarget(){
         // when
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(교대역, 교대역);
 
         // then
-
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("출발역과 도착역이 같습니다.");
     }
 
     /**
@@ -90,9 +100,10 @@ public class PathAcceptanceTest extends AcceptanceTest{
     @Test
     void searchPathWithSourceTargetDisconnected(){
         // when
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(교대역, 범계역);
 
         // then
-
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("연결되지 않은 역입니다.");
     }
 
     /**
@@ -104,10 +115,13 @@ public class PathAcceptanceTest extends AcceptanceTest{
     @Test
     void searchPathFailWithNotExistStation(){
         // when
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(존재하지않는역, 범계역);
 
         // then
-
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo("존재하지 않는 역입니다.");
     }
+
+
 
     private Map<String, String> createSectionCreateParams(
             Long upStationId, Long downStationId, Integer distance) {

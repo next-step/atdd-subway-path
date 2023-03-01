@@ -1,20 +1,18 @@
 package nextstep.subway.ui;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
 
 import nextstep.subway.common.ErrorResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class ControllerExceptionHandler {
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgsException(
-            DataIntegrityViolationException e) {
+            IllegalArgumentException e) {
         ErrorResponse errorResponse =
                 new ErrorResponse(HttpStatus.BAD_REQUEST, "1000", e.getMessage());
 

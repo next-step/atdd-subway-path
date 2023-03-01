@@ -2,7 +2,6 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.StationService;
-import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +60,7 @@ public class PathServiceMockTest {
 
         // when
         PathService pathService = new PathService(stationService, lineRepository);
-        PathResponse pathResponse = pathService.searchPath(new PathRequest(강남역.getId(), 선릉역.getId()));
+        PathResponse pathResponse = pathService.searchPath(강남역.getId(), 선릉역.getId());
 
         // then
         assertThat(pathResponse.getDistance()).isEqualTo(15);
