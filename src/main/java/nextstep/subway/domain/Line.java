@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SectionBadRequestException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,5 +65,16 @@ public class Line {
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void removeSection() {
+        if (sections.isEmpty()) {
+            throw new SectionBadRequestException("구간이 존재하지 않습니다.");
+        }
+        if (sections.size() < 2) {
+            throw new SectionBadRequestException("현재 노선은 구간이 1개 입니다.");
+        }
+        int end = sections.size() - 1;
+        sections.remove(end);
     }
 }
