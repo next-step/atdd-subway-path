@@ -3,6 +3,7 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.applicaion.StationService;
+import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import org.springframework.http.ResponseEntity;
