@@ -61,7 +61,7 @@ class LineTest {
     void removeSectionFailBySectionsIsEmpty() {
         assertThatThrownBy(() -> 강남_2호선.removeSection())
                 .isInstanceOf(SectionBadRequestException.class)
-                .hasMessage("구간이 존재하지 않습니다");
+                .hasMessage("구간이 존재하지 않습니다.");
     }
 
     @Test
@@ -71,7 +71,8 @@ class LineTest {
 
         // then
         assertThatThrownBy(() -> 강남_2호선.removeSection())
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(SectionBadRequestException.class)
+                .hasMessage("현재 노선은 구간이 1개 입니다.");
     }
 
     @Test
