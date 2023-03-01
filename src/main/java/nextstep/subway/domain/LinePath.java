@@ -5,7 +5,6 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class LinePath {
 
@@ -23,21 +22,23 @@ public class LinePath {
 
     public List<Station> getStations(Station source, Station target) {
         return new DijkstraShortestPath(graph).getPath(source, target).getVertexList();
-//        return graph.vertexSet().stream().collect(Collectors.toList());
     }
 
     private WeightedMultigraph createPathGraph() {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         for (Line line : lines) {
-            List<Section> sections = line.getAllSections();
-            for (Section section : sections) {
-                graph.addVertex(section.getUpStation());
-                graph.addVertex(section.getDownStation());
-                graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-            }
+            setGraphInfo(line.getAllSections());
         }
 
         return graph;
+    }
+
+    private void setGraphInfo(List<Section> sections) {
+        for (Section section : sections) {
+            graph.addVertex(section.getUpStation());
+            graph.addVertex(section.getDownStation());
+            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+        }
     }
 
 }
