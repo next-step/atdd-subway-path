@@ -39,14 +39,14 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        List<Section> 검증하려는_구간_목록 = lineRepository.findById(강남_2호선.getId()).get().getSections();
-        List<Section> 입력했던_구간_목록 = 강남_2호선.getSections();
+        List<Section> 검증하려는_노선의_구간_목록 = lineRepository.findById(강남_2호선.getId()).get().getSections();
+        List<Section> 입력했던_노선의_구간_목록 = 강남_2호선.getSections();
 
         assertAll(
-                () -> assertThat(검증하려는_구간_목록).isEqualTo(입력했던_구간_목록),
-                () -> assertThat(검증하려는_구간_목록.get(0).getUpStation().getId()).isEqualTo(입력했던_구간_목록.get(0).getUpStation().getId()),
-                () -> assertThat(검증하려는_구간_목록.get(0).getDownStation().getId()).isEqualTo(입력했던_구간_목록.get(0).getDownStation().getId()),
-                () -> assertThat(검증하려는_구간_목록.get(0).getDistance()).isEqualTo(distance)
+                () -> assertThat(검증하려는_노선의_구간_목록).isEqualTo(입력했던_노선의_구간_목록),
+                () -> assertThat(검증하려는_노선의_구간_목록.get(0).getUpStation().getId()).isEqualTo(입력했던_노선의_구간_목록.get(0).getUpStation().getId()),
+                () -> assertThat(검증하려는_노선의_구간_목록.get(0).getDownStation().getId()).isEqualTo(입력했던_노선의_구간_목록.get(0).getDownStation().getId()),
+                () -> assertThat(검증하려는_노선의_구간_목록.get(0).getDistance()).isEqualTo(distance)
         );
     }
 }
