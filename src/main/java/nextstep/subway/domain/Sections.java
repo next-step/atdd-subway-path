@@ -1,29 +1,49 @@
 package nextstep.subway.domain;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import lombok.Getter;
 
 @Embeddable
-@Getter
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
+        CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section) {
-        if (isNotContain(section)) {
-            sections.add(section);
-        }
+    public List<Section> getSections() {
+        return getStations().stream()
+            .limit(size())
+            .map(this::getFirstSectionHavingSameUpStation)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
     }
 
-    public int size() {
-        return sections.size();
+    public void add(Section section) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+
+        if (isDuplicatedSection(section)) {
+            throw new IllegalArgumentException("Duplicated section");
+        }
+
+        if (isNotConnectable(section)) {
+            throw new IllegalArgumentException("Cannot add section consisting of non-existing stations");
+        }
+
+        addAndRearrange(section);
     }
+
 
     public void removeStation(Station station) {
         if (isNotRemovable(station)) {
@@ -33,42 +53,47 @@ public class Sections {
         sections.remove(sections.size() - 1);
     }
 
-    public boolean isEmpty() {
-        return sections.isEmpty();
-    }
-
-    public Section get(int index) {
-        return sections.get(index);
-    }
-
-    public Station getLastStation() {
-       return getLastSection().getDownStation();
-    }
-
     public List<Station> getStations() {
-        if(isEmpty()) {
+        if (sections.isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = sections.stream()
-            .map(Section::getUpStation)
-            .collect(Collectors.toList());
+        List<Station> result = new ArrayList<>(size() + 1);
 
-        stations.add(getLastStation());
+        Station upStation = getFirstStation();
+        result.add(upStation);
+        for (int i = 0; i < size(); i++) {
+            Optional<Section> section = getFirstSectionHavingSameUpStation(upStation);
 
-        return stations;
-    }
+            if (section.isEmpty()) {
+                break;
+            }
 
-    private boolean isNotContain(Section section) {
-        return !sections.contains(section);
-    }
-
-    private  Section getLastSection() {
-        if (sections.isEmpty()) {
-            throw new IllegalStateException("Empty Section");
+            upStation = section.get().getDownStation();
+            result.add(upStation);
         }
 
-        return sections.get(sections.size() - 1);
+        return result;
+    }
+
+    public Station getFirstStation() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        return upStations.stream()
+            .filter(it -> !downStations.contains(it))
+            .findFirst()
+            .orElseThrow(IllegalStateException::new);
+    }
+
+    public Station getLastStation() {
+        List<Station> upStations = getUpStations();
+        List<Station> downStations = getDownStations();
+
+        return downStations.stream()
+            .filter(it -> !upStations.contains(it))
+            .findFirst()
+            .orElseThrow(IllegalStateException::new);
     }
 
     private boolean isNotRemovable(Station station) {
@@ -77,5 +102,100 @@ public class Sections {
 
     private boolean isRemovable(Station station) {
         return getLastStation().equals(station);
+    }
+
+    private boolean isDuplicatedSection(Section section) {
+        return sections.stream()
+            .anyMatch(section::isSameAsSection);
+    }
+
+    private boolean isNotConnectable(Section section) {
+        return !isConnectable(section);
+    }
+
+    private boolean isConnectable(Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+
+        return contains(upStation) || contains(downStation);
+    }
+
+    private boolean contains(Station station) {
+        return getStations().contains(station);
+    }
+
+    private int size() {
+        return sections.size();
+    }
+
+    private List<Station> getUpStations() {
+        return sections.stream()
+            .map(Section::getUpStation)
+            .collect(Collectors.toList());
+    }
+
+    private List<Station> getDownStations() {
+        return sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
+    }
+
+    private Optional<Section> getFirstSectionHavingSameUpStation(Station station) {
+        return sections.stream()
+            .filter(section -> section.isSameAsUpStation(station))
+            .findFirst();
+    }
+
+    private Optional<Section> getFirstSectionHavingSameDownStation(Station station) {
+        return sections.stream()
+            .filter(section -> section.isSameAsDownStation(station))
+            .findFirst();
+    }
+
+    private void addAndRearrange(Section section) {
+        rearrangeInBaseOnUpStation(section);
+        rearrangeInBaseOnDownStation(section);
+
+        sections.add(section);
+    }
+
+    private void rearrangeInBaseOnUpStation(Section section) {
+        getFirstSectionHavingSameUpStation(section.getUpStation())
+            .ifPresent(oldSection -> {
+                checkArgument(
+                    section.getDistance() < oldSection.getDistance(),
+                    "Section distance is too long"
+                );
+
+                Section rearrangeSection = new Section(
+                    oldSection.getLine(),
+                    section.getDownStation(),
+                    oldSection.getDownStation(),
+                    oldSection.getDistance() - section.getDistance()
+                );
+
+                sections.add(rearrangeSection);
+                sections.remove(oldSection);
+            });
+    }
+
+    private void rearrangeInBaseOnDownStation(Section section) {
+        getFirstSectionHavingSameDownStation(section.getDownStation())
+            .ifPresent(oldSection -> {
+                checkArgument(
+                    section.getDistance() < oldSection.getDistance(),
+                    "Section distance is too long"
+                );
+
+                Section rearrangeSection = new Section(
+                    oldSection.getLine(),
+                    oldSection.getUpStation(),
+                    section.getUpStation(),
+                    oldSection.getDistance() - section.getDistance()
+                );
+
+                sections.add(rearrangeSection);
+                sections.remove(oldSection);
+            });
     }
 }

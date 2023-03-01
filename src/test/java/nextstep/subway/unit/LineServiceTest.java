@@ -28,28 +28,30 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    private int givenDistance;
+
     @Test
     @DisplayName("지하철 2호선에 구간을 추가할 수 있다")
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        String givenUpStationName = "강남역";
-        String givenDownStationName = "선릉역";
+        String 강남역_이름 = "강남역";
+        String 선릉역_이름 = "선릉역";
 
-        Station givenUpStation = new Station(givenUpStationName);
-        Station givenDownStation = new Station(givenDownStationName);
-        int givenDistance = 20;
+        Station 강남역 = new Station(강남역_이름);
+        Station 선릉역 = new Station(선릉역_이름);
+        givenDistance = 20;
 
         Line givenLine = new Line("2호선", "bg-green-35");
 
-        stationRepository.save(givenUpStation);
-        stationRepository.save(givenDownStation);
+        stationRepository.save(강남역);
+        stationRepository.save(선릉역);
 
         lineRepository.save(givenLine);
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(givenLine.getId(), new SectionRequest(givenUpStation.getId(), givenDownStation.getId(), givenDistance));
+        lineService.addSection(givenLine.getId(), new SectionRequest(강남역.getId(), 선릉역.getId(), givenDistance));
 
         // then
         // line.getSections 메서드를 통해 검증
@@ -61,6 +63,6 @@ public class LineServiceTest {
 
         assertThat(lineResponse.getStations())
             .extracting(StationResponse::getName)
-            .containsExactly(givenUpStationName, givenDownStationName);
+            .containsExactly(강남역_이름, 선릉역_이름);
     }
 }

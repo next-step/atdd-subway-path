@@ -58,6 +58,10 @@ public class Line {
         return sections.getSections();
     }
 
+    public void addSection(Station upStation, Station downStation, int distance) {
+        addSection(new Section(this, upStation, downStation, distance));
+    }
+
     public void addSection(Section section) {
         sections.add(section);
     }
