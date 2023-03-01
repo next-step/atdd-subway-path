@@ -1,10 +1,13 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LinePath;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,11 +21,12 @@ public class PathService {
     }
 
     public PathResponse getPathResponse(Long fromStationId, Long toStationId) {
+        List<Line> allLines = lineService.showLines();
+        LinePath linePath = new LinePath(allLines);
         Station fromStation = stationService.findById(fromStationId);
         Station toStation = stationService.findById(toStationId);
-        LinePath linePath = new LinePath(lineService.showLines());
 
-        return new PathResponse(fromStation.getName(), toStation.getName(), linePath.getShortestDistance(fromStation, toStation));
+        return new PathResponse(linePath.getStations(fromStation, toStation), linePath.getShortestDistance(fromStation, toStation));
     }
 
 }

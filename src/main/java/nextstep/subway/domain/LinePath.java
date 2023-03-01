@@ -5,18 +5,25 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LinePath {
 
     private List<Line> lines;
+    private WeightedMultigraph<Station, DefaultWeightedEdge> graph;
 
     public LinePath(List<Line> lines) {
         this.lines = lines;
+        this.graph = createPathGraph();
     }
 
     public int getShortestDistance(Station source, Station target) {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = createPathGraph();
         return (int) new DijkstraShortestPath(graph).getPath(source, target).getWeight();
+    }
+
+    public List<Station> getStations(Station source, Station target) {
+        return new DijkstraShortestPath(graph).getPath(source, target).getVertexList();
+//        return graph.vertexSet().stream().collect(Collectors.toList());
     }
 
     private WeightedMultigraph createPathGraph() {
@@ -32,6 +39,5 @@ public class LinePath {
 
         return graph;
     }
-
 
 }

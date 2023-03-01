@@ -1,23 +1,22 @@
 package nextstep.subway.applicaion.dto;
 
+import nextstep.subway.domain.Station;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class PathResponse {
 
-    private String sourceStationName;
-    private String targetStationName;
+    private List<StationResponse> stations;
     private Integer distance;
 
-    public PathResponse(String sourceStationName, String targetStationName, Integer distance) {
-        this.sourceStationName = sourceStationName;
-        this.targetStationName = targetStationName;
+    public PathResponse(List<Station> stations, Integer distance) {
+        this.stations = stations.stream().map(StationResponse::new).collect(Collectors.toList());
         this.distance = distance;
     }
 
-    public String getSourceStationName() {
-        return sourceStationName;
-    }
-
-    public String getTargetStationName() {
-        return targetStationName;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     public Integer getDistance() {
