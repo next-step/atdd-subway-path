@@ -1,22 +1,20 @@
 package nextstep.subway.domain.policy;
 
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class AddBetweenSectionPolicy extends AddSectionPolicy {
+public class AddBetweenSectionPolicy extends AddSectionPolicyChain {
 
-    private List<Section> sectionList;
-    private Section newSection;
-
-    public AddBetweenSectionPolicy(List<Section> sectionList, Section newSection) {
-        this.sectionList = sectionList;
-        this.newSection = newSection;
+    @Override
+    protected boolean supported(Sections sections, Section newSection) {
+        return sections.isBetweenSection(newSection);
     }
 
     @Override
-    public void execute() {
+    protected void addSection(List<Section> sectionList, Section newSection) {
         Section originSection =  sectionList.stream()
                 .filter(s -> isBetweenSection(s, newSection))
                 .findFirst().orElseThrow(NoSuchElementException::new);

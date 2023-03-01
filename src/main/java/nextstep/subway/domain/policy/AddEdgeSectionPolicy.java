@@ -5,11 +5,12 @@ import nextstep.subway.domain.Sections;
 
 import java.util.List;
 
-public class AddEmptySectionPolicy extends AddSectionPolicyChain {
+public class AddEdgeSectionPolicy extends AddSectionPolicyChain {
 
     @Override
-    protected boolean supported(Sections sections, Section newSection) {
-        return sections.isEmpty();
+    public boolean supported(Sections sections, Section newSection) {
+        return sections.isNewFirstSection(newSection)
+                || sections.isNewLastSection(newSection);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.SectionExceptionMessages;
-import nextstep.subway.domain.policy.AddSectionPolicy;
-import nextstep.subway.domain.policy.AddSectionPolicyFactory;
+import nextstep.subway.domain.policy.AddBetweenSectionPolicy;
+import nextstep.subway.domain.policy.AddEdgeSectionPolicy;
+import nextstep.subway.domain.policy.AddEmptySectionPolicy;
+import nextstep.subway.domain.policy.AddSectionPolicyChain;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.CascadeType;
@@ -29,8 +31,14 @@ public class Sections {
     public void addSection(Section section) {
         validateAddSection(section);
 
-        AddSectionPolicy policy = AddSectionPolicyFactory.of(this, sections, section);
-        policy.execute();
+        AddSectionPolicyChain policy1 = new AddEmptySectionPolicy();
+        AddSectionPolicyChain policy2 = new AddEdgeSectionPolicy();
+        AddSectionPolicyChain policy3 = new AddBetweenSectionPolicy();
+
+        policy1.setNext(policy2);
+        policy2.setNext(policy3);
+
+        policy1.execute(this, sections, section);
     }
 
     public int getSectionsCount() {
@@ -62,6 +70,14 @@ public class Sections {
         return getStationIncludeSection(getFirstStation());
     }
 
+    public boolean isFirstSection(Section section) {
+        return section.equals(getFirstSection());
+    }
+
+    public boolean isNewFirstSection(Section section) {
+        return section.getDownStation().equals(getFirstStation());
+    }
+
     public Station getFirstStation() {
         Set<Station> allDownStations = sections.stream().map(Section::getDownStation).collect(Collectors.toSet());
 
@@ -72,6 +88,14 @@ public class Sections {
                 .orElseThrow(NoSuchElementException::new);
     }
 
+    public Section getLastSection() {
+        if (getSectionsCount() == 1) {
+            return sections.get(0);
+        }
+
+        return getStationIncludeSection(getLastStation());
+    }
+
     public Station getLastStation() {
         Set<Station> allUpStations = sections.stream().map(Section::getUpStation).collect(Collectors.toSet());
 
@@ -80,6 +104,18 @@ public class Sections {
                 .findAny()
                 .map(Section::getDownStation)
                 .orElseThrow(NoSuchElementException::new);
+    }
+
+    public boolean isLastSection(Section section) {
+        return section.equals(getLastSection());
+    }
+
+    public boolean isNewLastSection(Section section) {
+        return section.getUpStation().equals(getLastStation());
+    }
+
+    public boolean isBetweenSection(Section section) {
+        return !isEmpty() && !isFirstSection(section) && !isLastSection(section);
     }
 
     private Section getStationIncludeSection(Station station) {
