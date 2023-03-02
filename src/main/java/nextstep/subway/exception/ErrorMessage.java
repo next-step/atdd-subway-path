@@ -13,7 +13,10 @@ public enum ErrorMessage {
 	CANNOT_FIND_SECTION("구간을 찾을 수 없습니다."),
 	CANNOT_REMOVE_NO_LAST_DOWN_STATION("마지막 역이 아니면 삭제할 수 없습니다."),
 	CANNOT_REMOVE_SINGLE_SECTION("노선의 마지막 구간은 삭제할 수 없습니다."),
-	CANNOT_REMOVE_NO_EXISTED_STATION("노선에 없는 역은 삭제할 수 없습니다");
+	CANNOT_REMOVE_NO_EXISTED_STATION("노선에 없는 역은 삭제할 수 없습니다"),
+	SHOULD_BE_PROVIDED_EXISTED_STATION("존재하는 지하철역이 제공되어야 합니다."),
+	SHOULD_BE_DIFFERENT_SOURCE_AND_TARGET("출발역과 도찰역은 달라야 합니다."),
+	SHOULD_EXIST_PATH("경로가 존재해야 합니다.");
 
 	private final String message;
 
