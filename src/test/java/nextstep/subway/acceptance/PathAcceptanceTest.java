@@ -18,7 +18,7 @@ import io.restassured.response.Response;
 
 @DisplayName("경로 관련 기능")
 class PathAcceptanceTest extends AcceptanceTest {
-	private static final Long 존재하지_않는_역 = Long.MAX_VALUE;
+	private Long 존재하지_않는_역;
 	private Long 신분당선;
 	private Long 이호선;
 	private Long 삼호선;
@@ -80,6 +80,7 @@ class PathAcceptanceTest extends AcceptanceTest {
 		교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
 		어린이대공원역 = 지하철역_생성_요청("어린이대공원역").jsonPath().getLong("id");
 		건대입구역 = 지하철역_생성_요청("건대입구역").jsonPath().getLong("id");
+		존재하지_않는_역 = 지하철역_생성_요청("존재하지_않는_역").jsonPath().getLong("id");
 
 		신분당선 = 지하철_노선_생성_요청("신분당선", "red", 신사역, 논현역, 10).jsonPath().getLong("id");
 		이호선 = 지하철_노선_생성_요청("이호선", "green", 교대역, 강남역, 2).jsonPath().getLong("id");
@@ -235,7 +236,7 @@ class PathAcceptanceTest extends AcceptanceTest {
 	void getPath_fail_WHEN_SOURCE_AND_TARGET_IS_SAME_THEN_THROW_EXCEPTION() {
 		// Given
 		Long 출발역 = 남부터미널역;
-		Long 도착역 = 신논현역;
+		Long 도착역 = 남부터미널역;
 
 		// When
 		ExtractableResponse<Response> response = 경로_조회_요청(출발역, 도착역);

@@ -37,9 +37,13 @@ public class LineService {
 	}
 
 	public List<LineResponse> showLines() {
-		return lineRepository.findAll().stream()
+		return findAllLines().stream()
 			.map(this::createLineResponse)
 			.collect(Collectors.toList());
+	}
+
+	public List<Line> findAllLines() {
+		return lineRepository.findAll();
 	}
 
 	public LineResponse findById(Long id) {

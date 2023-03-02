@@ -113,8 +113,8 @@ class PathFinderTest {
 
 		// Then
 		assertAll(
-			() -> 경로_구간_검증(shortestPath.getVertexList(), List.of(남부터미널역, 양재역, 강남역)),
-			() -> 경로_거리_리증((int)shortestPath.getWeight(), 10)
+			() -> 경로_구간_검증(shortestPath.getVertexList(), List.of(남부터미널역, 교대역, 강남역)),
+			() -> 경로_거리_검증((int)shortestPath.getWeight(), 3)
 		);
 	}
 
@@ -158,7 +158,7 @@ class PathFinderTest {
 		assertThat(actual).containsExactly(expected.toArray(new Station[expected.size()]));
 	}
 
-	private void 경로_거리_리증(int actual, int expected) {
+	private void 경로_거리_검증(int actual, int expected) {
 		assertThat(actual).isEqualTo(expected);
 	}
 }
