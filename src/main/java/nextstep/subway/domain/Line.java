@@ -1,12 +1,19 @@
 package nextstep.subway.domain;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import nextstep.subway.error.ErrorCode;
+import nextstep.subway.error.exception.BusinessException;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -49,12 +56,9 @@ public class Line {
     }
 
     public void update(final String name, final String color) {
-        if (!isNull(name)) {
-            this.name = name;
-        }
-        if (!isNull(color)) {
-            this.color = color;
-        }
+        validateBeforeUpdate(name, color);
+        this.name = name;
+        this.color = color;
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
@@ -69,7 +73,9 @@ public class Line {
         sections.remove(station);
     }
 
-    private boolean isNull(final String str) {
-        return !StringUtils.hasText(str);
+    private void validateBeforeUpdate(final String name, final String color) {
+        if (!StringUtils.hasText(name) || !StringUtils.hasText(color)) {
+            throw new BusinessException(ErrorCode.SOME_LINE_UPDATE_FIELD_IS_NULL);
+        }
     }
 }
