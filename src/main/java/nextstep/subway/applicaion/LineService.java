@@ -11,7 +11,6 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,11 +28,14 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
+
+        if (hasSectionRequestIn(request)) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+
+            line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
+
         return createLineResponse(line);
     }
 
@@ -70,32 +72,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
-    }
-
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
-        );
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
@@ -103,10 +80,25 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
+        line.removeStation(station);
+    }
 
-        line.getSections().remove(line.getSections().size() - 1);
+    private LineResponse createLineResponse(Line line) {
+        return new LineResponse(
+            line.getId(),
+            line.getName(),
+            line.getColor(),
+            createStationResponses(line)
+        );
+    }
+
+    private List<StationResponse> createStationResponses(Line line) {
+        return line.getStations().stream()
+            .map(stationService::createStationResponse)
+            .collect(Collectors.toList());
+    }
+
+    private boolean hasSectionRequestIn(LineRequest request) {
+        return request.getUpStationId() != null && request.getDownStationId() != null;
     }
 }

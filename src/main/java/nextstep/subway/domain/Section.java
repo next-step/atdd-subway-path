@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import javax.persistence.*;
 
 @Entity
@@ -31,6 +33,8 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+
+        checkArgument(distance > 0);
     }
 
     public Long getId() {
@@ -53,18 +57,6 @@ public class Section {
         return distance;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
-    public void increaseDistance(int distance) {
-        this.distance += distance;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Section{");
@@ -74,5 +66,22 @@ public class Section {
         sb.append(", distance=").append(distance);
         sb.append('}');
         return sb.toString();
+    }
+
+    public boolean isSameAsSection(Section section) {
+        return isSameAsUpStationAndDownStation(section.upStation, section.downStation) ||
+            isSameAsUpStationAndDownStation(section.downStation, section.upStation);
+    }
+
+    private boolean isSameAsUpStationAndDownStation(Station upStation, Station downStation) {
+        return isSameAsUpStation(upStation) && isSameAsDownStation(downStation);
+    }
+
+    public boolean isSameAsUpStation(Station station) {
+        return upStation == station;
+    }
+
+    public boolean isSameAsDownStation(Station station) {
+        return downStation == station;
     }
 }
