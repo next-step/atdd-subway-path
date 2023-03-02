@@ -21,12 +21,13 @@ public class PathService {
 	}
 
 	public PathResponse getPath(Long sourceId, Long targetId) {
-		PathFinder pathFinder = new PathFinder(lineService.findAllLines());
+		final PathFinder pathFinder = new PathFinder(lineService.findAllLines());
 
-		Station sourceStation = stationService.findById(sourceId);
-		Station targetStation = stationService.findById(targetId);
+		final Station sourceStation = stationService.findById(sourceId);
+		final Station targetStation = stationService.findById(targetId);
 
-		GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShortestPath(sourceStation, targetStation);
+		final GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShortestPath(sourceStation,
+			targetStation);
 		return new PathResponse(shortestPath.getVertexList(), (int)shortestPath.getWeight());
 	}
 }

@@ -45,8 +45,9 @@ public class PathFinder {
 	public GraphPath<Station, DefaultWeightedEdge> getShortestPath(Station source, Station target) {
 		validateSourceAndTarget(source, target);
 		validateExistStation(source, target);
-		DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-		GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
+		final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(
+			graph);
+		final GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
 
 		validateIsExistedPath(shortestPath);
 
