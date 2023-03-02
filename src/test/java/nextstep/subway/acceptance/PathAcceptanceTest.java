@@ -17,11 +17,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
 @DisplayName("경로 관련 기능")
-public class PathAcceptanceTest extends AcceptanceTest {
+class PathAcceptanceTest extends AcceptanceTest {
+	private static final Long 존재하지_않는_역 = Long.MAX_VALUE;
 	private Long 신분당선;
 	private Long 이호선;
 	private Long 삼호선;
 	private Long 구호선;
+	private Long 칠호선;
 	private Long 신사역;
 	private Long 논현역;
 	private Long 신논현역;
@@ -30,6 +32,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 	private Long 고속터미널역;
 	private Long 교대역;
 	private Long 남부터미널역;
+	private Long 어린이대공원역;
+	private Long 건대입구역;
 
 	/* Line
 	  신사역 --- *신분당선* ---    논현역
@@ -74,11 +78,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
 		남부터미널역 = 지하철역_생성_요청("남부터미널역").jsonPath().getLong("id");
 		신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
 		교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
+		어린이대공원역 = 지하철역_생성_요청("어린이대공원역").jsonPath().getLong("id");
+		건대입구역 = 지하철역_생성_요청("건대입구역").jsonPath().getLong("id");
 
 		신분당선 = 지하철_노선_생성_요청("신분당선", "red", 신사역, 논현역, 10).jsonPath().getLong("id");
 		이호선 = 지하철_노선_생성_요청("이호선", "green", 교대역, 강남역, 2).jsonPath().getLong("id");
 		삼호선 = 지하철_노선_생성_요청("삼호선", "orange", 신사역, 고속터미널역, 3).jsonPath().getLong("id");
 		구호선 = 지하철_노선_생성_요청("구호선", "yellow", 고속터미널역, 신논현역, 9).jsonPath().getLong("id");
+		칠호선 = 지하철_노선_생성_요청("칠호선", "khaki", 어린이대공원역, 건대입구역, 7).jsonPath().getLong("id");
 
 		지하철_노선에_지하철_구간_생성_요청(신분당선, 논현역, 신논현역, 5);
 		지하철_노선에_지하철_구간_생성_요청(신분당선, 신논현역, 강남역, 6);
@@ -178,6 +185,82 @@ public class PathAcceptanceTest extends AcceptanceTest {
 			() -> 경로_역_순서_검증(response, List.of(남부터미널역, 교대역, 강남역, 신논현역)),
 			() -> 경로_거리_검증(response, 9)
 		);
+	}
+
+	/**
+	 * Given 존재하지 않는 출발역이 주어지고
+	 * When 출발역에서 도착역 까지의 경로를 요청하면
+	 * Then 예외를 던진다.
+	 */
+	@DisplayName("지하철 경로 조회 - 예외 - 출발역이 존재하지 않는 경우")
+	@Test
+	void getPath_fail_WHEN_SOURCE_DOES_NOT_EXISTED_THEN_THROW_EXCEPTION() {
+		// Given
+		Long 출발역 = 존재하지_않는_역;
+		Long 도착역 = 신논현역;
+
+		// When
+		ExtractableResponse<Response> response = 경로_조회_요청(출발역, 도착역);
+
+		// Then
+		응답_상태_검증(response, HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * Given 존재하지 않는 도착역이 주어지고
+	 * When 출발역에서 도착역 까지의 경로를 요청하면
+	 * Then 예외를 던진다.
+	 */
+	@DisplayName("지하철 경로 조회 - 예외 - 도착역이 존재하지 않는 경우")
+	@Test
+	void getPath_fail_WHEN_TARGET_DOES_NOT_EXISTED_THEN_THROW_EXCEPTION() {
+		// Given
+		Long 출발역 = 신논현역;
+		Long 도착역 = 존재하지_않는_역;
+
+		// When
+		ExtractableResponse<Response> response = 경로_조회_요청(출발역, 도착역);
+
+		// Then
+		응답_상태_검증(response, HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * Given 동일한 출발역과 도착역이 주어지고
+	 * When 출발역에서 도착역 까지의 경로를 요청하면
+	 * Then 예외를 던진다.
+	 */
+	@DisplayName("지하철 경로 조회 - 예외 - 출발역과 도착역이 동일한 경우")
+	@Test
+	void getPath_fail_WHEN_SOURCE_AND_TARGET_IS_SAME_THEN_THROW_EXCEPTION() {
+		// Given
+		Long 출발역 = 남부터미널역;
+		Long 도착역 = 신논현역;
+
+		// When
+		ExtractableResponse<Response> response = 경로_조회_요청(출발역, 도착역);
+
+		// Then
+		응답_상태_검증(response, HttpStatus.BAD_REQUEST);
+	}
+
+	/**
+	 * Given 이어지지 않는 두 역이 출발역과 도착역으로 주어지고
+	 * When 출발역에서 도착역 까지의 경로를 요청하면
+	 * Then 예외를 던진다.
+	 */
+	@DisplayName("지하철 경로 조회 - 예외 - 경로가 존재하지 않는 경우")
+	@Test
+	void getPath_fail_WHEN_PATH_DOES_NOT_EXIST_SAME_THEN_THROW_EXCEPTION() {
+		// Given
+		Long 출발역 = 남부터미널역;
+		Long 도착역 = 건대입구역;
+
+		// When
+		ExtractableResponse<Response> response = 경로_조회_요청(출발역, 도착역);
+
+		// Then
+		응답_상태_검증(response, HttpStatus.BAD_REQUEST);
 	}
 
 	private void 경로_거리_검증(ExtractableResponse<Response> response, int distance) {
