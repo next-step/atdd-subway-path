@@ -148,7 +148,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
 	/**
 	 * When 지하철 노선의 구간이 하나일 때 구간 제거를 요청 하면
-	 * Then 노선에 구간이 제거된다
+	 * Then 예외를 던진다.
 	 */
 	@DisplayName("지하철 노선에 구간을 제거 - 구간이 하나인 노선에서 종점역을 삭제하는 경우 예외를 던진다.")
 	@Test
@@ -163,7 +163,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 	/**
 	 * Given 지하철 노선에 새로운 구간 추가를 요청 하고, 해당 노선에 존재하지 않는 역을 생성한다.
 	 * When 지하철 노선에서 존재하지 않는 역을 갖는 구간 제거를 요청 하면
-	 * Then 노선에 구간이 제거된다
+	 * Then 예외를 던진다.
 	 */
 	@DisplayName("지하철 노선에 구간을 제거 - 존재하지 않는 역을 삭제하는 경우 예외를 던진다.")
 	@Test
