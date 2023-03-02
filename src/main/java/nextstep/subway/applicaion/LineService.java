@@ -6,6 +6,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.policy.AddSectionPolicies;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,12 +15,15 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+
     private LineRepository lineRepository;
     private StationService stationService;
+    private AddSectionPolicies addSectionPolicies;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService, AddSectionPolicies addSectionPolicies) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.addSectionPolicies = addSectionPolicies;
     }
 
     @Transactional
@@ -28,7 +32,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.addSection(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(new Section(line, upStation, downStation, request.getDistance()), addSectionPolicies);
         }
 
         return line;
@@ -65,7 +69,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()), addSectionPolicies);
     }
 
     @Transactional
@@ -73,6 +77,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        line.removeSection(station);
+        line.removeSection(station, addSectionPolicies);
     }
 }

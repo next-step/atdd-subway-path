@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.SectionExceptionMessages;
-import nextstep.subway.domain.policy.AddBetweenSectionPolicy;
-import nextstep.subway.domain.policy.AddEdgeSectionPolicy;
-import nextstep.subway.domain.policy.AddEmptySectionPolicy;
-import nextstep.subway.domain.policy.AddSectionPolicyChain;
+import nextstep.subway.domain.policy.AddSectionPolicies;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.CascadeType;
@@ -28,17 +25,9 @@ public class Sections {
 
     }
 
-    public void addSection(Section section) {
+    public void addSection(Section section, AddSectionPolicies policies) {
         validateAddSection(section);
-
-        AddSectionPolicyChain policy1 = new AddEmptySectionPolicy();
-        AddSectionPolicyChain policy2 = new AddEdgeSectionPolicy();
-        AddSectionPolicyChain policy3 = new AddBetweenSectionPolicy();
-
-        policy1.setNext(policy2);
-        policy2.setNext(policy3);
-
-        policy1.execute(this, sections, section);
+        policies.execute(this, sections, section);
     }
 
     public int getSectionsCount() {
@@ -124,7 +113,7 @@ public class Sections {
                 .findFirst().orElseThrow(() -> new DataIntegrityViolationException(SectionExceptionMessages.CANNOT_FIND_SECTION));
     }
 
-    public void removeSection(Station station) {
+    public void removeSection(Station station, AddSectionPolicies policies) {
         validateRemoveSection();
 
         if (station.equals(getFirstStation())) {
@@ -139,7 +128,7 @@ public class Sections {
             return;
         }
 
-        removeBetweenSection(station);
+        removeBetweenSection(station, policies);
     }
 
     public int getTotalDistance() {
@@ -177,13 +166,13 @@ public class Sections {
                 .findFirst().orElse(null);
     }
 
-    private void removeBetweenSection(Station station) {
+    private void removeBetweenSection(Station station, AddSectionPolicies policies) {
         Section section = getStationIncludeSection(station);
         Section nextSection = getNextSection(section);
         sections.remove(section);
         sections.remove(nextSection);
 
-        addSection(section.merge(nextSection));
+        addSection(section.merge(nextSection), policies);
     }
 
 }

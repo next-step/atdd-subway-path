@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.policy.AddSectionPolicies;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,18 +34,20 @@ public class LineServiceMockTest {
     private StationService stationService;
 
     private SectionRequest request;
+    private AddSectionPolicies policies;
 
     // given
     @BeforeEach
     void init() {
         request = setUpStubs(lineId);
+        policies = new AddSectionPolicies();
     }
 
     @Test
     void addSection() {
         // when
         // lineService.addSection 호출
-        LineService lineService = new LineService(lineRepository, stationService);
+        LineService lineService = new LineService(lineRepository, stationService, policies);
         lineService.addSection(lineId, request);
 
         // then

@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LinePath;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.policy.AddSectionPolicies;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,10 +33,11 @@ class LinePathTest {
     // given
     @BeforeEach
     void setUp() {
-        서울1호선.addSection(new Section(서울1호선, 노량진역, 신도림역, 10));
-        서울1호선.addSection(new Section(서울1호선, 신도림역, 구로역, 10));
-        서울2호선.addSection(new Section(서울2호선, 당산역, 신도림역, 20));
-        서울9호선.addSection(new Section(서울9호선, 노량진역, 당산역, 5));
+        AddSectionPolicies policies = new AddSectionPolicies();
+        서울1호선.addSection(new Section(서울1호선, 노량진역, 신도림역, 10), policies);
+        서울1호선.addSection(new Section(서울1호선, 신도림역, 구로역, 10), policies);
+        서울2호선.addSection(new Section(서울2호선, 당산역, 신도림역, 20), policies);
+        서울9호선.addSection(new Section(서울9호선, 노량진역, 당산역, 5), policies);
         지하철경로 = new LinePath(List.of(서울1호선, 서울2호선, 서울9호선));
     }
 

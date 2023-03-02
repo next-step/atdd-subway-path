@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.policy.AddSectionPolicies;
+
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -59,8 +61,8 @@ public class Line {
         return !sections.isEmpty();
     }
 
-    public void addSection(Section section) {
-        sections.addSection(section);
+    public void addSection(Section section, AddSectionPolicies policies) {
+        sections.addSection(section, policies);
     }
 
     public int getSectionsCount() {
@@ -79,8 +81,8 @@ public class Line {
         return sections.getStations();
     }
 
-    public void removeSection(Station station) {
-        sections.removeSection(station);
+    public void removeSection(Station station, AddSectionPolicies policies) {
+        sections.removeSection(station, policies);
     }
 
     public int getLength() {

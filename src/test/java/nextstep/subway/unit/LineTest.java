@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.SectionExceptionMessages;
+import nextstep.subway.domain.policy.AddSectionPolicies;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,14 @@ class LineTest {
     private Station 신도림역 = new Station("신도림역");
     private Station 신림역 = new Station("신림역");
     private Section section;
+    private AddSectionPolicies policies;
 
     // given
     @BeforeEach
     void setUp() {
+        policies = new AddSectionPolicies();
         section = new Section(서울2호선, 당산역, 신도림역, 20);
-        서울2호선.addSection(section);
+        서울2호선.addSection(section, policies);
     }
 
     @DisplayName("구간 추가 - 정상1 : 새로운 노선에 구간을 추가")
@@ -43,8 +46,8 @@ class LineTest {
     @Test
     void addSection_case2() {
         // when
-        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
-        서울2호선.addSection(new Section(서울2호선, 신촌역, 당산역, 5));
+        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10), policies);
+        서울2호선.addSection(new Section(서울2호선, 신촌역, 당산역, 5), policies);
 
         // then
         assertThat(서울2호선.getStations()).containsExactly(신촌역, 당산역, 신도림역, 신림역);
@@ -54,7 +57,7 @@ class LineTest {
     @Test
     void addSection_case3() {
         // when
-        서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 10));
+        서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 10), policies);
 
         // then
         assertThat(서울2호선.getStations()).containsExactly(당산역, 신촌역, 신도림역);
@@ -64,7 +67,7 @@ class LineTest {
     @Test
     void addSection_InvalidCase1() {
         // when - then
-        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 30)))
+        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 당산역, 신촌역, 30), policies))
                 .isInstanceOf(DataIntegrityViolationException.class).hasMessage(SectionExceptionMessages.INVALID_DISTANCE);
     }
 
@@ -72,10 +75,10 @@ class LineTest {
     @Test
     void addSection_InvalidCase2() {
         // when - then
-        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 당산역, 신도림역, 10)))
+        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 당산역, 신도림역, 10), policies))
                 .isInstanceOf(DataIntegrityViolationException.class).hasMessage(SectionExceptionMessages.ALREADY_EXIST);
 
-        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 신도림역, 당산역, 10)))
+        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 신도림역, 당산역, 10), policies))
                 .isInstanceOf(DataIntegrityViolationException.class).hasMessage(SectionExceptionMessages.ALREADY_EXIST);
     }
 
@@ -83,7 +86,7 @@ class LineTest {
     @Test
     void addSection_InvalidCase3() {
         // when - then
-        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 신촌역, 신림역, 10)))
+        assertThatThrownBy(() -> 서울2호선.addSection(new Section(서울2호선, 신촌역, 신림역, 10), policies))
                 .isInstanceOf(DataIntegrityViolationException.class).hasMessage(SectionExceptionMessages.NOTHING_EXIST);
     }
 
@@ -91,12 +94,12 @@ class LineTest {
     @Test
     void removeSection_ValidCase1() {
         // given
-        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
+        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10), policies);
         assertThat(서울2호선.getSectionsCount()).isEqualTo(2);
         assertThat(서울2호선.getStations()).containsExactly(당산역, 신도림역, 신림역);
 
         // when
-        서울2호선.removeSection(당산역);
+        서울2호선.removeSection(당산역, policies);
 
         // then
         assertThat(서울2호선.getSectionsCount()).isEqualTo(1);
@@ -107,12 +110,12 @@ class LineTest {
     @Test
     void removeSection_ValidCase2() {
         // given
-        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
+        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10), policies);
         assertThat(서울2호선.getSectionsCount()).isEqualTo(2);
         assertThat(서울2호선.getStations()).containsExactly(당산역, 신도림역, 신림역);
 
         // when
-        서울2호선.removeSection(신림역);
+        서울2호선.removeSection(신림역, policies);
 
         // then
         assertThat(서울2호선.getSectionsCount()).isEqualTo(1);
@@ -123,12 +126,12 @@ class LineTest {
     @Test
     void removeSection_ValidCase3() {
         // given
-        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
+        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10), policies);
         assertThat(서울2호선.getSectionsCount()).isEqualTo(2);
         assertThat(서울2호선.getStations()).containsExactly(당산역, 신도림역, 신림역);
 
         // when
-        서울2호선.removeSection(신도림역);
+        서울2호선.removeSection(신도림역, policies);
 
         // then
         assertThat(서울2호선.getSectionsCount()).isEqualTo(1);
@@ -142,7 +145,7 @@ class LineTest {
         assertThat(서울2호선.getSectionsCount()).isEqualTo(1);
 
         // when - then
-        assertThatThrownBy(() -> 서울2호선.removeSection(당산역))
+        assertThatThrownBy(() -> 서울2호선.removeSection(당산역, policies))
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessage(SectionExceptionMessages.CANNOT_REMOVE_SECTION_WHEN_LINE_HAS_ONLY_ONE);
     }
@@ -151,11 +154,11 @@ class LineTest {
     @Test
     void removeSection_InvalidCase2() {
         // given
-        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10));
+        서울2호선.addSection(new Section(서울2호선, 신도림역, 신림역, 10), policies);
         assertThat(서울2호선.getSectionsCount()).isGreaterThan(1);
 
         // when - then
-        assertThatThrownBy(() -> 서울2호선.removeSection(신촌역))
+        assertThatThrownBy(() -> 서울2호선.removeSection(신촌역, policies))
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .hasMessage(SectionExceptionMessages.CANNOT_FIND_SECTION);
     }
