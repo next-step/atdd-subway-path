@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 import nextstep.subway.exception.CannotCreateSectionException;
 import nextstep.subway.exception.CannotFindFinalStationException;
 import nextstep.subway.exception.CannotFindSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 import nextstep.subway.exception.ErrorMessage;
 
 @Embeddable
@@ -43,6 +44,13 @@ public class Sections {
 	}
 
 	public void removeSection(Station station) {
+		if (hasSingleSection()) {
+			throw new CannotRemoveSectionException(ErrorMessage.CANNOT_REMOVE_SINGLE_SECTION);
+		}
+		if (notContains(station)) {
+			throw new CannotRemoveSectionException(ErrorMessage.CANNOT_REMOVE_NO_EXISTED_STATION);
+		}
+
 		if (isMiddleStation(station)) {
 			final Section frontSection = findSectionByDownStation(station);
 			final Section backSection = findSectionByUpStation(station);
