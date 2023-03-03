@@ -1,17 +1,19 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.SectionExceptionMessages;
+import nextstep.subway.domain.policy.AddSectionPolicies;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -19,43 +21,21 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Station firstStation;
-
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Station lastStation;
-
     public Sections() {
 
     }
 
-    public void addSection(Section section) {
+    public void addSection(Section section, AddSectionPolicies policies) {
         validateAddSection(section);
-
-        if (sections.isEmpty()) {
-            sections.add(section);
-            firstStation = section.getUpStation();
-            lastStation = section.getDownStation();
-            return;
-        }
-
-        if (isNewFirstSection(section)) {
-            sections.add(section);
-            firstStation = section.getUpStation();
-            return;
-        }
-
-        if (isNewLastSection(section)) {
-            sections.add(section);
-            lastStation = section.getDownStation();
-            return;
-        }
-
-        addBetweenSection(section);
+        policies.execute(this, sections, section);
     }
 
     public int getSectionsCount() {
         return sections.size();
+    }
+
+    public boolean isEmpty(){
+        return sections.isEmpty();
     }
 
     public List<Station> getStations() {
@@ -76,7 +56,55 @@ public class Sections {
             return sections.get(0);
         }
 
-        return getStationIncludeSection(firstStation);
+        return getStationIncludeSection(getFirstStation());
+    }
+
+    public boolean isFirstSection(Section section) {
+        return section.equals(getFirstSection());
+    }
+
+    public boolean isNewFirstSection(Section section) {
+        return section.getDownStation().equals(getFirstStation());
+    }
+
+    public Station getFirstStation() {
+        Set<Station> allDownStations = sections.stream().map(Section::getDownStation).collect(Collectors.toSet());
+
+        return sections.stream()
+                .filter(sec -> !allDownStations.contains(sec.getUpStation()))
+                .findAny()
+                .map(Section::getUpStation)
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    public Section getLastSection() {
+        if (getSectionsCount() == 1) {
+            return sections.get(0);
+        }
+
+        return getStationIncludeSection(getLastStation());
+    }
+
+    public Station getLastStation() {
+        Set<Station> allUpStations = sections.stream().map(Section::getUpStation).collect(Collectors.toSet());
+
+        return sections.stream()
+                .filter(sec -> !allUpStations.contains(sec.getDownStation()))
+                .findAny()
+                .map(Section::getDownStation)
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    public boolean isLastSection(Section section) {
+        return section.equals(getLastSection());
+    }
+
+    public boolean isNewLastSection(Section section) {
+        return section.getUpStation().equals(getLastStation());
+    }
+
+    public boolean isBetweenSection(Section section) {
+        return !isEmpty() && !isFirstSection(section) && !isLastSection(section);
     }
 
     private Section getStationIncludeSection(Station station) {
@@ -85,36 +113,30 @@ public class Sections {
                 .findFirst().orElseThrow(() -> new DataIntegrityViolationException(SectionExceptionMessages.CANNOT_FIND_SECTION));
     }
 
-    public void removeSection(Station station) {
+    public void removeSection(Station station, AddSectionPolicies policies) {
         validateRemoveSection();
 
-        if (station.equals(firstStation)) {
-            Section section = getStationIncludeSection(firstStation);
-            firstStation = section.getDownStation();
+        if (station.equals(getFirstStation())) {
+            Section section = getStationIncludeSection(getFirstStation());
             sections.remove(section);
             return;
         }
 
-        if (station.equals(lastStation)) {
-            Section section = getStationIncludeSection(lastStation);
-            lastStation = section.getUpStation();
+        if (station.equals(getLastStation())) {
+            Section section = getStationIncludeSection(getLastStation());
             sections.remove(section);
             return;
         }
 
-        removeBetweenSection(station);
+        removeBetweenSection(station, policies);
     }
 
     public int getTotalDistance() {
         return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
     }
 
-    private boolean isNewFirstSection(Section section) {
-        return section.getDownStation().equals(firstStation);
-    }
-
-    private boolean isNewLastSection(Section section) {
-        return section.getUpStation().equals(lastStation);
+    public List<Section> getAllSections() {
+        return Collections.unmodifiableList(sections);
     }
 
     private void validateAddSection(Section section) {
@@ -144,29 +166,13 @@ public class Sections {
                 .findFirst().orElse(null);
     }
 
-    private void addBetweenSection(Section section) {
-        Section originSection =  sections.stream()
-                .filter(s -> isBetweenSection(s, section))
-                .findFirst().orElseThrow(NoSuchElementException::new);
-
-        sections.addAll(originSection.divide(section));
-
-        sections.remove(originSection);
-    }
-
-    private void removeBetweenSection(Station station) {
+    private void removeBetweenSection(Station station, AddSectionPolicies policies) {
         Section section = getStationIncludeSection(station);
         Section nextSection = getNextSection(section);
         sections.remove(section);
         sections.remove(nextSection);
 
-        addSection(section.merge(nextSection));
+        addSection(section.merge(nextSection), policies);
     }
-
-    private boolean isBetweenSection(Section origin, Section target) {
-        return origin.getUpStation().equals(target.getUpStation())
-                || origin.getDownStation().equals(target.getDownStation());
-    }
-
 
 }
