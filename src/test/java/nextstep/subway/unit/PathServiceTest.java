@@ -3,7 +3,6 @@ package nextstep.subway.unit;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.PathService;
 import nextstep.subway.applicaion.StationService;
-import nextstep.subway.applicaion.dto.PathResponse;
 
 import nextstep.subway.domain.PathFinder;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -24,6 +22,9 @@ public class PathServiceTest {
 
     @Mock
     private StationService stationService;
+
+    @Mock
+    private PathFinder pathFinder;
 
     @DisplayName("")
     @Test

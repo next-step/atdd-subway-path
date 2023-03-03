@@ -12,6 +12,7 @@ import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요�
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("경로 조회 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -59,12 +60,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 경로_요청(교대역, 양재역);
 
         //Then
-        assertThat(response.jsonPath().getList("stations.id", Long.class))
-                .containsExactly(1L, 4L, 3L);
-
-        //Then
-        assertThat(response.jsonPath().getLong("distance"))
-                .isEqualTo(5);
+        assertAll(() -> assertThat(response.jsonPath().getList("stations.id", Long.class))
+                        .containsExactly(1L, 4L, 3L),
+                () -> assertThat(response.jsonPath().getLong("distance")).isEqualTo(5));
     }
 
     private ExtractableResponse<Response> 경로_요청(Long sourceId, Long targetId) {

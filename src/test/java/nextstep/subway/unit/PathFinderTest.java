@@ -4,6 +4,9 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Path;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.PathIllegalStationException;
+import nextstep.subway.exception.PathNotConnectedException;
+import nextstep.subway.exception.PathNotSameStationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PathFinderTest {
 
@@ -51,6 +55,44 @@ public class PathFinderTest {
         Path path = pathFinder.findPath(교대역, 양재역);
         assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(path.getDistance()).isEqualTo(5);
+    }
+
+    @DisplayName("출발역과 도착역이 같은 경우 예외 발생")
+    @Test
+    void findPathSameStation() {
+        List<Line> lines = List.of(이호선, 신분당선, 삼호선);
+        PathFinder pathFinder = new PathFinder(lines);
+        assertThatThrownBy(() ->
+                pathFinder.findPath(교대역, 교대역)
+        ).isInstanceOf(PathNotSameStationException.class);
+
+    }
+
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 예외 발생")
+    @Test
+    void findPathNotConnectedStation() {
+        Station 명동역 = new Station("명동역");
+        Station 종각역 = new Station("종각역");
+
+        Line 사호선 = new Line("4호선", "blue", 명동역, 종각역, 10);
+        List<Line> lines = List.of(이호선, 신분당선, 삼호선, 사호선);
+
+        PathFinder pathFinder = new PathFinder(lines);
+        assertThatThrownBy(() ->
+                pathFinder.findPath(교대역, 명동역)
+        ).isInstanceOf(PathNotConnectedException.class);
+    }
+
+    @DisplayName("존재하지 않는 출발역 조회시 예외 발생")
+    @Test
+    void findPathNotFoundedStation() {
+        Station 명동역 = new Station("명동역");
+        List<Line> lines = List.of(이호선, 신분당선, 삼호선);
+
+        PathFinder pathFinder = new PathFinder(lines);
+        assertThatThrownBy(() ->
+                pathFinder.findPath(교대역, 명동역)
+        ).isInstanceOf(PathIllegalStationException.class);
     }
 
 }
