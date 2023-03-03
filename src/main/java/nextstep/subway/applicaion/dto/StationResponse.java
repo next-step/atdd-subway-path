@@ -1,10 +1,8 @@
 package nextstep.subway.applicaion.dto;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 public class StationResponse {
@@ -18,15 +16,7 @@ public class StationResponse {
     }
 
     public static List<StationResponse> of(Line line) {
-        if (line.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = line.getSections().stream()
-            .map(Section::getDownStation)
-            .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = line.getStations();
 
         return stations.stream()
             .map(StationResponse::of)

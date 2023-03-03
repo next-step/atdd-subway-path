@@ -12,13 +12,11 @@ import nextstep.subway.applicaion.dto.LineRequest;
 @Entity
 public class Line {
 
+    @Embedded
+    private final Sections sections = new Sections();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Embedded
-    private final Sections sections = new Sections();
-
     private String name;
     private String color;
 
@@ -50,16 +48,16 @@ public class Line {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public List<Section> getSections() {
         return sections.getSections();
     }
 
     public void addSection(Section section) {
         sections.addSection(section);
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(this, upStation, downStation, distance);
     }
 
     public void deleteSection(Station station) {

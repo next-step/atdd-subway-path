@@ -21,7 +21,8 @@ public class Sections {
     private final List<Section> sections = new ArrayList<>();
 
     public List<Section> getSections() {
-        if (sections.size() > 1) {
+        int MIN_SECTION_SIZE_TO_SORT = 2;
+        if (sections.size() >= MIN_SECTION_SIZE_TO_SORT) {
             return sortSectionsByOrder(sections);
         }
         return sections;
@@ -61,12 +62,12 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        validateSectionAddition(newSection);
-
         if (sections.isEmpty()) {
             sections.add(newSection);
             return;
         }
+
+        validateSectionAddition(newSection);
 
         if (canAddSectionBetween(newSection)) {
             addSectionBetween(newSection);
@@ -76,6 +77,10 @@ public class Sections {
         if (canAddSectionAsEndpoint(newSection)) {
             sections.add(newSection);
         }
+    }
+
+    public void addSection(Line line, Station upStation, Station downStation, int distance) {
+        addSection(new Section(line, upStation, downStation, distance));
     }
 
     private void validateSectionAddition(Section section) {
@@ -91,7 +96,7 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return sections
+        return getSections()
             .stream()
             .flatMap(section ->
                 Stream.of(section.getUpStation(), section.getDownStation()))
@@ -167,7 +172,8 @@ public class Sections {
         }
 
         int lastSectionIndex = sections.size() - 1;
-        Station lastSectionDownStation = sections.get(lastSectionIndex).getDownStation();
+        Section lastSection = getSections().get(lastSectionIndex);
+        Station lastSectionDownStation = lastSection.getDownStation();
         if (!lastSectionDownStation.equals(station)) {
             throw new IllegalArgumentException();
         }

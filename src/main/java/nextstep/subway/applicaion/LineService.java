@@ -7,7 +7,6 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +30,7 @@ public class LineService {
             && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections()
-                .add(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(upStation, downStation, request.getDistance());
         }
         return LineResponse.of(line);
     }
@@ -63,10 +61,9 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        int distance = sectionRequest.getDistance();
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        Section section = sectionRequest.toEntity(line, upStation, downStation);
-        line.addSection(section);
+        line.addSection(upStation, downStation, distance);
     }
 
     @Transactional
