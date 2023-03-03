@@ -52,7 +52,6 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        System.out.println("LINE_ID_신분당선 = " + LINE_ID_신분당선);
         given(lineRepository.findById(LINE_ID_신분당선)).willReturn(Optional.of(신분당선));
         given(stationService.findById(STATION_ID_미금역)).willReturn(미금역);
         given(stationService.findById(STATION_ID_판교역)).willReturn(판교역);
