@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 class LineTest {
 
+    private static final String YELLOW = "yellow";
     private Line 신분당선;
     private Station 미금역;
     private Station 판교역;
@@ -61,6 +63,23 @@ class LineTest {
 
         // then
         assertThat(stations).containsExactly(미금역, 판교역);
+    }
+
+    /**
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @Test
+    @DisplayName("지하철 노선을 수정한다.")
+    void updateLine() {
+        // when
+        LineRequest updateRequest = LineRequest.builder()
+            .color(YELLOW)
+            .build();
+        신분당선.update(updateRequest);
+
+        // then
+        assertThat(신분당선.getColor()).isEqualTo(YELLOW);
     }
 
     /**
