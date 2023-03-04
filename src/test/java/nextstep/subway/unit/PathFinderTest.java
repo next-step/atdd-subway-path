@@ -47,7 +47,7 @@ public class PathFinderTest {
         삼호선.addSection(남부터미널역, 양재역, 3);
     }
 
-    @DisplayName("pathFinder의 findPath 검증")
+    @DisplayName("두 역의 최단 거리와 경로를 찾을 수 있다.")
     @Test
     void findPath() {
         List<Line> lines = List.of(이호선, 신분당선, 삼호선);

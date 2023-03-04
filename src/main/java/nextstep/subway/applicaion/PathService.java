@@ -18,7 +18,6 @@ public class PathService {
 
     private LineService lineService;
     private StationService stationService;
-    private PathFinder pathFinder;
 
     public PathService(LineService lineService, StationService stationService) {
         this.lineService = lineService;
