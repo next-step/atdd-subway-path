@@ -19,6 +19,8 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
+    private Sections newSections = new Sections();
+
     public Line() {
     }
 
@@ -52,28 +54,30 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return newSections.getSections();
     }
 
     public void addSection(Section section) {
-        sections.add(section);
+        newSections.add(section);
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-                .map(Section::getStations)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
+        return newSections.getStations();
     }
 
     public void removeSection() {
-        if (sections.isEmpty()) {
+        if (newSections.isEmpty()) {
             throw new SectionBadRequestException("구간이 존재하지 않습니다.");
         }
-        if (sections.size() < 2) {
+        if (newSections.hasEnoughSize()) {
             throw new SectionBadRequestException("현재 노선은 구간이 1개 입니다.");
         }
+
+        /*
+        * TODO
+        * 마지막 구간의 하행역만 삭제 할 수 있는 조건 작성하기
+        * */
+
         int end = sections.size() - 1;
         sections.remove(end);
     }
