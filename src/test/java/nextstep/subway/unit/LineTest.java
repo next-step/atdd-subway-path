@@ -45,11 +45,15 @@ class LineTest {
 
     @Test
     void removeSection() {
+        Station 서울숲역 = new Station("서울숲역");
         수인분당선.addSection(강남구청역, 압구정로데오역, DISTANCE);
+        수인분당선.addSection(압구정로데오역, 서울숲역, DISTANCE);
 
         수인분당선.removeSection(압구정로데오역);
 
         Sections sections = 수인분당선.getSections();
-        assertThat(sections.isEmpty()).isTrue();
+        List<Station> stations = 수인분당선.getStations();
+        assertThat(sections.getSections().size()).isEqualTo(1);
+        assertThat(stations).doesNotContain(압구정로데오역);
     }
 }
