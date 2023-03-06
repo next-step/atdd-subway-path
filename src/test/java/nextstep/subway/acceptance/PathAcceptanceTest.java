@@ -1,5 +1,10 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,12 +52,21 @@ class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(삼호선, 구간_요청(남부터미널역, 양재역, 3));
     }
 
-    @DisplayName("지하철 경로 조회")
+    /**
+     * Given 지하철 노선에 구간을 등록한다.
+     * When 출발역과 도착역을 입력받아 최단 거리 경로를 조회한다.
+     * Then 최단 거리 경로를 반환한다.
+     */
+    @DisplayName("최단 거리 경로 조회")
     @Test
-     void findPath() {
-        // when & then
-        assertThat(상태코드_추출(지하철_최단_경로를_조회한다(교대역, 양재역))).isEqualTo(200);
+    void findPath() {
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(교대역, 양재역);
+
+        var pathResponse = response.as(PathResponse.class);
+        assertThat(pathResponse.getDistance()).isEqualTo(5);
+        assertThat(pathResponse.getStations().stream().map(StationResponse::getId)).containsExactly(교대역, 남부터미널역, 양재역);
     }
+
 
     private Map<String, String> 구간_요청(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
@@ -62,4 +76,10 @@ class PathAcceptanceTest extends AcceptanceTest {
         return params;
     }
 
+    public static ExtractableResponse<Response> 지하철_경로_조회_요청(Long source, Long target) {
+        return RestAssured
+                .given().log().all()
+                .when().get("/paths?source={source}&target={target}", source, target)
+                .then().log().all().extract();
+    }
 }
