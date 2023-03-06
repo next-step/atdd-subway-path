@@ -99,4 +99,8 @@ public class LineService {
         Line line = findLine(lineId);
         line.deleteSection(stationId);
     }
+
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
 }

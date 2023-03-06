@@ -18,6 +18,8 @@ public enum SubwayErrorCode {
     NOT_CONTAIN_STATION("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다."),
     DELETE_LAST_SECTION("마지막 구간만 제거할 수 있습니다."),
     NOT_CONNECTED_SECTION("연결된 구간이 아닙니다."),
+    CAN_NOT_EQUAL_STATION("출발역과 도착역이 같을순 없습니다."),
+    CAN_NOT_EXSIST_PATH("경로가 존재하지 않습니다."),
     ;
 
     private String message;

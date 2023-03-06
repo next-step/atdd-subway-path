@@ -48,4 +48,8 @@ public class StationService {
     public Station findById(Long id) {
         return stationRepository.findById(id).orElseThrow(() -> new SubwayRuntimeException(SubwayErrorCode.NOT_FOUND_STATION.getMessage()));
     }
+
+    public List<Station> findStationsByIdIn(List<Long> vertexList) {
+        return stationRepository.findAllByIdIn(vertexList);
+    }
 }
