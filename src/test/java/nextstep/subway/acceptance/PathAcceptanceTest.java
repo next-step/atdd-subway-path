@@ -12,10 +12,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineSteps.상태코드_추출;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_최단_경로를_조회한다;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
