@@ -8,11 +8,12 @@ public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String color;
 
-//    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-//    private List<Section> sections = new ArrayList<>();
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String color;
 
     private Sections sections = new Sections();
 
@@ -62,5 +63,10 @@ public class Line {
 
     public void removeSection(Station station) {
         sections.remove(station);
+    }
+
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }
