@@ -96,4 +96,13 @@ class LineTest {
         // then
         assertThat(강남_2호선.getSections().size()).isEqualTo(1);
     }
+
+    @Test
+    void 노선의_이름과_색을_수정한다() {
+        // when
+        강남_2호선.update("강남강남_2호선", "super green");
+
+        assertThat(강남_2호선.getName()).isEqualTo("강남강남_2호선");
+        assertThat(강남_2호선.getColor()).isEqualTo("super green");
+    }
 }

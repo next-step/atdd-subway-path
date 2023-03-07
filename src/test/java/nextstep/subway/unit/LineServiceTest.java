@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
@@ -77,6 +78,23 @@ public class LineServiceTest {
 
     @Test
     void 구간이_비어있는_경우_노선을_삭제_할_수_없다() {
+    }
+
+    @Test
+    void 노선의_이름과_색을_변경한다() {
+        // given
+        Line 강남_2호선 = lineRepository.save(new Line("강남 2호선", "green"));
+        LineRequest lineRequest = new LineRequest("강남강남_2호선", "super green");
+
+        // when
+        lineService.updateLine(강남_2호선.getId(), lineRequest);
+
+        // then
+        Line 강남강남_2호선 = lineRepository.findById(강남_2호선.getId()).get();
+        assertAll(
+                () -> assertThat(강남강남_2호선.getName()).isEqualTo(강남_2호선.getName()),
+                () -> assertThat(강남강남_2호선.getColor()).isEqualTo(강남_2호선.getColor())
+        );
     }
 
     /*
