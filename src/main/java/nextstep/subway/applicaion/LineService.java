@@ -38,10 +38,6 @@ public class LineService {
         return createLineResponse(line);
     }
 
-    private static boolean isSectionAdd(LineRequest request) {
-        return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
-    }
-
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
                 .map(this::createLineResponse)
@@ -88,6 +84,17 @@ public class LineService {
         );
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Station station = stationService.findById(stationId);
+        line.removeSection(station);
+    }
+
+    private static boolean isSectionAdd(LineRequest request) {
+        return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
+    }
+
     private List<StationResponse> createStationResponses(Line line) {
         if (line.getSections().isEmpty()) {
             return Collections.emptyList();
@@ -96,21 +103,5 @@ public class LineService {
         return line.getStations().stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-        Station station = stationService.findById(stationId);
-
-        /*
-        * TODO
-        * 마지막 구간의 하행역만 삭제 할 수 있는 조건 분리하기
-        * */
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
     }
 }

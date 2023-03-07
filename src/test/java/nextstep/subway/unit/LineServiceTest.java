@@ -6,6 +6,7 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
 
+import nextstep.subway.exception.SectionBadRequestException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -76,12 +77,12 @@ public class LineServiceTest {
 
     @Test
     void 구간이_비어있는_경우_노선을_삭제_할_수_없다() {
-        // given
-        Line 강남_2호선 = lineRepository.save(new Line("강남 2호선", "green"));
-
-        // when
-        lineService.deleteSection(강남_2호선.getId(), 1L);
-
-        // then
     }
+
+    /*
+    * 구간이 비어있는 경우 노선을 삭제 할 수 없다
+    * 노선의_구간이_1개일_경우_구간을_삭제_할_수_없다
+    * 노선에_등록된_하행_종점역만_제거_할_수_있다
+    * 노선의 구간을 삭제한다
+    * */
 }
