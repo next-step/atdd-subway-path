@@ -56,7 +56,7 @@ class LineTest {
 
     @Test
     void 노선에_구간이_비어있는_경우_구간을_삭제_할_수_없다() {
-        assertThatThrownBy(() -> 강남_2호선.removeSection())
+        assertThatThrownBy(() -> 강남_2호선.removeSection(삼성역))
                 .isInstanceOf(SectionBadRequestException.class)
                 .hasMessage("구간이 존재하지 않습니다.");
     }
@@ -67,9 +67,21 @@ class LineTest {
         강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
 
         // then
-        assertThatThrownBy(() -> 강남_2호선.removeSection())
+        assertThatThrownBy(() -> 강남_2호선.removeSection(삼성역))
                 .isInstanceOf(SectionBadRequestException.class)
                 .hasMessage("현재 노선은 구간이 1개 입니다.");
+    }
+
+    @Test
+    void 노선에_등록된_하행_종점역만_제거_할_수_있다() {
+        // given
+        강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
+        강남_2호선.addSection(new Section(강남_2호선, 역삼역, 삼성역, 12));
+
+        // then
+        assertThatThrownBy(() -> 강남_2호선.removeSection(역삼역))
+                .isInstanceOf(SectionBadRequestException.class)
+                .hasMessage("노선에 등록된 하행 종점역만 제거 할 수 있습니다.");
     }
 
     @Test
@@ -79,7 +91,7 @@ class LineTest {
         강남_2호선.addSection(new Section(강남_2호선, 역삼역, 삼성역, 12));
 
         // when
-        강남_2호선.removeSection();
+        강남_2호선.removeSection(삼성역);
 
         // then
         assertThat(강남_2호선.getSections().size()).isEqualTo(1);
