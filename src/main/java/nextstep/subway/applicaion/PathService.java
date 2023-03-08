@@ -33,7 +33,7 @@ public class PathService {
         Station sourceStation = stationService.findById(source);
         Station targetStation = stationService.findById(target);
 
-        DijkstraShortestPath map = getSubwayMap();
+        DijkstraShortestPath<Long, DefaultWeightedEdge> map = getSubwayMap();
 
 
             int distance = calculateDistance(map, sourceStation.getId(), targetStation.getId());
@@ -53,7 +53,7 @@ public class PathService {
         addStationToMap(graph, lines);
         addSectionToMap(graph, lines);
 
-        DijkstraShortestPath map = new DijkstraShortestPath(graph);
+        DijkstraShortestPath<Long, DefaultWeightedEdge> map = new DijkstraShortestPath(graph);
 
         return map;
     }
