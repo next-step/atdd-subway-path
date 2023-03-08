@@ -26,7 +26,7 @@ public class PathService {
     }
 
     public PathResponse searchPath(Long source, Long target) {
-        if(source == target){
+        if(source.equals(target)){
             throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
         }
 
