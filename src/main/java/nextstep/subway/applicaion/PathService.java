@@ -90,14 +90,10 @@ public class PathService {
     }
 
     private int calculateDistance(DijkstraShortestPath map, Long source, Long target){
-        int distance = 0;
-
         try {
-            distance = (int) map.getPathWeight(source, target);
-        }catch(Exception e) {
+            return (int) map.getPathWeight(source, target);
+        } catch(Exception e) {
             throw new IllegalArgumentException("연결되지 않은 역입니다.");
         }
-
-        return distance;
     }
 }
