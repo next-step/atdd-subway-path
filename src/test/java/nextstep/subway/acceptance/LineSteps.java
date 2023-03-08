@@ -21,6 +21,22 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static Long 지하철_노선_생성_요청(String name, String color,
+        Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", Long.toString(upStationId));
+        params.put("downStationId", Long.toString(downStationId));
+        params.put("distance", Integer.toString(distance));
+        return RestAssured
+                .given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all().extract().body().jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured
                 .given().log().all()
@@ -63,5 +79,14 @@ public class LineSteps {
         return RestAssured.given().log().all()
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
+    }
+
+    public static Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId,
+        int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", Long.toString(upStationId));
+        params.put("downStationId", Long.toString(downStationId));
+        params.put("distance", Integer.toString(distance));
+        return params;
     }
 }
