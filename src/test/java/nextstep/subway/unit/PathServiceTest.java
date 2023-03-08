@@ -16,7 +16,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @DisplayName("경로 조회 Service 테스트")
 @SpringBootTest
 @Transactional
-public class PathServiceMockTest {
+public class PathServiceTest {
 
 
     @Autowired
