@@ -102,7 +102,7 @@ class PathFinderTest {
 		구호선.addSection(고속터미널역, 신논현역, 9);
 		칠호선.addSection(어린이대공원역, 건대입구역, 7);
 
-		pathFinder = new PathFinder(List.of(신분당선, 이호선, 삼호선, 칠호선, 구호선));
+		pathFinder = PathFinder.of(List.of(신분당선, 이호선, 삼호선, 칠호선, 구호선));
 	}
 
 	@DisplayName("최단 경로 탐색")

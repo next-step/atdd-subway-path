@@ -6,45 +6,33 @@ import java.util.Objects;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 
 import nextstep.subway.exception.NotExistedPathException;
 import nextstep.subway.exception.NotExistedStationException;
 import nextstep.subway.exception.SameStationException;
 
 public class PathFinder {
-	private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+	private final StationMap stationMap;
+	private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
-	protected PathFinder(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
-		this.graph = graph;
+	protected PathFinder(StationMap stationMap,
+		DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath) {
+		this.stationMap = stationMap;
+		this.dijkstraShortestPath = dijkstraShortestPath;
 	}
 
-	public PathFinder(List<Line> lines) {
-		this(new WeightedMultigraph(DefaultWeightedEdge.class));
+	public static PathFinder of(List<Line> lines) {
+		StationMap stationMap = new StationMap(lines);
+		DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(
+			stationMap.getGraph());
 
-		for (Line line : lines) {
-			initVertices(line);
-			initEdgeWeights(line);
-		}
-	}
-
-	private void initVertices(Line line) {
-		for (Station station : line.getStations()) {
-			graph.addVertex(station);
-		}
-	}
-
-	private void initEdgeWeights(Line line) {
-		for (Section section : line.getSections()) {
-			graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-		}
+		return new PathFinder(stationMap, dijkstraShortestPath);
 	}
 
 	public GraphPath<Station, DefaultWeightedEdge> getShortestPath(Station source, Station target) {
 		validateSourceAndTarget(source, target);
 		validateExistStation(source, target);
-		final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(
-			graph);
+
 		final GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(source, target);
 
 		validateIsExistedPath(shortestPath);
@@ -59,7 +47,7 @@ public class PathFinder {
 	}
 
 	private void validateExistStation(Station source, Station target) {
-		if (!graph.containsVertex(source) || !graph.containsVertex(target)) {
+		if (!stationMap.containsVertex(source) || !stationMap.containsVertex(target)) {
 			throw new NotExistedStationException();
 		}
 	}
