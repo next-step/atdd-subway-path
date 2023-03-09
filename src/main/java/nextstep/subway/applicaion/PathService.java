@@ -25,11 +25,9 @@ public class PathService {
 	}
 
 	public PathResponse getPath(Long sourceId, Long targetId) {
-		final PathFinder pathFinder = new PathFinder(lineService.findAllLines());
-
 		final Station sourceStation = stationService.findById(sourceId);
 		final Station targetStation = stationService.findById(targetId);
-
+		final PathFinder pathFinder = new PathFinder(lineService.findAllLines());
 		final GraphPath<Station, DefaultWeightedEdge> shortestPath = pathFinder.getShortestPath(sourceStation,
 			targetStation);
 
