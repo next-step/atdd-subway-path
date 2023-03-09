@@ -24,8 +24,6 @@ public class PathFinder {
 
 		for (Line line : lines) {
 			initVertices(line);
-		}
-		for (Line line : lines) {
 			initEdgeWeights(line);
 		}
 	}
