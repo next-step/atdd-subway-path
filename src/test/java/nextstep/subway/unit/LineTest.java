@@ -3,6 +3,8 @@ package nextstep.subway.unit;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.CannotCreateSectionException;
 import nextstep.subway.exception.CannotRemoveSectionException;
@@ -58,8 +59,8 @@ class LineTest {
 		이호선.addSection(강남역, 선릉역, 10);
 		이호선.addSection(강남역, 역삼역, 9);
 
-		Sections 이호선_구간_리스트 = 이호선.getSections();
-		Section 역삼역_선릉역_구간 = 이호선_구간_리스트.getSections().get(1);
+		List<Section> 이호선_구간_리스트 = 이호선.getSections();
+		Section 역삼역_선릉역_구간 = 이호선_구간_리스트.get(1);
 
 		// Then
 		assertThat(역삼역_선릉역_구간.getDistance()).isEqualTo(1);
@@ -128,7 +129,7 @@ class LineTest {
 		// When
 		이호선.addSection(강남역, 선릉역, 10);
 		// Then
-		assertThat(이호선.getSections().getSections()).isNotEmpty();
+		assertThat(이호선.getSections()).isNotEmpty();
 	}
 
 	@DisplayName("노선의 역 조회")
@@ -174,7 +175,7 @@ class LineTest {
 		이호선.removeSection(선릉역);
 
 		// Then
-		final int 새로운_구간_거리 = 이호선.getSections().getSections().get(0).getDistance();
+		final int 새로운_구간_거리 = 이호선.getSections().get(0).getDistance();
 		assertAll(
 			() -> assertThat(이호선.getStations()).containsExactly(강남역, 삼성역),
 			() -> assertThat(새로운_구간_거리).isEqualTo(30)

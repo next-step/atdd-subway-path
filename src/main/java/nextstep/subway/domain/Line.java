@@ -56,12 +56,12 @@ public class Line {
 		this.color = color;
 	}
 
-	public Sections getSections() {
-		return sections;
+	public List<Section> getSections() {
+		return sections.getSections();
 	}
 
 	public void addSection(Station upStation, Station downStation, int distance) {
-		this.getSections().addSection(new Section(this, upStation, downStation, distance));
+		this.sections.addSection(new Section(this, upStation, downStation, distance));
 	}
 
 	public List<Station> getStations() {
