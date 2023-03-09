@@ -11,7 +11,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 import lombok.Getter;
-import org.springframework.data.annotation.Transient;
 
 @Embeddable
 public class Sections {
@@ -19,13 +18,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
         CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
-
-    @Transient
-    private final String FIRST = "FIRST";
-    @Transient
-    private final String LAST = "LAST";
-    @Transient
-    private final String MIDDLE = "MIDDLE";
 
     public void add(Line line, Station upStation, Station downStation, int distance) {
         Section section = new Section(line, upStation, downStation, distance);
@@ -131,19 +123,19 @@ public class Sections {
         Map<Station, Section> downStationSectionMap = getDownStationSectionMap();
 
         List<Station> stations = getStations(upStationDownStationMap, downStationSectionMap);
-        String location = findLocationOfStation(stations, station, downStationSectionMap);
+        LocationOfStation location = findLocationOfStation(stations, station, downStationSectionMap);
 
-        if (location.equals(FIRST)) {
+        if (location.equals(LocationOfStation.FIRST)) {
             sections.remove(downStationSectionMap.get(upStationDownStationMap.get(station)));
             return;
         }
 
-        if (location.equals(LAST)) {
+        if (location.equals(LocationOfStation.LAST)) {
             sections.remove(downStationSectionMap.get(station));
             return;
         }
 
-        if (location.equals(MIDDLE)) {
+        if (location.equals(LocationOfStation.MIDDLE)) {
             Section downStationSection = downStationSectionMap.get(station);
             Section upStationSection = downStationSectionMap
                 .get(upStationDownStationMap.get(station));
@@ -154,17 +146,17 @@ public class Sections {
         throw new EntityNotFoundException("노선에 해당 역이 존재하지 않습니다.");
     }
 
-    private String findLocationOfStation(List<Station> stations, Station station,
+    private LocationOfStation findLocationOfStation(List<Station> stations, Station station,
         Map<Station, Section> downStationSectionMap) {
         if (stations.get(0).equals(station)) {
-            return FIRST;
+            return LocationOfStation.FIRST;
         }
         int lastIndex = stations.size() - 1;
         if (stations.get(lastIndex).equals(station)) {
-            return LAST;
+            return LocationOfStation.LAST;
         }
         if (downStationSectionMap.containsKey(station)) {
-            return MIDDLE;
+            return LocationOfStation.MIDDLE;
         }
         throw new EntityNotFoundException("노선에 해당 역이 존재하지 않습니다.");
     }

@@ -99,7 +99,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
                 createSectionCreateParams(강남역_ID, 정자역_ID, LONGER_DISTANCE));
 
-        예외_발생함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
+        실패함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -113,7 +113,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
                 createSectionCreateParams(강남역_ID, 양재역_ID, SHORTER_DISTANCE));
 
-        예외_발생함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
+        실패함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -129,7 +129,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
             지하철_노선에_지하철_구간_생성_요청(신분당선_ID,
                 createSectionCreateParams(정자역_ID, 신사역_ID, SHORTER_DISTANCE));
 
-        예외_발생함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
+        실패함(지하철_노선에_지하철_구간_생성_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -204,11 +204,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
             .containsExactly(stationId1, stationId2);
     }
 
-    private void 예외_발생함(ExtractableResponse<Response> response, HttpStatus status) {
-        assertThat(response.statusCode())
-            .isEqualTo(status.value());
-    }
-
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -218,14 +213,5 @@ class SectionAcceptanceTest extends AcceptanceTest {
         lineCreateParams.put("downStationId", Long.toString(downStationId));
         lineCreateParams.put("distance", Integer.toString(DISTANCE_OF_CREATE_LINE));
         return lineCreateParams;
-    }
-
-    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId,
-        int distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", Long.toString(upStationId));
-        params.put("downStationId", Long.toString(downStationId));
-        params.put("distance", Integer.toString(distance));
-        return params;
     }
 }
