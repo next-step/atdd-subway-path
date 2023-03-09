@@ -27,6 +27,41 @@ class LineTest {
         삼성역 = new Station("삼성역");
     }
 
+
+    @Test
+    void 기존_역_사이_길이보다_크거나_같으면_구간을_추가_할_수_없다() {
+    }
+
+    @Test
+    void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_구간을_추가_할_수_없다() {
+        // given
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
+        강남_2호선.addSection(강남_역삼_구간);
+
+        Section 새로운_강남_역삼_구간 = new Section(강남_2호선, new Station("장승배기"), new Station("천호역"), 12);
+
+        // when & then
+        assertThatThrownBy(() -> 강남_2호선.addSection(새로운_강남_역삼_구간))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역이 둘 중 하나라도 기존 구간에 포함 되어 있어야 합니다.");
+    }
+
+    @Test
+    void 기존_구간과_신규_구간이_같다면_구간을_추가_할_수_없다() {
+        // given
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
+        Section 역삼_삼성_구간 = new Section(강남_2호선, 역삼역, 삼성역, 8);
+        강남_2호선.addSection(강남_역삼_구간);
+        강남_2호선.addSection(역삼_삼성_구간);
+
+        Section 새로운_강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 12);
+
+        // when & then
+        assertThatThrownBy(() -> 강남_2호선.addSection(새로운_강남_역삼_구간))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역이 둘 다 이미 등록 되어 있습니다.");
+    }
+
     @Test
     void 구간을_추가한다() {
         // given

@@ -18,7 +18,35 @@ public class Sections {
 	private List<Section> sections = new ArrayList<>();
 
 	public void add(Section section) {
+		if (sections.isEmpty()) {
+			sections.add(section);
+			return ;
+		}
+
+		validateAddSection(section);
 		sections.add(section);
+	}
+
+	private void validateAddSection(Section section) {
+		if (isSectionIsAlreadyExist(section)) {
+			throw new IllegalArgumentException("상행역과 하행역이 둘 다 이미 등록 되어 있습니다.");
+		}
+		if (isNotIncludedOneStation(section)) {
+			throw new IllegalArgumentException("상행역과 하행역이 둘 중 하나라도 기존 구간에 포함 되어 있어야 합니다.");
+		}
+	}
+
+	private boolean isNotIncludedOneStation(Section section) {
+		return !isContainsStation(section.getUpStation()) && !isContainsStation(section.getDownStation());
+	}
+
+	private boolean isSectionIsAlreadyExist(Section section) {
+		return isContainsStation(section.getUpStation()) && isContainsStation(section.getDownStation());
+	}
+
+	private boolean isContainsStation(Station station) {
+		List<Station> stations = getStations();
+		return stations.contains(station);
 	}
 
 	public List<Section> getSections() {
