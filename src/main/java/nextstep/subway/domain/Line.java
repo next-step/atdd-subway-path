@@ -8,9 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import nextstep.subway.exception.CannotRemoveSectionException;
-import nextstep.subway.exception.ErrorMessage;
-
 @Entity
 public class Line {
 	@Id
@@ -59,12 +56,12 @@ public class Line {
 		this.color = color;
 	}
 
-	public Sections getSections() {
-		return sections;
+	public List<Section> getSections() {
+		return sections.getSections();
 	}
 
 	public void addSection(Station upStation, Station downStation, int distance) {
-		this.getSections().addSection(new Section(this, upStation, downStation, distance));
+		this.sections.addSection(new Section(this, upStation, downStation, distance));
 	}
 
 	public List<Station> getStations() {
@@ -72,13 +69,6 @@ public class Line {
 	}
 
 	public void removeSection(Station station) {
-		if (sections.hasSingleSection()) {
-			throw new CannotRemoveSectionException(ErrorMessage.CANNOT_REMOVE_SINGLE_SECTION);
-		}
-		if (sections.notContains(station)) {
-			throw new CannotRemoveSectionException(ErrorMessage.CANNOT_REMOVE_NO_EXISTED_STATION);
-		}
-
 		sections.removeSection(station);
 	}
 

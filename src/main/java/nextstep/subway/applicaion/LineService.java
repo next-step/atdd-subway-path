@@ -37,9 +37,13 @@ public class LineService {
 	}
 
 	public List<LineResponse> showLines() {
-		return lineRepository.findAll().stream()
+		return findAllLines().stream()
 			.map(this::createLineResponse)
 			.collect(Collectors.toList());
+	}
+
+	public List<Line> findAllLines() {
+		return lineRepository.findAll();
 	}
 
 	public LineResponse findById(Long id) {
@@ -81,7 +85,7 @@ public class LineService {
 	}
 
 	private List<StationResponse> createStationResponses(Line line) {
-		if (line.getSections().getSections().isEmpty()) {
+		if (line.getSections().isEmpty()) {
 			return Collections.emptyList();
 		}
 

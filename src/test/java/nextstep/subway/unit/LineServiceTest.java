@@ -56,7 +56,7 @@ public class LineServiceTest {
 		lineService.addSection(이호선.getId(), 강남역_선릉역_구간_생성_요청_데이터);
 
 		// then
-		assertThat(이호선.getSections().getSections()).isNotEmpty();
+		assertThat(이호선.getSections()).isNotEmpty();
 	}
 
 	@DisplayName("노선의 역 조회")

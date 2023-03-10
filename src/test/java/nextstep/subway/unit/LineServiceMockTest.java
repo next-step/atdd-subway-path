@@ -54,7 +54,7 @@ public class LineServiceMockTest {
 		lineService.addSection(LINE_ID, 강남역_선릉역_구간_생성_요청_데이터);
 		// then
 		Line line = lineService.findLineById(LINE_ID);
-		assertThat(line.getSections().getSections()).isNotEmpty();
+		assertThat(line.getSections()).isNotEmpty();
 	}
 
 	@DisplayName("노선의 구간 삭제")
@@ -70,7 +70,7 @@ public class LineServiceMockTest {
 
 		// then
 		Line line = lineService.findLineById(LINE_ID);
-		assertThat(line.getSections().getSections()).hasSize(1);
+		assertThat(line.getSections()).hasSize(1);
 	}
 
 	void StubOfLineFindById(String name, String color, Long id) {
