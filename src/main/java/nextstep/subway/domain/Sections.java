@@ -2,9 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.SectionBadRequestException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -31,7 +29,55 @@ public class Sections {
 		}
 
 		// 기존 구간 사이에 새로운 구간을 추가하는 경우
-		sections.add(newSection);
+		betweenExistSection(newSection);
+	}
+
+	private void betweenExistSection(Section newSection) {
+		/*
+		* 동일한 하행역 기준으로 추가
+		* Ex. 기존 구간: A -> C,
+		*   새로운 구간: B -> C
+		* A -> B -> C
+		* */
+		addSectionDownStation(newSection);
+
+		/*
+		 * 동일한 상행역 기준으로 추가
+		 * Ex. 기존 구간: A -> C,
+		 *   새로운 구간: A -> B
+		 * A -> B -> C
+		 * */
+		addSectionUpStation(newSection);
+	}
+
+	private void addSectionDownStation(Section newSection) {
+		Optional<Section> optSection = sections.stream()
+				.filter(oldSection -> oldSection.getDownStation().equals(newSection.getDownStation()))
+				.findFirst();
+
+		if (optSection.isPresent()) {
+			Section oldSection = optSection.get();
+			validateDistance(newSection, oldSection);
+			sections.add(oldSection.addStation(newSection.getUpStation(), newSection.getDistance()));
+		}
+	}
+
+	private void addSectionUpStation(Section newSection) {
+		Optional<Section> optSection = sections.stream()
+				.filter(oldSection -> oldSection.getUpStation().equals(newSection.getUpStation()))
+				.findFirst();
+
+		if (optSection.isPresent()) {
+			Section oldSection = optSection.get();
+			validateDistance(newSection, oldSection);
+			sections.add(oldSection.addStation(newSection.getDownStation(), newSection.getDistance()));
+		}
+	}
+
+	private void validateDistance(Section newSection, Section section) {
+		if (newSection.getDistance() >= section.getDistance()) {
+			throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같을 수 없습니다.");
+		}
 	}
 
 	// 새로운 역을 하행 종점으로 등록할 경우

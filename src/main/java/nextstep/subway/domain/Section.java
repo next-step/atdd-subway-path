@@ -67,6 +67,14 @@ public class Section {
         return station.equals(downStation);
     }
 
+    public Section addStation(Station station, int distance) {
+        this.distance = this.distance - distance;
+        Station downStation = this.downStation;
+        this.downStation = station;
+
+        return new Section(line, station, downStation, distance);
+    }
+
     @Override
     public String toString() {
         return "Section{" +

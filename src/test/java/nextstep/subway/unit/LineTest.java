@@ -6,6 +6,8 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SectionBadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -26,8 +28,18 @@ class LineTest {
         삼성역 = new Station("삼성역");
     }
 
-    @Test
-    void 기존_역_사이_길이보다_크거나_같으면_구간을_추가_할_수_없다() {
+    @ParameterizedTest
+    @ValueSource(ints = {11, 20})
+    void 기존_역_사이_길이보다_크거나_같으면_구간을_추가_할_수_없다(int 강남_삼성_구간_거리) {
+        // given
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 11);
+        Section 강남_삼성_구간 = new Section(강남_2호선, 강남역, 삼성역, 강남_삼성_구간_거리);
+        강남_2호선.addSection(강남_역삼_구간);
+
+        // when
+        assertThatThrownBy(() -> 강남_2호선.addSection(강남_삼성_구간))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("기존 역 사이 길이보다 크거나 같을 수 없습니다.");
     }
 
     @Test
@@ -100,6 +112,31 @@ class LineTest {
         assertThat(강남_2호선.getSections()).contains(역삼_삼성_구간);
     }
 
+    @Test
+    void 기존_구간의_상행역에_새로운_구간을_추가한다() {
+        // given
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
+        Section 강남_삼성_구간 = new Section(강남_2호선, 강남역, 삼성역, 7);
+        강남_2호선.addSection(강남_역삼_구간);
+
+        // when
+        강남_2호선.addSection(강남_삼성_구간);
+
+        assertThat(강남_2호선.getStations()).extracting("name").contains("강남역", "역삼역", "삼성역");
+    }
+
+    @Test
+    void 기존_구간의_하행역에_새로운_구간을_추가한다() {
+        // given
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
+        Section 강남_삼성_구간 = new Section(강남_2호선, 삼성역, 역삼역, 7);
+        강남_2호선.addSection(강남_역삼_구간);
+
+        // when
+        강남_2호선.addSection(강남_삼성_구간);
+
+        assertThat(강남_2호선.getStations()).extracting("name").contains("강남역", "역삼역", "삼성역");
+    }
 
     @Test
     void 노선의_역_목록을_반환한다() {
