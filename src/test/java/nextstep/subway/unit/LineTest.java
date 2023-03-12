@@ -5,7 +5,6 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SectionBadRequestException;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,7 +25,6 @@ class LineTest {
         역삼역 = new Station("역삼역");
         삼성역 = new Station("삼성역");
     }
-
 
     @Test
     void 기존_역_사이_길이보다_크거나_같으면_구간을_추가_할_수_없다() {
@@ -63,7 +61,7 @@ class LineTest {
     }
 
     @Test
-    void 구간을_추가한다() {
+    void 구간이_비어있는경우_구간을_추가한다() {
         // given
         Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
 
@@ -73,6 +71,35 @@ class LineTest {
         // then
         assertThat(강남_2호선.getSections()).containsExactly(강남_역삼_구간);
     }
+
+    @Test
+    void 새로운_구간의_상행역을_상행_종점으로_등록한다() {
+        // given
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
+        Section 삼성_강남_구간 = new Section(강남_2호선, 삼성역, 강남역, 7);
+        강남_2호선.addSection(강남_역삼_구간);
+
+        // when
+        강남_2호선.addSection(삼성_강남_구간);
+
+        // then
+        assertThat(강남_2호선.getSections()).contains(삼성_강남_구간);
+    }
+
+    @Test
+    void 새로운_구간의_하행역을_하행_종점으로_등록한다() {
+        // given
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
+        Section 역삼_삼성_구간 = new Section(강남_2호선, 역삼역, 삼성역, 7);
+        강남_2호선.addSection(강남_역삼_구간);
+
+        // when
+        강남_2호선.addSection(역삼_삼성_구간);
+
+        // then
+        assertThat(강남_2호선.getSections()).contains(역삼_삼성_구간);
+    }
+
 
     @Test
     void 노선의_역_목록을_반환한다() {

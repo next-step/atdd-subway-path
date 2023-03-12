@@ -17,14 +17,39 @@ public class Sections {
 	@OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
 	private List<Section> sections = new ArrayList<>();
 
-	public void add(Section section) {
+	public void add(Section newSection) {
 		if (sections.isEmpty()) {
-			sections.add(section);
+			sections.add(newSection);
 			return ;
 		}
 
-		validateAddSection(section);
-		sections.add(section);
+		validateAddSection(newSection);
+
+		if (isFirstSection(newSection) || isLastSection(newSection)) {
+			sections.add(newSection);
+			return ;
+		}
+
+		// 기존 구간 사이에 새로운 구간을 추가하는 경우
+		sections.add(newSection);
+	}
+
+	// 새로운 역을 하행 종점으로 등록할 경우
+	private boolean isLastSection(Section newSection) {
+		return getLastSection().isDownStation(newSection.getDownStation());
+	}
+
+	// 새로운 역을 상행 종점으로 등록할 경우
+	private boolean isFirstSection(Section newSection) {
+		return getFirstSection().isUpstation(newSection.getDownStation());
+	}
+
+	private Section getLastSection() {
+		return sections.get(sections.size() - 1);
+	}
+
+	private Section getFirstSection() {
+		return sections.get(0);
 	}
 
 	private void validateAddSection(Section section) {

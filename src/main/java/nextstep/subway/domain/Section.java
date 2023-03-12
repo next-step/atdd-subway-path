@@ -58,4 +58,20 @@ public class Section {
     public List<Station> getStations() {
         return Arrays.asList(this.upStation, this.downStation);
     }
+
+    public boolean isUpstation(Station station) {
+        return station.equals(upStation);
+    }
+
+    public boolean isDownStation(Station station) {
+        return station.equals(downStation);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "upStation=" + upStation +
+                ", downStation=" + downStation +
+                '}';
+    }
 }
