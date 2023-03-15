@@ -204,4 +204,22 @@ class LineTest {
         assertThat(강남_2호선.getName()).isEqualTo("강남강남_2호선");
         assertThat(강남_2호선.getColor()).isEqualTo("super green");
     }
+
+    @Test
+    void 기존_구간의_역에_새로운_구간을_추가하는경우_새롭게_추가되는_구간의_길이는_기존구간의_길이를_뺀_나머지_길이이다() {
+        // given
+        int 강남_역삼_구간_거리 = 10;
+        int 강남_삼성_구간_거리 = 7;
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 강남_역삼_구간_거리);
+        Section 강남_삼성_구간 = new Section(강남_2호선, 강남역, 삼성역, 강남_삼성_구간_거리);
+
+        강남_2호선.addSection(강남_역삼_구간);
+
+        // when
+        강남_2호선.addSection(강남_삼성_구간);
+
+        // then
+        int 계산된_강남_삼성_구간_거리 = 강남_2호선.getSections().get(0).getDistance();
+        assertThat(계산된_강남_삼성_구간_거리).isEqualTo(강남_역삼_구간_거리 - 강남_삼성_구간_거리);
+    }
 }
