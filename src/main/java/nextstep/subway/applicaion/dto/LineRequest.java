@@ -34,4 +34,8 @@ public class LineRequest {
         this.name = name;
         this.color = color;
     }
+
+    public boolean canAddSection() {
+        return this.getUpStationId() != null && this.getDownStationId() != null && this.getDistance() != 0;
+    }
 }

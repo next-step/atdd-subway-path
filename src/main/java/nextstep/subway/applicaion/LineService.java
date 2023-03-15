@@ -30,7 +30,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
 
-        if (isSectionAdd(request)) {
+        if (request.canAddSection()) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(new Section(line, upStation, downStation, request.getDistance()));
@@ -83,10 +83,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
         line.removeSection(station);
-    }
-
-    private static boolean isSectionAdd(LineRequest request) {
-        return request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0;
     }
 
     private List<StationResponse> createStationResponses(Line line) {
