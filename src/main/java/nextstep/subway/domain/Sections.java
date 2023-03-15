@@ -82,7 +82,7 @@ public class Sections {
 
 	// 새로운 역을 하행 종점으로 등록할 경우
 	private boolean isLastSection(Section newSection) {
-		return getLastSection().isDownStation(newSection.getDownStation());
+		return getLastSection().isDownStation(newSection.getUpStation());
 	}
 
 	// 새로운 역을 상행 종점으로 등록할 경우
@@ -152,7 +152,7 @@ public class Sections {
 		}
 
 		int end = sections.size() - 1;
-        sections.remove(end);
+		sections.remove(end);
 	}
 
 	public boolean isNotEndStation(Station station) {
