@@ -45,6 +45,11 @@ public class Section {
         return upStation;
     }
 
+    public void update(Station station, int distance) {
+        this.upStation = station;
+        this.distance = getDistance() - distance;
+    }
+
     public Station getDownStation() {
         return downStation;
     }
