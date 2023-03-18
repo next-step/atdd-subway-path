@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.common.constants.ErrorConstant.*;
+
 @Embeddable
 public class Sections {
 
@@ -53,8 +55,21 @@ public class Sections {
 
 
     public void addSection(Section addSection) {
+        if (getStations().contains(addSection.getUpStation()) && getStations().contains(addSection.getDownStation())) {
+            throw new IllegalArgumentException(ALREADY_ENROLL_UP_AND_DOWN_STATION);
+        }
+
+        if (!sections.isEmpty()) {
+            if (!getStations().contains(addSection.getUpStation()) && !getStations().contains(addSection.getDownStation())) {
+                throw new IllegalArgumentException(NOT_ENROLL_UP_AND_DOWN_STATION);
+            }
+        }
+
         for (Section section : sections) {
             if (section.getUpStation() == addSection.getUpStation()) {
+                if (section.getDistance() >= addSection.getDistance()) {
+                    throw new IllegalArgumentException(NOT_SAME_SMALL_DISTANCE);
+                }
                 section.update(addSection.getDownStation(), addSection.getDistance());
             }
         }
