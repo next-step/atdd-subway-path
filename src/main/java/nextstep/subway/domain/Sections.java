@@ -29,7 +29,9 @@ public class Sections {
 		}
 
 		// 기존 구간 사이에 새로운 구간을 추가하는 경우
-		betweenExistSection(newSection);
+		if (!addSectionDownStation(newSection)) {
+			addSectionUpStation(newSection);
+		}
 	}
 
 	private void betweenExistSection(Section newSection) {
@@ -50,7 +52,7 @@ public class Sections {
 		addSectionUpStation(newSection);
 	}
 
-	private void addSectionDownStation(Section newSection) {
+	private boolean addSectionDownStation(Section newSection) {
 		Optional<Section> optSection = sections.stream()
 				.filter(oldSection -> oldSection.getDownStation().equals(newSection.getDownStation()))
 				.findFirst();
@@ -59,7 +61,9 @@ public class Sections {
 			Section oldSection = optSection.get();
 			validateDistance(newSection, oldSection);
 			sections.add(oldSection.addStation(newSection.getUpStation(), newSection.getDistance()));
+			return true;
 		}
+		return false;
 	}
 
 	private void addSectionUpStation(Section newSection) {
@@ -76,7 +80,7 @@ public class Sections {
 
 	private void validateDistance(Section newSection, Section section) {
 		if (newSection.getDistance() >= section.getDistance()) {
-			throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같을 수 없습니다.");
+			throw new SectionBadRequestException("기존 역 사이 길이보다 크거나 같을 수 없습니다.");
 		}
 	}
 
@@ -100,10 +104,10 @@ public class Sections {
 
 	private void validateAddSection(Section section) {
 		if (isSectionIsAlreadyExist(section)) {
-			throw new IllegalArgumentException("상행역과 하행역이 둘 다 이미 등록 되어 있습니다.");
+			throw new SectionBadRequestException("상행역과 하행역이 둘 다 이미 등록 되어 있습니다.");
 		}
 		if (isNotIncludedOneStation(section)) {
-			throw new IllegalArgumentException("상행역과 하행역이 둘 중 하나라도 기존 구간에 포함 되어 있어야 합니다.");
+			throw new SectionBadRequestException("상행역과 하행역이 둘 중 하나라도 기존 구간에 포함 되어 있어야 합니다.");
 		}
 	}
 
