@@ -52,7 +52,7 @@ class LineTest {
 
         // when & then
         assertThatThrownBy(() -> 강남_2호선.addSection(새로운_강남_역삼_구간))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionBadRequestException.class)
                 .hasMessage("상행역과 하행역이 둘 중 하나라도 기존 구간에 포함 되어 있어야 합니다.");
     }
 
@@ -68,7 +68,7 @@ class LineTest {
 
         // when & then
         assertThatThrownBy(() -> 강남_2호선.addSection(새로운_강남_역삼_구간))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionBadRequestException.class)
                 .hasMessage("상행역과 하행역이 둘 다 이미 등록 되어 있습니다.");
     }
 
