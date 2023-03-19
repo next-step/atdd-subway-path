@@ -53,6 +53,10 @@ public class Line {
         return sections.getSections();
     }
 
+    public int getDistance() {
+        return sections.getDistance();
+    }
+
     public void addSection(Section section) {
         sections.add(section);
     }

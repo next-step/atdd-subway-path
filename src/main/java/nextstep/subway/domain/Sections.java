@@ -160,4 +160,10 @@ public class Sections {
 		Station endStation = sections.get(end).getDownStation();
 		return !station.equals(endStation);
 	}
+
+	public int getDistance() {
+		return sections.stream()
+				.mapToInt(Section::getDistance)
+				.sum();
+	}
 }
