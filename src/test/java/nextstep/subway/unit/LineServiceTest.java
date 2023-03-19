@@ -8,6 +8,7 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.*;
 
 import nextstep.subway.exception.SectionBadRequestException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,18 +30,31 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
-    @Test
-    void 노선에_구간을_추가한다() {
+    private Line 강남_2호선;
+
+    private Station 강남역;
+
+    private Station 역삼역;
+
+    private Station 삼성역;
+
+    @BeforeEach
+    void setUp() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Line 강남_2호선 = lineRepository.save(new Line("강남 2호선", "green"));
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 역삼역 = stationRepository.save(new Station("역삼역"));
-        int distance = 10;
+
+        강남_2호선 = lineRepository.save(new Line("강남 2호선", "green"));
+        강남역 = stationRepository.save(new Station("강남역"));
+        역삼역 = stationRepository.save(new Station("역삼역"));
+        삼성역 = stationRepository.save(new Station("삼성역"));
+    }
+
+    @Test
+    void 노선에_구간을_추가한다() {
 
         // when
         // lineService.addSection 호출
-        lineService.addSection(강남_2호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), distance));
+        lineService.addSection(강남_2호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
 
         // then
         // line.getSections 메서드를 통해 검증
@@ -51,18 +65,13 @@ public class LineServiceTest {
                 () -> assertThat(검증하려는_노선의_구간_목록).isEqualTo(입력했던_노선의_구간_목록),
                 () -> assertThat(검증하려는_노선의_구간_목록.get(0).getUpStation().getId()).isEqualTo(입력했던_노선의_구간_목록.get(0).getUpStation().getId()),
                 () -> assertThat(검증하려는_노선의_구간_목록.get(0).getDownStation().getId()).isEqualTo(입력했던_노선의_구간_목록.get(0).getDownStation().getId()),
-                () -> assertThat(검증하려는_노선의_구간_목록.get(0).getDistance()).isEqualTo(distance)
+                () -> assertThat(검증하려는_노선의_구간_목록.get(0).getDistance()).isEqualTo(10)
         );
     }
 
     @Test
     void 노선에_등록되어있는_구간_목록을_조회한다() {
         // given
-        Line 강남_2호선 = lineRepository.save(new Line("강남 2호선", "green"));
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 역삼역 = stationRepository.save(new Station("역삼역"));
-        Station 삼성역 = stationRepository.save(new Station("삼성역"));
-
         lineService.addSection(강남_2호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
         lineService.addSection(강남_2호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 12));
 
@@ -78,12 +87,16 @@ public class LineServiceTest {
 
     @Test
     void 구간이_비어있는_경우_노선을_삭제_할_수_없다() {
+        // given
+
+        // when
+
+        // then
     }
 
     @Test
     void 노선의_이름과_색을_변경한다() {
         // given
-        Line 강남_2호선 = lineRepository.save(new Line("강남 2호선", "green"));
         LineRequest lineRequest = new LineRequest("강남강남_2호선", "super green");
 
         // when
