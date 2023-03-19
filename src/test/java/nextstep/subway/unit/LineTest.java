@@ -222,4 +222,15 @@ class LineTest {
         int 계산된_강남_삼성_구간_거리 = 강남_2호선.getSections().get(0).getDistance();
         assertThat(계산된_강남_삼성_구간_거리).isEqualTo(강남_역삼_구간_거리 - 강남_삼성_구간_거리);
     }
+
+    @Test
+    void 노선의_구간을_반환한다() {
+        // given
+        int 강남_역삼_구간_거리 = 10;
+        Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 강남_역삼_구간_거리);
+        강남_2호선.addSection(강남_역삼_구간);
+
+        // when & then
+        assertThat(강남_2호선.getDistance()).isEqualTo(강남_역삼_구간_거리);
+    }
 }
