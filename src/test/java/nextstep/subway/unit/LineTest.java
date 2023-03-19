@@ -38,7 +38,7 @@ class LineTest {
 
         // when
         assertThatThrownBy(() -> 강남_2호선.addSection(강남_삼성_구간))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(SectionBadRequestException.class)
                 .hasMessage("기존 역 사이 길이보다 크거나 같을 수 없습니다.");
     }
 
@@ -129,11 +129,11 @@ class LineTest {
     void 기존_구간의_하행역에_새로운_구간을_추가한다() {
         // given
         Section 강남_역삼_구간 = new Section(강남_2호선, 강남역, 역삼역, 10);
-        Section 강남_삼성_구간 = new Section(강남_2호선, 강남역, 삼성역, 7);
+        Section 삼성_역삼_구간 = new Section(강남_2호선, 삼성역, 역삼역, 7);
         강남_2호선.addSection(강남_역삼_구간);
 
         // when
-        강남_2호선.addSection(강남_삼성_구간);
+        강남_2호선.addSection(삼성_역삼_구간);
 
         assertThat(강남_2호선.getStations()).extracting("name").contains("강남역", "역삼역", "삼성역");
     }
