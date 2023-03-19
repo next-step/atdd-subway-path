@@ -153,4 +153,18 @@ public class LineServiceTest {
                 () -> assertThat(강남강남_2호선.getColor()).isEqualTo(강남_2호선.getColor())
         );
     }
+
+    @Test
+    void 노선의_ID로_노선을_조회한다() {
+        // when
+        LineResponse lineResponse = lineService.findById(강남_2호선.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(lineResponse.getDistance()).isEqualTo(0),
+                () -> assertThat(lineResponse.getId()).isEqualTo(강남_2호선.getId()),
+                () -> assertThat(lineResponse.getName()).isEqualTo(강남_2호선.getName()),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(강남_2호선.getColor())
+        );
+    }
 }
