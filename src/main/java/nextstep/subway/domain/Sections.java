@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.common.exception.SubwayException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -7,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static nextstep.subway.common.constants.ErrorConstant.*;
+import static nextstep.subway.common.exception.ErrorCode.*;
 
 @Embeddable
 public class Sections {
@@ -54,28 +55,40 @@ public class Sections {
     }
 
 
-    public void addSection(Section addSection) {
-        if (getStations().contains(addSection.getUpStation()) && getStations().contains(addSection.getDownStation())) {
-            throw new IllegalArgumentException(ALREADY_ENROLL_UP_AND_DOWN_STATION);
-        }
+    public void addSection(Section section) {
 
-        if (!sections.isEmpty()) {
-            if (!getStations().contains(addSection.getUpStation()) && !getStations().contains(addSection.getDownStation())) {
-                throw new IllegalArgumentException(NOT_ENROLL_UP_AND_DOWN_STATION);
-            }
-        }
+        containsStation(section);
 
-        for (Section section : sections) {
-            if (section.getUpStation() == addSection.getUpStation()) {
-                if (section.getDistance() >= addSection.getDistance()) {
-                    throw new IllegalArgumentException(NOT_SAME_SMALL_DISTANCE);
-                }
-                section.update(addSection.getDownStation(), addSection.getDistance());
+        List<Section> betweenSection = findBetweenSection(section);
+
+        if (!betweenSection.isEmpty()) {
+            if (betweenSection.get(0).getDistance() <= section.getDistance()) {
+                throw new SubwayException(NOT_SAME_SMALL_DISTANCE);
             }
+            betweenSection.get(0).update(section.getDownStation(), section.getDistance());
         }
-        sections.add(addSection);
+        sections.add(section);
     }
 
+
+    private List<Section> findBetweenSection(Section addSection) {
+        return sections.stream().filter(section1 ->
+                addSection.getUpStation().equals(section1.getUpStation())).collect(Collectors.toList());
+    }
+
+
+    private void containsStation(Section section) {
+        if (!sections.isEmpty()) {
+            if (!getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation())) {
+                throw new SubwayException(NOT_ENROLL_UP_AND_DOWN_STATION);
+            }
+        }
+
+        if (getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation())) {
+            throw new SubwayException(ALREADY_ENROLL_UP_AND_DOWN_STATION);
+        }
+
+    }
 
 
     public Station findFirstStation() {
