@@ -101,62 +101,14 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        removeValidate();
-        List<Section> sortedSections = getSortedSections();
-        List<Section> adjacentSection = getAdjacentSection(station, sortedSections);
-        removeSection(adjacentSection);
-    }
-
-    private void removeSection(List<Section> adjacentSection) {
-        if (adjacentSection.size() == 1) {
-            removeEndSection(adjacentSection);
-    } else {
-            removeMiddleSection(adjacentSection);
-        }
-    }
-
-    private void removeEndSection(List<Section> adjacentSection) {
-        Section section = adjacentSection.get(0);
-        this.sections.remove(section);
-    }
-
-    private void removeMiddleSection(List<Section> adjacentSection) {
-        Section firstSection = adjacentSection.get(0);
-        Section secondSection = adjacentSection.get(1);
-
-        firstSection.setDownStation(secondSection.getDownStation());
-        firstSection.setDistance(secondSection.getDistance());
-        this.sections.remove(secondSection);
-    }
-
-    private List<Section> getAdjacentSection(Station station, List<Section> sortedSections) {
-        return sortedSections.stream()
-            .filter(s -> s.getUpStation() == station || s.getDownStation() == station)
-            .collect(Collectors.toList());
-    }
-
-    private void removeValidate() {
         if (sections.isEmpty()) {
             throw new IllegalArgumentException("구간이 존재하지 않습니다.");
         }
-        if (sections.size() == 1) {
-            throw new SectionException("구간을 삭제할 수 없습니다.");
+        if (!getLastSection().getDownStation().equals(station)) {
+            throw new IllegalArgumentException();
         }
-    }
 
-    private List<Section> getSortedSections() {
-        List<Section> result = new ArrayList<>();
-        Station nextStation = getHeadStation().get(0);
-
-        while (sections.size() != result.size()) {
-            for (Section section : sections) {
-                if (section.getUpStation() == nextStation) {
-                    result.add(section);
-                    nextStation = section.getDownStation();
-                }
-            }
-        }
-        return result;
+        sections.remove(getLastIndex());
     }
 
     private int getLastIndex() {
