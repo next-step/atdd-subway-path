@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,19 +34,8 @@ public class Sections {
 
     private void addValidation(Section newSection) {
         for (Section section : sections) {
-            notMatchAnyStation(newSection, section);
             isAlreadyExistSection(newSection, section);
             isDistanceIssueSection(newSection, section);
-        }
-    }
-
-    private void notMatchAnyStation(Section newSection, Section section) {
-        List<Station> stationList = Arrays.asList(section.getDownStation(), section.getUpStation(),
-            newSection.getDownStation(), newSection.getUpStation());
-        Set<Station> stationSet = new HashSet<>(stationList);
-
-        if (stationSet.size() == stationList.size()) {
-            throw new SectionException("매칭되는 역이 없습니다.");
         }
     }
 
@@ -81,11 +67,9 @@ public class Sections {
 
         if (matchSection.getUpStation() == newSection.getUpStation()) {
             matchSection.setUpStation(newSection.getDownStation());
-            matchSection.setDistance(matchSection.getDistance() - newSection.getDistance());
             return;
         }
         matchSection.setDownStation(newSection.getUpStation());
-        matchSection.setDistance(matchSection.getDistance() - newSection.getDistance());
     }
 
     private static boolean isSectionInMiddle(Section newSection, Section section) {
@@ -141,7 +125,7 @@ public class Sections {
         Section secondSection = adjacentSection.get(1);
 
         firstSection.setDownStation(secondSection.getDownStation());
-        firstSection.setDistance(firstSection.getDistance() + secondSection.getDistance());
+        firstSection.setDistance(secondSection.getDistance());
         this.sections.remove(secondSection);
     }
 

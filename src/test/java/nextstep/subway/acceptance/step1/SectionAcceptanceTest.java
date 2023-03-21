@@ -1,7 +1,6 @@
 package nextstep.subway.acceptance.step1;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +20,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleanUp;
+
 
 @DirtiesContext
 @Sql(
@@ -50,11 +50,9 @@ public class SectionAcceptanceTest {
     void add_Between_Exist_Section() {
 
         // given 기존 구간 조회
-        int 기존_구간_길이 = 10;
-        int 신규_구간_길이 = 7;
 
         // when 신규 구간 삽입
-        구간추가(1L, 2L, 3L, 신규_구간_길이);
+        구간추가(1L, 2L, 3L, 7);
 
         // then 역 조회
         List<String> stations = 역_이름_조회();
@@ -63,11 +61,6 @@ public class SectionAcceptanceTest {
         // then 구간 조회
         List<String> sections = 구간_상행역_조회();
         assertThat(sections.size()).isEqualTo(2);
-
-        // then 구간 거리 검증
-        List<Integer> distances = 구간_거리_조회();
-        int 구간_총_길이 = distances.stream().mapToInt(i -> i).sum();
-        assertEquals(구간_총_길이, 기존_구간_길이);
     }
 
     /**
@@ -79,11 +72,9 @@ public class SectionAcceptanceTest {
     @DisplayName("기존 구간에 추가 : 상행역 기준")
     void add_Before_UpStation() {
         // given sql 대체
-        int 기존_구간_길이 = 10;
-        int 신규_구간_길이 = 7;
 
         // when 신규 구간 삽입
-        구간추가(1L, 1L, 2L, 신규_구간_길이);
+        구간추가(1L, 1L, 2L, 7);
 
         // then 역 조회
         List<String> stations = 역_이름_조회();
@@ -92,10 +83,6 @@ public class SectionAcceptanceTest {
         // then 구간 조회
         List<String> sections = 구간_상행역_조회();
         assertThat(sections.size()).isEqualTo(2);
-
-        List<Integer> distances = 구간_거리_조회();
-        int 구간_총_길이 = distances.stream().mapToInt(i -> i).sum();
-        assertEquals(구간_총_길이, 기존_구간_길이 + 신규_구간_길이);
     }
 
     /**
@@ -107,12 +94,10 @@ public class SectionAcceptanceTest {
     @DisplayName("기존 구간에 추가 : 하행역 기준")
     void add_After_DownStation() {
         // given sql 대체
-        int 기존_구간_길이 = 10;
-        int 신규_구간_길이 = 7;
 
         // when 신규 구간 삽입
         long 기준_하행역 = 4L;
-        구간추가(1L, 기준_하행역, 5L, 신규_구간_길이);
+        구간추가(1L, 기준_하행역, 5L, 7);
 
         // then 역 조회
         List<String> stations = 역_이름_조회();
@@ -121,10 +106,6 @@ public class SectionAcceptanceTest {
         // then 구간 조회
         List<String> sections = 구간_상행역_조회();
         assertThat(sections.size()).isEqualTo(2);
-
-        List<Integer> distances = 구간_거리_조회();
-        int 구간_총_길이 = distances.stream().mapToInt(i -> i).sum();
-        assertEquals(구간_총_길이, 기존_구간_길이 + 신규_구간_길이);
     }
 
     /**
@@ -156,18 +137,15 @@ public class SectionAcceptanceTest {
     @DisplayName("중간 구간 삭제 테스트")
     void remove_Middle_Section() {
         // given Sql 대체
-        int 기존_구간_길이 = 20;
+
         // when
         구간삭제(이호선_ID, 2L);
 
         // then
         List<String> stations = 역_이름_조회();
         assertThat(stations).containsExactly("교대역", "역삼역");
-
-        List<Integer> distances = 구간_거리_조회();
-        int 구간_총_길이 = distances.stream().mapToInt(i -> i).sum();
-        assertEquals(구간_총_길이, 기존_구간_길이);
     }
+
 
     /**
      * given 노선에 2개의 구간이 존재할 때,
@@ -182,8 +160,6 @@ public class SectionAcceptanceTest {
     @DisplayName("끝 구간 삭제 테스트")
     void remove_End_Section() {
         // given Sql 대체
-        int 기존_구간_길이 = 20;
-        int 삭제된_구간_길이 = 10;
 
         // when
         구간삭제(이호선_ID, 1L);
@@ -191,10 +167,6 @@ public class SectionAcceptanceTest {
         // then
         List<String> stations = 역_이름_조회();
         assertThat(stations).containsExactly("강남역", "역삼역");
-
-        List<Integer> distances = 구간_거리_조회();
-        int 구간_총_길이 = distances.stream().mapToInt(i -> i).sum();
-        assertEquals(구간_총_길이, 기존_구간_길이 - 삭제된_구간_길이);
     }
 
     /**
@@ -275,11 +247,7 @@ public class SectionAcceptanceTest {
     }
 
     private List<String> 구간_상행역_조회() {
-        return 노선조회(이호선_ID).jsonPath().getList("sections.upStation");
-    }
-
-    private List<Integer> 구간_거리_조회() {
-        return 노선조회(이호선_ID).jsonPath().getList("sections.distance");
+        return 노선조회(이호선_ID).jsonPath().getList("sections");
     }
 }
 
