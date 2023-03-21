@@ -21,7 +21,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleanUp;
 
-
 @DirtiesContext
 @Sql(
     scripts = "/sql/insert-line-and-section.sql",
