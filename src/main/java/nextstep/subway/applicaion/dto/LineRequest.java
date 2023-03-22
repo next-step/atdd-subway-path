@@ -26,4 +26,16 @@ public class LineRequest {
     public int getDistance() {
         return distance;
     }
+
+    public LineRequest() {
+    }
+
+    public LineRequest(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public boolean canAddSection() {
+        return this.getUpStationId() != null && this.getDownStationId() != null && this.getDistance() != 0;
+    }
 }

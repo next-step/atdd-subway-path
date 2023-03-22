@@ -58,4 +58,28 @@ public class Section {
     public List<Station> getStations() {
         return Arrays.asList(this.upStation, this.downStation);
     }
+
+    public boolean isUpstation(Station station) {
+        return station.equals(upStation);
+    }
+
+    public boolean isDownStation(Station station) {
+        return station.equals(downStation);
+    }
+
+    public Section addStation(Station station, int distance) {
+        this.distance = this.distance - distance;
+        Station downStation = this.downStation;
+        this.downStation = station;
+
+        return new Section(line, station, downStation, distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "upStation=" + upStation +
+                ", downStation=" + downStation +
+                '}';
+    }
 }
