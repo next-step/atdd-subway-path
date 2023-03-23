@@ -80,9 +80,7 @@ public class LineServiceTest {
 
         // then
         List<StationResponse> stations = lineResponses.get(0).getStations();
-        assertThat(stations.get(0).getName()).isEqualTo(강남역.getName());
-        assertThat(stations.get(1).getName()).isEqualTo(역삼역.getName());
-        assertThat(stations.get(2).getName()).isEqualTo(삼성역.getName());
+        assertThat(stations).extracting(StationResponse::getName).containsExactly(강남역.getName(), 역삼역.getName(), 삼성역.getName());
     }
 
     @Test
