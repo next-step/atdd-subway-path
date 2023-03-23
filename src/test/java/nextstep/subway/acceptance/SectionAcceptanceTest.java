@@ -65,7 +65,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 기존 구간 사이에 신규 구간을 추가하면
-     * Then 기존 구간의 상행역에 새로운 구간이 추가되고, 새로운 구간의 길이는 기존 구간의 길이를 뺀 나머지 길이이다.
+     * Then 기존 구간의 상행역에 새로운 구간이 추가되고, 기존 구간의 길이는 새로운 구간 길이를 뺀 나머지 길이이다.
      */
     @Test
     void 지하철_노선에_구간을_등록__기존_구간의_상행역에_새로운_구간을_추가한다() {
@@ -80,13 +80,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.jsonPath().getLong("id")).isEqualTo(신분당선),
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 삼성역, 양재역),
                 () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance),
-                () -> assertThat(distance - 강남_삼성_구간_거리).isEqualTo(4)
+                () -> assertThat(response.jsonPath().getInt("distance") - 강남_삼성_구간_거리).isEqualTo(4)
         );
     }
 
     /**
      * When 기존 구간 사이에 신규 구간을 추가하면
-     * Then 기존 구간의 하행역에 새로운 구간이 추가되고, 새로운 구간의 길이는 기존 구간의 길이를 뺀 나머지 길이이다.
+     * Then 기존 구간의 하행역에 새로운 구간이 추가되고, 기존 구간의 길이는 새로운 구간 길이를 뺀 나머지 길이이다.
      */
     @Test
     void 지하철_노선에_구간을_등록__기존_구간의_하행역에_새로운_구간을_추가한다() {
@@ -100,7 +100,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(response.jsonPath().getLong("id")).isEqualTo(신분당선),
                 () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).contains(강남역, 삼성역, 양재역),
                 () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance),
-                () -> assertThat(distance - 삼성_양재_구간_거리).isEqualTo(4)
+                () -> assertThat(response.jsonPath().getInt("distance") - 삼성_양재_구간_거리).isEqualTo(4)
         );
     }
 
