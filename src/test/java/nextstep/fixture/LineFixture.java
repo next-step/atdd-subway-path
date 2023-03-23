@@ -15,4 +15,12 @@ public class LineFixture {
         lineCreateParams.put("distance", 10 + "");
         return lineCreateParams;
     }
+
+    public static Map<String, String> createLineUpdateParams(String name, String color) {
+        Map<String, String> lineUpdateParams;
+        lineUpdateParams = new HashMap<>();
+        lineUpdateParams.put("name", name);
+        lineUpdateParams.put("color", color);
+        return lineUpdateParams;
+    }
 }
