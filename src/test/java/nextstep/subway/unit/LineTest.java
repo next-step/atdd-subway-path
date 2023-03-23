@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 class LineTest {
 
@@ -139,4 +140,72 @@ class LineTest {
                 경강선.addSection(이천역, 신둔도예촌역, 3)).isInstanceOf(SubwayException.class);
 
     }
+
+    @DisplayName("하행역을 삭제할 경우 삭제할 수 있다.")
+    @Test
+    void downStationRemoveSection() {
+        // given
+        경강선.addSection(여주역, 부발역, 4);
+        경강선.addSection(부발역, 이천역, 7);
+
+        // when
+        경강선.deleteSection(이천역);
+
+        // then
+        assertThat(경강선.getStations()).isNotIn(이천역);
+    }
+
+    @DisplayName("상행역을 삭제할 경우 삭제할 수 있다.")
+    @Test
+    void upStationRemoveSection() {
+        // given
+        경강선.addSection(여주역, 부발역, 4);
+        경강선.addSection(부발역, 이천역, 7);
+
+        // when
+        경강선.deleteSection(여주역);
+
+        // then
+        assertThat(경강선.getStations()).isNotIn(여주역);
+    }
+
+    @DisplayName("중간역을 삭제할 경우 삭제할 수 있다.")
+    @Test
+    void betweenStationRemoveSection() {
+        // given
+        Station 경기광주역 = new Station("경기광주역");
+        경강선.addSection(여주역, 부발역, 4);
+        경강선.addSection(부발역, 이천역, 7);
+        경강선.addSection(이천역, 경기광주역, 4);
+
+        // when
+        경강선.deleteSection(부발역);
+
+        // then
+        assertAll(
+                () -> assertThat(경강선.getStations()).isNotIn(부발역),
+                () -> assertThat(경강선.getStations()).contains(이천역),
+                () -> assertThat(경강선.getSections().get(0).getDistance()).isEqualTo(11));
+    }
+
+    @DisplayName("구간이 하나 남아있을 때 삭제할 경우 예외가 발생한다.")
+    @Test
+    void deleteSectionException1() {
+        // given
+        경강선.addSection(여주역, 부발역, 4);
+
+        // when & then
+        assertThatThrownBy(() -> 경강선.deleteSection(부발역)).isInstanceOf(SubwayException.class);
+    }
+
+    @DisplayName("노선에 등록되지 않은 역을 삭제할 경우 예외가 발생한다.")
+    @Test
+    void deleteSectionException2() {
+        // given
+        경강선.addSection(여주역, 부발역, 3);
+
+        // when & then
+        assertThatThrownBy(() -> 경강선.deleteSection(이천역)).isInstanceOf(SubwayException.class);
+    }
+
  }
