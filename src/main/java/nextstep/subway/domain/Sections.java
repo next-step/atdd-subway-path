@@ -34,24 +34,6 @@ public class Sections {
 		}
 	}
 
-	private void betweenExistSection(Section newSection) {
-		/*
-		* 동일한 하행역 기준으로 추가
-		* Ex. 기존 구간: A -> C,
-		*   새로운 구간: B -> C
-		* A -> B -> C
-		* */
-		addSectionDownStation(newSection);
-
-		/*
-		 * 동일한 상행역 기준으로 추가
-		 * Ex. 기존 구간: A -> C,
-		 *   새로운 구간: A -> B
-		 * A -> B -> C
-		 * */
-		addSectionUpStation(newSection);
-	}
-
 	private boolean addSectionDownStation(Section newSection) {
 		Optional<Section> optSection = sections.stream()
 				.filter(oldSection -> oldSection.getDownStation().equals(newSection.getDownStation()))
@@ -140,7 +122,7 @@ public class Sections {
 		return sections.isEmpty();
 	}
 
-	public boolean hasEnoughSize() {
+	private boolean hasEnoughSize() {
 		return sections.size() < 2;
 	}
 
@@ -160,8 +142,7 @@ public class Sections {
 	}
 
 	public boolean isNotEndStation(Station station) {
-		int end = sections.size() - 1;
-		Station endStation = sections.get(end).getDownStation();
+		Station endStation = getLastSection().getDownStation();
 		return !station.equals(endStation);
 	}
 
