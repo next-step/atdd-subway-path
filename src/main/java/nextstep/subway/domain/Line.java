@@ -1,10 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.DuplicatedDownStationException;
-import nextstep.subway.exception.NotEqualLastStationException;
-import nextstep.subway.exception.NotLastStationException;
-import nextstep.subway.exception.SingleSectionException;
-
 import javax.persistence.*;
 import java.util.List;
 
@@ -31,7 +26,7 @@ public class Line {
         sections.add(new Section(this, upStation, downStation, distance));
     }
 
-    public int getSumDistance() {
+    public int getCalcDistance() {
         return sections.calcDistance();
     }
 
@@ -67,7 +62,7 @@ public class Line {
         this.color = color;
     }
 
-    public Sections getSections() {
-        return sections;
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 }

@@ -22,8 +22,7 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
+    protected Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
@@ -31,6 +30,14 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean existsUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public boolean existsDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     public Long getId() {
