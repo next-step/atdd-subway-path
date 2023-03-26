@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import static nextstep.subway.common.exception.ErrorCode.*;
@@ -37,7 +38,7 @@ public class Sections {
         return stations.stream().distinct().collect(Collectors.toList());
     }
 
-    public Station getLastStation() {
+    public Station getLastStationBySort() {
         return sections.get(sections.size()-1).getDownStation();
     }
 
@@ -65,15 +66,15 @@ public class Sections {
             if (betweenSection.get(0).getDistance() <= section.getDistance()) {
                 throw new SubwayException(NOT_SAME_SMALL_DISTANCE);
             }
-            betweenSection.get(0).update(section.getDownStation(), section.getDistance());
+            betweenSection.get(0).addUpdate(section.getDownStation(), section.getDistance());
         }
         sections.add(section);
     }
 
 
     private List<Section> findBetweenSection(Section addSection) {
-        return sections.stream().filter(section1 ->
-                addSection.getUpStation().equals(section1.getUpStation())).collect(Collectors.toList());
+        return sections.stream().filter(section ->
+                addSection.getUpStation().equals(section.getUpStation())).collect(Collectors.toList());
     }
 
 
@@ -115,12 +116,57 @@ public class Sections {
 
 
     public void deleteSection(Station station) {
+
         if (!getStations().contains(station)) {
-            throw new IllegalArgumentException("해당 역은 존재하지 않습니다.");
+            throw new SubwayException(NOT_EXIST_STATION);
         }
-        if (station != getLastStation()) {
-            throw new IllegalArgumentException("해당 역은 삭제할 수 없습니다");
+
+        if (getStations().size() == 2) {
+            throw new SubwayException(NOT_DELETE_LAST_SECTION);
         }
-        sections.remove(sections.size()-1);
+
+        if (isDownStation(station)) {
+            sections.removeIf(section -> section.getDownStation() == station);
+        }
+
+        if (isUpStation(station)) {
+            sections.removeIf(section -> section.getUpStation() == station);
+        }
+
+        if (isBetweenStation(station)) {
+            deleteBetweenStation(station);
+        }
+    }
+
+    private boolean isDownStation(Station station) {
+        return findFirstStation() != station && findLastStation() == station;
+    }
+
+    private boolean isUpStation(Station station) {
+        return findFirstStation() == station && findLastStation() != station;
+    }
+
+    private boolean isBetweenStation(Station station) {
+        return findFirstStation() != station && findLastStation() != station;
+    }
+
+
+    private void deleteBetweenStation(Station station) {
+        Station upStation = null;
+        int distance = 0;
+        Iterator<Section> iterator = sections.iterator();
+        while (iterator.hasNext()) {
+            Section section = iterator.next();
+            if (section.getDownStation().equals(station)) {
+                upStation = section.getUpStation();
+                distance = section.getDistance();
+                iterator.remove();
+            }
+            if (section.getUpStation().equals(station)) {
+                section.deleteUpdate(upStation, distance);
+            }
+        }
+
+
     }
 }

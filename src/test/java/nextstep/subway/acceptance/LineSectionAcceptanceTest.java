@@ -15,6 +15,7 @@ import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @DisplayName("지하철 구간 관리 기능")
@@ -51,7 +52,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
     }
 
@@ -71,7 +72,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
@@ -80,7 +81,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      * then 해당 노선을 조회시 추가한 역을 찾을 수 있다.
      * */
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 테스트")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 인수테스트")
     @Test
     void betweenAddSection() {
         // when
@@ -90,7 +91,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         List<Long> idList = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
 
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.statusCode()).isEqualTo(OK.value()),
                 () -> assertThat(idList).containsExactly(강남역, 정자역, 양재역)
         );
     }
@@ -99,7 +100,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     * when 새로운 역을 상행 종점으로 등록하여 구간을 추가할 경우
     * then 새로운 역이 상행 종점역이 되어 노선 조회시 추가한 역을 찾을 수 있다.
     * */
-    @DisplayName("새로운 역을 상행 종점으로 등록할 경우 테스트")
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우 인수테스트")
     @Test
     void upStationAddSection() {
         // when
@@ -109,13 +110,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         List<Long> idList = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
 
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.statusCode()).isEqualTo(OK.value()),
                 () -> assertThat(idList.get(0)).isEqualTo(정자역)
         );
     }
 
 
-    @DisplayName("새로운 역을 하행 종점으로 등록할 경우 테스트")
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우 인수테스트")
     @Test
     void downStationAddSection() {
         // when
@@ -125,7 +126,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         List<Long> idList = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
 
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.statusCode()).isEqualTo(OK.value()),
                 () -> assertThat(idList.get(idList.size()-1)).isEqualTo(정자역)
         );
     }
@@ -133,7 +134,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     /* when 기존 구간 사이에 새로운 구간을 등록할 때, 새로운 구간의 크기가 기존 구간의 크기와 같거나 더 크다면
     *  then 구간 등록에 실패한다.
     * */
-    @DisplayName("기존 구간 사이에 구간 등록시, 해당 구간의 크기가 기존 구간 보다 크거나 같다면 등록시 예외가 발생하는 테스트")
+    @DisplayName("기존 구간 사이에 구간 등록시, 해당 구간의 크기가 기존 구간 보다 크거나 같다면 등록시 예외가 발생하는 인수테스트")
     @Test
     void addSectionExceptionTest1() {
         // when
@@ -147,7 +148,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     *  when 등록하려는 구간의 상행역과 하행역이 노선에 모두 등록되어 있다면
     *  then 구간 등록에 실패한다.
     * */
-    @DisplayName("등록하려는 구간의 상행역, 하행역이 노선에 모두 등록이 되어있다면 등록시 예외가 발생하는 테스트")
+    @DisplayName("등록하려는 구간의 상행역, 하행역이 노선에 모두 등록이 되어있다면 등록시 예외가 발생하는 인수테스트")
     @Test
     void addSectionExceptionTest2() {
         // when
@@ -161,7 +162,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     * when 등록하려는 구간의 상행역과 하행역이 노선에 모두 포함되어 있지 않다면
     * then 구간 등록에 실패한다.
     * */
-    @DisplayName("등록하려는 구간의 상행역, 하행역이 노선에 모두 포함되어 있지 않다면 등록시 예외가 발생하는 테스트")
+    @DisplayName("등록하려는 구간의 상행역, 하행역이 노선에 모두 포함되어 있지 않다면 등록시 예외가 발생하는 인수테스트")
     @Test
     void addSectionExceptionTest3() {
         // when
@@ -172,6 +173,109 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
     }
 
+
+    /*
+    * given 지하철 노선에 구간을 추가하고
+    * when 상행역을 삭제 요청하면
+    * then 노선 조회시 삭제한 상행역을 찾을 수 없다.
+    * */
+    @DisplayName("상행역을 삭제할 경우 인수테스트")
+    @Test
+    void deleteUpStation() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        List<Long> idList = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(OK.value()),
+                () -> assertThat(idList).isNotIn(강남역)
+        );
+
+    }
+
+    /*
+     * given 지하철 노선에 구간을 추가하고
+     * when  하행역을 삭제 요청하면
+     * then  노선 조회시 삭제한 하행역을 찾을 수 없다.
+     * */
+    @DisplayName("하행역을 삭제할 경우 인수테스트")
+    @Test
+    void deleteDownStation() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+
+        // then
+        List<Long> idList = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(OK.value()),
+                () -> assertThat(idList).isNotIn(정자역)
+        );
+    }
+
+    /*
+     * given 지하철 노선에 구간을 추가하고
+     * when  중간역을 삭제 요청하면
+     * then  노선 조회시 삭제한 중간역을 찾을 수 없다.
+     * */
+    @DisplayName("중간역을 삭제할 경우 인수테스트")
+    @Test
+    void deleteBetweenStation() {
+        // given
+        Long 미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 미금역, 5));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        List<Long> idList = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(OK.value()),
+                () -> assertThat(idList).isNotIn(양재역),
+                () -> assertThat(idList).containsExactly(강남역, 정자역, 미금역)
+        );
+
+    }
+
+    /*
+     * when 노선에 등록되지 않은 역을 제거할 경우
+     * then 구간 삭제에 실패한다.
+     * */
+    @DisplayName("노선에 등록되지 않은 역을 제거할 경우 예외가 발생하는 인수테스트")
+    @Test
+    void deleteNotExistStationException() {
+        // given
+        Long 미금역 = 지하철역_생성_요청("미금역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 미금역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+    }
+
+    /*
+    * when 노선에 구간이 하나일 경우, 구간 제거 요청을 하면
+    * then 구간 삭제에 실패한다.
+    * */
+    @DisplayName("노선에 구간이 하나 남아있을 경우 구간을 제거 할 경우 예외가 발생하는 인수테스트")
+    @Test
+    void deleteLastSectionException() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+    }
 
 
 

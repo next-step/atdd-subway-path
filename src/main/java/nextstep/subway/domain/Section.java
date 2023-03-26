@@ -45,9 +45,14 @@ public class Section {
         return upStation;
     }
 
-    public void update(Station station, int addDistance) {
+    public void addUpdate(Station station, int distance) {
         this.upStation = station;
-        this.distance = getDistance() - addDistance;
+        this.distance = getDistance() - distance;
+    }
+
+    public void deleteUpdate(Station station, int distance) {
+        this.upStation = station;
+        this.distance = getDistance() + distance;
     }
 
     public Station getDownStation() {
