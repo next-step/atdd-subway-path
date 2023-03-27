@@ -28,7 +28,7 @@ public class Sections {
     }
 
     private void addByPosition(Section newSection) {
-        if (isEndSection(newSection) || sections.isEmpty()) {
+        if (sections.isEmpty() || isEndSection(newSection)) {
             sections.add(newSection);
             return;
         }
@@ -62,8 +62,14 @@ public class Sections {
     }
 
     private void isAlreadyExistSection(Section newSection, Section section) {
-        if (section.getDownStation() == newSection.getDownStation()
-            && section.getUpStation() == newSection.getUpStation()) {
+
+        boolean twoSectionMatchExactly = section.getDownStation() == newSection.getDownStation()
+            && section.getUpStation() == newSection.getUpStation();
+
+        boolean twoSectionMatchReversely = section.getDownStation() == newSection.getUpStation()
+            && section.getUpStation() == newSection.getDownStation();
+
+        if (twoSectionMatchReversely || twoSectionMatchExactly) {
             throw new SectionException("동일한 구간은 등록할 수 없습니다.");
         }
     }
@@ -81,11 +87,11 @@ public class Sections {
 
         if (matchSection.getUpStation() == newSection.getUpStation()) {
             matchSection.setUpStation(newSection.getDownStation());
-            matchSection.setDistance(matchSection.getDistance() - newSection.getDistance());
+            matchSection.minusDistance(newSection.getDistance());
             return;
         }
         matchSection.setDownStation(newSection.getUpStation());
-        matchSection.setDistance(matchSection.getDistance() - newSection.getDistance());
+        matchSection.minusDistance(newSection.getDistance());
     }
 
     private static boolean isSectionInMiddle(Section newSection, Section section) {
@@ -112,10 +118,6 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    private Section getLastSection() {
-        return this.sections.get(getLastIndex());
-    }
-
     public void remove(Station station) {
         removeValidate();
         List<Section> sortedSections = getSortedSections();
@@ -126,7 +128,7 @@ public class Sections {
     private void removeSection(List<Section> adjacentSection) {
         if (adjacentSection.size() == 1) {
             removeEndSection(adjacentSection);
-    } else {
+        } else {
             removeMiddleSection(adjacentSection);
         }
     }
@@ -141,7 +143,7 @@ public class Sections {
         Section secondSection = adjacentSection.get(1);
 
         firstSection.setDownStation(secondSection.getDownStation());
-        firstSection.setDistance(firstSection.getDistance() + secondSection.getDistance());
+        firstSection.plusDistance(secondSection.getDistance());
         this.sections.remove(secondSection);
     }
 

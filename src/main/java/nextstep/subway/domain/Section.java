@@ -64,4 +64,11 @@ public class Section {
     public void setDistance(int distance) {
         this.distance = distance;
     }
+
+    public void plusDistance(int newDistance) {
+        this.distance = this.distance + newDistance;
+    }
+    public void minusDistance(int newDistance) {
+        this.distance = this.distance - newDistance;
+    }
 }
