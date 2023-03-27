@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -177,15 +178,15 @@ public class Sections {
         return result;
     }
 
-    private int getLastIndex() {
-        return sections.size() - 1;
-    }
-
     public List<Station> getSortedStations() {
         List<Station> stations = getHeadStation();
+
+        if (stations.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         Station nextStation = stations.get(0);
 
-        // TODO : Refactoring 필요
         while (stations.size() <= sections.size()) {
             for (Section section : sections) {
                 if (section.getUpStation() == nextStation) {
