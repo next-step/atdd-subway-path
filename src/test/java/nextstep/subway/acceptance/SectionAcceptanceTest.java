@@ -205,5 +205,110 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 중간역을 제거 하면
+     * Then 노선의 중간역이 제거되고 노선의 거리는 두 구간의 거리의 합이 된다
+     */
+    @Test
+    void 노선의_중간_구간을_제거하면_노선의_거리는_두_구간의_거리의_합이_된다() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 삼성역, 10));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 삼성역),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).isNotIn(양재역),
+                () -> assertThat(response.jsonPath().getInt("distance")).isEqualTo(20)
+        );
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 상행 종점이 제거 되면
+     * Then 노선에 구간이 제거된다
+     */
+    @Test
+    void 상행_종점이_제거_되면_노선에_구간이_제거된다() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 삼성역, 10));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // & then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 삼성역),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).isNotIn(강남역)
+        );
+    }
+
+
+    /**
+     * Given 지하철 노선에 새로운 구간 추가를 요청 하고
+     * When 지하철 노선의 하행 종점이 제거 되면
+     * Then 노선에 구간이 제거된다
+     */
+    @Test
+    void 하행_종점이_제거_되면_노선에_구간이_제거된다() {
+        // given
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 삼성역, 10));
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 삼성역);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역),
+                () -> assertThat(response.jsonPath().getList("stations.id", Long.class)).isNotIn(삼성역)
+        );
+    }
+
+    /**
+     * When 구간이 하나인 노선에서 마지막 구간을 제거하면
+     * Then 지하철 노선의 구간을 제거 할 수 없다
+     */
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간을_제거할때_노선의_구간을_제거_할_수_없다() {
+        // when & then
+        assertAll(
+                () -> assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        );
+    }
+
+
+    /**
+     * When 지하철 노선에 등록되어있지 않은 역을 제거한다면
+     * Then 지하철 노선의 구간을 제거 할 수 없다
+     */
+    @Test
+    void 지하철_노선에_등록_되어있지_않은_역을_제거한다면_노선의_구간을_제거_할_수_없다() {
+        // when & then
+        assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 삼성역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 새로운 지하철 노선을 생성하고
+     * When 지하철 노선의 구간 삭제를 요청하면
+     * Then 지하철 노선의 구간을 제거 할 수 없다
+     */
+    @Test
+    void 지하철_노선의_구간이_존재하지_않는다면_노선의_구간을_제거_할_수_없다() {
+        // given
+        Long 신분당선 = 지하철_노선_생성_요청(createLineCreateParams()).jsonPath().getLong("id");
+
+        // then
+        assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 청명역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
 }

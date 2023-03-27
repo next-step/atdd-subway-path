@@ -9,10 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
     private Line 강남_2호선;
@@ -184,7 +186,18 @@ class LineTest {
     }
 
     @Test
-    void 노선의_마지막_구간을_삭제한다() {
+    void 노선에_등록되지_않은_구간을_삭제_할_수_없다() {
+        // given
+        강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
+        강남_2호선.addSection(new Section(강남_2호선, 역삼역, 삼성역, 12));
+
+        // then
+        assertThatThrownBy(() -> 강남_2호선.removeSection(new Station("청명역")))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("역이 존재 하지 않습니다.");
+    }
+    @Test
+    void 노선의_하행_종점을_삭제한다() {
         // given
         강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
         강남_2호선.addSection(new Section(강남_2호선, 역삼역, 삼성역, 12));
@@ -193,7 +206,60 @@ class LineTest {
         강남_2호선.removeSection(삼성역);
 
         // then
-        assertThat(강남_2호선.getSections().size()).isEqualTo(1);
+        assertAll(
+                () -> assertThat(강남_2호선.getSections().size()).isEqualTo(1),
+                () -> assertThat(강남_2호선.getStations()).isNotIn(삼성역)
+        );
+
+    }
+
+    @Test
+    void 노선의_상행_종점을_삭제한다() {
+        // given
+        강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
+        강남_2호선.addSection(new Section(강남_2호선, 역삼역, 삼성역, 12));
+
+        // when
+        강남_2호선.removeSection(강남역);
+
+        // then
+        assertAll(
+                () -> assertThat(강남_2호선.getSections().size()).isEqualTo(1),
+                () -> assertThat(강남_2호선.getStations()).isNotIn(강남역)
+        );
+    }
+
+    @Test
+    void 노선의_중간역을_삭제한다() {
+        // given
+        강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
+        강남_2호선.addSection(new Section(강남_2호선, 역삼역, 삼성역, 12));
+
+        // when
+        강남_2호선.removeSection(역삼역);
+
+        // then
+        assertAll(
+                () -> assertThat(강남_2호선.getSections().size()).isEqualTo(1),
+                () -> assertThat(강남_2호선.getStations()).isNotIn(역삼역)
+        );
+    }
+
+    @Test
+    void 노선의_중간역을_삭제하면_거리는_두_구간의_거리의_합이_된다() {
+        // given
+        강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
+        강남_2호선.addSection(new Section(강남_2호선, 역삼역, 삼성역, 12));
+
+        // when
+        강남_2호선.removeSection(역삼역);
+
+        // then
+        assertAll(
+                () -> assertThat(강남_2호선.getSections().size()).isEqualTo(1),
+                () -> assertThat(강남_2호선.getStations()).isNotIn(역삼역),
+                () -> assertThat(강남_2호선.getDistance()).isEqualTo(22)
+        );
     }
 
     @Test
