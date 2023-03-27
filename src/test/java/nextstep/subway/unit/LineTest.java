@@ -196,6 +196,7 @@ class LineTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("역이 존재 하지 않습니다.");
     }
+
     @Test
     void 노선의_하행_종점을_삭제한다() {
         // given

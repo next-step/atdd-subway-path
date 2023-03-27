@@ -250,7 +250,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
-
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 하행 종점이 제거 되면
@@ -286,7 +285,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         );
     }
 
-
     /**
      * When 지하철 노선에 등록되어있지 않은 역을 제거한다면
      * Then 지하철 노선의 구간을 제거 할 수 없다
@@ -310,5 +308,4 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 청명역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
 }
