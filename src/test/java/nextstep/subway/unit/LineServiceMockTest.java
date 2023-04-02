@@ -36,7 +36,7 @@ public class LineServiceMockTest {
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         Line 이호선 = new Line("2호선", "bg-color-green");
         Station 강남역 = new Station("강남구청역");
-        Station 역삼역 = new Station("압구정로데오역");
+        Station 역삼역 = new Station("역삼역");
         int distance = 10;
 
         Long 강남역_ID = 강남역.getId();
