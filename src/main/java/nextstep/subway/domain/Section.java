@@ -75,6 +75,11 @@ public class Section {
         return new Section(line, station, downStation, distance);
     }
 
+    public void modifyUpstation(Section section) {
+        upStation = section.upStation;
+        distance += section.distance;
+    }
+
     @Override
     public String toString() {
         return "Section{" +
