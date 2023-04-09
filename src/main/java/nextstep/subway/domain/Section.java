@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.IllegalDistanceException;
+
 import javax.persistence.*;
 
 @Entity
@@ -29,7 +31,7 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = checkDistance(distance);
     }
 
     public boolean existsUpStation(Station upStation) {
@@ -57,6 +59,13 @@ public class Section {
     }
 
     public int getDistance() {
+        return distance;
+    }
+
+    private static int checkDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalDistanceException();
+        }
         return distance;
     }
 }

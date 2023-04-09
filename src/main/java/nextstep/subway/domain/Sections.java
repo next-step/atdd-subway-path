@@ -1,13 +1,17 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.AlreadyRegisterBothStationException;
+import nextstep.subway.exception.NeitherRegisterStationException;
 import nextstep.subway.exception.NotLastStationException;
 import nextstep.subway.exception.SingleSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 @Embeddable
@@ -28,28 +32,17 @@ public class Sections {
             return;
         }
         checkSection(section);
-        addContainsUpStationInSections(section);
-        addContainsDownStationInSections(section);
-
-        if (isFirstStation(section.getDownStation())) {
-            sections.add(0, section);
-            return;
-        }
-
-        if (isLastStation(section.getUpStation())) {
-            sections.add(section);
-        }
+        addToMiddle(section);
+        addToFirstOrLast(section);
     }
 
     public List<Station> getStations() {
-        if (isEmpty()) {
+        if (sections.isEmpty()) {
             return Collections.emptyList();
         }
         List<Station> stations = new ArrayList<>();
         stations.add(sections.get(0).getUpStation());
-        stations.addAll(sections.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList()));
+        sections.forEach(x -> stations.add(x.getDownStation()));
         return stations;
     }
 
@@ -63,24 +56,39 @@ public class Sections {
         sections.remove(getLastStationIndex());
     }
 
-    private boolean isEmpty() {
-        return this.sections.isEmpty();
+    private void checkSection(Section section) {
+        if (isUpStation(section) && isDownStation(section)) {
+            throw new AlreadyRegisterBothStationException();
+        }
+        if (!(containsStation(section.getUpStation()) || containsStation(section.getDownStation()))) {
+            throw new NeitherRegisterStationException();
+        }
     }
 
-    private void checkSection(Section section) {
-        if (containsUpStation(section).isPresent() && containsDownStation(section).isPresent()) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+    private void addToFirstOrLast(Section section) {
+        if (isLastStation(section.getUpStation())) {
+            sections.add(section);
         }
-        if (!containsStation(section.getUpStation()) && !containsStation(section.getDownStation())) {
-            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+        if (isFirstStation(section.getDownStation())) {
+            sections.add(0, section);
+        }
+    }
+
+    private void addToMiddle(Section section) {
+        if (isUpStation(section)) {
+            addContainsUpStationInSections(section);
+        }
+        if (isDownStation(section)) {
+            addContainsDownStationInSections(section);
         }
     }
 
     private void addContainsUpStationInSections(Section section) {
         int index = getSectionIndex(section);
-        containsUpStation(section)
+        sections.stream()
+                .filter(it -> it.existsUpStation(section.getUpStation()) && !it.existsDownStation(section.getDownStation()))
+                .findFirst()
                 .ifPresent(it -> {
-                    validateDistanceInMiddleSection(it, section);
                     sections.add(index, section);
                     sections.add(index + 1, new Section(section.getLine(), section.getDownStation(), it.getDownStation(), it.getDistance() - section.getDistance()));
                     sections.remove(it);
@@ -89,31 +97,24 @@ public class Sections {
 
     private void addContainsDownStationInSections(Section section) {
         int index = getSectionIndex(section);
-        containsDownStation(section)
+        sections.stream()
+                .filter(it -> it.existsDownStation(section.getDownStation()) && !it.existsUpStation(section.getUpStation()))
+                .findFirst()
                 .ifPresent(it -> {
                     sections.add(index, new Section(section.getLine(), it.getUpStation(), section.getUpStation(), it.getDistance() - section.getDistance()));
                     sections.add(index + 1, section);
-                    validateDistanceInMiddleSection(it, section);
                     sections.remove(it);
                 });
     }
 
-    private Optional<Section> containsUpStation(Section section) {
+    boolean isUpStation(Section section) {
         return sections.stream()
-                .filter(it -> it.existsUpStation(section.getUpStation()) && !it.existsDownStation(section.getDownStation()))
-                .findFirst();
+                .anyMatch(it -> it.existsUpStation(section.getUpStation()) && !it.existsDownStation(section.getDownStation()));
     }
 
-    private Optional<Section> containsDownStation(Section section) {
+    boolean isDownStation(Section section) {
         return sections.stream()
-                .filter(it -> it.existsDownStation(section.getDownStation()) && !it.existsUpStation(section.getUpStation()))
-                .findFirst();
-    }
-
-    private void validateDistanceInMiddleSection(Section it, Section section) {
-        if (it.getDistance() <= section.getDistance()) {
-            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-        }
+                .anyMatch(it -> it.existsDownStation(section.getDownStation()) && !it.existsUpStation(section.getUpStation()));
     }
 
     public boolean isFirstStation(Station station) {

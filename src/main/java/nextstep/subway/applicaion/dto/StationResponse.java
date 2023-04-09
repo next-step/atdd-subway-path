@@ -1,6 +1,5 @@
 package nextstep.subway.applicaion.dto;
 
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
 import java.util.List;
@@ -22,8 +21,7 @@ public class StationResponse {
         return new StationResponse(station.getId(), station.getName());
     }
 
-    public static List<StationResponse> listOf(Line line) {
-        List<Station> stations = line.getAllStations();
+    public static List<StationResponse> listOf(List<Station> stations) {
         return stations.stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());

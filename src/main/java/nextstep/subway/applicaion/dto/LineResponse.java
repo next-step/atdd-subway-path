@@ -25,7 +25,7 @@ public class LineResponse {
                 line.getName(),
                 line.getColor(),
                 line.getCalcDistance(),
-                StationResponse.listOf(line)
+                StationResponse.listOf(line.getAllStations())
         );
     }
 
