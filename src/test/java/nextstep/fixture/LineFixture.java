@@ -31,4 +31,15 @@ public class LineFixture {
         lineUpdateParams.put("color", color);
         return lineUpdateParams;
     }
+
+    public static Map<String, String> createLineCreateParams(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> lineUpdateParams;
+        lineUpdateParams = new HashMap<>();
+        lineUpdateParams.put("name", name);
+        lineUpdateParams.put("color", color);
+        lineUpdateParams.put("upStationId", upStationId + "");
+        lineUpdateParams.put("downStationId", downStationId + "");
+        lineUpdateParams.put("distance", distance + "");
+        return lineUpdateParams;
+    }
 }
