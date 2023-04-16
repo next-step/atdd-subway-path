@@ -50,12 +50,74 @@ class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
     }
 
+
+    /*
+    * when 출발역과 도착역의 최단 경로 조회 요청을 하면
+    * then 해당 경로의 최단 거리를 알 수 있다
+    * */
     @Test
     void 최단_경로를_조회_한다() {
         // when
-        ExtractableResponse<Response> response = 최단_경로_조회_요청(교대역, 강남역);
+        ExtractableResponse<Response> response = 최단_경로_조회_요청(교대역, 양재역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
+    }
+
+    /*
+     * when 출발역과 도착역이 같다면
+     * then 최단 경로 조회에 실패한다
+     * */
+    @Test
+    void 출발역과_도착역이_같으면_최단_경로_조회에_실패한다() {
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회_요청(교대역, 교대역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /*
+     * given 새로운 역을 만들고
+     * when  출발역과 도착역이 연결되어 있지 않으면
+     * then  최단 경로 조회에 실패한다
+     * */
+    @Test
+    void 출발역과_도착역이_연결_되어_있지_않으면_경로_조회에_실패한다() {
+        // given
+        Long 사당역 = 지하철역_생성_요청("사당역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회_요청(교대역, 사당역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /*
+     * when  출발역이 존재하지 않는다면
+     * then  최단 경로 조회에 실패한다
+     * */
+    @Test
+    void 출발역이_존재하지_않는다면_경로_조회에_실패한다() {
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회_요청(100L, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /*
+     * when  도착역이 존재하지 않는다면
+     * then  최단 경로 조회에 실패한다
+     * */
+    @Test
+    void 도착역이_존재하지_않는다면_경로_조회에_실패한다() {
+        // when
+        ExtractableResponse<Response> response = 최단_경로_조회_요청(교대역, 100L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
