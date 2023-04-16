@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.IllegalDistanceException;
+
 import javax.persistence.*;
 
 @Entity
@@ -22,15 +24,22 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
+    protected Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = checkDistance(distance);
+    }
+
+    public boolean existsUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public boolean existsDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     public Long getId() {
@@ -50,6 +59,13 @@ public class Section {
     }
 
     public int getDistance() {
+        return distance;
+    }
+
+    private static int checkDistance(int distance) {
+        if (distance <= 0) {
+            throw new IllegalDistanceException();
+        }
         return distance;
     }
 }

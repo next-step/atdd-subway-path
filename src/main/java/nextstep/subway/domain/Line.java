@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,8 +11,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     public Line() {
     }
@@ -21,6 +20,18 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.add(new Section(this, upStation, downStation, distance));
+    }
+
+    public int getCalcDistance() {
+        return sections.calcDistance();
+    }
+
+    public List<Station> getAllStations() {
+        return sections.getStations();
     }
 
     public Long getId() {
@@ -33,6 +44,10 @@ public class Line {
 
     public String getName() {
         return name;
+    }
+
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 
     public void setName(String name) {
@@ -48,6 +63,6 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
-    private LineService lineService;
+    private final LineService lineService;
 
     public LineController(LineService lineService) {
         this.lineService = lineService;
@@ -33,7 +33,7 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.findById(id);
+        LineResponse lineResponse = LineResponse.of(lineService.findById(id));
         return ResponseEntity.ok().body(lineResponse);
     }
 
