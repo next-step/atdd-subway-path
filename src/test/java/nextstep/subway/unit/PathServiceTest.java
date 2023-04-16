@@ -8,6 +8,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.PathFinderException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -39,7 +42,8 @@ class PathServiceTest {
     private Station 삼성역;
     private Station 청명역;
     private Station 영통역;
-
+    private Station 사당역;
+    
     private Line 강남_2호선;
     private Line 수인_분당선;
 
@@ -49,6 +53,7 @@ class PathServiceTest {
         강남역 = stationRepository.save(new Station("강남역"));
         역삼역 = stationRepository.save(new Station("역삼역"));
         삼성역 = stationRepository.save(new Station("삼성역"));
+        사당역 = stationRepository.save(new Station("사당역"));
 
         lineService.addSection(강남_2호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
         lineService.addSection(강남_2호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 15));
@@ -67,5 +72,31 @@ class PathServiceTest {
 
         assertThat(stationNames).containsExactly(강남역.getName(), 역삼역.getName(), 삼성역.getName());
         assertThat(response.getDistance()).isEqualTo(25);
+    }
+
+    @Test
+    void 출발역과_도착역이_같은_경우_예외가_발생한다() {
+        assertThatThrownBy(() -> pathService.findPath(강남역.getId(), 강남역.getId()))
+                .isInstanceOf(PathFinderException.class)
+                .hasMessage("출발역과 도착역은 같을 수 없습니다.");
+    }
+
+    @Test
+    void 출발역과_도착역이_연결_되어_있지_않은_경우_예외가_발생한다() {
+        assertThatThrownBy(() -> pathService.findPath(강남역.getId(), 사당역.getId()))
+                .isInstanceOf(PathFinderException.class)
+                .hasMessage("출발역과 도착역이 연결되어 있지 않습니다.");
+    }
+
+    @Test
+    void 존재하지_않은_출발역을_조회_할_경우_예외가_발생한다() {
+        assertThatThrownBy(() -> pathService.findPath(강남역.getId(), 100L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 존재하지_않은_도착역을_조회_할_경우_예외가_발생한다() {
+        assertThatThrownBy(() -> pathService.findPath(100L, 역삼역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
