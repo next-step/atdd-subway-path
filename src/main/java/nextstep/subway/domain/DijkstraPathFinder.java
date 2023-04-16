@@ -22,7 +22,9 @@ public class DijkstraPathFinder implements PathFinder {
     private void drawGraph(List<Line> lines) {
         for (Line line : lines) {
             line.getStations().forEach(graph :: addVertex);
-            line.getSections().forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
+            line.getSections().forEach(section ->
+                    graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance())
+            );
         }
     }
 
