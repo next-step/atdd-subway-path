@@ -20,6 +20,7 @@ public class PathController {
 
     @GetMapping
     public ResponseEntity<PathResponse> showShortPath(PathRequest pathRequest) {
-        return ResponseEntity.ok().body(new PathResponse());
+        PathResponse path = pathService.findPath(pathRequest.getSource(), pathRequest.getTarget());
+        return ResponseEntity.ok().body(path);
     }
 }
