@@ -42,27 +42,39 @@ class PathServiceTest {
     private Station 삼성역;
     private Station 청명역;
     private Station 영통역;
-    private Station 사당역;
     
     private Line 강남_2호선;
     private Line 수인_분당선;
+    private Line 강남_청명선;
+    private Line 삼성_영통선;
 
+    /**
+     *          *강남_2호선*
+     * 강남역  --- 역삼역      ---    삼성역
+     * |                                 |
+     * *강남_청명선*                *삼성_영통선*
+     * |                                 |
+     * 청명역  --- *수인_분당선* ---   영통역
+     */
     @BeforeEach
     void setUp() {
         강남_2호선 = lineRepository.save(new Line("강남_2호선", "green"));
         강남역 = stationRepository.save(new Station("강남역"));
         역삼역 = stationRepository.save(new Station("역삼역"));
         삼성역 = stationRepository.save(new Station("삼성역"));
-        사당역 = stationRepository.save(new Station("사당역"));
-
         lineService.addSection(강남_2호선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10));
         lineService.addSection(강남_2호선.getId(), new SectionRequest(역삼역.getId(), 삼성역.getId(), 15));
 
         수인_분당선 = lineRepository.save(new Line("수인_분당선", "yellow"));
         청명역 = stationRepository.save(new Station("청명역"));
         영통역 = stationRepository.save(new Station("영통역"));
-
         lineService.addSection(수인_분당선.getId(), new SectionRequest(청명역.getId(), 영통역.getId(), 20));
+
+        강남_청명선 = lineRepository.save(new Line("강남_청명선", "blue"));
+        lineService.addSection(강남_청명선.getId(), new SectionRequest(강남역.getId(), 청명역.getId(), 7));
+
+        삼성_영통선 = lineRepository.save(new Line("삼성_영통선", "black"));
+        lineService.addSection(삼성_영통선.getId(), new SectionRequest(삼성역.getId(), 영통역.getId(), 3));
     }
 
     @Test
@@ -83,6 +95,8 @@ class PathServiceTest {
 
     @Test
     void 출발역과_도착역이_연결_되어_있지_않은_경우_예외가_발생한다() {
+        Station 사당역 = stationRepository.save(new Station("사당역"));
+
         assertThatThrownBy(() -> pathService.findPath(강남역.getId(), 사당역.getId()))
                 .isInstanceOf(PathFinderException.class)
                 .hasMessage("출발역과 도착역이 연결되어 있지 않습니다.");

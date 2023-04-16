@@ -22,6 +22,17 @@ class DijkstraPathFinderTest {
 
     private Line 강남_2호선;
     private Line 수인_분당선;
+    private Line 강남_청명선;
+    private Line 삼성_영통선;
+
+    /**
+     *          *강남_2호선*
+     * 강남역  --- 역삼역      ---    삼성역
+     * |                                 |
+     * *강남_청명선*                *삼성_영통선*
+     * |                                 |
+     * 청명역  --- *수인_분당선* ---   영통역
+     */
 
     @BeforeEach
     void setUp() {
@@ -36,6 +47,12 @@ class DijkstraPathFinderTest {
         청명역 = new Station("청명역");
         영통역 = new Station("영통역");
         수인_분당선.addSection(new Section(수인_분당선, 청명역, 영통역, 20));
+
+        강남_청명선 = new Line("강남_청명선", "blue");
+        강남_청명선.addSection(new Section(강남_청명선, 청명역, 영통역, 7));
+
+        삼성_영통선 = new Line("삼성_영통선", "black");
+        삼성_영통선.addSection(new Section(삼성_영통선, 삼성역, 영통역, 3));
 
         pathFinder = new DijkstraPathFinder(List.of(강남_2호선, 수인_분당선));
     }
