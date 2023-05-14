@@ -273,16 +273,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 구간이 하나인 노선에서 마지막 구간을 제거하면
+     * When 구간이 하나인 노선에서 마지막 구간의 상행역을 제거하는 경우
      * Then 지하철 노선의 구간을 제거 할 수 없다
      */
     @Test
-    void 구간이_하나인_노선에서_마지막_구간을_제거할때_노선의_구간을_제거_할_수_없다() {
+    void 구간이_하나인_노선에서_마지막_구간을_제거할때_노선의_구간을_제거_할_수_없다_상행역을_제거하는_경우() {
         // when & then
-        assertAll(
-                () -> assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
-        );
+        assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 구간이 하나인 노선에서 마지막 구간의 하행역을 제거하는 경우
+     * Then 지하철 노선의 구간을 제거 할 수 없다
+     */
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간을_제거할때_노선의_구간을_제거_할_수_없다_하행역을_제거하는_경우() {
+        // when & then
+        assertThat(지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**

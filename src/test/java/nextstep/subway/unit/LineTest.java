@@ -174,18 +174,6 @@ class LineTest {
     }
 
     @Test
-    void 노선에_등록된_하행_종점역만_제거_할_수_있다() {
-        // given
-        강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
-        강남_2호선.addSection(new Section(강남_2호선, 역삼역, 삼성역, 12));
-
-        // then
-        assertThatThrownBy(() -> 강남_2호선.removeSection(역삼역))
-                .isInstanceOf(SectionBadRequestException.class)
-                .hasMessage("노선에 등록된 하행 종점역만 제거 할 수 있습니다.");
-    }
-
-    @Test
     void 노선에_등록되지_않은_구간을_삭제_할_수_없다() {
         // given
         강남_2호선.addSection(new Section(강남_2호선, 강남역, 역삼역, 10));
