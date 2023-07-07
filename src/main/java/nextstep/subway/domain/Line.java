@@ -3,6 +3,9 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Line {
@@ -51,7 +54,13 @@ public class Line {
         return sections;
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    public void addSection(Section... section) {
+        sections.addAll(List.of(section));
+    }
+
+    public Set<Station> getStations() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toSet());
     }
 }
