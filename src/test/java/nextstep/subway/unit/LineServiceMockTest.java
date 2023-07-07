@@ -7,10 +7,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
-    @Mock
-    private LineRepository lineRepository;
-    @Mock
-    private StationService stationService;
+//    @Mock
+//    private LineRepository lineRepository;
+//    @Mock
+//    private StationService stationService;
 
     @Test
     void addSection() {

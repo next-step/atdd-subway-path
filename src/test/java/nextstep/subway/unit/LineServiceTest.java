@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
-    @Autowired
-    private StationRepository stationRepository;
-    @Autowired
-    private LineRepository lineRepository;
-
-    @Autowired
-    private LineService lineService;
+//    @Autowired
+//    private StationRepository stationRepository;
+//    @Autowired
+//    private LineRepository lineRepository;
+//
+//    @Autowired
+//    private LineService lineService;
 
     @Test
     void addSection() {
