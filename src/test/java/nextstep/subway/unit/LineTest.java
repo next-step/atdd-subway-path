@@ -36,5 +36,20 @@ class LineTest {
 
     @Test
     void removeSection() {
+        // give
+        Station 마들역 = new Station("마들역");
+        Station 노원역 = new Station("노원역");
+        Station 중계역 = new Station("중계역");
+        Line line = new Line();
+
+        Section 노원_마들 = new Section(line, 노원역, 마들역, 10);
+        Section 중계_노원 = new Section(line, 중계역, 노원역, 10);
+        line.addSection(노원_마들, 중계_노원);
+
+        // when
+        line.removeSection(노원_마들);
+
+        // then
+        assertThat(line.getSections()).doesNotContain(노원_마들);
     }
 }

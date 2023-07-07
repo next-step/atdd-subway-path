@@ -63,4 +63,8 @@ public class Line {
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .collect(Collectors.toSet());
     }
+
+    public void removeSection(Section section) {
+        sections.remove(section);
+    }
 }
