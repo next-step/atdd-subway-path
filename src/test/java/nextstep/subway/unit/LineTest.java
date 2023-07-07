@@ -10,10 +10,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LineTest {
     @Test
     void addSection() {
-        Section section = new Section();
+        // given
+        Station 마들역 = new Station("마들역");
+        Station 노원역 = new Station("노원역");
         Line line = new Line();
-        line.addSection(section);
-        assertThat(line.getSections()).contains(section);
+
+        Section 노원_마들 = new Section(line, 노원역, 마들역, 10);
+
+        // when
+        line.addSection(노원_마들);
+
+        // then
+        assertThat(line.getSections()).contains(노원_마들);
     }
 
     @Test
