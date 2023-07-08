@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,5 +69,19 @@ public class Line {
 
     public void removeSection(Section section) {
         sections.remove(section);
+    }
+
+    public LineResponse toLineResponse() {
+        return new LineResponse(
+                this.id,
+                this.name,
+                this.color,
+                createStationResponses()
+        );
+    }
+
+    public List<StationResponse> createStationResponses() {
+        return getStations().stream()
+                .map(station -> new StationResponse(station.getId(), station.getName())).collect(Collectors.toList());
     }
 }

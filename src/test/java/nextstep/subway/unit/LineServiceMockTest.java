@@ -29,13 +29,16 @@ public class LineServiceMockTest {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         Long lineId = 1L;
-        when(stationService.findById(any())).thenReturn(new Station());
+        Long upStationId = 1L;
+        Long downStationId = 2L;
+        when(stationService.findById(upStationId)).thenReturn(new Station());
+        when(stationService.findById(downStationId)).thenReturn(new Station());
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(new Line()));
         LineService lineService = new LineService(lineRepository, stationService);
 
         // when
         // lineService.addSection 호출
-        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 10);
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, 10);
         lineService.addSection(lineId, sectionRequest);
 
         // then
