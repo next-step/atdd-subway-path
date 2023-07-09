@@ -61,7 +61,7 @@ public class Line {
         );
     }
 
-    public void addSection(Section... section) {
+    public void addSection(Section section) {
         sections.add(section);
     }
 

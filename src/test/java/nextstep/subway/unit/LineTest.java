@@ -36,7 +36,8 @@ class LineTest {
         Section 중계_노원 = new Section(line, 중계역, 노원역, 10);
 
         // when
-        line.addSection(노원_마들, 중계_노원);
+        line.addSection(중계_노원);
+        line.addSection(노원_마들);
 
         // then
         assertThat(line.getStations()).containsExactlyInAnyOrder(노원역, 마들역, 중계역);
@@ -52,7 +53,8 @@ class LineTest {
 
         Section 노원_마들 = new Section(line, 노원역, 마들역, 10);
         Section 중계_노원 = new Section(line, 중계역, 노원역, 10);
-        line.addSection(노원_마들, 중계_노원);
+        line.addSection(중계_노원);
+        line.addSection(노원_마들);
 
         // when
         line.removeSection(노원_마들);

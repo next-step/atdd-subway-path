@@ -25,8 +25,12 @@ public class Sections {
         return sections.contains(section);
     }
 
-    public void add(Section... section) {
-        sections.addAll(List.of(section));
+    public void add(Section section) {
+        if (!sections.isEmpty() && !sections.get(sections.size() - 1).isDownStation(section.getUpStation())) {
+            throw new IllegalArgumentException();
+        }
+
+        sections.add(section);
     }
 
     public Set<Station> getStations() {
@@ -45,10 +49,9 @@ public class Sections {
     }
 
     public void removeLastSection(Station station) {
-        Section lastSection = sections.get(sections.size() - 1);
-        if (!lastSection.isDownStation(station)) {
+        if (sections.isEmpty() || !sections.get(sections.size() - 1).isDownStation(station)) {
             throw new IllegalArgumentException();
         }
-        sections.remove(lastSection);
+        sections.remove(sections.get(sections.size() - 1));
     }
 }
