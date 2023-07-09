@@ -28,24 +28,12 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public Sections getSections() {
@@ -77,4 +65,8 @@ public class Line {
         sections.removeLastSection(station);
     }
 
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
 }
