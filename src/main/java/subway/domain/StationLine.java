@@ -56,61 +56,64 @@ public class StationLine {
     }
 
     public StationLineSection createSection(Station sectionUpStation, Station sectionDownStation, BigDecimal distance) {
-        /*
-            기준역과 신규 역을 찾는다.
-            신규역이 사이에 존재할 경우 왼쪽 거리와 오른쪽 거리를 계산한뒤
-            기준역이 존재하는 기존 구간을 찾는다.
-            기존 구간의 거리를 왼쪽 거리로 update하고 해당 구간의 downStation을 신규역으로 수정한다
-            신규역과 기존역의 다음 역을 다시 새로운 구간으로 만들어서 해당 위치에 오른쪽 거리로 추가한다
-         */
-
         checkSectionStationExistOnlyOneToLine(sectionUpStation, sectionDownStation);
 
-        final StationLineSection section = StationLineSection.builder()
+        final StationLineSection newSection = StationLineSection.builder()
                 .upStation(sectionUpStation)
                 .downStation(sectionDownStation)
                 .distance(distance)
                 .build();
 
-        if (!isStationFirstOrLastOfLine(sectionDownStation)) {
-            final StationLineSection previousSectionOfNewSection = getSections()
-                    .stream()
-                    .filter(lineSection -> lineSection.getUpStation().equals(sectionUpStation))
-                    .findFirst()
-                    .orElseThrow(() -> new StationLineCreateException("can't find section up station"));
+        final boolean sectionUpStationExistingToLine = isStationExistingToLine(sectionUpStation);
+        final Station newStation = sectionUpStationExistingToLine ? sectionDownStation : sectionUpStation;
+        final Station standardStation = newStation.equals(sectionUpStation) ? sectionDownStation : sectionUpStation;
 
-            if (distance.compareTo(previousSectionOfNewSection.getDistance()) >= 0) {
-                throw new StationLineCreateException("section distance must be less then existing section distance");
-            }
-
-            final BigDecimal newPreviousSectionDistance = previousSectionOfNewSection.getDistance().subtract(distance);
-            previousSectionOfNewSection.changeDistance(newPreviousSectionDistance);
-
-
-            final int newSectionIndex = getSections().indexOf(previousSectionOfNewSection);
-
-            getSections().add(newSectionIndex, section);
+        if (newStation.equals(sectionUpStation) && standardStation.equals(getLineFirstUpStation())) {
+//            appendNewSectionToFirst(newStation, standardStation, newSection);
+        } else if (newStation.equals(sectionDownStation) && standardStation.equals(getLineLastDownStation())) {
+//            appendNewSectionToLast(newStation, standardStation, newSection);
+        } else {
+            appendNewSectionToBetween(newStation, standardStation, newSection);
         }
 
-//        checkSectionCanAdded(sectionUpStation, sectionDownStation);
+        newSection.apply(this);
 
-        section.apply(this);
-        return section;
+        return newSection;
+    }
+
+    private void appendNewSectionToBetween(Station newStation, Station standardStation, StationLineSection newSection) {
+        final boolean isStandardStationUpSide = standardStation.equals(newSection.getUpStation());
+
+        final StationLineSection neighborSection = getSections()
+                .stream()
+                .filter(lineSection -> isStandardStationUpSide ? standardStation.equals(lineSection.getUpStation()) : standardStation.equals(lineSection.getDownStation()))
+                .findFirst()
+                .orElseThrow(() -> new StationLineSectionCreateException("can't find standardStation included section"));
+        final int indexOfNeighborSection = getSections().indexOf(neighborSection);
+
+        final BigDecimal neighborSectionNewDistance = neighborSection.getDistance().subtract(newSection.getDistance());
+
+        if (isStandardStationUpSide) {
+            neighborSection.changeUpStation(newStation, neighborSectionNewDistance);
+            getSections().add(indexOfNeighborSection, newSection);
+        } else {
+            neighborSection.changeDownStation(newStation, neighborSectionNewDistance);
+            getSections().add(indexOfNeighborSection + 1, newSection);
+        }
     }
 
     private void checkSectionStationExistOnlyOneToLine(Station sectionUpStation, Station sectionDownStation) {
-        final boolean isSectionUpStationExisting = getAllStations().stream()
-                .anyMatch(sectionUpStation::equals);
-        final boolean isSectionDownStationExisting = getAllStations().stream()
-                .anyMatch(sectionDownStation::equals);
+        final boolean isSectionUpStationExisting = isStationExistingToLine(sectionUpStation);
+        final boolean isSectionDownStationExisting = isStationExistingToLine(sectionDownStation);
 
         if (isSectionUpStationExisting == isSectionDownStationExisting) {
             throw new StationLineCreateException("one of section up station and down station exactly exist only one to line");
         }
     }
 
-    private boolean isStationFirstOrLastOfLine(Station station) {
-        return station.equals(getLineFirstUpStation()) || station.equals(getLineLastDownStation());
+    private boolean isStationExistingToLine(Station station) {
+        return getAllStations().stream()
+                .anyMatch(station::equals);
     }
 
     public void deleteSection(Station targetStation) {

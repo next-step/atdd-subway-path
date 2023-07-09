@@ -36,7 +36,13 @@ public class StationLineSection {
         this.distance = distance;
     }
 
-    public void changeDistance(BigDecimal distance) {
+    public void changeUpStation(Station upStation, BigDecimal distance) {
+        this.upStation = upStation;
+        this.distance = distance;
+    }
+
+    public void changeDownStation(Station downStation, BigDecimal distance) {
+        this.downStation = downStation;
         this.distance = distance;
     }
 
