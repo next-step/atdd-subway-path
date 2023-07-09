@@ -21,7 +21,7 @@ class LineTest {
         line.addSection(노원_마들);
 
         // then
-        assertThat(line.getSections()).contains(노원_마들);
+        assertThat(line.getSections().contains(노원_마들)).isTrue();
     }
 
     @Test
@@ -58,6 +58,6 @@ class LineTest {
         line.removeSection(노원_마들);
 
         // then
-        assertThat(line.getSections()).doesNotContain(노원_마들);
+        assertThat(line.getSections().contains(노원_마들)).isFalse();
     }
 }

@@ -1,14 +1,9 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line {
@@ -18,8 +13,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private final List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -53,22 +48,8 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
-    }
-
-    public void addSection(Section... section) {
-        sections.addAll(List.of(section));
-    }
-
-    public Set<Station> getStations() {
-        return sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toSet());
-    }
-
-    public void removeSection(Section section) {
-        sections.remove(section);
     }
 
     public LineResponse toLineResponse() {
@@ -76,12 +57,24 @@ public class Line {
                 this.id,
                 this.name,
                 this.color,
-                createStationResponses()
+                sections.createStationResponses()
         );
     }
 
-    public List<StationResponse> createStationResponses() {
-        return getStations().stream()
-                .map(station -> new StationResponse(station.getId(), station.getName())).collect(Collectors.toList());
+    public void addSection(Section... section) {
+        sections.add(section);
     }
+
+    public Set<Station> getStations() {
+        return sections.getStations();
+    }
+
+    public void removeSection(Section section) {
+        sections.remove(section);
+    }
+
+    public void removeSection(Station station) {
+        sections.removeLastSection(station);
+    }
+
 }
