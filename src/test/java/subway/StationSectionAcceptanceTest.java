@@ -18,161 +18,154 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class StationSectionAcceptanceTest {
 
-	/**
-	 * Given 지하철 역 A,C 와 해당역이 포함된 지하철 노선을 생성한다
-	 * Given 지하철 역 B를 생성한다
-	 * When 지하철 노선에 (C,B) 구간을 추가한다
-	 * Then 지하철 노선 조회 시 추가한 구간의 역이 목록에 포함된다
-	 * Then 지하철 노선의 하행 종점역은 새로 추가된 B역이 된다
-	 */
-	@DisplayName("정상적인 지하철 구간 등록")
-	@Test
-	void createStationLineSection() {
-		//given
-		final Long aStationId = AcceptanceUtils.createStation("A역");
-		final Long cStationId = AcceptanceUtils.createStation("C역");
-		final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, cStationId, BigDecimal.TEN);
+    /**
+     * Given 지하철 역 A,B,C,D를 생성한다
+     * Given 지하철 역 A,B로 거리가 8m인 노선을 생성한다
+     * Given 지하철 역 B,C로 구간을 추가한다
+     * When 지하철 노선에 A,D 3m인 구간을 추가한다
+     * Then 지하철 노선 조회 시 노선의 역 목록이 A,D,B,C순으로 조회된다
+     */
+    @DisplayName("정상적인 기존 노선의 역 구간 사이에 새로운 구간 추가")
+    @Test
+    void createStationLineSection_To_Between_Station() {
+        //given
+        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
+        final Long aStationId = stationIds.get(0);
+        final Long bStationId = stationIds.get(1);
+        final Long cStationId = stationIds.get(2);
+        final Long dStationId = stationIds.get(3);
 
-		final Long bStationId = AcceptanceUtils.createStation("B역");
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.valueOf(8));
+        AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.valueOf(5));
 
-		//when
-		AcceptanceUtils.createStationLineSection(lineId, cStationId, bStationId, BigDecimal.ONE, HttpStatus.OK);
+        //when
+        AcceptanceUtils.createStationLineSection(lineId, aStationId, dStationId, BigDecimal.valueOf(3), HttpStatus.OK);
 
-		//then
-		final List<String> stationNames = AcceptanceUtils.getStationLine(lineId).getList("stations.name", String.class);
+        //then
+        final List<String> stationNames = AcceptanceUtils.getStationLine(lineId).getList("stations.name", String.class);
+        Assertions.assertArrayEquals(List.of("A역", "D역", "B역", "C역").toArray(), stationNames.toArray());
+    }
 
-		Assertions.assertEquals("A역", stationNames.get(0));
-		Assertions.assertEquals("C역", stationNames.get(1));
-		Assertions.assertEquals("B역", stationNames.get(2));
-	}
+    /**
+     * Given 지하철 역 A,B,C,D를 생성한다
+     * Given 지하철 역 A,B로 노선을 생성한다
+     * Given 지하철 역 B,C로 구간을 추가한다
+     * When 지하철 노선에 D,A 구간을 추가한다
+     * Then 지하철 노선 조회 시 노선의 역 목록이 D,A,B,C순으로 조회된다
+     */
+    @DisplayName("정상적으로 새로운 역을 기존 노선의 구간의 상행 종점 역으로 구간 추가")
+    @Test
+    void createStationLineSection_To_FirstUpStation() {
+        //given
+        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
+        final Long aStationId = stationIds.get(0);
+        final Long bStationId = stationIds.get(1);
+        final Long cStationId = stationIds.get(2);
+        final Long dStationId = stationIds.get(3);
 
-	/**
-	 * Given 지하철 역 A,B,C,D,E를 생성한다
-	 * Given 지하철 역 A,B로 노선을 생성한다.
-	 * Given 지하철 노선에 (B,C), (C,D) 구간을 추가한다
-	 * When 지하철 노선에 (A,E) 구간을 추가한다
-	 * Then 에러 발생
-	 */
-	@DisplayName("새로운 구간의 상행역이 노선의 하행 종점역이 아닌 경우 구간 생성 시 에러")
-	@Test
-	void createStationSection_upStation_notEqual_lineLastDownStation() {
-		//given
-		final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역", "E역"));
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+        AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.TEN);
 
-		final Long aStationId = stationIds.get(0);
-		final Long bStationId = stationIds.get(1);
-		final Long cStationId = stationIds.get(2);
-		final Long dStationId = stationIds.get(3);
-		final Long eStationId = stationIds.get(4);
+        //when
+        AcceptanceUtils.createStationLineSection(lineId, dStationId, aStationId, BigDecimal.ONE);
 
-		final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+        //then
+        final List<String> stationNames = AcceptanceUtils.getStationLine(lineId).getList("stations.name", String.class);
+        Assertions.assertArrayEquals(List.of("D역", "A역", "B역", "C역").toArray(), stationNames.toArray());
+    }
 
-		AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.ONE);
-		AcceptanceUtils.createStationLineSection(lineId, cStationId, dStationId, BigDecimal.ONE);
+    /**
+     * Given 지하철 역 A,B,C,D를 생성한다
+     * Given 지하철 역 A,B로 노선을 생성한다
+     * Given 지하철 역 B,C로 구간을 추가한다
+     * When 지하철 노선에 C,D 구간을 추가한다
+     * Then 지하철 노선 조회 시 노선의 역 목록이 A,B,C,D순으로 조회된다
+     */
+    @DisplayName("정상적으로 새로운 역을 기존 노선의 구간의 하행 종점 역으로 구간 추가")
+    @Test
+    void createStationLineSection_To_LastDownStation() {
+        //given
+        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
+        final Long aStationId = stationIds.get(0);
+        final Long bStationId = stationIds.get(1);
+        final Long cStationId = stationIds.get(2);
+        final Long dStationId = stationIds.get(3);
 
-		//when & then
-		AcceptanceUtils.createStationLineSection(lineId, aStationId, eStationId, BigDecimal.ONE, HttpStatus.BAD_REQUEST);
-	}
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+        AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.TEN);
 
-	/**
-	 * Given 지하철 역 A,B,C을 생성한다
-	 * Given 지하철 역 A,B로 노선을 생성한다
-	 * Given 지하철 노선에 (B,C) 구간을 추가한다
-	 * When 지하철 노선에 (A,C) 구간을 추가한다
-	 * Then 에러 발생
-	 */
-	@DisplayName("새로운 구간의 하행역이 이미 노선에 등록된 역으로 구간생성 시 에러")
-	@Test
-	void createStationSection_sectionDownStation_registeredTo_lineStation() {
-		//given
-		final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역"));
+        //when
+        AcceptanceUtils.createStationLineSection(lineId, cStationId, dStationId, BigDecimal.ONE);
 
-		final Long aStationId = stationIds.get(0);
-		final Long bStationId = stationIds.get(1);
-		final Long cStationId = stationIds.get(2);
+        //then
+        final List<String> stationNames = AcceptanceUtils.getStationLine(lineId).getList("stations.name", String.class);
+        Assertions.assertArrayEquals(List.of("A역", "B역", "C역", "D역").toArray(), stationNames.toArray());
+    }
 
-		final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+    /**
+     * Given 지하철 역 A,B,C를 생성한다
+     * Given 지하철 역 A,B로 구간의 길이가 10m인 노선을 생성한다
+     * When 지하철 노선에 A,C로 길이가 12m인 구간을 추가한다
+     * Then 에러 발생
+     */
+    @DisplayName("거리가 10m인 기존 노선의 역 구간 사이에 12m로 새로운 구간 추가시 애러")
+    @Test
+    void create_12M_StationLineSection_To_Between_Station_Has_10M() {
+        //given
+        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역"));
+        final Long aStationId = stationIds.get(0);
+        final Long bStationId = stationIds.get(1);
+        final Long cStationId = stationIds.get(2);
 
-		//when
-		AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.ONE, HttpStatus.OK);
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
 
-		//then
-		AcceptanceUtils.createStationLineSection(lineId, aStationId, cStationId, BigDecimal.ONE, HttpStatus.BAD_REQUEST);
-	}
+        //when & then
+        AcceptanceUtils.createStationLineSection(lineId, aStationId, cStationId, BigDecimal.valueOf(12), HttpStatus.BAD_REQUEST);
+    }
 
-	/**
-	 * Given 지하철 역 A,B,C,D를 생성한다
-	 * Given 지하철 역 A,B로 노선을 생성한다
-	 * Given 지하철 노선에 (B,C) (C,D) 구간을 추가한다
-	 * When 지하철 노선에서 D역을 제거한다
-	 * Then 지하철 노선 조회시 역이름 목록에서 D가 조회되지 않는다
-	 */
-	@DisplayName("정상적인 지하철 구간 제거")
-	@Test
-	void deleteStationLineSection() {
-		//given
-		final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
-		final Long aStationId = stationIds.get(0);
-		final Long bStationId = stationIds.get(1);
-		final Long cStationId = stationIds.get(2);
-		final Long dStationId = stationIds.get(3);
+    /**
+     * Given 지하철 역 A,B,C를 생성한다
+     * Given A,B로 지하철 노선 생성한다
+     * Given B,C로 지하철 구간을 추가한다
+     * When 지하철 노선에 A,C로 구간을 추가한다
+     * Then 에러 발생
+     */
+    @DisplayName("구간의 상행역과 하행역이 모두 노선에 등록된 역일 경우 구간 추가 시 애러")
+    @Test
+    void createStationLineSection_Both_Station_Existing_To_StationLine() {
+        //given
+        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역"));
+        final Long aStationId = stationIds.get(0);
+        final Long bStationId = stationIds.get(1);
+        final Long cStationId = stationIds.get(2);
 
-		final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+        AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.TEN);
 
-		AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.ONE);
-		AcceptanceUtils.createStationLineSection(lineId, cStationId, dStationId, BigDecimal.ONE);
+        //when & then
+        AcceptanceUtils.createStationLineSection(lineId, aStationId, cStationId, BigDecimal.TEN, HttpStatus.BAD_REQUEST);
+    }
 
-		//when
-		AcceptanceUtils.deleteStationLineSection(lineId, dStationId, HttpStatus.OK);
+    /**
+     * Given 지하철 역 A,B,C,D를 생성한다
+     * Given A,B로 지하철 노선 생성한다
+     * When 지하철 노선에 C,D로 구간을 추가한다
+     * Then 에러 발생
+     */
+    @DisplayName("구간의 상행역과 하행역이 모두 노선에 포함되지 않은 역일 경우 구간 추가시 애러")
+    @Test
+    void createStationLineSection_Both_Station_NotExisting_To_stationLine() {
+        //given
+        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
+        final Long aStationId = stationIds.get(0);
+        final Long bStationId = stationIds.get(1);
+        final Long cStationId = stationIds.get(2);
+        final Long dStationId = stationIds.get(3);
 
-		//then
-		final List<String> names = AcceptanceUtils.getStationLine(lineId).getList("stations.name", String.class);
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
 
-		Assertions.assertEquals(3, names.size());
-		Assertions.assertFalse(names.contains("D역"));
-	}
+        //when & then
+        AcceptanceUtils.createStationLineSection(lineId, cStationId, dStationId, BigDecimal.TEN, HttpStatus.BAD_REQUEST);
+    }
 
-	/**
-	 * Given 지하철 역 A,B,C를 생성한다
-	 * Given 지하철 역 A,B로 노선을 생성한다
-	 * Given 지하철 노선에 (B,C) 구간을 추가한다
-	 * When 지하철 노선에서 B역을 제거한다
-	 * Then 에러 발생
-	 */
-	@DisplayName("하행 종점역이 아닌 지하철역 구간 제거시 에러")
-	@Test
-	void deleteStationLineSection_NotLastDownStation() {
-		//given
-		final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역"));
-		final Long aStationId = stationIds.get(0);
-		final Long bStationId = stationIds.get(1);
-		final Long cStationId = stationIds.get(2);
-
-		final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
-
-		AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.ONE);
-
-		//when & then
-		AcceptanceUtils.deleteStationLineSection(lineId, bStationId, HttpStatus.BAD_REQUEST);
-	}
-
-	/**
-	 * Given 지하철 역 A,B를 생성한다
-	 * Given 지하철 역 A,B로 노선을 생성한다
-	 * When 지하철 노선에서 B역을 제거한다
-	 * Then 에러 발생
-	 */
-	@DisplayName("2개의 역으로 이뤄진 지하철역의 구간제거시 에러")
-	@Test
-	void deleteStationLineSection_hasOnly2StationLine() {
-		//given
-		final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역"));
-		final Long aStationId = stationIds.get(0);
-		final Long bStationId = stationIds.get(1);
-
-		final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
-
-		//when & then
-		AcceptanceUtils.deleteStationLineSection(lineId, bStationId, HttpStatus.BAD_REQUEST);
-	}
 }
