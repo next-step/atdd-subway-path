@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import nextstep.subway.station.Station;
 
 @Entity
@@ -20,6 +22,8 @@ public class Line {
     private String color;
     @ManyToMany
     private List<Station> stations;
+    @OneToMany
+    private List<Section> sections = new ArrayList<>();
 
     public Line() {
     }
@@ -74,5 +78,13 @@ public class Line {
             throw new SingleSectionRemovalException();
         }
         stations.remove(downStreamTerminusStationIndex);
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
