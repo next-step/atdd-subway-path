@@ -21,10 +21,6 @@ public class Sections {
         return sections.size();
     }
 
-    public boolean contains(Section section) {
-        return sections.contains(section);
-    }
-
     public void add(Section section) {
         if (!sections.isEmpty() && !sections.get(sections.size() - 1).isDownStation(section.getUpStation())) {
             throw new IllegalArgumentException();

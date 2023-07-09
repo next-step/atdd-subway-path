@@ -37,7 +37,7 @@ class LineTest {
         칠호선.addSection(노원_마들);
 
         // then
-        assertThat(칠호선.getSections().contains(노원_마들)).isTrue();
+        assertThat(칠호선.getSections().size()).isEqualTo(1);
     }
 
     @Test
@@ -60,6 +60,6 @@ class LineTest {
         칠호선.removeSection(노원_마들);
 
         // then
-        assertThat(칠호선.getSections().contains(노원_마들)).isFalse();
+        assertThat(칠호선.getSections().size()).isEqualTo(1);
     }
 }
