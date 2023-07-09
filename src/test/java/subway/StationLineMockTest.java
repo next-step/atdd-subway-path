@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import subway.domain.Station;
 import subway.domain.StationLine;
-import subway.exception.StationLineCreateException;
 import subway.exception.StationLineSectionCreateException;
 import subway.exception.StationLineSectionDeleteException;
 
@@ -71,10 +70,10 @@ public class StationLineMockTest {
         createEntityTestIds(line.getSections(), 1L);
 
         //when
-        final Throwable throwable = Assertions.assertThrows(StationLineCreateException.class,
+        final Throwable throwable = Assertions.assertThrows(StationLineSectionCreateException.class,
                 () -> line.createSection(lineUpStation, sectionDownStation, BigDecimal.TEN));
 
-        Assertions.assertEquals("section distance must be less then existing section distance", throwable.getMessage());
+        Assertions.assertEquals("new section distance must be less than existing section distance", throwable.getMessage());
     }
 
     @DisplayName("정상적인 구간의 하행역이 노선의 상행종점역인 구간 추가")

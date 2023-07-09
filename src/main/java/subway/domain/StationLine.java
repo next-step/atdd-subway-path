@@ -93,6 +93,10 @@ public class StationLine {
 
         final BigDecimal neighborSectionNewDistance = neighborSection.getDistance().subtract(newSection.getDistance());
 
+        if (neighborSectionNewDistance.compareTo(BigDecimal.ZERO) < 0) {
+            throw new StationLineSectionCreateException("new section distance must be less than existing section distance");
+        }
+
         if (isStandardStationUpSide) {
             neighborSection.changeUpStation(newStation, neighborSectionNewDistance);
             getSections().add(indexOfNeighborSection, newSection);
