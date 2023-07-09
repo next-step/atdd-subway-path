@@ -43,6 +43,35 @@ public class StationLineMockTest {
         Assertions.assertEquals("수유역", lineLastDownStation.getName());
     }
 
+    @DisplayName("정상적인 노선의 역 사이에 구간의 추가")
+    @Test
+    void createStationLineSection_Between_LineStations() {
+        //given
+        final Station lineUpStation = new Station("lineUpStation");
+        final Station lineDownStation = new Station("lineDownStation");
+        final Station sectionDownStation = new Station("newStation");
+
+        createEntityTestIds(List.of(lineUpStation, lineDownStation, sectionDownStation), 1L);
+
+        final StationLine line = StationLine.builder()
+                .name("1호선")
+                .color("blue")
+                .upStation(lineUpStation)
+                .downStation(lineDownStation)
+                .distance(BigDecimal.TEN)
+                .build();
+
+        createEntityTestId(line, 1L);
+        createEntityTestIds(line.getSections(), 1L);
+
+        //when
+        Assertions.assertDoesNotThrow(() -> line.createSection(lineUpStation, sectionDownStation, BigDecimal.ONE));
+
+        //then
+        Assertions.assertEquals(BigDecimal.ONE, line.getSections().get(0).getDistance());
+        Assertions.assertEquals(BigDecimal.valueOf(9), line.getSections().get(1).getDistance());
+    }
+
     @DisplayName("추가하려는 구간의 상행역이 노선의 하행종점역이 아닌 경우 예외 발생")
     @Test
     void createStationLineSection_sectionUpStation_NotEquals_To_LineLastDownStation() {
