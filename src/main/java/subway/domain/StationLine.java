@@ -65,16 +65,15 @@ public class StationLine {
                 .distance(distance)
                 .build();
 
-        final boolean sectionUpStationExistingToLine = isStationExistingToLine(sectionUpStation);
-        final Station newStation = sectionUpStationExistingToLine ? sectionDownStation : sectionUpStation;
-        final Station standardStation = newStation.equals(sectionUpStation) ? sectionDownStation : sectionUpStation;
+        final Station newStation = newSection.getNewStation(getAllStations());
+        final Station standardStation = newSection.getStandardStation(getAllStations());
 
         if (newStation.equals(sectionUpStation) && standardStation.equals(getLineFirstUpStation())) {
             appendNewSectionToFirst(newSection);
         } else if (newStation.equals(sectionDownStation) && standardStation.equals(getLineLastDownStation())) {
             appendNewSectionToLast(newSection);
         } else {
-            appendNewSectionToBetween(newStation, standardStation, newSection);
+            appendNewSectionToBetween(newSection);
         }
 
         newSection.apply(this);
@@ -93,8 +92,9 @@ public class StationLine {
         getSections().add(indexOfNeighborSection + 1, newSection);
     }
 
-
-    private void appendNewSectionToBetween(Station newStation, Station standardStation, StationLineSection newSection) {
+    private void appendNewSectionToBetween(StationLineSection newSection) {
+        final Station newStation = newSection.getNewStation(getAllStations());
+        final Station standardStation = newSection.getStandardStation(getAllStations());
         final boolean isStandardStationUpSide = standardStation.equals(newSection.getUpStation());
 
         final StationLineSection neighborSection = getSections()

@@ -5,6 +5,7 @@ import subway.exception.StationLineSectionSplitException;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Entity
@@ -49,6 +50,20 @@ public class StationLineSection {
             return;
         }
         this.downStation = newStation;
+    }
+
+    public Station getNewStation(List<Station> lineStations) {
+        final boolean upStationExistingToLineStations = lineStations.stream()
+                .anyMatch(upStation::equals);
+
+        return upStationExistingToLineStations ? downStation : upStation;
+    }
+
+    public Station getStandardStation(List<Station> lineStations) {
+        final boolean upStationExistingToLineStations = lineStations.stream()
+                .anyMatch(upStation::equals);
+
+        return upStationExistingToLineStations ? upStation : downStation;
     }
 
     //associate util method
