@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import static nextstep.subway.unit.LineFixture.makeLine;
+import static nextstep.subway.unit.StationFixture.강남역;
+import static nextstep.subway.unit.StationFixture.선릉역;
+import static nextstep.subway.unit.StationFixture.역삼역;
 
 import java.util.List;
 
@@ -22,7 +25,6 @@ import nextstep.subway.applicaion.line.LineService;
 import nextstep.subway.applicaion.line.request.SectionRequest;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.line.exception.NoSuchLineException;
-import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.domain.station.exception.NoSuchStationException;
 
@@ -39,11 +41,6 @@ class LineServiceMockTest {
 
     @InjectMocks
     private LineService lineService;
-
-    private final Station 강남역 = new Station("강남역");
-    private final Station 역삼역 = new Station("역삼역");
-    private final Station 선릉역 = new Station("선릉역");
-    private final Station 삼성역 = new Station("삼성역");
 
     @DisplayName("구간을 추가한다")
     @Nested
