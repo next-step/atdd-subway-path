@@ -2,6 +2,7 @@ package nextstep.subway;
 
 import io.restassured.RestAssured;
 import nextstep.common.IndependentTest;
+import nextstep.subway.station.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

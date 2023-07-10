@@ -1,4 +1,4 @@
-package nextstep.subway;
+package nextstep.subway.station;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

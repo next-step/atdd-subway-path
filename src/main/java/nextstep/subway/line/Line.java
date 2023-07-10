@@ -1,6 +1,6 @@
 package nextstep.subway.line;
 
-import nextstep.subway.Station;
+import nextstep.subway.station.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class Line {
     protected Line() {
     }
 
-    public Line(final String name, final String color, final Long distance, final List<LineStation> lineStations) {
+    public Line(final String name, final String color, final Long distance, final List<Section> lineStations) {
         this.name = name;
         this.color = color;
         this.distance = distance;
@@ -63,15 +63,15 @@ public class Line {
         return lineStations.isLastStation(station);
     }
 
-    public LineStation addSection(Station downStation, Long distance) {
-        return lineStations.addSection(new LineStation(this, downStation, distance));
+    public Section addSection(Station downStation, Long distance) {
+        return lineStations.addSection(new Section(this, downStation, distance));
     }
 
     public List<Station> getStations() {
         return lineStations.getStations();
     }
 
-    public LineStation removeSection(Station station) {
+    public Section removeSection(Station station) {
         return this.lineStations.removeSection(station);
     }
 

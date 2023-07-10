@@ -1,5 +1,5 @@
 SET REFERENTIAL_INTEGRITY FALSE;
 truncate table station RESTART IDENTITY;
 truncate table line RESTART IDENTITY;
-truncate table line_station RESTART IDENTITY;
+truncate table `section` RESTART IDENTITY;
 SET REFERENTIAL_INTEGRITY TRUE;

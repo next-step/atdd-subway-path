@@ -1,7 +1,7 @@
 package nextstep.subway.line;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import nextstep.subway.StationResponse;
+import nextstep.subway.station.StationResponse;
 
 import java.util.List;
 

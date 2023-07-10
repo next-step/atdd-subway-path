@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.common.DependentTest;
 import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
+import nextstep.subway.station.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,9 +1,9 @@
 package nextstep.subway.line;
 
-import nextstep.subway.Station;
-import nextstep.subway.StationNotFoundException;
-import nextstep.subway.StationRepository;
-import nextstep.subway.StationResponse;
+import nextstep.subway.station.Station;
+import nextstep.subway.station.StationNotFoundException;
+import nextstep.subway.station.StationRepository;
+import nextstep.subway.station.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
