@@ -1,6 +1,6 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.StationRepository;
+import nextstep.subway.station.StationRepository;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.line.LineService;
 import org.junit.jupiter.api.Test;

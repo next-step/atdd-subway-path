@@ -1,8 +1,8 @@
 package nextstep.subway.section;
 
-import nextstep.subway.Station;
-import nextstep.subway.StationNotFoundException;
-import nextstep.subway.StationRepository;
+import nextstep.subway.station.Station;
+import nextstep.subway.station.StationNotFoundException;
+import nextstep.subway.station.StationRepository;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineNotFoundException;
 import nextstep.subway.line.LineRepository;
