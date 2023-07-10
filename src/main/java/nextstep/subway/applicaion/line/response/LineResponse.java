@@ -1,13 +1,13 @@
 package nextstep.subway.applicaion.line.response;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.applicaion.station.response.StationResponse;
 import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.station.Station;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -24,18 +24,12 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse toResponse(final Line line) {
+    public static LineResponse toResponse(final Line line, final List<Station> stations) {
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                StationResponse.toResponses(line.getStations())
+                StationResponse.toResponses(stations)
         );
-    }
-
-    public static List<LineResponse> toResponses(final List<Line> lines) {
-        return lines.stream()
-                .map(LineResponse::toResponse)
-                .collect(Collectors.toUnmodifiableList());
     }
 }

@@ -44,7 +44,7 @@ public class Line {
     }
 
     public void appendSection(final Section section) {
-        sections.append(section);
+        sections.append(new LineSectionAppender(this), section);
     }
 
     public void removeSection(final Station station) {

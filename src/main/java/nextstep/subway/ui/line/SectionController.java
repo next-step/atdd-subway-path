@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.applicaion.line.SectionService;
+import nextstep.subway.applicaion.line.LineService;
 import nextstep.subway.applicaion.line.request.SectionRequest;
 import nextstep.subway.applicaion.line.response.LineResponse;
 
@@ -18,12 +18,12 @@ import nextstep.subway.applicaion.line.response.LineResponse;
 @RequiredArgsConstructor
 @RequestMapping("/lines/{lineId}/sections")
 public class SectionController {
-    private final SectionService sectionService;
+    private final LineService lineService;
 
     @PostMapping
     public ResponseEntity<LineResponse> appendSection(@PathVariable final Long lineId,
                                                       @RequestBody final SectionRequest request) {
-        final var response = sectionService.appendSection(lineId, request);
+        final var response = lineService.appendSection(lineId, request);
         return ResponseEntity
                 .ok()
                 .body(response);
@@ -31,7 +31,7 @@ public class SectionController {
 
     @DeleteMapping
     public ResponseEntity<Void> removeSection(@PathVariable final Long lineId, @RequestParam final Long stationId) {
-        sectionService.removeSection(lineId, stationId);
+        lineService.removeSection(lineId, stationId);
         return ResponseEntity
                 .noContent()
                 .build();
