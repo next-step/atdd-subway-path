@@ -5,11 +5,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import subway.domain.Station;
 import subway.domain.StationLine;
+import subway.domain.StationLineSection;
+import subway.exception.StationLineCreateException;
 import subway.exception.StationLineSectionCreateException;
 import subway.exception.StationLineSectionDeleteException;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static utils.UnitTestUtils.createEntityTestId;
 import static utils.UnitTestUtils.createEntityTestIds;
@@ -18,7 +21,7 @@ public class StationLineMockTest {
 
     @DisplayName("정상적인 노선의 역 사이에 구간의 추가")
     @Test
-    void createStationLineSection_Between_LineStations() {
+    void createStationLineSection_newStation_Between_LineStations() {
         //given
         final Station lineUpStation = new Station("lineUpStation");
         final Station lineDownStation = new Station("lineDownStation");
@@ -42,15 +45,20 @@ public class StationLineMockTest {
 
         //then
         final List<Station> expectedLineStations = List.of(lineUpStation, sectionDownStation, lineDownStation);
+        final List<BigDecimal> lineSectionDistances = line.getSections()
+                .stream()
+                .map(StationLineSection::getDistance)
+                .collect(Collectors.toList());
+
         Assertions.assertArrayEquals(expectedLineStations.toArray(), line.getAllStations().toArray());
 
-        Assertions.assertEquals(BigDecimal.ONE, line.getSections().get(0).getDistance());
-        Assertions.assertEquals(BigDecimal.valueOf(9), line.getSections().get(1).getDistance());
+        Assertions.assertEquals(BigDecimal.ONE, lineSectionDistances.get(0));
+        Assertions.assertEquals(BigDecimal.valueOf(9), lineSectionDistances.get(1));
     }
 
     @DisplayName("새로운 구간의 길이가 기존 노선의 역 구간 거리보다 크거나 같은 경우 애러")
     @Test
-    void createStationLineSection_Between_LineStations_largeThan_Exising_Distance() {
+    void createStationLineSection_newStation_Between_LineStations_largeThan_Exising_Distance() {
         //given
         final Station lineUpStation = new Station("lineUpStation");
         final Station lineDownStation = new Station("lineDownStation");
@@ -76,9 +84,9 @@ public class StationLineMockTest {
         Assertions.assertEquals("new section distance must be less than existing section distance", throwable.getMessage());
     }
 
-    @DisplayName("정상적인 구간의 하행역이 노선의 상행종점역인 구간 추가")
+    @DisplayName("정상적인 구간의 새로운 역이 노선의 상행종점역인 구간 추가")
     @Test
-    void createStationLineSection_Section_DownStation_Equals_To_Line_UpStation() {
+    void createStationLineSection_newStation_Equals_To_Line_FirstUpStation() {
         //given
         final Station lineUpStation = new Station("lineUpStation");
         final Station lineDownStation = new Station("lineDownStation");
@@ -102,66 +110,109 @@ public class StationLineMockTest {
 
         //then
         final List<Station> expectedLineStations = List.of(sectionUpStation, lineUpStation, lineDownStation);
+        final List<BigDecimal> lineSectionDistances = line.getSections()
+                .stream()
+                .map(StationLineSection::getDistance)
+                .collect(Collectors.toList());
+
         Assertions.assertArrayEquals(expectedLineStations.toArray(), line.getAllStations().toArray());
+
+        Assertions.assertEquals(BigDecimal.TEN, lineSectionDistances.get(0));
+        Assertions.assertEquals(BigDecimal.ONE, lineSectionDistances.get(1));
     }
 
-    @DisplayName("추가하려는 구간의 상행역이 노선의 하행종점역이 아닌 경우 예외 발생")
+    @DisplayName("정상적인 구간의 새로운 역이 노선의 하행종점역인 구간 추가")
     @Test
-    void createStationLineSection_sectionUpStation_NotEquals_To_LineLastDownStation() {
+    void createStationLineSection_newStation_Equals_To_Line_LastDownStation() {
         //given
-        final Station aStation = new Station("aStation");
-        final Station bStation = new Station("bStation");
-        final Station cStation = new Station("cStation");
-        final Station dStation = new Station("dStation");
-        final Station eStation = new Station("eStation");
+        final Station lineUpStation = new Station("lineUpStation");
+        final Station lineDownStation = new Station("lineDownStation");
+        final Station sectionDownStation = new Station("newStation");
 
-        createEntityTestIds(List.of(aStation, bStation, cStation, dStation, eStation), 1L);
+        createEntityTestIds(List.of(lineUpStation, lineDownStation, sectionDownStation), 1L);
 
         final StationLine line = StationLine.builder()
                 .name("1호선")
                 .color("blue")
-                .upStation(aStation)
-                .downStation(bStation)
-                .distance(BigDecimal.TEN)
+                .upStation(lineUpStation)
+                .downStation(lineDownStation)
+                .distance(BigDecimal.ONE)
                 .build();
 
-        line.createSection(bStation, cStation, BigDecimal.ONE);
+        createEntityTestId(line, 1L);
+        createEntityTestIds(line.getSections(), 1L);
 
-        //when & then
-        final Throwable throwable = Assertions.assertThrows(StationLineSectionCreateException.class,
-                () -> line.createSection(dStation, eStation, BigDecimal.ONE));
+        //when
+        Assertions.assertDoesNotThrow(() -> line.createSection(lineDownStation, sectionDownStation, BigDecimal.TEN));
 
-        Assertions.assertEquals("section up station must be equals to line last down station", throwable.getMessage());
+        //then
+        final List<Station> expectedLineStations = List.of(lineUpStation, lineDownStation, sectionDownStation);
+        final List<BigDecimal> lineSectionDistances = line.getSections()
+                .stream()
+                .map(StationLineSection::getDistance)
+                .collect(Collectors.toList());
+
+        Assertions.assertArrayEquals(expectedLineStations.toArray(), line.getAllStations().toArray());
+
+        Assertions.assertEquals(BigDecimal.ONE, lineSectionDistances.get(0));
+        Assertions.assertEquals(BigDecimal.TEN, lineSectionDistances.get(1));
     }
 
-    @DisplayName("추가하려는 구간의 하행역이 이미 노선의 역목록에 포함이된 경우 예외발생")
+    @DisplayName("추가하려는 구간의 역이 노선에 하나도 포함이 안된 경우 예외 발생")
     @Test
-    void createStationLineSection_sectionDownStation_Exist_To_LineStations() {
+    void createStationLineSection_Both_sectionStation_Not_Included_To_Line() {
         //given
-        final Station aStation = new Station("aStation");
-        final Station bStation = new Station("bStation");
-        final Station cStation = new Station("cStation");
-        final Station dStation = new Station("dStation");
+        final Station lineUpStation = new Station("lineUpStation");
+        final Station lineDownStation = new Station("lineDownStation");
+        final Station sectionUpStation = new Station("sectionUpStation");
+        final Station sectionDownStation = new Station("sectionDownStation");
 
-        createEntityTestIds(List.of(aStation, bStation, cStation, dStation), 1L);
+        createEntityTestIds(List.of(lineUpStation, lineDownStation, sectionUpStation, sectionDownStation), 1L);
 
         final StationLine line = StationLine.builder()
                 .name("1호선")
                 .color("blue")
-                .upStation(aStation)
-                .downStation(bStation)
-                .distance(BigDecimal.TEN)
+                .upStation(lineUpStation)
+                .downStation(lineDownStation)
+                .distance(BigDecimal.ONE)
                 .build();
 
-        line.createSection(bStation, cStation, BigDecimal.ONE);
+        createEntityTestId(line, 1L);
+        createEntityTestIds(line.getSections(), 1L);
 
         //when & then
-        final Throwable throwable = Assertions.assertThrows(StationLineSectionCreateException.class,
-                () -> line.createSection(cStation, bStation, BigDecimal.ONE));
+        final Throwable throwable = Assertions.assertThrows(StationLineCreateException.class,
+                () -> line.createSection(sectionUpStation, sectionDownStation, BigDecimal.TEN));
 
-        Assertions.assertEquals("section down station must not be included to line station", throwable.getMessage());
+        Assertions.assertEquals("one of section up station and down station exactly exist only one to line", throwable.getMessage());
     }
 
+    @DisplayName("추가하려는 구간의 역이 모두 노선에 존재하는 경우 예외 발생")
+    @Test
+    void createStationLineSection_Both_sectionStation_Included_To_Line() {
+        //given
+        final Station lineUpStation = new Station("lineUpStation");
+        final Station lineDownStation = new Station("lineDownStation");
+
+        createEntityTestIds(List.of(lineUpStation, lineDownStation), 1L);
+
+        final StationLine line = StationLine.builder()
+                .name("1호선")
+                .color("blue")
+                .upStation(lineUpStation)
+                .downStation(lineDownStation)
+                .distance(BigDecimal.ONE)
+                .build();
+
+        createEntityTestId(line, 1L);
+        createEntityTestIds(line.getSections(), 1L);
+
+        //when & then
+        final Throwable throwable = Assertions.assertThrows(StationLineCreateException.class,
+                () -> line.createSection(lineUpStation, lineDownStation, BigDecimal.TEN));
+
+        Assertions.assertEquals("one of section up station and down station exactly exist only one to line", throwable.getMessage());
+    }
 
     @DisplayName("정상적인 노선의 구간 삭제")
     @Test

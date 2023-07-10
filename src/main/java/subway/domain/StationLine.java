@@ -28,6 +28,7 @@ public class StationLine {
     @Column
     private String color;
 
+    @OrderColumn(name = "section_order_index")
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<StationLineSection> sections = new ArrayList<>();
 
@@ -69,9 +70,9 @@ public class StationLine {
         final Station standardStation = newStation.equals(sectionUpStation) ? sectionDownStation : sectionUpStation;
 
         if (newStation.equals(sectionUpStation) && standardStation.equals(getLineFirstUpStation())) {
-//            appendNewSectionToFirst(newStation, standardStation, newSection);
+            appendNewSectionToFirst(newSection);
         } else if (newStation.equals(sectionDownStation) && standardStation.equals(getLineLastDownStation())) {
-//            appendNewSectionToLast(newStation, standardStation, newSection);
+            appendNewSectionToLast(newSection);
         } else {
             appendNewSectionToBetween(newStation, standardStation, newSection);
         }
@@ -80,6 +81,18 @@ public class StationLine {
 
         return newSection;
     }
+
+    private void appendNewSectionToFirst(StationLineSection newSection) {
+        getSections().add(0, newSection);
+    }
+
+    private void appendNewSectionToLast(StationLineSection newSection) {
+        final StationLineSection neighborSection = getLastSection();
+        final int indexOfNeighborSection = getSections().indexOf(neighborSection);
+
+        getSections().add(indexOfNeighborSection + 1, newSection);
+    }
+
 
     private void appendNewSectionToBetween(Station newStation, Station standardStation, StationLineSection newSection) {
         final boolean isStandardStationUpSide = standardStation.equals(newSection.getUpStation());
@@ -163,6 +176,14 @@ public class StationLine {
         return Optional.ofNullable(getLastSection())
                 .map(StationLineSection::getDownStation)
                 .orElse(null);
+    }
+
+    public StationLineSection getFirstSection() {
+        if (getSections().isEmpty()) {
+            return null;
+        }
+
+        return getSections().get(0);
     }
 
     public StationLineSection getLastSection() {
