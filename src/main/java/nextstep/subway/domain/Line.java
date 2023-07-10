@@ -1,6 +1,13 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import nextstep.subway.applicaion.dto.LineRequest;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,24 +37,12 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
@@ -56,6 +51,15 @@ public class Line {
 
     public void appendSection(Section section) {
         this.sections.add(section);
+    }
+
+    public void updateLine(LineRequest lineRequest) {
+        if (lineRequest.getName() != null) {
+            this.name = lineRequest.getName();
+        }
+        if (lineRequest.getColor() != null) {
+            this.color = lineRequest.getColor();
+        }
     }
 
     public List<Station> getStations() {
