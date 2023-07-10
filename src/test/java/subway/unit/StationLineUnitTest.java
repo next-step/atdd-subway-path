@@ -9,6 +9,7 @@ import subway.domain.StationLineSection;
 import subway.exception.StationLineCreateException;
 import subway.exception.StationLineSectionCreateException;
 import subway.exception.StationLineSectionDeleteException;
+import subway.exception.StationLineSectionSplitException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -78,10 +79,10 @@ public class StationLineUnitTest {
         createEntityTestIds(line.getSections(), 1L);
 
         //when
-        final Throwable throwable = Assertions.assertThrows(StationLineSectionCreateException.class,
+        final Throwable throwable = Assertions.assertThrows(StationLineSectionSplitException.class,
                 () -> line.createSection(lineUpStation, sectionDownStation, BigDecimal.TEN));
 
-        Assertions.assertEquals("new section distance must be less than existing section distance", throwable.getMessage());
+        Assertions.assertEquals("can't split existing section into larger distance section", throwable.getMessage());
     }
 
     @DisplayName("정상적인 구간의 새로운 역이 노선의 상행종점역인 구간 추가")

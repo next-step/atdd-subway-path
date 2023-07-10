@@ -1,6 +1,7 @@
 package subway.domain;
 
 import lombok.*;
+import subway.exception.StationLineSectionSplitException;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -36,14 +37,18 @@ public class StationLineSection {
         this.distance = distance;
     }
 
-    public void changeUpStation(Station upStation, BigDecimal distance) {
-        this.upStation = upStation;
-        this.distance = distance;
-    }
+    public void splitSection(Station standardStation, Station newStation, BigDecimal newSectionDistance) {
+        this.distance = distance.subtract(newSectionDistance);
 
-    public void changeDownStation(Station downStation, BigDecimal distance) {
-        this.downStation = downStation;
-        this.distance = distance;
+        if (this.distance.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new StationLineSectionSplitException("can't split existing section into larger distance section");
+        }
+
+        if (standardStation.equals(upStation)) {
+            this.upStation = newStation;
+            return;
+        }
+        this.downStation = newStation;
     }
 
     //associate util method

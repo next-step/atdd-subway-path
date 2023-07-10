@@ -57,11 +57,9 @@ public class StationLineAcceptanceTest {
 		AcceptanceUtils.createStationLine("2호선", "green", line2_stationIds.get(0), line2_stationIds.get(1), BigDecimal.TEN);
 
 		//when
-		final JsonPath jsonPath = AcceptanceUtils.getStationLines();
+		final List<Long> lineIds = AcceptanceUtils.getStationLines().getList("id", Long.class);
 
 		//then
-		final List<Long> lineIds = jsonPath.getList("id", Long.class);
-
 		Assertions.assertEquals(2, lineIds.size());
 	}
 
