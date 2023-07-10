@@ -86,10 +86,7 @@ public class StationLine {
     }
 
     private void appendNewSectionToLast(StationLineSection newSection) {
-        final StationLineSection neighborSection = getLastSection();
-        final int indexOfNeighborSection = getSections().indexOf(neighborSection);
-
-        getSections().add(indexOfNeighborSection + 1, newSection);
+        getSections().add(newSection);
     }
 
     private void appendNewSectionToBetween(StationLineSection newSection) {
