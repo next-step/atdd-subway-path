@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.LineResponse;
-
 import javax.persistence.*;
 import java.util.Set;
 
@@ -38,15 +36,6 @@ public class Line {
 
     public Sections getSections() {
         return sections;
-    }
-
-    public LineResponse toLineResponse() {
-        return new LineResponse(
-                this.id,
-                this.name,
-                this.color,
-                sections.createStationResponses()
-        );
     }
 
     public void addSection(Section section) {
