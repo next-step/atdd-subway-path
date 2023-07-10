@@ -11,6 +11,7 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -108,5 +109,10 @@ public class LineService {
         }
 
         line.getSections().remove(line.getSections().size() - 1);
+    }
+
+    public Line findByLineId(long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
     }
 }

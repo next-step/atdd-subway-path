@@ -3,9 +3,12 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Line {
+    private static final long MINIMAL_SECTION_SIZE = 2L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,5 +52,19 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void appendSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        return this.sections.stream().flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation())).collect(Collectors.toList());
+    }
+
+    public void removeSection(Section section) {
+        final int lastSectionIndex = this.sections.size() - 1;
+        Section lastSection = this.sections.get(lastSectionIndex);
+        this.sections.remove(lastSection);
     }
 }
