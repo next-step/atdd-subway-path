@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.StationResponse;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -33,11 +31,6 @@ public class Sections {
         return sections.stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .collect(Collectors.toSet());
-    }
-
-    public List<StationResponse> createStationResponses() {
-        return getStations().stream()
-                .map(station -> new StationResponse(station.getId(), station.getName())).collect(Collectors.toList());
     }
 
     public void remove(Section... section) {
