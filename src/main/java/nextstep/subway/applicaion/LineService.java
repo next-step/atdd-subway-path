@@ -107,6 +107,6 @@ public class LineService {
 
     public Line findByLineId(long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(EntityNotFoundException::new);
+                .orElseThrow(() -> new EntityNotFoundException("노선이 존재하지 않습니다."));
     }
 }
