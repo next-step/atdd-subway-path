@@ -1,0 +1,99 @@
+package nextstep.subway.acceptance;
+
+import nextstep.subway.utils.AbstractAcceptanceTest;
+import nextstep.subway.utils.DatabaseCleanup;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+
+@DisplayName("지하철 구간 기능 인수 테스트")
+public class LineAcceptanceTest extends AbstractAcceptanceTest {
+
+    /**
+     * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
+     * When: 상행 종점역을 상행으로 새로운 역을 하행으로 등록한다
+     * Then: 노선 조회시 상행 종점역, 새로운 역, 하행 종점역 순으로 조회된다
+     */
+    @Test
+    void 역_사이에_새로운_역을_등록하는_경우() {
+        //given
+
+        //when
+
+        //then
+    }
+
+    /**
+     * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
+     * When: 상행 종점역을 하행으로 새로운 역을 상행으로 등록한다
+     * Then: 노선 조회시 새로운 역, 상행 종점역, 하행 종점역 순으로 조회된다
+     */
+    @Test
+    void 새로운_역을_상행_종점으로_등록할_경우() {
+        //given
+
+        //when
+
+        //then
+    }
+
+
+    /**
+     * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
+     * When: 하행 종점역을 상행으로 새로운 역을 하행으로 등록한다
+     * Then: 노선 조회시 상행 종점역, 하행 종점역, 새로운 역 순으로 조회된다
+     */
+    @Test
+    void 새로운_역을_하행_종점으로_등록할_경우() {
+        //given
+
+        //when
+
+        //then
+    }
+
+    /**
+     * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
+     * When: 하행 종점역을 하행으로 새로운 역을 상행으로 하고 상행 종점역과 하행 종점역 사이와 거리가 같은 구간을 등록한다
+     * Then: 예외를 발생한다.
+     */
+    @Test
+    void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
+        //given
+
+        //when
+
+        //then
+    }
+
+    /**
+     * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
+     * When: 상행 종점역을 상행으로 하행 종점역을 하행으로 하는 구간을 등록한다
+     * Then: 예외를 발생한다.
+     */
+    @Test
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
+        //given
+
+        //when
+
+        //then
+    }
+
+    /**
+     * Given: 상행 종점역과 중간역 그리고 하행 종점역을 갖는 노선을 생성한다
+     * When: 새로운 역을 상행으로 또 새로운 역을 하행으로 하는 구간을 등록한다
+     * Then: 예외를 발생한다.
+     */
+    @Test
+    void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
+        //given
+
+        //when
+
+        //then
+    }
+}
