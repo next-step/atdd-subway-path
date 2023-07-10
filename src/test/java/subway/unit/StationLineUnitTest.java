@@ -1,4 +1,4 @@
-package subway;
+package subway.unit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import static utils.UnitTestUtils.createEntityTestId;
 import static utils.UnitTestUtils.createEntityTestIds;
 
-public class StationLineMockTest {
+public class StationLineUnitTest {
 
     @DisplayName("정상적인 노선의 역 사이에 구간의 추가")
     @Test

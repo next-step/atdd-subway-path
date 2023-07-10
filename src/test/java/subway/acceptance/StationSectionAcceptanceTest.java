@@ -1,4 +1,4 @@
-package subway;
+package subway.acceptance;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -20,9 +20,9 @@ public class StationSectionAcceptanceTest {
 
     /**
      * Given 지하철 역 A,B,C,D를 생성한다
-     * Given 지하철 역 A,B로 거리가 8m인 노선을 생성한다
-     * Given 지하철 역 B,C로 구간을 추가한다
-     * When 지하철 노선에 A,D 3m인 구간을 추가한다
+     * Given (A,B)역으로 거리가 8m인 1호선 노선을 생성한다
+     * Given 1호선에 (B,C) 구간을 추가한다
+     * When 1호선에 (A,D) 3m인 구간을 추가한다
      * Then 지하철 노선 조회 시 노선의 역 목록이 A,D,B,C순으로 조회된다
      */
     @DisplayName("정상적인 기존 노선의 역 구간 사이에 새로운 구간 추가")
@@ -48,9 +48,9 @@ public class StationSectionAcceptanceTest {
 
     /**
      * Given 지하철 역 A,B,C,D를 생성한다
-     * Given 지하철 역 A,B로 노선을 생성한다
-     * Given 지하철 역 B,C로 구간을 추가한다
-     * When 지하철 노선에 D,A 구간을 추가한다
+     * Given (A,B)로 1호선 노선을 생성한다
+     * Given 1호선에 (B,C)로 구간을 추가한다
+     * When 1호선에 (D,A) 구간을 추가한다
      * Then 지하철 노선 조회 시 노선의 역 목록이 D,A,B,C순으로 조회된다
      */
     @DisplayName("정상적으로 새로운 역을 기존 노선의 구간의 상행 종점 역으로 구간 추가")
@@ -76,9 +76,9 @@ public class StationSectionAcceptanceTest {
 
     /**
      * Given 지하철 역 A,B,C,D를 생성한다
-     * Given 지하철 역 A,B로 노선을 생성한다
-     * Given 지하철 역 B,C로 구간을 추가한다
-     * When 지하철 노선에 C,D 구간을 추가한다
+     * Given (A,B)로 1호선 노선을 생성한다
+     * Given 1호선 노선에 (B,C) 구간을 추가한다
+     * When 1호선 노선에 (C,D) 구간을 추가한다
      * Then 지하철 노선 조회 시 노선의 역 목록이 A,B,C,D순으로 조회된다
      */
     @DisplayName("정상적으로 새로운 역을 기존 노선의 구간의 하행 종점 역으로 구간 추가")
@@ -104,8 +104,8 @@ public class StationSectionAcceptanceTest {
 
     /**
      * Given 지하철 역 A,B,C를 생성한다
-     * Given 지하철 역 A,B로 구간의 길이가 10m인 노선을 생성한다
-     * When 지하철 노선에 A,C로 길이가 12m인 구간을 추가한다
+     * Given (A,B)로 구간의 길이가 10m인 1호선 노선을 생성한다
+     * When 1호선에 A,C로 길이가 12m인 구간을 추가한다
      * Then 에러 발생
      */
     @DisplayName("거리가 10m인 기존 노선의 역 구간 사이에 12m로 새로운 구간 추가시 애러")
@@ -125,9 +125,9 @@ public class StationSectionAcceptanceTest {
 
     /**
      * Given 지하철 역 A,B,C를 생성한다
-     * Given A,B로 지하철 노선 생성한다
-     * Given B,C로 지하철 구간을 추가한다
-     * When 지하철 노선에 A,C로 구간을 추가한다
+     * Given (A,B)로 1호선 노선을 생성한다
+     * Given 1호선 노선에 (B,C) 구간을 추가한다
+     * When 1호선 노선에 (A,C) 구간을 추가한다
      * Then 에러 발생
      */
     @DisplayName("구간의 상행역과 하행역이 모두 노선에 등록된 역일 경우 구간 추가 시 애러")
@@ -148,8 +148,8 @@ public class StationSectionAcceptanceTest {
 
     /**
      * Given 지하철 역 A,B,C,D를 생성한다
-     * Given A,B로 지하철 노선 생성한다
-     * When 지하철 노선에 C,D로 구간을 추가한다
+     * Given (A,B)로 1호선 노선을 생성한다
+     * When 1호선 노선에 (C,D)로 구간을 추가한다
      * Then 에러 발생
      */
     @DisplayName("구간의 상행역과 하행역이 모두 노선에 포함되지 않은 역일 경우 구간 추가시 애러")
