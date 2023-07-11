@@ -18,7 +18,7 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        if (sections.isEmpty() || shouldAddNewUpEndSection(newSection)) {
+        if (sections.isEmpty() || shouldAddNewUpEndSection(newSection) || shouldAddNewDownEndSection(newSection)) {
             sections.add(newSection);
             return;
         }
@@ -73,6 +73,14 @@ public class Sections {
                 .orElseThrow(IllegalStateException::new);
     }
 
+    private Station getDownEndStation() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .filter(downStation -> sections.stream().noneMatch(section -> section.isUpStation(downStation)))
+                .findAny()
+                .orElseThrow(IllegalStateException::new);
+    }
+
     private void addSectionBetweenStation(Section newSection) {
         Section findSection = sections.stream().filter(s -> s.isUpStation(newSection.getUpStation()))
                 .findAny().orElseThrow(IllegalArgumentException::new);
@@ -87,5 +95,9 @@ public class Sections {
 
     private boolean shouldAddNewUpEndSection(Section newSection) {
         return getUpEndStation().equals(newSection.getDownStation());
+    }
+
+    private boolean shouldAddNewDownEndSection(Section newSection) {
+        return getDownEndStation().equals(newSection.getUpStation());
     }
 }
