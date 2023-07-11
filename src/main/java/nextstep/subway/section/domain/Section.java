@@ -16,8 +16,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import subway.line.domain.Line;
-import subway.station.domain.Station;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
+
 
 @Getter
 @Entity
@@ -52,20 +53,11 @@ public class Section {
         this.line = line;
     }
 
-    public void detractFromLine() {
-        this.line = null;
-    }
-
     public boolean isUpstation(Long stationId) {
         return Objects.equals(upStation.getId(), stationId);
     }
 
-    public boolean isDownstation(Long stationId) {
+    public boolean equalsDownStation(Long stationId) {
         return Objects.equals(downStation.getId(), stationId);
-    }
-
-
-    public boolean isMe(Long upStationId, Long downStationId) {
-        return isUpstation(upStationId) && isDownstation(downStationId);
     }
 }

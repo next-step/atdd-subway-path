@@ -15,13 +15,13 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import subway.SchemaInitSql;
-import subway.StationFixture;
-import subway.SubwayApplication;
-import subway.line.view.LineCreateRequest;
-import subway.line.view.LineModifyRequest;
-import subway.line.view.LineResponse;
-import subway.station.view.StationResponse;
+import nextstep.subway.SchemaInitSql;
+import nextstep.subway.StationFixture;
+import nextstep.subway.SubwayApplication;
+import nextstep.subway.line.view.LineCreateRequest;
+import nextstep.subway.line.view.LineModifyRequest;
+import nextstep.subway.line.view.LineResponse;
+import nextstep.subway.station.view.StationResponse;
 
 @SchemaInitSql
 @DisplayName("지하철 노선 관련 기능")

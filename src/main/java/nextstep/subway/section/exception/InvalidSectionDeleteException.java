@@ -1,7 +1,8 @@
 package nextstep.subway.section.exception;
 
-import subway.support.ErrorCode;
-import subway.support.SubwayException;
+
+import nextstep.subway.support.ErrorCode;
+import nextstep.subway.support.SubwayException;
 
 public class InvalidSectionDeleteException extends SubwayException {
     public InvalidSectionDeleteException(ErrorCode errorCode) {

@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import subway.station.service.StationService;
-import subway.station.view.StationRequest;
-import subway.station.view.StationResponse;
+import nextstep.subway.station.service.StationService;
+import nextstep.subway.station.view.StationRequest;
+import nextstep.subway.station.view.StationResponse;
 
 @RestController
 public class StationController {

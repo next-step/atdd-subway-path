@@ -16,11 +16,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import subway.section.domain.Section;
-import subway.section.exception.InvalidSectionCreateException;
-import subway.section.exception.InvalidSectionDeleteException;
-import subway.station.domain.Station;
-import subway.support.ErrorCode;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.station.domain.Station;
+
 
 @Getter
 @Entity
@@ -55,46 +53,16 @@ public class Line {
         this.color = color;
     }
 
-    public boolean isLastStation(Long stationId) {
-        if (!sections.isLastSection()) {
-            return false;
-        }
-
-        return sections.isLastStation(stationId);
-    }
-
-    // TODO:
-    public boolean isLastDownStation(Long stationId) {
-        return sections.isLastDownStation(stationId);
-    }
-
     public void addSection(Section section) {
-        if (sections.isNotEmpty()) {
-            if (!section.isUpstation(downStation.getId())) {
-                throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_UPSTATION);
-            }
-
-            if (section.isDownstation(downStation.getId()) || section.isDownstation(upStation.getId())) {
-                throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_DOWNSTATION);
-            }
+        if (sections.possibleToAddSection(section)) {
+            section.attachToLine(this);
+            sections.appendSection(section);
         }
-
-        section.attachToLine(this);
-        sections.appendSection(section);
     }
 
     public void deleteSection(Long stationId) {
-        if (isLastStation(stationId)) {
-
-            throw new InvalidSectionDeleteException(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_STATION_REMOVED);
+        if (sections.possibleToDeleteSection(stationId)) {
+            sections.deleteSectionByStationId(stationId);
         }
-
-        if (!isLastDownStation(stationId)) {
-            throw new InvalidSectionDeleteException(ErrorCode.SECTION_DELETE_FAIL_BY_NOT_ALLOWED_STATION);
-        }
-    }
-
-    public Section getSection(Long downStationId, Long upStationId) {
-        return sections.get(downStationId, upStationId);
     }
 }

@@ -2,7 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -15,8 +15,11 @@ import lombok.NoArgsConstructor;
 
 import org.springframework.util.CollectionUtils;
 
-import subway.section.domain.Section;
-import subway.section.exception.SectionNotFoundException;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.exception.InvalidSectionCreateException;
+import nextstep.subway.section.exception.InvalidSectionDeleteException;
+import nextstep.subway.support.ErrorCode;
+
 
 @Getter
 @Embeddable
@@ -32,10 +35,10 @@ public class Sections {
             return false;
         }
 
-        return Objects.equals(sections.get(sections.size()-1).getDownStation().getId(), stationId);
+        return getLastSection().equalsDownStation(stationId);
     }
 
-    public boolean isLastSection() {
+    public boolean hasOneSection() {
         if (CollectionUtils.isEmpty(this.sections)) {
             return false;
         }
@@ -43,42 +46,61 @@ public class Sections {
         return this.sections.size() == 1;
     }
 
-    public boolean isLastStation(Long stationId) {
-        return Objects.equals(this.sections.get(0).getUpStation().getId(), stationId) ||
-                Objects.equals(this.sections.get(0).getDownStation().getId(), stationId);
-    }
-
     public void appendSection(Section section) {
         this.sections.add(section);
-    }
-
-    public void deleteSection(Long stationId) {
-        for (Section section : sections) {
-            if (section.containStation(stationId)) {
-                section.detractFromLine();
-
-                remove(section);
-                break;
-            }
-        }
-    }
-
-    private void remove(Section section) {
-        this.sections.remove(section);
-    }
-
-    public Section get(Long downStationId, Long upStationId) {
-        return sections.stream()
-                       .filter(section -> section.isMe(upStationId, downStationId))
-                       .findFirst()
-                       .orElseThrow(SectionNotFoundException::new);
     }
 
     public boolean isEmpty() {
         return this.sections.isEmpty();
     }
 
-    public boolean isNotEmpty() {
-        return !isEmpty();
+    public boolean possibleToAddSection(Section section) {
+        if (isEmpty()) {
+            return true;
+        }
+
+        Section lastSection = getLastSection();
+
+        if (!section.isUpstation(lastSection.getDownStation().getId())) {
+            throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_UPSTATION);
+        }
+
+        if (alreadyRegistered(section.getDownStation().getId())) {
+            throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_DOWNSTATION);
+        }
+
+        return true;
     }
+
+    public boolean possibleToDeleteSection(Long stationId) {
+        if (hasOneSection()) {
+            throw new InvalidSectionDeleteException(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_SECTION_CANNOT_DELETED);
+        }
+
+        if (!isLastDownStation(stationId)) {
+            throw new InvalidSectionDeleteException(ErrorCode.ONLY_LAST_DOWNSTATION_CAN_DELETED);
+        }
+
+        return true;
+    }
+
+    public void deleteSectionByStationId(Long stationId) {
+        findSectionByStationId(stationId).ifPresent(section -> sections.remove(section));
+    }
+
+    private Optional<Section> findSectionByStationId(Long stationId) {
+        return sections.stream()
+                       .filter(section -> section.containStation(stationId))
+                       .findAny();
+    }
+
+    private boolean alreadyRegistered(Long stationId) {
+        return sections.stream()
+                       .anyMatch(section -> section.containStation(stationId));
+    }
+
+    private Section getLastSection() {
+        return sections.get(sections.size()-1);
+    }
+
 }

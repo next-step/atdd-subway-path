@@ -4,7 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import subway.section.domain.Section;
+import nextstep.subway.section.domain.Section;
+
 
 @Getter
 @Setter

@@ -8,8 +8,8 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import subway.line.view.LineCreateRequest;
-import subway.line.view.LineResponse;
+import nextstep.subway.line.view.LineCreateRequest;
+import nextstep.subway.line.view.LineResponse;
 
 public class LineFixture {
     private static final String API_CREATE_LINE = "/lines";

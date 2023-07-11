@@ -5,9 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import subway.line.exception.LineNotFoundException;
-import subway.section.exception.InvalidSectionCreateException;
-import subway.section.exception.InvalidSectionDeleteException;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.section.exception.InvalidSectionCreateException;
+import nextstep.subway.section.exception.InvalidSectionDeleteException;
+
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

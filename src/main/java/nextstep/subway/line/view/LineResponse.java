@@ -6,8 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import subway.line.domain.Line;
-import subway.station.view.StationResponse;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.view.StationResponse;
+
 
 @Getter
 @NoArgsConstructor

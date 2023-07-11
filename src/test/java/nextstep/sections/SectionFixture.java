@@ -5,7 +5,7 @@ import org.springframework.http.MediaType;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import subway.section.model.SectionCreateRequest;
+import nextstep.subway.section.model.SectionCreateRequest;
 
 public class SectionFixture {
 

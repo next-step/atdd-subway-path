@@ -6,24 +6,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import subway.line.domain.Line;
-import subway.line.repository.LineRepository;
-import subway.line.service.LineService;
-import subway.section.domain.Section;
-import subway.section.model.SectionCreateRequest;
-import subway.station.service.StationService;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.service.LineManageService;
+import nextstep.subway.line.service.LineReadService;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.model.SectionCreateRequest;
+import nextstep.subway.section.repository.SectionRepository;
+import nextstep.subway.station.service.StationService;
+
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class SectionCreateService {
+@Transactional
+public class SectionManageService {
     private final StationService stationService;
-    private final LineService lineService;
-    private final LineRepository lineRepository;
+    private final LineManageService lineManageService;
+    private final LineReadService lineReadService;
+    private final SectionRepository sectionRepository;
 
-    @Transactional
     public Section create(Long lineId, SectionCreateRequest request) {
-        Line line = lineService.getLine(lineId);
+        Line line = lineReadService.getLine(lineId);
 
         Section section = Section.builder()
                                  .downStation(stationService.get(request.getDownStationId()))
@@ -33,8 +36,6 @@ public class SectionCreateService {
 
         line.addSection(section);
 
-        Line createdLine = lineRepository.save(line);
-
-        return createdLine.getSection(request.getDownStationId(), request.getUpStationId());
+        return sectionRepository.save(section);
     }
 }

@@ -3,7 +3,8 @@ package nextstep.subway.station.view;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import subway.station.domain.Station;
+import nextstep.subway.station.domain.Station;
+
 
 @Getter
 @NoArgsConstructor

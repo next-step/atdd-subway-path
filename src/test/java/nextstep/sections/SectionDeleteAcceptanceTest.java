@@ -13,15 +13,15 @@ import org.springframework.http.HttpStatus;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import line.LineFixture;
-import subway.SchemaInitSql;
-import subway.StationFixture;
-import subway.SubwayApplication;
-import subway.line.view.LineResponse;
-import subway.section.model.SectionCreateResponse;
-import subway.station.view.StationResponse;
-import subway.support.ErrorCode;
-import subway.support.ErrorResponse;
+import nextstep.line.LineFixture;
+import nextstep.subway.SchemaInitSql;
+import nextstep.subway.StationFixture;
+import nextstep.subway.SubwayApplication;
+import nextstep.subway.line.view.LineResponse;
+import nextstep.subway.section.model.SectionCreateResponse;
+import nextstep.subway.station.view.StationResponse;
+import nextstep.subway.support.ErrorCode;
+import nextstep.subway.support.ErrorResponse;
 
 @SchemaInitSql
 @DisplayName("지하철 구간 삭제 기능")
@@ -69,7 +69,7 @@ public class SectionDeleteAcceptanceTest {
                                                                     .extract();
 
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                assertThat(response.as(ErrorResponse.class).getErrorCode()).isEqualTo(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_STATION_REMOVED);
+                assertThat(response.as(ErrorResponse.class).getErrorCode()).isEqualTo(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_SECTION_CANNOT_DELETED);
             }
         }
     }
@@ -94,7 +94,7 @@ public class SectionDeleteAcceptanceTest {
                                                                     .extract();
 
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                assertThat(response.as(ErrorResponse.class).getErrorCode()).isEqualTo(ErrorCode.SECTION_DELETE_FAIL_BY_NOT_ALLOWED_STATION);
+                assertThat(response.as(ErrorResponse.class).getErrorCode()).isEqualTo(ErrorCode.ONLY_LAST_DOWNSTATION_CAN_DELETED);
             }
         }
 
@@ -104,7 +104,7 @@ public class SectionDeleteAcceptanceTest {
 
             @DisplayName("구간이 제거된다")
             @Test
-            void shouldThrowError() {
+            void deleteSection() {
                 section = sectionFixture.구간생성(lineAB.getId(), lineDownstationB.getId(), lineUpstationC.getId(), 4).as(SectionCreateResponse.class);
 
                 ExtractableResponse<Response> response = RestAssured.given().log().all()

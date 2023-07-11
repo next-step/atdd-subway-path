@@ -12,14 +12,14 @@ import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import line.LineFixture;
-import subway.SchemaInitSql;
-import subway.StationFixture;
-import subway.SubwayApplication;
-import subway.line.view.LineResponse;
-import subway.station.view.StationResponse;
-import subway.support.ErrorCode;
-import subway.support.ErrorResponse;
+import nextstep.line.LineFixture;
+import nextstep.subway.SchemaInitSql;
+import nextstep.subway.StationFixture;
+import nextstep.subway.SubwayApplication;
+import nextstep.subway.line.view.LineResponse;
+import nextstep.subway.station.view.StationResponse;
+import nextstep.subway.support.ErrorCode;
+import nextstep.subway.support.ErrorResponse;
 
 @SchemaInitSql
 @DisplayName("지하철 구간 등록 기능")

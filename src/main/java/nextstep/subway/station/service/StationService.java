@@ -1,17 +1,17 @@
 package nextstep.subway.station.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import subway.station.domain.Station;
-import subway.station.exception.StationNotFoundException;
-import subway.station.repository.StationRepository;
-import subway.station.view.StationRequest;
-import subway.station.view.StationResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
+import nextstep.subway.station.repository.StationRepository;
+import nextstep.subway.station.view.StationRequest;
+import nextstep.subway.station.view.StationResponse;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -44,11 +44,6 @@ public class StationService {
                 station.getId(),
                 station.getName()
         );
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Station> findById(Long id) {
-        return stationRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
