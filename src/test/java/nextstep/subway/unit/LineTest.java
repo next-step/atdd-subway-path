@@ -126,4 +126,19 @@ class LineTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 등록 불가능 합니다.");
     }
+
+    @Test
+    void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
+        //given
+        칠호선.addSection(노원_마들);
+
+        //when
+        Station 하계역 = new Station("하계역");
+        Section 하계_중계 = new Section(칠호선, 하계역, 중계역, 10);
+
+        //then
+        assertThatThrownBy(() -> 칠호선.addSection(하계_중계))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않은 경우 등록 불가능 합니다.");
+    }
 }
