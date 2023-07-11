@@ -4,20 +4,38 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.utils.AbstractAcceptanceTest;
-import nextstep.subway.utils.DatabaseCleanup;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @DisplayName("지하철 구간 기능 인수 테스트")
 public class LineAcceptanceTest extends AbstractAcceptanceTest {
+
+    private static final String 상행종점역명 = "상행종점역";
+    private static final String 하행종점역명 = "하행종점역";
+    private static final String 새로운역명 = "새로운역";
+    private static final int 상행종점역_하행종점역_거리 = 10;
+    private StationResponse 상행종점역;
+    private StationResponse 하행종점역;
+    private StationResponse 새로운역;
+    private LineResponse 노선;
+
+    @BeforeEach
+    public void setUpFixture() {
+        상행종점역 = StationSteps.지하철역_생성_요청(상행종점역명);
+        하행종점역 = StationSteps.지하철역_생성_요청(하행종점역명);
+        새로운역 = StationSteps.지하철역_생성_요청(새로운역명);
+        노선 = LineSteps.지하철_노선_생성_요청(
+                "칠호선",
+                상행종점역.getId(),
+                하행종점역.getId(),
+                상행종점역_하행종점역_거리
+        );
+    }
 
     /**
      * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
@@ -26,20 +44,11 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 역_사이에_새로운_역을_등록하는_경우() {
-        //given
-        final String 상행종점역명 = "중계역";
-        final String 하행종점역명 = "마들역";
-        StationResponse 상행종점역 = StationSteps.지하철역_생성_요청(상행종점역명);
-        StationResponse 하행종점역 = StationSteps.지하철역_생성_요청(하행종점역명);
-        LineResponse 칠호선 = LineSteps.지하철_노선_생성_요청("칠호선", 상행종점역.getId(), 하행종점역.getId(), 10);
-
         //when
-        final String 새로운역명 = "노원역";
-        StationResponse 새로운역 = StationSteps.지하철역_생성_요청(새로운역명);
-        LineSteps.지하철_노선_구간_등록_요청(칠호선.getId(), new SectionRequest(상행종점역.getId(), 새로운역.getId(), 5));
+        LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 새로운역.getId(), 5));
 
         //then
-        List<String> stationNames = LineSteps.지하철_노선_조회_요청(칠호선.getId()).getStations()
+        List<String> stationNames = LineSteps.지하철_노선_조회_요청(노선.getId()).getStations()
                 .stream().map(StationResponse::getName).collect(Collectors.toList());
         Assertions.assertThat(stationNames).containsExactly(상행종점역명, 새로운역명, 하행종점역명);
     }
