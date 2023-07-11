@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
 
@@ -101,5 +102,16 @@ class LineTest {
 
         //then
         assertThat(칠호선.getStations()).containsExactly(중계역, 노원역, 마들역);
+    }
+
+    @Test
+    void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
+        //given
+        칠호선.addSection(중계_마들);
+
+        //then
+        assertThatThrownBy(() -> 칠호선.addSection(new Section(칠호선, 중계역, 노원역, 20)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("기존 역 사이 길이보다 크거나 같으면 등록 불가능 합니다.");
     }
 }
