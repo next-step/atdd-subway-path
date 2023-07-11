@@ -6,7 +6,6 @@ import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.utils.AbstractAcceptanceTest;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 기능 인수 테스트")
 public class LineAcceptanceTest extends AbstractAcceptanceTest {
@@ -132,10 +131,12 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
-        //given
-
         //when
+        StationResponse 다른새로운역 = StationSteps.지하철역_생성_요청("다른새로운역");
+        ExtractableResponse<Response> response =
+                LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(다른새로운역.getId(), 새로운역.getId(), 10));
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
