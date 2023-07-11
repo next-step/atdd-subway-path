@@ -114,4 +114,16 @@ class LineTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("기존 역 사이 길이보다 크거나 같으면 등록 불가능 합니다.");
     }
+
+    @Test
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
+        //given
+        칠호선.addSection(중계_마들);
+        칠호선.addSection(중계_노원);
+
+        //then
+        assertThatThrownBy(() -> 칠호선.addSection(중계_마들))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 등록 불가능 합니다.");
+    }
 }
