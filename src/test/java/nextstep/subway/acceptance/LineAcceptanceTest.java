@@ -113,11 +113,12 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
-        //given
-
         //when
+        ExtractableResponse<Response> response =
+                LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 하행종점역.getId(), 5));
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
