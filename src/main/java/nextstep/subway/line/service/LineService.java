@@ -25,7 +25,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    public LineDto createSubwayLine(LineDto dto) {
+    public LineDto createLine(LineDto dto) {
         Station upStation = stationRepository.findById(dto.getUpStationId())
                 .orElseThrow(() -> new IllegalArgumentException("상행역이 존재하지 않습니다."));
         Station downStation = stationRepository.findById(dto.getDownStationId())
@@ -41,27 +41,27 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public List<LineDto> getSubwayLines() {
+    public List<LineDto> getLines() {
         return lineRepository.findAll().stream()
                 .map(LineDto::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public LineDto getSubwayLine(Long id) {
+    public LineDto getLine(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
         return LineDto.of(line);
     }
 
-    public void modifySubwayLine(Long id, ModifyLineRequest request) {
+    public void modifyLine(Long id, ModifyLineRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
         line.modifySubwayLine(request.getName(), request.getColor());
     }
 
 
-    public void deleteSubwayLine(Long id) {
+    public void deleteLine(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
         lineRepository.delete(line);

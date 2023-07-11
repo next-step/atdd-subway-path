@@ -31,29 +31,29 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody CreateLineRequest request) {
-        LineResponse response = LineResponse.from(lineService.createSubwayLine(request.toDto()));
+        LineResponse response = LineResponse.from(lineService.createLine(request.toDto()));
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
-        return ResponseEntity.ok().body(lineService.getSubwayLines().stream().map(LineResponse::from).collect(Collectors.toList()));
+        return ResponseEntity.ok().body(lineService.getLines().stream().map(LineResponse::from).collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(LineResponse.from(lineService.getSubwayLine(id)));
+        return ResponseEntity.ok().body(LineResponse.from(lineService.getLine(id)));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> modifyLine(@PathVariable Long id, @RequestBody ModifyLineRequest request) {
-        lineService.modifySubwayLine(id, request);
+        lineService.modifyLine(id, request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineService.deleteSubwayLine(id);
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 }
