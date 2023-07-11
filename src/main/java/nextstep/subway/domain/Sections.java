@@ -17,22 +17,18 @@ public class Sections {
         return sections.size();
     }
 
-    public void add(Section section) {
+    public void add(Section newSection) {
         if (!sections.isEmpty()) {
-            Section findSection = sections.stream().filter(s -> s.isUpStation(section.getUpStation()))
+            Section findSection = sections.stream().filter(s -> s.isUpStation(newSection.getUpStation()))
                     .findAny().orElseThrow(IllegalArgumentException::new);
-            findSection.changeUpStation(section.getDownStation());
-            findSection.subtractDistance(section.getDistance());
+            findSection.changeUpStation(newSection.getDownStation());
+            findSection.subtractDistance(newSection.getDistance());
         }
-        sections.add(section);
+        sections.add(newSection);
     }
 
     public List<Station> getStations() {
-        Station upEndStation = sections.stream()
-                .map(Section::getUpStation)
-                .filter(upStation -> sections.stream().noneMatch(section -> section.isDownStation(upStation)))
-                .findFirst()
-                .orElseThrow(IllegalStateException::new);
+        Station upEndStation = getUpEndStation();
 
         List<Station> findStations = new ArrayList<>();
         findStations.add(upEndStation);
@@ -64,5 +60,13 @@ public class Sections {
             throw new IllegalArgumentException();
         }
         sections.remove(sections.get(sections.size() - 1));
+    }
+
+    private Station getUpEndStation() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .filter(upStation -> sections.stream().noneMatch(section -> section.isDownStation(upStation)))
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
     }
 }
