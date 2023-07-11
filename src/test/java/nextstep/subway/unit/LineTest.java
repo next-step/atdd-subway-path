@@ -90,4 +90,16 @@ class LineTest {
         //then
         assertThat(칠호선.getStations()).containsExactly(중계역, 노원역, 마들역);
     }
+
+    @Test
+    void 새로운_역을_하행_종점으로_등록할_경우() {
+        //given
+        칠호선.addSection(중계_노원);
+
+        //when
+        칠호선.addSection(노원_마들);
+
+        //then
+        assertThat(칠호선.getStations()).containsExactly(중계역, 노원역, 마들역);
+    }
 }
