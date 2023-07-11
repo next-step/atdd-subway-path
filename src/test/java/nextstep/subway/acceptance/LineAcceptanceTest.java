@@ -1,5 +1,7 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
@@ -8,9 +10,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("지하철 구간 기능 인수 테스트")
 public class LineAcceptanceTest extends AbstractAcceptanceTest {
@@ -50,7 +55,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         //then
         List<String> stationNames = LineSteps.지하철_노선_조회_요청(노선.getId()).getStations()
                 .stream().map(StationResponse::getName).collect(Collectors.toList());
-        Assertions.assertThat(stationNames).containsExactly(상행종점역명, 새로운역명, 하행종점역명);
+        assertThat(stationNames).containsExactly(상행종점역명, 새로운역명, 하행종점역명);
     }
 
     /**
@@ -66,7 +71,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         //then
         List<String> stationNames = LineSteps.지하철_노선_조회_요청(노선.getId()).getStations()
                 .stream().map(StationResponse::getName).collect(Collectors.toList());
-        Assertions.assertThat(stationNames).containsExactly(새로운역명, 상행종점역명, 하행종점역명);
+        assertThat(stationNames).containsExactly(새로운역명, 상행종점역명, 하행종점역명);
     }
 
 
@@ -83,7 +88,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         //then
         List<String> stationNames = LineSteps.지하철_노선_조회_요청(노선.getId()).getStations()
                 .stream().map(StationResponse::getName).collect(Collectors.toList());
-        Assertions.assertThat(stationNames).containsExactly(상행종점역명, 하행종점역명, 새로운역명);
+        assertThat(stationNames).containsExactly(상행종점역명, 하행종점역명, 새로운역명);
     }
 
     /**
@@ -93,11 +98,12 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
-        //given
-
         //when
+        ExtractableResponse<Response> response =
+                LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 새로운역.getId(), 상행종점역_하행종점역_거리));
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
