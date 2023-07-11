@@ -60,4 +60,8 @@ public class Section {
     public boolean equalsUpStationAndDownStation(Section section) {
         return section.getUpStation().equals(upStation) && section.getDownStation().equals(downStation);
     }
+
+    public boolean equalsUpStation(Station station) {
+        return upStation.equals(station);
+    }
 }

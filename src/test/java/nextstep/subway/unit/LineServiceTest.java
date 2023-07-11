@@ -67,7 +67,7 @@ public class LineServiceTest {
 
         // when
         신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
-        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 14));
         lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 고속터미널역.getId(), 10));
         lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 교대역.getId(), 10));
 

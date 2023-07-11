@@ -62,66 +62,68 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        Map<Station, Station> stationMap = new HashMap<>();
-        for (Section section : sections) {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-            stationMap.put(upStation, downStation);
-        }
+        Map<Station, Station> stationMap = buildStationMap();
+        List<Station> stations = extractStations(stationMap);
 
+        return stations;
+    }
+
+    private List<Station> extractStations(Map<Station, Station> stationMap) {
         List<Station> extractedStations = new ArrayList<>();
-        Station startStation = upStation;
-        Station currentStation = startStation;
-
+        Station currentStation = upStation;
         while (extractedStations.size() < sections.size() + 1) {
             extractedStations.add(currentStation);
             Station nextStation = stationMap.get(currentStation);
             currentStation = nextStation;
         }
-
         return extractedStations;
     }
 
+    private Map<Station, Station> buildStationMap() {
+        Map<Station, Station> stationMap = new HashMap<>();
+        sections.stream().forEach(section -> stationMap.put(section.getUpStation(), section.getDownStation()));
+        return stationMap;
+    }
 
     public void addSection(Section section) {
-        boolean isAdd = false;
+        boolean isAddSection = false;
 
-        // 상행종점역 지정
         if (sections.size() == 0) {
             upStation = section.getUpStation();
             downStation = section.getDownStation();
-            isAdd = true;
+            isAddSection = true;
         }
 
         // 새로운 구간의 상행역의 기존 구간의 상행역인 경우
-        for (Section s : sections) {
-            if (s.getUpStation().getName().equals(section.getUpStation().getName())) {
-                validateExistUpStation(s, section);
+        for (Section existSection : sections) {
+            if (existSection.equalsUpStation(section.getUpStation())) {
+                validateExistUpStation(existSection, section);
 
-                sections.add(new Section(this, section.getDownStation(), s.getDownStation(),
-                        s.getDistance() - section.getDistance()));
-                sections.remove(s);
-                isAdd = true;
+                sections.add(new Section(this, section.getDownStation(), existSection.getDownStation()
+                        , existSection.getDistance() - section.getDistance()));
+                sections.remove(existSection);
+                isAddSection = true;
                 break;
             }
         }
 
         // 새로운 구간의 하행역이 노선의 상행역인 경우
-        if (upStation.getName().equals(section.getDownStation().getName())) {
+        if (upStation.equals(section.getDownStation())) {
             upStation = section.getUpStation();
-            isAdd = true;
-        }
-
-        if (section.getUpStation().getName().equals(downStation.getName())) {
-            isAdd = true;
+            isAddSection = true;
         }
 
         // 새로운 구간의 상행역이 노선의 하행역인 경우
-        if (isAdd) {
-            sections.add(section);
-        } else {
+        if (downStation.equals(section.getUpStation())) {
+            downStation = section.getDownStation();
+            isAddSection = true;
+        }
+
+        if (!isAddSection) {
             throw new DataIntegrityViolationException("잘못된 지하철 구간 등록입니다.");
         }
+
+        sections.add(section);
     }
 
     private void validateExistUpStation(Section existSection, Section section) {
