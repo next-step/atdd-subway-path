@@ -5,7 +5,10 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -18,6 +21,8 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        validateNewSection(newSection);
+
         if (sections.isEmpty() || shouldAddNewUpEndSection(newSection) || shouldAddNewDownEndSection(newSection)) {
             sections.add(newSection);
             return;
@@ -100,4 +105,18 @@ public class Sections {
     private boolean shouldAddNewDownEndSection(Section newSection) {
         return getDownEndStation().equals(newSection.getUpStation());
     }
+
+    private void validateNewSection(Section newSection) {
+        Set<Station> stationsSet = getStationsSet();
+        if (stationsSet.contains(newSection.getDownStation()) && stationsSet.contains(newSection.getUpStation())) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 등록 불가능 합니다.");
+        }
+    }
+
+    private Set<Station> getStationsSet() {
+        return sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toSet());
+    }
+
 }
