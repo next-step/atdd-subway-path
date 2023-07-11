@@ -1,12 +1,14 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.repository.LineRepository;
+import nextstep.subway.service.StationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class LineServiceMockTest {
+class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
