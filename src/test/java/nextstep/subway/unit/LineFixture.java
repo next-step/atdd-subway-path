@@ -6,6 +6,8 @@ import nextstep.subway.domain.station.Station;
 
 public class LineFixture {
 
+    public static final int DEFAULT_LINE_LENGTH = 10;
+
     public static Line makeLine(final Station upStation, final Station firstDownStation, Station... downStations) {
         final var line = new Line("신분당선", "bg-red-600", upStation, firstDownStation, 10);
 
@@ -13,11 +15,11 @@ public class LineFixture {
             return line;
         }
 
-        line.appendSection(new Section(line, firstDownStation, downStations[0], 10));
+        line.appendSection(new Section(line, firstDownStation, downStations[0], DEFAULT_LINE_LENGTH));
 
         if (downStations.length > 1) {
             for (int i = 0; i < downStations.length - 1; i++) {
-                line.appendSection(new Section(line, downStations[i], downStations[i + 1], 10));
+                line.appendSection(new Section(line, downStations[i], downStations[i + 1], DEFAULT_LINE_LENGTH));
             }
         }
 

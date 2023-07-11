@@ -11,7 +11,6 @@ import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.domain.line.exception.LineAppendSectionException;
 import nextstep.subway.domain.line.exception.LineRemoveSectionException;
 import nextstep.subway.domain.line.exception.LineSectionsEmptyException;
 import nextstep.subway.domain.station.Station;
@@ -31,23 +30,8 @@ public class LineSections {
         return sections;
     }
 
-    public void append(final Section section) {
-        requireSectionAppendable(section);
-        value.add(section);
-    }
-
-    private void requireSectionAppendable(final Section section) {
-        if (!getLastStation().equals(section.getUpStation())) {
-            throw new LineAppendSectionException(String.format(
-                    "노선의 하행역이 구간의 상행역과 일치하지 않습니다 : 노선의 하행역 id=%d, 구간의 상행역 id=%d",
-                    getLastStation().getId(), section.getUpStation().getId()
-            ));
-        }
-        if (getStations().contains(section.getDownStation())) {
-            throw new LineAppendSectionException(
-                    "구간의 하행역이 이미 노선에 포함되어 있습니다 : 구간의 하행역 id=" + section.getDownStation().getId()
-            );
-        }
+    public void append(final LineSectionAppender sectionAppender, final Section section) {
+        sectionAppender.append(this, section);
     }
 
     public void remove(final Station station) {
@@ -56,7 +40,7 @@ public class LineSections {
     }
 
     private void requireStationRemovable(final Station station) {
-        if (!getLastStation().equals(station)) {
+        if (!getLastStation().equalsId(station)) {
             throw new LineRemoveSectionException("노선의 하행역이 아닙니다 : 역 id=" + station.getId());
         }
         if (value.size() == MINIMUM_SECTION_SIZE) {
@@ -70,7 +54,12 @@ public class LineSections {
 
     private Section getFirstSection() {
         checkSizeNotEmpty();
-        return value.get(0);
+
+        final var downStations = getDownStations();
+        return getValue().stream()
+                .filter(it -> !downStations.contains(it.getUpStation()))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("노선의 상행 종점역을 찾을 수 없습니다"));
     }
 
     public Station getLastStation() {
@@ -79,13 +68,30 @@ public class LineSections {
 
     private Section getLastSection() {
         checkSizeNotEmpty();
-        return value.get(value.size() - 1);
+
+        final var upStations = getUpStations();
+        return getValue().stream()
+                .filter(it -> !upStations.contains(it.getDownStation()))
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("노선의 하행 종점역을 찾을 수 없습니다"));
     }
 
     private void checkSizeNotEmpty() {
         if (this.value.isEmpty()) {
             throw new LineSectionsEmptyException();
         }
+    }
+
+    private List<Station> getUpStations() {
+        return getValue().stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    private List<Station> getDownStations() {
+        return getValue().stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<Station> getStations() {

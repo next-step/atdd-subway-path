@@ -2,9 +2,15 @@ package nextstep.subway.unit.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import static nextstep.subway.unit.LineFixture.makeLine;
+import static nextstep.subway.unit.StationFixture.강남역;
+import static nextstep.subway.unit.StationFixture.선릉역;
+import static nextstep.subway.unit.StationFixture.역삼역;
+
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,29 +20,27 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import nextstep.subway.applicaion.line.SectionService;
+import nextstep.subway.applicaion.LineGraphService;
+import nextstep.subway.applicaion.line.LineService;
 import nextstep.subway.applicaion.line.request.SectionRequest;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.line.exception.NoSuchLineException;
-import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.domain.station.exception.NoSuchStationException;
 
 @ExtendWith(MockitoExtension.class)
-class SectionServiceMockTest {
+class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
 
     @Mock
     private StationRepository stationRepository;
 
-    @InjectMocks
-    private SectionService sectionService;
+    @Mock
+    private LineGraphService lineGraphService;
 
-    private final Station 강남역 = new Station("강남역");
-    private final Station 역삼역 = new Station("역삼역");
-    private final Station 선릉역 = new Station("선릉역");
-    private final Station 삼성역 = new Station("삼성역");
+    @InjectMocks
+    private LineService lineService;
 
     @DisplayName("구간을 추가한다")
     @Nested
@@ -55,13 +59,14 @@ class SectionServiceMockTest {
                 given(lineRepository.getById(lineId)).willReturn(line);
                 given(stationRepository.getById(request.getUpStationId())).willReturn(역삼역);
                 given(stationRepository.getById(request.getDownStationId())).willReturn(선릉역);
+                given(lineGraphService.orderedStations(any())).willReturn(List.of(강남역, 역삼역, 선릉역));
 
                 // when
-                sectionService.appendSection(1L, new SectionRequest(1L, 2L, 10));
+                lineService.appendSection(1L, new SectionRequest(1L, 2L, 10));
 
                 // then
                 final var actual = line.getStations();
-                assertThat(actual).containsExactly(강남역, 역삼역, 선릉역);
+                assertThat(actual).contains(강남역, 역삼역, 선릉역);
             }
         }
 
@@ -76,7 +81,7 @@ class SectionServiceMockTest {
                 given(lineRepository.getById(lineId)).willThrow(new NoSuchLineException(""));
 
                 // when
-                assertThatThrownBy(() -> sectionService.appendSection(lineId, request))
+                assertThatThrownBy(() -> lineService.appendSection(lineId, request))
                         .isInstanceOf(NoSuchLineException.class);
             }
 
@@ -87,7 +92,7 @@ class SectionServiceMockTest {
                 given(stationRepository.getById(request.getUpStationId())).willThrow(new NoSuchStationException(""));
 
                 // when
-                assertThatThrownBy(() -> sectionService.appendSection(lineId, request))
+                assertThatThrownBy(() -> lineService.appendSection(lineId, request))
                         .isInstanceOf(NoSuchStationException.class);
             }
 
@@ -99,7 +104,7 @@ class SectionServiceMockTest {
                 given(stationRepository.getById(request.getUpStationId())).willThrow(new NoSuchStationException(""));
 
                 // when
-                assertThatThrownBy(() -> sectionService.appendSection(lineId, request))
+                assertThatThrownBy(() -> lineService.appendSection(lineId, request))
                         .isInstanceOf(NoSuchStationException.class);
             }
         }
@@ -122,11 +127,11 @@ class SectionServiceMockTest {
                 given(stationRepository.getById(stationId)).willReturn(선릉역);
 
                 // when
-                sectionService.removeSection(lineId, stationId);
+                lineService.removeSection(lineId, stationId);
 
                 // then
                 final var actual = line.getStations();
-                assertThat(actual).containsExactly(강남역, 역삼역);
+                assertThat(actual).contains(강남역, 역삼역);
             }
         }
 
@@ -139,7 +144,7 @@ class SectionServiceMockTest {
                 given(lineRepository.getById(lineId)).willThrow(new NoSuchLineException(""));
 
                 // then
-                assertThatThrownBy(() -> sectionService.removeSection(lineId, stationId))
+                assertThatThrownBy(() -> lineService.removeSection(lineId, stationId))
                         .isInstanceOf(NoSuchLineException.class);
             }
 
@@ -150,7 +155,7 @@ class SectionServiceMockTest {
                 given(stationRepository.getById(stationId)).willThrow(new NoSuchStationException(""));
 
                 // then
-                assertThatThrownBy(() -> sectionService.removeSection(lineId, stationId))
+                assertThatThrownBy(() -> lineService.removeSection(lineId, stationId))
                         .isInstanceOf(NoSuchStationException.class);
             }
         }
