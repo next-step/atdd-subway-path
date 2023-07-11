@@ -5,9 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Stack;
 
 @Embeddable
 public class Sections {
@@ -20,17 +18,41 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (!sections.isEmpty() && !sections.get(sections.size() - 1).isDownStation(section.getUpStation())) {
-            throw new IllegalArgumentException();
+        if (!sections.isEmpty()) {
+            Section findSection = sections.stream().filter(s -> s.isUpStation(section.getUpStation()))
+                    .findAny().orElseThrow(IllegalArgumentException::new);
+            findSection.changeUpStation(section.getDownStation());
+            findSection.subtractDistance(section.getDistance());
         }
-
         sections.add(section);
     }
 
-    public Set<Station> getStations() {
-        return sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toSet());
+    public List<Station> getStations() {
+        Station upEndStation = sections.stream()
+                .map(Section::getUpStation)
+                .filter(upStation -> sections.stream().noneMatch(section -> section.isDownStation(upStation)))
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
+
+        List<Station> findStations = new ArrayList<>();
+        findStations.add(upEndStation);
+
+        Stack<Station> upStationStack = new Stack<>();
+        upStationStack.push(upEndStation);
+
+        while (!upStationStack.isEmpty()) {
+            Station currentStation = upStationStack.pop();
+            sections.stream()
+                    .filter(section -> section.isUpStation(currentStation))
+                    .findAny()
+                    .ifPresent(section -> {
+                        Station nextStation = section.getDownStation();
+                        findStations.add(nextStation);
+                        upStationStack.push(nextStation);
+                    });
+        }
+
+        return findStations;
     }
 
     public void remove(Section... section) {

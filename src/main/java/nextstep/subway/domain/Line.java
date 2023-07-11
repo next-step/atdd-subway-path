@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -42,7 +43,7 @@ public class Line {
         sections.add(section);
     }
 
-    public Set<Station> getStations() {
+    public List<Station> getStations() {
         return sections.getStations();
     }
 

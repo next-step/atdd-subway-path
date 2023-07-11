@@ -76,5 +76,6 @@ class LineTest {
         //then
         assertThat(칠호선.getStations()).containsExactly(중계역, 노원역, 마들역);
         assertThat(중계_마들.getUpStation()).isEqualTo(노원역);
+        assertThat(중계_마들.getDistance()).isEqualTo(10);
     }
 }

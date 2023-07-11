@@ -56,4 +56,16 @@ public class Section {
     public boolean isDownStation(Station station) {
         return downStation.equals(station);
     }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void subtractDistance(int distance) {
+        this.distance -= distance;
+    }
 }
