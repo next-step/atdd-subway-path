@@ -96,6 +96,8 @@ public class Line {
         // 새로운 구간의 상행역의 기존 구간의 상행역인 경우
         for (Section s : sections) {
             if (s.getUpStation().getName().equals(section.getUpStation().getName())) {
+                validateExistUpStation(s, section);
+
                 sections.add(new Section(this, section.getDownStation(), s.getDownStation(),
                         s.getDistance() - section.getDistance()));
                 sections.remove(s);
@@ -118,7 +120,17 @@ public class Line {
         if (isAdd) {
             sections.add(section);
         } else {
-            throw new DataIntegrityViolationException("error!");
+            throw new DataIntegrityViolationException("잘못된 지하철 구간 등록입니다.");
+        }
+    }
+
+    private void validateExistUpStation(Section existSection, Section section) {
+        if (section.isGreaterOrEqualDistance(existSection)) {
+            throw new DataIntegrityViolationException("기존 역 사이 길이보다 크거나 같을 수 없습니다.");
+        }
+
+        if (section.equalsUpStationAndDownStation(existSection)) {
+            throw new DataIntegrityViolationException("상행역과 하행역이 이미 등록된 구간입니다.");
         }
     }
 
