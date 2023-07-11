@@ -1,10 +1,12 @@
 package nextstep.subway.domain;
 
+import org.springframework.dao.DataIntegrityViolationException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Map;
 
 @Entity
 public class Line {
@@ -13,6 +15,12 @@ public class Line {
     private Long id;
     private String name;
     private String color;
+
+    @ManyToOne
+    private Station upStation;
+
+    @ManyToOne
+    private Station downStation;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -54,13 +62,64 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toList());
+        Map<Station, Station> stationMap = new HashMap<>();
+        for (Section section : sections) {
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+            stationMap.put(upStation, downStation);
+        }
+
+        List<Station> extractedStations = new ArrayList<>();
+        Station startStation = upStation;
+        Station currentStation = startStation;
+
+        while (extractedStations.size() < sections.size() + 1) {
+            extractedStations.add(currentStation);
+            Station nextStation = stationMap.get(currentStation);
+            currentStation = nextStation;
+        }
+
+        return extractedStations;
     }
 
+
     public void addSection(Section section) {
-        sections.add(section);
+        boolean isAdd = false;
+
+        // 상행종점역 지정
+        if (sections.size() == 0) {
+            upStation = section.getUpStation();
+            downStation = section.getDownStation();
+            isAdd = true;
+        }
+
+        // 새로운 구간의 상행역의 기존 구간의 상행역인 경우
+        for (Section s : sections) {
+            if (s.getUpStation().getName().equals(section.getUpStation().getName())) {
+                sections.add(new Section(this, section.getDownStation(), s.getDownStation(),
+                        s.getDistance() - section.getDistance()));
+                sections.remove(s);
+                isAdd = true;
+                break;
+            }
+        }
+
+        // 새로운 구간의 하행역이 노선의 상행역인 경우
+        if (upStation.getName().equals(section.getDownStation().getName())) {
+            upStation = section.getUpStation();
+            isAdd = true;
+        }
+
+        if (section.getUpStation().getName().equals(downStation.getName())) {
+            isAdd = true;
+        }
+
+        // 새로운 구간의 상행역이 노선의 하행역인 경우
+        if (isAdd) {
+            sections.add(section);
+        } else {
+            throw new DataIntegrityViolationException("error!");
+        }
     }
 
     public void removeSection() {

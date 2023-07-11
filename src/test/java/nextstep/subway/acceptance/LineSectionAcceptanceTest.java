@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
-
     private Long 강남역;
     private Long 양재역;
 
@@ -50,6 +49,112 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
+    /**
+     * When 지하철 노선의 기존 지하철 구간에 새로운 구간 추가를 요청하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에 기존 구간에 새로운 구간을 등록")
+    @Test
+    void addExistLineSection() {
+        Long 고속터미널역 = 지하철역_생성_요청("고속터미널역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 고속터미널역));
+
+        // when
+        Long 교대역 = 지하철역_생성_요청("교대역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 교대역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(강남역, 교대역, 양재역, 고속터미널역);
+    }
+
+    /**
+     * When 지하철 노선에 새로운 역이 상행 종점인 구간 추가를 요청하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에 새로운 역이 상행 종점인 구간을 등록")
+    @Test
+    void addUpStationLineSection() {
+        // when
+        Long 고속터미널역 = 지하철역_생성_요청("고속터미널역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(고속터미널역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(고속터미널역, 강남역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에 새로운 역이 하행 종점인 구간 추가를 요청하면
+     * Then 노선에 새로운 구간이 추가된다
+     */
+    @DisplayName("지하철 노선에 새로운 역이 하행 종점인 구간을 등록")
+    @Test
+    void addDownStationLineSection() {
+        // when
+        Long 고속터미널역 = 지하철역_생성_요청("고속터미널역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 고속터미널역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(강남역, 양재역, 고속터미널역);
+    }
+
+    /**
+     * Given 지하철 노선에 포함되지 않은 구간을 생성하고
+     * When 지하철 노선에 새로운 구간 추가를 요청하면
+     * Then 에러가 발생한다
+     */
+    @DisplayName("지하철 노선에 잘못된 구간을 등록시 에러 발생한다.")
+    @Test
+    void addDownStationLineSection2() {
+        // when
+        Long 연신내역 = 지하철역_생성_요청("연신내역").jsonPath().getLong("id");
+        Long 독바위역 = 지하철역_생성_요청("독바위역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(연신내역, 독바위역));
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 기존 구간의 길이보다 크거나 같은 구간을 생성하고
+     * When 지하철 노선의 기존 지하철 구간에 새로운 구간 추가를 요청하면
+     * Then 에러가 발생한다
+     */
+    @DisplayName("지하철 노선에 기존 구간의 길이와 같거나 큰 경우 에러 발생")
+    @Test
+    void addLineSectionIfDistanceGreaterThanOrEqual() {
+
+    }
+
+    /**
+     * Given 노선에 이미 등록된 상행역과 하행역을 가진 구간을 생성하고
+     * When 지하철 노선에 새로운 구간 추가를 요청하면
+     * Then 에러가 발생한다
+     */
+    @DisplayName("지하철 노선에 이미 등록된 상행역과 하행역을 가진 구간을 등록할 때 에러 발생")
+    @Test
+    void addDuplicateLineSection() {
+
+    }
+
+    /**
+     * Given 노선에 지하철 구간에 상행역과 하행역 모두 포함되지 않은 구간을 생성하고
+     * When 지하철 노선에 새로운 구간 추가를 요청하면
+     * Then 에러가 발생한다
+     */
+    @DisplayName("지하철 노선에 상행역과 하행역 모두 포함되지 않은 구간을 등록할 때 에러 발생")
+    @Test
+    void addIncompleteLineSection() {
+
     }
 
     /**

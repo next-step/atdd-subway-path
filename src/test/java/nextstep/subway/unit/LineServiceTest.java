@@ -58,4 +58,21 @@ public class LineServiceTest {
         // then
         assertThat(신분당선.getSections().size()).isEqualTo(0);
     }
+
+    @Test
+    @DisplayName("지하철 노선의 역 사이에 새로운 역을 등록할 경우 지하철 역목록 조회")
+    void getStations() {
+        Station 고속터미널역 = stationRepository.save(new Station("고속터미널역"));
+        Station 교대역 = stationRepository.save(new Station("교대역"));
+
+        // when
+        신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 고속터미널역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 교대역.getId(), 10));
+
+        // then
+        assertThat(신분당선.getStations().stream().mapToLong(Station::getId))
+                .containsExactly(강남역.getId(), 교대역.getId(), 양재역.getId(), 고속터미널역.getId());
+    }
 }
