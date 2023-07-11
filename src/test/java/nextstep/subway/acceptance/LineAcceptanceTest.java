@@ -108,14 +108,18 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
     /**
      * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
+     * Given: 상행 종점역을 상행으로 새로운 역을 하행으로 등록한다
      * When: 상행 종점역을 상행으로 하행 종점역을 하행으로 하는 구간을 등록한다
      * Then: 예외를 발생한다.
      */
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
+        //given
+        LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 새로운역.getId(), 5));
+
         //when
         ExtractableResponse<Response> response =
-                LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 하행종점역.getId(), 5));
+                LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 하행종점역.getId(), 10));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
