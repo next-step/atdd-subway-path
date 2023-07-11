@@ -18,13 +18,16 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        if (!sections.isEmpty()) {
-            Section findSection = sections.stream().filter(s -> s.isUpStation(newSection.getUpStation()))
-                    .findAny().orElseThrow(IllegalArgumentException::new);
-            findSection.changeUpStation(newSection.getDownStation());
-            findSection.subtractDistance(newSection.getDistance());
+        if (sections.isEmpty() || shouldAddNewUpEndSection(newSection)) {
+            sections.add(newSection);
+            return;
         }
-        sections.add(newSection);
+        if (shouldAddSectionBetweenStation(newSection)) {
+            addSectionBetweenStation(newSection);
+            return;
+        }
+
+        throw new IllegalArgumentException();
     }
 
     public List<Station> getStations() {
@@ -66,7 +69,23 @@ public class Sections {
         return sections.stream()
                 .map(Section::getUpStation)
                 .filter(upStation -> sections.stream().noneMatch(section -> section.isDownStation(upStation)))
-                .findFirst()
+                .findAny()
                 .orElseThrow(IllegalStateException::new);
+    }
+
+    private void addSectionBetweenStation(Section newSection) {
+        Section findSection = sections.stream().filter(s -> s.isUpStation(newSection.getUpStation()))
+                .findAny().orElseThrow(IllegalArgumentException::new);
+        findSection.changeUpStation(newSection.getDownStation());
+        findSection.subtractDistance(newSection.getDistance());
+        sections.add(newSection);
+    }
+
+    private boolean shouldAddSectionBetweenStation(Section newSection) {
+        return sections.stream().anyMatch(section -> section.isUpStation(newSection.getUpStation()));
+    }
+
+    private boolean shouldAddNewUpEndSection(Section newSection) {
+        return getUpEndStation().equals(newSection.getDownStation());
     }
 }
