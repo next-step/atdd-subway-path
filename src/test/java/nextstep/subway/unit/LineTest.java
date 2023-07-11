@@ -16,6 +16,7 @@ class LineTest {
 
     private Section 노원_마들;
     private Section 중계_노원;
+    private Section 중계_마들;
 
     private Line 칠호선;
 
@@ -29,6 +30,7 @@ class LineTest {
 
         노원_마들 = new Section(칠호선, 노원역, 마들역, 10);
         중계_노원 = new Section(칠호선, 중계역, 노원역, 10);
+        중계_마들 = new Section(칠호선, 중계역, 마들역, 20);
     }
 
     @Test
@@ -61,5 +63,18 @@ class LineTest {
 
         // then
         assertThat(칠호선.getSections().size()).isEqualTo(1);
+    }
+
+    @Test
+    void 상행_종점역을_상행으로_새로운_역을_하행으로_등록() {
+        //given
+        칠호선.addSection(중계_마들);
+
+        //when
+        칠호선.addSection(중계_노원);
+
+        //then
+        assertThat(칠호선.getStations()).containsExactly(중계역, 노원역, 마들역);
+        assertThat(중계_마들.getUpStation()).isEqualTo(노원역);
     }
 }
