@@ -8,6 +8,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -26,6 +27,7 @@ public class LineServiceMockTest {
     private StationService stationService;
 
     @Test
+    @DisplayName("지하철 노선에 지하철 구간을 등록한다")
     void addSection() {
         // given
         Line line = new Line("line", "bg-red-600");
@@ -46,6 +48,7 @@ public class LineServiceMockTest {
     }
 
     @Test
+    @DisplayName("지하철 노선에 지하철 구간을 제거한다")
     void deleteSection() {
         // given
         Line line = new Line("line", "bg-red-600");

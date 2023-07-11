@@ -2,14 +2,18 @@ package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.domain.*;
-import org.assertj.core.api.Assertions;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -22,30 +26,34 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
-    @Test
-    void addSection() {
-        // given
-        Station 지하철역 = stationRepository.save(new Station("지하철역"));
-        Station 새로운_지하철역 = stationRepository.save(new Station("새로운_지하철역"));
-        Line 신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
+    private Station 강남역;
+    private Station 양재역;
+    private Line 신분당선;
 
+    @BeforeEach
+    public void setUp() {
+        강남역 = stationRepository.save(new Station("강남역"));
+        양재역 = stationRepository.save(new Station("양재역"));
+        신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
+    }
+
+    @Test
+    @DisplayName("지하철 노선에 지하철 구간을 등록한다")
+    void addSection() {
         // when
-        lineService.addSection(신분당선.getId(), new SectionRequest(지하철역.getId(), 새로운_지하철역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
 
         // then
         assertThat(신분당선.getSections().size()).isEqualTo(1);
     }
 
     @Test
+    @DisplayName("지하철 노선에 지하철 구간을 제거한다")
     void deleteSection() {
-        // given
-        Station 지하철역 = stationRepository.save(new Station("지하철역"));
-        Station 새로운_지하철역 = stationRepository.save(new Station("새로운_지하철역"));
-        Line 신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
-        lineService.addSection(신분당선.getId(), new SectionRequest(지하철역.getId(), 새로운_지하철역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
 
         // when
-        lineService.deleteSection(신분당선.getId(), 새로운_지하철역.getId());
+        lineService.deleteSection(신분당선.getId(), 양재역.getId());
 
         // then
         assertThat(신분당선.getSections().size()).isEqualTo(0);
