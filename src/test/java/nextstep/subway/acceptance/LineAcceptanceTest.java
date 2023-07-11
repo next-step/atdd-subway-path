@@ -77,11 +77,13 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 새로운_역을_하행_종점으로_등록할_경우() {
-        //given
-
         //when
+        LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(하행종점역.getId(), 새로운역.getId(), 5));
 
         //then
+        List<String> stationNames = LineSteps.지하철_노선_조회_요청(노선.getId()).getStations()
+                .stream().map(StationResponse::getName).collect(Collectors.toList());
+        Assertions.assertThat(stationNames).containsExactly(상행종점역명, 하행종점역명, 새로운역명);
     }
 
     /**
