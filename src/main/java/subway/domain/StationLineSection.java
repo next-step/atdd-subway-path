@@ -38,7 +38,7 @@ public class StationLineSection {
         this.distance = distance;
     }
 
-    public void splitSection(Station standardStation, Station newStation, BigDecimal newSectionDistance) {
+    public void splitSection(Station newStation, Station standardStation, BigDecimal newSectionDistance) {
         this.distance = distance.subtract(newSectionDistance);
 
         if (this.distance.compareTo(BigDecimal.ZERO) <= 0) {

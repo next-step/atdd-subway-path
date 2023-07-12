@@ -39,7 +39,7 @@ public class StationLineUnitTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when
         Assertions.assertDoesNotThrow(() -> line.createSection(lineUpStation, sectionDownStation, BigDecimal.ONE));
@@ -47,6 +47,7 @@ public class StationLineUnitTest {
         //then
         final List<Station> expectedLineStations = List.of(lineUpStation, sectionDownStation, lineDownStation);
         final List<BigDecimal> lineSectionDistances = line.getSections()
+                .getSections()
                 .stream()
                 .map(StationLineSection::getDistance)
                 .collect(Collectors.toList());
@@ -76,7 +77,7 @@ public class StationLineUnitTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when
         final Throwable throwable = Assertions.assertThrows(StationLineSectionSplitException.class,
@@ -104,7 +105,7 @@ public class StationLineUnitTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when
         Assertions.assertDoesNotThrow(() -> line.createSection(sectionUpStation, lineUpStation, BigDecimal.TEN));
@@ -112,6 +113,7 @@ public class StationLineUnitTest {
         //then
         final List<Station> expectedLineStations = List.of(sectionUpStation, lineUpStation, lineDownStation);
         final List<BigDecimal> lineSectionDistances = line.getSections()
+                .getSections()
                 .stream()
                 .map(StationLineSection::getDistance)
                 .collect(Collectors.toList());
@@ -141,7 +143,7 @@ public class StationLineUnitTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when
         Assertions.assertDoesNotThrow(() -> line.createSection(lineDownStation, sectionDownStation, BigDecimal.TEN));
@@ -149,6 +151,7 @@ public class StationLineUnitTest {
         //then
         final List<Station> expectedLineStations = List.of(lineUpStation, lineDownStation, sectionDownStation);
         final List<BigDecimal> lineSectionDistances = line.getSections()
+                .getSections()
                 .stream()
                 .map(StationLineSection::getDistance)
                 .collect(Collectors.toList());
@@ -179,7 +182,7 @@ public class StationLineUnitTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when & then
         final Throwable throwable = Assertions.assertThrows(StationLineCreateException.class,
@@ -206,7 +209,7 @@ public class StationLineUnitTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when & then
         final Throwable throwable = Assertions.assertThrows(StationLineCreateException.class,
@@ -236,7 +239,7 @@ public class StationLineUnitTest {
         line.createSection(bStation, cStation, BigDecimal.ONE);
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when
         Assertions.assertDoesNotThrow(() -> line.deleteSection(cStation));
@@ -269,7 +272,7 @@ public class StationLineUnitTest {
         line.createSection(bStation, cStation, BigDecimal.ONE);
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when & then
         final Throwable throwable = Assertions.assertThrows(StationLineSectionDeleteException.class,
@@ -297,7 +300,7 @@ public class StationLineUnitTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when & then
         final Throwable throwable = Assertions.assertThrows(StationLineSectionDeleteException.class,

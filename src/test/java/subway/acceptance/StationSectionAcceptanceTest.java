@@ -108,7 +108,7 @@ public class StationSectionAcceptanceTest {
      * When 1호선에 A,C로 길이가 12m인 구간을 추가한다
      * Then 에러 발생
      */
-    @DisplayName("거리가 10m인 기존 노선의 역 구간 사이에 12m로 새로운 구간 추가시 애러")
+    @DisplayName("거리가 10m인 기존 노선의 역 구간 사이에 12m로 새로운 구간 추가시 에러")
     @Test
     void create_12M_StationLineSection_To_Between_Station_Has_10M() {
         //given
@@ -130,7 +130,7 @@ public class StationSectionAcceptanceTest {
      * When 1호선 노선에 (A,C) 구간을 추가한다
      * Then 에러 발생
      */
-    @DisplayName("구간의 상행역과 하행역이 모두 노선에 등록된 역일 경우 구간 추가 시 애러")
+    @DisplayName("구간의 상행역과 하행역이 모두 노선에 등록된 역일 경우 구간 추가 시 에러")
     @Test
     void createStationLineSection_Both_Station_Existing_To_StationLine() {
         //given
@@ -152,7 +152,7 @@ public class StationSectionAcceptanceTest {
      * When 1호선 노선에 (C,D)로 구간을 추가한다
      * Then 에러 발생
      */
-    @DisplayName("구간의 상행역과 하행역이 모두 노선에 포함되지 않은 역일 경우 구간 추가시 애러")
+    @DisplayName("구간의 상행역과 하행역이 모두 노선에 포함되지 않은 역일 경우 구간 추가시 에러")
     @Test
     void createStationLineSection_Both_Station_NotExisting_To_stationLine() {
         //given
