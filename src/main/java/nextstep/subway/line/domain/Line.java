@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.support.ErrorCode;
+import nextstep.subway.support.SubwayException;
 
 
 @Getter
@@ -54,10 +56,12 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (sections.possibleToAddSection(section)) {
-            section.attachToLine(this);
-            sections.appendSection(section);
+        if (!sections.possibleToAddSection(section)) {
+            throw new SubwayException(ErrorCode.SECTION_ADD_FAIL);
         }
+
+        section.attachToLine(this);
+        sections.appendSection(section);
     }
 
     public void deleteSection(Long stationId) {

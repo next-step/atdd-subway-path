@@ -19,8 +19,6 @@ import nextstep.subway.StationFixture;
 import nextstep.subway.SubwayApplication;
 import nextstep.subway.line.view.LineResponse;
 import nextstep.subway.station.view.StationResponse;
-import nextstep.subway.support.ErrorCode;
-import nextstep.subway.support.ErrorResponse;
 
 @SchemaInitSql
 @DisplayName("지하철 구간 등록 기능")
@@ -50,44 +48,6 @@ public class SectionCreateAcceptanceTest {
         lineUpstationC = stationFixture.지하철역_생성("upstationC");
         lineDownstationD = stationFixture.지하철역_생성("downStationD");
         lineCD = lineFixture.노선생성("line-cd", "blue", lineUpstationC.getId(), lineDownstationD.getId(), 5);
-    }
-
-    @DisplayName("새로운 구간의 상행역이 노선의 하행 종점역이 아닐 때")
-    @Nested
-    class Given_section_upstation_is_not_lines_downstation {
-
-        @DisplayName("구간을 등록하면")
-        @Nested
-        class When_create_section {
-
-            @DisplayName("오류가 발생한다")
-            @Test
-            void shouldThrowError() {
-                ExtractableResponse<Response> response = sectionFixture.구간생성(lineAB.getId(), lineUpstationA.getId(), lineUpstationC.getId(), 3);
-
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                assertThat(response.as(ErrorResponse.class).getErrorCode()).isEqualTo(ErrorCode.SECTION_CREATE_FAIL_BY_UPSTATION);
-            }
-        }
-    }
-
-    @DisplayName("given_새로운 구간의 하행역이 노선에 존재할때")
-    @Nested
-    class Given_section_downstation_on_same_line {
-
-        @DisplayName("when_구간을 등록하면")
-        @Nested
-        class When_create_section {
-
-            @DisplayName("then_오류가 발생한다")
-            @Test
-            void shouldThrowError() {
-                ExtractableResponse<Response> response = sectionFixture.구간생성(lineAB.getId(), lineDownstationB.getId(), lineUpstationA.getId(), 3);
-
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                assertThat(response.as(ErrorResponse.class).getErrorCode()).isEqualTo(ErrorCode.SECTION_CREATE_FAIL_BY_DOWNSTATION);
-            }
-        }
     }
 
     @Nested

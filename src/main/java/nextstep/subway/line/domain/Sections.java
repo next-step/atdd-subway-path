@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.exception.InvalidSectionCreateException;
 import nextstep.subway.section.exception.InvalidSectionDeleteException;
 import nextstep.subway.support.ErrorCode;
 
@@ -70,6 +69,10 @@ public class Sections {
             return true;
         }
 
+        if (isSameUpStation(section.getUpStation().getId()) && isSameDownstation(section.getDownStation().getId())) {
+            return false;
+        }
+
         if (isSameUpStation(section.getUpStation().getId())) {
             if (findSameUpStation(section.getUpStation().getId()).get().getDistance() <= section.getDistance()) {
                 return false;
@@ -86,17 +89,17 @@ public class Sections {
             return false;
         }
 
-        Section lastSection = getLastSection();
-
-//        if (!section.equalsUpstation(lastSection.getDownStation().getId())) {
-//            throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_UPSTATION);
+//        Section lastSection = getLastSection();
+//
+////        if (!section.equalsUpstation(lastSection.getDownStation().getId())) {
+////            throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_UPSTATION);
+////        }
+//
+//
+//
+//        if (alreadyRegistered(section.getDownStation().getId())) {
+//            throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_DOWNSTATION);
 //        }
-
-
-
-        if (alreadyRegistered(section.getDownStation().getId())) {
-            throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_DOWNSTATION);
-        }
 
         return true;
     }

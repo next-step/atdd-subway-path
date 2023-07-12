@@ -3,7 +3,7 @@ package nextstep.subway.support;
 import lombok.Getter;
 
 @Getter
-public abstract class SubwayException extends RuntimeException {
+public class SubwayException extends RuntimeException {
     private final ErrorCode errorCode;
 
     public SubwayException(ErrorCode errorCode) {

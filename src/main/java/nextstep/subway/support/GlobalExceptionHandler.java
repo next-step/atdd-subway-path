@@ -6,8 +6,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import nextstep.subway.line.exception.LineNotFoundException;
-import nextstep.subway.section.exception.InvalidSectionCreateException;
-import nextstep.subway.section.exception.InvalidSectionDeleteException;
 
 
 @ControllerAdvice
@@ -18,7 +16,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @ExceptionHandler(value = { InvalidSectionCreateException.class, InvalidSectionDeleteException.class, })
+    @ExceptionHandler(value = { SubwayException.class, })
     public ResponseEntity<ErrorResponse> handleInvalidSectionUpstationException(SubwayException se) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                              .body(new ErrorResponse(se));
