@@ -46,7 +46,7 @@ public class LineServiceTest {
         lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(1);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(1);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class LineServiceTest {
         lineService.addSection(신분당선.getId(), new SectionRequest(다른_지하철역.getId(), 강남역.getId(), 15));
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(2);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(2);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class LineServiceTest {
         lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 다른_지하철역.getId(), 5));
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(2);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(2);
     }
 
     @Test
@@ -166,6 +166,6 @@ public class LineServiceTest {
         lineService.deleteSection(신분당선.getId(), 양재역.getId());
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(0);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(0);
     }
 }

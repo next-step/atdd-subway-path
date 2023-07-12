@@ -34,7 +34,7 @@ class LineTest {
         신분당선.addSection(new Section(신분당선, 지하철역, 또다른_지하철역, 10));
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(1);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(1);
     }
 
     @Test
@@ -48,7 +48,7 @@ class LineTest {
         신분당선.addSection(new Section(신분당선, 또다른_지하철역, 다른지하철역, 5));
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(2);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(2);
     }
 
     @Test
@@ -62,7 +62,7 @@ class LineTest {
         신분당선.addSection(new Section(신분당선, 다른_지하철역, 지하철역, 15));
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(2);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(2);
     }
 
     @Test
@@ -162,6 +162,6 @@ class LineTest {
         신분당선.removeSection();
 
         // then
-        assertThat(신분당선.getSections().size()).isEqualTo(0);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(0);
     }
 }

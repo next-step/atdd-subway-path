@@ -84,7 +84,7 @@ public class LineService {
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.isEmptySections()) {
             return Collections.emptyList();
         }
 
@@ -98,7 +98,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+        if (!line.getLastStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
@@ -106,6 +106,6 @@ public class LineService {
     }
 
     public Line findLineById(Long lineId) {
-         return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
     }
 }
