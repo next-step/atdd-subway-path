@@ -59,6 +59,9 @@ public class Sections {
             return true;
         }
 
+        /**
+         * 역의 양 끝에 추가하는 경우
+         */
         if (isSameUpStation(section.getDownStation().getId())) {
             return true;
         }
@@ -67,12 +70,25 @@ public class Sections {
             return true;
         }
 
+        if (isSameUpStation(section.getUpStation().getId())) {
+            if (findSameUpStation(section.getUpStation().getId()).get().getDistance() <= section.getDistance()) {
+                return false;
+            }
+        }
+
+        if (isSameDownstation(section.getDownStation().getId())) {
+            if (findSameDownStation(section.getDownStation().getId()).get().getDistance() <= section.getDistance()) {
+                return false;
+            }
+        }
 
         Section lastSection = getLastSection();
 
-        if (!section.equalsUpstation(lastSection.getDownStation().getId())) {
-            throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_UPSTATION);
-        }
+//        if (!section.equalsUpstation(lastSection.getDownStation().getId())) {
+//            throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_UPSTATION);
+//        }
+
+
 
         if (alreadyRegistered(section.getDownStation().getId())) {
             throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_DOWNSTATION);
