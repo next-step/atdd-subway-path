@@ -32,17 +32,17 @@ public class LineService {
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(new Section(line, upStation, downStation, request.getDistance()));
         }
-        return line.toLineResponse();
+        return LineResponse.from(line);
     }
 
-    public List<LineResponse> showLines() {
+    public List<LineResponse> findLines() {
         return lineRepository.findAll().stream()
-                .map(Line::toLineResponse)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        return lineRepository.findById(id).map(Line::toLineResponse).orElseThrow(IllegalArgumentException::new);
+        return lineRepository.findById(id).map(LineResponse::from).orElseThrow(IllegalArgumentException::new);
     }
 
     @Transactional

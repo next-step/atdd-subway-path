@@ -4,6 +4,9 @@ import javax.persistence.*;
 
 @Entity
 public class Section {
+
+    private static final String DISTANCE_ERROR_MESSAGE = "기존 역 사이 길이보다 크거나 같으면 등록 불가능 합니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -55,5 +58,20 @@ public class Section {
 
     public boolean isDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void subtractDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException(DISTANCE_ERROR_MESSAGE);
+        }
+        this.distance -= distance;
     }
 }

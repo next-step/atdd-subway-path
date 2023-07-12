@@ -22,4 +22,7 @@ public class SectionRequest {
         this.downStationId = downStationId;
         this.distance = distance;
     }
+
+    public SectionRequest() {
+    }
 }

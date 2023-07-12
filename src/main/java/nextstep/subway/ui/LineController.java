@@ -26,8 +26,8 @@ public class LineController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> responses = lineService.showLines();
+    public ResponseEntity<List<LineResponse>> findLines() {
+        List<LineResponse> responses = lineService.findLines();
         return ResponseEntity.ok().body(responses);
     }
 

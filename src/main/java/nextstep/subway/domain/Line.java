@@ -1,8 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.LineResponse;
-
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -40,20 +39,11 @@ public class Line {
         return sections;
     }
 
-    public LineResponse toLineResponse() {
-        return new LineResponse(
-                this.id,
-                this.name,
-                this.color,
-                sections.createStationResponses()
-        );
-    }
-
     public void addSection(Section section) {
         sections.add(section);
     }
 
-    public Set<Station> getStations() {
+    public List<Station> getStations() {
         return sections.getStations();
     }
 
