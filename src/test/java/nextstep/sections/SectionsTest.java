@@ -26,23 +26,24 @@ public class SectionsTest {
 
     @BeforeEach
     public void beforeEach() {
-        lineAB = Line.builder()
-                     .id(1L)
-                     .color("y")
-                     .upStation(stationA)
-                     .downStation(stationB)
-                     .build();
-
         firstSection = new Section(1L, lineAB, stationA, stationB, firstSectionDistance);
 
         List<Section> sectionList = new ArrayList<>();
         sectionList.add(firstSection);
 
         sections = new Sections(sectionList);
+
+        lineAB = Line.builder()
+                     .id(1L)
+                     .color("y")
+                     .upStation(stationA)
+                     .downStation(stationB)
+                     .sections(sections)
+                     .build();
     }
 
     @Nested
-    class Given_구간이_있을때{
+    class Given_구간이_있을때 {
 
         @Nested
         class When_추가하는역이_상행종점일경우 {
@@ -54,6 +55,18 @@ public class SectionsTest {
 
                 // then
                 Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isTrue();
+            }
+
+            @Test
+            void 구간을_추가하고_상행종점이_변경된다() {
+                Section givenAddSection = new Section(2L, lineAB, stationC, stationA, firstSectionDistance);
+
+                // then
+                Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isTrue();
+
+                lineAB.addSection(givenAddSection);
+
+                Assertions.assertThat(lineAB.equalUpstation(stationC.getId())).isTrue();
             }
         }
 

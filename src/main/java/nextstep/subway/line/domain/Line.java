@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -60,6 +62,10 @@ public class Line {
             throw new SubwayException(ErrorCode.SECTION_ADD_FAIL);
         }
 
+        if (sections.requireUpStationChange(section)) {
+            upStation = section.getUpStation();
+        }
+
         section.attachToLine(this);
         sections.appendSection(section);
     }
@@ -69,4 +75,9 @@ public class Line {
             sections.deleteSectionByStationId(stationId);
         }
     }
+
+    public boolean equalUpstation(Long stationId) {
+        return Objects.equals(upStation.getId(), stationId);
+    }
+
 }

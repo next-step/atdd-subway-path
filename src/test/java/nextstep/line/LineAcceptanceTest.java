@@ -78,6 +78,24 @@ public class LineAcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id")).containsSequence(List.of(1, 2));
     }
 
+    @DisplayName("지하철 노선을 조회한다")
+    @Test
+    void getLineWithValidStationOrder() {
+        // given
+        StationResponse stationA = stationFixture.지하철역_생성("A역");
+        StationResponse stationB = stationFixture.지하철역_생성("B역");
+        LineResponse createResponse = lineFixture.노선생성("신분당선", "bg-red-600", stationA.getId(), stationB.getId(), 10);
+
+        // when
+        ExtractableResponse<Response> response = 노선조회(createResponse.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(response.jsonPath().getString("color")).isEqualTo("bg-red-600");
+        assertThat(response.jsonPath().getList("stations.id")).containsSequence(List.of(1, 2));
+    }
+
     @DisplayName("존재하지 않는 노선을 조회하면 404 처리된다")
     @Test
     void getNotExistLine() {
