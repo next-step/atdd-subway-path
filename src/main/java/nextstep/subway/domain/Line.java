@@ -91,7 +91,6 @@ public class Line {
         }
 
         boolean isAddSection = false;
-
         if (sections.size() == 0) {
             upStation = section.getUpStation();
             downStation = section.getDownStation();
@@ -99,16 +98,8 @@ public class Line {
         }
 
         // 새로운 구간의 상행역의 기존 구간의 상행역인 경우
-        for (Section existSection : sections) {
-            if (existSection.equalsUpStation(section.getUpStation())) {
-                validateExistUpStation(existSection, section);
-
-                sections.add(new Section(this, section.getDownStation(), existSection.getDownStation()
-                        , existSection.getDistance() - section.getDistance()));
-                sections.remove(existSection);
-                isAddSection = true;
-                break;
-            }
+        if(upStationExistUpStation(section)){
+            isAddSection = true;
         }
 
         // 새로운 구간의 하행역이 노선의 상행역인 경우
@@ -128,6 +119,20 @@ public class Line {
         }
 
         sections.add(section);
+    }
+
+    private boolean upStationExistUpStation(Section section) {
+        for (Section existSection : sections) {
+            if (existSection.equalsUpStation(section.getUpStation())) {
+                validateExistUpStation(existSection, section);
+
+                sections.add(new Section(this, section.getDownStation(), existSection.getDownStation()
+                        , existSection.getDistance() - section.getDistance()));
+                sections.remove(existSection);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void validateExistUpStation(Section existSection, Section section) {
