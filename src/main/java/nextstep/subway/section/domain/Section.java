@@ -53,7 +53,7 @@ public class Section {
         this.line = line;
     }
 
-    public boolean isUpstation(Long stationId) {
+    public boolean equalsUpstation(Long stationId) {
         return Objects.equals(upStation.getId(), stationId);
     }
 

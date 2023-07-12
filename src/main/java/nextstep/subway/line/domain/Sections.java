@@ -59,13 +59,18 @@ public class Sections {
             return true;
         }
 
-        if (findSameUpStation(section.getUpStation().getId()).isPresent()) {
+        if (isSameUpStation(section.getDownStation().getId())) {
             return true;
         }
 
+        if (isSameDownstation(section.getUpStation().getId())) {
+            return true;
+        }
+
+
         Section lastSection = getLastSection();
 
-        if (!section.isUpstation(lastSection.getDownStation().getId())) {
+        if (!section.equalsUpstation(lastSection.getDownStation().getId())) {
             throw new InvalidSectionCreateException(ErrorCode.SECTION_CREATE_FAIL_BY_UPSTATION);
         }
 
@@ -78,8 +83,22 @@ public class Sections {
 
     private Optional<Section> findSameUpStation(Long stationId) {
         return sections.stream()
-                       .filter(section -> section.isUpstation(stationId))
+                       .filter(section -> section.equalsUpstation(stationId))
                        .findFirst();
+    }
+
+    private Optional<Section> findSameDownStation(Long stationId) {
+        return sections.stream()
+                       .filter(section -> section.equalsDownStation(stationId))
+                       .findFirst();
+    }
+
+    private boolean isSameDownstation(Long stationId) {
+        return findSameDownStation(stationId).isPresent();
+    }
+
+    private boolean isSameUpStation(Long stationId) {
+        return findSameUpStation(stationId).isPresent();
     }
 
     public boolean possibleToDeleteSection(Long stationId) {
@@ -111,10 +130,5 @@ public class Sections {
 
     private Section getLastSection() {
         return sections.get(sections.size()-1);
-    }
-
-    public Optional<Section> findLinkableSection(Section section) {
-
-        return Optional.empty();
     }
 }
