@@ -1,6 +1,7 @@
 package subway.acceptance;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,8 +19,22 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TE
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class StationSectionAcceptanceTest {
 
+    private Long aStationId;
+    private Long bStationId;
+    private Long dStationId;
+    private Long cStationId;
+
+    @BeforeEach
+    public void createStation() {
+        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
+
+        aStationId = stationIds.get(0);
+        bStationId = stationIds.get(1);
+        cStationId = stationIds.get(2);
+        dStationId = stationIds.get(3);
+    }
+
     /**
-     * Given 지하철 역 A,B,C,D를 생성한다
      * Given (A,B)역으로 거리가 8m인 1호선 노선을 생성한다
      * Given 1호선에 (B,C) 구간을 추가한다
      * When 1호선에 (A,D) 3m인 구간을 추가한다
@@ -29,12 +44,6 @@ public class StationSectionAcceptanceTest {
     @Test
     void createStationLineSection_To_Between_Station() {
         //given
-        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
-        final Long aStationId = stationIds.get(0);
-        final Long bStationId = stationIds.get(1);
-        final Long cStationId = stationIds.get(2);
-        final Long dStationId = stationIds.get(3);
-
         final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.valueOf(8));
         AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.valueOf(5));
 
@@ -47,7 +56,6 @@ public class StationSectionAcceptanceTest {
     }
 
     /**
-     * Given 지하철 역 A,B,C,D를 생성한다
      * Given (A,B)로 1호선 노선을 생성한다
      * Given 1호선에 (B,C)로 구간을 추가한다
      * When 1호선에 (D,A) 구간을 추가한다
@@ -57,12 +65,6 @@ public class StationSectionAcceptanceTest {
     @Test
     void createStationLineSection_To_FirstUpStation() {
         //given
-        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
-        final Long aStationId = stationIds.get(0);
-        final Long bStationId = stationIds.get(1);
-        final Long cStationId = stationIds.get(2);
-        final Long dStationId = stationIds.get(3);
-
         final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
         AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.TEN);
 
@@ -75,7 +77,6 @@ public class StationSectionAcceptanceTest {
     }
 
     /**
-     * Given 지하철 역 A,B,C,D를 생성한다
      * Given (A,B)로 1호선 노선을 생성한다
      * Given 1호선 노선에 (B,C) 구간을 추가한다
      * When 1호선 노선에 (C,D) 구간을 추가한다
@@ -85,12 +86,6 @@ public class StationSectionAcceptanceTest {
     @Test
     void createStationLineSection_To_LastDownStation() {
         //given
-        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
-        final Long aStationId = stationIds.get(0);
-        final Long bStationId = stationIds.get(1);
-        final Long cStationId = stationIds.get(2);
-        final Long dStationId = stationIds.get(3);
-
         final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
         AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.TEN);
 
@@ -103,7 +98,6 @@ public class StationSectionAcceptanceTest {
     }
 
     /**
-     * Given 지하철 역 A,B,C를 생성한다
      * Given (A,B)로 구간의 길이가 10m인 1호선 노선을 생성한다
      * When 1호선에 A,C로 길이가 12m인 구간을 추가한다
      * Then 에러 발생
@@ -112,11 +106,6 @@ public class StationSectionAcceptanceTest {
     @Test
     void create_12M_StationLineSection_To_Between_Station_Has_10M() {
         //given
-        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역"));
-        final Long aStationId = stationIds.get(0);
-        final Long bStationId = stationIds.get(1);
-        final Long cStationId = stationIds.get(2);
-
         final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
 
         //when & then
@@ -124,7 +113,6 @@ public class StationSectionAcceptanceTest {
     }
 
     /**
-     * Given 지하철 역 A,B,C를 생성한다
      * Given (A,B)로 1호선 노선을 생성한다
      * Given 1호선 노선에 (B,C) 구간을 추가한다
      * When 1호선 노선에 (A,C) 구간을 추가한다
@@ -134,11 +122,6 @@ public class StationSectionAcceptanceTest {
     @Test
     void createStationLineSection_Both_Station_Existing_To_StationLine() {
         //given
-        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역"));
-        final Long aStationId = stationIds.get(0);
-        final Long bStationId = stationIds.get(1);
-        final Long cStationId = stationIds.get(2);
-
         final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
         AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.TEN);
 
@@ -147,7 +130,6 @@ public class StationSectionAcceptanceTest {
     }
 
     /**
-     * Given 지하철 역 A,B,C,D를 생성한다
      * Given (A,B)로 1호선 노선을 생성한다
      * When 1호선 노선에 (C,D)로 구간을 추가한다
      * Then 에러 발생
@@ -156,12 +138,6 @@ public class StationSectionAcceptanceTest {
     @Test
     void createStationLineSection_Both_Station_NotExisting_To_stationLine() {
         //given
-        final List<Long> stationIds = AcceptanceUtils.createStations(List.of("A역", "B역", "C역", "D역"));
-        final Long aStationId = stationIds.get(0);
-        final Long bStationId = stationIds.get(1);
-        final Long cStationId = stationIds.get(2);
-        final Long dStationId = stationIds.get(3);
-
         final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
 
         //when & then
