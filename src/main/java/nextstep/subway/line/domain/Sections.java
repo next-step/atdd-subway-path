@@ -17,6 +17,7 @@ import org.springframework.util.CollectionUtils;
 
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.exception.InvalidSectionDeleteException;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.support.ErrorCode;
 
 
@@ -49,7 +50,14 @@ public class Sections {
         if (requireSectionDivide(section)) {
             Section divideTargetSection = findDivideTargetSection(section);
 
-            divideTargetSection.changeStation(section.getUpStation(), section.getDownStation());
+            if (divideTargetSection.equalsUpstation(section.getUpStation().getId())) {
+                divideTargetSection.changeUpStation(section.getDownStation());
+            }
+
+            if (divideTargetSection.equalsDownStation(section.getDownStation().getId())) {
+                divideTargetSection.changeDownStation(section.getUpStation());
+            }
+
             divideTargetSection.decreaseDistance(section.getDistance());
         }
 
@@ -179,5 +187,19 @@ public class Sections {
 
     private Section getLastSection() {
         return sections.get(sections.size()-1);
+    }
+
+    public List<Section> toOrderedList(Station lastUpStation) {
+        List<Section> orderedSections = new ArrayList<>();
+
+        Section iterateSection  = findSameUpStation(lastUpStation.getId()).get();
+        orderedSections.add(iterateSection);
+
+        while(findSameUpStation(iterateSection.getDownStation().getId()).isPresent()) {
+            iterateSection = findSameUpStation(iterateSection.getDownStation().getId()).get();
+            orderedSections.add(iterateSection);
+        }
+
+        return List.copyOf(orderedSections);
     }
 }

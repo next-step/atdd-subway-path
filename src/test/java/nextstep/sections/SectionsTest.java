@@ -161,8 +161,6 @@ public class SectionsTest {
         }
     }
 
-
-
     @Nested
     class Given_구간이있을때 {
 
@@ -187,6 +185,31 @@ public class SectionsTest {
                 Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isFalse();
             }
         }
+    }
+
+    @Nested
+    class Given_노선에_구간을_추가했을때 {
+        @Nested
+        class When_구간을조회하면 {
+
+            @Test
+            void 상행역_종점역_순으로_조회된다() {
+                Section givenAddSection = new Section(2L, lineAB, stationC, stationB, firstSectionDistance / 2);
+
+                Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isTrue();
+
+                lineAB.addSection(givenAddSection);
+
+
+                List<Section> orderedSections = lineAB.orderedSections();
+
+                Assertions.assertThat(orderedSections.get(0).getUpStation()).isEqualTo(stationA);
+                Assertions.assertThat(orderedSections.get(0).getDownStation()).isEqualTo(stationC);
+                Assertions.assertThat(orderedSections.get(1).getUpStation()).isEqualTo(stationC);
+                Assertions.assertThat(orderedSections.get(1).getDownStation()).isEqualTo(stationB);
+            }
+        }
+
     }
 
 

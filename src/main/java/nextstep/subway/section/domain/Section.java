@@ -70,6 +70,14 @@ public class Section {
         this.downStation = downStation;
     }
 
+    public void changeUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void changeDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
     public void decreaseDistance(int newSectionDistance) {
         this.distance -= newSectionDistance;
     }

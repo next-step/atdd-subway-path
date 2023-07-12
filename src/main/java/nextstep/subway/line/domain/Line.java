@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -89,6 +90,10 @@ public class Line {
 
     public boolean equalDownStation(Long stationId) {
         return Objects.equals(downStation.getId(), stationId);
+    }
+
+    public List<Section> orderedSections() {
+        return sections.toOrderedList(upStation);
     }
 
 }
