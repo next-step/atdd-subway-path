@@ -66,7 +66,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThat(lineAB.equalUpstation(stationC.getId())).isTrue();
+                Assertions.assertThat(lineAB.equalUpStation(stationC.getId())).isTrue();
             }
         }
 
@@ -79,6 +79,17 @@ public class SectionsTest {
                 Section givenAddSection = new Section(2L, lineAB, stationB, stationC, firstSectionDistance);
 
                 Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isTrue();
+            }
+
+            @Test
+            void 추가하고_하행종점이_변경된다() {
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC, firstSectionDistance);
+
+                Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isTrue();
+
+                lineAB.addSection(givenAddSection);
+
+                Assertions.assertThat(lineAB.equalDownStation(stationC.getId())).isTrue();
             }
         }
     }

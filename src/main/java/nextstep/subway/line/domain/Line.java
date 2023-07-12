@@ -66,6 +66,10 @@ public class Line {
             upStation = section.getUpStation();
         }
 
+        if (sections.requireDownStationChange(section)) {
+            downStation = section.getDownStation();
+        }
+
         section.attachToLine(this);
         sections.appendSection(section);
     }
@@ -76,8 +80,12 @@ public class Line {
         }
     }
 
-    public boolean equalUpstation(Long stationId) {
+    public boolean equalUpStation(Long stationId) {
         return Objects.equals(upStation.getId(), stationId);
+    }
+
+    public boolean equalDownStation(Long stationId) {
+        return Objects.equals(downStation.getId(), stationId);
     }
 
 }

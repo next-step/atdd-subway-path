@@ -108,6 +108,10 @@ public class Sections {
         return isSameUpStation(section.getDownStation().getId());
     }
 
+    public boolean requireDownStationChange(Section section) {
+        return isSameDownstation(section.getUpStation().getId());
+    }
+
     private Optional<Section> findSameUpStation(Long stationId) {
         return sections.stream()
                        .filter(section -> section.equalsUpstation(stationId))
