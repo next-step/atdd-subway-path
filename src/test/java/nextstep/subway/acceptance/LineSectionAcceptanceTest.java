@@ -149,7 +149,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 상행역과 하행역 모두 포함되지 않은 구간을 등록할 때 에러 발생")
     @Test
-    void addIncompleteLineSection() {
+    void addSectionUpStationOrDownStationNotContain() {
         // when
         Long 연신내역 = 지하철역_생성_요청("연신내역").jsonPath().getLong("id");
         Long 독바위역 = 지하철역_생성_요청("독바위역").jsonPath().getLong("id");

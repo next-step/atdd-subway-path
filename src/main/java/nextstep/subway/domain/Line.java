@@ -86,6 +86,10 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        if (section.equalsUpStation(upStation) && section.equalsDownStation(downStation)) {
+            throw new DataIntegrityViolationException("상행역과 하행역이 이미 등록된 구간입니다.");
+        }
+
         boolean isAddSection = false;
 
         if (sections.size() == 0) {

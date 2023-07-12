@@ -64,4 +64,8 @@ public class Section {
     public boolean equalsUpStation(Station station) {
         return upStation.equals(station);
     }
+
+    public boolean equalsDownStation(Station station) {
+        return downStation.equals(station);
+    }
 }
