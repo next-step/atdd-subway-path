@@ -1,5 +1,9 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.DuplicationStationException;
+import nextstep.subway.exception.IllegalNewSectionException;
+import nextstep.subway.exception.NotExistedStationException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -12,10 +16,6 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-
-    private static final String DUPLICATE_STATION_ERROR_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 등록 불가능 합니다.";
-    private static final String NOT_EXISTED_STATION_ERROR_MESSAGE = "상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않은 경우 등록 불가능 합니다.";
-
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
@@ -35,7 +35,7 @@ public class Sections {
             return;
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalNewSectionException();
     }
 
     public List<Station> getStations() {
@@ -112,11 +112,11 @@ public class Sections {
     private void validateNewSection(Section newSection) {
         Set<Station> stationsSet = getStationsSet();
         if (stationsSet.contains(newSection.getDownStation()) && stationsSet.contains(newSection.getUpStation())) {
-            throw new IllegalArgumentException(DUPLICATE_STATION_ERROR_MESSAGE);
+            throw new DuplicationStationException();
         }
         if (!sections.isEmpty() && !stationsSet.contains(newSection.getDownStation())
                 && !stationsSet.contains(newSection.getUpStation())) {
-            throw new IllegalArgumentException(NOT_EXISTED_STATION_ERROR_MESSAGE);
+            throw new NotExistedStationException();
         }
     }
 
