@@ -46,7 +46,30 @@ public class Sections {
     }
 
     public void appendSection(Section section) {
+        if (requireSectionDivide(section)) {
+            Section divideTargetSection = findDivideTargetSection(section);
+
+            divideTargetSection.changeStation(section.getUpStation(), section.getDownStation());
+            divideTargetSection.decreaseDistance(section.getDistance());
+        }
+
         this.sections.add(section);
+
+
+    }
+
+    private Section findDivideTargetSection(Section section) {
+        Optional<Section> maybeTarget = findSectionByStationId(section.getUpStation().getId());
+
+        if (maybeTarget.isEmpty()) {
+            maybeTarget = findSectionByStationId(section.getDownStation().getId());
+        }
+
+        return maybeTarget.get();
+    }
+
+    private boolean requireSectionDivide(Section section) {
+        return isSameUpStation(section.getUpStation().getId()) || isSameDownstation(section.getDownStation().getId());
     }
 
     public boolean isEmpty() {
@@ -152,11 +175,6 @@ public class Sections {
         return sections.stream()
                        .filter(section -> section.containStation(stationId))
                        .findAny();
-    }
-
-    private boolean alreadyRegistered(Long stationId) {
-        return sections.stream()
-                       .anyMatch(section -> section.containStation(stationId));
     }
 
     private Section getLastSection() {

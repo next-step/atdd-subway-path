@@ -61,7 +61,16 @@ public class Section {
         return Objects.equals(downStation.getId(), stationId);
     }
 
-    public boolean equalsById(Long id) {
+    private boolean equalsById(Long id) {
         return Objects.equals(this.id, id);
+    }
+
+    public void changeStation(Station upStation, Station downStation) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+    }
+
+    public void decreaseDistance(int newSectionDistance) {
+        this.distance -= newSectionDistance;
     }
 }

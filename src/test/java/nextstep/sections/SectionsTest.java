@@ -109,13 +109,28 @@ public class SectionsTest {
         }
 
         @Nested
-        class When_기존역사이길이보다_크면 {
+        class When_기존구간의_길이보다_크면 {
 
             @Test
             void 추가할수없다() {
                 Section givenAddSection = new Section(2L, lineAB, stationC, stationB, firstSectionDistance + 1);
 
                 Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isFalse();
+            }
+        }
+
+        @Nested
+        class When_기존구간의_길이보다_작으면 {
+
+            @Test
+            void 추가가능하다() {
+                Section givenAddSection = new Section(2L, lineAB, stationC, stationB, firstSectionDistance / 2);
+
+                Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isTrue();
+
+                lineAB.addSection(givenAddSection);
+
+                Assertions.assertThat(lineAB.equalDownStation(stationC.getId())).isTrue();
             }
         }
     }

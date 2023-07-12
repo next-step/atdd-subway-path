@@ -62,6 +62,9 @@ public class Line {
             throw new SubwayException(ErrorCode.SECTION_ADD_FAIL);
         }
 
+        /**
+         * 상행 / 하행 종점역 업데이트
+         */
         if (sections.requireUpStationChange(section)) {
             upStation = section.getUpStation();
         }
