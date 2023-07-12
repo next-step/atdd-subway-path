@@ -59,6 +59,10 @@ public class Sections {
             return true;
         }
 
+        if (findSameUpStation(section.getUpStation().getId()).isPresent()) {
+            return true;
+        }
+
         Section lastSection = getLastSection();
 
         if (!section.isUpstation(lastSection.getDownStation().getId())) {
@@ -70,6 +74,12 @@ public class Sections {
         }
 
         return true;
+    }
+
+    private Optional<Section> findSameUpStation(Long stationId) {
+        return sections.stream()
+                       .filter(section -> section.isUpstation(stationId))
+                       .findFirst();
     }
 
     public boolean possibleToDeleteSection(Long stationId) {
@@ -103,4 +113,8 @@ public class Sections {
         return sections.get(sections.size()-1);
     }
 
+    public Optional<Section> findLinkableSection(Section section) {
+
+        return Optional.empty();
+    }
 }

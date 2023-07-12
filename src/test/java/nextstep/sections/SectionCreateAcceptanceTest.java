@@ -2,6 +2,7 @@ package nextstep.sections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -32,16 +33,19 @@ public class SectionCreateAcceptanceTest {
     StationResponse lineUpstationA = null;
     StationResponse lineDownstationB = null;
     LineResponse lineAB = null;
+    int sectionABDistance = 10;
 
     StationResponse lineUpstationC = null;
     StationResponse lineDownstationD = null;
     LineResponse lineCD = null;
 
+
+
     @BeforeEach
     public void beforeEach() {
         lineUpstationA = stationFixture.지하철역_생성("upstationA");
         lineDownstationB = stationFixture.지하철역_생성("downStationB");
-        lineAB = lineFixture.노선생성("line-ab", "yellow", lineUpstationA.getId(), lineDownstationB.getId(), 10);
+        lineAB = lineFixture.노선생성("line-ab", "yellow", lineUpstationA.getId(), lineDownstationB.getId(), sectionABDistance);
 
         lineUpstationC = stationFixture.지하철역_생성("upstationC");
         lineDownstationD = stationFixture.지하철역_생성("downStationD");
@@ -100,6 +104,56 @@ public class SectionCreateAcceptanceTest {
                 ExtractableResponse<Response> response = sectionFixture.구간생성(lineAB.getId(), lineDownstationB.getId(), lineUpstationC.getId(), 4);
 
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            }
+        }
+    }
+
+    /**
+     *
+     * given 구간이 있을때
+     * when 구간 사이에 역을 추가하면
+     * then 구간이 추가된다
+     */
+    @DisplayName("구간이 있을때")
+    @Nested
+    class GivenSection {
+
+        @DisplayName("기존 구간에서 상행역이 같지만 길이가 짧은 역을 추가할 경우")
+        @Nested
+        class WhenRegisterSameUpStationAndLessDistance {
+
+
+            @DisplayName("구간이 추가된다 ")
+            @Test
+            void sectionShouldAdd() {
+                ExtractableResponse<Response> response = sectionFixture.구간생성(lineAB.getId(), lineUpstationA.getId(), lineUpstationC.getId(), 5);
+            }
+        }
+
+        @DisplayName("기존 구간에서 상행역이 같지만 길이가 긴 역을 추가할 경우")
+        @Nested
+        class WhenRegisterSameUpStationAndLongerDistance {
+
+
+            @DisplayName("추가할 수 없다")
+            @Test
+            void sectionShouldAdd() {
+                ExtractableResponse<Response> response = sectionFixture.구간생성(lineAB.getId(), lineUpstationA.getId(), lineUpstationC.getId(), sectionABDistance + 1);
+
+                Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
+
+        @DisplayName("추가되는 역이 이미 노선에 등록되어 있으면")
+        @Nested
+        class WhenRegisterSameStations {
+
+            @DisplayName("추가할 수 없다")
+            @Test
+            void sectionCouldNotAdd() {
+                ExtractableResponse<Response> response = sectionFixture.구간생성(lineAB.getId(), lineUpstationA.getId(), lineDownstationB.getId(), 3);
+
+                Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             }
         }
     }

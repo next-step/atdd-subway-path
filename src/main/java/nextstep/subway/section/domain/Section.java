@@ -60,4 +60,8 @@ public class Section {
     public boolean equalsDownStation(Long stationId) {
         return Objects.equals(downStation.getId(), stationId);
     }
+
+    public boolean equalsById(Long id) {
+        return Objects.equals(this.id, id);
+    }
 }
