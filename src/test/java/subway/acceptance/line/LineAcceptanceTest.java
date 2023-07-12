@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
-import subway.ApiTest;
+import subway.acceptance.AcceptanceTest;
 import subway.acceptance.station.StationSteps;
 
 import java.util.ArrayList;
@@ -14,9 +14,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends ApiTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
     public List<Long> stationIds = new ArrayList<>();
 

@@ -4,16 +4,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
-import subway.ApiTest;
+import subway.acceptance.AcceptanceTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest extends ApiTest {
+public class StationAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
