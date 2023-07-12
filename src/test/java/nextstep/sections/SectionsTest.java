@@ -121,4 +121,34 @@ public class SectionsTest {
             }
         }
     }
+
+
+
+    @Nested
+    class Given_구간이있을때 {
+
+        @Nested
+        class When_이미등록된구간을등록하면 {
+
+            @Test
+            void 추가할수없다() {
+                Section givenAddSection = new Section(2L, lineAB, stationA, stationB, firstSectionDistance);
+
+                Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isFalse();
+            }
+        }
+
+        @Nested
+        class When_새로운구간과_접점이없는_구간을_등록하면 {
+
+            @Test
+            void 추가할수없다() {
+                Section givenAddSection = new Section(2L, lineAB, stationC, stationD, firstSectionDistance);
+
+                Assertions.assertThat(sections.possibleToAddSection(givenAddSection)).isFalse();
+            }
+        }
+    }
+
+
 }

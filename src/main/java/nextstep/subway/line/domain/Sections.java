@@ -82,6 +82,10 @@ public class Sections {
             }
         }
 
+        if (findSectionByStationId(section.getUpStation().getId()).isEmpty() && findSectionByStationId(section.getDownStation().getId()).isEmpty()) {
+            return false;
+        }
+
         Section lastSection = getLastSection();
 
 //        if (!section.equalsUpstation(lastSection.getDownStation().getId())) {
