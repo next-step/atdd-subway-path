@@ -1,4 +1,4 @@
-package nextstep.subway.utils;
+package nextstep.subway.support;
 
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.ActiveProfiles;

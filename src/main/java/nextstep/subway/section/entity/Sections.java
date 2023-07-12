@@ -46,10 +46,6 @@ public class Sections {
                 .stream()
                 .map(Station::getId)
                 .collect(Collectors.toList());
-        System.out.println("stationId = " + stationId);
-        for (Long id : allStationIds){
-            System.out.println("id = " + id);
-        }
         if (!allStationIds.contains(stationId)) {
             throw new InvalidLineSectionException(ErrorCode.UNREGISTERED_STATION);
         }

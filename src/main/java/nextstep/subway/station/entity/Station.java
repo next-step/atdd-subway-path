@@ -7,6 +7,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @EqualsAndHashCode(of = {"id"})
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Station {
     @Id
