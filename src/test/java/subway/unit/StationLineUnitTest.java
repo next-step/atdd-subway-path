@@ -320,8 +320,82 @@ public class StationLineUnitTest {
         Assertions.assertEquals(0, sectionDistance.compareTo(expectedNewSectionDistance));
     }
 
+    @DisplayName("정상적인 노선의 상행종점역 삭제")
+    @Test
+    void deleteStationLineSection_FirstStation() {
+        //given
+        final Station aStation = new Station("aStation");
+        final Station bStation = new Station("bStation");
+        final Station cStation = new Station("cStation");
 
-    @DisplayName("삭제하려는 구간의 지하철 노선이 2개의 역만 가진 노선일 경우 애러")
+        createEntityTestIds(List.of(aStation, bStation, cStation), 1L);
+
+        final StationLine line = StationLine.builder()
+                .name("1호선")
+                .color("blue")
+                .upStation(aStation)
+                .downStation(bStation)
+                .distance(BigDecimal.TEN)
+                .build();
+
+        line.createSection(bStation, cStation, BigDecimal.ONE);
+
+        createEntityTestId(line, 1L);
+        createEntityTestIds(line.getSections(), 1L);
+
+        //when
+        Assertions.assertDoesNotThrow(() -> line.deleteSection(aStation));
+
+        //then
+        final Station lineFirstStation = line.getLineFirstStation();
+        final Station lineLastStation = line.getLineLastStation();
+
+        Assertions.assertEquals(bStation, lineFirstStation);
+        Assertions.assertEquals(cStation, lineLastStation);
+        Assertions.assertFalse(line.getAllStations().contains(aStation));
+    }
+
+    @DisplayName("정상적인 노선의 하행종점역 삭제")
+    @Test
+    void deleteStationLineSection_LastStation() {
+        //given
+        final Station aStation = new Station("aStation");
+        final Station bStation = new Station("bStation");
+        final Station cStation = new Station("cStation");
+
+        createEntityTestIds(List.of(aStation, bStation, cStation), 1L);
+
+        final StationLine line = StationLine.builder()
+                .name("1호선")
+                .color("blue")
+                .upStation(aStation)
+                .downStation(bStation)
+                .distance(BigDecimal.TEN)
+                .build();
+
+        line.createSection(bStation, cStation, BigDecimal.ONE);
+
+        createEntityTestId(line, 1L);
+        createEntityTestIds(line.getSections(), 1L);
+
+        //when
+        Assertions.assertDoesNotThrow(() -> line.deleteSection(cStation));
+
+        //then
+        final Station lineFirstStation = line.getLineFirstStation();
+        final Station lineLastStation = line.getLineLastStation();
+
+        Assertions.assertEquals(aStation, lineFirstStation);
+        Assertions.assertEquals(bStation, lineLastStation);
+        Assertions.assertFalse(line.getAllStations().contains(cStation));
+
+        final BigDecimal expectedNewSectionDistance = BigDecimal.valueOf(11);
+        final BigDecimal sectionDistance = line.getSections().get(0).getDistance();
+        Assertions.assertEquals(0, sectionDistance.compareTo(expectedNewSectionDistance));
+    }
+
+
+    @DisplayName("삭제하려는 역의 지하철 노선이 2개의 역만 가진 노선일 경우 예외")
     @Test
     void deleteStationLineSection_has_2_StationLine() {
         //given
@@ -346,5 +420,33 @@ public class StationLineUnitTest {
                 () -> line.deleteSection(bStation));
 
         Assertions.assertEquals("section must be greater or equals than 2", throwable.getMessage());
+    }
+
+    @DisplayName("삭제하려는 역이 노선에 존재하지 않을 경우 예외")
+    @Test
+    void deleteStationLineSection_Not_Included_In_StationLine() {
+        //given
+        final Station aStation = new Station("aStation");
+        final Station bStation = new Station("bStation");
+        final Station cStation = new Station("bStation");
+
+        createEntityTestIds(List.of(aStation, bStation,cStation), 1L);
+
+        final StationLine line = StationLine.builder()
+                .name("1호선")
+                .color("blue")
+                .upStation(aStation)
+                .downStation(bStation)
+                .distance(BigDecimal.TEN)
+                .build();
+
+        createEntityTestId(line, 1L);
+        createEntityTestIds(line.getSections(), 1L);
+
+        //when & then
+        final Throwable throwable = Assertions.assertThrows(StationLineSectionDeleteException.class,
+                () -> line.deleteSection(cStation));
+
+        Assertions.assertEquals("the station not included to this line", throwable.getMessage());
     }
 }
