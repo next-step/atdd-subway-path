@@ -58,7 +58,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<StationResponse> stations = stationResponse.jsonPath().getList(".", StationResponse.class);
+        List<StationResponse> stations = stationResponse.jsonPath()
+                .getList(".", StationResponse.class);
         assertThat(stations).hasSize(2);
     }
 

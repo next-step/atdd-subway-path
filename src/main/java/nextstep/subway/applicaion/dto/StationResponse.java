@@ -1,6 +1,7 @@
 package nextstep.subway.applicaion.dto;
 
 public class StationResponse {
+
     private Long id;
     private String name;
 

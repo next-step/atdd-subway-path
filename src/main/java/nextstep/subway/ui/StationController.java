@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 public class StationController {
+
     private StationService stationService;
 
     public StationController(StationService stationService) {
@@ -18,7 +19,8 @@ public class StationController {
     }
 
     @PostMapping("/stations")
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+    public ResponseEntity<StationResponse> createStation(
+            @RequestBody StationRequest stationRequest) {
         StationResponse station = stationService.saveStation(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
     }
