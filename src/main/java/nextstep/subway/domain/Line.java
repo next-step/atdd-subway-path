@@ -12,7 +12,7 @@ public class Line {
     private String color;
 
     @Embedded
-    Sections sections = new Sections(this);
+    LineSections lineSections = new LineSections(this);
 
     public Line() {
     }
@@ -47,30 +47,30 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        return lineSections.getStations();
     }
 
     public void removeSection() {
-        sections.removeLastStation();
+        lineSections.removeLastStation();
     }
 
     public void addSection(Section section) {
-        sections.addSection(section);
+        lineSections.addSection(section);
     }
 
     public boolean isEmptySections() {
-        return sections.isEmpty();
+        return lineSections.isEmpty();
     }
 
     public int sizeSections() {
-        return sections.size();
+        return lineSections.size();
     }
 
     public Station getLastStation() {
-        return sections.getDownStation();
+        return lineSections.getDownStation();
     }
 
     public int getSectionsSize() {
-        return sections.size();
+        return lineSections.size();
     }
 }
