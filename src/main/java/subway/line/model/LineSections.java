@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import subway.exception.SubwayBadRequestException;
 import subway.exception.SubwayNotFoundException;
 import subway.line.constant.SubwayMessage;
+import subway.line.dto.SectionAppendResponse;
 import subway.station.model.Station;
 
 import javax.persistence.CascadeType;
@@ -11,6 +12,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,14 +25,56 @@ public class LineSections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    public void add(Section section, Line line) {
-        if (line.getLineSections().sections.size() > 1) {
-            validUpStationInNewSectionIsDownStationInExistLine(section, line);
-            validDownStationInNewSectionIsNotDuplicatedInExistLine(section, line);
+    public SectionAppendResponse add(Section newSection, Line line) {
+        SectionAppendResponse appendResponse = new SectionAppendResponse();
+
+        if (line.getLineSections().sections.size() > 0) {
+            // up이든 down이든 둘중 하나는 연결할 수 있어야됨!
+            validStationInNewSectionIsStationInExistLine(newSection, line);
+//            validUpStationInNewSectionIsDownStationInExistLine(section, line);
+//            validDownStationInNewSectionIsNotDuplicatedInExistLine(section, line);
+
+            // 구간이 중복되는 경우
+            validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, line);
+
+            // 중간에 넣는 경우
+//            if (newSection.getDownStation().equals(line.getDownStation()) ||
+//                    newSection.getUpStation().equals(line.getUpStation())) {
+//                if (this.getTotalDistance() <= newSection.getDistance()) {
+//                    throw new SubwayBadRequestException(9999L, "중간에 추가하고자 하는 구간의 길이가 총 길이를 넘을 수 없습니다."); //TODO : constant
+//                }
+//                appendResponse = SectionAppendResponse.builder()
+//                        .upStation(line.getUpStation())
+//                        .downStation(line.getDownStation())
+//                        .build();
+//            }
+
+            // 끝에 늘리는 경우
+            if (newSection.getDownStation().equals(line.getUpStation())) {
+                appendResponse = SectionAppendResponse.builder()
+                        .upStation(newSection.getUpStation())
+                        .downStation(line.getDownStation())
+                        .build();
+            }
+            if (newSection.getUpStation().equals(line.getDownStation())) {
+                appendResponse = SectionAppendResponse.builder()
+                        .upStation(line.getUpStation())
+                        .downStation(newSection.getDownStation())
+                        .build();
+            }
         }
-        section.setLine(line);
-        this.sections.add(section);
+
+        if (line.getLineSections().sections.size() < 1) {
+            appendResponse = SectionAppendResponse.builder()
+                    .upStation(line.getUpStation())
+                    .downStation(line.getDownStation())
+                    .build();
+        }
+        newSection.setLine(line);
+        this.sections.add(newSection);
+        return appendResponse;
     }
+
 
     public List<Station> getStations(Station upStation, Station downStation) {
         List<Section> sortedSections = new ArrayList<>();
@@ -71,6 +115,7 @@ public class LineSections {
                 .reduce(0L, Long::sum);
     }
 
+    @Deprecated
     private Section getLastSection() {
         int lastSectionIndex = this.sections.size() - 1;
         return this.sections.get(lastSectionIndex);
@@ -94,29 +139,53 @@ public class LineSections {
         return this.sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
                 .findAny()
-                .orElseThrow(() -> new SubwayNotFoundException(9999L, "노선에 등록된 상행역이 구간에 없습니다."));
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.STATION_NOT_FOUND_UP_STATION_IN_LINE_MESSAGE));
     }
 
-    private void validUpStationInNewSectionIsDownStationInExistLine(Section section, Line line) {
-        if (!line.getDownStation().equals(section.getUpStation())) {
-            throw new SubwayBadRequestException(SubwayMessage.DOWN_STATION_NOT_MATCH_WITH_UP_STATION);
+    private void validStationInNewSectionIsStationInExistLine(Section section, Line line) {
+        List<Station> stations = this.getStations(line.getUpStation(), line.getDownStation());
+        Optional<Station> findStation = stations.stream()
+                .filter(station -> station.equals(section.getUpStation()) || station.equals(section.getDownStation()))
+                .findAny();
+        if (findStation.isEmpty()) {
+            throw new SubwayBadRequestException(SubwayMessage.SECTION_ADD_STATION_NOT_FOUND_ANYONE_MESSAGE);
         }
     }
 
-    private void validDownStationInNewSectionIsNotDuplicatedInExistLine(Section section, Line line) {
-        List<Station> stationsInLine = line.getStations();
-        stationsInLine.stream()
-                .filter(s -> s.equals(section.getDownStation()))
-                .findAny()
-                .ifPresent(e -> {
-                    throw new SubwayBadRequestException(SubwayMessage.ADD_SECTION_STATION_DUPLICATION_VALID_MESSAGE);
-                });
+    private void validStationInNewSectionIsNotDuplicatedStationInExistLine(Section section, Line line) {
+        List<Station> stations = this.getStations(line.getUpStation(), line.getDownStation());
+        Optional<Station> findUpStation = stations.stream()
+                .filter(station -> station.equals(section.getUpStation()))
+                .findAny();
+        Optional<Station> findDownStation = stations.stream()
+                .filter(station -> station.equals(section.getDownStation()))
+                .findAny();
+        if (findUpStation.isPresent() && findDownStation.isPresent()) {
+            throw new SubwayBadRequestException(SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE_MESSAGE.getCode(),
+                    SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE_MESSAGE.getFormatMessage(section.getUpStation().getName(), section.getDownStation().getName()));
+        }
     }
+
+//    private void validUpStationInNewSectionIsDownStationInExistLine(Section section, Line line) {
+//        if (!line.getDownStation().equals(section.getUpStation())) {
+//            throw new SubwayBadRequestException(SubwayMessage.DOWN_STATION_NOT_MATCH_WITH_UP_STATION);
+//        }
+//    }
+//
+//    private void validDownStationInNewSectionIsNotDuplicatedInExistLine(Section section, Line line) {
+//        List<Station> stationsInLine = line.getStations();
+//        stationsInLine.stream()
+//                .filter(s -> s.equals(section.getDownStation()))
+//                .findAny()
+//                .ifPresent(e -> {
+//                    throw new SubwayBadRequestException(SubwayMessage.SECTION_ADD_STATION_DUPLICATION_VALID_MESSAGE);
+//                });
+//    }
 
     private void validStationsCountIsOverMinimalSectionSize() {
         if (this.getSectionsCount() < MINIMAL_SECTION_SIZE) {
-            throw new SubwayBadRequestException(SubwayMessage.DOWN_STATION_MINIMAL_VALID_MESSAGE.getCode(),
-                    SubwayMessage.DOWN_STATION_MINIMAL_VALID_MESSAGE.getFormatMessage(MINIMAL_SECTION_SIZE));
+            throw new SubwayBadRequestException(SubwayMessage.STATION_DELETE_MINIMAL_VALID_MESSAGE.getCode(),
+                    SubwayMessage.STATION_DELETE_MINIMAL_VALID_MESSAGE.getFormatMessage(MINIMAL_SECTION_SIZE));
         }
     }
 

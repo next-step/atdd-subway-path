@@ -44,7 +44,7 @@ class LineTest {
         line.addSection(section);
 
         // then
-        assertThat(line.getSectionsCount()).isEqualTo(1);
+        assertThat(line.getLineSections().getSectionsCount()).isEqualTo(1);
 
     }
 
@@ -84,7 +84,7 @@ class LineTest {
         line.getLineSections().remove(section);
 
         // then
-        long sectionsCount = line.getSectionsCount();
+        long sectionsCount = line.getLineSections().getSectionsCount();
         assertThat(sectionsCount).isEqualTo(1);
     }
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import subway.line.dto.SectionAppendResponse;
 import subway.station.model.Station;
 
 import javax.persistence.Column;
@@ -52,17 +53,15 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(Section section) { // TODO : 바뀐 스팩의 상행역/하행역 지정 반영하기
-        this.lineSections.add(section, this);
-        this.downStation = section.getDownStation();
+    public void addSection(Section newSection) { // TODO : 바뀐 스팩의 상행역/하행역 지정 반영하기
+        SectionAppendResponse response = this.lineSections.add(newSection, this);
+//        this.downStation = section.getDownStation(); // 원래 기준
+        this.upStation = response.getUpStation();
+        this.downStation = response.getDownStation();
     }
 
     public List<Station> getStations() {
         return lineSections.getStations(this.upStation, this.downStation);
-    }
-
-    public long getSectionsCount() { // TODO : 다시 안으로 넣기 ->  테스트 말고 쓰는데 없음
-        return lineSections.getSectionsCount();
     }
 
     public void deleteSectionByStation(Station station) {

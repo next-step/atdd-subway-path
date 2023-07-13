@@ -49,31 +49,31 @@ public class LineService {
         line.updateLine(request.getName(), request.getColor());
     }
 
-    public List<LineResponse> findAll() { // plamark
+    public List<LineResponse> findAll() {
         return lineRepository.findAll().stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) { // plamark
+    public LineResponse findById(Long id) {
         return lineRepository.findById(id)
                 .map(LineResponse::from)
                 .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND_MESSAGE));
     }
 
-    public Line findLineById(Long id) { // plamark only
+    public Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND_MESSAGE));
     }
 
     @Transactional
-    public void deleteById(Long id) { // plamark
+    public void deleteById(Long id) {
         lineRepository.findById(id)
                 .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND_MESSAGE));
         lineRepository.deleteById(id);
     }
 
-    @Transactional // plamark
+    @Transactional
     public LineResponse createLine(LineCreateRequest lineRequest) {
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
@@ -91,7 +91,7 @@ public class LineService {
     }
 
     @Transactional
-    public void appendSection(final Long lineId, SectionCreateRequest request) { // plamark
+    public void appendSection(final Long lineId, SectionCreateRequest request) {
         Station upStation = stationService.findStationById(request.getUpStationId());
         Station downStation = stationService.findStationById(request.getDownStationId());
         Line foundLine = this.findLineById(lineId);
@@ -105,7 +105,7 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(SectionDeleteRequest request) { // plamark
+    public void deleteSection(SectionDeleteRequest request) {
         Line foundLine = this.findLineById(request.getLineId());
 
         Station station = stationService.findStationById(request.getStationId());

@@ -52,7 +52,7 @@ public class LineServiceTest {
         lineService.appendSection(이호선.getId(), 구간_요청);
 
         // then
-        assertThat(이호선.getSectionsCount()).isEqualTo(1);
+        assertThat(이호선.getLineSections().getSectionsCount()).isEqualTo(1);
     }
 
 
@@ -93,7 +93,7 @@ public class LineServiceTest {
         lineService.deleteSection(구간_삭제_요청);
 
         // then
-        long sectionsCount = lineService.findLineById(이호선.getId()).getSectionsCount();
+        long sectionsCount = lineService.findLineById(이호선.getId()).getLineSections().getSectionsCount();
         assertThat(sectionsCount).isEqualTo(1);
 
     }

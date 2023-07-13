@@ -59,7 +59,7 @@ public class LineServiceMockTest {
         lineService.appendSection(lineId, createRequest);
 
         // then
-        assertThat(lineService.findLineById(lineId).getSectionsCount()).isEqualTo(1);
+        assertThat(lineService.findLineById(lineId).getLineSections().getSectionsCount()).isEqualTo(1);
     }
 
     /**
@@ -105,7 +105,7 @@ public class LineServiceMockTest {
         lineService.deleteSection(구간_삭제_요청);
 
         // then
-        long sectionsSize = lineService.findLineById(lineId).getSectionsCount();
+        long sectionsSize = lineService.findLineById(lineId).getLineSections().getSectionsCount();
         assertThat(sectionsSize).isEqualTo(1);
 
     }

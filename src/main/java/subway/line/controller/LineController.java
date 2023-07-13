@@ -28,43 +28,43 @@ public class LineController {
 
     private final LineService lineService;
 
-    @PostMapping // plamark
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineRequest) {
         LineResponse line = lineService.createLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping // plamark
+    @GetMapping
     public ResponseEntity<List<LineResponse>> retrieveLines() {
         List<LineResponse> lineResponses = lineService.findAll();
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping("/{id}") // plamark
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> retrieveLine(@PathVariable Long id) {
         LineResponse lineResponse = lineService.findById(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @PutMapping("/{id}") // plamatk
+    @PutMapping("/{id}")
     public ResponseEntity<Void> modifyLine(@PathVariable Long id, @RequestBody LineModifyRequest request) {
         lineService.updateLine(id, request);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}") // plamark
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{id}/sections") // plamark
+    @PostMapping("/{id}/sections")
     public ResponseEntity<Void> appendSection(@PathVariable(name = "id") Long lineId, @RequestBody SectionCreateRequest request) {
         lineService.appendSection(lineId, request);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}/sections") // plamark
+    @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable(name = "id") Long lineId, @RequestParam(name = "stationId") Long stationId) {
         SectionDeleteRequest request = SectionDeleteRequest.builder()
                 .stationId(stationId)
