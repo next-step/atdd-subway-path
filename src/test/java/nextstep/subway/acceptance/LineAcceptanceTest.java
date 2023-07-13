@@ -136,4 +136,61 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given: 상행 종점역과 중간역 그리고 하행 종점역을 갖는 노선을 생성한다
+     * When: 중간역을 삭제하면
+     * Then: 노선 조회시 중간역은 조회되지 않는다.
+     * Then: 노선 조회시 노선의 총 길이는 상행 종점역과 중간역 사이의 거리와 중간역과 하행 종점역 사이의 거리를 합한 값이다.
+     */
+    @Test
+    void 구간_삭제_기능() {
+        //given
+
+        //when
+
+        //then
+    }
+
+    /**
+     * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
+     * When: 상행 종점역을 삭제하면
+     * Then: 예외가 발생한다.
+     */
+    @Test
+    void 구간이_하나인_노선에서_상행_종점역을_제거할_때() {
+        //given
+
+        //when
+
+        //then
+    }
+
+    /**
+     * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
+     * When: 상행 종점역을 삭제하면
+     * Then: 예외가 발생한다.
+     */
+    @Test
+    void 구간이_하나인_노선에서_하행_종점역을_제거할_때() {
+        //given
+
+        //when
+
+        //then
+    }
+
+    /**
+     * Given: 상행 종점역과 중간역 그리고 하행 종점역을 갖는 노선을 생성한다
+     * When: 새로운역을 삭제하면
+     * Then: 예외가 발생한다
+     */
+    @Test
+    void 노선에_등록되어있지_않은_역을_제거하려할_때() {
+        //given
+
+        //when
+
+        //then
+    }
 }
