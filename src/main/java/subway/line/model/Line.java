@@ -52,21 +52,21 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(Section section) {
+    public void addSection(Section section) { // TODO : 바뀐 스팩의 상행역/하행역 지정 반영하기
         this.lineSections.add(section, this);
         this.downStation = section.getDownStation();
     }
 
-    public List<Station> getStationsInSections() {
-        return lineSections.getStations();
+    public List<Station> getStations() {
+        return lineSections.getStations(this.upStation, this.downStation);
     }
 
-    public long getSectionsCount() {
+    public long getSectionsCount() { // TODO : 다시 안으로 넣기 ->  테스트 말고 쓰는데 없음
         return lineSections.getSectionsCount();
     }
 
     public void deleteSectionByStation(Station station) {
-        Section lastSection = lineSections.deleteSectionByStation(station);
+        Section lastSection = lineSections.removeSectionByStation(station);
         this.downStation = lastSection.getUpStation();
     }
 }

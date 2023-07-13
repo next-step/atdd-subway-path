@@ -60,7 +60,7 @@ class LineTest {
         Line line = 이호선_기본구간_생성();
 
         // when
-        List<Station> stations = line.getStationsInSections();
+        List<Station> stations = line.getStations();
 
         // then
         assertThat(stations.size()).isEqualTo(2);

@@ -21,7 +21,7 @@ public class LineResponse {
     private List<StationResponse> stations;
 
     public static LineResponse from(Line line) {
-        List<Station> stationsInSections = line.getStationsInSections();
+        List<Station> stationsInSections = line.getStations();
         List<StationResponse> stationResponses = stationsInSections.stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());

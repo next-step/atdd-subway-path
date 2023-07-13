@@ -1,5 +1,7 @@
 package subway.acceptance.line;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import subway.acceptance.station.StationSteps;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
@@ -72,7 +75,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    // spec change
+    // deprecated -> spec change at week2
 
 //    /**
 //     * Given 3개의 역을 가진 구간의 노선을 생성하고
@@ -141,25 +144,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stations.size()).isEqualTo(2);
     }
 
-    /**
-     * Given 3개의 역이 등록된 구간을 가진 노선이 있고
-     * When 노선의 두번째 역을 제거하면
-     * Then 역이 제거되지 않는다.
-     */
-    @DisplayName("구간의 중간 역을 제거할 수 없다.")
-    @Test
-    void deleteStationInMiddleOfSection() {
-        // given
-        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+    // deprecated -> spec change at week2
 
-        // when
-        final Long stationId = stationIds.get(1);
-        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
-
-        // then
-        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
+//    /**
+//     * Given 3개의 역이 등록된 구간을 가진 노선이 있고
+//     * When 노선의 두번째 역을 제거하면
+//     * Then 역이 제거되지 않는다.
+//     */
+//    @DisplayName("구간의 중간 역을 제거할 수 없다.")
+//    @Test
+//    void deleteStationInMiddleOfSection() {
+//        // given
+//        final String createdLocation = 세구간이_포함된_노선_생성_작업();
+//        final String appendLocation = createdLocation + "/sections";
+//
+//        // when
+//        final Long stationId = stationIds.get(1);
+//        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
+//
+//        // then
+//        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+//    }
 
     /**
      * Given 노선이 있고
@@ -209,6 +214,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선의 가장 앞에 새 구간을 추가한다.")
     @Test
     void appendSectionBeforeLine() {
+        // given
+        String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
+
+        // when
+        var 상행에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(3), stationIds.get(0), 10L);
+//        var response = LineSteps.구간_추가_API(appendLocation, 상행에_추가하는_구간_요청);
+//
+//        // then
+//        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+//
+//        // then
+//        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
+//        assertThat(retrieveLine.body().jsonPath().getList("stations.name").size()).isEqualTo(4);
+//        Long t = retrieveLine.body().jsonPath().get("stations.distance");
+//        assertThat(t).isEqualTo(20);
+
+        // TODO: distance 합
+        // TODO: 상행추가
 
     }
 
