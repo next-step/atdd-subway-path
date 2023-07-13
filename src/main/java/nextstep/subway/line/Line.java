@@ -69,6 +69,15 @@ public class Line {
         return sections;
     }
 
-    public void deleteSection(Station downStreamTerminusStation) {
+    public void deleteStation(Station downStation) {
+        if (sections.size() == 1) {
+            throw new SingleSectionRemovalException();
+        }
+        Section section = sections.get(sections.size() - 1);
+        if (section.isSameDownStation(downStation)) {
+            sections.remove(section);
+            return;
+        }
+        throw new NonDownstreamTerminusException();
     }
 }

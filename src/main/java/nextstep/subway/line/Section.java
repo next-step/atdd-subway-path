@@ -79,6 +79,10 @@ public class Section {
     }
 
     public boolean hasDownStation(Station downStation) {
-        return this.downStation == downStation || this.upStation == downStation;
+        return this.downStation.equals(downStation) || this.upStation.equals(downStation);
+    }
+
+    public boolean isSameDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 }
