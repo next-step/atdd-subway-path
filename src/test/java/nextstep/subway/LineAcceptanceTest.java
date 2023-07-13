@@ -456,7 +456,7 @@ public class LineAcceptanceTest {
      * When 구간이 하나인 노선의 하행 종점역을 역을 제거하면
      * Then 예외가 발생하고 역이 제거되지 않는다
      */
-    @DisplayName("하행 종점역이 아니기 때문에 구간 제거 실패")
+    @DisplayName("구간이 하나여서 제거 실패")
     @Test
     void removeSectionFailedByOnyOneSection() {
         // given

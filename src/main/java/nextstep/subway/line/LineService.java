@@ -25,11 +25,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(StationNotFoundException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(StationNotFoundException::new);
-        Section section = sectionRepository.save(new Section(null, upStation, downStation, lineRequest.getDistance()));
+        Section section = saveSectionOf(lineRequest.getUpStationId(), lineRequest.getDownStationId(),
+                lineRequest.getDistance());
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
                 List.of(section));
         return LineResponse.from(lineRepository.save(line));
@@ -59,14 +56,19 @@ public class LineService {
 
     @Transactional
     public LineResponse addSection(Long id, SectionRequest sectionRequest) {
-        Station upstreamStation = stationRepository.findById(sectionRequest.getUpStationId())
-                .orElseThrow(StationNotFoundException::new);
-        Station downstreamStation = stationRepository.findById(sectionRequest.getDownStationId())
-                .orElseThrow(StationNotFoundException::new);
-        Section section = sectionRepository.save(new Section(null, upstreamStation, downstreamStation, sectionRequest.getDistance()));
+        Section section = saveSectionOf(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
+                sectionRequest.getDistance());
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         line.addSection(section);
         return LineResponse.from(line);
+    }
+
+    private Section saveSectionOf(Long sectionRequest, Long sectionRequest1, int sectionRequest2) {
+        Station upstreamStation = stationRepository.findById(sectionRequest)
+                .orElseThrow(StationNotFoundException::new);
+        Station downstreamStation = stationRepository.findById(sectionRequest1)
+                .orElseThrow(StationNotFoundException::new);
+        return sectionRepository.save(new Section(null, upstreamStation, downstreamStation, sectionRequest2));
     }
 
     @Transactional

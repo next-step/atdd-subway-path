@@ -58,6 +58,10 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        if (sections.stream()
+                .anyMatch(savedSection -> savedSection.hasDownStation(section.getDownStation()))) {
+            throw new DownstreamStationIncludedException();
+        }
         sections.add(section);
     }
 
