@@ -6,7 +6,7 @@ import nextstep.subway.section.entity.Sections;
 import nextstep.subway.station.entity.Station;
 
 import javax.persistence.*;
-import java.util.Collections;
+import java.util.ArrayList;
 
 
 @Entity
@@ -38,11 +38,14 @@ public class Line {
         this.name = name;
         this.color = color;
         this.sections = new Sections(
-                Collections.singletonList(Section.builder()
-                        .upStation(upStation)
-                        .downStation(downStation)
-                        .distance(distance)
-                        .build()),
+                new ArrayList<>() {{
+                    add(Section.builder()
+                            .upStation(upStation)
+                            .downStation(downStation)
+                            .distance(distance)
+                            .build()
+                    );
+                }},
                 distance
         );
     }

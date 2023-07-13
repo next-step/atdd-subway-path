@@ -84,7 +84,7 @@ public class LineSectionAcceptanceTest {
     void addLineSection() {
         // when
         SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
-                지하철_노선의_하행종점역_아이디를_찾는다(신분당선)
+                지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
         );
         ExtractableResponse<Response> saveLineSectionResponse = saveLineSection(광교역이_하행_종점역인_구간);
 
@@ -94,7 +94,7 @@ public class LineSectionAcceptanceTest {
                 () -> {
                     LineResponseDto 추가한_지하철_구간 = saveLineSectionResponse.as(LineResponseDto.class);
 
-                    assertThat(지하철_노선의_하행종점역_아이디를_찾는다(추가한_지하철_구간))
+                    assertThat(지하철_노선의_하행_종점역_아이디를_찾는다(추가한_지하철_구간))
                             .isEqualTo(광교역이_하행_종점역인_구간.getDownStationId());
                 }
         );
@@ -112,7 +112,7 @@ public class LineSectionAcceptanceTest {
     void addAlreadyRegisteredDownStation() {
         // given
         SaveLineSectionRequestDto 판교역이_하행_종점역인_구간 = 판교역이_하행_종점역인_구간을_생성한다(
-                지하철_노선의_하행종점역_아이디를_찾는다(신분당선)
+                지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
         );
         SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
                 판교역이_하행_종점역인_구간.getDownStationId()
@@ -147,7 +147,7 @@ public class LineSectionAcceptanceTest {
     void createNotExistDownStation() {
         // when
         SaveLineSectionRequestDto 존재하지_않는_역이_하행_종점역인_구간 = SaveLineSectionRequestDto.builder()
-                .downStationId(지하철_노선의_하행종점역_아이디를_찾는다(신분당선))
+                .downStationId(지하철_노선의_하행_종점역_아이디를_찾는다(신분당선))
                 .upStationId(0L)
                 .distance(1)
                 .build();
@@ -176,7 +176,7 @@ public class LineSectionAcceptanceTest {
     void deleteLastLineSection() {
         // given
         SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
-                지하철_노선의_하행종점역_아이디를_찾는다(신분당선)
+                지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
         );
         saveLineSection(광교역이_하행_종점역인_구간);
 
@@ -214,7 +214,7 @@ public class LineSectionAcceptanceTest {
     void deleteMiddleLineSection() {
         // given
         SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
-                지하철_노선의_하행종점역_아이디를_찾는다(신분당선)
+                지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
         );
         saveLineSection(광교역이_하행_종점역인_구간);
 
@@ -246,7 +246,7 @@ public class LineSectionAcceptanceTest {
     void deleteNotExistLineSection() {
         // given
         SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
-                지하철_노선의_하행종점역_아이디를_찾는다(신분당선)
+                지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
         );
         saveLineSection(광교역이_하행_종점역인_구간);
 
@@ -277,7 +277,7 @@ public class LineSectionAcceptanceTest {
     void deleteStandAloneLineSection() {
         // when
         ExtractableResponse<Response> deleteLineSectionByStationIdResponse =
-                deleteLineSectionByStationId(지하철_노선의_하행종점역_아이디를_찾는다(신분당선));
+                deleteLineSectionByStationId(지하철_노선의_하행_종점역_아이디를_찾는다(신분당선));
 
         // then
         assertAll(
@@ -369,7 +369,7 @@ public class LineSectionAcceptanceTest {
                 .build();
     }
 
-    private Long 지하철_노선의_하행종점역_아이디를_찾는다(LineResponseDto lineResponseDto) {
+    private Long 지하철_노선의_하행_종점역_아이디를_찾는다(LineResponseDto lineResponseDto) {
         List<StationResponseDto> stations = lineResponseDto.getStations();
         int lastIndex = stations.size() - 1;
         return stations

@@ -67,13 +67,13 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("이미 등록되어 있는 역이 하행 종점역이 구간을 추가한다.")
+    @DisplayName("이미 등록되어 있는 역이 하행 종점역인 구간을 추가한다.")
     void addAlreadyRegisteredDownStation() {
-        // when
+        // given
         Section 강남역_판교역_구간 = new Section(강남역, 판교역, 5);
         Section 판교역_강남역_구간 = new Section(판교역, 강남역, 5);
 
-        // then
+        // when & then
         assertThatThrownBy(() -> List.of(강남역_판교역_구간, 판교역_강남역_구간)
                 .forEach(sections::addSection))
                 .isInstanceOf(InvalidLineSectionException.class)
@@ -118,11 +118,12 @@ class LineTest {
 
         // when & then
         assertThatThrownBy(() -> sections.deleteSectionByStationId(강남역.getId()))
-                .isInstanceOf(InvalidLineSectionException.class);
+                .isInstanceOf(InvalidLineSectionException.class)
+                .hasMessageContaining(ErrorCode.IS_NOT_LAST_LINE_SECTION.getMessage());
     }
 
     @Test
-    @DisplayName("등록되어 있지 않는 구간을 삭제한다.")
+    @DisplayName("등록되어 있지 않은 구간을 삭제한다.")
     void removeNotExistSection() {
         // when & then
         assertThatThrownBy(() -> sections.deleteSectionByStationId(광교역.getId()))

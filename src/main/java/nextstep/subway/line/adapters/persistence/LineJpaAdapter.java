@@ -31,6 +31,7 @@ public class LineJpaAdapter {
         return lineRepository.findAll();
     }
 
+    @Transactional
     public void deleteById(Long id) {
         lineRepository.deleteById(id);
     }
