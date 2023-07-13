@@ -2,16 +2,10 @@ package subway.domain;
 
 import lombok.*;
 import subway.exception.StationLineCreateException;
-import subway.exception.StationLineSectionCreateException;
-import subway.exception.StationLineSectionDeleteException;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -79,14 +73,20 @@ public class StationLine {
     }
 
     public void deleteSection(Station station) {
-        sections.deleteSection(station);
+        final StationLineSection newSection = sections.deleteSection(station);
+
+        newSection.apply(this);
     }
 
     public List<Station> getAllStations() {
         return sections.getAllStations();
     }
 
-    public Station getLineLastDownStation() {
+    public Station getLineFirstStation() {
+        return sections.getLineFirstStation();
+    }
+
+    public Station getLineLastStation() {
         return sections.getLineLastStation();
     }
 }

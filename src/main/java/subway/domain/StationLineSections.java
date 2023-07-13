@@ -103,17 +103,44 @@ public class StationLineSections {
                 .orElse(null);
     }
 
-    public void deleteSection(Station station) {
-        checkSectionCanDeleted(station);
+    public StationLineSection deleteSection(Station station) {
+        checkSectionCanDeleted();
 
-        sections.remove(sections.size() - 1);
+        final StationLineSection upSection = sections.stream()
+                .filter(section -> station.equals(section.getDownStation()))
+                .findFirst()
+                .orElse(null);
+
+        final StationLineSection downSection = sections.stream()
+                .filter(section -> station.equals(section.getUpStation()))
+                .findFirst()
+                .orElse(null);
+
+        final StationLineSection mergedSection = mergeStationLineSection(upSection, downSection);
+
+        sections.remove(upSection);
+        sections.remove(downSection);
+
+        return mergedSection;
     }
 
-    private void checkSectionCanDeleted(Station station) {
-        if (!station.equals(getLineLastStation())) {
-            throw new StationLineSectionDeleteException("target section must be last station of line");
-        }
+    public StationLineSection mergeStationLineSection(StationLineSection upSection, StationLineSection downSection) {
+        final BigDecimal totalDistance = upSection.getDistance().add(downSection.getDistance());
 
+        final StationLineSection mergedSection = StationLineSection.builder()
+                .upStation(upSection.getUpStation())
+                .downStation(downSection.getDownStation())
+                .distance(totalDistance)
+                .build();
+
+        final int indexOfDownSection = sections.indexOf(downSection);
+
+        sections.add(indexOfDownSection, mergedSection);
+
+        return mergedSection;
+    }
+
+    private void checkSectionCanDeleted() {
         if (getCountOfAllStation() <= 2) {
             throw new StationLineSectionDeleteException("section must be greater or equals than 2");
         }
@@ -123,7 +150,7 @@ public class StationLineSections {
         return sections.size() + 1;
     }
 
-    private Station getLineFirstStation() {
+    public Station getLineFirstStation() {
         return getSections().stream()
                 .map(StationLineSection::getUpStation)
                 .findFirst()
