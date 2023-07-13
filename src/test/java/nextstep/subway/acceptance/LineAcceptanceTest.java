@@ -18,25 +18,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    @Nested
-    @DisplayName("지하철 노선 생성")
-    public class LineCreationTest {
-        /**
-         * When 지하철 노선을 생성하면
-         * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
-         */
-        @DisplayName("노멀 케이스")
-        @Test
-        void createLine() {
-            // when
-            ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+    /**
+     * When 지하철 노선을 생성하면
+     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     */
+    @DisplayName("노멀 케이스")
+    @Test
+    void createLine() {
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
 
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-            ExtractableResponse<Response> listResponse = 지하철_노선_목록_조회_요청();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> listResponse = 지하철_노선_목록_조회_요청();
 
-            assertThat(listResponse.jsonPath().getList("name")).contains("2호선");
-        }
+        assertThat(listResponse.jsonPath().getList("name")).contains("2호선");
     }
 
 
