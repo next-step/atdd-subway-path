@@ -146,10 +146,14 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 구간_삭제_기능() {
         //given
+        LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(상행종점역_id, 새로운역_id, 5));
 
         //when
+        LineSteps.지하철_노선_구간_삭제_요청(노선_id, 새로운역_id);
 
         //then
+        assertThat(LineSteps.지하철_노선_조회_요청_역_이름_목록_반환(노선_id)).doesNotContain(새로운역명);
+        assertThat(LineSteps.지하철_노선_조회_요청_총_거리_반환(노선_id)).isEqualTo(상행종점역_하행종점역_거리);
     }
 
     /**

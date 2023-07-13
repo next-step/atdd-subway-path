@@ -1,5 +1,6 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.LineRequest;
@@ -24,4 +25,19 @@ public class LineSteps {
     public static List<String> 지하철_노선_조회_요청_역_이름_목록_반환(Long lineId) {
         return get("/lines/{id}", lineId).jsonPath().get("stations.name");
     }
+
+    public static int 지하철_노선_조회_요청_총_거리_반환(Long lineId) {
+        return get("/lines/{id}", lineId).jsonPath().getInt("distance");
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제_요청(Long lineId, Long stationId) {
+        return RestAssured
+                .given().log().all()
+                .queryParam("stationId", stationId)
+                .pathParam("id", lineId)
+                .when().delete("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
+    }
+
 }
