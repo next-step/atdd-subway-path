@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,22 +17,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-    /**
-     * When 지하철 노선을 생성하면
-     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
-     */
+
+    @Nested
     @DisplayName("지하철 노선 생성")
-    @Test
-    void createLine() {
-        // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+    public class LineCreationTest {
+        /**
+         * When 지하철 노선을 생성하면
+         * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+         */
+        @DisplayName("노멀 케이스")
+        @Test
+        void createLine() {
+            // when
+            ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> listResponse = 지하철_노선_목록_조회_요청();
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            ExtractableResponse<Response> listResponse = 지하철_노선_목록_조회_요청();
 
-        assertThat(listResponse.jsonPath().getList("name")).contains("2호선");
+            assertThat(listResponse.jsonPath().getList("name")).contains("2호선");
+        }
     }
+
 
     /**
      * Given 2개의 지하철 노선을 생성하고
