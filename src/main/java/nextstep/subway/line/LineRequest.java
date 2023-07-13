@@ -1,8 +1,5 @@
 package nextstep.subway.line;
 
-import java.util.List;
-import nextstep.subway.station.Station;
-
 public class LineRequest {
 
     private String name;
@@ -31,7 +28,4 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toEntity(List<Station> stations) {
-        return new Line(name, color, stations);
-    }
 }

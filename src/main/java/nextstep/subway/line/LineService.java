@@ -14,10 +14,13 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository,
+            SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -26,8 +29,9 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
                 .orElseThrow(StationNotFoundException::new);
+        Section section = sectionRepository.save(new Section(null, upStation, downStation, lineRequest.getDistance()));
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
-                List.of(upStation, downStation));
+                List.of(section));
         return LineResponse.from(lineRepository.save(line));
     }
 
@@ -59,14 +63,15 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
         Station downstreamStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(StationNotFoundException::new);
+        Section section = sectionRepository.save(new Section(null, upstreamStation, downstreamStation, sectionRequest.getDistance()));
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
-        line.addSection(upstreamStation, downstreamStation);
+        line.addSection(section);
         return LineResponse.from(line);
     }
 
     @Transactional
     public void deleteSection(Long id, Station downStreamTerminusStation) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
-        line.deleteSectionByDownStreamTerminusStation(downStreamTerminusStation);
+        line.deleteSection(downStreamTerminusStation);
     }
 }
