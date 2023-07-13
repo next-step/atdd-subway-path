@@ -23,20 +23,20 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     private static final String 하행종점역명 = "하행종점역";
     private static final String 새로운역명 = "새로운역";
     private static final int 상행종점역_하행종점역_거리 = 10;
-    private StationResponse 상행종점역;
-    private StationResponse 하행종점역;
-    private StationResponse 새로운역;
-    private LineResponse 노선;
+    private Long 상행종점역_id;
+    private Long 하행종점역_id;
+    private Long 새로운역_id;
+    private Long 노선_id;
 
     @BeforeEach
     public void setUpFixture() {
-        상행종점역 = StationSteps.지하철역_생성_요청(상행종점역명);
-        하행종점역 = StationSteps.지하철역_생성_요청(하행종점역명);
-        새로운역 = StationSteps.지하철역_생성_요청(새로운역명);
-        노선 = LineSteps.지하철_노선_생성_요청(
+        상행종점역_id = StationSteps.지하철역_생성_요청(상행종점역명);
+        하행종점역_id = StationSteps.지하철역_생성_요청(하행종점역명);
+        새로운역_id = StationSteps.지하철역_생성_요청(새로운역명);
+        노선_id = LineSteps.지하철_노선_생성_요청(
                 "칠호선",
-                상행종점역.getId(),
-                하행종점역.getId(),
+                상행종점역_id,
+                하행종점역_id,
                 상행종점역_하행종점역_거리
         );
     }
@@ -49,11 +49,10 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 역_사이에_새로운_역을_등록하는_경우() {
         //when
-        LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 새로운역.getId(), 5));
+        LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(상행종점역_id, 새로운역_id, 5));
 
         //then
-        List<String> stationNames = LineSteps.지하철_노선_조회_요청(노선.getId()).getStations()
-                .stream().map(StationResponse::getName).collect(Collectors.toList());
+        List<String> stationNames = LineSteps.지하철_노선_조회_요청_역_이름_목록_반환(노선_id);
         assertThat(stationNames).containsExactly(상행종점역명, 새로운역명, 하행종점역명);
     }
 
@@ -65,11 +64,10 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 새로운_역을_상행_종점으로_등록할_경우() {
         //when
-        LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(새로운역.getId(), 상행종점역.getId(), 5));
+        LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(새로운역_id, 상행종점역_id, 5));
 
         //then
-        List<String> stationNames = LineSteps.지하철_노선_조회_요청(노선.getId()).getStations()
-                .stream().map(StationResponse::getName).collect(Collectors.toList());
+        List<String> stationNames = LineSteps.지하철_노선_조회_요청_역_이름_목록_반환(노선_id);
         assertThat(stationNames).containsExactly(새로운역명, 상행종점역명, 하행종점역명);
     }
 
@@ -82,11 +80,10 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 새로운_역을_하행_종점으로_등록할_경우() {
         //when
-        LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(하행종점역.getId(), 새로운역.getId(), 5));
+        LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(하행종점역_id, 새로운역_id, 5));
 
         //then
-        List<String> stationNames = LineSteps.지하철_노선_조회_요청(노선.getId()).getStations()
-                .stream().map(StationResponse::getName).collect(Collectors.toList());
+        List<String> stationNames = LineSteps.지하철_노선_조회_요청_역_이름_목록_반환(노선_id);
         assertThat(stationNames).containsExactly(상행종점역명, 하행종점역명, 새로운역명);
     }
 
@@ -99,7 +96,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
         //when
         ExtractableResponse<Response> response =
-                LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 새로운역.getId(), 상행종점역_하행종점역_거리));
+                LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(상행종점역_id, 새로운역_id, 상행종점역_하행종점역_거리));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -114,11 +111,11 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
         //given
-        LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 새로운역.getId(), 5));
+        LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(상행종점역_id, 새로운역_id, 5));
 
         //when
         ExtractableResponse<Response> response =
-                LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(상행종점역.getId(), 하행종점역.getId(), 10));
+                LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(상행종점역_id, 하행종점역_id, 10));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -132,9 +129,9 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
         //when
-        StationResponse 다른새로운역 = StationSteps.지하철역_생성_요청("다른새로운역");
+        Long 다른새로운역_id = StationSteps.지하철역_생성_요청("다른새로운역");
         ExtractableResponse<Response> response =
-                LineSteps.지하철_노선_구간_등록_요청(노선.getId(), new SectionRequest(다른새로운역.getId(), 새로운역.getId(), 10));
+                LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(다른새로운역_id, 새로운역_id, 10));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
