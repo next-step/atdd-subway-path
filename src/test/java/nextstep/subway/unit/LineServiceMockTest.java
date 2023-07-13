@@ -8,6 +8,7 @@ import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.repository.StationRepository;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,13 +31,19 @@ public class LineServiceMockTest {
     @InjectMocks
     private SectionService sectionService;
 
+    private Station 당고개역, 이수역, 사당역;
+
+    @BeforeEach
+    void setUpStation() {
+        당고개역 = 당고개역();
+        이수역 = 이수역();
+        사당역 = 사당역();
+    }
+
     @DisplayName("구간을 추가한다.")
     @Test
     void addSection() {
         // given
-        Station 당고개역 = 당고개역();
-        Station 이수역 = 이수역();
-        Station 사당역 = 사당역();
         Line line = line(당고개역, 이수역);
 
         SectionDto sectionDto
@@ -61,9 +68,6 @@ public class LineServiceMockTest {
     @Test
     void removeSection() {
         // given : 선행조건 기술
-        Station 당고개역 = 당고개역();
-        Station 이수역 = 이수역();
-        Station 사당역 = 사당역();
         Line line = line(당고개역, 이수역);
         SectionDto sectionDto
                 = sectionDto(이수역.getId(), 사당역.getId());

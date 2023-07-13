@@ -8,6 +8,7 @@ import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.repository.StationRepository;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +28,22 @@ public class LineServiceTest {
     @Autowired
     private SectionService sectionService;
 
+    private Station 당고개역, 이수역, 사당역;
+    private Line line;
+    private SectionDto sectionDto;
+
+    @BeforeEach
+    void setUpStation() {
+        당고개역 = stationRepository.save(당고개역());
+        이수역 = stationRepository.save(이수역());
+        사당역 = stationRepository.save(사당역());
+        line = lineRepository.save(line(당고개역, 이수역));
+        sectionDto = sectionDto(이수역.getId(), 사당역.getId());
+    }
+
     @DisplayName("구간을 추가한다.")
     @Test
     void addSection() {
-        // given
-        Station 당고개역 = stationRepository.save(당고개역());
-        Station 이수역 = stationRepository.save(이수역());
-        Line line = lineRepository.save(line(당고개역, 이수역));
-
-        Station 사당역 = stationRepository.save(사당역());
-        SectionDto sectionDto
-                = sectionDto(이수역.getId(), 사당역.getId());
-
         // when
         sectionService.addSection(line.getId(), sectionDto);
 
@@ -55,14 +60,6 @@ public class LineServiceTest {
     @Test
     void removeSection() {
         // given : 선행조건 기술
-        Station 당고개역 = stationRepository.save(당고개역());
-        Station 이수역 = stationRepository.save(이수역());
-        Line line = lineRepository.save(line(당고개역, 이수역));
-
-        Station 사당역 = stationRepository.save(사당역());
-        SectionDto sectionDto
-                = sectionDto(이수역.getId(), 사당역.getId());
-
         sectionService.addSection(line.getId(), sectionDto);
 
         // when : 기능 수행
@@ -103,15 +100,6 @@ public class LineServiceTest {
         return Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(10)
-                .build();
-    }
-
-    private Section section(Line line) {
-        return Section.builder()
-                .line(line)
-                .upStation(이수역())
-                .downStation(사당역())
                 .distance(10)
                 .build();
     }
