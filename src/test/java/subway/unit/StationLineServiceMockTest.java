@@ -1,4 +1,4 @@
-package subway;
+package subway.unit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -55,7 +55,7 @@ public class StationLineServiceMockTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         given(stationLineRepository.findById(line.getLineId())).willReturn(Optional.of(line));
 
@@ -97,7 +97,7 @@ public class StationLineServiceMockTest {
                 .build();
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when & then
         final StationLineSectionCreateRequest request = new StationLineSectionCreateRequest();
@@ -139,7 +139,7 @@ public class StationLineServiceMockTest {
         line.createSection(bStation, cStation, BigDecimal.TEN);
 
         createEntityTestId(line, 1L);
-        createEntityTestIds(line.getSections(), 1L);
+        createEntityTestIds(line.getSections().getSections(), 1L);
 
         //when & then
         Assertions.assertThrows(EntityNotFoundException.class,

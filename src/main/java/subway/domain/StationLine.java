@@ -18,121 +18,75 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "lineId")
 public class StationLine {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long lineId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long lineId;
 
-	@Column
-	private String name;
+    @Column
+    private String name;
 
-	@Column
-	private String color;
+    @Column
+    private String color;
 
-	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	private List<StationLineSection> sections = new ArrayList<>();
+    @Embedded
+    private StationLineSections sections;
 
-	@Builder
-	public StationLine(String name, String color, Station upStation, Station downStation, BigDecimal distance) {
-		if (upStation.equals(downStation)) {
-			throw new StationLineCreateException("upStation and downStation can't be equal");
-		}
+    @Builder
+    public StationLine(String name, String color, Station upStation, Station downStation, BigDecimal distance) {
+        if (upStation.equals(downStation)) {
+            throw new StationLineCreateException("upStation and downStation can't be equal");
+        }
 
-		this.name = name;
-		this.color = color;
+        this.name = name;
+        this.color = color;
 
-		createSection(upStation, downStation, distance);
-	}
+        final StationLineSection section = StationLineSection.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build();
 
-	public void update(String name, String color) {
-		this.name = name;
-		this.color = color;
-	}
+        sections = StationLineSections.builder()
+                .section(section)
+                .build();
 
-	public StationLineSection createSection(Station sectionUpStation, Station sectionDownStation, BigDecimal distance) {
-		checkSectionCanAdded(sectionUpStation, sectionDownStation);
+        section.apply(this);
+    }
 
-		final StationLineSection section = StationLineSection.builder()
-			.upStation(sectionUpStation)
-			.downStation(sectionDownStation)
-			.distance(distance)
-			.build();
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
 
-		section.apply(this);
+    public StationLineSection createSection(Station sectionUpStation, Station sectionDownStation, BigDecimal distance) {
+        checkSectionStationExistOnlyOneToLine(sectionUpStation, sectionDownStation);
 
-		sections.add(section);
+        final StationLineSection newSection = sections.appendStationLineSection(sectionUpStation, sectionDownStation, distance);
 
-		return section;
-	}
+        newSection.apply(this);
+        return newSection;
+    }
 
-	private void checkSectionCanAdded(Station sectionUpStation, Station sectionDownStation) {
-		if (getSections().isEmpty()) {
-			return;
-		}
+    private void checkSectionStationExistOnlyOneToLine(Station sectionUpStation, Station sectionDownStation) {
+        if (isStationExistingToLine(sectionUpStation) == isStationExistingToLine(sectionDownStation)) {
+            throw new StationLineCreateException("one of section up station and down station exactly exist only one to line");
+        }
+    }
 
-		if (Objects.nonNull(getLineLastDownStation()) && !getLineLastDownStation().equals(sectionUpStation)) {
-			throw new StationLineSectionCreateException("section up station must be equals to line last down station");
-		}
+    private boolean isStationExistingToLine(Station station) {
+        return getAllStations().stream()
+                .anyMatch(station::equals);
+    }
 
-		final boolean isExistSectionDownStationToLine = getAllStations().stream()
-			.anyMatch(sectionDownStation::equals);
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
+    }
 
-		if (isExistSectionDownStationToLine) {
-			throw new StationLineSectionCreateException("section down station must not be included to line station");
-		}
-	}
+    public List<Station> getAllStations() {
+        return sections.getAllStations();
+    }
 
-	public void deleteSection(Station targetStation) {
-		checkSectionCanDeleted(targetStation);
-
-		final StationLineSection targetSection = getSections().stream()
-			.filter(section -> targetStation.equals(section.getDownStation()))
-			.findFirst()
-			.orElseThrow(() -> new StationLineSectionDeleteException("not found deleted target section"));
-
-		getSections().remove(targetSection);
-	}
-
-	private void checkSectionCanDeleted(Station targetStation) {
-		if (!targetStation.equals(getLineLastDownStation())) {
-			throw new StationLineSectionDeleteException("target section must be last station of line");
-		}
-
-		if (getSections().size() < 2) {
-			throw new StationLineSectionDeleteException("section must be greater or equals than 2");
-		}
-	}
-
-	public List<Station> getAllStations() {
-		final List<Station> allUpStation = getSections().stream()
-			.map(StationLineSection::getUpStation)
-			.collect(Collectors.toList());
-
-		Optional.ofNullable(getLineLastDownStation())
-			.ifPresent(allUpStation::add);
-
-		return allUpStation;
-	}
-
-	public Station getLineFirstUpStation() {
-		return getSections().stream()
-			.map(StationLineSection::getUpStation)
-			.findFirst()
-			.orElse(null);
-	}
-
-	public Station getLineLastDownStation() {
-		return Optional.ofNullable(getLastSection())
-			.map(StationLineSection::getDownStation)
-			.orElse(null);
-	}
-
-	public StationLineSection getLastSection() {
-		if (getSections().isEmpty()) {
-			return null;
-		}
-
-		final int lastIndexOfSections = getSections().size() - 1;
-
-		return getSections().get(lastIndexOfSections);
-	}
+    public Station getLineLastDownStation() {
+        return sections.getLineLastStation();
+    }
 }

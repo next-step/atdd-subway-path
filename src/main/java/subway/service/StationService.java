@@ -11,32 +11,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 public class StationService {
-	private StationRepository stationRepository;
+    private StationRepository stationRepository;
 
-	public StationService(StationRepository stationRepository) {
-		this.stationRepository = stationRepository;
-	}
+    public StationService(StationRepository stationRepository) {
+        this.stationRepository = stationRepository;
+    }
 
-	@Transactional
-	public StationResponse saveStation(StationRequest stationRequest) {
-		Station station = stationRepository.save(new Station(stationRequest.getName()));
-		return createStationResponse(station);
-	}
+    @Transactional
+    public StationResponse saveStation(StationRequest stationRequest) {
+        final Station station = stationRepository.save(new Station(stationRequest.getName()));
 
-	public List<StationResponse> findAllStations() {
-		return stationRepository.findAll().stream()
-			.map(this::createStationResponse)
-			.collect(Collectors.toList());
-	}
+        return StationResponse.fromEntity(station);
+    }
 
-	@Transactional
-	public void deleteStationById(Long id) {
-		stationRepository.deleteById(id);
-	}
+    @Transactional(readOnly = true)
+    public List<StationResponse> findAllStations() {
+        final List<Station> response = stationRepository.findAll();
 
-	private StationResponse createStationResponse(Station station) {
-		return StationResponse.fromEntity(station);
-	}
+
+        return stationRepository.findAll().stream()
+                .map(StationResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteStationById(Long id) {
+        stationRepository.deleteById(id);
+    }
 }

@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	@ExceptionHandler(EntityNotFoundException.class)
-	public void entityNotFoundExceptionHandler(EntityNotFoundException exception) {
-		log.info("error occurred: {}", exception.getMessage());
-	}
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntityNotFoundException.class)
+    public void entityNotFoundExceptionHandler(EntityNotFoundException exception) {
+        log.info("error occurred: {}", exception.getMessage());
+    }
 
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler({StationLineCreateException.class, StationLineSectionCreateException.class, StationLineSectionDeleteException.class})
-	public void businessErrorExceptionHandler(RuntimeException exception) {
-		log.info("error occurred: {}", exception.getMessage());
-	}
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({StationLineCreateException.class, StationLineSectionCreateException.class, StationLineSectionDeleteException.class, StationLineSectionSplitException.class})
+    public void businessErrorExceptionHandler(RuntimeException exception) {
+        log.info("error occurred: {}", exception.getMessage());
+    }
 
 }
