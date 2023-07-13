@@ -141,4 +141,18 @@ class LineTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않은 경우 등록 불가능 합니다.");
     }
+
+    @Test
+    void 구간_삭제() {
+        //given
+        칠호선.addSection(중계_노원);
+        칠호선.addSection(노원_마들);
+
+        //when
+        칠호선.removeSection(노원역);
+
+        //then
+        assertThat(칠호선.getStations()).doesNotContain(노원역);
+        assertThat(칠호선.getDistance()).isEqualTo(20);
+    }
 }

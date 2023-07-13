@@ -74,4 +74,12 @@ public class Section {
         }
         this.distance -= distance;
     }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void addDistance(int distance) {
+        this.distance += distance;
+    }
 }

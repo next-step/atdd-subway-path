@@ -66,11 +66,22 @@ public class Sections {
         sections.removeAll(List.of(section));
     }
 
-    public void removeLastSection(Station station) {
-        if (sections.isEmpty() || !sections.get(sections.size() - 1).isDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
-        sections.remove(sections.get(sections.size() - 1));
+    public void remove(Station station) {
+        Section downSection = getDownSection(station);
+        Section upSection = getUpSection(station);
+        upSection.changeDownStation(downSection.getDownStation());
+        upSection.addDistance(downSection.getDistance());
+        sections.remove(downSection);
+    }
+
+    private Section getDownSection(Station station) {
+        return sections.stream().filter(section -> section.isUpStation(station))
+                .findAny().orElseThrow(IllegalArgumentException::new);
+    }
+
+    private Section getUpSection(Station station) {
+        return sections.stream().filter(section -> section.isDownStation(station))
+                .findAny().orElseThrow(IllegalArgumentException::new);
     }
 
     private Station getUpEndStation() {
@@ -90,8 +101,7 @@ public class Sections {
     }
 
     private void addSectionBetweenStation(Section newSection) {
-        Section findSection = sections.stream().filter(s -> s.isUpStation(newSection.getUpStation()))
-                .findAny().orElseThrow(IllegalArgumentException::new);
+        Section findSection = getDownSection(newSection.getUpStation());
         findSection.changeUpStation(newSection.getDownStation());
         findSection.subtractDistance(newSection.getDistance());
         sections.add(newSection);
@@ -126,4 +136,7 @@ public class Sections {
                 .collect(Collectors.toSet());
     }
 
+    public int getTotalDistance() {
+        return sections.stream().mapToInt(Section::getDistance).sum();
+    }
 }
