@@ -1,0 +1,1 @@
+insert into line (id, name, color) values (1000, '2호선', 'green');
