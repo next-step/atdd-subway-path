@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import java.util.List;
+import java.util.Objects;
 import nextstep.subway.station.Station;
 
 public class LineResponse {
@@ -35,5 +36,24 @@ public class LineResponse {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof LineResponse)) {
+            return false;
+        }
+        LineResponse that = (LineResponse) o;
+        return Objects.equals(getId(), that.getId()) && Objects.equals(getName(), that.getName())
+                && Objects.equals(getColor(), that.getColor()) && Objects.equals(getStations(),
+                that.getStations());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getColor(), getStations());
     }
 }

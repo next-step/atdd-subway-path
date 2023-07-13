@@ -76,7 +76,8 @@ public class Line {
         if (sections.size() == 1) {
             throw new SingleSectionRemovalException();
         }
-        Section section = sections.get(sections.size() - 1);
+        int lastIndex = sections.size() - 1;
+        Section section = sections.get(lastIndex);
         if (section.isSameDownStation(downStation)) {
             sections.remove(section);
             return;
