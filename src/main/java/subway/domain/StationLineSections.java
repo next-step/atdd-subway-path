@@ -100,7 +100,7 @@ public class StationLineSections {
         return Optional.of(sections)
                 .map(stations -> stations.get(indexOfLastSection))
                 .map(StationLineSection::getDownStation)
-                .orElse(null);
+                .orElseThrow(() -> new IllegalStateException("there is no last station of this line"));
     }
 
     public StationLineSection deleteSection(Station station) {
