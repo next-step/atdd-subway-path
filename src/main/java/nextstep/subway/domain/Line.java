@@ -50,4 +50,15 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
+    public Section getSection(long upStationId, long downStationId) {
+
+        return this.sections.stream().filter(it -> it.getUpStation().getId() == upStationId && it.getDownStation()
+                                                                                                 .getId() == downStationId)
+                            .findFirst().orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(new Section(this, upStation, downStation, distance));
+    }
 }

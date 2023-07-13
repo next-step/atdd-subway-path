@@ -1,9 +1,6 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -38,9 +35,7 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
-                .collect(Collectors.toList());
+        return lineRepository.findAll().stream().map(this::createLineResponse).collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
@@ -74,12 +69,7 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                createStationResponses(line)
-        );
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), createStationResponses(line));
     }
 
     private List<StationResponse> createStationResponses(Line line) {
@@ -87,15 +77,11 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
+        List<Station> stations = line.getSections().stream().map(Section::getDownStation).collect(Collectors.toList());
 
         stations.add(0, line.getSections().get(0).getUpStation());
 
-        return stations.stream()
-                .map(it -> stationService.createStationResponse(it))
-                .collect(Collectors.toList());
+        return stations.stream().map(it -> stationService.createStationResponse(it)).collect(Collectors.toList());
     }
 
     @Transactional
@@ -108,5 +94,13 @@ public class LineService {
         }
 
         line.getSections().remove(line.getSections().size() - 1);
+    }
+
+    public SectionResponse findSection(Long lineId, Long upStationId, Long downStationId) {
+
+        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Section section = line.getSection(upStationId, downStationId);
+
+        return new SectionResponse(section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
     }
 }

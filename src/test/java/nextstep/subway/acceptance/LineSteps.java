@@ -64,4 +64,10 @@ public class LineSteps {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all().extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선의_구간정보_조회(Long lineId, Long upStationId, Long downStationId) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/{lineId}/sections?upStationId={upStationId}&downStationId={downStationId}", lineId, upStationId, downStationId)
+                .then().log().all().extract();
+    }
 }

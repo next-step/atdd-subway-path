@@ -21,6 +21,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private Long 강남역;
     private Long 양재역;
+    private Long 거리_양재역_강남역 = 10L;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -175,6 +176,27 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+
+
+    /**
+     * Given 강남역-양재역 지하철 노선에
+     * When 강남역-양재역 구간을 조회하면
+     * Then 구간이 조회가 된다.
+     */
+    @DisplayName("지하철 노선 구간을 조회")
+    @Test
+    void findLineSection() {
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선의_구간정보_조회(신분당선, 강남역, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getLong("distance")).isEqualTo(거리_양재역_강남역);
+        assertThat(response.jsonPath().getLong("upStationId")).isEqualTo(강남역);
+        assertThat(response.jsonPath().getLong("downStationId")).isEqualTo(양재역);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -182,7 +204,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         lineCreateParams.put("color", "bg-red-600");
         lineCreateParams.put("upStationId", upStationId + "");
         lineCreateParams.put("downStationId", downStationId + "");
-        lineCreateParams.put("distance", 10 + "");
+        lineCreateParams.put("distance", 거리_양재역_강남역 + "");
         return lineCreateParams;
     }
 
