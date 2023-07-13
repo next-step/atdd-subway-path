@@ -56,13 +56,11 @@ public class StationLine {
         this.color = color;
     }
 
-    public StationLineSection createSection(Station sectionUpStation, Station sectionDownStation, BigDecimal distance) {
+    public void createSection(Station sectionUpStation, Station sectionDownStation, BigDecimal distance) {
         checkSectionStationExistOnlyOneToLine(sectionUpStation, sectionDownStation);
 
-        final StationLineSection newSection = sections.appendStationLineSection(sectionUpStation, sectionDownStation, distance);
-
-        newSection.apply(this);
-        return newSection;
+        sections.appendStationLineSection(sectionUpStation, sectionDownStation, distance);
+        sections.apply(this);
     }
 
     private void checkSectionStationExistOnlyOneToLine(Station sectionUpStation, Station sectionDownStation) {
@@ -77,9 +75,8 @@ public class StationLine {
     }
 
     public void deleteSection(Station station) {
-        final StationLineSection newSection = sections.deleteSection(station);
-
-        newSection.apply(this);
+        sections.deleteSection(station);
+        sections.apply(this);
     }
 
     public List<Station> getAllStations() {

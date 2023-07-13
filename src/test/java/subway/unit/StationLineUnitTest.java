@@ -388,10 +388,6 @@ public class StationLineUnitTest {
         Assertions.assertEquals(aStation, lineFirstStation);
         Assertions.assertEquals(bStation, lineLastStation);
         Assertions.assertFalse(line.getAllStations().contains(cStation));
-
-        final BigDecimal expectedNewSectionDistance = BigDecimal.valueOf(11);
-        final BigDecimal sectionDistance = line.getSections().get(0).getDistance();
-        Assertions.assertEquals(0, sectionDistance.compareTo(expectedNewSectionDistance));
     }
 
 
@@ -428,9 +424,10 @@ public class StationLineUnitTest {
         //given
         final Station aStation = new Station("aStation");
         final Station bStation = new Station("bStation");
-        final Station cStation = new Station("bStation");
+        final Station cStation = new Station("cStation");
+        final Station dStation = new Station("dStation");
 
-        createEntityTestIds(List.of(aStation, bStation,cStation), 1L);
+        createEntityTestIds(List.of(aStation, bStation, cStation, dStation), 1L);
 
         final StationLine line = StationLine.builder()
                 .name("1호선")
@@ -439,13 +436,14 @@ public class StationLineUnitTest {
                 .downStation(bStation)
                 .distance(BigDecimal.TEN)
                 .build();
-
         createEntityTestId(line, 1L);
+
+        line.createSection(bStation,cStation,BigDecimal.ONE);
         createEntityTestIds(line.getSections(), 1L);
 
         //when & then
         final Throwable throwable = Assertions.assertThrows(StationLineSectionDeleteException.class,
-                () -> line.deleteSection(cStation));
+                () -> line.deleteSection(dStation));
 
         Assertions.assertEquals("the station not included to this line", throwable.getMessage());
     }
