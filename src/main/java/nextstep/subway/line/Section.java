@@ -78,11 +78,19 @@ public class Section {
         return Objects.hash(id);
     }
 
-    public boolean hasDownStation(Station downStation) {
-        return this.downStation.equals(downStation) || this.upStation.equals(downStation);
+    public boolean containsStation(Station station) {
+        return this.downStation.equals(station) || this.upStation.equals(station);
     }
 
     public boolean isSameDownStation(Station downStation) {
         return this.downStation.equals(downStation);
+    }
+
+    public boolean canLink(Section section) {
+        return section.isSameAsUpStation(downStation);
+    }
+
+    private boolean isSameAsUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 }

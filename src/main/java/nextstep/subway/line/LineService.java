@@ -56,9 +56,9 @@ public class LineService {
 
     @Transactional
     public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         Section section = saveSectionOf(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         line.addSection(section);
         return LineResponse.from(line);
     }

@@ -45,6 +45,10 @@ public class Line {
         return color;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public List<Station> getStations() {
         return sections.stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
@@ -59,14 +63,13 @@ public class Line {
 
     public void addSection(Section section) {
         if (sections.stream()
-                .anyMatch(savedSection -> savedSection.hasDownStation(section.getDownStation()))) {
+                .anyMatch(savedSection -> savedSection.containsStation(section.getDownStation()))) {
             throw new DownstreamStationIncludedException();
         }
+        if (!sections.isEmpty() && !sections.get(sections.size() - 1).canLink(section)) {
+            throw new MismatchedUpstreamStationException();
+        }
         sections.add(section);
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 
     public void deleteStation(Station downStation) {
