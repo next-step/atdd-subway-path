@@ -1,8 +1,15 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Line {
@@ -52,4 +59,15 @@ public class Line {
     public List<Section> getSections() {
         return sections;
     }
+
+    public List<Station> getStation() {
+        return this.sections.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toList());
+    }
+
+    public void removeSection(Station station) {
+        this.sections.remove(this.sections.size()-1);
+    }
+
 }
