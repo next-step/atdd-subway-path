@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.DuplicationStationException;
 import nextstep.subway.exception.IllegalNewSectionException;
 import nextstep.subway.exception.NotExistedStationException;
+import nextstep.subway.exception.RemoveSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -67,11 +68,18 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateRemoveSection(station);
         Section downSection = getDownSection(station);
         Section upSection = getUpSection(station);
         upSection.changeDownStation(downSection.getDownStation());
         upSection.addDistance(downSection.getDistance());
         sections.remove(downSection);
+    }
+
+    private void validateRemoveSection(Station station) {
+        if (sections.size() < 2) {
+            throw new RemoveSectionException();
+        }
     }
 
     private Section getDownSection(Station station) {
