@@ -37,6 +37,16 @@ public class Line {
 
     protected Line() {}
 
+    public Line(Long id, String name, String color, Integer distance, LineLastStations lastStations,
+        SectionList sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.distance = distance;
+        this.lastStations = lastStations;
+        this.sections = sections;
+    }
+
     public Line(String name, String color, LineLastStations lastStations, Integer distance) {
         if (!StringUtils.hasText(name) || !StringUtils.hasText(color)) {
             throw new CustomException(ErrorCode.INVALID_PARAM);
@@ -76,7 +86,7 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public List<Section> getSectionList() {
         return sections.getSections();
     }
 
@@ -118,5 +128,9 @@ public class Line {
 
     public Integer getDistance() {
         return distance;
+    }
+
+    public SectionList getSections() {
+        return sections;
     }
 }

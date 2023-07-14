@@ -29,7 +29,6 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
 
-
         Station upwardStation = stationService.getStation(lineRequest.getUpStationId());
         Station downwardStation = stationService.getStation(lineRequest.getDownStationId());
         LineLastStations lastStations = new LineLastStations(upwardStation, downwardStation);

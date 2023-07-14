@@ -55,7 +55,7 @@ class LineTest {
     void addBaseSection() {
         Line line = new Line("신분당선", "abc", lastStations, 5);
 
-        List<Section> sectionList = line.getSections();
+        List<Section> sectionList = line.getSectionList();
         assertThat(sectionList).hasSize(1);
         assertThat(line.getDistance()).isEqualTo(5);
     }
@@ -67,7 +67,7 @@ class LineTest {
         Section section = new Section(line, new SectionStations(stationB, stationC), 3);
         line.addSection(section);
 
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSectionList();
         LineLastStations stations = line.getLastStations();
         assertThat(sections).hasSize(2);
         assertThat(stations.getDownLastStation()).isEqualTo(stationC);
@@ -96,7 +96,7 @@ class LineTest {
         line.deleteStation(stationC);
 
         //then
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSectionList();
         LineLastStations stations = line.getLastStations();
         assertThat(sections).hasSize(1);
         assertThat(stations.getDownLastStation()).isEqualTo(stationB);
