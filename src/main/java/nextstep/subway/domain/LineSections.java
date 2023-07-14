@@ -150,4 +150,56 @@ public class LineSections {
     public Station getDownStation() {
         return downStation;
     }
+
+    public void removeStation(Station removeStation) {
+        if (lineSections.size() == 1) {
+            throw new DataIntegrityViolationException("지하철 노선에 구간이 한개인 경우 삭제할 수 없습니다.");
+        }
+
+        if (!lineSections.stream().anyMatch(section ->
+                section.getUpStation().equals(removeStation) || section.getDownStation().equals(removeStation))) {
+            throw new DataIntegrityViolationException("지하철 노선에 등록되어 있지 않은 역입니다.");
+        }
+
+        // 1. 만약 삭제할 역을 상행역으로 가진 구간이 없는 경우 마지막 구간
+        if (!lineSections.stream().anyMatch(section -> section.getUpStation().equals(removeStation))) {
+            Section lastSection = lineSections.stream().filter(section -> section.getDownStation().equals(removeStation))
+                    .findFirst().orElseThrow();
+            downStation = lastSection.getUpStation();
+            lineSections.remove(lastSection);
+            return;
+        }
+
+        // 2. 만약 삭제할 역을 하행역으로 가진 구간이 없는 경우 첫번째 구간
+        if (!lineSections.stream().anyMatch(section -> section.getDownStation().equals(removeStation))) {
+            Section firstSection = lineSections.stream().filter(section -> section.getUpStation().equals(removeStation))
+                    .findFirst().orElseThrow();
+            upStation = firstSection.getDownStation();
+            lineSections.remove(firstSection);
+            return;
+        }
+
+        // 3. 만약 삭제할 역을 하행역, 상행역으로 가진 구간이 있는 경우 중간 구간
+        if (lineSections.stream().anyMatch(section -> section.getUpStation().equals(removeStation))
+                && lineSections.stream().anyMatch(section -> section.getDownStation().equals(removeStation))) {
+            Section frontSection = lineSections.stream()
+                    .filter(section -> section.getDownStation().equals(removeStation))
+                    .findFirst()
+                    .orElseThrow();
+
+            Section rearSection = lineSections.stream()
+                    .filter(section -> section.getUpStation().equals(removeStation))
+                    .findFirst()
+                    .orElseThrow();
+
+            Section mergeSection = new Section(line
+                    , frontSection.getUpStation()
+                    , rearSection.getDownStation()
+                    , frontSection.getDistance() + rearSection.getDistance());
+
+            lineSections.remove(frontSection);
+            lineSections.remove(rearSection);
+            lineSections.add(mergeSection);
+        }
+    }
 }
