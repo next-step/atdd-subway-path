@@ -1,5 +1,8 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.exception.NewSectionException;
+import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.exception.RemoveSectionException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,21 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ExceptionResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        return getResponseEntity(e.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleNotFoundException(NotFoundException e) {
+        return getResponseEntity(e.getMessage());
+    }
+
+    @ExceptionHandler(NewSectionException.class)
+    public ResponseEntity<ExceptionResponse> handleNewSectionException(NewSectionException e) {
+        return getResponseEntity(e.getMessage());
+    }
+
+    @ExceptionHandler(RemoveSectionException.class)
+    public ResponseEntity<ExceptionResponse> handleRemoveSectionException(RemoveSectionException e) {
         return getResponseEntity(e.getMessage());
     }
 

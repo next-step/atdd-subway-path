@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.DuplicationStationException;
-import nextstep.subway.exception.IllegalNewSectionException;
-import nextstep.subway.exception.NotExistedStationException;
-import nextstep.subway.exception.RemoveSectionException;
+import nextstep.subway.exception.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -36,7 +33,7 @@ public class Sections {
             return;
         }
 
-        throw new IllegalNewSectionException();
+        throw new NewSectionException();
     }
 
     public List<Station> getStations() {
@@ -78,18 +75,18 @@ public class Sections {
 
     private void validateRemoveSection(Station station) {
         if (sections.size() < 2) {
-            throw new RemoveSectionException();
+            throw new MinimumSizeRemoveSectionException();
         }
     }
 
     private Section getDownSection(Station station) {
         return sections.stream().filter(section -> section.isUpStation(station))
-                .findAny().orElseThrow(IllegalArgumentException::new);
+                .findAny().orElseThrow(SectionNotFoundException::new);
     }
 
     private Section getUpSection(Station station) {
         return sections.stream().filter(section -> section.isDownStation(station))
-                .findAny().orElseThrow(IllegalArgumentException::new);
+                .findAny().orElseThrow(SectionNotFoundException::new);
     }
 
     private Station getUpEndStation() {
@@ -97,7 +94,7 @@ public class Sections {
                 .map(Section::getUpStation)
                 .filter(upStation -> sections.stream().noneMatch(section -> section.isDownStation(upStation)))
                 .findAny()
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(StationNotFoundException::new);
     }
 
     private Station getDownEndStation() {
@@ -105,7 +102,7 @@ public class Sections {
                 .map(Section::getDownStation)
                 .filter(downStation -> sections.stream().noneMatch(section -> section.isUpStation(downStation)))
                 .findAny()
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(StationNotFoundException::new);
     }
 
     private void addSectionBetweenStation(Section newSection) {
@@ -130,11 +127,11 @@ public class Sections {
     private void validateNewSection(Section newSection) {
         Set<Station> stationsSet = getStationsSet();
         if (stationsSet.contains(newSection.getDownStation()) && stationsSet.contains(newSection.getUpStation())) {
-            throw new DuplicationStationException();
+            throw new DuplicationNewSectionException();
         }
         if (!sections.isEmpty() && !stationsSet.contains(newSection.getDownStation())
                 && !stationsSet.contains(newSection.getUpStation())) {
-            throw new NotExistedStationException();
+            throw new NotExistedNewSectionException();
         }
     }
 
