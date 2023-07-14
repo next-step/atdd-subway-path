@@ -122,7 +122,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     /**
-     * Given: 상행 종점역과 중간역 그리고 하행 종점역을 갖는 노선을 생성한다
+     * Given: 상행 종점역과 하행 종점역을 갖는 노선을 생성한다
      * When: 새로운 역을 상행으로 또 새로운 역을 하행으로 하는 구간을 등록한다
      * Then: 예외를 발생한다.
      */
@@ -192,9 +192,13 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 노선에_등록되어있지_않은_역을_제거하려할_때() {
         //given
+        LineSteps.지하철_노선_구간_등록_요청(노선_id, new SectionRequest(상행종점역_id, 새로운역_id, 3));
 
         //when
+        Long 다른새로운역_id = StationSteps.지하철역_생성_요청("다른새로운역");
+        ExtractableResponse<Response> response = LineSteps.지하철_노선_구간_삭제_요청(노선_id, 다른새로운역_id);
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
