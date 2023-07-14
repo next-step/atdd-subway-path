@@ -75,49 +75,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    // deprecated -> spec change at week2
-
-//    /**
-//     * Given 3개의 역을 가진 구간의 노선을 생성하고
-//     * When 새로운 구간의 상행역을 기존 구간의 두번째 역으로 지정하면
-//     * Then 구간이 등록되지 않는다.
-//     */
-//    @DisplayName("새 구간의 상행역은 노선 내 구간의 중간 역이 될 수 없다.")
-//    @Test
-//    void appendStationToMiddleOfSection() {
-//        // given
-//        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-//        final String appendLocation = createdLocation + "/sections";
-//
-//        // when
-//        var 구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(1), stationIds.get(3), 10L);
-//        var createSectionResponse = LineSteps.구간_추가_API(appendLocation, 구간_요청);
-//
-//        // then
-//        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//    }
-//
-//    /**
-//     * Given 3개의 역을 가진 구간의 노선을 생성하고
-//     * When 새로운 구간의 하행역을 기존 구간의 역으로 지정하면
-//     * Then 구간이 등록되지 않는다
-//     */
-//    @DisplayName("새 구간의 하행역은 노선 내 구간의 역이 될 수 없다.")
-//    @Test
-//    void appendSectionWithDownStation() {
-//        // given
-//        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-//        final String appendLocation = createdLocation + "/sections";
-//
-//        // when
-//        var 구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(1), stationIds.get(3), 10L);
-//        var createSectionResponse = LineSteps.구간_추가_API(appendLocation, 구간_요청);
-//
-//        // then
-//        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//    }
-
-
     /**
      * Given 3개의 역이 등록된 구간을 가진 노선이 있고
      * When 노선의 하행역을 제거하면
