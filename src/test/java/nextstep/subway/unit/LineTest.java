@@ -180,7 +180,7 @@ class LineTest {
 
         //then
         assertThatThrownBy(() -> 칠호선.removeSection(하계역))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(RemoveSectionException.class)
                 .hasMessage("입력한 역이 등록된 구간이 존재하지 않습니다.");
     }
 }
