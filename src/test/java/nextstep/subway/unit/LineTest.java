@@ -166,4 +166,19 @@ class LineTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("구간이 하나인 노선에서는 구간 삭제가 불가능합니다.");
     }
+
+    @Test
+    void 노선에_등록되어_있지_않은_역을_제거할_수_없음() {
+        //given
+        칠호선.addSection(노원_마들);
+        칠호선.addSection(중계_노원);
+
+        //when
+        Station 하계역 = new Station("하계역");
+
+        //then
+        assertThatThrownBy(() -> 칠호선.removeSection(하계역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("입력한 역이 등록된 구간이 존재하지 않습니다.");
+    }
 }
