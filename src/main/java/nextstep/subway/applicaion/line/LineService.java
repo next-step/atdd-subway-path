@@ -59,16 +59,16 @@ public class LineService {
     @Transactional
     public LineResponse appendSection(final Long lineId, final SectionRequest request) {
         final var line = lineRepository.getById(lineId);
-        line.appendSection(convertToSection(line, request));
+        line.appendSection(convertToSection(request));
 
         return convertToLineResponse(line);
     }
 
-    private Section convertToSection(final Line line, final SectionRequest request) {
+    private Section convertToSection(final SectionRequest request) {
         final var upStation = stationRepository.getById(request.getUpStationId());
         final var downStation = stationRepository.getById(request.getDownStationId());
 
-        return new Section(line, upStation, downStation, request.getDistance());
+        return new Section(upStation, downStation, request.getDistance());
     }
 
     @Transactional

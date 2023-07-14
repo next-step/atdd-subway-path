@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
@@ -19,7 +21,12 @@ import nextstep.subway.domain.station.Station;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class LineSections {
-    @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.PERSIST)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "line_section",
+            joinColumns = @JoinColumn(name = "line.id"),
+            inverseJoinColumns = @JoinColumn(name = "section.id")
+    )
     private final List<Section> value = new ArrayList<>();
 
     private static final int MINIMUM_SECTION_SIZE = 1;

@@ -15,11 +15,11 @@ public class LineFixture {
             return line;
         }
 
-        line.appendSection(new Section(line, firstDownStation, downStations[0], DEFAULT_LINE_LENGTH));
+        line.appendSection(new Section(firstDownStation, downStations[0], DEFAULT_LINE_LENGTH));
 
         if (downStations.length > 1) {
             for (int i = 0; i < downStations.length - 1; i++) {
-                line.appendSection(new Section(line, downStations[i], downStations[i + 1], DEFAULT_LINE_LENGTH));
+                line.appendSection(new Section(downStations[i], downStations[i + 1], DEFAULT_LINE_LENGTH));
             }
         }
 

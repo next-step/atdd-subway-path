@@ -24,10 +24,6 @@ public class Section {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "line_id")
-    private Line line;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
@@ -38,8 +34,7 @@ public class Section {
     @Column(nullable = false)
     private int distance;
 
-    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
-        this.line = line;
+    public Section(final Station upStation, final Station downStation, final int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
