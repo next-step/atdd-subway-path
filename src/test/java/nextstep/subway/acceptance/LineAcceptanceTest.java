@@ -177,11 +177,11 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 구간이_하나인_노선에서_하행_종점역을_제거할_때() {
-        //given
-
         //when
+        ExtractableResponse<Response> response = LineSteps.지하철_노선_구간_삭제_요청(노선_id, 하행종점역_id);
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
