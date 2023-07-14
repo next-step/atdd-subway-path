@@ -68,6 +68,16 @@ public class LineSteps {
         statusCodeShouldBe(response, HttpStatus.OK);
     }
 
+    public static void 지하철노선_수정에_실패한다(final Long id, final LineUpdateRequest request) {
+        final var response = RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when().put(BASE_URL + "/" + id)
+                .then();
+
+        statusCodeShouldBe(response, HttpStatus.BAD_REQUEST);
+    }
+
     public static void 지하철노선을_제거한다(final Long id) {
         final var response = RestAssured.given()
                 .when().delete(BASE_URL + "/" + id)

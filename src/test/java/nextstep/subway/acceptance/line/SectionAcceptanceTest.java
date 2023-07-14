@@ -149,6 +149,35 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 지하철구간_등록에_실패한다(lineId, new SectionRequest(강남역, 역삼역, length));
                 assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
             }
+
+            @Test
+            void 구간을_등록하고자_하는_노선은_등록되어_있어야_한다() {
+                지하철구간_등록에_실패한다(0L, new SectionRequest(교대역, 삼성역, 10));
+            }
+
+            @Test
+            void 등록하고자_하는_구간의_상행역은_등록되어_있어야_한다() {
+                final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 선릉역, 20);
+
+                // given
+                final var lineId = 지하철노선을_생성한다(request).getId();
+
+                // when & then
+                지하철구간_등록에_실패한다(lineId, new SectionRequest(0L, 삼성역, 10));
+                assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
+            }
+
+            @Test
+            void 등록하고자_하는_구간의_하행역은_등록되어_있어야_한다() {
+                final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 선릉역, 20);
+
+                // given
+                final var lineId = 지하철노선을_생성한다(request).getId();
+
+                // when & then
+                지하철구간_등록에_실패한다(lineId, new SectionRequest(교대역, 0L, 10));
+                assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
+            }
         }
     }
 
@@ -230,6 +259,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
                 // when & then
                 지하철구간_제거에_실패한다(lineId, 역삼역);
+                assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
+            }
+
+            @Test
+            void 역을_삭제하고자_하는_노선은_등록되어_있어야_한다() {
+                지하철구간_제거에_실패한다(0L, 교대역);
+            }
+
+            @Test
+            void 삭제하고자_하는_역은_등록되어_있어야_한다() {
+                final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 선릉역, 20);
+
+                // given
+                final var lineId = 지하철노선을_생성한다(request).getId();
+
+                // when & then
+                지하철구간_제거에_실패한다(lineId, 0L);
                 assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
             }
         }
