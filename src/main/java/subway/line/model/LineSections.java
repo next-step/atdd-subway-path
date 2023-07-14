@@ -28,73 +28,176 @@ public class LineSections {
     public SectionAppendResponse add(Section newSection, Line line) {
         SectionAppendResponse appendResponse = new SectionAppendResponse();
 
-
-
-        if (line.getLineSections().sections.size() > 0) {
-            List<Station> stations = this.getStations(line.getUpStation(), line.getDownStation());
-
-            // 구간이 중복되는 경우
-            validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
-
-            // 둘 다 없는 경우
-            validStationInNewSectionIsStationInExistLine(newSection, stations);
-
-            // 역 비교
-            Station upStationInLine = line.getUpStation();
-            Station downStationInLine = line.getDownStation();
-
-            // 1. 상행 밖으로 붙이기
-            if (upStationInLine.equals(newSection.getDownStation())) {
-                appendResponse = SectionAppendResponse.builder()
-                        .upStation(newSection.getUpStation())
-                        .downStation(line.getDownStation())
-                        .build();
-            }
-
-            // 2. 하행 밖으로 붙이기
-            if (downStationInLine.equals(newSection.getUpStation())) {
-                appendResponse = SectionAppendResponse.builder()
-                        .upStation(line.getUpStation())
-                        .downStation(newSection.getDownStation())
-                        .build();
-            }
-
-            // 3-1. 중간에 넣기: 새 구간의 하행역이 노선에 있지만 상행역은 없을 때
-            Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
-            Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
-            if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
-                Section existSection = sectionWithDownStationByDownStation.get();
-                existSection.changeDownStation(newSection);
-                appendResponse = SectionAppendResponse.builder()
-                        .upStation(line.getUpStation())
-                        .downStation(line.getDownStation())
-                        .build();
-            }
-
-            // 3-2. 중간에 넣기: 새 구간의 상행역이 노선에 있지만 하행역은 없을 때
-            Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
-            Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
-            if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
-                Section existSection = sectionWithUpStationByUpStation.get();
-                existSection.changeUpStation(newSection);
-                appendResponse = SectionAppendResponse.builder()
-                        .upStation(line.getUpStation())
-                        .downStation(line.getDownStation())
-                        .build();
-            }
-
+        if (hasSections(line)) {
+            appendResponse = appendSection(newSection, line);
         }
 
-        if (line.getLineSections().sections.size() < 1) {
-            appendResponse = SectionAppendResponse.builder()
-                    .upStation(line.getUpStation())
-                    .downStation(line.getDownStation())
-                    .build();
+        if (!hasSections(line)) {
+            appendResponse = createFirstSection(line);
         }
-        newSection.setLine(line);
-        this.sections.add(newSection);
+
+        setLineToSection(newSection, line);
+        addSection(newSection);
+
         return appendResponse;
     }
+
+    private boolean hasSections(Line line) {
+        return line.getLineSections().sections.size() > 0;
+    }
+
+    private SectionAppendResponse appendSection(Section newSection, Line line) {
+        SectionAppendResponse appendResponse = new SectionAppendResponse();
+
+        List<Station> stations = getStations(line.getUpStation(), line.getDownStation());
+
+        validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
+        validStationInNewSectionIsStationInExistLine(newSection, stations);
+
+        appendResponse = appendUpOrDown(newSection, line, appendResponse);
+        appendResponse = appendMiddle(newSection, line, appendResponse);
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse appendUpOrDown(Section newSection, Line line, SectionAppendResponse appendResponse) {
+        Station upStationInLine = line.getUpStation();
+        Station downStationInLine = line.getDownStation();
+
+        if (upStationInLine.equals(newSection.getDownStation())) {
+            appendResponse = createSectionAppendResponse(newSection.getUpStation(), line.getDownStation());
+        }
+
+        if (downStationInLine.equals(newSection.getUpStation())) {
+            appendResponse = createSectionAppendResponse(line.getUpStation(), newSection.getDownStation());
+        }
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse appendMiddle(Section newSection, Line line, SectionAppendResponse appendResponse) {
+        appendResponse = appendMiddleDown(newSection, line, appendResponse);
+        appendResponse = appendMiddleUp(newSection, line, appendResponse);
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse appendMiddleDown(Section newSection, Line line, SectionAppendResponse appendResponse) {
+        Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
+        Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
+
+        if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
+            Section existSection = sectionWithDownStationByDownStation.get();
+            existSection.changeDownStation(newSection);
+            appendResponse = createSectionAppendResponse(line.getUpStation(), line.getDownStation());
+        }
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse appendMiddleUp(Section newSection, Line line, SectionAppendResponse appendResponse) {
+        Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
+        Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
+
+        if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
+            Section existSection = sectionWithUpStationByUpStation.get();
+            existSection.changeUpStation(newSection);
+            appendResponse = createSectionAppendResponse(line.getUpStation(), line.getDownStation());
+        }
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse createFirstSection(Line line) {
+        return SectionAppendResponse.builder()
+                .upStation(line.getUpStation())
+                .downStation(line.getDownStation())
+                .build();
+    }
+
+    private SectionAppendResponse createSectionAppendResponse(Station upStation, Station downStation) {
+        return SectionAppendResponse.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .build();
+    }
+
+    private void setLineToSection(Section newSection, Line line) {
+        newSection.setLine(line);
+    }
+
+    private void addSection(Section newSection) {
+        this.sections.add(newSection);
+    }
+
+//    public SectionAppendResponse add(Section newSection, Line line) {
+//        SectionAppendResponse appendResponse = new SectionAppendResponse();
+//
+//        if (line.getLineSections().sections.size() > 0) {
+//            List<Station> stations = this.getStations(line.getUpStation(), line.getDownStation());
+//
+//            // 구간이 중복되는 경우
+//            validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
+//
+//            // 둘 다 없는 경우
+//            validStationInNewSectionIsStationInExistLine(newSection, stations);
+//
+//            // 역 비교
+//
+//            // 1. 상행 밖으로 붙이기
+//            Station upStationInLine = line.getUpStation();
+//            if (upStationInLine.equals(newSection.getDownStation())) {
+//                appendResponse = SectionAppendResponse.builder()
+//                        .upStation(newSection.getUpStation())
+//                        .downStation(line.getDownStation())
+//                        .build();
+//            }
+//
+//            // 2. 하행 밖으로 붙이기
+//            Station downStationInLine = line.getDownStation();
+//            if (downStationInLine.equals(newSection.getUpStation())) {
+//                appendResponse = SectionAppendResponse.builder()
+//                        .upStation(line.getUpStation())
+//                        .downStation(newSection.getDownStation())
+//                        .build();
+//            }
+//
+//            // 3-1. 중간에 넣기: 새 구간의 하행역이 노선에 있지만 상행역은 없을 때
+//            Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
+//            Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
+//            if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
+//                Section existSection = sectionWithDownStationByDownStation.get();
+//                existSection.changeDownStation(newSection);
+//                appendResponse = SectionAppendResponse.builder()
+//                        .upStation(line.getUpStation())
+//                        .downStation(line.getDownStation())
+//                        .build();
+//            }
+//
+//            // 3-2. 중간에 넣기: 새 구간의 상행역이 노선에 있지만 하행역은 없을 때
+//            Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
+//            Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
+//            if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
+//                Section existSection = sectionWithUpStationByUpStation.get();
+//                existSection.changeUpStation(newSection);
+//                appendResponse = SectionAppendResponse.builder()
+//                        .upStation(line.getUpStation())
+//                        .downStation(line.getDownStation())
+//                        .build();
+//            }
+//
+//        }
+//
+//        if (line.getLineSections().sections.size() < 1) {
+//            appendResponse = SectionAppendResponse.builder()
+//                    .upStation(line.getUpStation())
+//                    .downStation(line.getDownStation())
+//                    .build();
+//        }
+//        newSection.setLine(line);
+//        this.sections.add(newSection);
+//        return appendResponse;
+//    }
 
 
     public List<Station> getStations(Station upStation, Station downStation) {
