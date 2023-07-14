@@ -11,16 +11,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import subway.request.LineModifyRequest;
-import subway.request.LineRequest;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import subway.dto.request.LineModifyRequest;
+import subway.dto.request.LineRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.annotation.DirtiesContext.MethodMode.AFTER_METHOD;
-
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
 
     @LocalServerPort
@@ -48,19 +48,19 @@ public class LineAcceptanceTest {
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
-    @DirtiesContext(methodMode = AFTER_METHOD)
+
     @DisplayName("지하철노선을 생성한다.")
     @Test
     void createLineAndFindList() {
         //when
-        LineRequest request = getLineRequest1();
+        LineRequest request = mockRequest_신분당선();
         this.createLine(request);
         //then
         List<String> names = this.findLines().jsonPath().getList("name", String.class);
         Assertions.assertThat(names).contains(request.getName());
     }
 
-    private static ExtractableResponse<Response> createLine(LineRequest dto) {
+    public static ExtractableResponse<Response> createLine(LineRequest dto) {
         return RestAssured.given().log().all()
                 .body(dto)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -82,13 +82,12 @@ public class LineAcceptanceTest {
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.있다
      */
-    @DirtiesContext(methodMode = AFTER_METHOD)
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void create2LineAndFindLines() {
         //when
-        this.createLine(getLineRequest1());
-        this.createLine(getLineRequest2());
+        this.createLine(mockRequest_신분당선());
+        this.createLine(mockRequest_분당선());
 
         //then
         List<String> names = this.findLines().jsonPath().getList("name", String.class);
@@ -100,12 +99,11 @@ public class LineAcceptanceTest {
      * When 생성한 지하철 노선을 조회하면
      * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
      */
-    @DirtiesContext(methodMode = AFTER_METHOD)
     @DisplayName("지하철노선 목록을 조회한다.")
     @Test
     void create2LineAndfindLine() {
         //when
-        LineRequest request = getLineRequest1();
+        LineRequest request = mockRequest_신분당선();
         Long id = this.createLine(request).jsonPath().getLong("id");
 
         //then
@@ -114,7 +112,7 @@ public class LineAcceptanceTest {
     }
 
 
-    private static ExtractableResponse<Response> findLine(Long id) {
+    public static ExtractableResponse<Response> findLine(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/{id}", id)
@@ -127,12 +125,11 @@ public class LineAcceptanceTest {
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
      */
-    @DirtiesContext(methodMode = AFTER_METHOD)
     @DisplayName("지하철노선을 수정한다.")
     @Test
     void createLineAndModifyLine() {
         //given
-        LineRequest request = getLineRequest1();
+        LineRequest request = mockRequest_신분당선();
         Long id = this.createLine(request).jsonPath().getLong("id");
 
         //when
@@ -162,12 +159,11 @@ public class LineAcceptanceTest {
      * When 생성한 지하철 노선을 삭제하면
      * Then 해당 지하철 노선 정보는 삭제된다
      */
-    @DirtiesContext(methodMode = AFTER_METHOD)
     @DisplayName("지하철노선을 삭제한다.")
     @Test
     void createLineAndDeleteLine() {
         //when
-        LineRequest request = getLineRequest1();
+        LineRequest request = mockRequest_신분당선();
         Long id = this.createLine(request).jsonPath().getLong("id");
 
         deleteLine(id);
@@ -185,7 +181,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private LineRequest getLineRequest1() {
+    private LineRequest mockRequest_신분당선() {
         String 신분당선 = "신분당선";
         return LineRequest.builder()
                 .name(신분당선)
@@ -196,7 +192,7 @@ public class LineAcceptanceTest {
                 .build();
     }
 
-    private LineRequest getLineRequest2() {
+    private LineRequest mockRequest_분당선() {
         String 분당선 = "분당선";
         return LineRequest.builder()
                 .name(분당선)
