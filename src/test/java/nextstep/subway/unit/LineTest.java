@@ -155,4 +155,15 @@ class LineTest {
         assertThat(칠호선.getStations()).doesNotContain(노원역);
         assertThat(칠호선.getDistance()).isEqualTo(20);
     }
+
+    @Test
+    void 구간이_하나인_노선에서_상행_종점역을_제거할_수_없음() {
+        //given
+        칠호선.addSection(중계_노원);
+
+        //then
+        assertThatThrownBy(() -> 칠호선.removeSection(중계역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 하나인 노선에서는 구간 삭제가 불가능합니다.");
+    }
 }
