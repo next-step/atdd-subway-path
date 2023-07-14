@@ -3,6 +3,7 @@ package subway;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -113,10 +114,35 @@ public class SectionAcceptanceTest {
     }
 
     /**
+     * When 장 거리의 지하철 구간을 생성하고, 중간 거리의 지하철 구간을 생성
+     * Then 지하철 구간이 생성된다
+     * Then 지하철 라인 역 목록 조회 시 추가 한 구간의 종점 역을 찾을 수 있다.
+     */
+    @DisplayName("지하철 구간을 생성한다. 구간의 중간에 생성")
+    @Test
+    void createSectionMiddle() {
+        Long 양재역 = stationMaps.get("양재역");
+        Long 양재시민의숲역 = createStation("양재시민의숲역");
+        Long 판교역 = createStation("판교역");
+
+        // when
+        this.createSection(양재역, 판교역, 50);
+        ExtractableResponse<Response> response = this.createSection(양재역, 양재시민의숲역, 20);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        JsonPath line = LineAcceptanceTest.findLine(lineId).jsonPath();
+        List<String> stations = line.getList("stations.name", String.class);
+        assertThat(stations).containsAnyOf("양재시민의숲역", "판교역");
+    }
+
+    /**
      * When 하행 역으로 시작하지 않는 지하철 구간을 생성하면
      * Then 지하철 구간이 생성되지 않는다.
      */
-    @DisplayName("지하철 구간 생성 실패 - 등록되어 있는 하행 종점역이랑 다를경우")
+    @DisplayName("지하철 구간 생성 실패 - 등록되어 있는 하행 종점역이랑 다를경우(상/하행 모두 포함되어 있지 않음)")
     @Test
     void failToCreateSectionByDownStationId() {
         Long 신사역 = createStation("신사역");
@@ -130,10 +156,47 @@ public class SectionAcceptanceTest {
     }
 
     /**
+     * When 상행 역이 하행 종점역이 아니면서
+     * When 상행 역은 포함하고, 하행 역은 포함되어 있지 않는 구간을 생성할때 거리를 기존과 같게 설정한 경우
+     * Then 지하철 구간이 생성되지 않는다.
+     */
+    @DisplayName("지하철 구간 생성 실패 - 상행만 포함되어 있때, 등록 된 거리와 같을 경우)")
+    @Test
+    void failToCreateSectionBySameDistance() {
+        Long 강남역 = stationMaps.get("강남역");
+        Long 양재시민의숲역 = createStation("양재시민의숲역");
+
+        // when
+        ExtractableResponse<Response> response = this.createSection(강남역, 양재시민의숲역, 10);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 상행 역이 하행 종점역이 아니면서
+     * When 상행 역은 포함하고, 하행 역은  포함되어 있지 않는 구간을 생성할때 거리를 기존보다 크게 설정한 경우
+     * Then 지하철 구간이 생성되지 않는다.
+     */
+    @DisplayName("지하철 구간 생성 실패 - 상행만 포함되어 있을때, 등록 된 거리 보다 클 경우)")
+    @Test
+    void failToCreateSectionByLongDistance() {
+        Long 강남역 = stationMaps.get("강남역");
+        Long 청계산역 = createStation("청계산역");
+
+        // when
+        ExtractableResponse<Response> response = this.createSection(강남역, 청계산역, 20);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    /**
      * When 하행 역으로 시작하지 않는 지하철 구간을 생성하면
      * Then 지하철 구간이 생성되지 않는다.
      */
-    @DisplayName("지하철 구간 생성 실패 - 새로운 구간의 하행역은 해당 노선에 등록되어있는 역일 수 없다.")
+    @DisplayName("지하철 구간 생성 실패 - 새로운 구간의 하행역은 해당 노선에 등록되어있는 역일 수 없다.(상/하행 다 같을 때)")
     @Test
     void failToCreateSectionByExistStationId() {
         Long 강남역 = stationMaps.get("강남역");

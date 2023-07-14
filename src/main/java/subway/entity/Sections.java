@@ -36,7 +36,7 @@ public class Sections {
         }
 
         // 마지막 구간의 하행역과 추가하려는 구간의 상행역과 일치하는지 확인
-        var lastSection = sections.get(sections.size() - 1);
+        var lastSection = this.lastSection();
         if(!lastSection.getDownStation().equals(section.getUpStation())) {
             throw new ApiException(ErrorCode.INVALID_SECTION_REGISTRATION);
         }
