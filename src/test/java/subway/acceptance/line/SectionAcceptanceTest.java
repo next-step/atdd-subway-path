@@ -242,9 +242,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * Then 노선이 추가된다
      */
     @DisplayName("노선의 중간에 상행역이 같은 새 구간을 추가한다.")
-//    @Test
+    @Test
     void appendSectionNewUpStationExistUpStationIsInMiddleOfLine() {
+        // given
+        String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
 
+        // when
+        var 노선_중간에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(1), stationIds.get(3), 5L);
+        var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
     }
 
     /**
@@ -253,9 +263,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * Then 노선이 추가된다
      */
     @DisplayName("노선의 중간에 하행역이 같은 새 구간을 추가한다.")
-//    @Test
+    @Test
     void appendSectionNewDownStationExistDownStationIsInMiddleOfLine() {
+        // given
+        String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
 
+        // when
+        var 노선_중간에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(3), stationIds.get(1), 5L);
+        var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
     }
 
     /**
@@ -265,9 +285,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * Then 노선에 추가되지 않는다.
      */
     @DisplayName("노선의 길이를 넘는 구간은 추가할 수 없다.")
-//    @Test
+    @Test
     void appendSectionOverLineDistance() {
+        // given
+        String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
 
+        // when
+        var 노선_중간에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(3), stationIds.get(1), 11L);
+        var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
     }
 
     /**
@@ -284,8 +314,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String appendLocation = createdLocation + "/sections";
 
         // when
-        var 구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(1), stationIds.get(2), 10L);
-        var response = LineSteps.구간_추가_API(appendLocation, 구간_요청);
+        var 이미_존재하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(1), stationIds.get(2), 10L);
+        var response = LineSteps.구간_추가_API(appendLocation, 이미_존재하는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -298,9 +328,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * 상행역과 하행역이 모두 노선에 존재하지 않는 구간의 추가
      */
     @DisplayName("상행역과 하행역 모두가 노선에 존재하지 않는 구간은 추가 할 수 없다.")
-//    @Test
+    @Test
     void appendSectionWithNeitherUpStationNorDownStationExistInLine() {
+        // given
+        String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
 
+        // when
+        var 존재하지_않는_구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(3), stationIds.get(4), 10L);
+        var response = LineSteps.구간_추가_API(appendLocation, 존재하지_않는_구간_요청);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 
