@@ -1,9 +1,10 @@
 package subway.service;
 
+import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import subway.request.StationRequest;
-import subway.response.StationResponse;
+import subway.dto.request.StationRequest;
+import subway.dto.response.StationResponse;
 import subway.entity.Station;
 import subway.repository.StationRepository;
 
@@ -41,5 +42,9 @@ public class StationService {
                 station.getId(),
                 station.getName()
         );
+    }
+
+    public Station findStation(Long id) {
+        return stationRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
     }
 }
