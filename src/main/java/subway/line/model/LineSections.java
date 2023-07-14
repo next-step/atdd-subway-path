@@ -28,40 +28,61 @@ public class LineSections {
     public SectionAppendResponse add(Section newSection, Line line) {
         SectionAppendResponse appendResponse = new SectionAppendResponse();
 
+
+
         if (line.getLineSections().sections.size() > 0) {
-            // up이든 down이든 둘중 하나는 연결할 수 있어야됨!
-            validStationInNewSectionIsStationInExistLine(newSection, line);
-//            validUpStationInNewSectionIsDownStationInExistLine(section, line);
-//            validDownStationInNewSectionIsNotDuplicatedInExistLine(section, line);
+            List<Station> stations = this.getStations(line.getUpStation(), line.getDownStation());
 
             // 구간이 중복되는 경우
-            validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, line);
+            validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
 
-            // 중간에 넣는 경우
-//            if (newSection.getDownStation().equals(line.getDownStation()) ||
-//                    newSection.getUpStation().equals(line.getUpStation())) {
-//                if (this.getTotalDistance() <= newSection.getDistance()) {
-//                    throw new SubwayBadRequestException(9999L, "중간에 추가하고자 하는 구간의 길이가 총 길이를 넘을 수 없습니다."); //TODO : constant
-//                }
-//                appendResponse = SectionAppendResponse.builder()
-//                        .upStation(line.getUpStation())
-//                        .downStation(line.getDownStation())
-//                        .build();
-//            }
+            // 둘 다 없는 경우
+            validStationInNewSectionIsStationInExistLine(newSection, stations);
 
-            // 끝에 늘리는 경우
-            if (newSection.getDownStation().equals(line.getUpStation())) {
+            // 역 비교
+            Station upStationInLine = line.getUpStation();
+            Station downStationInLine = line.getDownStation();
+
+            // 1. 상행 밖으로 붙이기
+            if (upStationInLine.equals(newSection.getDownStation())) {
                 appendResponse = SectionAppendResponse.builder()
                         .upStation(newSection.getUpStation())
                         .downStation(line.getDownStation())
                         .build();
             }
-            if (newSection.getUpStation().equals(line.getDownStation())) {
+
+            // 2. 하행 밖으로 붙이기
+            if (downStationInLine.equals(newSection.getUpStation())) {
                 appendResponse = SectionAppendResponse.builder()
                         .upStation(line.getUpStation())
                         .downStation(newSection.getDownStation())
                         .build();
             }
+
+            // 3-1. 중간에 넣기: 새 구간의 하행역이 노선에 있지만 상행역은 없을 때
+            Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
+            Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
+            if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
+                Section existSection = sectionWithDownStationByDownStation.get();
+                existSection.changeDownStation(newSection);
+                appendResponse = SectionAppendResponse.builder()
+                        .upStation(line.getUpStation())
+                        .downStation(line.getDownStation())
+                        .build();
+            }
+
+            // 3-2. 중간에 넣기: 새 구간의 상행역이 노선에 있지만 하행역은 없을 때
+            Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
+            Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
+            if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
+                Section existSection = sectionWithUpStationByUpStation.get();
+                existSection.changeUpStation(newSection);
+                appendResponse = SectionAppendResponse.builder()
+                        .upStation(line.getUpStation())
+                        .downStation(line.getDownStation())
+                        .build();
+            }
+
         }
 
         if (line.getLineSections().sections.size() < 1) {
@@ -79,7 +100,8 @@ public class LineSections {
     public List<Station> getStations(Station upStation, Station downStation) {
         List<Section> sortedSections = new ArrayList<>();
 
-        Section firstSection = findSectionByUpStation(upStation);
+        Section firstSection = findSectionWithUpStationByUpStation(upStation)
+                .orElseThrow(() -> new SubwayNotFoundException(9999L, "상행역에 해당하는 구간을 찾을 수 없습니다"));//TODO: constant;
         sortedSections.add(firstSection);
 
         Station nextDownStation = firstSection.getDownStation();
@@ -132,32 +154,52 @@ public class LineSections {
         return this.sections.stream()
                 .filter(section -> section.getUpStation().equals(downStation))
                 .findAny()
-                .orElseThrow(() -> new SubwayNotFoundException(9999L, "노선에 등록된 하행역이 구간에 없습니다."));
+                .orElseThrow(() -> new SubwayNotFoundException(9999L, "노선에 등록된 하행역이 구간에 없습니다.")); // TODO : contant
     }
 
-    private Section findSectionByUpStation(Station upStation) {
+    private Optional<Section> findSectionWithUpStationByUpStation(Station upStation) {
         return this.sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
-                .findAny()
-                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.STATION_NOT_FOUND_UP_STATION_IN_LINE_MESSAGE));
+                .findAny();
     }
 
-    private void validStationInNewSectionIsStationInExistLine(Section section, Line line) {
-        List<Station> stations = this.getStations(line.getUpStation(), line.getDownStation());
-        Optional<Station> findStation = stations.stream()
+
+    private Optional<Section> findSectionWithDownStationByDownStation(Station downStation) {
+        return this.sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findAny();
+    }
+
+    private Optional<Section> findSectionWithUpStationByDownStation(Station downStation) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(downStation))
+                .findAny();
+    }
+    private Optional<Section> findSectionWithDownStationByUpStation(Station upStation) {
+        return this.sections.stream()
+                .filter(section -> section.getDownStation().equals(upStation))
+                .findAny();
+    }
+
+    private Optional<Station> findAnyStationInNewSectionIsStationInExistLine(Section section, List<Station> stationsInLine) {
+        return stationsInLine.stream()
                 .filter(station -> station.equals(section.getUpStation()) || station.equals(section.getDownStation()))
                 .findAny();
+    }
+
+    private void validStationInNewSectionIsStationInExistLine(Section section, List<Station> stationsInLine) {
+        Optional<Station> findStation = findAnyStationInNewSectionIsStationInExistLine(section, stationsInLine);
         if (findStation.isEmpty()) {
-            throw new SubwayBadRequestException(SubwayMessage.SECTION_ADD_STATION_NOT_FOUND_ANYONE_MESSAGE);
+            throw new SubwayBadRequestException(SubwayMessage.SECTION_ADD_STATION_NOT_FOUND_ANYONE_MESSAGE.getCode(),
+                    SubwayMessage.SECTION_ADD_STATION_NOT_FOUND_ANYONE_MESSAGE.getFormatMessage(section.getUpStation().getName(), section.getDownStation().getName()));
         }
     }
 
-    private void validStationInNewSectionIsNotDuplicatedStationInExistLine(Section section, Line line) {
-        List<Station> stations = this.getStations(line.getUpStation(), line.getDownStation());
-        Optional<Station> findUpStation = stations.stream()
+    private void validStationInNewSectionIsNotDuplicatedStationInExistLine(Section section, List<Station> stationsInLine) {
+        Optional<Station> findUpStation = stationsInLine.stream()
                 .filter(station -> station.equals(section.getUpStation()))
                 .findAny();
-        Optional<Station> findDownStation = stations.stream()
+        Optional<Station> findDownStation = stationsInLine.stream()
                 .filter(station -> station.equals(section.getDownStation()))
                 .findAny();
         if (findUpStation.isPresent() && findDownStation.isPresent()) {

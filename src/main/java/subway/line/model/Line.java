@@ -53,9 +53,8 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(Section newSection) { // TODO : 바뀐 스팩의 상행역/하행역 지정 반영하기
+    public void addSection(Section newSection) {
         SectionAppendResponse response = this.lineSections.add(newSection, this);
-//        this.downStation = section.getDownStation(); // 원래 기준
         this.upStation = response.getUpStation();
         this.downStation = response.getDownStation();
     }

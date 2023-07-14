@@ -38,8 +38,8 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 강남역 = stationRepository.save(new Station(1L, "강남역"));
+        Station 역삼역 = stationRepository.save(new Station(2L, "역삼역"));
         Line 이호선 = lineRepository.save(Line.builder().name("2호선").color("bg-green-600").build());
         final long distance = 10;
 
@@ -65,9 +65,9 @@ public class LineServiceTest {
     @Test
     void deleteSection() {
         // given
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 역삼역 = stationRepository.save(new Station("역삼역"));
-        Station 선릉역 = stationRepository.save(new Station("선릉역"));
+        Station 강남역 = stationRepository.save(new Station(1L, "강남역"));
+        Station 역삼역 = stationRepository.save(new Station(2L, "역삼역"));
+        Station 선릉역 = stationRepository.save(new Station(3L, "선릉역"));
         Line 이호선 = lineRepository.save(Line.builder().name("2호선").color("bg-green-600").downStation(선릉역).build());
         final long distance = 10;
 
@@ -107,8 +107,8 @@ public class LineServiceTest {
     @Test
     void updateLine() {
         // given
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 강남역 = stationRepository.save(new Station(1L, "강남역"));
+        Station 역삼역 = stationRepository.save(new Station(2L, "역삼역"));
         Line 이호선 = lineRepository.save(Line.builder().name("2호선").color("bg-green-600").build());
         final long distance = 10;
 
@@ -143,8 +143,8 @@ public class LineServiceTest {
     @Test
     void deleteLine() {
         // given
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 강남역 = stationRepository.save(new Station(1L, "강남역"));
+        Station 역삼역 = stationRepository.save(new Station(2L, "역삼역"));
         Line 이호선 = lineRepository.save(Line.builder().name("2호선").color("bg-green-600").build());
         final long distance = 10;
 
@@ -173,8 +173,8 @@ public class LineServiceTest {
     @Test
     void saveLine() {
         // when
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 역삼역 = stationRepository.save(new Station("역삼역"));
+        Station 강남역 = stationRepository.save(new Station(1L, "강남역"));
+        Station 역삼역 = stationRepository.save(new Station(2L, "역삼역"));
         Line 이호선 = lineRepository.save(Line.builder().name("2호선").color("bg-green-600").build());
         final long distance = 10;
 

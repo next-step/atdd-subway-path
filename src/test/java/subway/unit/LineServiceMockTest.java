@@ -44,8 +44,8 @@ public class LineServiceMockTest {
         final long lineId = 1L;
         final long distance = 10;
 
-        when(stationService.findStationById(upStationId)).thenReturn(new Station("강남역"));
-        when(stationService.findStationById(downStationId)).thenReturn(new Station("역삼역"));
+        when(stationService.findStationById(upStationId)).thenReturn(new Station(1L, "강남역"));
+        when(stationService.findStationById(downStationId)).thenReturn(new Station(2L, "역삼역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
 
         // when
@@ -77,9 +77,9 @@ public class LineServiceMockTest {
         final long lineId = 1L;
         final long distance = 10;
 
-        when(stationService.findStationById(firstStationId)).thenReturn(new Station("강남역"));
-        when(stationService.findStationById(middleStationId)).thenReturn(new Station("역삼역"));
-        when(stationService.findStationById(lastStationId)).thenReturn(new Station("선릉역"));
+        when(stationService.findStationById(firstStationId)).thenReturn(new Station(1L, "강남역"));
+        when(stationService.findStationById(middleStationId)).thenReturn(new Station(2L, "역삼역"));
+        when(stationService.findStationById(lastStationId)).thenReturn(new Station(3L, "선릉역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
         LineService lineService = new LineService(lineRepository, stationService);
 
@@ -124,8 +124,8 @@ public class LineServiceMockTest {
         final long lineId = 1L;
         final long distance = 10;
 
-        when(stationService.findStationById(upStationId)).thenReturn(new Station("강남역"));
-        when(stationService.findStationById(downStationId)).thenReturn(new Station("역삼역"));
+        when(stationService.findStationById(upStationId)).thenReturn(new Station(1L, "강남역"));
+        when(stationService.findStationById(downStationId)).thenReturn(new Station(2L, "역삼역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
         LineService lineService = new LineService(lineRepository, stationService);
 
@@ -166,8 +166,8 @@ public class LineServiceMockTest {
         final long lineId = 1L;
         final long distance = 10;
 
-        when(stationService.findStationById(upStationId)).thenReturn(new Station("강남역"));
-        when(stationService.findStationById(downStationId)).thenReturn(new Station("역삼역"));
+        when(stationService.findStationById(upStationId)).thenReturn(new Station(1L, "강남역"));
+        when(stationService.findStationById(downStationId)).thenReturn(new Station(2L, "역삼역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
         LineService lineService = new LineService(lineRepository, stationService);
 
@@ -199,8 +199,8 @@ public class LineServiceMockTest {
         final long lineId = 1L;
         final long distance = 10;
 
-        when(stationService.findStationById(upStationId)).thenReturn(new Station("강남역"));
-        when(stationService.findStationById(downStationId)).thenReturn(new Station("역삼역"));
+        when(stationService.findStationById(upStationId)).thenReturn(new Station(1L, "강남역"));
+        when(stationService.findStationById(downStationId)).thenReturn(new Station(2L, "역삼역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
         LineService lineService = new LineService(lineRepository, stationService);
 
