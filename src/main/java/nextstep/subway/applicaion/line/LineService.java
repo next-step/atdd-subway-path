@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.applicaion.LineGraphService;
 import nextstep.subway.applicaion.line.request.LineCreateRequest;
 import nextstep.subway.applicaion.line.request.LineUpdateRequest;
 import nextstep.subway.applicaion.line.request.SectionRequest;

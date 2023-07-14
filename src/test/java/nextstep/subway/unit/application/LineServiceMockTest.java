@@ -20,7 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import nextstep.subway.applicaion.LineGraphService;
+import nextstep.subway.applicaion.line.LineGraphService;
 import nextstep.subway.applicaion.line.LineService;
 import nextstep.subway.applicaion.line.request.SectionRequest;
 import nextstep.subway.domain.line.LineRepository;

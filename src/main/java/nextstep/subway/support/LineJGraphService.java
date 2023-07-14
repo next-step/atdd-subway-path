@@ -8,7 +8,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Component;
 
-import nextstep.subway.applicaion.LineGraphService;
+import nextstep.subway.applicaion.line.LineGraphService;
 import nextstep.subway.domain.line.LineSections;
 import nextstep.subway.domain.station.Station;
 

@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.applicaion.line;
 
 import java.util.List;
 
