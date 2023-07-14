@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.service.LineManageService;
 import nextstep.subway.line.service.LineReadService;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.model.SectionCreateRequest;
@@ -21,7 +20,6 @@ import nextstep.subway.station.service.StationService;
 @Transactional
 public class SectionManageService {
     private final StationService stationService;
-    private final LineManageService lineManageService;
     private final LineReadService lineReadService;
     private final SectionRepository sectionRepository;
 
