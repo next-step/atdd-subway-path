@@ -2,16 +2,10 @@ package subway.domain;
 
 import lombok.*;
 import subway.exception.StationLineCreateException;
-import subway.exception.StationLineSectionCreateException;
-import subway.exception.StationLineSectionDeleteException;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Getter
 @Entity
@@ -53,18 +47,20 @@ public class StationLine {
         section.apply(this);
     }
 
+    public List<StationLineSection> getSections() {
+        return sections.getSections();
+    }
+
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public StationLineSection createSection(Station sectionUpStation, Station sectionDownStation, BigDecimal distance) {
+    public void createSection(Station sectionUpStation, Station sectionDownStation, BigDecimal distance) {
         checkSectionStationExistOnlyOneToLine(sectionUpStation, sectionDownStation);
 
-        final StationLineSection newSection = sections.appendStationLineSection(sectionUpStation, sectionDownStation, distance);
-
-        newSection.apply(this);
-        return newSection;
+        sections.appendStationLineSection(sectionUpStation, sectionDownStation, distance);
+        sections.apply(this);
     }
 
     private void checkSectionStationExistOnlyOneToLine(Station sectionUpStation, Station sectionDownStation) {
@@ -80,13 +76,18 @@ public class StationLine {
 
     public void deleteSection(Station station) {
         sections.deleteSection(station);
+        sections.apply(this);
     }
 
     public List<Station> getAllStations() {
         return sections.getAllStations();
     }
 
-    public Station getLineLastDownStation() {
+    public Station getLineFirstStation() {
+        return sections.getLineFirstStation();
+    }
+
+    public Station getLineLastStation() {
         return sections.getLineLastStation();
     }
 }

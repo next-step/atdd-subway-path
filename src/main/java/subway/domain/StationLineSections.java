@@ -28,7 +28,7 @@ public class StationLineSections {
         sections.add(section);
     }
 
-    public StationLineSection appendStationLineSection(Station upStation, Station downStation, BigDecimal distance) {
+    public void appendStationLineSection(Station upStation, Station downStation, BigDecimal distance) {
         final StationLineSection section = StationLineSection.builder()
                 .upStation(upStation)
                 .downStation(downStation)
@@ -36,8 +36,6 @@ public class StationLineSections {
                 .build();
 
         appendNewSection(section);
-
-        return section;
     }
 
     private void appendNewSection(StationLineSection section) {
@@ -100,33 +98,84 @@ public class StationLineSections {
         return Optional.of(sections)
                 .map(stations -> stations.get(indexOfLastSection))
                 .map(StationLineSection::getDownStation)
-                .orElse(null);
+                .orElseThrow(() -> new IllegalStateException("there is no last station of this line"));
     }
 
     public void deleteSection(Station station) {
-        checkSectionCanDeleted(station);
+        checkCanDeleteStation(station);
 
-        sections.remove(sections.size() - 1);
+        if (station.equals(getLineFirstStation())) {
+            deleteFirstStation();
+        } else if (station.equals(getLineLastStation())) {
+            deleteLastStation();
+        } else {
+            deleteMiddleStation(station);
+        }
     }
 
-    private void checkSectionCanDeleted(Station station) {
-        if (!station.equals(getLineLastStation())) {
-            throw new StationLineSectionDeleteException("target section must be last station of line");
-        }
+    private void deleteFirstStation() {
+        sections.remove(0);
+    }
 
+    private void deleteLastStation() {
+        sections.remove(getSections().size() - 1);
+    }
+
+    private void deleteMiddleStation(Station station) {
+        final StationLineSection upSection = sections.stream()
+                .filter(section -> station.equals(section.getDownStation()))
+                .findFirst()
+                .orElseThrow(() -> new StationLineSectionDeleteException("can't find station included section"));
+
+        final StationLineSection downSection = sections.stream()
+                .filter(section -> station.equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new StationLineSectionDeleteException("can't find station included section"));
+
+        mergeStationLineSection(upSection, downSection);
+
+        sections.remove(upSection);
+        sections.remove(downSection);
+    }
+
+    public void mergeStationLineSection(StationLineSection upSection, StationLineSection downSection) {
+        final BigDecimal totalDistance = upSection.getDistance().add(downSection.getDistance());
+
+        final StationLineSection mergedSection = StationLineSection.builder()
+                .upStation(upSection.getUpStation())
+                .downStation(downSection.getDownStation())
+                .distance(totalDistance)
+                .build();
+
+        final int indexOfDownSection = sections.indexOf(downSection);
+
+        sections.add(indexOfDownSection, mergedSection);
+    }
+
+    private void checkCanDeleteStation(Station station) {
         if (getCountOfAllStation() <= 2) {
             throw new StationLineSectionDeleteException("section must be greater or equals than 2");
         }
+
+        getAllStations().stream()
+                .filter(station::equals)
+                .findFirst()
+                .orElseThrow(() -> new StationLineSectionDeleteException("the station not included to this line"));
     }
 
     public int getCountOfAllStation() {
         return sections.size() + 1;
     }
 
-    private Station getLineFirstStation() {
+    public Station getLineFirstStation() {
         return getSections().stream()
                 .map(StationLineSection::getUpStation)
                 .findFirst()
                 .orElse(null);
+    }
+
+    //associate util method
+    public void apply(StationLine line) {
+        sections.forEach(section -> section.apply(line));
     }
 }

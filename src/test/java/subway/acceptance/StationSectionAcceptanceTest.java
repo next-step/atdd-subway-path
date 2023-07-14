@@ -144,4 +144,73 @@ public class StationSectionAcceptanceTest {
         AcceptanceUtils.createStationLineSection(lineId, cStationId, dStationId, BigDecimal.TEN, HttpStatus.BAD_REQUEST);
     }
 
+
+    /**
+     * Given (A,B)로 1호선 노선을 생성한
+     * Given (B,C)를 길이 2로, (C,D)를 길이 5로 차례대로 1호선에 생성
+     * When 1호선에서 C역 삭제
+     * THEN 노선 조회시 지하철역 순서는 (A,B,D)가 된다
+     */
+    @DisplayName("정상적인 노선의 중간역을 삭제")
+    @Test
+    void deleteStationLineSection_Middle_Station() {
+        //given
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+
+        AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.valueOf(2));
+        AcceptanceUtils.createStationLineSection(lineId, cStationId, dStationId, BigDecimal.valueOf(5));
+
+        //when
+        AcceptanceUtils.deleteStationLineSection(lineId, cStationId, HttpStatus.OK);
+
+        //then
+        final List<String> stationNames = AcceptanceUtils.getStationLine(lineId).getList("stations.name", String.class);
+        Assertions.assertArrayEquals(List.of("A역", "B역", "D역").toArray(), stationNames.toArray());
+    }
+
+    /**
+     * Given (A,B)로 1호선 노선을 생성한
+     * Given (B,C), (C,D)구간을 차례대로 1호선에 생성
+     * When 1호선에서 A역 삭제
+     * THEN 노선 조회시 지하철역 순서는 (B,C,D)가 된다
+     */
+    @DisplayName("정상적인 노선의 상행종점역을 삭제")
+    @Test
+    void deleteStationLineSection_First_Station() {
+        //given
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+
+        AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.valueOf(2));
+        AcceptanceUtils.createStationLineSection(lineId, cStationId, dStationId, BigDecimal.valueOf(5));
+
+        //when
+        AcceptanceUtils.deleteStationLineSection(lineId, aStationId, HttpStatus.OK);
+
+        //then
+        final List<String> stationNames = AcceptanceUtils.getStationLine(lineId).getList("stations.name", String.class);
+        Assertions.assertArrayEquals(List.of("B역", "C역", "D역").toArray(), stationNames.toArray());
+    }
+
+    /**
+     * Given (A,B)로 1호선 노선을 생성한
+     * Given (B,C), (C,D)구간을 차례대로 1호선에 생성
+     * When 1호선에서 D역 삭제
+     * THEN 노선 조회시 지하철역 순서는 (A,B,C)가 된다
+     */
+    @DisplayName("정상적인 노선의 하행종점역을 삭제")
+    @Test
+    void deleteStationLineSection_Last_Station() {
+        //given
+        final Long lineId = AcceptanceUtils.createStationLine("1호선", "blue", aStationId, bStationId, BigDecimal.TEN);
+
+        AcceptanceUtils.createStationLineSection(lineId, bStationId, cStationId, BigDecimal.valueOf(2));
+        AcceptanceUtils.createStationLineSection(lineId, cStationId, dStationId, BigDecimal.valueOf(5));
+
+        //when
+        AcceptanceUtils.deleteStationLineSection(lineId, dStationId, HttpStatus.OK);
+
+        //then
+        final List<String> stationNames = AcceptanceUtils.getStationLine(lineId).getList("stations.name", String.class);
+        Assertions.assertArrayEquals(List.of("A역", "B역", "C역").toArray(), stationNames.toArray());
+    }
 }
