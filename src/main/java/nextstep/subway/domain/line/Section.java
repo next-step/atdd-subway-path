@@ -39,4 +39,16 @@ public class Section {
         this.downStation = downStation;
         this.distance = distance;
     }
+
+    public boolean contains(final Station station) {
+        return equalsUpStation(station) || equalsDownStation(station);
+    }
+
+    public boolean equalsUpStation(final Station station) {
+        return upStation.equalsId(station);
+    }
+
+    public boolean equalsDownStation(final Station station) {
+        return downStation.equalsId(station);
+    }
 }

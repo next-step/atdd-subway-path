@@ -197,26 +197,72 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Nested
     class RemoveSectionTest {
 
-        /**
-         * Given 지하철 노선을 생성하고
-         * Given 지하철 구간을 등록하고
-         * When 등록한 지하철 구간을 삭제하면
-         * Then 해당 지하철 구간 정보는 삭제된다
-         */
         @DisplayName("지하철 구간 제거에 성공한다")
-        @Test
-        void success() {
-            final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 역삼역, 20);
+        @Nested
+        class success {
 
-            // given
-            final var lineId = 지하철노선을_생성한다(request).getId();
-            지하철구간을_등록한다(lineId, new SectionRequest(역삼역, 선릉역, 10));
+            /**
+             * Given 지하철 노선을 생성하고
+             * Given 지하철 구간을 등록하고
+             * When 등록한 지하철 구간을 삭제하면
+             * Then 해당 지하철 구간 정보는 삭제된다
+             */
+            @Test
+            void 지하철_구간의_상행_종점역을_삭제한다() {
+                final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 역삼역, 20);
 
-            // when
-            지하철구간을_제거한다(lineId, 선릉역);
+                // given
+                final var lineId = 지하철노선을_생성한다(request).getId();
+                지하철구간을_등록한다(lineId, new SectionRequest(역삼역, 선릉역, 10));
 
-            // then
-            assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
+                // when
+                지하철구간을_제거한다(lineId, 강남역);
+
+                // then
+                assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
+            }
+
+            /**
+             * Given 지하철 노선을 생성하고
+             * Given 지하철 구간을 등록하고
+             * When 등록한 지하철 구간을 삭제하면
+             * Then 해당 지하철 구간 정보는 삭제된다
+             */
+            @Test
+            void 지하철_구간의_중간_역을_삭제한다() {
+                final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 역삼역, 20);
+
+                // given
+                final var lineId = 지하철노선을_생성한다(request).getId();
+                지하철구간을_등록한다(lineId, new SectionRequest(역삼역, 선릉역, 10));
+
+                // when
+                지하철구간을_제거한다(lineId, 역삼역);
+
+                // then
+                assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
+            }
+
+            /**
+             * Given 지하철 노선을 생성하고
+             * Given 지하철 구간을 등록하고
+             * When 등록한 지하철 구간을 삭제하면
+             * Then 해당 지하철 구간 정보는 삭제된다
+             */
+            @Test
+            void 지하철_구간의_하행_종점역을_삭제한다() {
+                final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 역삼역, 20);
+
+                // given
+                final var lineId = 지하철노선을_생성한다(request).getId();
+                지하철구간을_등록한다(lineId, new SectionRequest(역삼역, 선릉역, 10));
+
+                // when
+                지하철구간을_제거한다(lineId, 선릉역);
+
+                // then
+                assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
+            }
         }
 
         @DisplayName("지하철 구간 제거에 실패한다")
@@ -231,7 +277,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
              * Then 해당 지하철 구간 정보는 삭제할 수 없다
              */
             @Test
-            void 삭제하고자_하는_구간이_마지막_구간이_아닌_경우() {
+            void 노선에_등록되어_있지_않은_역의_경우() {
                 final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 역삼역, 20);
 
                 // given
@@ -239,7 +285,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 지하철구간을_등록한다(lineId, new SectionRequest(역삼역, 선릉역, 10));
 
                 // when & then
-                지하철구간_제거에_실패한다(lineId, 역삼역);
+                지하철구간_제거에_실패한다(lineId, 삼성역);
                 assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(3);
             }
 
@@ -251,15 +297,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
              * Then 해당 지하철 구간 정보는 삭제할 수 없다
              */
             @Test
-            void 노선에_상행_종점역과_하행_종점역만_있는_경우() {
+            void 노선에_구간이_하나만_있는_경우() {
                 final var request = new LineCreateRequest("2호선", "bg-red-600", 강남역, 역삼역, 20);
 
                 // given
                 final var lineId = 지하철노선을_생성한다(request).getId();
-                지하철구간을_등록한다(lineId, new SectionRequest(역삼역, 선릉역, 10));
 
                 // when & then
-                지하철구간을_제거한다(lineId, 선릉역);
                 지하철구간_제거에_실패한다(lineId, 역삼역);
                 assertThat(지하철노선을_조회한다(lineId).getStations()).hasSize(2);
             }

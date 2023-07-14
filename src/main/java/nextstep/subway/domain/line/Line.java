@@ -32,6 +32,7 @@ public class Line {
     private LineSections sections;
 
     private static final LineSectionAppender LINE_SECTION_APPENDER = new LineSectionAppender();
+    private static final LineSectionRemover LINE_SECTION_REMOVER = new LineSectionRemover();
 
     public Line(final String name, final String color, final Station upStation, final Station downStation,
                 final int distance) {
@@ -50,7 +51,7 @@ public class Line {
     }
 
     public void removeSection(final Station station) {
-        sections.remove(station);
+        sections.remove(LINE_SECTION_REMOVER, station);
     }
 
     public List<Station> getStations() {

@@ -2,6 +2,7 @@ package nextstep.subway.domain.line;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
@@ -13,7 +14,6 @@ import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.domain.line.exception.LineRemoveSectionException;
 import nextstep.subway.domain.line.exception.LineSectionsEmptyException;
 import nextstep.subway.domain.station.Station;
 
@@ -29,7 +29,6 @@ public class LineSections {
     )
     private final List<Section> value = new ArrayList<>();
 
-    private static final int MINIMUM_SECTION_SIZE = 1;
 
     public static LineSections init(final Section section) {
         final var sections = new LineSections();
@@ -41,18 +40,8 @@ public class LineSections {
         sectionAppender.append(this, section);
     }
 
-    public void remove(final Station station) {
-        requireStationRemovable(station);
-        value.remove(getLastSection());
-    }
-
-    private void requireStationRemovable(final Station station) {
-        if (!getLastStation().equalsId(station)) {
-            throw new LineRemoveSectionException("노선의 하행역이 아닙니다 : 역 id=" + station.getId());
-        }
-        if (value.size() == MINIMUM_SECTION_SIZE) {
-            throw new LineRemoveSectionException("상행 종점역과 하행 종점역만 있습니다");
-        }
+    public void remove(final LineSectionRemover sectionRemover, final Station station) {
+        sectionRemover.remove(this, station);
     }
 
     public Station getFirstStation() {
@@ -99,6 +88,18 @@ public class LineSections {
         return getValue().stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toUnmodifiableList());
+    }
+
+    public Optional<Section> findSectionContainsAsDownStation(final Station station) {
+        return value.stream()
+                .filter(section -> section.equalsDownStation(station))
+                .findAny();
+    }
+
+    public Optional<Section> findSectionContainsAsUpStation(final Station station) {
+        return value.stream()
+                .filter(section -> section.equalsUpStation(station))
+                .findAny();
     }
 
     public List<Station> getStations() {
