@@ -1,5 +1,7 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
+import nextstep.subway.line.infra.LineRepository;
+import nextstep.subway.station.service.StationService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
