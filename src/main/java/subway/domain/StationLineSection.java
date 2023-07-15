@@ -66,6 +66,14 @@ public class StationLineSection {
         return upStationExistingToLineStations ? upStation : downStation;
     }
 
+    public Long getUpStationId() {
+        return this.upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return this.downStation.getId();
+    }
+
     //associate util method
     public void apply(StationLine line) {
         this.line = line;

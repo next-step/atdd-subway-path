@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class AcceptanceUtils {
@@ -108,6 +109,11 @@ public class AcceptanceUtils {
                 .collect(Collectors.toList());
     }
 
+    public static Map<String, Long> createStationsAndGetStationMap(List<String> names) {
+        return names.stream()
+                .collect(Collectors.toMap(Function.identity(), AcceptanceUtils::createStation));
+    }
+
     public static JsonPath getStations() {
         return RestAssured.given().log().all()
                 .get("/stations")
@@ -135,5 +141,16 @@ public class AcceptanceUtils {
                 .then().log().all()
                 .extract()
                 .jsonPath().getLong("id");
+    }
+
+    public static JsonPath searchStationPath(Long startStationId, Long destinationStationId) {
+        return RestAssured.given().log().all()
+                .queryParam("source", startStationId)
+                .queryParam("target", destinationStationId)
+                .get("/paths")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .jsonPath();
     }
 }
