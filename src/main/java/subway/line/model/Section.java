@@ -17,7 +17,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.util.Objects;
 
 @Getter
 @Builder
@@ -58,7 +57,7 @@ public class Section {
     }
 
     private void validDistance(long newDistance) {
-        if (this.getDistance() <= newDistance){
+        if (this.getDistance() <= newDistance) {
             throw new SubwayBadRequestException(SubwayMessage.SECTION_OVER_DISTANCE);
         }
 

@@ -4,7 +4,6 @@ import lombok.NoArgsConstructor;
 import subway.exception.SubwayBadRequestException;
 import subway.exception.SubwayNotFoundException;
 import subway.line.constant.SubwayMessage;
-import subway.line.dto.SectionStation;
 import subway.station.model.Station;
 
 import javax.persistence.CascadeType;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Embeddable
 @NoArgsConstructor
@@ -29,31 +27,11 @@ public class LineSections {
     public void add(Section newSection, Line line) {
 
         if (hasSections(line)) {
-            appendSection(newSection, line);
+            appendSection(newSection);
         }
-//
-//        if (!hasSections(line)) {
-//            createFirstSection(line);
-//        }
 
         newSection.setLine(line);
         addSection(newSection);
-    }
-
-    public List<Station> getStations(Station upStation, Station downStation) {
-        List<Section> sortedSections = new ArrayList<>();
-
-        Section firstSection = findSectionWithUpStationByUpStation(upStation)
-                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_BY_UP_STATION));
-        sortedSections.add(firstSection);
-
-        Station nextDownStation = firstSection.getDownStation();
-        while (!downStation.equals(nextDownStation)) {
-            Section nextSection = findNextSectionByDownStation(nextDownStation);
-            sortedSections.add(nextSection);
-            nextDownStation = nextSection.getDownStation();
-        }
-        return this.getStations(sortedSections);
     }
 
     public Station getFirstStation() {
@@ -65,6 +43,7 @@ public class LineSections {
         List<Station> stations = getStations();
         return stations.get(stations.size() - 1);
     }
+
     public List<Station> getStations() {
         Map<Station, Station> stationMap = sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
@@ -73,7 +52,7 @@ public class LineSections {
                 .map(Section::getUpStation)
                 .filter(station -> !stationMap.containsValue(station))
                 .findFirst()
-                .orElseThrow(() -> new SubwayNotFoundException(9999L, "역이 없습니다.")); // TODO : constant
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_BY_UP_STATION));
 
         List<Station> stations = new ArrayList<>();
         Station nextStation = upStation;
@@ -90,32 +69,16 @@ public class LineSections {
         return this.sections.size();
     }
 
-    public Section removeSectionByStation(Station targetStation) {
+    public void removeSectionByStation(Station targetStation) {
         validStationsCountIsOverMinimalSectionSize();
         validRemoveStationIsDownStationInExistLine(targetStation);
 
         Section lastSection = getLastSection();
         this.remove(lastSection);
-
-        return lastSection;
     }
 
     private void remove(Section section) {
         sections.remove(section);
-    }
-
-//    private SectionAppendResponse createFirstSection(Line line) {
-//        return SectionAppendResponse.builder()
-//                .upStation(line.getUpStation())
-//                .downStation(line.getDownStation())
-//                .build();
-//    }
-
-    private SectionStation createSectionAppendResponse(Station upStation, Station downStation) {
-        return SectionStation.builder()
-                .upStation(upStation)
-                .downStation(downStation)
-                .build();
     }
 
     private void addSection(Section newSection) {
@@ -133,20 +96,6 @@ public class LineSections {
         return this.sections.get(lastSectionIndex);
     }
 
-    private List<Station> getStations(List<Section> sortedSections) {
-        return sortedSections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    private Section findNextSectionByDownStation(Station downStation) {
-        return this.sections.stream()
-                .filter(section -> section.getUpStation().equals(downStation))
-                .findAny()
-                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_BY_DOWN_STATION));
-    }
-
     private Optional<Section> findSectionWithUpStationByUpStation(Station upStation) {
         return this.sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
@@ -157,66 +106,40 @@ public class LineSections {
         return line.getLineSections().sections.size() > 0;
     }
 
-    private SectionStation appendSection(Section newSection, Line line) {
-        SectionStation appendResponse = new SectionStation();
-
+    private void appendSection(Section newSection) {
         List<Station> stations = getStations();
 
         validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
         validStationInNewSectionIsStationInExistLine(newSection, stations);
 
-        appendResponse = appendUpOrDown(newSection, line, appendResponse);
-        appendResponse = appendMiddle(newSection, line, appendResponse);
-
-        return appendResponse;
+        appendMiddle(newSection);
     }
 
-    private SectionStation appendUpOrDown(Section newSection, Line line, SectionStation appendResponse) {
-        Station upStationInLine =  this.getFirstStation();
-        Station downStationInLine = this.getLastStation();
-
-        if (upStationInLine.equals(newSection.getDownStation())) {
-            appendResponse = createSectionAppendResponse(newSection.getUpStation(), downStationInLine);
-        }
-
-        if (downStationInLine.equals(newSection.getUpStation())) {
-            appendResponse = createSectionAppendResponse(upStationInLine, newSection.getDownStation());
-        }
-
-        return appendResponse;
+    private void appendMiddle(Section newSection) {
+        appendMiddleDown(newSection);
+        appendMiddleUp(newSection);
     }
 
-    private SectionStation appendMiddle(Section newSection, Line line, SectionStation appendResponse) {
-        appendResponse = appendMiddleDown(newSection, line, appendResponse);
-        appendResponse = appendMiddleUp(newSection, line, appendResponse);
-
-        return appendResponse;
-    }
-
-    private SectionStation appendMiddleDown(Section newSection, Line line, SectionStation appendResponse) {
+    private void appendMiddleDown(Section newSection) {
         Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
         Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
 
         if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
             Section existSection = sectionWithDownStationByDownStation.get();
             existSection.changeDownStation(newSection);
-            appendResponse = createSectionAppendResponse(this.getFirstStation(), this.getLastStation());
         }
 
-        return appendResponse;
     }
 
-    private SectionStation appendMiddleUp(Section newSection, Line line, SectionStation appendResponse) {
+    private void appendMiddleUp(Section newSection) {
         Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
         Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
 
         if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
             Section existSection = sectionWithUpStationByUpStation.get();
             existSection.changeUpStation(newSection);
-            appendResponse = createSectionAppendResponse(this.getFirstStation(), this.getLastStation());
         }
 
-        return appendResponse;
     }
 
     private Optional<Section> findSectionWithDownStationByDownStation(Station downStation) {
@@ -279,5 +202,4 @@ public class LineSections {
             throw new SubwayBadRequestException(SubwayMessage.SECTION_DELETE_LAST_STATION_VALID_MESSAGE);
         }
     }
-
 }
