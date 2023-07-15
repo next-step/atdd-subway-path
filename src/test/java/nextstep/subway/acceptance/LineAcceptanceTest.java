@@ -142,6 +142,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      * When: 중간역을 삭제하면
      * Then: 노선 조회시 중간역은 조회되지 않는다.
      * Then: 노선 조회시 노선의 총 길이는 상행 종점역과 중간역 사이의 거리와 중간역과 하행 종점역 사이의 거리를 합한 값이다.
+     * Then: 노선 조회시 상행 종점역, 하행 종점역 순으로 조회된다.
      */
     @Test
     void 구간_삭제_기능() {
@@ -154,6 +155,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         //then
         assertThat(LineSteps.지하철_노선_조회_요청_역_이름_목록_반환(노선_id)).doesNotContain(새로운역명);
         assertThat(LineSteps.지하철_노선_조회_요청_총_거리_반환(노선_id)).isEqualTo(상행종점역_하행종점역_거리);
+        assertThat(LineSteps.지하철_노선_조회_요청_역_이름_목록_반환(노선_id)).containsExactly(상행종점역명, 하행종점역명);
     }
 
     /**
