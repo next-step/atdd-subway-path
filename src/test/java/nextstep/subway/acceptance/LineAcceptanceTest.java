@@ -1,7 +1,5 @@
 package nextstep.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static nextstep.subway.utils.LineTestRequests.지하철_노선_목록_조회;
 import static nextstep.subway.utils.LineTestRequests.지하철_노선_삭제;
 import static nextstep.subway.utils.LineTestRequests.지하철_노선_수정;
@@ -9,26 +7,31 @@ import static nextstep.subway.utils.LineTestRequests.지하철_노선_조회;
 import static nextstep.subway.utils.LineTestRequests.지하철_노선도_등록;
 import static nextstep.subway.utils.StationTestRequests.지하철_역_등록;
 import static nextstep.subway.utils.StatusCodeAssertions.응답코드_검증;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.subway.line.controller.dto.LineResponse;
+import nextstep.subway.utils.DBCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import nextstep.subway.line.controller.dto.LineResponse;
 
 @DisplayName("지하철 노선 관련 기능")
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class LineAcceptanceTest {
 
+    @Autowired
+    private DBCleanup dbCleanup;
+
     @BeforeEach
-    void initStations() {
+    void init() {
+        dbCleanup.execute();
         지하철_역_등록("첫번째역");
         지하철_역_등록("두번째역");
         지하철_역_등록("세번째역");

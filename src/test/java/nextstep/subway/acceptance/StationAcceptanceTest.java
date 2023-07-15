@@ -1,34 +1,42 @@
 package nextstep.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static nextstep.subway.utils.StationTestRequests.지하철_역_등록;
 import static nextstep.subway.utils.StationTestRequests.지하철_역_등록_Id_획득;
 import static nextstep.subway.utils.StationTestRequests.지하철_역_리스트_반환;
 import static nextstep.subway.utils.StationTestRequests.지하철_역_삭제;
 import static nextstep.subway.utils.StationTestRequests.지하철_역_조회;
 import static nextstep.subway.utils.StatusCodeAssertions.응답코드_검증;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.subway.station.controller.dto.StationResponse;
+import nextstep.subway.utils.DBCleanup;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import nextstep.subway.station.controller.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class StationAcceptanceTest {
-    /**
-     * When 지하철역을 생성하면
-     * Then 지하철역이 생성된다
-     * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
-     */
+
+    @Autowired
+    private DBCleanup dbCleanup;
+
+    @BeforeEach
+    void init() {
+        dbCleanup.execute();
+    }
+        /**
+         * When 지하철역을 생성하면
+         * Then 지하철역이 생성된다
+         * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
+         */
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {

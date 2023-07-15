@@ -27,8 +27,6 @@ public class Line {
     @Column(length = 20, nullable = false)
     private String color;
 
-    private Integer distance;
-
     @Embedded
     private LineLastStations lastStations;
 
@@ -37,12 +35,10 @@ public class Line {
 
     protected Line() {}
 
-    public Line(Long id, String name, String color, Integer distance, LineLastStations lastStations,
-        SectionList sections) {
+    public Line(Long id, String name, String color, LineLastStations lastStations, SectionList sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.distance = distance;
         this.lastStations = lastStations;
         this.sections = sections;
     }
@@ -55,7 +51,6 @@ public class Line {
         this.color = color;
         this.lastStations = lastStations;
         this.sections = new SectionList();
-        this.distance = 0;
 
         this.addBaseSection(distance);
     }
@@ -98,7 +93,6 @@ public class Line {
         SectionStations stations = SectionStations.createLineBaseSection(lastStations);
         Section section = new Section(this, stations, distance);
         sections.addSection(section);
-        this.distance += distance;
     }
 
     public LineLastStations getLastStations() {
@@ -112,7 +106,6 @@ public class Line {
 
         sections.addSection(section);
         lastStations.updateDownLastStation(section.getDownwardStation());
-        this.distance += section.getDistance();
     }
 
     public void deleteStation(Station targetStation) {
@@ -123,11 +116,10 @@ public class Line {
 
         Section removeSection = sections.removeSection(targetStation);
         lastStations.updateDownLastStation(removeSection.getUpwardStation());
-        distance -= removeSection.getDistance();
     }
 
     public Integer getDistance() {
-        return distance;
+        return sections.getDistance();
     }
 
     public SectionList getSections() {

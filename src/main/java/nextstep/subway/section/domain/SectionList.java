@@ -52,6 +52,10 @@ public class SectionList {
         throw new CustomException(ErrorCode.NOT_FOUND);
     }
 
+    public Integer getDistance() {
+        return sections.stream().map(Section::getDistance).reduce(0, Integer::sum);
+    }
+
     public List<Section> getSections() {
         return sections;
     }

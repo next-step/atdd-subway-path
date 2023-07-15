@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-public class SectionServiceTest {
+class SectionServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
