@@ -207,7 +207,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제(1L, 2L);
 
         //then
-        응답코드_검증(response, HttpStatus.OK);
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
         에러코드_검증(response, ErrorCode.CAN_NOT_REMOVE_STATION);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         하행선_기대값_검증(line7, 3L, "세번째역");
@@ -228,7 +228,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제(1L, 2L);
 
         //then
-        응답코드_검증(response, HttpStatus.OK);
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
 
 
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
@@ -272,7 +272,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제(1L, 4L);
 
         //then
-        응답코드_검증(response, HttpStatus.OK);
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
         에러코드_검증(response, ErrorCode.CAN_NOT_REMOVE_STATION);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         하행선_기대값_검증(line7, 3L, "세번째역");
