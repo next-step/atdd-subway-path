@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.applicaion.LineGraphService;
 import nextstep.subway.applicaion.line.request.LineCreateRequest;
 import nextstep.subway.applicaion.line.request.LineUpdateRequest;
 import nextstep.subway.applicaion.line.request.SectionRequest;
@@ -52,23 +51,22 @@ public class LineService {
 
     @Transactional
     public void deleteLine(final Long id) {
-        final var line = lineRepository.getById(id);
-        lineRepository.delete(line);
+        lineRepository.deleteById(id);
     }
 
     @Transactional
     public LineResponse appendSection(final Long lineId, final SectionRequest request) {
         final var line = lineRepository.getById(lineId);
-        line.appendSection(convertToSection(line, request));
+        line.appendSection(convertToSection(request));
 
         return convertToLineResponse(line);
     }
 
-    private Section convertToSection(final Line line, final SectionRequest request) {
+    private Section convertToSection(final SectionRequest request) {
         final var upStation = stationRepository.getById(request.getUpStationId());
         final var downStation = stationRepository.getById(request.getDownStationId());
 
-        return new Section(line, upStation, downStation, request.getDistance());
+        return new Section(upStation, downStation, request.getDistance());
     }
 
     @Transactional

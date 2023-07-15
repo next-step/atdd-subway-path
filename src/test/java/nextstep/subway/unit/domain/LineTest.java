@@ -34,7 +34,7 @@ class LineTest {
             void 노선_앞에_구간을_추가한다() {
                 final var line = makeLine(강남역, 역삼역);
 
-                final var section = new Section(line, 교대역, 강남역, 10);
+                final var section = new Section(교대역, 강남역, 10);
                 line.appendSection(section);
 
                 final var actual = line.getStations();
@@ -45,7 +45,7 @@ class LineTest {
             void 노선_뒤에_구간을_추가한다() {
                 final var line = makeLine(강남역, 역삼역);
 
-                final var section = new Section(line, 역삼역, 선릉역, 10);
+                final var section = new Section(역삼역, 선릉역, 10);
                 line.appendSection(section);
 
                 final var actual = line.getStations();
@@ -59,7 +59,7 @@ class LineTest {
                 void 상행역이_동일한_구간을_추가한다() {
                     final var line = makeLine(강남역, 선릉역);
 
-                    final var section = new Section(line, 강남역, 역삼역, 5);
+                    final var section = new Section(강남역, 역삼역, 5);
                     line.appendSection(section);
 
                     final var actual = line.getStations();
@@ -70,7 +70,7 @@ class LineTest {
                 void 하행역이_동일한_구간을_추가한다() {
                     final var line = makeLine(강남역, 선릉역);
 
-                    final var section = new Section(line, 역삼역, 선릉역, 5);
+                    final var section = new Section(역삼역, 선릉역, 5);
                     line.appendSection(section);
 
                     final var actual = line.getStations();
@@ -86,7 +86,7 @@ class LineTest {
             void 상행역과_하행역_모두_노선에_포함되어_있으면_안된다() {
                 final var line = makeLine(강남역, 역삼역, 선릉역);
 
-                final var section = new Section(line, 강남역, 선릉역, 15);
+                final var section = new Section(강남역, 선릉역, 15);
                 assertThatThrownBy(() -> line.appendSection(section))
                         .isInstanceOf(LineAppendSectionException.class);
             }
@@ -95,7 +95,7 @@ class LineTest {
             void 상행역과_하행역_둘중_하나도_노선에_포함되어_있지_않으면_안된다() {
                 final var line = makeLine(강남역, 역삼역, 선릉역);
 
-                final var section = new Section(line, 선릉역, 강남역, 10);
+                final var section = new Section(선릉역, 강남역, 10);
                 assertThatThrownBy(() -> line.appendSection(section))
                         .isInstanceOf(LineAppendSectionException.class);
             }
@@ -104,7 +104,7 @@ class LineTest {
             @ValueSource(ints = {DEFAULT_LINE_LENGTH, DEFAULT_LINE_LENGTH + 1})
             void 역_사이에_새로운_역을_등록할_경우_새로운_구간의_길이는_기존_역_사이_길이보다_크거나_같아선_안된다(final int length) {
                 final var line = makeLine(강남역, 선릉역);
-                final var section = new Section(line, 강남역, 역삼역, length);
+                final var section = new Section(강남역, 역삼역, length);
 
                 assertThatThrownBy(() -> line.appendSection(section))
                         .isInstanceOf(LineAppendSectionException.class);
@@ -120,12 +120,30 @@ class LineTest {
         class Success {
 
             @Test
-            void 구간을_삭제한다() {
+            void 상행_종점역을_삭제한다() {
+                final var line = makeLine(강남역, 역삼역, 선릉역);
+                line.removeSection(강남역);
+
+                final var actual = line.getStations();
+                assertThat(actual).contains(역삼역, 선릉역);
+            }
+
+            @Test
+            void 하행_종점역을_삭제한다() {
                 final var line = makeLine(강남역, 역삼역, 선릉역);
                 line.removeSection(선릉역);
 
                 final var actual = line.getStations();
                 assertThat(actual).contains(강남역, 역삼역);
+            }
+
+            @Test
+            void 중간역을_삭제한다() {
+                final var line = makeLine(강남역, 역삼역, 선릉역);
+                line.removeSection(역삼역);
+
+                final var actual = line.getStations();
+                assertThat(actual).contains(강남역, 선릉역);
             }
         }
 
@@ -133,15 +151,15 @@ class LineTest {
         class Fail {
 
             @Test
-            void 삭제하고자_하는_역은_노선의_하행역이어야만_한다() {
+            void 삭제하고자_하는_역은_노선에_존재하는_역이어야만_한다() {
                 final var line = makeLine(강남역, 역삼역, 선릉역);
 
-                assertThatThrownBy(() -> line.removeSection(역삼역))
+                assertThatThrownBy(() -> line.removeSection(삼성역))
                         .isInstanceOf(LineRemoveSectionException.class);
             }
 
             @Test
-            void 노선의_구간이_하나만_있는_경우_하행역을_삭제할_수_없다() {
+            void 노선의_구간이_하나만_있는_경우_역을_삭제할_수_없다() {
                 final var line = makeLine(강남역, 역삼역);
 
                 assertThatThrownBy(() -> line.removeSection(역삼역))

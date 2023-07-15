@@ -1,5 +1,7 @@
 package nextstep.subway.unit;
 
+import org.springframework.test.util.ReflectionTestUtils;
+
 import nextstep.subway.domain.station.Station;
 
 public class StationFixture {
@@ -11,17 +13,7 @@ public class StationFixture {
 
     private static Station makeStation(final Long id, final String name) {
         final var station = new Station(name);
-        injectId(station, id);
+        ReflectionTestUtils.setField(station, "id", id);
         return station;
-    }
-
-    private static void injectId(final Station station, final Long id) {
-        try {
-            final var field = Station.class.getDeclaredField("id");
-            field.setAccessible(true);
-            field.set(station, id);
-        } catch (final NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("해당하는 필드를 찾을 수 없습니다." + e.getMessage());
-        }
     }
 }

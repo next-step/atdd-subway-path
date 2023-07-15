@@ -31,11 +31,14 @@ public class Line {
     @Embedded
     private LineSections sections;
 
+    private static final LineSectionAppender LINE_SECTION_APPENDER = new LineSectionAppender();
+    private static final LineSectionRemover LINE_SECTION_REMOVER = new LineSectionRemover();
+
     public Line(final String name, final String color, final Station upStation, final Station downStation,
                 final int distance) {
         this.name = name;
         this.color = color;
-        this.sections = LineSections.init(new Section(this, upStation, downStation, distance));
+        this.sections = LineSections.init(new Section(upStation, downStation, distance));
     }
 
     public void update(final String name, final String color) {
@@ -44,11 +47,11 @@ public class Line {
     }
 
     public void appendSection(final Section section) {
-        sections.append(new LineSectionAppender(this), section);
+        sections.append(LINE_SECTION_APPENDER, section);
     }
 
     public void removeSection(final Station station) {
-        sections.remove(station);
+        sections.remove(LINE_SECTION_REMOVER, station);
     }
 
     public List<Station> getStations() {

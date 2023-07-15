@@ -7,12 +7,6 @@ import nextstep.subway.domain.station.Station;
 
 public class LineSectionAppender {
 
-    private final Line line;
-
-    public LineSectionAppender(final Line line) {
-        this.line = line;
-    }
-
     public void append(final LineSections lineSections, final Section section) {
         requireStationExistOneSideOnly(lineSections.getStations(), section);
 
@@ -73,7 +67,7 @@ public class LineSectionAppender {
             final var upStation = newSection.getDownStation();
             final var downStation = originSection.getDownStation();
             final var distance = subtractDistance(originSection.getDistance(), newSection.getDistance());
-            final var separatedSection = new Section(line, upStation, downStation, distance);
+            final var separatedSection = new Section(upStation, downStation, distance);
 
             sections.remove(originSection);
             sections.add(newSection);
@@ -90,7 +84,7 @@ public class LineSectionAppender {
             final var upStation = originSection.getUpStation();
             final var downStation = newSection.getUpStation();
             final var distance = subtractDistance(originSection.getDistance(), newSection.getDistance());
-            final var separatedSection = new Section(line, upStation, downStation, distance);
+            final var separatedSection = new Section(upStation, downStation, distance);
 
             sections.remove(originSection);
             sections.add(newSection);
