@@ -2,6 +2,7 @@ package nextstep.sections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -121,6 +122,40 @@ public class SectionDeleteAcceptanceTest {
         return "/lines/" + lineId + "/sections?stationId=" + stationId;
     }
 
+    @Nested
+    class Given_노선에_구간이_하나일때 {
+
+
+        @Nested
+        class When_구간의_상행역을_제거하면 {
+
+            @DisplayName("예외가 발생한다")
+            @Test
+            void shouldThrowError() {
+                ExtractableResponse<Response> response = RestAssured.given().log().all()
+                                                                    .when().delete(getDeleteSectionUrl(lineAB.getId(), lineUpstationA.getId()))
+                                                                    .then().log().all()
+                                                                    .extract();
+
+                Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
+
+        @Nested
+        class When_구간의_하행역을_제거하면 {
+
+            @DisplayName("예외가 발생한다")
+            @Test
+            void shouldThrowError() {
+                ExtractableResponse<Response> response = RestAssured.given().log().all()
+                                                                    .when().delete(getDeleteSectionUrl(lineAB.getId(), lineDownstationB.getId()))
+                                                                    .then().log().all()
+                                                                    .extract();
+
+                Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            }
+        }
+    }
 
 
 }
