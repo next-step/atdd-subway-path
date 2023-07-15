@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import nextstep.subway.common.exception.CustomException;
+import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
@@ -48,9 +50,22 @@ public class Section {
         return stations.checkStationInSection(station);
     }
 
+    public boolean hasSameUpwardStation(Station station) {
+        Station currentUpwardStation = stations.getUpStation();
+        return currentUpwardStation.equals(station);
+    }
+
     public boolean hasSameDownwardStation(Station station) {
         Station currentDownwardStation = stations.getDownStation();
         return currentDownwardStation.equals(station);
+    }
+
+    public void shareSectionDistance(Section section) {
+        if (section.distance >= this.distance) {
+            throw new CustomException(ErrorCode.INVALID_INTER_STATION_DISTANCE);
+        }
+
+        this.distance -= section.distance;
     }
 
     public Integer getDistance() {

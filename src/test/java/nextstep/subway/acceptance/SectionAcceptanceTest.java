@@ -118,7 +118,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_등록(1L, 1L, 2L, 5);
 
         //then
-        응답코드_검증(response, HttpStatus.OK);
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
         에러코드_검증(response, ErrorCode.INVALID_INTER_STATION_DISTANCE);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         상행선_기대값_검증(line7, 1L, "첫번째역");
@@ -140,7 +140,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_등록(1L, 2L, 1L, 4);
 
         //then
-        응답코드_검증(response, HttpStatus.OK);
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
         에러코드_검증(response, ErrorCode.ALREADY_IN_LINE);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         상행선_기대값_검증(line7, 1L, "첫번째역");
@@ -159,12 +159,11 @@ class SectionAcceptanceTest {
         지하철_노선도_등록("7호선", "bg-1234", 1L, 2L, 5);
 
         //when
-        지하철_구간_등록(1L, 2L, 3L, 7);
-        ExtractableResponse<Response> response = 지하철_구간_등록(1L, 4L, 3L, 7);
+        ExtractableResponse<Response> response = 지하철_구간_등록(1L, 3L, 4L, 4);
 
         //then
-        응답코드_검증(response, HttpStatus.OK);
-        에러코드_검증(response, ErrorCode.ALREADY_IN_LINE);
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
+        에러코드_검증(response, ErrorCode.NOT_FOUND);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         상행선_기대값_검증(line7, 1L, "첫번째역");
         하행선_기대값_검증(line7, 2L, "두번째역");

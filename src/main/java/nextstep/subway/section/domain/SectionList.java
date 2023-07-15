@@ -20,20 +20,57 @@ public class SectionList {
     }
 
     public void addSection(Section newSection) {
-        if (isAlreadyInStation(newSection.getDownwardStation())) {
-            throw new CustomException(ErrorCode.ALREADY_IN_LINE);
-        }
-
+        checkValidStations(newSection.getUpwardStation(), newSection.getDownwardStation());
+        changeInterStationDistance(newSection);
         this.sections.add(newSection);
     }
 
-    public boolean isAlreadyInStation(Station downwardStation) {
+    private void changeInterStationDistance(Section newSection) {
         for (Section section : sections) {
-            if (section.checkStationInSection(downwardStation)){
-                return true;
+            if (section.hasSameUpwardStation(newSection.getUpwardStation())) {
+                section.shareSectionDistance(newSection);
+                break;
+            }
+
+            if (section.hasSameDownwardStation(newSection.getDownwardStation())) {
+                section.shareSectionDistance(newSection);
+                break;
             }
         }
-        return false;
+    }
+
+    private void checkValidStations(Station upStation, Station downStation) {
+        if (sections.isEmpty()) {
+            return;
+        }
+
+        boolean hasUpwardStation = false;
+        boolean hasDownwardStation = false;
+
+        for (Section section : sections) {
+            if (section.checkStationInSection(upStation)) {
+                hasUpwardStation = true;
+            }
+
+            if (section.checkStationInSection(downStation)) {
+                hasDownwardStation = true;
+            }
+        }
+
+        if (isAlReadyAllInStation(hasUpwardStation, hasDownwardStation)) {
+            throw new CustomException(ErrorCode.ALREADY_IN_LINE);
+        }
+        if (isAllStationNotIn(hasUpwardStation, hasDownwardStation)) {
+            throw new CustomException(ErrorCode.NOT_FOUND);
+        }
+    }
+
+    private boolean isAlReadyAllInStation(boolean hasUpwardStation, boolean hasDownwardStation) {
+        return hasDownwardStation == hasUpwardStation && hasUpwardStation;
+    }
+
+    private boolean isAllStationNotIn(boolean hasUpwardStation, boolean hasDownwardStation) {
+        return hasDownwardStation == hasUpwardStation && !hasUpwardStation;
     }
 
     public Section removeSection(Station targetStation){

@@ -100,10 +100,6 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (!lastStations.isLastDownwardIsSameWithSectionUpwardStation(section.getStations())) {
-            throw new CustomException(ErrorCode.INVALID_INTER_STATION_DISTANCE);
-        }
-
         sections.addSection(section);
         lastStations.updateDownLastStation(section.getDownwardStation());
     }
