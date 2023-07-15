@@ -45,23 +45,6 @@ public class Section {
     @Column(nullable = false)
     private Long distance;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Section section = (Section) o;
-        return Objects.equals(getId(), section.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId());
-    }
-
     public void changeDownStation(Section newSection) {
         validDistance(newSection.getDistance());
         this.distance = this.getDistance() - newSection.getDistance();
