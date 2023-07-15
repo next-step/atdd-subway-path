@@ -50,8 +50,8 @@ public class Line {
         return lineSections.getStations();
     }
 
-    public void removeSection() {
-        lineSections.removeLastStation();
+    public void removeSection(Station station) {
+        lineSections.removeStation(station);
     }
 
     public void addSection(Section section) {
@@ -62,15 +62,11 @@ public class Line {
         return lineSections.isEmpty();
     }
 
-    public int sizeSections() {
-        return lineSections.size();
-    }
-
-    public Station getLastStation() {
-        return lineSections.getDownStation();
-    }
-
     public int getSectionsSize() {
         return lineSections.size();
+    }
+
+    public int getLineSectionsTotalDistance() {
+        return lineSections.getLineSectionsTotalDistance();
     }
 }

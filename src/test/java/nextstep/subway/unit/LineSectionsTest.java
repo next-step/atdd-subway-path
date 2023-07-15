@@ -156,7 +156,7 @@ public class LineSectionsTest {
     }
 
     @Test
-    @DisplayName("지하철 노선 마지막 구간에 구간을 제거한다")
+    @DisplayName("지하철 노선 마지막 구간을 제거한다")
     void removeLastLineSection() {
         // given
         Station 다른_지하철역 = new Station("다른지하철역");
@@ -185,6 +185,7 @@ public class LineSectionsTest {
         List<Station> stations = 지하철노선_구간.getStations();
         assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
                 .containsExactly("지하철역", "다른지하철역");
+        assertThat(지하철노선_구간.getLineSectionsTotalDistance()).isEqualTo(20);
     }
 
     @DisplayName("지하철 노선에 처음에 위치한 구간을 제거한다")
