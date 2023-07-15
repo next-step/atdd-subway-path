@@ -116,19 +116,19 @@ public class Line {
     }
 
     private void validateAddedStation(Station upStation, Station downStation) {
-        if (isIncludeAllStation(upStation, downStation)) {
+        if (isIncludeBoth(upStation, downStation)) {
             throw new IllegalArgumentException("upStation과 downStation 모두 존재합니다.");
         }
 
-        if (isNotIncludeAnyStation(upStation, downStation)) {
+        if (isNotIncludeBoth(upStation, downStation)) {
             throw new IllegalArgumentException("upStation과 downStation 모두 존재하지 않습니다.");
         }
     }
 
     /**
-     *
+     * 
      * 구간을 두 개의 구간으로 나눈다.
-     *
+     * 
      * @param oldSection 기존에 존재하던 구간 (삭제)
      * @param newSection 요청을 통해 추가되는 구간 (추가)
      * @param splitedUpStation 파생된 구간의 상행역
@@ -153,11 +153,11 @@ public class Line {
                 .anyMatch(it -> it.getUpStation() == downStation);
     }
 
-    private boolean isIncludeAllStation(Station upStation, Station downStation) {
+    private boolean isIncludeBoth(Station upStation, Station downStation) {
         return getStations().contains(upStation) && getStations().contains(downStation);
     }
 
-    private boolean isNotIncludeAnyStation(Station upStation, Station downStation) {
+    private boolean isNotIncludeBoth(Station upStation, Station downStation) {
         return !getStations().contains(upStation) && !getStations().contains(downStation);
     }
 
