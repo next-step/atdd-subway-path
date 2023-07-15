@@ -233,7 +233,7 @@ public class SectionsTest {
         class When_종점역을_제거하면 {
 
             @Test
-            void 제거된다 () {
+            void 제거된다() {
                 Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
 
                 lineAB.addSection(givenAddSection);
@@ -241,6 +241,22 @@ public class SectionsTest {
                 lineAB.deleteSection(stationB.getId());
 
                 Assertions.assertThat(lineAB.getSections().hasOneSection()).isTrue();
+            }
+        }
+
+        @Nested
+        class When_없는역을_제거하면 {
+
+            @Test
+            void 오류가_발생한다() {
+                Station givenOtherStation = new Station(14L, "otherStation");
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                Assertions.assertThatThrownBy(() -> {
+                    lineAB.deleteSection(givenOtherStation.getId());
+                });
             }
         }
     }

@@ -20,6 +20,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.exception.InvalidSectionDeleteException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.support.ErrorCode;
+import nextstep.subway.support.SubwayException;
 
 
 @Getter
@@ -169,8 +170,7 @@ public class Sections {
         } else if (relatedSections.size() == 1) {
             this.sections.remove(relatedSections.get(0));
         } else {
-
-
+            throw new SubwayException(ErrorCode.STATION_NOT_ON_SECTIONS);
         }
     }
 
