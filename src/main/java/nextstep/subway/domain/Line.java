@@ -52,11 +52,15 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        sections.removeLastSection(station);
+        sections.remove(station);
     }
 
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public int getDistance() {
+        return sections.getTotalDistance();
     }
 }

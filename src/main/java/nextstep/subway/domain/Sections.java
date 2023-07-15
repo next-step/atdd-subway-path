@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.*;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -12,10 +14,6 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-
-    private static final String DUPLICATE_STATION_ERROR_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 등록 불가능 합니다.";
-    private static final String NOT_EXISTED_STATION_ERROR_MESSAGE = "상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않은 경우 등록 불가능 합니다.";
-
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
@@ -35,7 +33,7 @@ public class Sections {
             return;
         }
 
-        throw new IllegalArgumentException();
+        throw new AnyNewSectionException();
     }
 
     public List<Station> getStations() {
@@ -66,11 +64,32 @@ public class Sections {
         sections.removeAll(List.of(section));
     }
 
-    public void removeLastSection(Station station) {
-        if (sections.isEmpty() || !sections.get(sections.size() - 1).isDownStation(station)) {
-            throw new IllegalArgumentException();
+    public void remove(Station station) {
+        validateRemoveSection(station);
+        Section downSection = getDownSection(station);
+        Section upSection = getUpSection(station);
+        upSection.changeDownStation(downSection.getDownStation());
+        upSection.addDistance(downSection.getDistance());
+        sections.remove(downSection);
+    }
+
+    private void validateRemoveSection(Station station) {
+        if (sections.size() < 2) {
+            throw new MinimumSizeRemoveSectionException();
         }
-        sections.remove(sections.get(sections.size() - 1));
+        if (!getStationsSet().contains(station)) {
+            throw new NotExistedRemoveSectionException();
+        }
+    }
+
+    private Section getDownSection(Station station) {
+        return sections.stream().filter(section -> section.isUpStation(station))
+                .findAny().orElseThrow(SectionNotFoundException::new);
+    }
+
+    private Section getUpSection(Station station) {
+        return sections.stream().filter(section -> section.isDownStation(station))
+                .findAny().orElseThrow(SectionNotFoundException::new);
     }
 
     private Station getUpEndStation() {
@@ -78,7 +97,7 @@ public class Sections {
                 .map(Section::getUpStation)
                 .filter(upStation -> sections.stream().noneMatch(section -> section.isDownStation(upStation)))
                 .findAny()
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(StationNotFoundException::new);
     }
 
     private Station getDownEndStation() {
@@ -86,12 +105,11 @@ public class Sections {
                 .map(Section::getDownStation)
                 .filter(downStation -> sections.stream().noneMatch(section -> section.isUpStation(downStation)))
                 .findAny()
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(StationNotFoundException::new);
     }
 
     private void addSectionBetweenStation(Section newSection) {
-        Section findSection = sections.stream().filter(s -> s.isUpStation(newSection.getUpStation()))
-                .findAny().orElseThrow(IllegalArgumentException::new);
+        Section findSection = getDownSection(newSection.getUpStation());
         findSection.changeUpStation(newSection.getDownStation());
         findSection.subtractDistance(newSection.getDistance());
         sections.add(newSection);
@@ -112,11 +130,11 @@ public class Sections {
     private void validateNewSection(Section newSection) {
         Set<Station> stationsSet = getStationsSet();
         if (stationsSet.contains(newSection.getDownStation()) && stationsSet.contains(newSection.getUpStation())) {
-            throw new IllegalArgumentException(DUPLICATE_STATION_ERROR_MESSAGE);
+            throw new DuplicationNewSectionException();
         }
         if (!sections.isEmpty() && !stationsSet.contains(newSection.getDownStation())
                 && !stationsSet.contains(newSection.getUpStation())) {
-            throw new IllegalArgumentException(NOT_EXISTED_STATION_ERROR_MESSAGE);
+            throw new NotExistedNewSectionException();
         }
     }
 
@@ -126,4 +144,7 @@ public class Sections {
                 .collect(Collectors.toSet());
     }
 
+    public int getTotalDistance() {
+        return sections.stream().mapToInt(Section::getDistance).sum();
+    }
 }

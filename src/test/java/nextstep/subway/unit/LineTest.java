@@ -3,6 +3,8 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.NewSectionException;
+import nextstep.subway.exception.RemoveSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -123,7 +125,7 @@ class LineTest {
 
         //then
         assertThatThrownBy(() -> 칠호선.addSection(중계_마들))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NewSectionException.class)
                 .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우 등록 불가능 합니다.");
     }
 
@@ -138,7 +140,47 @@ class LineTest {
 
         //then
         assertThatThrownBy(() -> 칠호선.addSection(하계_중계))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NewSectionException.class)
                 .hasMessage("상행역과 하행역 둘 중 하나도 노선에 포함되어있지 않은 경우 등록 불가능 합니다.");
+    }
+
+    @Test
+    void 구간_삭제() {
+        //given
+        칠호선.addSection(중계_노원);
+        칠호선.addSection(노원_마들);
+
+        //when
+        칠호선.removeSection(노원역);
+
+        //then
+        assertThat(칠호선.getStations()).doesNotContain(노원역);
+        assertThat(칠호선.getDistance()).isEqualTo(20);
+    }
+
+    @Test
+    void 구간이_하나인_노선에서_구간을_제거할_수_없음() {
+        //given
+        칠호선.addSection(중계_노원);
+
+        //then
+        assertThatThrownBy(() -> 칠호선.removeSection(중계역))
+                .isInstanceOf(RemoveSectionException.class)
+                .hasMessage("구간이 하나인 노선에서는 구간 삭제가 불가능합니다.");
+    }
+
+    @Test
+    void 노선에_등록되어_있지_않은_역을_제거할_수_없음() {
+        //given
+        칠호선.addSection(노원_마들);
+        칠호선.addSection(중계_노원);
+
+        //when
+        Station 하계역 = new Station("하계역");
+
+        //then
+        assertThatThrownBy(() -> 칠호선.removeSection(하계역))
+                .isInstanceOf(RemoveSectionException.class)
+                .hasMessage("입력한 역이 등록된 구간이 존재하지 않습니다.");
     }
 }

@@ -7,6 +7,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.SectionNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,12 +44,12 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        return lineRepository.findById(id).map(LineResponse::from).orElseThrow(IllegalArgumentException::new);
+        return LineResponse.from(findLineById(id));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = findLineById(id);
 
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
@@ -61,14 +63,18 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = findLineById(lineId);
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(LineNotFoundException::new);
+    }
+
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(SectionNotFoundException::new);
         Station station = stationService.findById(stationId);
 
         line.removeSection(station);

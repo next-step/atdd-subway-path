@@ -10,12 +10,14 @@ public class LineResponse {
     private String name;
     private String color;
     private List<StationResponse> stations;
+    private int distance;
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations, int distance) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+        this.distance = distance;
     }
 
     public static LineResponse from(Line line) {
@@ -25,11 +27,16 @@ public class LineResponse {
                 line.getColor(),
                 line.getStations().stream()
                         .map(StationResponse::from)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                line.getDistance()
         );
     }
 
     public LineResponse() {
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public Long getId() {
