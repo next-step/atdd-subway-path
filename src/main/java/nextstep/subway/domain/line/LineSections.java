@@ -29,6 +29,8 @@ public class LineSections {
     )
     private final List<Section> value = new ArrayList<>();
 
+    private static final LineSectionAppender LINE_SECTION_APPENDER = new LineSectionAppender();
+    private static final LineSectionRemover LINE_SECTION_REMOVER = new LineSectionRemover();
 
     public static LineSections init(final Section section) {
         final var sections = new LineSections();
@@ -36,12 +38,12 @@ public class LineSections {
         return sections;
     }
 
-    public void append(final LineSectionAppender sectionAppender, final Section section) {
-        sectionAppender.append(this, section);
+    public void append(final Section section) {
+        LINE_SECTION_APPENDER.append(this, section);
     }
 
-    public void remove(final LineSectionRemover sectionRemover, final Station station) {
-        sectionRemover.remove(this, station);
+    public void remove(final Station station) {
+        LINE_SECTION_REMOVER.remove(this, station);
     }
 
     public Station getFirstStation() {
