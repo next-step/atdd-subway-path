@@ -101,7 +101,7 @@ public class Line {
 
     public void addSection(Section section) {
         if (!lastStations.isLastDownwardIsSameWithSectionUpwardStation(section.getStations())) {
-            throw new CustomException(ErrorCode.ONLY_DOWNWARD_CAN_BE_ADDED_TO_LINE);
+            throw new CustomException(ErrorCode.INVALID_INTER_STATION_DISTANCE);
         }
 
         sections.addSection(section);
