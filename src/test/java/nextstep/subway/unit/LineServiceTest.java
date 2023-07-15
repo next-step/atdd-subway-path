@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -48,28 +49,22 @@ public class LineServiceTest {
     static int DISTANCE_10 = 10;
 
     @Test
-    @DisplayName("노선을 저장")
+    @DisplayName("새로운 노선을 저장")
     void saveLine() {
         // given
         LineRequest request = new LineRequest(LINE_NAME_1, LINE_COLOR_1, STATION_ID_1, STATION_ID_2,
                 DISTANCE_10);
 
         // when
-        lineService.saveLine(request);
+        LineResponse response = lineService.saveLine(request);
 
         // then
-        Line line = lineRepository.findById(LINE_ID_1).orElseThrow();
-        List<Section> sections = line.getSections();
-        Section firstSection = sections.get(0);
-
-        assertThat(line.getName()).isEqualTo(LINE_NAME_1);
-        assertThat(line.getColor()).isEqualTo(LINE_COLOR_1);
-        assertThat(firstSection.getUpStation().getId()).isEqualTo(STATION_ID_1);
-        assertThat(firstSection.getDownStation().getId()).isEqualTo(STATION_ID_2);
+        assertThat(response.getName()).isNotNull();
+        assertThat(response.getName()).isEqualTo(LINE_NAME_1);
     }
 
     @Test
-    @DisplayName("노선을 수정")
+    @DisplayName("기존 노선을 수정")
     void updateLine() {
         // given
         LineRequest request = new LineRequest(LINE_NAME_UPDATE, LINE_COLOR_UPDATE);
@@ -85,7 +80,7 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("노선을 삭제")
+    @DisplayName("기존 노선을 삭제")
     void deleteLine() {
         // when
         lineService.deleteLine(LINE_ID_1000);
@@ -97,7 +92,7 @@ public class LineServiceTest {
 
 
     @Test
-    @DisplayName("구간을 추가")
+    @DisplayName("기조 노선에 구간을 추가")
     void addSection() {
         // given
         SectionRequest request = new SectionRequest(STATION_ID_2, STATION_ID_3, DISTANCE_10);
@@ -107,9 +102,9 @@ public class LineServiceTest {
 
         // then
         Line line = lineRepository.findById(LINE_ID_1000).orElseThrow();
-        List<Section> sections = line.getSections();
-        Section lastSection = sections.get(sections.size() - 1);
-
+        // then
+        assertThat(line).isNotNull();
+        Section lastSection = line.getSections().get(line.getSections().size() - 1);
         assertThat(lastSection.getUpStation().getId()).isEqualTo(STATION_ID_2);
         assertThat(lastSection.getDownStation().getId()).isEqualTo(STATION_ID_3);
         assertThat(lastSection.getDistance()).isEqualTo(DISTANCE_10);

@@ -47,7 +47,7 @@ class LineTest {
         line_2.getSections().add(역삼역_선릉역_구간);
 
         //when
-        List<Station> stations = line_2.getStation();
+        List<Station> stations = line_2.getStations();
 
         //then
         assertThat(stations).containsAnyOf(강남역, 역삼역, 선릉역);
