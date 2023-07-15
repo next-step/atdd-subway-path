@@ -166,8 +166,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
-//        assertThat(retrieveLine.body().jsonPath().getList("stations.name").size()).isEqualTo(4);
+        LineSteps.노선_조회_API(createdLocation);
 
     }
 
@@ -189,8 +188,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
-//        assertThat(retrieveLine.body().jsonPath().getList("stations.name").size()).isEqualTo(4);
+        LineSteps.노선_조회_API(createdLocation);
     }
 
     /**
@@ -204,9 +202,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         String createdLocation = 세구간이_포함된_노선_생성_작업();
         final String appendLocation = createdLocation + "/sections";
-
-        LineSteps.노선_조회_API(createdLocation);
-        System.out.println("-------------------------");
 
         // when
         var 노선_중간에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(1), stationIds.get(3), 5L);

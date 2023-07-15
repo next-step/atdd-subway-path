@@ -42,72 +42,6 @@ public class LineSections {
         return appendResponse;
     }
 
-    private boolean hasSections(Line line) {
-        return line.getLineSections().sections.size() > 0;
-    }
-
-    public SectionAppendResponse appendSection(Section newSection, Line line) {
-        SectionAppendResponse appendResponse = new SectionAppendResponse();
-
-        List<Station> stations = getStations(line.getUpStation(), line.getDownStation());
-
-        validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
-        validStationInNewSectionIsStationInExistLine(newSection, stations);
-
-        appendResponse = appendUpOrDown(newSection, line, appendResponse);
-        appendResponse = appendMiddle(newSection, line, appendResponse);
-
-        return appendResponse;
-    }
-
-    public SectionAppendResponse appendUpOrDown(Section newSection, Line line, SectionAppendResponse appendResponse) {
-        Station upStationInLine = line.getUpStation();
-        Station downStationInLine = line.getDownStation();
-
-        if (upStationInLine.equals(newSection.getDownStation())) {
-            appendResponse = createSectionAppendResponse(newSection.getUpStation(), line.getDownStation());
-        }
-
-        if (downStationInLine.equals(newSection.getUpStation())) {
-            appendResponse = createSectionAppendResponse(line.getUpStation(), newSection.getDownStation());
-        }
-
-        return appendResponse;
-    }
-
-    public SectionAppendResponse appendMiddle(Section newSection, Line line, SectionAppendResponse appendResponse) {
-        appendResponse = appendMiddleDown(newSection, line, appendResponse);
-        appendResponse = appendMiddleUp(newSection, line, appendResponse);
-
-        return appendResponse;
-    }
-
-    public SectionAppendResponse appendMiddleDown(Section newSection, Line line, SectionAppendResponse appendResponse) {
-        Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
-        Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
-
-        if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
-            Section existSection = sectionWithDownStationByDownStation.get();
-            existSection.changeDownStation(newSection);
-            appendResponse = createSectionAppendResponse(line.getUpStation(), line.getDownStation());
-        }
-
-        return appendResponse;
-    }
-
-    public SectionAppendResponse appendMiddleUp(Section newSection, Line line, SectionAppendResponse appendResponse) {
-        Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
-        Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
-
-        if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
-            Section existSection = sectionWithUpStationByUpStation.get();
-            existSection.changeUpStation(newSection);
-            appendResponse = createSectionAppendResponse(line.getUpStation(), line.getDownStation());
-        }
-
-        return appendResponse;
-    }
-
     public List<Station> getStations(Station upStation, Station downStation) {
         List<Section> sortedSections = new ArrayList<>();
 
@@ -191,6 +125,71 @@ public class LineSections {
                 .findAny();
     }
 
+    private boolean hasSections(Line line) {
+        return line.getLineSections().sections.size() > 0;
+    }
+
+    private SectionAppendResponse appendSection(Section newSection, Line line) {
+        SectionAppendResponse appendResponse = new SectionAppendResponse();
+
+        List<Station> stations = getStations(line.getUpStation(), line.getDownStation());
+
+        validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
+        validStationInNewSectionIsStationInExistLine(newSection, stations);
+
+        appendResponse = appendUpOrDown(newSection, line, appendResponse);
+        appendResponse = appendMiddle(newSection, line, appendResponse);
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse appendUpOrDown(Section newSection, Line line, SectionAppendResponse appendResponse) {
+        Station upStationInLine = line.getUpStation();
+        Station downStationInLine = line.getDownStation();
+
+        if (upStationInLine.equals(newSection.getDownStation())) {
+            appendResponse = createSectionAppendResponse(newSection.getUpStation(), line.getDownStation());
+        }
+
+        if (downStationInLine.equals(newSection.getUpStation())) {
+            appendResponse = createSectionAppendResponse(line.getUpStation(), newSection.getDownStation());
+        }
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse appendMiddle(Section newSection, Line line, SectionAppendResponse appendResponse) {
+        appendResponse = appendMiddleDown(newSection, line, appendResponse);
+        appendResponse = appendMiddleUp(newSection, line, appendResponse);
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse appendMiddleDown(Section newSection, Line line, SectionAppendResponse appendResponse) {
+        Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
+        Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
+
+        if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
+            Section existSection = sectionWithDownStationByDownStation.get();
+            existSection.changeDownStation(newSection);
+            appendResponse = createSectionAppendResponse(line.getUpStation(), line.getDownStation());
+        }
+
+        return appendResponse;
+    }
+
+    private SectionAppendResponse appendMiddleUp(Section newSection, Line line, SectionAppendResponse appendResponse) {
+        Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
+        Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
+
+        if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
+            Section existSection = sectionWithUpStationByUpStation.get();
+            existSection.changeUpStation(newSection);
+            appendResponse = createSectionAppendResponse(line.getUpStation(), line.getDownStation());
+        }
+
+        return appendResponse;
+    }
 
     private Optional<Section> findSectionWithDownStationByDownStation(Station downStation) {
         return this.sections.stream()
@@ -215,6 +214,7 @@ public class LineSections {
                 .filter(station -> station.equals(section.getUpStation()) || station.equals(section.getDownStation()))
                 .findAny();
     }
+
 
     private void validStationInNewSectionIsStationInExistLine(Section section, List<Station> stationsInLine) {
         Optional<Station> findStation = findAnyStationInNewSectionIsStationInExistLine(section, stationsInLine);
