@@ -1,9 +1,9 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -60,14 +60,19 @@ public class Line {
         return sections;
     }
 
-    public List<Station> getStation() {
-        return this.sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+    public List<Station> getStations() {
+        if (this.getSections().isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Station> stations = this.getSections().stream()
+                .map(Section::getDownStation)
                 .collect(Collectors.toList());
+        stations.add(0, this.getSections().get(0).getUpStation());
+        return stations;
     }
 
     public void removeSection(Station station) {
-        this.sections.remove(this.sections.size()-1);
+        this.sections.remove(this.sections.size() - 1);
     }
 
 }
