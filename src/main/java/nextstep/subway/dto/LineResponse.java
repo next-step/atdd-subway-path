@@ -19,7 +19,7 @@ public class LineResponse {
         lineResponse.id = line.getId();
         lineResponse.name = line.getName();
         lineResponse.color = line.getColor();
-        lineResponse.stations = line.getStationList();
+        lineResponse.stations = line.getOrderedStationList();
 
         return lineResponse;
     }

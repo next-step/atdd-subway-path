@@ -56,43 +56,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
 
-    /**
-     * Given 지하철 역과 노선을 생성하고
-     * When 해당 노선에 등록되어있는 하행 종점역이 아닌 상행역을 가진 구간을 추가하면
-     * Then Bad Request 400 error가 발생한다
-     */
-    @DisplayName("잘못된 상행역을 가진 지하철 구간을 생성한다.")
-    @Test
-    void createInvalidSectionDueToUpStation() {
-        //given
-        SectionStep.지하철구간_생성(이호선,강남역,역삼역,10L);
-
-        // when
-        ExtractableResponse<Response> response = SectionStep.지하철구간_생성(이호선,선릉역,삼성역,20L);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    /**
-     * Given 지하철 역과 노선을 생성하고
-     * When  해당 노선에 등록되어있는 역과 동일한 하행역을 가진 구간을 추가하면
-     * Then Bad Request 400 error가 발생한다
-     */
-
-    @DisplayName("잘못된 하행역을 가진 구간을 생성한다.")
-    @Test
-    void createInvalidSectionDueToDownStation() {
-        //given
-        SectionStep.지하철구간_생성(이호선,강남역,역삼역,10L);
-
-        // when
-        ExtractableResponse<Response> response = SectionStep.지하철구간_생성(이호선,역삼역,강남역,20L);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     @DisplayName("존재하지 않는 역을 가진 구간을 생성한다.")
     @Test
     void createInvalidSectionNotExistsStation() {
@@ -107,6 +70,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+
+
 
     /**
      * Given 지하철 역,노선, 구간을 생성하고

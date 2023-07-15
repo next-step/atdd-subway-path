@@ -28,11 +28,10 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
-
+    private Long distance;
 
     @Builder
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section( Line line, Station upStation, Station downStation, Long distance) {
         this.line = Objects.requireNonNull(line);
         this.upStation = Objects.requireNonNull(upStation);
         this.downStation = Objects.requireNonNull(downStation);

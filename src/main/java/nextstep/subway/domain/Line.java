@@ -5,10 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -25,6 +22,14 @@ public class Line {
     @Column(length = 20, nullable = false)
     private String color;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "up_station_id")
+    private Station firstUpStation;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "down_station_id")
+    private Station lastDownStation;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -38,43 +43,124 @@ public class Line {
         this.color = color;
     }
 
-    public List<Station> getStationList(){
-        if(this.getSections().isEmpty()){
+    public void addSection(Section newSection){
+
+        //노선의 첫 구간추가일 경우
+        if(this.sections.isEmpty()){
+            this.firstUpStation = newSection.getUpStation();
+            this.lastDownStation = newSection.getDownStation();
+
+            sections.add(newSection);
+            return;
+        }
+
+        List<Station> orderedStationList = this.getOrderedStationList();
+        boolean isUpStationAlreadyRegistered = orderedStationList.contains(newSection.getUpStation());
+        boolean isDownStationAlreadyRegistered = orderedStationList.contains(newSection.getDownStation());
+
+        if(isUpStationAlreadyRegistered && isDownStationAlreadyRegistered){
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
+        }
+
+        if( !(isUpStationAlreadyRegistered) && !(isDownStationAlreadyRegistered)){
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
+        }
+
+        //새로운 역을 상행 종점으로 등록할 경우
+        if(this.firstUpStation.getId()==newSection.getDownStation().getId()){
+            this.firstUpStation = newSection.getUpStation();
+
+            sections.add(newSection);
+            return;
+        }
+
+        //새로운 역을 하행 종점으로 등록할 경우
+        if(this.lastDownStation.getId()==newSection.getUpStation().getId()){
+            this.lastDownStation = newSection.getDownStation();
+
+            sections.add(newSection);
+            return;
+        }
+
+
+        //역 사이에 새로운 역을 등록할 경우
+
+        ////새로운 역의 상행역이 기존역인 경우
+        if(isUpStationAlreadyRegistered){
+            Section oldSection = findSectionByUpStation(newSection.getUpStation().getId()).get();
+
+            if(newSection.getDistance()>=oldSection.getDistance()){
+                throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+            }
+
+            sections.add(new Section(newSection.getLine(), newSection.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - newSection.getDistance()));
+            sections.remove(oldSection);
+            sections.add(newSection);
+            return;
+
+        }
+        ////새로운 역의 하행역이 기존역인 경우
+        if(isDownStationAlreadyRegistered){
+            Section oldSection = findSectionByDownStation(newSection.getDownStation().getId()).get();
+
+            if(newSection.getDistance()>=oldSection.getDistance()){
+                throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
+            }
+
+            sections.add(new Section(newSection.getLine(), oldSection.getUpStation(), newSection.getUpStation(), oldSection.getDistance() - newSection.getDistance()));
+            sections.remove(oldSection);
+            sections.add(newSection);
+            return;
+        }
+
+
+
+    }
+
+
+
+    public List<Station> getOrderedStationList(){
+        if(this.sections.isEmpty()){
             return Collections.emptyList();
         }
         else{
-            List<Station> stations = this.getSections().stream()
+            List<Station> stations = this.getOrderdSectionList().stream()
                     .map(Section::getDownStation)
                     .collect(Collectors.toList());
 
-            stations.add(0, this.getSections().get(0).getUpStation());
+            stations.add(0, this.firstUpStation);
 
             return stations;
         }
-
     }
 
-    public void validateCreateSectionRequest(Long newUpStationId,Long newDownStationId){
+    public List<Section> getOrderdSectionList(){
+        List<Section> orderedSections = new ArrayList<>();
 
-        List<Station> stationList = this.getStationList();
+        Section nextSection = findSectionByUpStation(firstUpStation.getId()).get();
+        orderedSections.add(nextSection);
 
-        //기존에 등록된 구간이 없을 경우
-        if(stationList.isEmpty()){
-            return;
-        }
-        Station lastStation = stationList.get(stationList.size()-1);
-        if(!Objects.equals(newUpStationId, lastStation.getId())){
-            throw new IllegalArgumentException("새로운 구간의 상행역이 해당 노선에 등록되어있는 하행 종점역과 다릅니다");
+        while(findSectionByUpStation(nextSection.getDownStation().getId()).isPresent()) {
+            nextSection = findSectionByUpStation(nextSection.getDownStation().getId()).get();
+            orderedSections.add(nextSection);
         }
 
-        boolean isNewDownStationIdAlreadyExists = stationList.stream()
-                .anyMatch(station-> station.getId().equals(newDownStationId));
-
-        if(isNewDownStationIdAlreadyExists){
-            throw new IllegalArgumentException("새로운 구간의 하행역이 해당 노선에 이미 등록되어 있습니다.");
-        }
-
+        return List.copyOf(orderedSections);
     }
+
+    private Optional<Section> findSectionByUpStation(Long upStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId()==upStationId)
+                .findFirst();
+    }
+
+    private Optional<Section> findSectionByDownStation(Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().getId()==downStationId)
+                .findFirst();
+    }
+
+
 
     public void validateDeleteSectionRequest(Station station){
 

@@ -69,16 +69,11 @@ public class LineService {
         Station upStation = stationService.findStation(sectionRequest.getUpStationId());
         Station downStation = stationService.findStation(sectionRequest.getDownStationId());
         Line line = this.findLine(lineId);
-        line.validateCreateSectionRequest(upStation.getId(), downStation.getId());
 
-        Section section = Section.builder()
-                .line(line)
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(sectionRequest.getDistance())
-                .build();
+        Section section = new Section(line, upStation, downStation, sectionRequest.getDistance());
 
-        line.getSections().add(section);
+        line.addSection(section);
+
     }
 
 
