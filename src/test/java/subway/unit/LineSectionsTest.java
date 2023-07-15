@@ -1,11 +1,8 @@
 package subway.unit;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import subway.exception.SubwayBadRequestException;
-import subway.exception.SubwayNotFoundException;
-import subway.line.dto.SectionAppendResponse;
 import subway.line.model.Line;
 import subway.line.model.LineSections;
 import subway.line.model.Section;
@@ -15,7 +12,6 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LineSectionsTest {
 
@@ -37,7 +33,7 @@ class LineSectionsTest {
         이호선_구간.add(section, 이호선);
 
         // then
-        List<Station> stations = 이호선_구간.getStations(이호선.getUpStation(), 이호선.getDownStation());
+        List<Station> stations = 이호선_구간.getStations();
         assertThat(stations.size()).isEqualTo(2L);
     }
 
@@ -53,8 +49,9 @@ class LineSectionsTest {
         Line 이호선 = 이호선_기본구간_설정();
 
         // when
+        Station 강남역 = new Station(1L, "강남역");
+        Station 역삼역 = new Station(2L, "역삼역");
         Station 교대역 = new Station(3L, "교대역");
-        Station 강남역 = 이호선.getUpStation();
 
         Section 구간_추가 = Section.builder()
                 .upStation(교대역)
@@ -64,11 +61,11 @@ class LineSectionsTest {
                 .build();
 
         LineSections 이호선_구간 = 이호선.getLineSections();
-        SectionAppendResponse add = 이호선_구간.add(구간_추가, 이호선);
+        이호선_구간.add(구간_추가, 이호선);
 
         // then
-        assertThat(add.getUpStation()).isEqualTo(교대역);
-        assertThat(add.getDownStation()).isEqualTo(이호선.getDownStation());
+        assertThat(이호선_구간.getFirstStation()).isEqualTo(교대역);
+        assertThat(이호선_구간.getLastStation()).isEqualTo(역삼역);
     }
 
     /**
@@ -83,8 +80,9 @@ class LineSectionsTest {
         Line 이호선 = 이호선_기본구간_설정();
 
         // when
+        Station 강남역 = new Station(1L, "강남역");
+        Station 역삼역 = new Station(2L, "역삼역");
         Station 선릉역 = new Station(3L, "선릉역");
-        Station 역삼역 = 이호선.getDownStation();
 
         Section 구간_추가 = Section.builder()
                 .upStation(역삼역)
@@ -94,11 +92,11 @@ class LineSectionsTest {
                 .build();
 
         LineSections 이호선_구간 = 이호선.getLineSections();
-        SectionAppendResponse add = 이호선_구간.add(구간_추가, 이호선);
+        이호선_구간.add(구간_추가, 이호선);
 
         // then
-        assertThat(add.getUpStation()).isEqualTo(이호선.getUpStation());
-        assertThat(add.getDownStation()).isEqualTo(선릉역);
+        assertThat(이호선_구간.getFirstStation()).isEqualTo(강남역);
+        assertThat(이호선_구간.getLastStation()).isEqualTo(선릉역);
     }
 
     /**
@@ -172,7 +170,7 @@ class LineSectionsTest {
 
         // when
         LineSections 이호선_구간 = 이호선.getLineSections();
-        List<Station> stations = 이호선_구간.getStations(이호선.getUpStation(), 이호선.getDownStation());
+        List<Station> stations = 이호선_구간.getStations();
 
         // then
         assertThat(stations.size()).isEqualTo(2L);
@@ -206,10 +204,11 @@ class LineSectionsTest {
     void removeSectionByStationMinimumSectionCount() {
         // given
         Line 이호선 = 이호선_기본구간_설정();
+        Station 역삼역 = new Station(2L, "역삼역");
 
         // when/then
         LineSections 이호선_구간 = 이호선.getLineSections();
-        assertThatThrownBy(() -> 이호선_구간.removeSectionByStation(이호선.getDownStation()))
+        assertThatThrownBy(() -> 이호선_구간.removeSectionByStation(역삼역))
                 .isInstanceOf(SubwayBadRequestException.class);
     }
 
@@ -242,7 +241,7 @@ class LineSectionsTest {
     }
 
     private Line 구간_추가(Line line, Station station) {
-        Station downStation = line.getDownStation();
+        Station downStation = line.getLineSections().getLastStation();
         Section build = Section.builder()
                 .upStation(downStation)
                 .downStation(station)
@@ -256,8 +255,6 @@ class LineSectionsTest {
         Line line = Line.builder()
                 .name(name)
                 .color("bg-green-600")
-                .upStation(section.getUpStation())
-                .downStation(section.getDownStation())
                 .build();
         return line;
     }

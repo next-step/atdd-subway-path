@@ -10,7 +10,7 @@ import subway.station.model.Station;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SectionAppendResponse {
+public class SectionStation {
     private Station upStation;
     private Station downStation;
 }

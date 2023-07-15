@@ -209,7 +209,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
+        LineSteps.노선_조회_API(createdLocation);
     }
 
     /**
@@ -224,17 +224,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         String createdLocation = 세구간이_포함된_노선_생성_작업();
         final String appendLocation = createdLocation + "/sections";
 
-        LineSteps.노선_조회_API(createdLocation);
-        System.out.println("-------------------------");
-
-
         // when
         var 노선_중간에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(stationIds.get(3), stationIds.get(1), 5L);
         var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
+        LineSteps.노선_조회_API(createdLocation);
     }
 
     /**
@@ -256,7 +252,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        var retrieveLine = LineSteps.노선_조회_API(createdLocation);
+        LineSteps.노선_조회_API(createdLocation);
     }
 
     /**

@@ -36,8 +36,6 @@ public class LineCreateRequest {
         return Line.builder()
                 .name(request.getName())
                 .color(request.getColor())
-                .upStation(upStation)
-                .downStation(downStation)
                 .build();
     }
 }

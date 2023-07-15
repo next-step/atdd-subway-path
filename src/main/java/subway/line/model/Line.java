@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import subway.line.dto.SectionAppendResponse;
 import subway.station.model.Station;
 
 import javax.persistence.Column;
@@ -13,8 +12,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import java.util.List;
 
 @Getter
@@ -36,14 +33,6 @@ public class Line {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne
-    @JoinColumn
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn
-    private Station downStation;
-
     @Builder.Default
     @Embedded
     private LineSections lineSections = new LineSections();
@@ -54,17 +43,14 @@ public class Line {
     }
 
     public void addSection(Section newSection) {
-        SectionAppendResponse response = this.lineSections.add(newSection, this);
-        this.upStation = response.getUpStation();
-        this.downStation = response.getDownStation();
+        this.lineSections.add(newSection, this);
     }
 
     public List<Station> getStations() {
-        return lineSections.getStations(this.upStation, this.downStation);
+        return lineSections.getStations();
     }
 
     public void deleteSectionByStation(Station station) {
-        Section lastSection = lineSections.removeSectionByStation(station);
-        this.downStation = lastSection.getUpStation();
+        lineSections.removeSectionByStation(station);
     }
 }

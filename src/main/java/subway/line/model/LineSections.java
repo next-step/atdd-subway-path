@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import subway.exception.SubwayBadRequestException;
 import subway.exception.SubwayNotFoundException;
 import subway.line.constant.SubwayMessage;
-import subway.line.dto.SectionAppendResponse;
+import subway.line.dto.SectionStation;
 import subway.station.model.Station;
 
 import javax.persistence.CascadeType;
@@ -12,6 +12,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,21 +26,18 @@ public class LineSections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
-    public SectionAppendResponse add(Section newSection, Line line) {
-        SectionAppendResponse appendResponse = new SectionAppendResponse();
+    public void add(Section newSection, Line line) {
 
         if (hasSections(line)) {
-            appendResponse = appendSection(newSection, line);
+            appendSection(newSection, line);
         }
-
-        if (!hasSections(line)) {
-            appendResponse = createFirstSection(line);
-        }
+//
+//        if (!hasSections(line)) {
+//            createFirstSection(line);
+//        }
 
         newSection.setLine(line);
         addSection(newSection);
-
-        return appendResponse;
     }
 
     public List<Station> getStations(Station upStation, Station downStation) {
@@ -56,6 +54,36 @@ public class LineSections {
             nextDownStation = nextSection.getDownStation();
         }
         return this.getStations(sortedSections);
+    }
+
+    public Station getFirstStation() {
+        List<Station> stations = getStations();
+        return stations.get(0);
+    }
+
+    public Station getLastStation() {
+        List<Station> stations = getStations();
+        return stations.get(stations.size() - 1);
+    }
+    public List<Station> getStations() {
+        Map<Station, Station> stationMap = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+
+        Station upStation = sections.stream()
+                .map(Section::getUpStation)
+                .filter(station -> !stationMap.containsValue(station))
+                .findFirst()
+                .orElseThrow(() -> new SubwayNotFoundException(9999L, "역이 없습니다.")); // TODO : constant
+
+        List<Station> stations = new ArrayList<>();
+        Station nextStation = upStation;
+
+        while (nextStation != null) {
+            stations.add(nextStation);
+            nextStation = stationMap.get(nextStation);
+        }
+
+        return stations;
     }
 
     public long getSectionsCount() {
@@ -76,15 +104,15 @@ public class LineSections {
         sections.remove(section);
     }
 
-    private SectionAppendResponse createFirstSection(Line line) {
-        return SectionAppendResponse.builder()
-                .upStation(line.getUpStation())
-                .downStation(line.getDownStation())
-                .build();
-    }
+//    private SectionAppendResponse createFirstSection(Line line) {
+//        return SectionAppendResponse.builder()
+//                .upStation(line.getUpStation())
+//                .downStation(line.getDownStation())
+//                .build();
+//    }
 
-    private SectionAppendResponse createSectionAppendResponse(Station upStation, Station downStation) {
-        return SectionAppendResponse.builder()
+    private SectionStation createSectionAppendResponse(Station upStation, Station downStation) {
+        return SectionStation.builder()
                 .upStation(upStation)
                 .downStation(downStation)
                 .build();
@@ -129,10 +157,10 @@ public class LineSections {
         return line.getLineSections().sections.size() > 0;
     }
 
-    private SectionAppendResponse appendSection(Section newSection, Line line) {
-        SectionAppendResponse appendResponse = new SectionAppendResponse();
+    private SectionStation appendSection(Section newSection, Line line) {
+        SectionStation appendResponse = new SectionStation();
 
-        List<Station> stations = getStations(line.getUpStation(), line.getDownStation());
+        List<Station> stations = getStations();
 
         validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
         validStationInNewSectionIsStationInExistLine(newSection, stations);
@@ -143,49 +171,49 @@ public class LineSections {
         return appendResponse;
     }
 
-    private SectionAppendResponse appendUpOrDown(Section newSection, Line line, SectionAppendResponse appendResponse) {
-        Station upStationInLine = line.getUpStation();
-        Station downStationInLine = line.getDownStation();
+    private SectionStation appendUpOrDown(Section newSection, Line line, SectionStation appendResponse) {
+        Station upStationInLine =  this.getFirstStation();
+        Station downStationInLine = this.getLastStation();
 
         if (upStationInLine.equals(newSection.getDownStation())) {
-            appendResponse = createSectionAppendResponse(newSection.getUpStation(), line.getDownStation());
+            appendResponse = createSectionAppendResponse(newSection.getUpStation(), downStationInLine);
         }
 
         if (downStationInLine.equals(newSection.getUpStation())) {
-            appendResponse = createSectionAppendResponse(line.getUpStation(), newSection.getDownStation());
+            appendResponse = createSectionAppendResponse(upStationInLine, newSection.getDownStation());
         }
 
         return appendResponse;
     }
 
-    private SectionAppendResponse appendMiddle(Section newSection, Line line, SectionAppendResponse appendResponse) {
+    private SectionStation appendMiddle(Section newSection, Line line, SectionStation appendResponse) {
         appendResponse = appendMiddleDown(newSection, line, appendResponse);
         appendResponse = appendMiddleUp(newSection, line, appendResponse);
 
         return appendResponse;
     }
 
-    private SectionAppendResponse appendMiddleDown(Section newSection, Line line, SectionAppendResponse appendResponse) {
+    private SectionStation appendMiddleDown(Section newSection, Line line, SectionStation appendResponse) {
         Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
         Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
 
         if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
             Section existSection = sectionWithDownStationByDownStation.get();
             existSection.changeDownStation(newSection);
-            appendResponse = createSectionAppendResponse(line.getUpStation(), line.getDownStation());
+            appendResponse = createSectionAppendResponse(this.getFirstStation(), this.getLastStation());
         }
 
         return appendResponse;
     }
 
-    private SectionAppendResponse appendMiddleUp(Section newSection, Line line, SectionAppendResponse appendResponse) {
+    private SectionStation appendMiddleUp(Section newSection, Line line, SectionStation appendResponse) {
         Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
         Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
 
         if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
             Section existSection = sectionWithUpStationByUpStation.get();
             existSection.changeUpStation(newSection);
-            appendResponse = createSectionAppendResponse(line.getUpStation(), line.getDownStation());
+            appendResponse = createSectionAppendResponse(this.getFirstStation(), this.getLastStation());
         }
 
         return appendResponse;

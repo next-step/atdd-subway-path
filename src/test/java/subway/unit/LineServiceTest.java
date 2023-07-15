@@ -68,7 +68,7 @@ public class LineServiceTest {
         Station 강남역 = stationRepository.save(new Station(1L, "강남역"));
         Station 역삼역 = stationRepository.save(new Station(2L, "역삼역"));
         Station 선릉역 = stationRepository.save(new Station(3L, "선릉역"));
-        Line 이호선 = lineRepository.save(Line.builder().name("2호선").color("bg-green-600").downStation(선릉역).build());
+        Line 이호선 = lineRepository.save(Line.builder().name("2호선").color("bg-green-600").build());
         final long distance = 10;
 
         SectionCreateRequest 첫번째구간_요청 = SectionCreateRequest.builder()

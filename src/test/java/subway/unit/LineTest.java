@@ -28,8 +28,6 @@ class LineTest {
         Line line = Line.builder()
                 .name("2호선")
                 .color("bg-green-600")
-                .upStation(강남역)
-                .downStation(역삼역)
                 .build();
 
         final long distance = 10;
@@ -90,8 +88,8 @@ class LineTest {
         // when
         Station 선릉역 = new Station(3L, "선릉역");
         Station 역삼역 = new Station(2L, "역삼역");
+        final long distance = 8;
 
-        final long distance = 10;
         Section section = Section.builder()
                 .line(line)
                 .upStation(선릉역)
@@ -180,8 +178,6 @@ class LineTest {
         Line line = Line.builder()
                 .name("2호선")
                 .color("bg-green-600")
-                .upStation(강남역)
-                .downStation(역삼역)
                 .build();
 
         final long distance = 10;
