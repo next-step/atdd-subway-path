@@ -111,20 +111,18 @@ class LineTest {
                 .id(6L)
                 .name("종합운동장역")
                 .build();
-        Section 선릉삼성구간 = new Section(이호선, 선릉역, 삼성역, 선릉잠실구간거리+1);
-        Section 잠실운동장잠실구간 = new Section(이호선, 종합운동장역, 잠실역, 선릉잠실구간거리+1);
 
         이호선.addSection(선릉잠실구간);
 
         //when
-        Section invalidSection1 = 선릉삼성구간;
-        Section invalidSection2 = 잠실운동장잠실구간;
+        Section 기존길이보다큰경우 = new Section(이호선, 선릉역, 삼성역, 선릉잠실구간거리+1);
+        Section 기존길이와같은경우 = new Section(이호선, 종합운동장역, 잠실역, 선릉잠실구간거리);
 
         //then
-        assertThatThrownBy(() ->  이호선.addSection(invalidSection1))
+        assertThatThrownBy(() ->  이호선.addSection(기존길이보다큰경우))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
-        assertThatThrownBy(() ->  이호선.addSection(invalidSection2))
+        assertThatThrownBy(() ->  이호선.addSection(기존길이와같은경우))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음");
     }
@@ -148,7 +146,7 @@ class LineTest {
                 .hasMessage("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음");
     }
 
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void invalidAddSection3() {
         //given
