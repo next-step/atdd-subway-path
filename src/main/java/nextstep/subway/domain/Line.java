@@ -160,13 +160,15 @@ public class Line {
 
         List<Station> result = new ArrayList<>();
 
+        // map 생성. key: upStation, value: downStation
         Map<Station, Station> upDownStationMap = this.sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 
         // first Station을 찾는다.
         upDownStationMap.keySet().stream()
-                .filter(upStation -> upDownStationMap.values().stream().filter(downStation -> downStation == upStation)
-                        .findFirst().isEmpty()).findFirst().ifPresent(result::add);
+                .filter(station -> isFirstStation(upDownStationMap, station))
+                .findFirst()
+                .ifPresent(result::add);
 
         // 순서대로 list에 넣는다.
         Station nextStation = result.get(0);
@@ -176,5 +178,9 @@ public class Line {
         }
 
         return Collections.unmodifiableList(result);
+    }
+
+    private static boolean isFirstStation(Map<Station, Station> upDownStationMap, Station upStation) {
+        return upDownStationMap.values().stream().filter(downStation -> downStation == upStation).findFirst().isEmpty();
     }
 }
