@@ -101,7 +101,7 @@ public class Line {
 
     public void addSection(Section section) {
         sections.addSection(section);
-        lastStations.updateDownLastStation(section.getDownwardStation());
+        lastStations.updateLastStationBySection(section.getUpwardStation(), section.getDownwardStation());
     }
 
     public void deleteStation(Station targetStation) {

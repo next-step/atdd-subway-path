@@ -51,4 +51,15 @@ public class LineLastStations {
     public boolean isLastDownwardStation(Station station) {
         return downLastStation.equals(station);
     }
+
+    public void updateLastStationBySection(Station upStation, Station downStation) {
+        if (upStation.equals(downLastStation)) {
+            this.downLastStation = downStation;
+            return;
+        }
+
+        if (downStation.equals(upLastStation)) {
+            this.upLastStation = upStation;
+        }
+    }
 }

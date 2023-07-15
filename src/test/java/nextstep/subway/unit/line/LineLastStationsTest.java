@@ -2,6 +2,8 @@ package nextstep.subway.unit.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.section.domain.Section;
 import org.junit.jupiter.api.Test;
 import nextstep.subway.line.domain.LineLastStations;
 import nextstep.subway.section.domain.SectionStations;
@@ -32,5 +34,35 @@ class LineLastStationsTest {
         stations.updateDownLastStation(stationC);
 
         assertThat(stations.getDownLastStation()).isEqualTo(stationC);
+    }
+
+    @Test
+    void updateLastStationBySection() {
+        LineLastStations stations = new LineLastStations(stationA, stationB);
+
+        stations.updateLastStationBySection(stationA, stationB);
+
+        assertThat(stations.getUpLastStation()).isEqualTo(stationA);
+        assertThat(stations.getDownLastStation()).isEqualTo(stationB);
+    }
+
+    @Test
+    void updateLastStationBySection1() {
+        LineLastStations stations = new LineLastStations(stationA, stationB);
+
+        stations.updateLastStationBySection(stationB, stationC);
+
+        assertThat(stations.getUpLastStation()).isEqualTo(stationA);
+        assertThat(stations.getDownLastStation()).isEqualTo(stationC);
+    }
+
+    @Test
+    void updateLastStationBySection2() {
+        LineLastStations stations = new LineLastStations(stationA, stationB);
+
+        stations.updateLastStationBySection(stationC, stationA);
+
+        assertThat(stations.getUpLastStation()).isEqualTo(stationC);
+        assertThat(stations.getDownLastStation()).isEqualTo(stationB);
     }
 }
