@@ -27,6 +27,11 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+
+        if (distance <= 0) {
+            throw new IllegalArgumentException("distance는 0이하일 수 없습니다.");
+        }
+
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
