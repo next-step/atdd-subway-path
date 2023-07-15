@@ -220,11 +220,27 @@ public class SectionsTest {
             @Test
             void 거리가_합쳐진다() {
                 Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
                 lineAB.addSection(givenAddSection);
 
                 lineAB.deleteSection(stationB.getId());
 
                 Assertions.assertThat(lineAB.getSections().allDistance()).isEqualTo(15);
+            }
+        }
+
+        @Nested
+        class When_종점역을_제거하면 {
+
+            @Test
+            void 제거된다 () {
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                lineAB.deleteSection(stationB.getId());
+
+                Assertions.assertThat(lineAB.getSections().hasOneSection()).isTrue();
             }
         }
     }

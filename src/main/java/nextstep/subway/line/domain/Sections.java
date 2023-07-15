@@ -155,10 +155,6 @@ public class Sections {
             throw new InvalidSectionDeleteException(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_SECTION_CANNOT_DELETED);
         }
 
-//        if (!isLastDownStation(stationId)) {
-//            throw new InvalidSectionDeleteException(ErrorCode.ONLY_LAST_DOWNSTATION_CAN_DELETED);
-//        }
-
         return true;
     }
 
@@ -170,14 +166,12 @@ public class Sections {
 
             this.sections.removeAll(relatedSections);
             this.sections.add(newSection);
+        } else if (relatedSections.size() == 1) {
+            this.sections.remove(relatedSections.get(0));
         } else {
 
+
         }
-
-
-//        findSectionByStationId(stationId).ifPresent(section -> sections.remove(section));
-
-        //
     }
 
     private Optional<Section> findSectionByStationId(Long stationId) {
