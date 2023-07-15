@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -154,21 +155,41 @@ public class Sections {
             throw new InvalidSectionDeleteException(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_SECTION_CANNOT_DELETED);
         }
 
-        if (!isLastDownStation(stationId)) {
-            throw new InvalidSectionDeleteException(ErrorCode.ONLY_LAST_DOWNSTATION_CAN_DELETED);
-        }
+//        if (!isLastDownStation(stationId)) {
+//            throw new InvalidSectionDeleteException(ErrorCode.ONLY_LAST_DOWNSTATION_CAN_DELETED);
+//        }
 
         return true;
     }
 
     public void deleteSectionByStationId(Long stationId) {
-        findSectionByStationId(stationId).ifPresent(section -> sections.remove(section));
+        List<Section> relatedSections = findSectionsByStationId(stationId);
+
+        if (relatedSections.size() == 2) {
+            Section newSection = relatedSections.get(0).mergeSection(relatedSections.get(1));
+
+            this.sections.removeAll(relatedSections);
+            this.sections.add(newSection);
+        } else {
+
+        }
+
+
+//        findSectionByStationId(stationId).ifPresent(section -> sections.remove(section));
+
+        //
     }
 
     private Optional<Section> findSectionByStationId(Long stationId) {
         return sections.stream()
                        .filter(section -> section.containStation(stationId))
                        .findAny();
+    }
+
+    private List<Section> findSectionsByStationId(Long stationId) {
+        return sections.stream()
+                       .filter(section -> section.containStation(stationId))
+                       .collect(Collectors.toList());
     }
 
     private Section getLastSection() {
@@ -187,5 +208,11 @@ public class Sections {
         }
 
         return List.copyOf(orderedSections);
+    }
+
+    public int allDistance() {
+        return sections.stream()
+                       .map(Section::getDistance)
+                       .reduce(0, Integer::sum);
     }
 }

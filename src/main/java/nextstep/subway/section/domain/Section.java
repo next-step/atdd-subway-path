@@ -81,7 +81,25 @@ public class Section {
         return this.distance <=distance;
     }
 
-    public Long getUpstationId() {
-        return upStation.getId();
+    public Section mergeSection(Section section) {
+        Station newUpStation = this.upStation;
+        Station newDownStation = this.downStation;
+
+        if (this.upStation.equals(section.getDownStation())) {
+            newUpStation = section.getUpStation();
+            newDownStation = this.downStation;
+        }
+
+        if (this.downStation.equals(section.getUpStation())) {
+            newUpStation = this.upStation;
+            newDownStation = section.getDownStation();
+        }
+
+        return Section.builder()
+                      .upStation(newUpStation)
+                      .downStation(newDownStation)
+                      .line(line)
+                      .distance(this.distance + section.distance)
+                      .build();
     }
 }

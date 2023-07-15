@@ -209,7 +209,24 @@ public class SectionsTest {
                 Assertions.assertThat(orderedSections.get(1).getDownStation()).isEqualTo(stationB);
             }
         }
+    }
 
+    @Nested
+    class Given_노선에_구간이_2개이상일때 {
+
+        @Nested
+        class When_중간역을_제거하면 {
+
+            @Test
+            void 거리가_합쳐진다() {
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+                lineAB.addSection(givenAddSection);
+
+                lineAB.deleteSection(stationB.getId());
+
+                Assertions.assertThat(lineAB.getSections().allDistance()).isEqualTo(15);
+            }
+        }
     }
 
 
