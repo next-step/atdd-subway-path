@@ -77,6 +77,9 @@ public class Sections {
         if (sections.size() < 2) {
             throw new MinimumSizeRemoveSectionException();
         }
+        if (!getStationsSet().contains(station)) {
+            throw new NotExistedRemoveSectionException();
+        }
     }
 
     private Section getDownSection(Station station) {
