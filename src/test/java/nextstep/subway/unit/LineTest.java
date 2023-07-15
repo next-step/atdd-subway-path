@@ -211,7 +211,9 @@ class LineTest {
 
         // when, then
         assertThatThrownBy(() -> 신분당선.removeSection(또다른_지하철역))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .message()
+                .isEqualTo("지하철 노선에 구간이 한개인 경우 삭제할 수 없습니다.");
     }
 
     @DisplayName("지하철 노선에 등록되지 않은 구간을 제거하면 에러가 발생한다")
@@ -225,6 +227,8 @@ class LineTest {
 
         // when, then
         assertThatThrownBy(() -> 신분당선.removeSection(없는_지하철역))
-                .isInstanceOf(DataIntegrityViolationException.class);
+                .isInstanceOf(DataIntegrityViolationException.class)
+                .message()
+                .isEqualTo("지하철 노선에 등록되어 있지 않은 역입니다.");
     }
 }
