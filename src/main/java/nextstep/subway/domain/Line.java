@@ -125,6 +125,15 @@ public class Line {
         }
     }
 
+    /**
+     *
+     * 구간을 두 개의 구간으로 나눈다.
+     *
+     * @param oldSection 기존에 존재하던 구간 (삭제)
+     * @param newSection 요청을 통해 추가되는 구간 (추가)
+     * @param splitedUpStation 파생된 구간의 상행역
+     * @param splitedDownStation 파생된 구간의 하행역
+     */
     private void splitSection(Section oldSection, Section newSection, Station splitedUpStation, Station splitedDownStation) {
 
         if (oldSection.getDistance() - newSection.getDistance() <= 0) {
@@ -152,6 +161,10 @@ public class Line {
         return !getStations().contains(upStation) && !getStations().contains(downStation);
     }
 
+    /**
+     * station을 노선 상행에서 하행 순서대로 만든다.
+     * @return 정렬된 정거장 목록
+     */
     public List<Station> getStations() {
 
         if (this.sections.isEmpty()) {
