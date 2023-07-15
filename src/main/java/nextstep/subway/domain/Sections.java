@@ -33,7 +33,7 @@ public class Sections {
             return;
         }
 
-        throw new NewSectionException();
+        throw new AnyNewSectionException();
     }
 
     public List<Station> getStations() {
