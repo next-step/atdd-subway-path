@@ -143,75 +143,71 @@ public class LineSections {
         return lineSections.size();
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public void removeStation(Station removeStation) {
         validateRemoveStation(removeStation);
 
-        if(removeFirstSection(removeStation)) return;
-        if(removeLastSection(removeStation)) return;
-        removeMiddleSection(removeStation);
+        if (!hasDownStationSection(removeStation)) {
+            removeFirstSection(removeStation);
+            return;
+        }
+
+        if (!hasUpStationSection(removeStation)) {
+            removeLastSection(removeStation);
+            return;
+        }
+
+        if (hasUpStationSection(removeStation) && hasDownStationSection(removeStation)) {
+            removeMiddleSection(removeStation);
+        }
     }
 
     private void removeMiddleSection(Station removeStation) {
-        boolean isMiddleSection = lineSections.stream()
-                .anyMatch(section -> section.getUpStation().equals(removeStation))
-                && lineSections.stream()
-                .anyMatch(section -> section.getDownStation().equals(removeStation));
+        Section frontSection = getSectionWithSameDownStation(removeStation);
+        Section rearSection = getSectionWithSameUpStation(removeStation);
 
-        if (isMiddleSection) {
-            Section frontSection = lineSections.stream()
-                    .filter(section -> section.getDownStation().equals(removeStation))
-                    .findFirst()
-                    .orElseThrow();
+        Section mergeSection = new Section(line
+                , frontSection.getUpStation()
+                , rearSection.getDownStation()
+                , frontSection.getDistance() + rearSection.getDistance());
 
-            Section rearSection = lineSections.stream()
-                    .filter(section -> section.getUpStation().equals(removeStation))
-                    .findFirst()
-                    .orElseThrow();
-
-            Section mergeSection = new Section(line
-                    , frontSection.getUpStation()
-                    , rearSection.getDownStation()
-                    , frontSection.getDistance() + rearSection.getDistance());
-
-            lineSections.remove(frontSection);
-            lineSections.remove(rearSection);
-            lineSections.add(mergeSection);
-        }
+        lineSections.remove(frontSection);
+        lineSections.remove(rearSection);
+        lineSections.add(mergeSection);
     }
 
-    private boolean removeFirstSection(Station removeStation) {
-        boolean isFirstSection = lineSections.stream()
-                .noneMatch(section -> section.getDownStation().equals(removeStation));
-
-        if (isFirstSection) {
-            Section firstSection = lineSections.stream()
-                    .filter(section -> section.getUpStation().equals(removeStation))
-                    .findFirst().orElseThrow();
-
-            upStation = firstSection.getDownStation();
-            lineSections.remove(firstSection);
-            return true;
-        }
-        return false;
+    private Section getSectionWithSameDownStation(Station removeStation) {
+        return lineSections.stream()
+                .filter(section -> section.getDownStation().equals(removeStation))
+                .findFirst()
+                .orElseThrow();
     }
 
-    private boolean removeLastSection(Station removeStation) {
-        boolean isLastSection = lineSections.stream()
-                .noneMatch(section -> section.getUpStation().equals(removeStation));
+    private void removeFirstSection(Station removeStation) {
+        Section firstSection = getSectionWithSameUpStation(removeStation);
+        upStation = firstSection.getDownStation();
+        lineSections.remove(firstSection);
+    }
 
-        if (isLastSection) {
-            Section lastSection = lineSections.stream()
-                    .filter(section -> section.getDownStation().equals(removeStation))
-                    .findFirst().orElseThrow();
-            downStation = lastSection.getUpStation();
-            lineSections.remove(lastSection);
-            return true;
-        }
-        return false;
+    private Section getSectionWithSameUpStation(Station station) {
+        return lineSections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst().orElseThrow();
+    }
+
+    private void removeLastSection(Station removeStation) {
+        Section lastSection = getSectionWithSameDownStation(removeStation);
+        downStation = lastSection.getUpStation();
+        lineSections.remove(lastSection);
+    }
+
+    private boolean hasUpStationSection(Station station) {
+        return lineSections.stream()
+                .anyMatch(section -> section.getUpStation().equals(station));
+    }
+
+    private boolean hasDownStationSection(Station station) {
+        return lineSections.stream()
+                .anyMatch(section -> section.getDownStation().equals(station));
     }
 
     private void validateRemoveStation(Station removeStation) {
