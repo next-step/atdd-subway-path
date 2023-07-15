@@ -75,30 +75,44 @@ public class Line {
             return;
         }
 
-
         if (addToUpToUpStation(upStation, newSection)) {
             return;
         }
 
-        addDownToDownSection(downStation, newSection);
+        if (addDownToDownSection(downStation, newSection)) {
+            return;
+        }
+
+        throw new RuntimeException("잘못된 데이터입니다.");
     }
 
     private boolean addToUpToUpStation(Station upStation, Section newSection) {
+
         Optional<Section> upStationMatchedSection = this.sections.stream().filter(it -> it.getUpStation() == upStation).findFirst();
-        if (upStationMatchedSection.isPresent()) {
-            Section oldSection = upStationMatchedSection.get();
-            splitSection(oldSection, newSection, newSection.getDownStation(), oldSection.getDownStation());
-            return true;
+
+        if (upStationMatchedSection.isEmpty()) {
+            return false;
         }
-        return false;
+
+        Section oldSection = upStationMatchedSection.get();
+        splitSection(oldSection, newSection, newSection.getDownStation(), oldSection.getDownStation());
+
+        return true;
     }
 
-    private void addDownToDownSection(Station downStation, Section newSection) {
+    private boolean addDownToDownSection(Station downStation, Section newSection) {
+
         Optional<Section> downStationMatchedSection = this.sections.stream().filter(it -> it.getDownStation() == downStation).findFirst();
-        if (downStationMatchedSection.isPresent()) {
-            Section oldSection = downStationMatchedSection.get();
-            splitSection(oldSection, newSection, oldSection.getUpStation(), newSection.getUpStation());
+
+        if (downStationMatchedSection.isEmpty()) {
+            return false;
         }
+
+        Section oldSection = downStationMatchedSection.get();
+        splitSection(oldSection, newSection, oldSection.getUpStation(), newSection.getUpStation());
+
+        return true;
+
     }
 
     private void validateAddedStation(Station upStation, Station downStation) {
