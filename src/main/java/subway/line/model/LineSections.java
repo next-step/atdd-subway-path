@@ -72,7 +72,7 @@ public class LineSections {
         return lastSection;
     }
 
-    public void remove(Section section) {
+    private void remove(Section section) {
         sections.remove(section);
     }
 

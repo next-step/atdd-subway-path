@@ -155,18 +155,18 @@ class LineTest {
 
     /**
      * Given 구간이 2개 이상인 노선이 있고
-     * When 마지막 구간을 삭제하려고 하면
+     * When 마지막 역을 삭제 하려고 하면
      * Then 구간을 삭제할 수 있다
      */
-    @DisplayName("노선에서 구간을 삭제한다.")
+    @DisplayName("노선에서 마지막 역의 구간을 삭제한다.")
     @Test
-    void removeSection() {
+    void deleteSectionByStation() {
         // given
         Line line = 이호선_기본구간_생성();
         Section section = 기본구간에_구간추가(line);
 
         // when
-        line.getLineSections().remove(section);
+        line.deleteSectionByStation(section.getDownStation());
 
         // then
         long sectionsCount = line.getLineSections().getSectionsCount();
@@ -176,7 +176,6 @@ class LineTest {
     private Line 이호선_기본구간_생성() {
         Station 강남역 = new Station(1L, "강남역");
         Station 역삼역 = new Station(2L, "역삼역");
-
 
         Line line = Line.builder()
                 .name("2호선")
