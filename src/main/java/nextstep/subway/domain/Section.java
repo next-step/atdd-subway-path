@@ -56,10 +56,6 @@ public class Section {
         return upStation.equalsId(stationId);
     }
 
-    public boolean equalsId(Long id) {
-        return Objects.equals(this.id, id);
-    }
-
     public Long getId() {
         return id;
     }

@@ -46,7 +46,6 @@ public class LineServiceMockTest {
         Line actual = lineService.addSection(1L, sectionAddRequest);
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
         Assertions.assertThat(actual)
             .usingRecursiveComparison()
             .isEqualTo(lineService.findById(actual.getId()));
