@@ -5,6 +5,7 @@ import subway.exception.StationLineCreateException;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -48,7 +49,7 @@ public class StationLine {
     }
 
     public List<StationLineSection> getSections() {
-        return sections.getSections();
+        return Collections.unmodifiableList(sections.getSections());
     }
 
     public void update(String name, String color) {

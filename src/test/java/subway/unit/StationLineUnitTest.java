@@ -445,6 +445,6 @@ public class StationLineUnitTest {
         final Throwable throwable = Assertions.assertThrows(StationLineSectionDeleteException.class,
                 () -> line.deleteSection(dStation));
 
-        Assertions.assertEquals("the station not included to this line", throwable.getMessage());
+        Assertions.assertEquals("the station not exists to this line", throwable.getMessage());
     }
 }
