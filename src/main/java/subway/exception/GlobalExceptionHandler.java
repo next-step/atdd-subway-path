@@ -17,7 +17,11 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler({StationLineCreateException.class, StationLineSectionCreateException.class, StationLineSectionDeleteException.class, StationLineSectionSplitException.class})
+    @ExceptionHandler({StationLineCreateException.class,
+            StationLineSectionCreateException.class,
+            StationLineSectionDeleteException.class,
+            StationLineSectionSplitException.class,
+            StationLineSearchFailException.class})
     public void businessErrorExceptionHandler(RuntimeException exception) {
         log.info("error occurred: {}", exception.getMessage());
     }

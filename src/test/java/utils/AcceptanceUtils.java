@@ -143,13 +143,13 @@ public class AcceptanceUtils {
                 .jsonPath().getLong("id");
     }
 
-    public static JsonPath searchStationPath(Long startStationId, Long destinationStationId) {
+    public static JsonPath searchStationPath(Long startStationId, Long destinationStationId, HttpStatus status) {
         return RestAssured.given().log().all()
                 .queryParam("source", startStationId)
                 .queryParam("target", destinationStationId)
                 .get("/paths")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(status.value())
                 .extract()
                 .jsonPath();
     }
