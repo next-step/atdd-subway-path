@@ -29,7 +29,7 @@ public class LineSections {
     public void add(Section newSection, Line line) {
 
         if (hasSections(line)) {
-            putInMiddleOfSections(newSection);
+            putInSections(newSection);
         }
 
         newSection.setLine(line);
@@ -89,7 +89,7 @@ public class LineSections {
             Section downSection = findSectionWithUpStationByStation(targetStation)
                     .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 하행 구간을 찾을 수 없습니다."));
 
-            upSection.moveDownStationFromTargetSection(downSection);
+            upSection.pullDownStationFromUpStationOfTargetSection(downSection);
             remove(downSection);
         }
 
@@ -133,7 +133,7 @@ public class LineSections {
         return line.getLineSections().sections.size() > 0;
     }
 
-    private void putInMiddleOfSections(Section newSection) {
+    private void putInSections(Section newSection) {
         List<Station> stations = getStations();
 
         validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
@@ -153,7 +153,7 @@ public class LineSections {
 
         if (sectionByDownStation.isPresent() && sectionByUpStation.isEmpty()) {
             Section existSection = sectionByDownStation.get();
-            existSection.addDownStation(newSection);
+            existSection.changeDownStation(newSection);
         }
     }
 
@@ -163,7 +163,7 @@ public class LineSections {
 
         if (sectionByUpStation.isPresent() && sectionByDownStation.isEmpty()) {
             Section existSection = sectionByUpStation.get();
-            existSection.addUpStation(newSection);
+            existSection.changeUpStation(newSection);
         }
     }
     private Optional<Section> findSectionWithUpStationByStation(Station upStation) {
