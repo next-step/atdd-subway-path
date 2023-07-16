@@ -69,14 +69,7 @@ public class LineServiceTest {
 
         // then
         Line savedLine = lineRepository.getReferenceById(lineResponse.getId());
-        Assertions.assertAll(
-                () -> assertThat(savedLine.getName()).isEqualTo("신분당선"),
-                () -> assertThat(savedLine.getColor()).isEqualTo("#D31145"),
-                () -> assertThat(
-                        savedLine.getSections().stream()
-                                .anyMatch(section -> section.containsStation(upStation) && section.containsStation(
-                                        downStation))
-                ).isTrue());
+        assertThat(lineResponse).isEqualTo(LineResponse.from(savedLine));
     }
 
     @DisplayName("모든 노선을 보낸다")
