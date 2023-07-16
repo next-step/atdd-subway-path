@@ -105,11 +105,11 @@ public class PathAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 존재하지_않는_도착역인_경우() {
-        //given
-
         //when
+        ExtractableResponse<Response> response = PathSteps.지하철_경로_조회(교대역_id, 100_000_000L);
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
