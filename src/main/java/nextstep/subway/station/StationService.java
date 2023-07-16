@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -21,7 +21,8 @@ public class StationService {
     }
 
     public List<StationResponse> findAllStations() {
-        return stationRepository.findAll().stream()
+        return stationRepository.findAll()
+                .stream()
                 .map(this::createStationResponse)
                 .collect(Collectors.toList());
     }
@@ -39,12 +40,14 @@ public class StationService {
     }
 
     public Station findStation(Long id) {
-        return stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
+        return stationRepository.findById(id)
+                .orElseThrow(StationNotFoundException::new);
     }
 
     @Transactional
     public Station updateStation(Long id, StationRequest stationRequest) {
-        Station station = stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
+        Station station = stationRepository.findById(id)
+                .orElseThrow(StationNotFoundException::new);
         station.update(stationRequest.getName());
         return station;
     }

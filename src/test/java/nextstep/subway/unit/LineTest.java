@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +73,7 @@ class LineTest {
         List<Station> stations = line.getStations();
 
         // then
-        assertThat(stations).contains(gangnamStation, yangjaeStation);
+        assertThat(stations).containsExactly(gangnamStation, yangjaeStation);
     }
 
     @DisplayName("노선에서 등록된 station을 성공적으로 삭제한다")

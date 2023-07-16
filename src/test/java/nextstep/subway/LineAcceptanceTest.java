@@ -29,91 +29,6 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class LineAcceptanceTest {
 
-    private static ExtractableResponse<Response> 지하철_노선_등록한다(String 노선이름, String 노선색상,
-            int 상행종점역, int 하행종점역, int 거리) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", 노선이름);
-        params.put("color", 노선색상);
-        params.put("upStationId", 상행종점역);
-        params.put("downStationId", 하행종점역);
-        params.put("distance", 거리);
-
-        return RestAssured
-                .given().accept(ContentType.JSON).contentType(ContentType.JSON).body(params).log()
-                .all()
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private static ExtractableResponse<Response> 지하철_노선_목록_조회한다() {
-        return RestAssured
-                .given().accept(ContentType.JSON).log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private static ExtractableResponse<Response> 지하철_노선_수정한다(int 수정될_지하철_노선_아이디, String 수정될_이름,
-            String 수정될_컬러) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", 수정될_이름);
-        params.put("color", 수정될_컬러);
-
-        return RestAssured
-                .given().accept(ContentType.JSON).contentType(ContentType.JSON).body(params)
-                .when().put("/lines/" + 수정될_지하철_노선_아이디)
-                .then().log().all()
-                .extract();
-    }
-
-    private static ExtractableResponse<Response> 지하철_노선_삭제한다(int 신분당선_아이디) {
-        return RestAssured
-                .given().log().all()
-                .when().delete("/lines/" + 신분당선_아이디)
-                .then().log().all()
-                .extract();
-    }
-
-    private static ExtractableResponse<Response> 노선_구간을_등록한다(int 노선_아이디, int 상행역, int 하행역,
-            int 거리) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", 하행역);
-        params.put("upStationId", 상행역);
-        params.put("distance", 거리);
-        return RestAssured
-                .given().body(params).log().all()
-                .contentType(ContentType.JSON).accept(ContentType.JSON)
-                .when().post("/lines/" + 노선_아이디 + "/sections")
-                .then().log().all()
-                .extract();
-    }
-
-    private static ExtractableResponse<Response> 노선에서_구간_제거한다(int 종점역_아이디, int 노선_아이디) {
-        return RestAssured
-                .given().log().all().param("stationId", 종점역_아이디)
-                .when().delete("/lines/" + 노선_아이디 + "/sections")
-                .then().log().all()
-                .extract();
-    }
-
-    private static List<String> 스테이션_이름_리스트(ExtractableResponse<Response> 지하철_노선_목록, int 위치) {
-        return 지하철_노선_목록.jsonPath().getList("stations[" + 위치 + "].name", String.class);
-    }
-
-    private static List<Integer> 스테이션_아이디_리스트(ExtractableResponse<Response> 지하철_노선_목록, int 위치) {
-        return 지하철_노선_목록.jsonPath().getList("stations[" + 위치 + "].id", Integer.class);
-    }
-
-    private static List<String> 스테이션_이름_리스트(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList("stations.name", String.class);
-    }
-
-    private static List<Integer> 스테이션_아이디_리스트(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList("stations.id", Integer.class);
-    }
-
-
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -483,5 +398,87 @@ public class LineAcceptanceTest {
         );
     }
 
+    private static ExtractableResponse<Response> 지하철_노선_등록한다(String 노선이름, String 노선색상,
+            int 상행종점역, int 하행종점역, int 거리) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", 노선이름);
+        params.put("color", 노선색상);
+        params.put("upStationId", 상행종점역);
+        params.put("downStationId", 하행종점역);
+        params.put("distance", 거리);
 
+        return RestAssured
+                .given().accept(ContentType.JSON).contentType(ContentType.JSON).body(params).log()
+                .all()
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철_노선_목록_조회한다() {
+        return RestAssured
+                .given().accept(ContentType.JSON).log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철_노선_수정한다(int 수정될_지하철_노선_아이디, String 수정될_이름,
+            String 수정될_컬러) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", 수정될_이름);
+        params.put("color", 수정될_컬러);
+
+        return RestAssured
+                .given().accept(ContentType.JSON).contentType(ContentType.JSON).body(params)
+                .when().put("/lines/" + 수정될_지하철_노선_아이디)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철_노선_삭제한다(int 신분당선_아이디) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/" + 신분당선_아이디)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 노선_구간을_등록한다(int 노선_아이디, int 상행역, int 하행역,
+            int 거리) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("downStationId", 하행역);
+        params.put("upStationId", 상행역);
+        params.put("distance", 거리);
+        return RestAssured
+                .given().body(params).log().all()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .when().post("/lines/" + 노선_아이디 + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 노선에서_구간_제거한다(int 종점역_아이디, int 노선_아이디) {
+        return RestAssured
+                .given().log().all().param("stationId", 종점역_아이디)
+                .when().delete("/lines/" + 노선_아이디 + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private static List<String> 스테이션_이름_리스트(ExtractableResponse<Response> 지하철_노선_목록, int 위치) {
+        return 지하철_노선_목록.jsonPath().getList("stations[" + 위치 + "].name", String.class);
+    }
+
+    private static List<Integer> 스테이션_아이디_리스트(ExtractableResponse<Response> 지하철_노선_목록, int 위치) {
+        return 지하철_노선_목록.jsonPath().getList("stations[" + 위치 + "].id", Integer.class);
+    }
+
+    private static List<String> 스테이션_이름_리스트(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.name", String.class);
+    }
+
+    private static List<Integer> 스테이션_아이디_리스트(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.id", Integer.class);
+    }
 }

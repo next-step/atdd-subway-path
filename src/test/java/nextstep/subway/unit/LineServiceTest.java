@@ -104,7 +104,7 @@ public class LineServiceTest {
 
         // then
         Assertions.assertAll(
-                () -> assertThat(lineResponses).contains(
+                () -> assertThat(lineResponses).containsOnly(
                         LineResponse.from(shinshinundangLine), LineResponse.from(shinundangLine))
         );
     }
@@ -197,9 +197,9 @@ public class LineServiceTest {
                 () -> assertThat(savedLine.getSections().size()).isEqualTo(1),
                 () -> assertThat(
                         savedLine.getSections().stream()
-                                .anyMatch(section -> section.containsStation(yangjaeStation) && section.containsStation(
-                                        pangyoStation))
-
+                                .anyMatch(section ->
+                                        section.containsStation(yangjaeStation)
+                                                && section.containsStation(pangyoStation))
                 ).isFalse()
         );
     }

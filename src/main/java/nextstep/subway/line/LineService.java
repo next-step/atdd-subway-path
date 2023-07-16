@@ -33,19 +33,22 @@ public class LineService {
     }
 
     public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
+        return lineRepository.findAll()
+                .stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse searchById(Long id) {
         return LineResponse.from(
-                lineRepository.findById(id).orElseThrow(LineNotFoundException::new));
+                lineRepository.findById(id)
+                        .orElseThrow(LineNotFoundException::new));
     }
 
     @Transactional
     public void update(Long id, UpdateLineRequest updateLineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
         line.update(updateLineRequest.getName(), updateLineRequest.getColor());
     }
 
@@ -70,7 +73,8 @@ public class LineService {
     public void deleteSection(Long id, Long stationId) {
         Station downStreamTerminusStation = stationRepository.findById(stationId)
                 .orElseThrow(StationNotFoundException::new);
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(LineNotFoundException::new);
         line.deleteStation(downStreamTerminusStation);
     }
 }
