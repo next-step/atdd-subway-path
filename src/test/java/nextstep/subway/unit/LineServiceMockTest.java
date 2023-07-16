@@ -17,7 +17,6 @@ import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.line.Section;
-import nextstep.subway.line.SectionRepository;
 import nextstep.subway.line.SectionRequest;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
@@ -40,14 +39,12 @@ public class LineServiceMockTest {
     @Mock
     private StationRepository stationRepository;
 
-    @Mock
-    private SectionRepository sectionRepository;
 
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository, stationRepository, sectionRepository);
+        lineService = new LineService(lineRepository, stationRepository);
     }
 
     @DisplayName("노선에 section을 추가하기 성공한다")
@@ -58,9 +55,6 @@ public class LineServiceMockTest {
         Line line = new Line("신분당선", "#123123", new ArrayList<>());
         given(lineRepository.findById(any())).willReturn(Optional.of(line));
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station()));
-        Section section = new Section(1L, new Station("강남역"), new Station("양재역"), 1);
-        given(sectionRepository.save(any())).willReturn(
-                section);
 
         // when
         // lineService.addSection 호출
@@ -101,8 +95,6 @@ public class LineServiceMockTest {
         // given
         Line line = new Line("신분당선", "#123123", new ArrayList<>());
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station()));
-        Section section = new Section(1L, new Station("강남역"), new Station("양재역"), 1);
-        given(sectionRepository.save(any())).willReturn(section);
         given(lineRepository.save(any(Line.class))).willReturn(line);
 
         // when
@@ -209,9 +201,9 @@ public class LineServiceMockTest {
         Station yangjaeStation = new Station("양재역");
         Station pangyoStation = new Station("판교역");
         Line line = new Line();
-        Section section = new Section(1L, gangnamStation, yangjaeStation, 10);
+        Section section = new Section(gangnamStation, yangjaeStation, 10);
         line.addSection(section);
-        section = new Section(2L, yangjaeStation, pangyoStation, 10);
+        section = new Section(yangjaeStation, pangyoStation, 10);
         line.addSection(section);
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(pangyoStation));
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));

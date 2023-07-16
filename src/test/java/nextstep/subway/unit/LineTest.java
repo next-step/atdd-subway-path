@@ -38,11 +38,11 @@ class LineTest {
     void addSectionFailedByUpStationOfNewSection() {
         // given
         Line line = new Line();
-        Section savedSection = new Section(1L,new Station("강남역"),new Station("양재역"),1);
+        Section savedSection = new Section(new Station("강남역"),new Station("양재역"),1);
         line.addSection(savedSection);
 
         // when,then
-        Section newSection = new Section(2L,new Station("양재역"),new Station("강남역"),1);
+        Section newSection = new Section(new Station("양재역"),new Station("강남역"),1);
         assertThatThrownBy(() -> line.addSection(newSection)).isInstanceOf(DownstreamStationIncludedException.class);
     }
 
@@ -51,11 +51,11 @@ class LineTest {
     void addSectionFailed() {
         // given
         Line line = new Line();
-        Section savedSection = new Section(1L,new Station("강남역"),new Station("양재역"),1);
+        Section savedSection = new Section(new Station("강남역"),new Station("양재역"),1);
         line.addSection(savedSection);
 
         // when,then
-        Section newSection = new Section(2L,new Station("교대역"),new Station("서초역"),1);
+        Section newSection = new Section(new Station("교대역"),new Station("서초역"),1);
         assertThatThrownBy(() -> line.addSection(newSection)).isInstanceOf(MismatchedUpstreamStationException.class);
     }
 
@@ -66,7 +66,7 @@ class LineTest {
         Station gangnamStation = new Station("강남역");
         Station yangjaeStation = new Station("양재역");
         Line line = new Line();
-        Section section = new Section(1L, gangnamStation, yangjaeStation, 10);
+        Section section = new Section(gangnamStation, yangjaeStation, 10);
         line.addSection(section);
 
         // when
@@ -84,9 +84,9 @@ class LineTest {
         Station yangjaeStation = new Station("양재역");
         Station pangyoStation = new Station("판교역");
         Line line = new Line();
-        Section section = new Section(1L, gangnamStation, yangjaeStation, 10);
+        Section section = new Section(gangnamStation, yangjaeStation, 10);
         line.addSection(section);
-        section = new Section(2L, yangjaeStation, pangyoStation, 10);
+        section = new Section(yangjaeStation, pangyoStation, 10);
         line.addSection(section);
 
         // when
@@ -105,7 +105,7 @@ class LineTest {
         Station gangnamStation = new Station("강남역");
         Station yangjaeStation = new Station("양재역");
         Line line = new Line();
-        Section section = new Section(1L, gangnamStation, yangjaeStation, 10);
+        Section section = new Section(gangnamStation, yangjaeStation, 10);
         line.addSection(section);
 
         // when,then
@@ -121,9 +121,9 @@ class LineTest {
         Station yangjaeStation = new Station("양재역");
         Station pangyoStation = new Station("판교역");
         Line line = new Line();
-        Section section = new Section(1L, gangnamStation, yangjaeStation, 10);
+        Section section = new Section(gangnamStation, yangjaeStation, 10);
         line.addSection(section);
-        section = new Section(2L, yangjaeStation, pangyoStation, 10);
+        section = new Section(yangjaeStation, pangyoStation, 10);
         line.addSection(section);
 
         // when,then

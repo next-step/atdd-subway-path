@@ -12,7 +12,6 @@ import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.line.Section;
-import nextstep.subway.line.SectionRepository;
 import nextstep.subway.line.SectionRequest;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
@@ -33,8 +32,6 @@ public class LineServiceTest {
     @Autowired
     private LineRepository lineRepository;
 
-    @Autowired
-    private SectionRepository sectionRepository;
 
     @Autowired
     private LineService lineService;
@@ -92,10 +89,10 @@ public class LineServiceTest {
         Station gangnamStation = stationRepository.save(new Station("강남역"));
         Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
-        Section pangyoToYangjae = sectionRepository.save(new Section(null, pangyoStation, yangjaeStation, 2));
-        Section yangjaeToGangnam = sectionRepository.save(new Section(null, yangjaeStation, gangnamStation, 1));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
+        Section pangyoToYangjae = new Section(pangyoStation, yangjaeStation, 2);
+        Section yangjaeToGangnam = new Section(yangjaeStation, gangnamStation, 1);
 
         Line shinundangLine = lineRepository.save(
                 new Line("신분당선", "#D31145", List.of(gangnamToYangjae, yangjaeToPangyo)));
@@ -119,8 +116,8 @@ public class LineServiceTest {
         Station gangnamStation = stationRepository.save(new Station("강남역"));
         Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
 
         Line line = lineRepository.save(
                 new Line("신분당선", "#D31145", List.of(gangnamToYangjae, yangjaeToPangyo)));
@@ -139,8 +136,8 @@ public class LineServiceTest {
         Station gangnamStation = stationRepository.save(new Station("강남역"));
         Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
         Line line = lineRepository.save(
                 new Line("신분당선", "#D31145", List.of(gangnamToYangjae, yangjaeToPangyo)));
         UpdateLineRequest updateLineRequest = new UpdateLineRequest("분당선", "#D31146");
@@ -163,8 +160,8 @@ public class LineServiceTest {
         Station gangnamStation = stationRepository.save(new Station("강남역"));
         Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
         Line line = lineRepository.save(
                 new Line("신분당선", "#D31145", List.of(gangnamToYangjae, yangjaeToPangyo)));
 
@@ -183,8 +180,8 @@ public class LineServiceTest {
         Station gangnamStation = stationRepository.save(new Station("강남역"));
         Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
         List<Section> sections = new ArrayList<>();
         sections.add(gangnamToYangjae);
         sections.add(yangjaeToPangyo);
