@@ -158,7 +158,10 @@ public class LineSections {
 
         if (hasUpStationSection(removeStation) && hasDownStationSection(removeStation)) {
             removeMiddleSection(removeStation);
+            return;
         }
+
+        throw new DataIntegrityViolationException("올바르지 않은 구간 삭제 입니다.");
     }
 
     private void removeMiddleSection(Station removeStation) {
