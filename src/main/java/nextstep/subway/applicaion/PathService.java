@@ -13,6 +13,6 @@ public class PathService {
     }
 
     public PathResponse find(Long sourceId, Long targetId) {
-        return null;
+        return pathFinder.find(sourceId, targetId);
     }
 }
