@@ -2,15 +2,12 @@ package nextstep.subway.unit.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import static nextstep.subway.unit.LineFixture.makeLine;
 import static nextstep.subway.unit.StationFixture.강남역;
 import static nextstep.subway.unit.StationFixture.선릉역;
 import static nextstep.subway.unit.StationFixture.역삼역;
-
-import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import nextstep.subway.applicaion.line.LineGraphService;
 import nextstep.subway.applicaion.line.LineService;
 import nextstep.subway.applicaion.line.request.SectionRequest;
 import nextstep.subway.domain.line.LineRepository;
@@ -35,9 +31,6 @@ class LineServiceMockTest {
 
     @Mock
     private StationRepository stationRepository;
-
-    @Mock
-    private LineGraphService lineGraphService;
 
     @InjectMocks
     private LineService lineService;
@@ -59,7 +52,6 @@ class LineServiceMockTest {
                 given(lineRepository.getById(lineId)).willReturn(line);
                 given(stationRepository.getById(request.getUpStationId())).willReturn(역삼역);
                 given(stationRepository.getById(request.getDownStationId())).willReturn(선릉역);
-                given(lineGraphService.orderedStations(any())).willReturn(List.of(강남역, 역삼역, 선릉역));
 
                 // when
                 lineService.appendSection(1L, new SectionRequest(1L, 2L, 10));

@@ -25,4 +25,13 @@ public class LineFixture {
 
         return line;
     }
+
+    public static Line makeLine(final Station upStation, final Station downStation, final int distance) {
+        return new Line("신분당선", "bg-red-600", upStation, downStation, distance);
+    }
+
+    public static void appendSection(final Line line, final Station upStation, final Station downStation,
+                                     final int distance) {
+        line.appendSection(new Section(upStation, downStation, distance));
+    }
 }
