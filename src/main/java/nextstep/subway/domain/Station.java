@@ -38,4 +38,8 @@ public class Station {
                 "name='" + name + '\'' +
                 '}';
     }
+
+    public boolean hasId(Long id) {
+        return this.id.equals(id);
+    }
 }
