@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationService;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,50 +27,32 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-                .header(HttpHeaders.VARY, HttpHeaders.ORIGIN)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS)
-                .body(line);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> line = lineService.showLines();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.VARY, HttpHeaders.ORIGIN)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS)
-                .body(line);
+        return ResponseEntity.ok().body(line);
     }
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> searchById(@PathVariable Long id) {
         LineResponse line = lineService.searchById(id);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.VARY, HttpHeaders.ORIGIN)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS)
-                .body(line);
+        return ResponseEntity.ok().body(line);
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id,
             @RequestBody UpdateLineRequest updateLineRequest) {
         lineService.update(id, updateLineRequest);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.VARY, HttpHeaders.ORIGIN)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS).build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteById(id);
-        return ResponseEntity.noContent()
-                .header(HttpHeaders.VARY, HttpHeaders.ORIGIN)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS).build();
+        return ResponseEntity.noContent().build();
     }
 
 
@@ -79,20 +60,13 @@ public class LineController {
     public ResponseEntity<LineResponse> registerSection(@PathVariable Long id,
             @RequestBody SectionRequest sectionRequest) {
         LineResponse line = lineService.addSection(id, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-                .header(HttpHeaders.VARY, HttpHeaders.ORIGIN)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS)
-                .body(line);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @DeleteMapping("/lines/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, Long stationId) {
         Station downStreamTerminusStation = stationService.findStation(stationId);
         lineService.deleteSection(id, downStreamTerminusStation);
-        return ResponseEntity.noContent()
-                .header(HttpHeaders.VARY, HttpHeaders.ORIGIN)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD)
-                .header(HttpHeaders.VARY, HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS).build();
+        return ResponseEntity.noContent().build();
     }
 }
