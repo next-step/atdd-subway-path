@@ -1,7 +1,6 @@
 package nextstep.subway.service;
 
 import nextstep.subway.common.NotFoundLineException;
-import nextstep.subway.controller.request.SectionAddRequest;
 import nextstep.subway.controller.resonse.LineResponse;
 import nextstep.subway.controller.resonse.StationResponse;
 import nextstep.subway.domain.Line;
@@ -11,6 +10,7 @@ import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.command.LineCreateCommand;
 import nextstep.subway.service.command.LineModifyCommand;
+import nextstep.subway.service.command.SectionAddCommand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +30,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveStationLine(LineCreateCommand createCommand) {
+    public LineResponse saveLine(LineCreateCommand createCommand) {
         Station upStation = stationRepository.getReferenceById(createCommand.getUpStationId());
         Station downStation = stationRepository.getReferenceById(createCommand.getDownStationId());
 
@@ -44,28 +44,28 @@ public class LineService {
 
         Line satedLine = lineRepository.save(line);
 
-        return createSubwayLineResponse(satedLine);
+        return createLineResponse(satedLine);
     }
 
-    public List<LineResponse> findAllSubwayLines() {
+    public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-                .map(this::createSubwayLineResponse)
+                .map(this::createLineResponse)
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findSubwayLine(Long id) {
+    public LineResponse findLineById(Long id) {
         Line line = requireGetById(id);
-        return createSubwayLineResponse(line);
+        return createLineResponse(line);
     }
 
     @Transactional
-    public void modifySubwayLine(Long id, LineModifyCommand modifyCommand) {
+    public void modifyLine(Long id, LineModifyCommand modifyCommand) {
         Line line = requireGetById(id);
         line.modify(modifyCommand.getName(), modifyCommand.getColor());
     }
 
     @Transactional
-    public void deleteSubwayLineById(Long id) {
+    public void deleteLineById(Long id) {
         Line line = requireGetById(id);
         lineRepository.delete(line);
     }
@@ -75,7 +75,7 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundLineException(id));
     }
 
-    private LineResponse createSubwayLineResponse(Line line) {
+    private LineResponse createLineResponse(Line line) {
         return new LineResponse(
                 line.getId(),
                 line.getName(),
@@ -86,19 +86,19 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Long subwayLineId, SectionAddRequest subwayLineCreateRequest) {
-        Line line = requireGetById(subwayLineId);
+    public void addSection(Long lLineId, SectionAddCommand sectionAddCommand) {
+        Line line = requireGetById(lLineId);
 
-        Station upStation = stationRepository.getReferenceById(subwayLineCreateRequest.getUpStationId());
-        Station downStation = stationRepository.getReferenceById(subwayLineCreateRequest.getDownStationId());
+        Station upStation = stationRepository.getReferenceById(sectionAddCommand.getUpStationId());
+        Station downStation = stationRepository.getReferenceById(sectionAddCommand.getDownStationId());
 
-        Section savedSection = Section.of(upStation, downStation, subwayLineCreateRequest.getDistance());
+        Section savedSection = Section.of(upStation, downStation, sectionAddCommand.getDistance());
         line.expandLine(savedSection);
     }
 
     @Transactional
-    public void deleteStationAtLineSection(Long subwayLineId, Long stationId) {
-        Line line = requireGetById(subwayLineId);
+    public void deleteStationAtLine(Long lineId, Long stationId) {
+        Line line = requireGetById(lineId);
 
         Station targetStation = stationRepository.getReferenceById(stationId);
 

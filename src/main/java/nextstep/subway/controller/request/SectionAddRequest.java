@@ -1,6 +1,8 @@
 package nextstep.subway.controller.request;
 
-public class SectionAddRequest {
+import nextstep.subway.service.command.SectionAddCommand;
+
+public class SectionAddRequest implements SectionAddCommand {
 
     private Long upStationId;
     private Long downStationId;

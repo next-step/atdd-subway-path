@@ -23,29 +23,29 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createStationLine(@RequestBody LineCreateRequest lineCreateRequest) {
-        LineResponse lineResponse = lineService.saveStationLine(lineCreateRequest);
+        LineResponse lineResponse = lineService.saveLine(lineCreateRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> showStationLines() {
-        return ResponseEntity.ok().body(lineService.findAllSubwayLines());
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> showStationLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findSubwayLine(id));
+        return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Void> modifyStationLine(@PathVariable Long id, @RequestBody LineModifyRequest lineModifyRequest) {
-        lineService.modifySubwayLine(id, lineModifyRequest);
+        lineService.modifyLine(id, lineModifyRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStationLine(@PathVariable Long id) {
-        lineService.deleteSubwayLineById(id);
+        lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
@@ -57,7 +57,7 @@ public class LineController {
 
     @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteStationAtLineSection(@PathVariable Long id, @RequestParam Long stationId) {
-        lineService.deleteStationAtLineSection(id, stationId);
+        lineService.deleteStationAtLine(id, stationId);
         return ResponseEntity.noContent().build();
     }
 }

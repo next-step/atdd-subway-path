@@ -13,6 +13,23 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 
 class LineTest {
+
+    @Test
+    void 노선_정보_수정() {
+        // given
+        Station upStation = createStation("강남역", 1L);
+        Station downStation = createStation("언주역", 2L);
+
+        Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
+
+        // when
+        line.modify("3호선", "bg-green-400");
+
+        // then
+        Assertions.assertEquals("3호선", line.getName());
+        Assertions.assertEquals("bg-green-400", line.getColor());
+    }
+
     @Test
     void 구간_추가() {
         // given
@@ -58,7 +75,7 @@ class LineTest {
         Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
         Section section = Section.of(downStation, newSectionStation, 3L);
         line.expandLine(section);
-        
+
         // when
         line.shorten(newSectionStation);
 
