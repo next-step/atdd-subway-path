@@ -7,6 +7,7 @@ import nextstep.subway.utils.AbstractAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -76,11 +77,11 @@ public class PathAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 출발역과_도착역이_같은_경우() {
-        //given
-
         //when
+        ExtractableResponse<Response> response = PathSteps.지하철_경로_조회(교대역_id, 교대역_id);
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
