@@ -106,7 +106,6 @@ public class LineService {
     @Transactional
     public void deleteSection(SectionDeleteRequest request) {
         Line foundLine = this.findLineById(request.getLineId());
-
         Station station = stationService.findStationById(request.getStationId());
         foundLine.deleteSectionByStation(station);
     }

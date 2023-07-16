@@ -335,5 +335,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         List<String> stations = lineRetrieveResponse.jsonPath().getList("stations.name", String.class);
         assertThat(stations.size()).isEqualTo(2);
     }
+
+    /**
+     * Given 구간이 3개인 노선이 있고
+     * When 노선에 존재하지 않는 역을 제거하면
+     * Then 구간이 삭제되지 않는다.
+     */
+    @DisplayName("노선에 존재하지 않는 역은 제거되지 않는다.")
+    @Test
+    void deleteNotExistStationInMiddleOfSection() {
+        // given
+        final String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
+        LineSteps.노선_조회_API(createdLocation);
+
+        // when
+        final Long stationId = getStationId("강변역");
+        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
+
+        // then
+        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }
 
