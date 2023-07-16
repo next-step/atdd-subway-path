@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 
 @Embeddable
 @NoArgsConstructor
@@ -71,14 +73,54 @@ public class LineSections {
 
     public void removeSectionByStation(Station targetStation) {
         validStationsCountIsOverMinimalSectionSize();
-        validRemoveStationIsDownStationInExistLine(targetStation);
+//        validRemoveStationIsDownStationInExistLine(targetStation);
 
-        Section lastSection = getLastSection();
-        this.remove(lastSection);
+        // TODO : week2-2 mark
+        List<Station> stations = getStations();
+        int findIndex = IntStream.range(0, stations.size())
+                .filter(idx -> targetStation.equals(stations.get(idx)))
+                .findFirst()
+                .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제 할 역을 찾을 수 없습니다."));
+
+        // 중간인 경우
+        if (findIndex != 0 && findIndex != stations.size() - 1) {
+            Section upSection = findSectionWithDownStationByStation(targetStation)
+                    .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 상행 구간을 찾을 수 없습니다."));
+            Section downSection = findSectionWithUpStationByStation(targetStation)
+                    .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 하행 구간을 찾을 수 없습니다."));
+
+            upSection.moveDownStationFromTargetSection(downSection);
+            remove(downSection);
+        }
+
+        // 맨 앞인 경우
+        if (findIndex == 0) {
+            Section section = findSectionWithUpStationByStation(targetStation)
+                    .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 상행 구간을 찾을 수 없습니다."));
+            remove(section);
+        }
+
+        // 맨 끝인 경우
+        if (findIndex == stations.size() - 1) {
+            Section section = findSectionWithDownStationByStation(targetStation)
+                    .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 하행 구간을 찾을 수 없습니다."));
+            remove(section);
+        }
+
     }
 
+//    private List<Section> getSectionsExistInLine(Station targetStation) {
+//        Optional<Section> upSection = findSectionWithDownStationByUpStation(targetStation);
+//        Optional<Section> downSection = findSectionWithUpStationByDownStation(targetStation);
+//        if (upSection.isEmpty() || downSection.isEmpty()) {
+//            throw new SubwayNotFoundException(9999L,"역이 포함된 구간이 없다."); //TODO : constant
+//        }
+//        return List.of(upSection.get(), downSection.get());
+//    }
+
     private void remove(Section section) {
-        sections.remove(section);
+        this.sections.remove(section);
+
     }
 
     private void addSection(Section newSection) {
@@ -94,12 +136,6 @@ public class LineSections {
     private Section getLastSection() {
         int lastSectionIndex = this.sections.size() - 1;
         return this.sections.get(lastSectionIndex);
-    }
-
-    private Optional<Section> findSectionWithUpStationByUpStation(Station upStation) {
-        return this.sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation))
-                .findAny();
     }
 
     private boolean hasSections(Line line) {
@@ -121,44 +157,52 @@ public class LineSections {
     }
 
     private void appendMiddleDown(Section newSection) {
-        Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
-        Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
+        Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByStation(newSection.getDownStation());
+        Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByStation(newSection.getUpStation());
 
         if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
             Section existSection = sectionWithDownStationByDownStation.get();
-            existSection.changeDownStation(newSection);
+            existSection.addDownStation(newSection);
+
         }
 
     }
 
     private void appendMiddleUp(Section newSection) {
-        Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
-        Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
+        Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByStation(newSection.getUpStation());
+        Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByStation(newSection.getDownStation());
 
         if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
             Section existSection = sectionWithUpStationByUpStation.get();
-            existSection.changeUpStation(newSection);
+            existSection.addUpStation(newSection);
+
         }
 
     }
+    private Optional<Section> findSectionWithUpStationByStation(Station upStation) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findAny();
+    }
 
-    private Optional<Section> findSectionWithDownStationByDownStation(Station downStation) {
+    private Optional<Section> findSectionWithDownStationByStation(Station downStation) {
         return this.sections.stream()
                 .filter(section -> section.getDownStation().equals(downStation))
                 .findAny();
     }
 
-    private Optional<Section> findSectionWithUpStationByDownStation(Station downStation) {
-        return this.sections.stream()
-                .filter(section -> section.getUpStation().equals(downStation))
-                .findAny();
-    }
+//    private Optional<Section> findSectionWithUpStationByStation(Station downStation) {
+//        return this.sections.stream()
+//                .filter(section -> section.getUpStation().equals(downStation))
+//                .findAny();
+//    }
+//
+//    private Optional<Section> findSectionWithDownStationByStation(Station upStation) {
+//        return this.sections.stream()
+//                .filter(section -> section.getDownStation().equals(upStation))
+//                .findAny();
+//    }
 
-    private Optional<Section> findSectionWithDownStationByUpStation(Station upStation) {
-        return this.sections.stream()
-                .filter(section -> section.getDownStation().equals(upStation))
-                .findAny();
-    }
 
     private Optional<Station> findAnyStationInNewSectionIsStationInExistLine(Section section, List<Station> stationsInLine) {
         return stationsInLine.stream()
@@ -194,12 +238,12 @@ public class LineSections {
                     SubwayMessage.STATION_DELETE_MINIMAL_VALID_MESSAGE.getFormatMessage(MINIMAL_SECTION_SIZE));
         }
     }
+//    private void validRemoveStationIsDownStationInExistLine(Station targetStation) {
+//        Section lastSection = getLastSection();
+//        Station downStation = lastSection.getDownStation();
+//        if (!downStation.equals(targetStation)) {
+//            throw new SubwayBadRequestException(SubwayMessage.SECTION_DELETE_LAST_STATION_VALID_MESSAGE);
+//        }
+//    }
 
-    private void validRemoveStationIsDownStationInExistLine(Station targetStation) {
-        Section lastSection = getLastSection();
-        Station downStation = lastSection.getDownStation();
-        if (!downStation.equals(targetStation)) {
-            throw new SubwayBadRequestException(SubwayMessage.SECTION_DELETE_LAST_STATION_VALID_MESSAGE);
-        }
-    }
 }
