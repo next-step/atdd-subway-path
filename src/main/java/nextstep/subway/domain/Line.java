@@ -7,6 +7,7 @@ import nextstep.subway.domain.vo.Sections;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -62,7 +63,7 @@ public class Line {
         this.distance = sections.sumOfDistance();
     }
 
-    public void pop(Station targetStation) {
+    public void shorten(Station targetStation) {
         if (this.sections.isMinimumSize()) {
             throw new NotEnoughSectionException();
         }
@@ -76,6 +77,10 @@ public class Line {
 
     public long getDistance() {
         return this.distance;
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
     }
 
     public static class Builder {

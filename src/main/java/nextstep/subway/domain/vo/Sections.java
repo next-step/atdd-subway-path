@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -66,5 +67,13 @@ public class Sections {
     public void pop() {
         Section lastSection = this.sections.get(getLastIndex());
         this.sections.remove(lastSection);
+    }
+
+    public List<Station> getStations() {
+        List<Station> upStations = sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        upStations.add(this.getDownStation());
+        return upStations;
     }
 }

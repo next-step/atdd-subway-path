@@ -108,6 +108,6 @@ public class LineService {
 
         Station targetStation = stationRepository.getReferenceById(stationId);
 
-        line.pop(targetStation);
+        line.shorten(targetStation);
     }
 }
