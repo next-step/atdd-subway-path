@@ -57,12 +57,15 @@ public class Section {
         return Objects.equals(upStation.getId(), stationId);
     }
 
+    public boolean equalsUpstation(Station station) {
+        return Objects.equals(upStation.getId(), station.getId());
+    }
     public boolean equalsDownStation(Long stationId) {
         return Objects.equals(downStation.getId(), stationId);
     }
 
-    private boolean equalsById(Long id) {
-        return Objects.equals(this.id, id);
+    public boolean equalsDownStation(Station station) {
+        return Objects.equals(downStation.getId(), station.getId());
     }
 
     public void changeUpStation(Station upStation) {

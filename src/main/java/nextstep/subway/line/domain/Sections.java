@@ -69,7 +69,7 @@ public class Sections {
     }
 
     private boolean requireSectionDivide(Section section) {
-        return hasSameUpStationInSection(section.getUpStation().getId()) || hasSameDownstationInSection(section.getDownStation().getId());
+        return hasSameUpStationInSection(section.getUpStation()) || hasSameDownstationInSection(section.getDownStation());
     }
 
     public boolean isEmpty() {
@@ -84,26 +84,26 @@ public class Sections {
         /**
          * 역의 양 끝에 추가하는 경우
          */
-        if (hasSameUpStationInSection(section.getDownStation().getId())) {
+        if (hasSameUpStationInSection(section.getDownStation())) {
             return true;
         }
 
-        if (hasSameDownstationInSection(section.getUpStation().getId())) {
+        if (hasSameDownstationInSection(section.getUpStation())) {
             return true;
         }
 
-        if (hasSameUpStationInSection(section.getUpStation().getId()) && hasSameDownstationInSection(section.getDownStation().getId())) {
+        if (hasSameUpStationInSection(section.getUpStation()) && hasSameDownstationInSection(section.getDownStation())) {
             return false;
         }
 
-        if (hasSameUpStationInSection(section.getUpStation().getId())) {
-            if (findSameUpStationSection(section.getUpStation().getId()).get().distanceIsLessThanEquals(section.getDistance())) {
+        if (hasSameUpStationInSection(section.getUpStation())) {
+            if (findSameUpStationSection(section.getUpStation()).get().distanceIsLessThanEquals(section.getDistance())) {
                 return false;
             }
         }
 
-        if (hasSameDownstationInSection(section.getDownStation().getId())) {
-            if (findSameDownStation(section.getDownStation().getId()).get().getDistance() <= section.getDistance()) {
+        if (hasSameDownstationInSection(section.getDownStation())) {
+            if (findSameDownStation(section.getDownStation()).get().getDistance() <= section.getDistance()) {
                 return false;
             }
         }
@@ -116,31 +116,31 @@ public class Sections {
     }
 
     public boolean requireUpStationChange(Section section) {
-        return hasSameUpStationInSection(section.getDownStation().getId());
+        return hasSameUpStationInSection(section.getDownStation());
     }
 
     public boolean requireDownStationChange(Section section) {
-        return hasSameDownstationInSection(section.getUpStation().getId());
+        return hasSameDownstationInSection(section.getUpStation());
     }
 
-    private Optional<Section> findSameUpStationSection(Long stationId) {
+    private Optional<Section> findSameUpStationSection(Station station) {
         return sections.stream()
-                       .filter(section -> section.equalsUpstation(stationId))
+                       .filter(section -> section.equalsUpstation(station))
                        .findFirst();
     }
 
-    private Optional<Section> findSameDownStation(Long stationId) {
+    private Optional<Section> findSameDownStation(Station station) {
         return sections.stream()
-                       .filter(section -> section.equalsDownStation(stationId))
+                       .filter(section -> section.equalsDownStation(station))
                        .findFirst();
     }
 
-    private boolean hasSameDownstationInSection(Long stationId) {
-        return findSameDownStation(stationId).isPresent();
+    private boolean hasSameDownstationInSection(Station station) {
+        return findSameDownStation(station).isPresent();
     }
 
-    private boolean hasSameUpStationInSection(Long stationId) {
-        return findSameUpStationSection(stationId).isPresent();
+    private boolean hasSameUpStationInSection(Station station) {
+        return findSameUpStationSection(station).isPresent();
     }
 
     public void possibleToDeleteSection(Station station) {
@@ -185,11 +185,11 @@ public class Sections {
     public List<Section> toOrderedList(Station lastUpStation) {
         List<Section> orderedSections = new ArrayList<>();
 
-        Section iterateSection = findSameUpStationSection(lastUpStation.getId()).get();
+        Section iterateSection = findSameUpStationSection(lastUpStation).get();
         orderedSections.add(iterateSection);
 
-        while(findSameUpStationSection(iterateSection.getDownStation().getId()).isPresent()) {
-            iterateSection = findSameUpStationSection(iterateSection.getDownStation().getId()).get();
+        while(findSameUpStationSection(iterateSection.getDownStation()).isPresent()) {
+            iterateSection = findSameUpStationSection(iterateSection.getDownStation()).get();
             orderedSections.add(iterateSection);
         }
 
