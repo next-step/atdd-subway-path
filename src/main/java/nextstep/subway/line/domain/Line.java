@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -79,9 +80,28 @@ public class Line {
     }
 
     public void deleteSection(Long stationId) {
-        if (sections.possibleToDeleteSection(stationId)) {
-            sections.deleteSectionByStationId(stationId);
+        sections.possibleToDeleteSection();
+
+        Optional<Station> nextUpStation = Optional.empty();
+        Optional<Station> nextDownStation = Optional.empty();
+
+        // 상행 종점역 제거시
+        if (equalUpStation(stationId)) {
+            Section targetSection = sections.findSectionByUpStation(stationId);
+
+            nextUpStation = Optional.of(targetSection.getDownStation());
         }
+
+        if (equalDownStation(stationId)) {
+            Section targetSection = sections.findSectionByDownStation(stationId);
+
+            nextDownStation = Optional.of(targetSection.getUpStation());
+        }
+
+        sections.deleteSectionByStationId(stationId);
+
+        nextUpStation.ifPresent(station -> this.upStation = station);
+        nextDownStation.ifPresent(station -> this.downStation = station);
     }
 
     public boolean equalUpStation(Long stationId) {

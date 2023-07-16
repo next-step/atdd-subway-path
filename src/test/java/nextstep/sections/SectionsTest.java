@@ -230,7 +230,7 @@ public class SectionsTest {
         }
 
         @Nested
-        class When_종점역을_제거하면 {
+        class When_상행_종점역을_제거하면 {
 
             @Test
             void 제거된다() {
@@ -238,7 +238,22 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                lineAB.deleteSection(stationB.getId());
+                lineAB.deleteSection(stationA.getId());
+
+                Assertions.assertThat(lineAB.getSections().hasOneSection()).isTrue();
+            }
+        }
+
+        @Nested
+        class When_하행_종점역을_제거하면 {
+
+            @Test
+            void 제거된다() {
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                lineAB.deleteSection(stationC.getId());
 
                 Assertions.assertThat(lineAB.getSections().hasOneSection()).isTrue();
             }

@@ -40,6 +40,14 @@ public class Sections {
         return getLastSection().equalsDownStation(stationId);
     }
 
+    public boolean isFirstUpStation(Long stationId) {
+        if (CollectionUtils.isEmpty(this.sections)) {
+            return false;
+        }
+
+        return getLastSection().equalsDownStation(stationId);
+    }
+
     public boolean hasOneSection() {
         if (CollectionUtils.isEmpty(this.sections)) {
             return false;
@@ -151,12 +159,10 @@ public class Sections {
         return findSameUpStationSection(stationId).isPresent();
     }
 
-    public boolean possibleToDeleteSection(Long stationId) {
+    public void possibleToDeleteSection() {
         if (hasOneSection()) {
             throw new InvalidSectionDeleteException(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_SECTION_CANNOT_DELETED);
         }
-
-        return true;
     }
 
     public void deleteSectionByStationId(Long stationId) {
@@ -209,4 +215,19 @@ public class Sections {
                        .map(Section::getDistance)
                        .reduce(0, Integer::sum);
     }
+
+    public Section findSectionByUpStation(Long stationId) {
+        return sections.stream()
+                       .filter(section -> section.equalsUpstation(stationId))
+                       .findFirst()
+                       .get();
+    }
+
+    public Section findSectionByDownStation(Long stationId) {
+        return sections.stream()
+                       .filter(section -> section.equalsDownStation(stationId))
+                       .findFirst()
+                       .get();
+    }
+
 }
