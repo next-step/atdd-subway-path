@@ -76,12 +76,14 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
+        List<StationResponse> stationResponses = line.getStations().stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                List.of(new StationResponse(line.getUpStation()),
-                        new StationResponse(line.getDownStation())),
+                stationResponses,
                 line.getDistance());
     }
 
