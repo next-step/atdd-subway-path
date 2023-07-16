@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.domain.Station;
 import nextstep.subway.utils.AbstractAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -120,9 +121,14 @@ public class PathAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void 연결되어_있지_않는_출발역과_도착역인_경우() {
         //given
+        Long 서면역_id = StationSteps.지하철역_생성_요청("서면역");
+        Long 범내골역_id = StationSteps.지하철역_생성_요청("범내골역");
+        Long 부산1호선_id = LineSteps.지하철_노선_생성_요청("부산1호선", 서면역_id, 범내골역_id, 10);
 
         //when
+        ExtractableResponse<Response> response = PathSteps.지하철_경로_조회(교대역_id, 서면역_id);
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
