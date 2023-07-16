@@ -40,7 +40,6 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = new Line("신분당선", "#D31145", new ArrayList<>());
         lineRepository.save(line);
         Station upStation = stationRepository.save(new Station("강남역"));
@@ -48,11 +47,9 @@ public class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 1);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(
                 line.getSections().stream()
                         .anyMatch(section -> section.containsStation(upStation) && section.containsStation(downStation))

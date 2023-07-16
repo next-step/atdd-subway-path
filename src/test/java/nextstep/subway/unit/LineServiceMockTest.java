@@ -51,17 +51,14 @@ public class LineServiceMockTest {
     @Test
     void addSectionSuccess() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         Line line = new Line("신분당선", "#123123", new ArrayList<>());
         given(lineRepository.findById(any())).willReturn(Optional.of(line));
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station()));
 
         // when
-        // lineService.addSection 호출
         LineResponse lineResponse = lineService.addSection(1L, new SectionRequest(1L, 1L, 1));
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
         assertThat(lineService.searchById(lineResponse.getId())).isEqualTo(lineResponse);
     }
 
