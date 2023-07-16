@@ -44,11 +44,11 @@ public class Sections {
         if (requireSectionDivide(section)) {
             Section divideTargetSection = findDivideTargetSection(section);
 
-            if (divideTargetSection.equalsUpstation(section.getUpStation().getId())) {
+            if (divideTargetSection.equalsUpstation(section.getUpStation())) {
                 divideTargetSection.changeUpStation(section.getDownStation());
             }
 
-            if (divideTargetSection.equalsDownStation(section.getDownStation().getId())) {
+            if (divideTargetSection.equalsDownStation(section.getDownStation())) {
                 divideTargetSection.changeDownStation(section.getUpStation());
             }
 
@@ -59,10 +59,10 @@ public class Sections {
     }
 
     private Section findDivideTargetSection(Section section) {
-        Optional<Section> maybeTarget = findSectionByStationId(section.getUpStation().getId());
+        Optional<Section> maybeTarget = findSectionByStationId(section.getUpStation());
 
         if (maybeTarget.isEmpty()) {
-            maybeTarget = findSectionByStationId(section.getDownStation().getId());
+            maybeTarget = findSectionByStationId(section.getDownStation());
         }
 
         return maybeTarget.get();
@@ -108,7 +108,7 @@ public class Sections {
             }
         }
 
-        if (findSectionByStationId(section.getUpStation().getId()).isEmpty() && findSectionByStationId(section.getDownStation().getId()).isEmpty()) {
+        if (findSectionByStationId(section.getUpStation()).isEmpty() && findSectionByStationId(section.getDownStation()).isEmpty()) {
             return false;
         }
 
@@ -154,11 +154,11 @@ public class Sections {
     }
 
     private boolean isStationOnSections(Station station) {
-        return sections.stream().anyMatch(section -> section.containStation(station.getId()));
+        return sections.stream().anyMatch(section -> section.containStation(station));
     }
 
-    public void deleteSectionByStationId(Long stationId) {
-        List<Section> relatedSections = findSectionsByStationId(stationId);
+    public void deleteSectionByStationId(Station station) {
+        List<Section> relatedSections = findSectionsByStationId(station);
 
         if (relatedSections.size() == 2) {
             Section newSection = relatedSections.get(0).mergeSection(relatedSections.get(1));
@@ -170,15 +170,15 @@ public class Sections {
         }
     }
 
-    private Optional<Section> findSectionByStationId(Long stationId) {
+    private Optional<Section> findSectionByStationId(Station station) {
         return sections.stream()
-                       .filter(section -> section.containStation(stationId))
+                       .filter(section -> section.containStation(station))
                        .findAny();
     }
 
-    private List<Section> findSectionsByStationId(Long stationId) {
+    private List<Section> findSectionsByStationId(Station station) {
         return sections.stream()
-                       .filter(section -> section.containStation(stationId))
+                       .filter(section -> section.containStation(station))
                        .collect(Collectors.toList());
     }
 
@@ -202,9 +202,9 @@ public class Sections {
                        .reduce(0, Integer::sum);
     }
 
-    public Optional<Section> findSectionByUpStation(Long stationId) {
+    public Optional<Section> findSectionByUpStation(Station station) {
         return sections.stream()
-                       .filter(section -> section.equalsUpstation(stationId))
+                       .filter(section -> section.equalsUpstation(station))
                        .findFirst();
     }
 

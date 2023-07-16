@@ -87,7 +87,7 @@ public class Line {
 
         // 상행 종점역 제거시
         if (equalUpStation(station)) {
-            maybeNextUpStation = sections.findSectionByUpStation(station.getId())
+            maybeNextUpStation = sections.findSectionByUpStation(station)
                                          .map(Section::getDownStation);
         }
 
@@ -96,7 +96,7 @@ public class Line {
                                            .map(Section::getUpStation);
         }
 
-        sections.deleteSectionByStationId(station.getId());
+        sections.deleteSectionByStationId(station);
 
         maybeNextUpStation.ifPresent(nextUpStation -> this.upStation = nextUpStation);
         maybeNextDownStation.ifPresent(nextDownStation -> this.downStation = nextDownStation);

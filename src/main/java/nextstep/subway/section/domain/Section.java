@@ -45,16 +45,12 @@ public class Section {
 
     private int distance;
 
-    public boolean containStation(Long stationId) {
-        return Objects.equals(upStation.getId(), stationId) || Objects.equals(downStation.getId(), stationId);
+    public boolean containStation(Station station) {
+        return Objects.equals(upStation.getId(), station.getId()) || Objects.equals(downStation.getId(), station.getId());
     }
 
     public void attachToLine(Line line) {
         this.line = line;
-    }
-
-    public boolean equalsUpstation(Long stationId) {
-        return Objects.equals(upStation.getId(), stationId);
     }
 
     public boolean equalsUpstation(Station station) {
