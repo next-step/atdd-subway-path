@@ -81,4 +81,17 @@ public class PathFinderMockTest {
         assertThatThrownBy(() -> pathFinder.find(100_000_000L, 1L))
                 .isInstanceOf(StationNotFoundException.class);
     }
+
+    @Test
+    void 연결되어_있지_않는_출발역과_도착역인_경우() {
+        //when
+        Station 동떨어진역 = new Station(4L, "동떨어진역");
+        Station 더동떨어진역 = new Station(5L, "더동떨어진역");
+        Section 동떨어진구간 = new Section(new Line(), 동떨어진역, 더동떨어진역, 10);
+        when(sectionRepository.findAll()).thenReturn(List.of(출발역_중간역, 중간역_도착역, 출발역_도착역, 동떨어진구간));
+
+        //then
+        assertThatThrownBy(() -> pathFinder.find(1L, 4L))
+                .isInstanceOf(PathException.class);
+    }
 }
