@@ -8,7 +8,6 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.PathException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,12 +50,14 @@ public class PathFinderMockTest {
         중간역_도착역 = new Section(노선, 중간역, 도착역, 10);
         출발역_도착역 = new Section(노선, 출발역, 도착역, 16);
 
-        when(sectionRepository.findAll()).thenReturn(List.of(출발역_중간역, 중간역_도착역, 출발역_도착역));
         pathFinder = new PathFinder(sectionRepository);
     }
 
     @Test
     void find() {
+        //when
+        when(sectionRepository.findAll()).thenReturn(List.of(출발역_중간역, 중간역_도착역, 출발역_도착역));
+
         //then
         PathResponse pathResponse = pathFinder.find(1L, 3L);
         List<String> stationNames = pathResponse.getStations().stream()
