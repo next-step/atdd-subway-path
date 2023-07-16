@@ -29,11 +29,11 @@ public class LineSections {
     public void add(Section newSection, Line line) {
 
         if (hasSections(line)) {
-            appendSection(newSection);
+            putInSections(newSection);
         }
 
         newSection.setLine(line);
-        addSection(newSection);
+        appendSections(newSection);
     }
 
     public Station getFirstStation() {
@@ -109,21 +109,12 @@ public class LineSections {
 
     }
 
-//    private List<Section> getSectionsExistInLine(Station targetStation) {
-//        Optional<Section> upSection = findSectionWithDownStationByUpStation(targetStation);
-//        Optional<Section> downSection = findSectionWithUpStationByDownStation(targetStation);
-//        if (upSection.isEmpty() || downSection.isEmpty()) {
-//            throw new SubwayNotFoundException(9999L,"역이 포함된 구간이 없다."); //TODO : constant
-//        }
-//        return List.of(upSection.get(), downSection.get());
-//    }
-
     private void remove(Section section) {
         this.sections.remove(section);
 
     }
 
-    private void addSection(Section newSection) {
+    private void appendSections(Section newSection) {
         this.sections.add(newSection);
     }
 
@@ -142,42 +133,38 @@ public class LineSections {
         return line.getLineSections().sections.size() > 0;
     }
 
-    private void appendSection(Section newSection) {
+    private void putInSections(Section newSection) {
         List<Station> stations = getStations();
 
         validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
         validStationInNewSectionIsStationInExistLine(newSection, stations);
 
-        appendMiddle(newSection);
+        putInMiddle(newSection);
     }
 
-    private void appendMiddle(Section newSection) {
-        appendMiddleDown(newSection);
-        appendMiddleUp(newSection);
+    private void putInMiddle(Section newSection) {
+        putInMiddleDown(newSection);
+        putInMiddleUp(newSection);
     }
 
-    private void appendMiddleDown(Section newSection) {
-        Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByStation(newSection.getDownStation());
-        Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByStation(newSection.getUpStation());
+    private void putInMiddleDown(Section newSection) {
+        Optional<Section> sectionByDownStation = findSectionWithDownStationByStation(newSection.getDownStation());
+        Optional<Section> sectionByUpStation = findSectionWithDownStationByStation(newSection.getUpStation());
 
-        if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
-            Section existSection = sectionWithDownStationByDownStation.get();
+        if (sectionByDownStation.isPresent() && sectionByUpStation.isEmpty()) {
+            Section existSection = sectionByDownStation.get();
             existSection.addDownStation(newSection);
-
         }
-
     }
 
-    private void appendMiddleUp(Section newSection) {
-        Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByStation(newSection.getUpStation());
-        Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByStation(newSection.getDownStation());
+    private void putInMiddleUp(Section newSection) {
+        Optional<Section> sectionByUpStation = findSectionWithUpStationByStation(newSection.getUpStation());
+        Optional<Section> sectionByDownStation = findSectionWithUpStationByStation(newSection.getDownStation());
 
-        if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
-            Section existSection = sectionWithUpStationByUpStation.get();
+        if (sectionByUpStation.isPresent() && sectionByDownStation.isEmpty()) {
+            Section existSection = sectionByUpStation.get();
             existSection.addUpStation(newSection);
-
         }
-
     }
     private Optional<Section> findSectionWithUpStationByStation(Station upStation) {
         return this.sections.stream()

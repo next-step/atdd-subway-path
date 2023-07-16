@@ -70,7 +70,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
 
-    // deprecated week2-2
+    // deprecated week2-2 TODO : remove
 
 //    /**
 //     * Given 3개의 역이 등록된 구간을 가진 노선이 있고
