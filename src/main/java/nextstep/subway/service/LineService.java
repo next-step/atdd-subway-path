@@ -3,13 +3,11 @@ package nextstep.subway.service;
 import nextstep.subway.common.NotFoundLineException;
 import nextstep.subway.controller.request.SectionAddRequest;
 import nextstep.subway.controller.resonse.LineResponse;
-import nextstep.subway.controller.resonse.SectionResponse;
 import nextstep.subway.controller.resonse.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.repository.LineRepository;
-import nextstep.subway.repository.SectionRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.command.LineCreateCommand;
 import nextstep.subway.service.command.LineModifyCommand;
@@ -23,14 +21,12 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class LineService {
 
-    private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
+    private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -90,16 +86,14 @@ public class LineService {
     }
 
     @Transactional
-    public SectionResponse addStationSection(Long subwayLineId, SectionAddRequest subwayLineCreateRequest) {
+    public void addSection(Long subwayLineId, SectionAddRequest subwayLineCreateRequest) {
         Line line = requireGetById(subwayLineId);
 
         Station upStation = stationRepository.getReferenceById(subwayLineCreateRequest.getUpStationId());
         Station downStation = stationRepository.getReferenceById(subwayLineCreateRequest.getDownStationId());
 
-        Section savedSection = sectionRepository.save(Section.of(upStation, downStation, subwayLineCreateRequest.getDistance()));
+        Section savedSection = Section.of(upStation, downStation, subwayLineCreateRequest.getDistance());
         line.expandLine(savedSection);
-
-        return SectionResponse.of(savedSection);
     }
 
     @Transactional

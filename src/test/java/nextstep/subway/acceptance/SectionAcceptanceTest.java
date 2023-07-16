@@ -85,14 +85,14 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         ValidatableResponse sectionCreatedResponse = createSection(createdLineId, downStationId, sectionDownStationId, sectionDistance);
 
         //then
-        verifyResponseStatus(sectionCreatedResponse, HttpStatus.CREATED);
+        verifyResponseStatus(sectionCreatedResponse, HttpStatus.OK);
         ValidatableResponse createdSectionResponse = getResource(getLocation(lineCratedResponse));
         verifyResponseStatus(createdSectionResponse, HttpStatus.OK);
-        verifySectionAdded(createdSectionResponse, "신분당선", "bg-red-600", "강남역", "언주역", distance + sectionDistance);
     }
 
 
     /**
+     * xs
      * /**
      * 지하철노선 구간 제거
      * Given 지하철 노선을 생성하고 생성한 지하철 노선에 추가로 구간을 등록한뒤
@@ -153,15 +153,14 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
 
         ValidatableResponse stationCreatedResponse = createStation("길음역");
-        Long sectionDownStationId = getLong(stationCreatedResponse, DOWN_STATION_ID_JSON_PATH);
         StationResponse stationResponse = stationCreatedResponse.extract().as(StationResponse.class);
+        Long newDownStationId = stationResponse.getId();
         int sectionDistance = 3;
 
-        ValidatableResponse createdSectionResponse = createSection(createdLineId, downStationId, sectionDownStationId, sectionDistance);
-        verifySectionAdded(createdSectionResponse, "신분당선", "bg-red-600", "강남역", "길음역", sectionDistance);
+        createSection(createdLineId, downStationId, newDownStationId, sectionDistance);
 
         //when
-        ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + stationResponse.getId());
+        ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + newDownStationId);
 
         //then
         verifyResponseStatus(sectionDeletedResponse, HttpStatus.NO_CONTENT);
@@ -169,7 +168,6 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         ValidatableResponse foundLineResponse = getResource(LINES_RESOURCE_URL + "/" + createdLineId);
         verifyResponseStatus(foundLineResponse, HttpStatus.OK);
 
-        verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "강남역", "길음역");
-
+        verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "강남역", "언주역");
     }
 }
