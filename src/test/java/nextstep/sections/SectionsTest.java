@@ -1,5 +1,7 @@
 package nextstep.sections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.exception.InvalidSectionDeleteException;
 import nextstep.subway.station.domain.Station;
 
 public class SectionsTest {
@@ -269,7 +272,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThatThrownBy(() -> {
+                assertThrows(InvalidSectionDeleteException.class, () -> {
                     lineAB.deleteSection(givenOtherStation.getId());
                 });
             }
