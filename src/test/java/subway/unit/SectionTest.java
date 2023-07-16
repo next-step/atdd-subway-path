@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SectionTest {
 
-    @DisplayName("")
+    @DisplayName("해당 구간의 하행에 새로운 구간을 추가한다.")
     @Test
     void addDownStation() {
     }

@@ -81,8 +81,8 @@ public class LineService {
         lineRepository.save(line);
 
         Section section = Section.builder()
-                .downStation(downStation)
                 .upStation(upStation)
+                .downStation(downStation)
                 .distance(lineRequest.getDistance())
                 .build();
         line.addSection(section);
@@ -96,8 +96,8 @@ public class LineService {
         Line foundLine = this.findLineById(lineId);
 
         Section section = Section.builder()
-                .downStation(downStation)
                 .upStation(upStation)
+                .downStation(downStation)
                 .distance(request.getDistance())
                 .build();
         foundLine.addSection(section);

@@ -29,11 +29,11 @@ public class LineSections {
     public void add(Section newSection, Line line) {
 
         if (hasSections(line)) {
-            putInSections(newSection);
+            putInMiddleOfSections(newSection);
         }
 
         newSection.setLine(line);
-        appendSections(newSection);
+        add(newSection);
     }
 
     public Station getFirstStation() {
@@ -114,7 +114,7 @@ public class LineSections {
 
     }
 
-    private void appendSections(Section newSection) {
+    private void add(Section newSection) {
         this.sections.add(newSection);
     }
 
@@ -133,7 +133,7 @@ public class LineSections {
         return line.getLineSections().sections.size() > 0;
     }
 
-    private void putInSections(Section newSection) {
+    private void putInMiddleOfSections(Section newSection) {
         List<Station> stations = getStations();
 
         validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
@@ -143,13 +143,13 @@ public class LineSections {
     }
 
     private void putInMiddle(Section newSection) {
-        putInMiddleDown(newSection);
-        putInMiddleUp(newSection);
+        putInBackSectionOfMiddle(newSection);
+        putInFrontSectionOfMiddle(newSection);
     }
 
-    private void putInMiddleDown(Section newSection) {
-        Optional<Section> sectionByDownStation = findSectionWithDownStationByStation(newSection.getDownStation());
+    private void putInBackSectionOfMiddle(Section newSection) {
         Optional<Section> sectionByUpStation = findSectionWithDownStationByStation(newSection.getUpStation());
+        Optional<Section> sectionByDownStation = findSectionWithDownStationByStation(newSection.getDownStation());
 
         if (sectionByDownStation.isPresent() && sectionByUpStation.isEmpty()) {
             Section existSection = sectionByDownStation.get();
@@ -157,7 +157,7 @@ public class LineSections {
         }
     }
 
-    private void putInMiddleUp(Section newSection) {
+    private void putInFrontSectionOfMiddle(Section newSection) {
         Optional<Section> sectionByUpStation = findSectionWithUpStationByStation(newSection.getUpStation());
         Optional<Section> sectionByDownStation = findSectionWithUpStationByStation(newSection.getDownStation());
 
