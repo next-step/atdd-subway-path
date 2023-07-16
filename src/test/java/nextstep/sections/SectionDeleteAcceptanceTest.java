@@ -160,7 +160,7 @@ public class SectionDeleteAcceptanceTest {
     /**
      * given 노선에 구간이 2개 이상일때
      * when 중간역을 제거하면
-     * then 재배치된다
+     * then 삭제된다
      */
     @Nested
     class Given_노선에_구간이_2개이상일때 {
@@ -168,7 +168,6 @@ public class SectionDeleteAcceptanceTest {
         @Nested
         class When_중간역을_제거하면 {
 
-//            @DisplayName("새로운 구간의 거리는 기존 구간의 합으로 바뀐다")
             @DisplayName("삭제된다")
             @Test
             void then() {
