@@ -196,18 +196,16 @@ public class Sections {
                        .reduce(0, Integer::sum);
     }
 
-    public Section findSectionByUpStation(Long stationId) {
+    public Optional<Section> findSectionByUpStation(Long stationId) {
         return sections.stream()
                        .filter(section -> section.equalsUpstation(stationId))
-                       .findFirst()
-                       .get();
+                       .findFirst();
     }
 
-    public Section findSectionByDownStation(Long stationId) {
+    public Optional<Section> findSectionByDownStation(Long stationId) {
         return sections.stream()
                        .filter(section -> section.equalsDownStation(stationId))
-                       .findFirst()
-                       .get();
+                       .findFirst();
     }
 
 }

@@ -87,15 +87,11 @@ public class Line {
 
         // 상행 종점역 제거시
         if (equalUpStation(stationId)) {
-            Section targetSection = sections.findSectionByUpStation(stationId);
-
-            nextUpStation = Optional.of(targetSection.getDownStation());
+            nextUpStation = sections.findSectionByUpStation(stationId).map(Section::getDownStation);
         }
 
         if (equalDownStation(stationId)) {
-            Section targetSection = sections.findSectionByDownStation(stationId);
-
-            nextDownStation = Optional.of(targetSection.getUpStation());
+            nextDownStation = sections.findSectionByDownStation(stationId).map(Section::getUpStation);
         }
 
         sections.deleteSectionByStationId(stationId);
