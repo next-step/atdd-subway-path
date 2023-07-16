@@ -80,7 +80,7 @@ public class Line {
     }
 
     public void deleteSection(Station station) {
-        sections.possibleToDeleteSection();
+        sections.possibleToDeleteSection(station);
 
         Optional<Station> maybeNextUpStation = Optional.empty();
         Optional<Station> maybeNextDownStation = Optional.empty();

@@ -143,10 +143,18 @@ public class Sections {
         return findSameUpStationSection(stationId).isPresent();
     }
 
-    public void possibleToDeleteSection() {
+    public void possibleToDeleteSection(Station station) {
         if (hasOneSection()) {
             throw new InvalidSectionDeleteException(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_SECTION_CANNOT_DELETED);
         }
+
+        if (!isStationOnSections(station)) {
+            throw new SubwayException(ErrorCode.STATION_NOT_ON_SECTIONS);
+        }
+    }
+
+    private boolean isStationOnSections(Station station) {
+        return sections.stream().anyMatch(section -> section.containStation(station.getId()));
     }
 
     public void deleteSectionByStationId(Long stationId) {
@@ -159,8 +167,6 @@ public class Sections {
             this.sections.add(newSection);
         } else if (relatedSections.size() == 1) {
             this.sections.remove(relatedSections.get(0));
-        } else {
-            throw new SubwayException(ErrorCode.STATION_NOT_ON_SECTIONS);
         }
     }
 

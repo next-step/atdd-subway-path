@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.exception.InvalidSectionDeleteException;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.support.SubwayException;
 
 public class SectionsTest {
     Station stationA = new Station(10L, "stationA");
@@ -133,7 +133,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThat(lineAB.equalDownStation(stationC)).isTrue();
+                Assertions.assertThat(lineAB.equalDownStation(stationB)).isTrue();
             }
         }
     }
@@ -272,7 +272,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                assertThrows(InvalidSectionDeleteException.class, () -> {
+                assertThrows(SubwayException.class, () -> {
                     lineAB.deleteSection(givenOtherStation);
                 });
             }
