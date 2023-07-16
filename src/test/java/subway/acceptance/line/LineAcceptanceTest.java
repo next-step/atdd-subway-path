@@ -4,17 +4,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
 import subway.acceptance.AcceptanceTest;
 import subway.acceptance.station.StationSteps;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -61,10 +58,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         var retrieveLineResponse = LineSteps.노선_목록_조회_API();
-        List<String> stations = retrieveLineResponse.jsonPath().getList("name", String.class);
+        List<String> lineNames = retrieveLineResponse.jsonPath().getList("name", String.class);
 
         // then
-        stations.forEach(station -> assertThat(station).containsAnyOf("1호선", "2호선"));
+        assertThat(lineNames).containsExactlyInAnyOrder("1호선", "2호선");
+
 
     }
 
