@@ -74,7 +74,7 @@ class LineTest {
 
             // then
             Assertions.assertThrows(InvalidSectionDeleteException.class, () -> {
-                lineAB.deleteSection(stationB.getId());
+                lineAB.deleteSection(stationB);
             });
         }
     }
@@ -120,11 +120,11 @@ class LineTest {
             @Test
             void 상행_종점역이_변경된다() {
                 // when
-                lineAB.deleteSection(stationA.getId());
+                lineAB.deleteSection(stationA);
 
                 // when
-                assertThat(lineAB.equalUpStation(stationB.getId()));
-                assertThat(lineAB.equalDownStation(stationC.getId()));
+                assertThat(lineAB.equalUpStation(stationB));
+                assertThat(lineAB.equalDownStation(stationC));
             }
         }
 
@@ -134,11 +134,11 @@ class LineTest {
             @Test
             void 하행_종점역이_변경된다() {
                 // when
-                lineAB.deleteSection(stationC.getId());
+                lineAB.deleteSection(stationC);
 
                 // when
-                assertThat(lineAB.equalUpStation(stationA.getId())).isTrue();
-                assertThat(lineAB.equalDownStation(stationB.getId())).isTrue();
+                assertThat(lineAB.equalUpStation(stationA)).isTrue();
+                assertThat(lineAB.equalDownStation(stationB)).isTrue();
             }
         }
     }

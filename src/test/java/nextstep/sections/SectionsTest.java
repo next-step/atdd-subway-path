@@ -69,7 +69,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThat(lineAB.equalUpStation(stationC.getId())).isTrue();
+                Assertions.assertThat(lineAB.equalUpStation(stationC)).isTrue();
             }
         }
 
@@ -92,7 +92,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThat(lineAB.equalDownStation(stationC.getId())).isTrue();
+                Assertions.assertThat(lineAB.equalDownStation(stationC)).isTrue();
             }
         }
     }
@@ -133,7 +133,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThat(lineAB.equalDownStation(stationC.getId())).isTrue();
+                Assertions.assertThat(lineAB.equalDownStation(stationC)).isTrue();
             }
         }
     }
@@ -226,7 +226,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                lineAB.deleteSection(stationB.getId());
+                lineAB.deleteSection(stationB);
 
                 Assertions.assertThat(lineAB.getSections().allDistance()).isEqualTo(15);
             }
@@ -241,7 +241,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                lineAB.deleteSection(stationA.getId());
+                lineAB.deleteSection(stationA);
 
                 Assertions.assertThat(lineAB.getSections().hasOneSection()).isTrue();
             }
@@ -256,7 +256,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                lineAB.deleteSection(stationC.getId());
+                lineAB.deleteSection(stationC);
 
                 Assertions.assertThat(lineAB.getSections().hasOneSection()).isTrue();
             }
@@ -273,7 +273,7 @@ public class SectionsTest {
                 lineAB.addSection(givenAddSection);
 
                 assertThrows(InvalidSectionDeleteException.class, () -> {
-                    lineAB.deleteSection(givenOtherStation.getId());
+                    lineAB.deleteSection(givenOtherStation);
                 });
             }
         }

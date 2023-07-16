@@ -79,33 +79,35 @@ public class Line {
         sections.appendSection(section);
     }
 
-    public void deleteSection(Long stationId) {
+    public void deleteSection(Station station) {
         sections.possibleToDeleteSection();
 
-        Optional<Station> nextUpStation = Optional.empty();
-        Optional<Station> nextDownStation = Optional.empty();
+        Optional<Station> maybeNextUpStation = Optional.empty();
+        Optional<Station> maybeNextDownStation = Optional.empty();
 
         // 상행 종점역 제거시
-        if (equalUpStation(stationId)) {
-            nextUpStation = sections.findSectionByUpStation(stationId).map(Section::getDownStation);
+        if (equalUpStation(station)) {
+            maybeNextUpStation = sections.findSectionByUpStation(station.getId())
+                                         .map(Section::getDownStation);
         }
 
-        if (equalDownStation(stationId)) {
-            nextDownStation = sections.findSectionByDownStation(stationId).map(Section::getUpStation);
+        if (equalDownStation(station)) {
+            maybeNextDownStation = sections.findSectionByDownStation(station.getId())
+                                           .map(Section::getUpStation);
         }
 
-        sections.deleteSectionByStationId(stationId);
+        sections.deleteSectionByStationId(station.getId());
 
-        nextUpStation.ifPresent(station -> this.upStation = station);
-        nextDownStation.ifPresent(station -> this.downStation = station);
+        maybeNextUpStation.ifPresent(nextUpStation -> this.upStation = nextUpStation);
+        maybeNextDownStation.ifPresent(nextDownStation -> this.downStation = nextDownStation);
     }
 
-    public boolean equalUpStation(Long stationId) {
-        return Objects.equals(upStation.getId(), stationId);
+    public boolean equalUpStation(Station station) {
+        return Objects.equals(upStation, station);
     }
 
-    public boolean equalDownStation(Long stationId) {
-        return Objects.equals(downStation.getId(), stationId);
+    public boolean equalDownStation(Station station) {
+        return Objects.equals(downStation, station);
     }
 
     public List<Section> orderedSections() {
