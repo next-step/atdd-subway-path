@@ -72,7 +72,9 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(Long id, Station downStreamTerminusStation) {
+    public void deleteSection(Long id, Long stationId) {
+        Station downStreamTerminusStation = stationRepository.findById(stationId)
+                .orElseThrow(StationNotFoundException::new);
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         line.deleteStation(downStreamTerminusStation);
     }

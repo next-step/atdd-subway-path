@@ -2,8 +2,6 @@ package nextstep.subway.line;
 
 import java.net.URI;
 import java.util.List;
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     private final LineService lineService;
-    private final StationService stationService;
 
-    public LineController(LineService lineService, StationService stationService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.stationService = stationService;
     }
 
     @PostMapping("/lines")
@@ -65,8 +61,7 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, Long stationId) {
-        Station downStreamTerminusStation = stationService.findStation(stationId);
-        lineService.deleteSection(id, downStreamTerminusStation);
+        lineService.deleteSection(id, stationId);
         return ResponseEntity.noContent().build();
     }
 }

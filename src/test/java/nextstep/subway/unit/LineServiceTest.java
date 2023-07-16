@@ -192,7 +192,7 @@ public class LineServiceTest {
                 new Line("신분당선", "#D31145", sections));
 
         // when
-        lineService.deleteSection(line.getId(), pangyoStation);
+        lineService.deleteSection(line.getId(), pangyoStation.getId());
 
         // then
         Line savedLine = lineRepository.findById(line.getId()).orElseThrow(LineNotFoundException::new);

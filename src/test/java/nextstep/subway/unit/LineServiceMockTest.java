@@ -213,10 +213,11 @@ public class LineServiceMockTest {
         line.addSection(section);
         section = new Section(2L, yangjaeStation, pangyoStation, 10);
         line.addSection(section);
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(pangyoStation));
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        lineService.deleteSection(1L, pangyoStation);
+        lineService.deleteSection(1L, 1L);
 
         // then
         boolean exists = line.getSections().stream()
@@ -226,12 +227,25 @@ public class LineServiceMockTest {
 
     @DisplayName("마지막 하행스테이션으로 세션을 삭제 요청시 대상 라인이 존재하지 않으면 예외를 던진다")
     @Test
-    void deleteSectionFailed() {
+    void deleteSectionFailedByLineNotExist() {
         // given
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station("강남역")));
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when,then
-        assertThatThrownBy(() -> lineService.deleteSection(1L, new Station())).isInstanceOf(
+        assertThatThrownBy(() -> lineService.deleteSection(1L,1L)).isInstanceOf(
+                LineNotFoundException.class);
+    }
+
+    @DisplayName("마지막 하행스테이션으로 세션을 삭제 요청시 대상 스테이션이 존재하지 않으면 예외를 던진다")
+    @Test
+    void deleteSectionFailedByStationNotExist() {
+        // given
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station("강남역")));
+        given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when,then
+        assertThatThrownBy(() -> lineService.deleteSection(1L,1L)).isInstanceOf(
                 LineNotFoundException.class);
     }
 }
