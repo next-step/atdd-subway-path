@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SameOriginPathException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -24,6 +25,7 @@ public class PathFinder {
     }
 
     public PathResponse find(Long sourceId, Long targetId) {
+        validate(sourceId, targetId);
         List<Section> sections = sectionRepository.findAll();
         Set<Station> stations = getStationSet(sections);
         Station sourceStation = findStation(sourceId, stations);
@@ -35,6 +37,12 @@ public class PathFinder {
         double weight = getWeight(graph, sourceStation, targetStation);
 
         return new PathResponse(shortestPath, (int) weight);
+    }
+
+    private void validate(Long sourceId, Long targetId) {
+        if (sourceId.equals(targetId)) {
+            throw new SameOriginPathException();
+        }
     }
 
     private double getWeight(WeightedMultigraph<Station, DefaultWeightedEdge> graph,
