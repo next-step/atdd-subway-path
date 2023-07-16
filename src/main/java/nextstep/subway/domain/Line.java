@@ -1,10 +1,9 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.domain.exception.AlreadyRegisteredSectionDownStationException;
+import nextstep.subway.domain.exception.CanNotAddSectionException;
 import nextstep.subway.domain.exception.NotEnoughSectionException;
 import nextstep.subway.domain.exception.NotMatchesSectionStationException;
 import nextstep.subway.domain.vo.Sections;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.util.List;
@@ -39,40 +38,34 @@ public class Line {
         this.distance = distance;
     }
 
-    public Station getUpStation() {
-        return this.sections.getUpStation();
+    public Station getStartOfLine() {
+        return this.sections.getStartOfLine();
     }
 
-    public Station getDownStation() {
-        return this.sections.getDownStation();
+    public Station getEndOfLine() {
+        return this.sections.getEndOfLine();
     }
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public void expandLine(Section newSection) {
-        if (this.sections.isNotEndWith(newSection.getUpStation())) {
-            throw new NotMatchesSectionStationException(this.getDownStation(), newSection.getUpStation());
-        }
-        if (this.sections.contains(newSection.getDownStation())) {
-            throw new AlreadyRegisteredSectionDownStationException(newSection.getDownStation());
+    public void add(Section newSection) {
+        if (this.sections.canNotAdd(newSection)) {
+            throw new CanNotAddSectionException(newSection);
         }
 
         this.sections.add(newSection);
         this.distance = sections.sumOfDistance();
     }
 
-    public void shorten(Station targetStation) {
+    public void remove(Station targetStation) {
         if (this.sections.isMinimumSize()) {
             throw new NotEnoughSectionException();
         }
-        if (this.sections.isNotEndWith(targetStation)) {
-            throw new NotMatchesSectionStationException(this.getDownStation(), targetStation);
-        }
 
-        this.sections.pop();
-        this.distance = sections.sumOfDistance();
+        this.sections.remove(targetStation);
+        this.distance = this.sections.sumOfDistance();
     }
 
     public long getDistance() {
@@ -94,13 +87,13 @@ public class Line {
         }
 
         public Builder name(String name) {
-            assert StringUtils.hasText(name);
+            Objects.requireNonNull(name);
             this.name = name;
             return this;
         }
 
         public Builder color(String color) {
-            assert StringUtils.hasText(color);
+            Objects.requireNonNull(color);
             this.color = color;
             return this;
         }

@@ -187,7 +187,7 @@ class LineServiceMockTest {
         lineService.addSection(1L, sectionAddCommand);
 
         // then
-        then(line).should().expandLine(sectionArgumentCaptor.capture());
+        then(line).should().add(sectionArgumentCaptor.capture());
         Section newSection = sectionArgumentCaptor.getValue();
         Assertions.assertEquals(downStation, newSection.getUpStation());
         Assertions.assertEquals(newStation, newSection.getDownStation());
@@ -214,15 +214,14 @@ class LineServiceMockTest {
         lineService.deleteStationAtLine(1L, 1L);
 
         // then
-        then(line).should().shorten(targetStation);
+        then(line).should().remove(targetStation);
     }
 
     private Line getSavedLine(Station upStation, Station downStation) {
         Line line = mock(Line.class);
         given(line.getName()).willReturn("2호선");
         given(line.getColor()).willReturn("bg-green-300");
-        given(line.getUpStation()).willReturn(upStation);
-        given(line.getDownStation()).willReturn(downStation);
+        given(line.getStations()).willReturn(List.of(upStation, downStation));
         return line;
     }
 

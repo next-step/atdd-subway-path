@@ -95,7 +95,7 @@ public class LineService {
         Station downStation = stationRepository.getReferenceById(sectionAddCommand.getDownStationId());
 
         Section savedSection = Section.of(upStation, downStation, sectionAddCommand.getDistance());
-        line.expandLine(savedSection);
+        line.add(savedSection);
     }
 
     @Transactional
@@ -104,6 +104,6 @@ public class LineService {
 
         Station targetStation = stationRepository.getReferenceById(stationId);
 
-        line.shorten(targetStation);
+        line.remove(targetStation);
     }
 }

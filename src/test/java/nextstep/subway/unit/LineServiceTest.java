@@ -43,7 +43,8 @@ class LineServiceTest {
         LineResponse response = lineService.saveLine(lineCreateRequest);
 
         // then
-        verifyLineResponse(response, "2호선", "bg-green-300", "강남역", "언주역", 10L);
+        verifyLineResponse(response, "2호선", "bg-green-300", 10L);
+        verifyStationResponse(response, "강남역", "언주역");
     }
 
     @Test
@@ -58,7 +59,9 @@ class LineServiceTest {
 
         // then
         assertThat(lines).hasSize(1);
-        verifyLineResponse(lines.get(0), "2호선", "bg-green-300", "강남역", "언주역", 10L);
+        LineResponse response = lines.get(0);
+        verifyLineResponse(response, "2호선", "bg-green-300", 10L);
+        verifyStationResponse(response, "강남역", "언주역");
     }
 
     @Test
@@ -72,7 +75,8 @@ class LineServiceTest {
         LineResponse response = lineService.findLineById(line.getId());
 
         // then
-        verifyLineResponse(response, "2호선", "bg-green-300", "강남역", "언주역", 10L);
+        verifyLineResponse(response, "2호선", "bg-green-300", 10L);
+        verifyStationResponse(response, "강남역", "언주역");
     }
 
     @Test
@@ -94,7 +98,8 @@ class LineServiceTest {
 
         // then
         LineResponse response = lineService.findLineById(line.getId());
-        verifyLineResponse(response, "3호선", "bg-red-700", "강남역", "언주역", 10L);
+        verifyLineResponse(response, "3호선", "bg-red-700", 10L);
+        verifyStationResponse(response, "강남역", "언주역");
     }
 
     @Test
@@ -127,7 +132,8 @@ class LineServiceTest {
 
         // then
         LineResponse response = lineService.findLineById(line.getId());
-        verifyLineResponse(response, "2호선", "bg-green-300", "강남역", "길음역", 13L);
+        verifyLineResponse(response, "2호선", "bg-green-300", 13L);
+        verifyStationResponse(response, "강남역", "언주역", "길음역");
     }
 
     @Test
@@ -143,14 +149,16 @@ class LineServiceTest {
         lineService.addSection(line.getId(), sectionAddCommand);
 
         LineResponse savedLineResponse = lineService.findLineById(line.getId());
-        verifyLineResponse(savedLineResponse, "2호선", "bg-green-300", "강남역", "길음역", 13L);
+        verifyLineResponse(savedLineResponse, "2호선", "bg-green-300", 13L);
+        verifyStationResponse(savedLineResponse, "강남역", "언주역", "길음역");
 
         // when
         lineService.deleteStationAtLine(line.getId(), newStation.getId());
 
         // then
         LineResponse deletedStationResponse = lineService.findLineById(line.getId());
-        verifyLineResponse(deletedStationResponse, "2호선", "bg-green-300", "강남역", "언주역", 10L);
+        verifyLineResponse(deletedStationResponse, "2호선", "bg-green-300", 10L);
+        verifyStationResponse(deletedStationResponse, "강남역", "언주역");
     }
 
 
@@ -169,14 +177,16 @@ class LineServiceTest {
         return stationRepository.save(Station.create(() -> name));
     }
 
-    private void verifyLineResponse(LineResponse response, String name, String color, String upStationName, String downStationName, long distance) {
+    private void verifyLineResponse(LineResponse response, String name, String color, long distance) {
         Assertions.assertEquals(name, response.getName());
         Assertions.assertEquals(color, response.getColor());
         Assertions.assertEquals(distance, response.getDistance());
+    }
 
+    private void verifyStationResponse(LineResponse response, String... stationNames) {
         List<StationResponse> stations = response.getStations();
-        assertThat(stations).hasSize(2)
+        assertThat(stations).hasSize(stationNames.length)
                 .map(StationResponse::getName)
-                .containsExactly(upStationName, downStationName);
+                .containsExactly(stationNames);
     }
 }

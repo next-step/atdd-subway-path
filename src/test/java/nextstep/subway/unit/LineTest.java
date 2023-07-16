@@ -41,11 +41,11 @@ class LineTest {
         Section section = Section.of(downStation, newSectionStation, 3L);
 
         // when
-        Assertions.assertDoesNotThrow(() -> line.expandLine(section));
+        Assertions.assertDoesNotThrow(() -> line.add(section));
 
         // then
-        Assertions.assertEquals(upStation, line.getUpStation());
-        Assertions.assertEquals(newSectionStation, line.getDownStation());
+        Assertions.assertEquals(upStation, line.getStartOfLine());
+        Assertions.assertEquals(newSectionStation, line.getEndOfLine());
         Assertions.assertEquals(13L, line.getDistance());
     }
 
@@ -73,15 +73,14 @@ class LineTest {
         Station newSectionStation = createStation("성수역", 3L);
 
         Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-        Section section = Section.of(downStation, newSectionStation, 3L);
-        line.expandLine(section);
+        line.add(Section.of(downStation, newSectionStation, 3L));
 
         // when
-        line.shorten(newSectionStation);
+        line.remove(newSectionStation);
 
         // then
-        Assertions.assertEquals(upStation, line.getUpStation());
-        Assertions.assertEquals(downStation, line.getDownStation());
+        Assertions.assertEquals(upStation, line.getStartOfLine());
+        Assertions.assertEquals(downStation, line.getEndOfLine());
         Assertions.assertEquals(10L, line.getDistance());
     }
 

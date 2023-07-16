@@ -22,7 +22,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
     class 구간_등록_성공 {
 
         /**
-         * TODO
+         *
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
@@ -56,7 +56,6 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         }
 
         /**
-         * TODO
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
@@ -145,7 +144,6 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         }
 
         /**
-         * TODO
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
@@ -171,7 +169,6 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         }
 
         /**
-         * TODO
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
@@ -194,7 +191,6 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         }
 
         /**
-         * TODO
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
@@ -260,7 +256,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
 
     @Nested
     class 구간_제거_실패 {
-        /**
+        /** TODO
          * 지하철노선 구간 제거
          * Given 지하철 노선을 생성하고 생성한 지하철 노선에 추가로 구간을 등록한뒤
          * When 중간에 있는 역을 제거하려 하면
@@ -303,7 +299,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
             verifyResponseStatus(sectionDeletedResponse, HttpStatus.BAD_REQUEST);
         }
 
-        /**
+        /** TODO
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고 구간을 추가 한뒤
          * When 지하철 노선 구간을 제거하려 할때 요청한 역이 노선의 하행역 아니면 역이면
