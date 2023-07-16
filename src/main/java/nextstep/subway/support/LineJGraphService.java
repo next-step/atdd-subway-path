@@ -1,7 +1,6 @@
 package nextstep.subway.support;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -17,38 +16,27 @@ public class LineJGraphService implements LineGraphService {
 
     @Override
     public List<Station> orderedStations(final LineSections sections) {
-        final var firstStationNode = sections.getFirstStation().getId();
-        final var lastStationNode = sections.getLastStation().getId();
+        final var firstStationNode = sections.getFirstStation();
+        final var lastStationNode = sections.getLastStation();
 
         final var dijkstraShortestPath = new DijkstraShortestPath<>(initGraph(sections));
-        final var nodes = dijkstraShortestPath.getPath(firstStationNode, lastStationNode).getVertexList();
-
-        return mapToStations(sections, nodes);
+        return dijkstraShortestPath.getPath(firstStationNode, lastStationNode).getVertexList();
     }
 
-    private WeightedMultigraph<Long, DefaultWeightedEdge> initGraph(final LineSections sections) {
-        final var graph = new WeightedMultigraph<Long, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+    private WeightedMultigraph<Station, DefaultWeightedEdge> initGraph(final LineSections sections) {
+        final var graph = new WeightedMultigraph<Station, DefaultWeightedEdge>(DefaultWeightedEdge.class);
 
         for (final var station : sections.getStations()) {
-            graph.addVertex(station.getId());
+            graph.addVertex(station);
         }
 
         for (final var section : sections.getValue()) {
             graph.setEdgeWeight(
-                    graph.addEdge(section.getUpStation().getId(), section.getDownStation().getId()),
+                    graph.addEdge(section.getUpStation(), section.getDownStation()),
                     section.getDistance()
             );
         }
 
         return graph;
-    }
-
-    private List<Station> mapToStations(final LineSections sections, final List<Long> nodes) {
-        final var stations = sections.getStations().stream()
-                .collect(Collectors.toUnmodifiableMap(Station::getId, it -> it));
-
-        return nodes.stream()
-                .map(stations::get)
-                .collect(Collectors.toUnmodifiableList());
     }
 }
