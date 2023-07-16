@@ -73,40 +73,60 @@ public class LineSections {
 
     public void removeSectionByStation(Station targetStation) {
         validStationsCountIsOverMinimalSectionSize();
-//        validRemoveStationIsDownStationInExistLine(targetStation);
 
-        // TODO : week2-2 mark
         List<Station> stations = getStations();
-        int findIndex = IntStream.range(0, stations.size())
+        int findIndex = findStationIndex(targetStation, stations);
+
+        if (isMiddleStation(stations, findIndex)) {
+            removeMiddleStation(targetStation);
+        }
+        if (isFirstStation(findIndex)) {
+            removeStationInSectionWithUpStation(targetStation);
+        }
+        if (isLastStation(stations, findIndex)) {
+            removeStationInSectionWithDownStation(targetStation);
+        }
+    }
+
+    private int findStationIndex(Station targetStation, List<Station> stations) {
+        return IntStream.range(0, stations.size())
                 .filter(idx -> targetStation.equals(stations.get(idx)))
                 .findFirst()
-                .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제 할 역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.STATION_NOT_FOUND_IN_SECTION));
+    }
 
-        // 중간인 경우
-        if (findIndex != 0 && findIndex != stations.size() - 1) {
-            Section upSection = findSectionWithDownStationByStation(targetStation)
-                    .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 상행 구간을 찾을 수 없습니다."));
-            Section downSection = findSectionWithUpStationByStation(targetStation)
-                    .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 하행 구간을 찾을 수 없습니다."));
+    private boolean isMiddleStation(List<Station> stations, int findIndex) {
+        return findIndex != 0 && findIndex != stations.size() - 1;
+    }
 
-            upSection.pullDownStationFromUpStationOfTargetSection(downSection);
-            remove(downSection);
-        }
+    private boolean isFirstStation(int findIndex) {
+        return findIndex == 0;
+    }
 
-        // 맨 앞인 경우
-        if (findIndex == 0) {
-            Section section = findSectionWithUpStationByStation(targetStation)
-                    .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 상행 구간을 찾을 수 없습니다."));
-            remove(section);
-        }
+    private boolean isLastStation(List<Station> stations, int findIndex) {
+        return findIndex == stations.size() - 1;
+    }
 
-        // 맨 끝인 경우
-        if (findIndex == stations.size() - 1) {
-            Section section = findSectionWithDownStationByStation(targetStation)
-                    .orElseThrow(() -> new SubwayNotFoundException(9999L, "삭제를 위한 하행 구간을 찾을 수 없습니다."));
-            remove(section);
-        }
+    private void removeMiddleStation(Station targetStation) {
+        Section upSection = findSectionWithDownStationByStation(targetStation)
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_DOWN_STATION_IN_SECTION));
+        Section downSection = findSectionWithUpStationByStation(targetStation)
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_UP_STATION_IN_SECTION));
 
+        upSection.pullDownStationFromUpStationOfTargetSection(downSection);
+        remove(downSection);
+    }
+
+    private void removeStationInSectionWithUpStation(Station targetStation) {
+        Section section = findSectionWithUpStationByStation(targetStation)
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_UP_STATION_IN_SECTION));
+        remove(section);
+    }
+
+    private void removeStationInSectionWithDownStation(Station targetStation) {
+        Section section = findSectionWithDownStationByStation(targetStation)
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_DOWN_STATION_IN_SECTION));
+        remove(section);
     }
 
     private void remove(Section section) {
@@ -166,6 +186,7 @@ public class LineSections {
             existSection.changeUpStation(newSection);
         }
     }
+
     private Optional<Section> findSectionWithUpStationByStation(Station upStation) {
         return this.sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))
@@ -177,19 +198,6 @@ public class LineSections {
                 .filter(section -> section.getDownStation().equals(downStation))
                 .findAny();
     }
-
-//    private Optional<Section> findSectionWithUpStationByStation(Station downStation) {
-//        return this.sections.stream()
-//                .filter(section -> section.getUpStation().equals(downStation))
-//                .findAny();
-//    }
-//
-//    private Optional<Section> findSectionWithDownStationByStation(Station upStation) {
-//        return this.sections.stream()
-//                .filter(section -> section.getDownStation().equals(upStation))
-//                .findAny();
-//    }
-
 
     private Optional<Station> findAnyStationInNewSectionIsStationInExistLine(Section section, List<Station> stationsInLine) {
         return stationsInLine.stream()
@@ -214,23 +222,15 @@ public class LineSections {
                 .filter(station -> station.equals(section.getDownStation()))
                 .findAny();
         if (findUpStation.isPresent() && findDownStation.isPresent()) {
-            throw new SubwayBadRequestException(SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE_MESSAGE.getCode(),
-                    SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE_MESSAGE.getFormatMessage(section.getUpStation().getName(), section.getDownStation().getName()));
+            throw new SubwayBadRequestException(SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE.getCode(),
+                    SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE.getFormatMessage(section.getUpStation().getName(), section.getDownStation().getName()));
         }
     }
 
     private void validStationsCountIsOverMinimalSectionSize() {
         if (this.getSectionsCount() < MINIMAL_SECTION_SIZE) {
-            throw new SubwayBadRequestException(SubwayMessage.STATION_DELETE_MINIMAL_VALID_MESSAGE.getCode(),
-                    SubwayMessage.STATION_DELETE_MINIMAL_VALID_MESSAGE.getFormatMessage(MINIMAL_SECTION_SIZE));
+            throw new SubwayBadRequestException(SubwayMessage.STATION_DELETE_MINIMAL_VALID.getCode(),
+                    SubwayMessage.STATION_DELETE_MINIMAL_VALID.getFormatMessage(MINIMAL_SECTION_SIZE));
         }
     }
-//    private void validRemoveStationIsDownStationInExistLine(Station targetStation) {
-//        Section lastSection = getLastSection();
-//        Station downStation = lastSection.getDownStation();
-//        if (!downStation.equals(targetStation)) {
-//            throw new SubwayBadRequestException(SubwayMessage.SECTION_DELETE_LAST_STATION_VALID_MESSAGE);
-//        }
-//    }
-
 }
