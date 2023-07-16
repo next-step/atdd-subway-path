@@ -32,22 +32,6 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public boolean isLastDownStation(Long stationId) {
-        if (CollectionUtils.isEmpty(this.sections)) {
-            return false;
-        }
-
-        return getLastSection().equalsDownStation(stationId);
-    }
-
-    public boolean isFirstUpStation(Long stationId) {
-        if (CollectionUtils.isEmpty(this.sections)) {
-            return false;
-        }
-
-        return getLastSection().equalsDownStation(stationId);
-    }
-
     public boolean hasOneSection() {
         if (CollectionUtils.isEmpty(this.sections)) {
             return false;
@@ -190,10 +174,6 @@ public class Sections {
         return sections.stream()
                        .filter(section -> section.containStation(stationId))
                        .collect(Collectors.toList());
-    }
-
-    private Section getLastSection() {
-        return sections.get(sections.size()-1);
     }
 
     public List<Section> toOrderedList(Station lastUpStation) {
