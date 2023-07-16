@@ -1,9 +1,11 @@
 package nextstep.subway.unit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.line.domain.Line;
@@ -73,5 +75,84 @@ class LineTest {
         Assertions.assertThrows(InvalidSectionDeleteException.class, () -> {
             lineAB.deleteSection(stationB.getId());
         });
+    }
+
+    @Nested
+    class Given_노선에_구간이_2개이상일때 {
+
+        @Nested
+        class When_상행_종점역을_제거하면 {
+            @Test
+            void 상행_종점역이_변경된다() {
+                // given
+                Station stationA = createStation(1L, "stationA");
+                Station stationB = createStation(2L, "stationB");
+                Station stationC = createStation(3L, "stationC");
+
+                firstSection = new Section(1L, lineAB, stationA, stationB, 10);
+
+                List<Section> sectionList = new ArrayList<>();
+                sectionList.add(firstSection);
+
+                Sections sections = new Sections(sectionList);
+
+                lineAB = Line.builder()
+                             .id(1L)
+                             .color("y")
+                             .upStation(stationA)
+                             .downStation(stationB)
+                             .sections(sections)
+                             .build();
+
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                // when
+                lineAB.deleteSection(stationA.getId());
+
+                // when
+                org.assertj.core.api.Assertions.assertThat(lineAB.equalUpStation(stationB.getId()));
+                org.assertj.core.api.Assertions.assertThat(lineAB.equalDownStation(stationC.getId()));
+            }
+        }
+
+        @Nested
+        class When_하행_종점역을_제거하면 {
+
+            @Test
+            void 하행_종점역이_변경된다() {
+                // given
+                Station stationA = createStation(1L, "stationA");
+                Station stationB = createStation(2L, "stationB");
+                Station stationC = createStation(3L, "stationC");
+
+                firstSection = new Section(1L, lineAB, stationA, stationB, 10);
+
+                List<Section> sectionList = new ArrayList<>();
+                sectionList.add(firstSection);
+
+                Sections sections = new Sections(sectionList);
+
+                lineAB = Line.builder()
+                             .id(1L)
+                             .color("y")
+                             .upStation(stationA)
+                             .downStation(stationB)
+                             .sections(sections)
+                             .build();
+
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                // when
+                lineAB.deleteSection(stationC.getId());
+
+                // when
+                org.assertj.core.api.Assertions.assertThat(lineAB.equalUpStation(stationA.getId()));
+                org.assertj.core.api.Assertions.assertThat(lineAB.equalDownStation(stationB.getId()));
+            }
+        }
     }
 }
