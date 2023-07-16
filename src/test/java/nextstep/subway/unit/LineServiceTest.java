@@ -30,12 +30,14 @@ public class LineServiceTest {
 
     private Station 강남역;
     private Station 양재역;
+    private Station 정자역;
     private Line 신분당선;
 
     @BeforeEach
     public void setUp() {
         강남역 = stationRepository.save(new Station("강남역"));
         양재역 = stationRepository.save(new Station("양재역"));
+        정자역 = stationRepository.save(new Station("정자역"));
         신분당선 = lineRepository.save(new Line("신분당선", "bg-red-600"));
     }
 
@@ -161,11 +163,12 @@ public class LineServiceTest {
     @DisplayName("지하철 노선에 지하철 구간을 제거한다")
     void deleteSection() {
         lineService.addSection(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 10));
+        lineService.addSection(신분당선.getId(), new SectionRequest(양재역.getId(), 정자역.getId(), 10));
 
         // when
         lineService.deleteSection(신분당선.getId(), 양재역.getId());
 
         // then
-        assertThat(신분당선.getSectionsSize()).isEqualTo(0);
+        assertThat(신분당선.getSectionsSize()).isEqualTo(1);
     }
 }

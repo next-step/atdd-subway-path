@@ -5,7 +5,6 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,6 +38,8 @@ public class LineServiceMockTest {
     private Long 독바위역 = 5L;
     private Long 신분당선 = 1L;
 
+    private Line line;
+
     // given
     @BeforeEach
     void setUp() {
@@ -50,7 +51,7 @@ public class LineServiceMockTest {
 
         lineService = new LineService(lineRepository, stationService);
 
-        Line line = new Line("line", "bg-red-600");
+        line = new Line("line", "bg-red-600");
         when(lineRepository.findById(신분당선)).thenReturn(Optional.of(line));
     }
 
@@ -147,21 +148,14 @@ public class LineServiceMockTest {
     @Test
     @DisplayName("지하철 노선에 지하철 구간을 제거한다")
     void deleteSection() {
-        // given
-        Line line = new Line("line", "bg-red-600");
-        Station downStation = new Station("또다른지하철역");
-        line.addSection(new Section(line, new Station("지하철역"), downStation, 10));
-
-        long lineId = 1L;
-        long downStationId = 2L;
-        when(lineRepository.findById(lineId)).thenReturn(Optional.of(line));
-        when(stationService.findById(downStationId)).thenReturn(downStation);
+        lineService.addSection(신분당선, new SectionRequest(강남역, 양재역, 10));
+        lineService.addSection(신분당선, new SectionRequest(양재역, 다른_지하철역, 10));
 
         // when
         LineService lineService = new LineService(lineRepository, stationService);
-        lineService.deleteSection(lineId, downStationId);
+        lineService.deleteSection(신분당선, 다른_지하철역);
 
         // then
-        Assertions.assertThat(line.getSectionsSize()).isEqualTo(0);
+        Assertions.assertThat(line.getSectionsSize()).isEqualTo(1);
     }
 }

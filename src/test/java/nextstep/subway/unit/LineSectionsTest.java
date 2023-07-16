@@ -156,15 +156,82 @@ public class LineSectionsTest {
     }
 
     @Test
-    @DisplayName("지하철 노선 구간에 구간을 제거한다")
-    void removeSection() {
+    @DisplayName("지하철 노선 마지막 구간을 제거한다")
+    void removeLastLineSection() {
+        // given
+        Station 다른_지하철역 = new Station("다른지하철역");
+        지하철노선_구간.addSection(new Section(신분당선, 지하철역, 또다른_지하철역, 10));
+        지하철노선_구간.addSection(new Section(신분당선, 또다른_지하철역, 다른_지하철역, 10));
+
+        // when
+        지하철노선_구간.removeStation(다른_지하철역);
+
+        // then
+        assertThat(지하철노선_구간.size()).isEqualTo(1);
+    }
+
+    @DisplayName("지하철 노선에 중간에 위치한 구간을 제거한다")
+    @Test
+    void removeMiddleLineSection() {
+        final int FIRST_SECTION_DISTANCE = 10;
+        final int SECOND_SECTION_DISTANCE = 10;
+
+
+        // given
+        Station 다른_지하철역 = new Station("다른지하철역");
+        지하철노선_구간.addSection(new Section(신분당선, 지하철역, 또다른_지하철역, FIRST_SECTION_DISTANCE));
+        지하철노선_구간.addSection(new Section(신분당선, 또다른_지하철역, 다른_지하철역, SECOND_SECTION_DISTANCE));
+
+        // when
+        지하철노선_구간.removeStation(또다른_지하철역);
+
+        // then
+        List<Station> stations = 지하철노선_구간.getStations();
+        assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
+                .containsExactly("지하철역", "다른지하철역");
+        assertThat(지하철노선_구간.getLineSectionsTotalDistance())
+                .isEqualTo(FIRST_SECTION_DISTANCE + SECOND_SECTION_DISTANCE);
+    }
+
+    @DisplayName("지하철 노선에 처음에 위치한 구간을 제거한다")
+    @Test
+    void removeFirstLineSection() {
+        // given
+        Station 다른_지하철역 = new Station("다른지하철역");
+        지하철노선_구간.addSection(new Section(신분당선, 지하철역, 또다른_지하철역, 10));
+        지하철노선_구간.addSection(new Section(신분당선, 또다른_지하철역, 다른_지하철역, 10));
+
+        // when
+        지하철노선_구간.removeStation(지하철역);
+
+        // then
+        List<Station> stations = 지하철노선_구간.getStations();
+        assertThat(stations.stream().map(Station::getName).collect(Collectors.toList()))
+                .containsExactly("또다른지하철역", "다른지하철역");
+    }
+
+    @DisplayName("구간이 하나인 지하철 노선에 구간을 제거할때 에러가 발생한다")
+    @Test
+    void removeOneLineSectionException() {
         // given
         지하철노선_구간.addSection(new Section(신분당선, 지하철역, 또다른_지하철역, 10));
 
-        // when
-        지하철노선_구간.removeLastStation();
+        // when, then
+        assertThatThrownBy(() -> 지하철노선_구간.removeStation(또다른_지하철역))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
 
-        // then
-        assertThat(지하철노선_구간.size()).isEqualTo(0);
+    @DisplayName("지하철 노선에 등록되지 않은 구간을 제거하면 에러가 발생한다")
+    @Test
+    void removeNonexistentLineSection() {
+        // given
+        Station 없는_지하철역 = new Station("없는지하철역");
+        Station 다른_지하철역 = new Station("다른지하철역");
+        지하철노선_구간.addSection(new Section(신분당선, 지하철역, 또다른_지하철역, 10));
+        지하철노선_구간.addSection(new Section(신분당선, 또다른_지하철역, 다른_지하철역, 10));
+
+        // when, then
+        assertThatThrownBy(() -> 지하철노선_구간.removeStation(없는_지하철역))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 }

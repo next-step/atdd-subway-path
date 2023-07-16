@@ -107,10 +107,6 @@ public class LineSections {
         }
     }
 
-    public void removeLastStation() {
-        lineSections.remove(lineSections.size() - 1);
-    }
-
     public List<Station> getStations() {
         Section currentSection = getUpStationSection();
 
@@ -147,7 +143,85 @@ public class LineSections {
         return lineSections.size();
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public void removeStation(Station removeStation) {
+        validateRemoveStation(removeStation);
+
+        if (!hasDownStationSection(removeStation)) {
+            removeFirstSection(removeStation);
+            return;
+        }
+
+        if (!hasUpStationSection(removeStation)) {
+            removeLastSection(removeStation);
+            return;
+        }
+
+        if (hasUpStationSection(removeStation) && hasDownStationSection(removeStation)) {
+            removeMiddleSection(removeStation);
+        }
+    }
+
+    private void removeMiddleSection(Station removeStation) {
+        Section frontSection = getSectionWithSameDownStation(removeStation);
+        Section rearSection = getSectionWithSameUpStation(removeStation);
+
+        Section mergeSection = new Section(line
+                , frontSection.getUpStation()
+                , rearSection.getDownStation()
+                , frontSection.getDistance() + rearSection.getDistance());
+
+        lineSections.remove(frontSection);
+        lineSections.remove(rearSection);
+        lineSections.add(mergeSection);
+    }
+
+    private Section getSectionWithSameDownStation(Station removeStation) {
+        return lineSections.stream()
+                .filter(section -> section.getDownStation().equals(removeStation))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private void removeFirstSection(Station removeStation) {
+        Section firstSection = getSectionWithSameUpStation(removeStation);
+        upStation = firstSection.getDownStation();
+        lineSections.remove(firstSection);
+    }
+
+    private Section getSectionWithSameUpStation(Station station) {
+        return lineSections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst().orElseThrow();
+    }
+
+    private void removeLastSection(Station removeStation) {
+        Section lastSection = getSectionWithSameDownStation(removeStation);
+        downStation = lastSection.getUpStation();
+        lineSections.remove(lastSection);
+    }
+
+    private boolean hasUpStationSection(Station station) {
+        return lineSections.stream()
+                .anyMatch(section -> section.getUpStation().equals(station));
+    }
+
+    private boolean hasDownStationSection(Station station) {
+        return lineSections.stream()
+                .anyMatch(section -> section.getDownStation().equals(station));
+    }
+
+    private void validateRemoveStation(Station removeStation) {
+        if (lineSections.size() == 1) {
+            throw new DataIntegrityViolationException("지하철 노선에 구간이 한개인 경우 삭제할 수 없습니다.");
+        }
+
+        if (!lineSections.stream().anyMatch(section ->
+                section.getUpStation().equals(removeStation) || section.getDownStation().equals(removeStation))) {
+            throw new DataIntegrityViolationException("지하철 노선에 등록되어 있지 않은 역입니다.");
+        }
+    }
+
+    public int getLineSectionsTotalDistance() {
+        return lineSections.stream().mapToInt(Section::getDistance).sum();
     }
 }
