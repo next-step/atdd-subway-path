@@ -8,6 +8,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.PathException;
+import nextstep.subway.exception.StationNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -72,5 +73,12 @@ public class PathFinderMockTest {
         assertThatThrownBy(() -> pathFinder.find(1L, 1L))
                 .isInstanceOf(PathException.class)
                 .hasMessage("출발역과 도착역이 같습니다.");
+    }
+
+    @Test
+    void 존재하지_않는_출발역인_경우() {
+        //then
+        assertThatThrownBy(() -> pathFinder.find(100_000_000L, 1L))
+                .isInstanceOf(StationNotFoundException.class);
     }
 }
