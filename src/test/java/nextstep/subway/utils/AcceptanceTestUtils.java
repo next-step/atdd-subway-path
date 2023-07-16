@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 
 import java.util.List;
+import java.util.Map;
 
 public class AcceptanceTestUtils {
 
@@ -62,6 +63,15 @@ public class AcceptanceTestUtils {
                 .given().log().all()
                 .pathParam("id", id)
                 .when().delete(path)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> get(String path, Map<String, Long> queryParams) {
+        return RestAssured
+                .given().log().all()
+                .queryParams(queryParams)
+                .when().get(path)
                 .then().log().all()
                 .extract();
     }

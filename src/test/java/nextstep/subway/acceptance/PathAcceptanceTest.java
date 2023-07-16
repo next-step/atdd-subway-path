@@ -1,11 +1,56 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.utils.AbstractAcceptanceTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DisplayName("지하철 경로 기능 인수 테스트")
 public class PathAcceptanceTest extends AbstractAcceptanceTest {
+
+    private String 교대역명 = "교대역";
+    private String 강남역명 = "강남역";
+    private String 양재역명 = "양재역명";
+    private String 남부터미널역명 = "남부터미널역";
+
+    private Long 교대역_id;
+    private Long 강남역_id;
+    private Long 양재역_id;
+    private Long 남부터미널역_id;
+
+    private Long 이호선_id;
+    private Long 신분당선_id;
+    private Long 삼호선_id;
+
+    /**
+     * 교대역  ---- *2호선* --- d:10 ------  강남역
+     * |                                    |
+     * *3호선*                            *신분당선*
+     * d:2                                 d:10
+     * |                                   |
+     * 남부터미널역  --- *3호선* -- d:3 --- 양재
+     */
+
+    @BeforeEach
+    public void setUp() {
+        교대역_id = StationSteps.지하철역_생성_요청(교대역명);
+        강남역_id = StationSteps.지하철역_생성_요청(강남역명);
+        양재역_id = StationSteps.지하철역_생성_요청(양재역명);
+        남부터미널역_id = StationSteps.지하철역_생성_요청(남부터미널역명);
+
+        이호선_id = LineSteps.지하철_노선_생성_요청("2호선", 교대역_id, 강남역_id, 10);
+        신분당선_id = LineSteps.지하철_노선_생성_요청("신분당선", 강남역_id, 양재역_id, 10);
+        삼호선_id = LineSteps.지하철_노선_생성_요청("3호선", 교대역_id, 남부터미널역_id, 2);
+
+        LineSteps.지하철_노선_구간_등록_요청(삼호선_id, new SectionRequest(남부터미널역_id, 양재역_id, 3));
+    }
 
     /**
      * Given: 지하철 노선과 구간을 생성한다.
@@ -15,11 +60,13 @@ public class PathAcceptanceTest extends AbstractAcceptanceTest {
      */
     @Test
     void 최단_경로_조회() {
-        //given
-
         //when
+        ExtractableResponse<Response> response = PathSteps.지하철_경로_조회(교대역_id, 양재역_id);
 
         //then
+        List<String> stations = response.jsonPath().get("stations.name");
+        assertThat(stations).startsWith(교대역명).endsWith(양재역명);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(5);
     }
 
     /**
