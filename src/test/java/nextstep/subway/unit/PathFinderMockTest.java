@@ -45,6 +45,6 @@ public class PathFinderMockTest {
         List<String> stationNames = pathResponse.getStations().stream()
                 .map(StationResponse::getName).collect(Collectors.toList());
         assertThat(stationNames).containsExactly("출발역", "중간역", "도착역");
-        assertThat(pathResponse.getDistance()).isEqualTo(15f);
+        assertThat(pathResponse.getDistance()).isEqualTo(15);
     }
 }

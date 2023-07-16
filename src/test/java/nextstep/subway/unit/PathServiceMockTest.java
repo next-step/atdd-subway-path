@@ -29,7 +29,7 @@ public class PathServiceMockTest {
         Long sourceId = 1L;
         String 도착역명 = "도착역";
         Long targetId = 2L;
-        when(pathFinder.find(sourceId, targetId)).thenReturn(new PathResponse(List.of(new Station(출발역명), new Station(도착역명)), 10f));
+        when(pathFinder.find(sourceId, targetId)).thenReturn(new PathResponse(List.of(new Station(출발역명), new Station(도착역명)), 10));
         PathService pathService = new PathService(pathFinder);
 
         //when
@@ -38,6 +38,6 @@ public class PathServiceMockTest {
         //then
         List<String> stationNames = response.getStations().stream().map(StationResponse::getName).collect(Collectors.toList());
         assertThat(stationNames).startsWith(출발역명).endsWith(도착역명);
-        assertThat(response.getDistance()).isEqualTo(10f);
+        assertThat(response.getDistance()).isEqualTo(10);
     }
 }
