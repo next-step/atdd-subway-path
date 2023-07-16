@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SameOriginPathException;
+import nextstep.subway.exception.StationNotFoundException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -80,6 +81,7 @@ public class PathFinder {
     }
 
     private Station findStation(Long sourceId, Set<Station> stations) {
-        return stations.stream().filter(station -> station.hasId(sourceId)).findAny().get();
+        return stations.stream().filter(station -> station.hasId(sourceId)).findAny()
+                .orElseThrow(StationNotFoundException::new);
     }
 }
