@@ -19,6 +19,11 @@ public class Station {
         this.name = name;
     }
 
+    public Station(Long id, String name) {
+        this(name);
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
@@ -32,5 +37,9 @@ public class Station {
         return "Station{" +
                 "name='" + name + '\'' +
                 '}';
+    }
+
+    public boolean hasId(Long id) {
+        return this.id.equals(id);
     }
 }

@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import nextstep.subway.exception.NewSectionException;
 import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.exception.PathException;
 import nextstep.subway.exception.RemoveSectionException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,11 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(RemoveSectionException.class)
     public ResponseEntity<ExceptionResponse> handleRemoveSectionException(RemoveSectionException e) {
+        return getResponseEntity(e.getMessage());
+    }
+
+    @ExceptionHandler(PathException.class)
+    public ResponseEntity<ExceptionResponse> handleRemoveSectionException(PathException e) {
         return getResponseEntity(e.getMessage());
     }
 
