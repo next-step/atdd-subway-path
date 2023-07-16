@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.NotConnectedPathException;
 import nextstep.subway.exception.SameOriginPathException;
 import nextstep.subway.exception.StationNotFoundException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -50,16 +51,24 @@ public class PathFinder {
                              Station sourceStation,
                              Station targetStation) {
 
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        return dijkstraShortestPath.getPathWeight(sourceStation, targetStation);
+        try {
+            DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+            return dijkstraShortestPath.getPathWeight(sourceStation, targetStation);
+        } catch (NullPointerException e) {
+            throw new NotConnectedPathException();
+        }
     }
 
     private List<Station> getShortestPath(WeightedMultigraph<Station, DefaultWeightedEdge> graph,
                                           Station sourceStation,
                                           Station targetStation) {
 
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+        try {
+            DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+            return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+        } catch (NullPointerException e) {
+            throw new NotConnectedPathException();
+        }
     }
 
     private WeightedMultigraph<Station, DefaultWeightedEdge> createWeightedMultigraph(List<Section> sections,
