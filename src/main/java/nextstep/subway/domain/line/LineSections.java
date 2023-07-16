@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -105,15 +106,9 @@ public class LineSections {
     }
 
     public List<Station> getStations() {
-        final var upStation = getFirstStation();
-        final var downStations = value.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toUnmodifiableList());
-
-        final var stations = new ArrayList<Station>();
-        stations.add(upStation);
-        stations.addAll(downStations);
-        return stations.stream()
+        return value.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
                 .collect(Collectors.toUnmodifiableList());
     }
 }
