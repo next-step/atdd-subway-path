@@ -11,6 +11,16 @@ public class LineCreateRequest implements LineCreateCommand {
     private Long downStationId;
     private Long distance;
 
+    public LineCreateRequest() {
+    }
+
+    public LineCreateRequest(String name, String color, Long upStationId, Long downStationId, Long distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
 
     public String getName() {
         return name;

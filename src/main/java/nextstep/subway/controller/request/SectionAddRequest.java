@@ -11,6 +11,12 @@ public class SectionAddRequest implements SectionAddCommand {
     public SectionAddRequest() {
     }
 
+    public SectionAddRequest(Long upStationId, Long downStationId, Long distance) {
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }

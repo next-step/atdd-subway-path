@@ -10,6 +10,11 @@ public class LineModifyRequest implements LineModifyCommand {
     public LineModifyRequest() {
     }
 
+    public LineModifyRequest(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public String getName() {
         return name;
     }
