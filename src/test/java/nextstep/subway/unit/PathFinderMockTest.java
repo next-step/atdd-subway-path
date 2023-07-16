@@ -92,6 +92,7 @@ public class PathFinderMockTest {
 
         //then
         assertThatThrownBy(() -> pathFinder.find(1L, 4L))
-                .isInstanceOf(PathException.class);
+                .isInstanceOf(PathException.class)
+                .hasMessage("출발역과 도착역이 연결되어 있지 않습니다.");
     }
 }
