@@ -27,7 +27,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
          * 새로운 노선의 상행역이 기존 노선의 상행역이라면
-         * Then 새로운 구간이 노선에 추가되고 조회 시 하행역이 변경되고 거리가 추가 된다.
+         * Then 새로운 구간이 노선에 추가되고 조회 시 하행역이 변경된다.
          */
         @Test
         void 기존_노선_상행역에_신규_구간_상행역_등록_성공() {
@@ -60,7 +60,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
          * 새로운 노선의 하행역이 기존 노선의 상행역이라면
-         * Then 새로운 구간이 노선에 추가되고 조회 시 하행역이 변경되고 거리가 추가 된다.
+         * Then 새로운 구간이 노선에 추가되고 조회 시 상행역이 변경되고 거리가 추가 된다.
          */
         @Test
         void 기존_노선_상행역에_신규_구간_하행역_등록_성공() {
