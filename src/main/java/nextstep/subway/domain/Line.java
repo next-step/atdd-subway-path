@@ -1,11 +1,19 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.DuplicateSectionException;
+import nextstep.subway.exception.InvalidDistanceException;
+import nextstep.subway.exception.NoConnectedSectionException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Line {
+    private static final int FIRST_INDEX = 0;
+    private static final int NEXT_VALUE = 1;
+    private static final int MIN_DISTANCE = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -13,6 +21,7 @@ public class Line {
     private String color;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OrderColumn(name = "POSITION")
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -47,7 +56,113 @@ public class Line {
         this.color = color;
     }
 
+    public void setSections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        if (sections.isEmpty()) {
+            addToLast(section);
+            return;
+        }
+        validateSection(section);
+
+        if (isAddToFirst(section)) {
+            addToFirst(section);
+            return;
+        }
+        if (isAddToLast(section)) {
+            addToLast(section);
+            return;
+        }
+        if (isAddToPrev(section)) {
+            addToPrev(section);
+            return;
+        }
+        if (isAddToNext(section)) {
+            addToNext(section);
+            return;
+        }
+
+        throw new IllegalStateException("Section is not match");
+    }
+
+    private void validateSection(Section section) {
+        if (!isConnected(section)) {
+            throw new NoConnectedSectionException();
+        }
+        if (isDuplicatedSection(section)) {
+            throw new DuplicateSectionException();
+        }
+    }
+
+    private boolean isConnected(Section section) {
+        return sections.stream().anyMatch(s -> s.isConnected(section));
+    }
+
+    private boolean isDuplicatedSection(Section section) {
+        return sections.stream().anyMatch(s -> s.isUpStation(section.getUpStation())) &&
+                sections.stream().anyMatch(s -> s.isDownStation(section.getDownStation()));
+    }
+
+
+    private boolean isAddToFirst(Section section) {
+        return sections.stream().anyMatch(s -> s.isUpStation(section.getDownStation()));
+    }
+
+    private boolean isAddToLast(Section section) {
+        return sections.stream().anyMatch(s -> s.isDownStation(section.getUpStation()));
+    }
+
+    private boolean isAddToPrev(Section section) {
+        return sections.stream().anyMatch(s -> s.isUpStation(section.getUpStation()));
+    }
+
+    private boolean isAddToNext(Section section) {
+        return sections.stream().anyMatch(s -> s.isDownStation(section.getDownStation()));
+    }
+
+    private void addToFirst(Section section) {
+        sections.add(FIRST_INDEX, section);
+    }
+
+    private void addToLast(Section section) {
+        sections.add(section);
+    }
+
+    private void addToPrev(Section section) {
+        Section registeredSection = getRegisterSection(section);
+        int index = sections.indexOf(registeredSection);
+        int distance = registeredSection.getDistance() - section.getDistance();
+        validateDistance(distance);
+        Section newSection = Section.of(registeredSection.getLine(), section.getDownStation(),
+                registeredSection.getDownStation(), distance);
+        sections.set(index, section);
+        sections.add(index + NEXT_VALUE, newSection);
+    }
+
+    private void addToNext(Section section) {
+        Section registeredSection = getRegisterSection(section);
+        int index = sections.indexOf(registeredSection);
+        int distance = registeredSection.getDistance() - section.getDistance();
+        validateDistance(distance);
+        Section newSection = Section.of(registeredSection.getLine(), registeredSection.getUpStation(),
+                section.getUpStation(), distance);
+        sections.set(index, newSection);
+        sections.add(index + NEXT_VALUE, section);
+    }
+
+    private Section getRegisterSection(Section section) {
+        return sections.stream().filter(s -> s.isContain(section)).findAny().get();
+    }
+
+    private void validateDistance(final int distance) {
+        if (distance < MIN_DISTANCE) {
+            throw new InvalidDistanceException();
+        }
     }
 }
