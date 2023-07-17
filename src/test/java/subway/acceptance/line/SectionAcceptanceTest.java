@@ -276,7 +276,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStationInMiddleOfSection() {
         // given
         final String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        final String appendLocation = createdLocation + "/sections"; // TODO : uri를 사용처에서 조합하도록 변경하기
         LineSteps.노선_조회_API(createdLocation);
 
         // when
@@ -310,7 +310,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         var lineRetrieveResponse = LineSteps.노선_조회_API(createdLocation);
         List<String> stations = lineRetrieveResponse.jsonPath().getList("stations.name", String.class);
-        assertThat(stations.size()).isEqualTo(2);
+        assertThat(stations.size()).isEqualTo(2); // TODO : containsExactlyInAnyOrder() 로 변경
     }
 
     /**

@@ -232,6 +232,8 @@ class LineSectionsTest {
         이호선_구간.removeSectionByStation(stations.get(1));
     }
 
+    // TODO : 역으로 구간 제거 기능 예외 테스트 https://github.com/next-step/atdd-subway-path/pull/598#discussion_r1265292893
+
     private Line 이호선_기본구간_설정() {
         Section 기본_구간 = 기본_구간();
         Line line = 기본_노선("이호선", 기본_구간);
