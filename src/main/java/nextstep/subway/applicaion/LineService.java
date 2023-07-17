@@ -78,7 +78,7 @@ public class LineService {
         Line line = findLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+        if (!line.isDeletableSection(station)) {
             throw new IllegalArgumentException("해당 line을 삭제할 수 없습니다.");
         }
 

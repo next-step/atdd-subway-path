@@ -202,4 +202,8 @@ public class Line {
     private static boolean isFirstStation(Map<Station, Station> upDownStationMap, Station upStation) {
         return upDownStationMap.values().stream().filter(downStation -> downStation == upStation).findFirst().isEmpty();
     }
+
+    public boolean isDeletableSection(Station station) {
+        return getSections().get(getSections().size() - 1).getDownStation().equals(station);
+    }
 }
