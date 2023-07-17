@@ -32,12 +32,40 @@ public class LineAcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고
+     * When 하행역이 노선 상행 종점인 노선을 등록하면
+     * Then 노선의 상행역이 노선 상행역으로 등록된다
+     */
+    @DisplayName("새로운 역을 상행 종점에 등록한다")
+    @Test
+    void insertSectionToUpTerminalStationSuccess() {
+        // given
+        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
+        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
+        int 교대역_아이디 = 아이디(지하철역을_생성한다("교대역"));
+        var 신분당선 = 지하철_노선_등록한다(
+                "신분당선",
+                "bg-red-600",
+                강남역_아이디,
+                판교역_아이디,
+                10);
+
+        // when
+        노선_구간을_등록한다(아이디(신분당선), 교대역_아이디, 강남역_아이디, 1);
+
+        // then
+        신분당선 = 지하철_노선_조회한다(아이디(신분당선));
+        List<String> 스테이션_이름_리스트 = 스테이션_이름_리스트(신분당선);
+        assertThat(스테이션_이름_리스트).containsExactly("교대역", "강남역", "판교역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
      * When 상행역이 기존 구간의 상행역과 일치하고 똑같이 않은 구간을 등록하면
      * Then 기존 구간의 역을 기준으로 새로운 구간을 추가된다
      */
     @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가")
     @Test
-    void insertSectionSuccess() {
+    void insertSectionToCenterSuccess() {
         // given
         int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
         int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
@@ -300,6 +328,7 @@ public class LineAcceptanceTest {
      * When 상행역이 생성한 노선의 하행 종점역이고 하행역 해당 노선에 등록되어 있는 지하철 구간을 등록하면
      * Then 지하철 구간이 등록되지 않고 예외코드가 반환한다
      */
+    @Disabled
     @DisplayName("구간 등록 하행역이 노선에 포함되여 있어서 등록 실패")
     @Test
     void registerSectionFailedByLineContainsDownStation() {

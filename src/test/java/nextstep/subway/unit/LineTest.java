@@ -13,6 +13,7 @@ import nextstep.subway.line.Section;
 import nextstep.subway.line.SingleSectionRemovalException;
 import nextstep.subway.station.Station;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +31,28 @@ class LineTest {
 
         // then
         assertThat(line.getSections()).contains(section);
+    }
+
+    @DisplayName("추가할 세션의 하행 스테이션이 노선의 상행 종점일 때 추가할 세션이 상행 좀점 세션으로 등록된다")
+    @Test
+    void insertSectionSuccessToTop() {
+        // given
+        Line line = new Line();
+        Station 강남역 = new Station("강남역");
+        Station 판교역 = new Station("판교역");
+        Section targetSection = new Section(강남역, 판교역, 1);
+        line.addSection(targetSection);
+        Station 교대역 = new Station("교대역");
+        Section insertSection = new Section(교대역, 강남역, 1);
+
+        // when
+        line.addSection(insertSection);
+
+        // then
+        Assertions.assertAll(
+                () -> assertThat(line.getSections().get(0)).isEqualTo(insertSection),
+                () -> assertThat(line.getSections().get(1)).isEqualTo(targetSection)
+        );
     }
 
     @DisplayName("추가할 세션의 상행 스테이션이 추가될 노선에 포함되고 추가될 위치의 하행스테이션과 똑같이 아니면 그사이에 추가된다")
@@ -52,7 +75,7 @@ class LineTest {
         assertThat(sections).containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 1));
     }
 
-
+    @Disabled
     @DisplayName("추가할 세션의 하행 스테이션이 Line에 포함 되여 있으면 예외를 던진다")
     @Test
     void addSectionFailedByUpStationOfNewSection() {

@@ -67,10 +67,6 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        if (sections.stream()
-                .anyMatch(savedSection -> savedSection.containsStation(section.getDownStation()))) {
-            throw new DownstreamStationIncludedException();
-        }
         Optional<Section> sameUpStation = sections.stream()
                 .filter(savedSection -> savedSection.isSameUpStation(section.getUpStation()))
                 .findFirst();
@@ -82,7 +78,19 @@ public class Line {
             sections.add(new Section(section.getDownStation(), targetDownStation, 1));
             return;
         }
-        if (!sections.isEmpty() && !sections.get(sections.size() - 1).canLink(section)) {
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
+        }
+        Section topSection = sections.get(0);
+        if (topSection.getUpStation().equals(section.getDownStation())) {
+            List<Section> targetSections = new ArrayList<>();
+            targetSections.add(section);
+            targetSections.addAll(sections);
+            sections = targetSections;
+            return;
+        }
+        if (!sections.get(sections.size() - 1).canLink(section)) {
             throw new MismatchedUpstreamStationException();
         }
         sections.add(section);
