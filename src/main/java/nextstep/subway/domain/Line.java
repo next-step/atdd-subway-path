@@ -206,6 +206,10 @@ public class Line {
     }
 
     public boolean isDeletableSection(Station station) {
-        return getSections().get(getSections().size() - 1).getDownStation().equals(station);
+        return false;
+    }
+
+    public void removeStation(Station station) {
+
     }
 }
