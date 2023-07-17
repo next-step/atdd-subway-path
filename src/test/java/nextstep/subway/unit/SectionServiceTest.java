@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class LineServiceTest {
+public class SectionServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired

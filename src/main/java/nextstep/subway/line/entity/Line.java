@@ -56,7 +56,7 @@ public class Line {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.addSection(section);
+        this.addSectionInit(section);
     }
 
     public static Line of(String name, String color, Station upStationId, Station downStationId, Integer distance) {
@@ -74,9 +74,20 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(Section section) {
+    public void addSectionInit(Section section) {
         this.sections.add(section);
         section.addSection(this);
+    }
+
+    public void addSection(Section section) {
+        sections.stream()
+                .filter(oldSection -> oldSection.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .ifPresent(oldSection -> {
+                    this.sections.add(Section.of(oldSection.getUpStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance(), this));
+                    sections.remove(oldSection);
+                });
+        this.sections.add(section);
     }
 
     public void isExistsDownStation(Station upStation) {
@@ -117,5 +128,13 @@ public class Line {
         } else {
             return Optional.of(sections.get(sections.size() - 1));
         }
+    }
+
+    public void validationStations(Station upStation, Station downStation) {
+        // 신규 구간의 상행역이 기존 구간의 하행역과 같은지 확인 아닐시 예외 처리
+        isExistsDownStation(upStation);
+
+        // 신규 구간의 하행역이 기존 구간의 역이 있는지 검사 있으면 예외 처리
+        isExistsStations(downStation);
     }
 }

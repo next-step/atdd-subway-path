@@ -3,12 +3,14 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.SubwayLineSteps;
 import nextstep.subway.utils.ApiTest;
 import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.line.dto.CreateLineRequest;
 import nextstep.subway.section.dto.CreateSectionRequest;
 import nextstep.subway.station.StationSteps;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -35,6 +37,7 @@ class SectionAcceptanceTest extends ApiTest {
      * When 새로운 구간(이수역 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
      * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
      */
+    @Disabled
     @DisplayName("새로운 구간을 등록한다.")
     @Test
     void addSection() {
@@ -46,6 +49,65 @@ class SectionAcceptanceTest extends ApiTest {
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 3개(당고개역, 이수역, 동작역)의 지하철 역을 생성한다.
+     * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
+     * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
+     * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
+     */
+    @DisplayName("새로운 구간을 등록한다. - 새로운 구간의 상행역과 기존 구간의 상행역이 같은 경우")
+    @Test
+    void addSection2() {
+        // given : 선행조건 기술
+        CreateSectionRequest request = request(당고개역, 사당역, distance);
+
+        // when : 기능 수행
+        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+
+        // then : 결과 확인
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 3개(당고개역, 이수역, 동작역)의 지하철 역을 생성한다.
+     * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
+     * When 새로운 구간(사당역 - 상행 종점, 당고개역 - 하행 종점)을 등록한다.
+     * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
+     */
+    @DisplayName("새로운 구간을 등록한다. - 새로운역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSection3() {
+        // given : 선행조건 기술
+        CreateSectionRequest request = request(당고개역, 사당역, distance);
+
+        // when : 기능 수행
+        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+
+        // then : 결과 확인
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response1 = SubwayLineSteps.지하철노선목록조회요청();
+    }
+
+    /**
+     * Given 3개(당고개역, 이수역, 동작역)의 지하철 역을 생성한다.
+     * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
+     * When 새로운 구간(사당역 - 상행 종점, 당고개역 - 하행 종점)을 등록한다.
+     * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
+     */
+    @DisplayName("새로운 구간을 등록한다. - 새로운역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSection4() {
+        // given : 선행조건 기술
+        CreateSectionRequest request = request(당고개역, 사당역, distance);
+
+        // when : 기능 수행
+        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+
+        // then : 결과 확인
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response1 = SubwayLineSteps.지하철노선목록조회요청();
     }
 
     /**

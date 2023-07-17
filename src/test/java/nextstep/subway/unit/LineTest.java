@@ -24,7 +24,7 @@ class LineTest {
     }
 
     @Test
-    void getStations() {
+    void getSections() {
         // given : 선행조건 기술
         Line line = line();
         line.addSection(section(line));
