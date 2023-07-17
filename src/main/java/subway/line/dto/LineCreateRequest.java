@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 public class LineCreateRequest {
 
-    private final String DISTANCE_MIN_MESSAGE = "구간의 최소 거리는 1 이상이어야 합니다.";
+    private static final String DISTANCE_MIN_MESSAGE = "구간의 최소 거리는 1 이상이어야 합니다.";
 
     @NotBlank
     private String name;

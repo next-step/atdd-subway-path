@@ -44,16 +44,23 @@ public class Section {
     @Column(nullable = false)
     private Long distance;
 
+
     public void changeDownStation(Section newSection) {
         validDistance(newSection.getDistance());
         this.distance = this.getDistance() - newSection.getDistance();
         this.downStation = newSection.getUpStation();
     }
 
+
     public void changeUpStation(Section newSection) {
         validDistance(newSection.getDistance());
         this.distance = this.getDistance() - newSection.getDistance();
         this.upStation = newSection.getDownStation();
+    }
+
+    public void pullDownStationFromUpStationOfTargetSection(Section targetSection) {
+        this.downStation = targetSection.getDownStation();
+        this.distance = this.distance + targetSection.getDistance();
     }
 
     private void validDistance(long newDistance) {

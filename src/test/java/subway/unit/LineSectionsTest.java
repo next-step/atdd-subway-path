@@ -216,7 +216,7 @@ class LineSectionsTest {
     /**
      * Given 구간을 가진 노선이 있을 떄
      * When 노선의 중간 역인 구간을 삭제하면
-     * Then 구간이 삭제 되지 않는다.
+     * Then 구간이 삭제된다.
      */
     @DisplayName("역으로 구간 제거 기능 : 구간 중간 삭제")
     @Test
@@ -229,8 +229,7 @@ class LineSectionsTest {
         // when/then
         LineSections 이호선_구간 = 이호선.getLineSections();
         List<Station> stations = 이호선.getStations();
-        assertThatThrownBy(() -> 이호선_구간.removeSectionByStation(stations.get(1)))
-                .isInstanceOf(SubwayBadRequestException.class);
+        이호선_구간.removeSectionByStation(stations.get(1));
     }
 
     private Line 이호선_기본구간_설정() {

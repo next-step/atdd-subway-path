@@ -41,6 +41,6 @@ public class StationService {
 
     public Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.STATION_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.STATION_NOT_FOUND));
     }
 }

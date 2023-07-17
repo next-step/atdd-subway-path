@@ -57,18 +57,18 @@ public class LineService {
     public LineResponse findById(Long id) {
         return lineRepository.findById(id)
                 .map(LineResponse::from)
-                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND));
     }
 
     public Line findLineById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND));
     }
 
     @Transactional
     public void deleteById(Long id) {
         lineRepository.findById(id)
-                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND_MESSAGE));
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.LINE_NOT_FOUND));
         lineRepository.deleteById(id);
     }
 
@@ -81,8 +81,8 @@ public class LineService {
         lineRepository.save(line);
 
         Section section = Section.builder()
-                .downStation(downStation)
                 .upStation(upStation)
+                .downStation(downStation)
                 .distance(lineRequest.getDistance())
                 .build();
         line.addSection(section);
@@ -96,8 +96,8 @@ public class LineService {
         Line foundLine = this.findLineById(lineId);
 
         Section section = Section.builder()
-                .downStation(downStation)
                 .upStation(upStation)
+                .downStation(downStation)
                 .distance(request.getDistance())
                 .build();
         foundLine.addSection(section);
@@ -106,7 +106,6 @@ public class LineService {
     @Transactional
     public void deleteSection(SectionDeleteRequest request) {
         Line foundLine = this.findLineById(request.getLineId());
-
         Station station = stationService.findStationById(request.getStationId());
         foundLine.deleteSectionByStation(station);
     }

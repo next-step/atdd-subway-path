@@ -69,51 +69,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    /**
-     * Given 3개의 역이 등록된 구간을 가진 노선이 있고
-     * When 노선의 하행역을 제거하면
-     * Then 구간이 삭제되고
-     * Then 2개의 역을 가진 노선이 된다
-     */
-    @DisplayName("노선의 구간을 삭제한다.")
-    @Test
-    void deleteStationInSection() {
-        // given
-        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
-
-        // when
-        final Long stationId = getStationId("선릉역");
-        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
-
-        // then
-        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
-        // then
-        var lineRetrieveResponse = LineSteps.노선_조회_API(createdLocation);
-        List<String> stations = lineRetrieveResponse.jsonPath().getList("stations.name", String.class);
-        assertThat(stations.size()).isEqualTo(2);
-    }
-
-    /**
-     * Given 3개의 역이 등록된 구간을 가진 노선이 있고
-     * When 노선의 두번째 역을 제거하면
-     * Then 역이 제거되지 않는다.
-     */
-    @DisplayName("구간의 중간 역을 제거할 수 없다.")
-    @Test
-    void deleteStationInMiddleOfSection() {
-        // given
-        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
-
-        // when
-        final Long stationId = getStationId("역삼역");
-        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
-
-        // then
-        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
 
     /**
      * Given 노선이 있고
@@ -307,6 +262,99 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return createdLocation;
     }
 
+    // week 2-2
 
+    /**
+     * Given 구간이 3개인 노선이 있고
+     * When 중간 구간을 삭제 하면
+     * Then 중간 구간이 삭제 된다.
+     */
+    @DisplayName("노선의 중간 구간을 제거한다.")
+    @Test
+    void deleteStationInMiddleOfSection() {
+        // given
+        final String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
+        LineSteps.노선_조회_API(createdLocation);
+
+        // when
+        final Long stationId = getStationId("역삼역");
+        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
+
+        // then
+        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        LineSteps.노선_조회_API(createdLocation);
+    }
+
+    /**
+     * Given 3개의 역이 등록된 구간을 가진 노선이 있고
+     * When 노선의 가장 앞의 구간을 제거하면
+     * Then 구간이 삭제되고
+     * Then 2개의 역을 가진 노선이 된다
+     */
+    @DisplayName("노선의 가장 앞 구간을 삭제한다.")
+    @Test
+    void deleteSectionAtFrontOfLine() {
+        // given
+        final String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
+
+        // when
+        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, getStationId("강남역"));
+
+        // then
+        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        var lineRetrieveResponse = LineSteps.노선_조회_API(createdLocation);
+        List<String> stations = lineRetrieveResponse.jsonPath().getList("stations.name", String.class);
+        assertThat(stations.size()).isEqualTo(2);
+    }
+
+    /**
+     * Given 3개의 역이 등록된 구간을 가진 노선이 있고
+     * When 노선의 가장 뒤의 구간을 제거하면
+     * Then 구간이 삭제되고
+     * Then 2개의 역을 가진 노선이 된다
+     */
+    @DisplayName("노선의 가장 뒤 구간을 삭제한다.")
+    @Test
+    void deleteSectionAtEndOfLine() {
+        // given
+        final String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
+
+        // when
+        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, getStationId("선릉역"));
+
+        // then
+        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        var lineRetrieveResponse = LineSteps.노선_조회_API(createdLocation);
+        List<String> stations = lineRetrieveResponse.jsonPath().getList("stations.name", String.class);
+        assertThat(stations.size()).isEqualTo(2);
+    }
+
+    /**
+     * Given 구간이 3개인 노선이 있고
+     * When 노선에 존재하지 않는 역을 제거하면
+     * Then 구간이 삭제되지 않는다.
+     */
+    @DisplayName("노선에 존재하지 않는 역은 제거되지 않는다.")
+    @Test
+    void deleteNotExistStationInMiddleOfSection() {
+        // given
+        final String createdLocation = 세구간이_포함된_노선_생성_작업();
+        final String appendLocation = createdLocation + "/sections";
+        LineSteps.노선_조회_API(createdLocation);
+
+        // when
+        final Long stationId = getStationId("강변역");
+        var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
+
+        // then
+        assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 }
 

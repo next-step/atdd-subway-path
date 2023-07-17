@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 
 @Embeddable
 @NoArgsConstructor
@@ -27,11 +29,11 @@ public class LineSections {
     public void add(Section newSection, Line line) {
 
         if (hasSections(line)) {
-            appendSection(newSection);
+            putInSections(newSection);
         }
 
         newSection.setLine(line);
-        addSection(newSection);
+        add(newSection);
     }
 
     public Station getFirstStation() {
@@ -71,17 +73,68 @@ public class LineSections {
 
     public void removeSectionByStation(Station targetStation) {
         validStationsCountIsOverMinimalSectionSize();
-        validRemoveStationIsDownStationInExistLine(targetStation);
 
-        Section lastSection = getLastSection();
-        this.remove(lastSection);
+        List<Station> stations = getStations();
+        int findIndex = findStationIndex(targetStation, stations);
+
+        if (isMiddleStation(stations, findIndex)) {
+            removeMiddleStation(targetStation);
+        }
+        if (isFirstStation(findIndex)) {
+            removeStationInSectionWithUpStation(targetStation);
+        }
+        if (isLastStation(stations, findIndex)) {
+            removeStationInSectionWithDownStation(targetStation);
+        }
+    }
+
+    private int findStationIndex(Station targetStation, List<Station> stations) {
+        return IntStream.range(0, stations.size())
+                .filter(idx -> targetStation.equals(stations.get(idx)))
+                .findFirst()
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.STATION_NOT_FOUND_IN_SECTION));
+    }
+
+    private boolean isMiddleStation(List<Station> stations, int findIndex) {
+        return findIndex != 0 && findIndex != stations.size() - 1;
+    }
+
+    private boolean isFirstStation(int findIndex) {
+        return findIndex == 0;
+    }
+
+    private boolean isLastStation(List<Station> stations, int findIndex) {
+        return findIndex == stations.size() - 1;
+    }
+
+    private void removeMiddleStation(Station targetStation) {
+        Section upSection = findSectionWithDownStationByStation(targetStation)
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_DOWN_STATION_IN_SECTION));
+        Section downSection = findSectionWithUpStationByStation(targetStation)
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_UP_STATION_IN_SECTION));
+
+        upSection.pullDownStationFromUpStationOfTargetSection(downSection);
+        remove(downSection);
+    }
+
+    private void removeStationInSectionWithUpStation(Station targetStation) {
+        Section section = findSectionWithUpStationByStation(targetStation)
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_UP_STATION_IN_SECTION));
+        remove(section);
+    }
+
+    private void removeStationInSectionWithDownStation(Station targetStation) {
+        Section section = findSectionWithDownStationByStation(targetStation)
+                .orElseThrow(() -> new SubwayNotFoundException(SubwayMessage.SECTION_NOT_FOUND_DOWN_STATION_IN_SECTION));
+        remove(section);
     }
 
     private void remove(Section section) {
-        sections.remove(section);
+        this.sections.remove(section);
+
     }
 
-    private void addSection(Section newSection) {
+    private void add(Section newSection) {
         this.sections.add(newSection);
     }
 
@@ -96,67 +149,53 @@ public class LineSections {
         return this.sections.get(lastSectionIndex);
     }
 
-    private Optional<Section> findSectionWithUpStationByUpStation(Station upStation) {
-        return this.sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation))
-                .findAny();
-    }
-
     private boolean hasSections(Line line) {
         return line.getLineSections().sections.size() > 0;
     }
 
-    private void appendSection(Section newSection) {
+    private void putInSections(Section newSection) {
         List<Station> stations = getStations();
 
         validStationInNewSectionIsNotDuplicatedStationInExistLine(newSection, stations);
         validStationInNewSectionIsStationInExistLine(newSection, stations);
 
-        appendMiddle(newSection);
+        putInMiddle(newSection);
     }
 
-    private void appendMiddle(Section newSection) {
-        appendMiddleDown(newSection);
-        appendMiddleUp(newSection);
+    private void putInMiddle(Section newSection) {
+        putInBackSectionOfMiddle(newSection);
+        putInFrontSectionOfMiddle(newSection);
     }
 
-    private void appendMiddleDown(Section newSection) {
-        Optional<Section> sectionWithDownStationByDownStation = findSectionWithDownStationByDownStation(newSection.getDownStation());
-        Optional<Section> sectionWithDownStationByUpStation = findSectionWithDownStationByUpStation(newSection.getUpStation());
+    private void putInBackSectionOfMiddle(Section newSection) {
+        Optional<Section> sectionByUpStation = findSectionWithDownStationByStation(newSection.getUpStation());
+        Optional<Section> sectionByDownStation = findSectionWithDownStationByStation(newSection.getDownStation());
 
-        if (sectionWithDownStationByDownStation.isPresent() && sectionWithDownStationByUpStation.isEmpty()) {
-            Section existSection = sectionWithDownStationByDownStation.get();
+        if (sectionByDownStation.isPresent() && sectionByUpStation.isEmpty()) {
+            Section existSection = sectionByDownStation.get();
             existSection.changeDownStation(newSection);
         }
-
     }
 
-    private void appendMiddleUp(Section newSection) {
-        Optional<Section> sectionWithUpStationByUpStation = findSectionWithUpStationByUpStation(newSection.getUpStation());
-        Optional<Section> sectionWithUpStationByDownStation = findSectionWithUpStationByDownStation(newSection.getDownStation());
+    private void putInFrontSectionOfMiddle(Section newSection) {
+        Optional<Section> sectionByUpStation = findSectionWithUpStationByStation(newSection.getUpStation());
+        Optional<Section> sectionByDownStation = findSectionWithUpStationByStation(newSection.getDownStation());
 
-        if (sectionWithUpStationByUpStation.isPresent() && sectionWithUpStationByDownStation.isEmpty()) {
-            Section existSection = sectionWithUpStationByUpStation.get();
+        if (sectionByUpStation.isPresent() && sectionByDownStation.isEmpty()) {
+            Section existSection = sectionByUpStation.get();
             existSection.changeUpStation(newSection);
         }
-
     }
 
-    private Optional<Section> findSectionWithDownStationByDownStation(Station downStation) {
+    private Optional<Section> findSectionWithUpStationByStation(Station upStation) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findAny();
+    }
+
+    private Optional<Section> findSectionWithDownStationByStation(Station downStation) {
         return this.sections.stream()
                 .filter(section -> section.getDownStation().equals(downStation))
-                .findAny();
-    }
-
-    private Optional<Section> findSectionWithUpStationByDownStation(Station downStation) {
-        return this.sections.stream()
-                .filter(section -> section.getUpStation().equals(downStation))
-                .findAny();
-    }
-
-    private Optional<Section> findSectionWithDownStationByUpStation(Station upStation) {
-        return this.sections.stream()
-                .filter(section -> section.getDownStation().equals(upStation))
                 .findAny();
     }
 
@@ -183,23 +222,15 @@ public class LineSections {
                 .filter(station -> station.equals(section.getDownStation()))
                 .findAny();
         if (findUpStation.isPresent() && findDownStation.isPresent()) {
-            throw new SubwayBadRequestException(SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE_MESSAGE.getCode(),
-                    SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE_MESSAGE.getFormatMessage(section.getUpStation().getName(), section.getDownStation().getName()));
+            throw new SubwayBadRequestException(SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE.getCode(),
+                    SubwayMessage.STATION_IS_ALREADY_EXIST_IN_LINE.getFormatMessage(section.getUpStation().getName(), section.getDownStation().getName()));
         }
     }
 
     private void validStationsCountIsOverMinimalSectionSize() {
         if (this.getSectionsCount() < MINIMAL_SECTION_SIZE) {
-            throw new SubwayBadRequestException(SubwayMessage.STATION_DELETE_MINIMAL_VALID_MESSAGE.getCode(),
-                    SubwayMessage.STATION_DELETE_MINIMAL_VALID_MESSAGE.getFormatMessage(MINIMAL_SECTION_SIZE));
-        }
-    }
-
-    private void validRemoveStationIsDownStationInExistLine(Station targetStation) {
-        Section lastSection = getLastSection();
-        Station downStation = lastSection.getDownStation();
-        if (!downStation.equals(targetStation)) {
-            throw new SubwayBadRequestException(SubwayMessage.SECTION_DELETE_LAST_STATION_VALID_MESSAGE);
+            throw new SubwayBadRequestException(SubwayMessage.STATION_DELETE_MINIMAL_VALID.getCode(),
+                    SubwayMessage.STATION_DELETE_MINIMAL_VALID.getFormatMessage(MINIMAL_SECTION_SIZE));
         }
     }
 }
