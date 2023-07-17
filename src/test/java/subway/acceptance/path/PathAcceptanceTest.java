@@ -15,15 +15,12 @@ import subway.acceptance.line.SectionFixture;
 import subway.acceptance.station.StationSteps;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @DisplayName("경로 관련 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
     private Map<String, Long> stationsMap = new HashMap<>();
-
-    private String 일호선_URI;
-    private String 삼호선_URI;
-    private String 신분당선_URI;
 
 
     // TODO: 인수 테스트 작성
@@ -59,38 +56,54 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 3개의 구간을 가진 노선이 있고
+     * Given 2개의 구간을 가진 노선이 있고
      * When 노선의 상행역과 하행역으로 경로를 조회하면
-     * Then 4개의 역이 출력된다
-     * Then 3 구간의 모든 거리의 합이 출력된다
+     * Then 3개의 역이 출력된다
+     * Then 2 구간의 모든 거리의 합이 출력된다
      */
     @DisplayName("같은 노선의 경로를 조회한다")
     @Test
     void getPath() {
+        // when
         // TODO : 여기서 부터 하면 됨
         UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
                 .fromUriString("/path")
                 .queryParam("source", getStationId("교대역"))
                 .queryParam("target", getStationId("양재역"))
                 .build();
-        var response = RestAssured.given().log().all()
+        var extract = RestAssured.given().log().all()
                 .when().get(retrieveQueryWithBaseUri.toUri())
                 .then().log().all()
-                .extract()
-                .response();
+                .extract();
+        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
+        Integer distance = extract.response().jsonPath().get("distance");
+        System.out.println(list);
+        System.out.println(distance);
 
     }
 
     /**
      * Given 각 구간을 가진 3개의 서로 연결된 노선이 있고
-     * When 3 노선을 모두 통과하는 경로를 조회하면
+     * When 다른 노선을 모두 통과하는 경로를 조회하면
      * Then 경로 조회 결과가 나온다
      * Then 구간의 모든 거리의 합이 출력된다
      */
     @DisplayName("다른 노선에 있는 지하철 경로를 조회한다")
     @Test
     void getPathWithOtherLine() {
-
+        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
+                .fromUriString("/path")
+                .queryParam("source", getStationId("강남역"))
+                .queryParam("target", getStationId("남부터미널역"))
+                .build();
+        var extract = RestAssured.given().log().all()
+                .when().get(retrieveQueryWithBaseUri.toUri())
+                .then().log().all()
+                .extract();
+        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
+        Integer distance = extract.response().jsonPath().get("distance");
+        System.out.println(list);
+        System.out.println(distance);
     }
 
     /**
@@ -101,7 +114,19 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("연결되지 않은 경로를 조회한다")
     @Test
     void getPathWithNotConnected() {
-
+        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
+                .fromUriString("/path")
+                .queryParam("source", getStationId("강남역"))
+                .queryParam("target", getStationId("역삼역"))
+                .build();
+        var extract = RestAssured.given().log().all()
+                .when().get(retrieveQueryWithBaseUri.toUri())
+                .then().log().all()
+                .extract();
+        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
+        Integer distance = extract.response().jsonPath().get("distance");
+        System.out.println(list);
+        System.out.println(distance);
     }
 
     /**
@@ -112,7 +137,20 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("시작과 끝이 같은 역의 경로를 조회한다.")
     @Test
     void getPathWithSameStation() {
-
+        // TODO : 이거 조회가 되네.
+        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
+                .fromUriString("/path")
+                .queryParam("source", getStationId("강남역"))
+                .queryParam("target", getStationId("강남역"))
+                .build();
+        var extract = RestAssured.given().log().all()
+                .when().get(retrieveQueryWithBaseUri.toUri())
+                .then().log().all()
+                .extract();
+        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
+        Integer distance = extract.response().jsonPath().get("distance");
+        System.out.println(list);
+        System.out.println(distance);
     }
 
     /**
@@ -123,7 +161,19 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 역으로 경로를 조회한다")
     @Test
     void getPathWithNotExistStation() {
-
+        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
+                .fromUriString("/path")
+                .queryParam("source", 22)
+                .queryParam("target", 33)
+                .build();
+        var extract = RestAssured.given().log().all()
+                .when().get(retrieveQueryWithBaseUri.toUri())
+                .then().log().all()
+                .extract();
+        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
+        Integer distance = extract.response().jsonPath().get("distance");
+        System.out.println(list);
+        System.out.println(distance);
     }
 
     private Long getStationId(String name) {

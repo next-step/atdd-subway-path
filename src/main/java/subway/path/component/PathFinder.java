@@ -49,6 +49,7 @@ public class PathFinder {
         try {
             DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
             return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+            // TODO : java.lang.IllegalArgumentException: graph must contain the sink vertex
         } catch (NullPointerException e) {
             throw new SubwayBadRequestException(9999L, "역이 연결되어 있지 않습니다.");
         }
