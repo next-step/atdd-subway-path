@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class AcceptanceTest {
+public abstract class AcceptanceTestConfig {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
