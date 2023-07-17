@@ -28,11 +28,11 @@ public class StationSteps {
         return requestDelete("/stations/{stationId}", pathParams);
     }
 
-    public static List<String> 역_이름_목록_반환(ExtractableResponse<Response> response) {
+    public static List<String> 역_이름_목록_추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("name", String.class);
     }
 
-    public static Long 역_생성_ID_반환(ExtractableResponse<Response> response) {
+    public static Long 역_생성_ID_추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getLong("id");
     }
 }
