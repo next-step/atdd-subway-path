@@ -70,6 +70,12 @@ public class Line {
         Optional<Section> sameUpStationSection = sections.stream()
                 .filter(savedSection -> savedSection.isSameUpStation(section.getUpStation()))
                 .findFirst();
+        List<Station> stations = sections.stream()
+                .flatMap(savedSection -> Stream.of(savedSection.getUpStation(), savedSection.getDownStation()))
+                .collect(Collectors.toList());
+        if (stations.contains(section.getDownStation()) && stations.contains(section.getUpStation())) {
+            throw new AlreadyConnectedException();
+        }
         if (sameUpStationSection.isPresent()) {
             Section targetSection = sameUpStationSection.get();
             if (section.getDistance() >= targetSection.getDistance()) {
