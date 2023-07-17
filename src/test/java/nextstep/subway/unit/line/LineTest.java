@@ -115,4 +115,26 @@ class LineTest {
 
         assertThrows(CustomException.class, ()->line.deleteStation(stationB));
     }
+
+    @Test
+    void getUpLastStation() {
+        Line line = new Line("신분당선", "abc", section);
+        Section newSection = new Section(new SectionStations(stationB, stationC), 5);
+        line.addSection(newSection);
+
+        Station station = line.getUpLastStation();
+
+        assertThat(station).isEqualTo(stationA);
+    }
+
+    @Test
+    void getDownLastStation() {
+        Line line = new Line("신분당선", "abc", section);
+        Section newSection = new Section(new SectionStations(stationB, stationC), 5);
+        line.addSection(newSection);
+
+        Station station = line.getDownLastStation();
+
+        assertThat(station).isEqualTo(stationC);
+    }
 }

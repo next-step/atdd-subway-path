@@ -12,7 +12,6 @@ import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionList;
-import nextstep.subway.section.domain.SectionStations;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -95,5 +94,13 @@ public class Line {
 
     public SectionList getSections() {
         return sections;
+    }
+
+    public Station getUpLastStation() {
+        return sections.getUpLastStation();
+    }
+
+    public Station getDownLastStation() {
+        return sections.getDownLastStation();
     }
 }

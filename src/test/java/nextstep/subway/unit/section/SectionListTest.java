@@ -79,4 +79,24 @@ class SectionListTest {
 
         assertThrows(CustomException.class, () -> sectionList.addSection(allIncludeSection));
     }
+
+    @Test
+    void getDownLastStation() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(b, c), 4);
+        sectionList.addSection(newSection);
+
+        Station lastDownStation = sectionList.getDownLastStation();
+
+        assertThat(lastDownStation).isEqualTo(c);
+    }
+
+    @Test
+    void getUpLastStation() {
+        SectionList sectionList = line.getSections();
+
+        Station lastDownStation = sectionList.getUpLastStation();
+
+        assertThat(lastDownStation).isEqualTo(a);
+    }
 }

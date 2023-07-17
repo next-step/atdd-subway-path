@@ -96,4 +96,12 @@ public class SectionList {
     public List<Section> getSections() {
         return sections;
     }
+
+    public Station getDownLastStation() {
+        return null;
+    }
+
+    public Station getUpLastStation() {
+        return null;
+    }
 }
