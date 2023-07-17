@@ -114,4 +114,8 @@ public class Line {
         sections.sort(Comparator.comparing(Section::getId));
         return sections.get(sections.size() - 1);
     }
+
+    public void addSectionVer2(Section newSection) {
+
+    }
 }
