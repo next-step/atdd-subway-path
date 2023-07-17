@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.List;
 import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineLastStations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionList;
 import nextstep.subway.section.domain.SectionStations;

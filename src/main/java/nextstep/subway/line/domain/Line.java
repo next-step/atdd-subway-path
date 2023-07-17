@@ -28,31 +28,26 @@ public class Line {
     private String color;
 
     @Embedded
-    private LineLastStations lastStations;
-
-    @Embedded
     private SectionList sections;
 
     protected Line() {}
 
-    public Line(Long id, String name, String color, LineLastStations lastStations, SectionList sections) {
+    public Line(Long id, String name, String color, SectionList sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.lastStations = lastStations;
         this.sections = sections;
     }
 
-    public Line(String name, String color, LineLastStations lastStations, Integer distance) {
+    public Line(String name, String color, Section section) {
         if (!StringUtils.hasText(name) || !StringUtils.hasText(color)) {
             throw new CustomException(ErrorCode.INVALID_PARAM);
         }
         this.name = name;
         this.color = color;
-        this.lastStations = lastStations;
         this.sections = new SectionList();
 
-        this.addBaseSection(distance);
+        this.addSection(section);
     }
 
     public void updateName(String name) {
@@ -85,33 +80,13 @@ public class Line {
         return sections.getSections();
     }
 
-    private void addBaseSection(Integer distance) {
-        if (!sections.isEmpty()) {
-            throw new CustomException(ErrorCode.INVALID_PARAM);
-        }
-
-        SectionStations stations = SectionStations.createLineBaseSection(lastStations);
-        Section section = new Section(this, stations, distance);
-        sections.addSection(section);
-    }
-
-    public LineLastStations getLastStations() {
-        return lastStations;
-    }
-
     public void addSection(Section section) {
         sections.addSection(section);
-        lastStations.updateLastStationBySection(section.getUpwardStation(), section.getDownwardStation());
+        section.updateLine(this);
     }
 
     public void deleteStation(Station targetStation) {
-
-        if (!lastStations.isLastDownwardStation(targetStation)) {
-            throw new CustomException(ErrorCode.CAN_NOT_REMOVE_STATION);
-        }
-
-        Section removeSection = sections.removeSection(targetStation);
-        lastStations.updateDownLastStation(removeSection.getUpwardStation());
+        sections.removeSection(targetStation);
     }
 
     public Integer getDistance() {

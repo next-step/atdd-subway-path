@@ -73,7 +73,7 @@ public class SectionList {
         return hasDownwardStation == hasUpwardStation && !hasUpwardStation;
     }
 
-    public Section removeSection(Station targetStation){
+    public void removeSection(Station targetStation){
 
         if (sections.size() <= 1) {
             throw new CustomException(ErrorCode.CAN_NOT_REMOVE_STATION);
@@ -82,7 +82,7 @@ public class SectionList {
         for (Section section : sections) {
             if (section.hasSameDownwardStation(targetStation)) {
                 sections.remove(section);
-                return section;
+                return;
             }
         }
 
@@ -95,9 +95,5 @@ public class SectionList {
 
     public List<Section> getSections() {
         return sections;
-    }
-
-    public boolean isEmpty() {
-        return this.sections.isEmpty();
     }
 }

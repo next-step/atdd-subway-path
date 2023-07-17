@@ -2,13 +2,14 @@ package nextstep.subway.line.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.SectionStations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.controller.dto.LineRequest;
 import nextstep.subway.line.controller.dto.LineResponse;
 import nextstep.subway.line.controller.dto.LineUpdateRequest;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineLastStations;
 import nextstep.subway.line.infra.LineRepository;
 import nextstep.subway.station.controller.dto.StationResponse;
 import nextstep.subway.station.domain.Station;
@@ -31,9 +32,8 @@ public class LineService {
 
         Station upwardStation = stationService.getStation(lineRequest.getUpStationId());
         Station downwardStation = stationService.getStation(lineRequest.getDownStationId());
-        LineLastStations lastStations = new LineLastStations(upwardStation, downwardStation);
-        Line savedLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), lastStations, lineRequest.getDistance()));
-
+        Section section = new Section(new SectionStations(upwardStation, downwardStation), lineRequest.getDistance());
+        Line savedLine = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), section));
         return createLineResponse(savedLine);
     }
 

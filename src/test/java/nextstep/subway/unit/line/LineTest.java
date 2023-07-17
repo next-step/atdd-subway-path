@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineLastStations;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionStations;
 import nextstep.subway.station.domain.Station;

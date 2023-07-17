@@ -4,7 +4,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.common.exception.ErrorCode;
-import nextstep.subway.line.domain.LineLastStations;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -24,11 +23,6 @@ public class SectionStations {
         }
         this.upStation = upStation;
         this.downStation = downStation;
-    }
-
-    public static SectionStations createLineBaseSection(LineLastStations lineLastStations) {
-        return new SectionStations(lineLastStations.getUpLastStation(),
-                lineLastStations.getDownLastStation());
     }
 
     public Station getUpStation() {

@@ -14,7 +14,7 @@ public class LineMemoryRepository implements LineRepository {
   @Override
   public Line save(Line line) {
     Long id = (long) (data.size() + 1);
-    line = new Line(id, line.getName(), line.getColor(), line.getLastStations(), line.getSections());
+    line = new Line(id, line.getName(), line.getColor(), line.getSections());
     data.put(id, line);
     return line;
   }

@@ -28,6 +28,11 @@ public class Section {
 
     protected Section() {}
 
+    public Section(SectionStations stations, Integer distance) {
+        this.stations = stations;
+        this.distance = distance;
+    }
+
     public Section(Line line, SectionStations stations, Integer distance) {
         this.line = line;
         this.stations = stations;
@@ -70,5 +75,9 @@ public class Section {
 
     public Integer getDistance() {
         return distance;
+    }
+
+    public void updateLine(Line line) {
+        this.line = line;
     }
 }
