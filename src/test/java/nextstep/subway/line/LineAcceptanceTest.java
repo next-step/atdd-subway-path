@@ -46,7 +46,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> 강남역_저장_정보 = 역_저장_정보(강남역_정보, 지하철_아이디_획득(강남역_URL));
         Map<String, String> 판교역_저장_정보 = 역_저장_정보(판교역_정보, 지하철_아이디_획득(판교역_URL));
 
-        지하철_노선_생성_여부_검증(노선_목록_조회_결과, 신분당선_생성_요청, 강남역_저장_정보, 판교역_저장_정보);
+        모든_노선_정보가_반환된다(노선_목록_조회_결과, 신분당선_생성_요청, 강남역_저장_정보, 판교역_저장_정보);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다")
@@ -64,8 +64,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, String> 판교역_저장_정보 = 역_저장_정보(판교역_정보, 지하철_아이디_획득(판교역_URL));
         Map<String, String> 삼성역_저장_정보 = 역_저장_정보(삼성역_정보, 지하철_아이디_획득(삼성역_URL));
 
-        지하철_노선_생성_여부_검증(노선_목록_조회_결과, 신분당선_생성_요청, 강남역_저장_정보, 판교역_저장_정보);
-        지하철_노선_생성_여부_검증(노선_목록_조회_결과, 이호선_생성_요청, 강남역_저장_정보, 삼성역_저장_정보);
+        모든_노선_정보가_반환된다(노선_목록_조회_결과, 신분당선_생성_요청, 강남역_저장_정보, 판교역_저장_정보);
+        모든_노선_정보가_반환된다(노선_목록_조회_결과, 이호선_생성_요청, 강남역_저장_정보, 삼성역_저장_정보);
     }
 
     @DisplayName("지하철 노선을 조회한다")
@@ -78,7 +78,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회(lineUrl);
 
         // then
-        지하철_노선_조회_검증(노선_조회_결과, 신분당선_생성_요청);
+        노선_정보가_반환된다(노선_조회_결과, 신분당선_생성_요청);
     }
 
     @DisplayName("지하철 노선을 수정한다")
@@ -95,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정_요청(lineUrl, 노선_수정_요청_정보);
 
         // then
-        지하철_노선_수정_검증(lineUrl, 노선_수정_요청_정보);
+        노선_조회시_수정된_정보가_반환된다(lineUrl, 노선_수정_요청_정보);
     }
 
     @DisplayName("지하철 노선을 삭제한다")
@@ -108,10 +108,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_삭제(lineUrl);
 
         // then
-        지하철_삭제_여부_검증();
+        지하철_노선을_조회할수_없다();
     }
 
-    private static void 지하철_노선_생성_여부_검증(ExtractableResponse<Response> 노선_목록_조회_결과, Map<String, String> 노선_생성_요청_정보,
+    private static void 모든_노선_정보가_반환된다(ExtractableResponse<Response> 노선_목록_조회_결과, Map<String, String> 노선_생성_요청_정보,
                                         Map<String, String>... 역_저장_정보들) {
         assertThat(노선_목록_조회_결과.jsonPath().getList("id")).isNotEmpty();
         assertThat(노선_목록_조회_결과.jsonPath().getList("name", String.class)).contains(노선_생성_요청_정보.get("name"));
@@ -132,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private void 지하철_노선_조회_검증(ExtractableResponse<Response> 노선_조회_결과, Map<String, String> 노선_생성_요청_정보) {
+    private void 노선_정보가_반환된다(ExtractableResponse<Response> 노선_조회_결과, Map<String, String> 노선_생성_요청_정보) {
         assertThat(노선_조회_결과.jsonPath().getString("id")).isNotEmpty();
         assertThat(노선_조회_결과.jsonPath().getString("name")).isEqualTo(노선_생성_요청_정보.get("name"));
         assertThat(노선_조회_결과.jsonPath().getString("color")).isEqualTo(노선_생성_요청_정보.get("color"));
@@ -144,14 +144,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private void 지하철_노선_수정_검증(String lineUrl, Map<String, String> 노선_수정_요청_정보) {
+    private void 노선_조회시_수정된_정보가_반환된다(String lineUrl, Map<String, String> 노선_수정_요청_정보) {
         ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회(lineUrl);
 
         assertThat(노선_수정_요청_정보.get("name")).isEqualTo(노선_조회_결과.jsonPath().getString("name"));
         assertThat(노선_수정_요청_정보.get("color")).isEqualTo(노선_조회_결과.jsonPath().getString("color"));
     }
 
-    private void 지하철_삭제_여부_검증() {
+    private void 지하철_노선을_조회할수_없다() {
         지하철_노선_목록_조회().jsonPath().getList("id").isEmpty();
     }
 }

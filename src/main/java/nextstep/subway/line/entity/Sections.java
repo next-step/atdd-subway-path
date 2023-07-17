@@ -13,6 +13,9 @@ import java.util.List;
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sections {
+
+    private final int FIRST_IDX = 0;
+
     @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<Section> sections = new ArrayList<>();
 
@@ -27,8 +30,7 @@ public class Sections {
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         stations.add(getFirstStation());
-        sections.stream()
-                .forEach(section -> stations.add(section.getDownStation()));
+        sections.forEach(section -> stations.add(section.getDownStation()));
         return stations;
     }
 
@@ -47,7 +49,7 @@ public class Sections {
     }
 
     public Station getFirstStation() {
-        return sections.get(0).getUpStation();
+        return sections.get(FIRST_IDX).getUpStation();
     }
 
     public Station getLastStation() {

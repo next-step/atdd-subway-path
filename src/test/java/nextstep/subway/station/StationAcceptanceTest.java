@@ -28,7 +28,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철역_생성(강남역_정보);
 
         // then
-        역_생성_여부_검증(지하철역_조회(), 강남역_정보);
+        노선_조회시_역이름을_조회할수_있다(지하철역_조회(), 강남역_정보);
     }
 
 
@@ -48,7 +48,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_조회();
 
         // then
-        역_개수_검증(response, 2);
+        생성한_지하철_역이_모두_조회된다(response, 2);
     }
 
     /**
@@ -67,20 +67,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철역_삭제(stationUrl);
 
         // then
-        역_삭제_여부_검증(지하철역_조회(), 강남역_정보);
+        역을_조회할수_없다(지하철역_조회(), 강남역_정보);
     }
 
-    private static void 역_개수_검증(ExtractableResponse<Response> response, int targetCount) {
+    private static void 생성한_지하철_역이_모두_조회된다(ExtractableResponse<Response> response, int targetCount) {
         List<String> stationNames = response.jsonPath().getList("name", String.class);
 
         assertThat(stationNames.size()).isEqualTo(targetCount);
     }
 
-    private void 역_생성_여부_검증(ExtractableResponse<Response> 지하철_조회_결과, Map<String, String> 역_정보) {
+    private void 노선_조회시_역이름을_조회할수_있다(ExtractableResponse<Response> 지하철_조회_결과, Map<String, String> 역_정보) {
         assertThat(지하철_조회_결과.jsonPath().getList("name", String.class)).containsAnyOf(역_정보.get("name"));
     }
 
-    private static void 역_삭제_여부_검증(ExtractableResponse<Response> 지하철_조회_결과, Map<String, String> 역_정보) {
+    private static void 역을_조회할수_없다(ExtractableResponse<Response> 지하철_조회_결과, Map<String, String> 역_정보) {
         assertThat(지하철_조회_결과.jsonPath().getList("name")).doesNotContain(역_정보.get("name"));
     }
 }
