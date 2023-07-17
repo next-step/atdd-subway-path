@@ -67,15 +67,19 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        Optional<Section> sameUpStation = sections.stream()
+        Optional<Section> sameUpStationSection = sections.stream()
                 .filter(savedSection -> savedSection.isSameUpStation(section.getUpStation()))
                 .findFirst();
-        if (sameUpStation.isPresent()) {
-            Section targetStation = sameUpStation.get();
-            sections.remove(targetStation);
-            Station targetDownStation = targetStation.getDownStation();
+        if (sameUpStationSection.isPresent()) {
+            Section targetSection = sameUpStationSection.get();
+            if (section.getDistance() >= targetSection.getDistance()) {
+                throw new InvalidDistanceException();
+            }
+            sections.remove(targetSection);
+            Station targetDownStation = targetSection.getDownStation();
             sections.add(section);
-            sections.add(new Section(section.getDownStation(), targetDownStation, 1));
+            sections.add(new Section(section.getDownStation(), targetDownStation,
+                    targetSection.getDistance() - section.getDistance()));
             return;
         }
         if (sections.isEmpty()) {

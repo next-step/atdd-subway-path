@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.ArrayList;
 import java.util.List;
 import nextstep.subway.line.DownstreamStationIncludedException;
+import nextstep.subway.line.InvalidDistanceException;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.MismatchedUpstreamStationException;
 import nextstep.subway.line.NonDownstreamTerminusException;
@@ -57,12 +58,12 @@ class LineTest {
 
     @DisplayName("추가할 세션의 상행 스테이션이 추가될 노선에 포함되고 추가될 위치의 하행스테이션과 똑같이 아니면 그사이에 추가된다")
     @Test
-    void insertSectionSuccessBetweenSection() {
+    void insertSectionSuccessBetweenSectionSuccess() {
         // given
         Line line = new Line();
         Station 강남역 = new Station("강남역");
         Station 판교역 = new Station("판교역");
-        Section targetSection = new Section(강남역, 판교역, 1);
+        Section targetSection = new Section(강남역, 판교역, 10);
         line.addSection(targetSection);
         Station 양재역 = new Station("양재역");
         Section insertSection = new Section(강남역, 양재역, 1);
@@ -72,7 +73,24 @@ class LineTest {
 
         // then
         List<Section> sections = line.getSections();
-        assertThat(sections).containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 1));
+        assertThat(sections).containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 9));
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음\n")
+    @Test
+    void insertSectionSuccessBetweenSectionFailedByDistance() {
+        // given
+        Line line = new Line();
+        Station 강남역 = new Station("강남역");
+        Station 판교역 = new Station("판교역");
+        Section targetSection = new Section(강남역, 판교역, 1);
+        line.addSection(targetSection);
+        Station 양재역 = new Station("양재역");
+        Section insertSection = new Section(강남역, 양재역, 1);
+
+        // when,then
+        assertThatThrownBy(() -> line.addSection(insertSection))
+                .isInstanceOf(InvalidDistanceException.class);
     }
 
     @Disabled
