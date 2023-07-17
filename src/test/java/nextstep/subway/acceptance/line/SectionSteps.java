@@ -15,6 +15,11 @@ public class SectionSteps {
 
     public static final String BASE_URL = "/lines";
 
+    public static LineResponse 지하철구간을_등록한다(
+            final Long lineId, final Long upStationId, final Long downStationId, final int distance) {
+        return 지하철구간을_등록한다(lineId, new SectionRequest(upStationId, downStationId, distance));
+    }
+
     public static LineResponse 지하철구간을_등록한다(final Long lineId, final SectionRequest request) {
         final var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

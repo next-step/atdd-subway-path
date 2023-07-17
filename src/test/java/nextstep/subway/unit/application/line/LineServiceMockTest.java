@@ -1,4 +1,4 @@
-package nextstep.subway.unit.application;
+package nextstep.subway.unit.application.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

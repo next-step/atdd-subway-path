@@ -2,27 +2,34 @@ package nextstep.subway.support;
 
 import java.util.List;
 
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import nextstep.subway.domain.line.Section;
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.global.SubwayException;
 
 public class SubwayShortestPath {
-    private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
-    private final Station source;
-    private final Station target;
+    private final GraphPath<Station, DefaultWeightedEdge> path;
 
     private SubwayShortestPath(final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath,
                                final Station source, final Station target) {
-        this.dijkstraShortestPath = dijkstraShortestPath;
-        this.source = source;
-        this.target = target;
+        this.path = dijkstraShortestPath.getPath(source, target);
+
+        if (path == null) {
+            throw new SubwayException(String.format(
+                    "출발역부터 도착역까지의 경로를 조회할 수 없습니다: 출발역id=%d, 도착역id=%d", source.getId(), target.getId()));
+        }
     }
 
     public List<Station> getStation() {
-        return dijkstraShortestPath.getPath(source, target).getVertexList();
+        return path.getVertexList();
+    }
+
+    public long getDistance() {
+        return (long) path.getWeight();
     }
 
     public static Builder builder(final List<Station> stations, final List<Section> sections) {
