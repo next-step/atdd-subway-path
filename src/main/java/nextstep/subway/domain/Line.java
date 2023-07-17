@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import nextstep.subway.domain.exception.CanNotAddSectionException;
 import nextstep.subway.domain.exception.NotEnoughSectionException;
-import nextstep.subway.domain.exception.NotMatchesSectionStationException;
 import nextstep.subway.domain.vo.Sections;
 
 import javax.persistence.*;
@@ -22,9 +21,6 @@ public class Line {
     @Column(length = 20, nullable = false)
     private String color;
 
-    @Column(nullable = false)
-    private Long distance;
-
     @Embedded
     private Sections sections = new Sections();
 
@@ -35,7 +31,6 @@ public class Line {
         this.name = name;
         this.color = color;
         this.sections.add(Section.of(upStation, downStation, distance));
-        this.distance = distance;
     }
 
     public Station getStartOfLine() {
@@ -56,7 +51,6 @@ public class Line {
         }
 
         this.sections.add(newSection);
-        this.distance = sections.sumOfDistance();
     }
 
     public void remove(Station targetStation) {
@@ -65,11 +59,10 @@ public class Line {
         }
 
         this.sections.remove(targetStation);
-        this.distance = this.sections.sumOfDistance();
     }
 
     public long getDistance() {
-        return this.distance;
+        return this.sections.sumOfDistance();
     }
 
     public List<Station> getStations() {
