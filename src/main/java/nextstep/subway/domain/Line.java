@@ -42,7 +42,7 @@ public class Line {
         return name;
     }
 
-    public void setName(String name) {
+    public void updateName(String name) {
         this.name = name;
     }
 
@@ -50,7 +50,7 @@ public class Line {
         return color;
     }
 
-    public void setColor(String color) {
+    public void updateColor(String color) {
         this.color = color;
     }
 

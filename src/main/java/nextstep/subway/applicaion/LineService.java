@@ -44,10 +44,10 @@ public class LineService {
         Line line = findLineById(lineId);
 
         if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
+            line.updateName(lineRequest.getName());
         }
         if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
+            line.updateColor(lineRequest.getColor());
         }
     }
 
