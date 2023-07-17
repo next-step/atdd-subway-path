@@ -126,7 +126,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
          * 새로운 노선의 하행역이 기존 노선에 등록되어 있는 역이면
-         * Then InvalidSectionDownStationException 이 발생한다
+         * Then 구간 등록에 실패한다
          */
         @Test
         void 신규_구간_하행역_기등록_실패() {
@@ -148,7 +148,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
          * 새로운 노선이 추가되는 구간의 길이가 기존 역 사이보다 크거나 같으면
-         * Then InvalidNewSectionDistanceException 이 발생한다
+         * Then 구간 등록에 실패한다
          */
         @CsvSource(value = {"10", "11", "12"})
         @ParameterizedTest
@@ -173,7 +173,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
          * 새로운 노선의 상행, 하행역이 모두 이미 구간 등록이 되어 있는 역인 경우
-         * Then AlreadyRegisteredSectionException 이 발생한다
+         * Then 구간 등록에 실패한다
          */
         @Test
         void 신규_구간_기등록_실패() {
@@ -195,7 +195,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
          * 새로운 노선의 상행, 하행역 중 어느 것도 노선에 등록 된 역이 아니면
-         * Then NotMatchesSectionStationException 이 발생한다
+         * Then 구간 등록에 실패한다
          */
         @Test
         void 신규_구간_노선_구간_상행_하행_모두_미등록_실패() {
@@ -303,8 +303,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고 구간을 추가 한뒤
          * When 지하철 노선 구간을 제거하려 할때 요청한 역이 노선의 하행역 아니면 역이면
-         * Then NotMatchesSectionStationException 이 발생한다
-         * 다시 조회하면 제거된 역을 제외한 상행역과 하행역이 조회되고 거리도 줄어든다
+         * Then 구간 등록에 실패한다
          */
         @Test
         void 지하철노선_구간_제거_하행역이_아니어서_실패() {
