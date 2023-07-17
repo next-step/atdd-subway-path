@@ -11,6 +11,7 @@ import subway.line.dto.SectionDeleteRequest;
 import subway.line.model.Line;
 import subway.line.repository.LineRepository;
 import subway.line.service.LineService;
+import subway.line.service.SectionService;
 import subway.station.model.Station;
 import subway.station.service.StationService;
 
@@ -29,6 +30,9 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
+
+    @Mock
+    private SectionService sectionService;
 
     /**
      * Given 노선이 있을 때
@@ -49,7 +53,7 @@ public class LineServiceMockTest {
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
 
         // when
-        LineService lineService = new LineService(lineRepository, stationService);
+        LineService lineService = new LineService(lineRepository, stationService, sectionService);
 
         SectionCreateRequest createRequest = SectionCreateRequest.builder()
                 .distance(distance)
@@ -81,7 +85,7 @@ public class LineServiceMockTest {
         when(stationService.findStationById(middleStationId)).thenReturn(new Station(2L, "역삼역"));
         when(stationService.findStationById(lastStationId)).thenReturn(new Station(3L, "선릉역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
-        LineService lineService = new LineService(lineRepository, stationService);
+        LineService lineService = new LineService(lineRepository, stationService, sectionService);
 
         SectionCreateRequest 첫번째_구간_요청 = SectionCreateRequest.builder()
                 .upStationId(firstStationId)
@@ -127,7 +131,7 @@ public class LineServiceMockTest {
         when(stationService.findStationById(upStationId)).thenReturn(new Station(1L, "강남역"));
         when(stationService.findStationById(downStationId)).thenReturn(new Station(2L, "역삼역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
-        LineService lineService = new LineService(lineRepository, stationService);
+        LineService lineService = new LineService(lineRepository, stationService, sectionService);
 
         SectionCreateRequest 구간_요청 = SectionCreateRequest.builder()
                 .upStationId(upStationId)
@@ -169,7 +173,7 @@ public class LineServiceMockTest {
         when(stationService.findStationById(upStationId)).thenReturn(new Station(1L, "강남역"));
         when(stationService.findStationById(downStationId)).thenReturn(new Station(2L, "역삼역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
-        LineService lineService = new LineService(lineRepository, stationService);
+        LineService lineService = new LineService(lineRepository, stationService, sectionService);
 
         SectionCreateRequest 구간_요청 = SectionCreateRequest.builder()
                 .upStationId(upStationId)
@@ -202,7 +206,7 @@ public class LineServiceMockTest {
         when(stationService.findStationById(upStationId)).thenReturn(new Station(1L, "강남역"));
         when(stationService.findStationById(downStationId)).thenReturn(new Station(2L, "역삼역"));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(Line.builder().name("2호선").color("bg-green-600").build()));
-        LineService lineService = new LineService(lineRepository, stationService);
+        LineService lineService = new LineService(lineRepository, stationService, sectionService);
 
         SectionCreateRequest 구간_요청 = SectionCreateRequest.builder()
                 .upStationId(upStationId)

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import subway.exception.SubwayBadRequestException;
-import subway.line.constant.SubwayMessage;
+import subway.constant.SubwayMessage;
 import subway.station.model.Station;
 
 import javax.persistence.Column;

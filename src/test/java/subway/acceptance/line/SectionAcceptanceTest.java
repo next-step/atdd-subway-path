@@ -61,7 +61,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String createdLocation = createLineResponse.header("Location");
 
         // then
-        var 구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("역삼역"), getStationId("선릉역"), 10L);
+        var 구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("선릉역"), 10L);
         final String appendLocation = createdLocation + "/sections";
         var createSectionResponse = LineSteps.구간_추가_API(appendLocation, 구간_요청);
         LineSteps.노선_조회_API(createdLocation);
@@ -110,7 +110,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String appendLocation = createdLocation + "/sections";
 
         // when
-        var 상행에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("교대역"), getStationId("강남역"), 10L);
+        var 상행에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("교대역"), getStationId("강남역"), 10L);
         var response = LineSteps.구간_추가_API(appendLocation, 상행에_추가하는_구간_요청);
 
         // then
@@ -132,7 +132,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String appendLocation = createdLocation + "/sections";
 
         // when
-        var 하행에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("선릉역"), getStationId("삼성역"), 10L);
+        var 하행에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("선릉역"), getStationId("삼성역"), 10L);
         var response = LineSteps.구간_추가_API(appendLocation, 하행에_추가하는_구간_요청);
 
         // then
@@ -153,7 +153,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String appendLocation = createdLocation + "/sections";
 
         // when
-        var 노선_중간에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("역삼역"), getStationId("왕십리역"), 5L);
+        var 노선_중간에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("왕십리역"), 5L);
         var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
 
         // then
@@ -174,7 +174,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String appendLocation = createdLocation + "/sections";
 
         // when
-        var 노선_중간에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("왕십리역"), getStationId("역삼역"), 5L);
+        var 노선_중간에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("왕십리역"), getStationId("역삼역"), 5L);
         var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
 
         // then
@@ -196,7 +196,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String appendLocation = createdLocation + "/sections";
 
         // when
-        var 노선_중간에_추가하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("왕십리역"), getStationId("역삼역"), 11L);
+        var 노선_중간에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("왕십리역"), getStationId("역삼역"), 11L);
         var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
 
         // then
@@ -217,7 +217,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String appendLocation = createdLocation + "/sections";
 
         // when
-        var 이미_존재하는_구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("역삼역"), getStationId("삼성역"), 10L);
+        var 이미_존재하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("삼성역"), 10L);
         var response = LineSteps.구간_추가_API(appendLocation, 이미_존재하는_구간_요청);
 
         // then
@@ -238,13 +238,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String appendLocation = createdLocation + "/sections";
 
         // when
-        var 존재하지_않는_구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("왕십리역"), getStationId("성수역"), 10L);
+        var 존재하지_않는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("왕십리역"), getStationId("성수역"), 10L);
         var response = LineSteps.구간_추가_API(appendLocation, 존재하지_않는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+
+    // TODO : to fixture
 
     private Long getStationId(String name) {
         return stationsMap.get(name);
@@ -256,7 +258,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final String createdLocation = 노선_생성.header("Location");
         final String appendLocation = createdLocation + "/sections";
 
-        var 구간_요청 = LineRequestGenerator.구간_요청_만들기(getStationId("역삼역"), getStationId("선릉역"), 10L);
+        var 구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("선릉역"), 10L);
         LineSteps.구간_추가_API(appendLocation, 구간_요청);
 
         return createdLocation;

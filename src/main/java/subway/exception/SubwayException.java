@@ -1,6 +1,6 @@
 package subway.exception;
 
-import subway.line.constant.SubwayMessage;
+import subway.constant.SubwayMessage;
 
 public class SubwayException extends RuntimeException {
 

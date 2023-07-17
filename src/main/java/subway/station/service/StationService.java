@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.exception.SubwayNotFoundException;
-import subway.line.constant.SubwayMessage;
+import subway.constant.SubwayMessage;
 import subway.station.dto.StationRequest;
 import subway.station.dto.StationResponse;
 import subway.station.model.Station;

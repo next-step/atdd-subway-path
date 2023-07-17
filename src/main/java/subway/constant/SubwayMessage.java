@@ -1,4 +1,4 @@
-package subway.line.constant;
+package subway.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

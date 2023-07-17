@@ -3,6 +3,7 @@ package subway.unit;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import subway.acceptance.line.SectionFixture;
 import subway.line.model.Line;
 import subway.line.model.Section;
 import subway.station.model.Station;
@@ -54,7 +55,7 @@ class LineTest {
     @Test
     void addSectionEndOfLine() {
         // given
-        Line line = 이호선_기본구간_생성();
+        Line line = SectionFixture.이호선_기본구간_생성();
 
         // when
         Station 역삼역 = new Station(2L, "역삼역");
@@ -83,7 +84,7 @@ class LineTest {
     @Test
     void addSectionFrontOfLine() {
         // given
-        Line line = 이호선_기본구간_생성();
+        Line line = SectionFixture.이호선_기본구간_생성();
 
         // when
         Station 선릉역 = new Station(3L, "선릉역");
@@ -112,7 +113,7 @@ class LineTest {
     @Test
     void addSectionInMiddleOfLine() {
         // given
-        Line line = 이호선_기본구간_생성();
+        Line line = SectionFixture.이호선_기본구간_생성();
 
         // when
         Station 선릉역 = new Station(3L, "선릉역");
@@ -142,7 +143,7 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        Line line = 이호선_기본구간_생성();
+        Line line = SectionFixture.이호선_기본구간_생성();
 
         // when
         List<Station> stations = line.getStations();
@@ -160,8 +161,8 @@ class LineTest {
     @Test
     void deleteSectionByStation() {
         // given
-        Line line = 이호선_기본구간_생성();
-        Section section = 기본구간에_구간추가(line);
+        Line line = SectionFixture.이호선_기본구간_생성();
+        Section section = SectionFixture.기본구간에_구간추가(line);
 
         // when
         line.deleteSectionByStation(section.getDownStation());
@@ -169,43 +170,6 @@ class LineTest {
         // then
         long sectionsCount = line.getLineSections().getSectionsCount();
         assertThat(sectionsCount).isEqualTo(1);
-    }
-
-    private Line 이호선_기본구간_생성() {
-        Station 강남역 = new Station(1L, "강남역");
-        Station 역삼역 = new Station(2L, "역삼역");
-
-        Line line = Line.builder()
-                .name("2호선")
-                .color("bg-green-600")
-                .build();
-
-        final long distance = 10;
-
-        Section section = Section.builder()
-                .line(line)
-                .upStation(강남역)
-                .downStation(역삼역)
-                .distance(distance)
-                .build();
-        line.addSection(section);
-        return line;
-    }
-
-    private Section 기본구간에_구간추가(Line line) {
-        Station upStation = new Station(2L, "역삼역");
-        Station downStation = new Station(5L, "잠실역");
-
-
-        final long distance = 10;
-        Section section = Section.builder()
-                .line(line)
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(distance)
-                .build();
-        line.addSection(section);
-        return section;
     }
 
 

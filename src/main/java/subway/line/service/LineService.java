@@ -3,8 +3,8 @@ package subway.line.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import subway.constant.SubwayMessage;
 import subway.exception.SubwayNotFoundException;
-import subway.line.constant.SubwayMessage;
 import subway.line.dto.LineCreateRequest;
 import subway.line.dto.LineModifyRequest;
 import subway.line.dto.LineResponse;
@@ -26,8 +26,8 @@ public class LineService {
 
 
     private final LineRepository lineRepository;
-
     private final StationService stationService;
+    private final SectionService sectionService;
 
     @Transactional
     public Line saveLine(LineCreateRequest createRequest,
@@ -108,5 +108,11 @@ public class LineService {
         Line foundLine = this.findLineById(request.getLineId());
         Station station = stationService.findStationById(request.getStationId());
         foundLine.deleteSectionByStation(station);
+    }
+
+    public List<Line> findByStation(Station sourceStation, Station targetStation) {
+        List<Section> sectionsByStation = sectionService.findByStation(sourceStation, targetStation);
+        return sectionsByStation.stream()
+                .map(Section::getLine).distinct().collect(Collectors.toList());
     }
 }
