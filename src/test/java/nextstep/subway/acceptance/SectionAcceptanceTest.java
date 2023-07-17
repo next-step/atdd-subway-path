@@ -25,24 +25,67 @@ import org.springframework.http.HttpStatus;
  */
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-    /*
-      # 구간 등록 기능
-      ## 요구사항
-      - 지하철 노선에 구간을 등록한다.
-      - 새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다. 즉, 새로운 구간이 등록될 때, "기존 구간의 하행역 == 새로운 구간의 상행 역"이여야 등록 가능하다.
-      - 새로운 구간의 하행역은 해당 노선에 등록되어있는 역일 수 없다. -> 하행역이 N개가 될 수 있으므로..
-      - 새로운 구간 등록시 위 조건에 부합하지 않는 경우 에러 처리한다.
+    /**
+     * Given : 지하철역을 3개 생성하고
+     * And : 지하철 노선을 1개 생성한 후
+     * When : 역 사이에 새로운 구간을 등록하면
+     * Then : 노선에 새로운 구간이 등록된다
      */
+    @DisplayName("역 사이에 새로운 지하철 구간 등록")
+    @Test
+    void registerSectionBetweenStation() {
+        // given
+        long 노선_상행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("강남역"));
+        long 노선_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재시민의숲역"));
+        long 구간_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재역"));
+
+        long lineId = 응답_결과에서_Id를_추출한다(LineStep.지하철_노선을_생성한다(노선_상행_Id, 노선_하행_Id, "신분당선"));
+
+        // when
+        ExtractableResponse<Response> createSectionResponse = SectionStep.지하철_노선_구간을_등록한다(lineId, 노선_상행_Id, 구간_하행_Id);
+
+        // then
+        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> showLineResponse = LineStep.지하철_노선을_조회한다(lineId);
+        assertThat(지하철_구간_목록을_추출한다(showLineResponse)).hasSize(2);
+    }
 
     /**
      * Given : 지하철역을 3개 생성하고
      * And : 지하철 노선을 1개 생성한 후
-     * When : 새로운 구간을 등록하면
+     * When : 상행 종점에 새로운 구간을 등록하면
      * Then : 노선에 새로운 구간이 등록된다
      */
-    @DisplayName("지하철 구간 등록")
+    @DisplayName("상행 종점에 새로운 지하철 구간 등록")
     @Test
-    void registerSectionOk() {
+    void registerSectionUpStation() {
+        // given
+        long 노선_상행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("강남역"));
+        long 노선_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재역"));
+        long 구간_상행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("신논현역"));
+
+        long lineId = 응답_결과에서_Id를_추출한다(LineStep.지하철_노선을_생성한다(노선_상행_Id, 노선_하행_Id, "신분당선"));
+
+        // when
+        ExtractableResponse<Response> createSectionResponse = SectionStep.지하철_노선_구간을_등록한다(lineId, 구간_상행_Id, 노선_상행_Id);
+
+        // then
+        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> showLineResponse = LineStep.지하철_노선을_조회한다(lineId);
+        assertThat(지하철_구간_목록을_추출한다(showLineResponse)).hasSize(2);
+    }
+
+    /**
+     * Given : 지하철역을 3개 생성하고
+     * And : 지하철 노선을 1개 생성한 후
+     * When : 하행 종점에 새로운 구간을 등록하면
+     * Then : 노선에 새로운 구간이 등록된다
+     */
+    @DisplayName("하행 종점에 새로운 지하철 구간 등록")
+    @Test
+    void registerSectionDownStation() {
         // given
         long 노선_상행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("강남역"));
         long 노선_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재역"));
