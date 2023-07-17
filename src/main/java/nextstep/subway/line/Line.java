@@ -66,49 +66,67 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(Section section) {
-        Optional<Section> sameUpStationSection = sections.stream()
-                .filter(savedSection -> savedSection.isSameUpStation(section.getUpStation()))
-                .findFirst();
-        List<Station> stations = sections.stream()
-                .flatMap(savedSection -> Stream.of(savedSection.getUpStation(), savedSection.getDownStation()))
-                .collect(Collectors.toList());
-        boolean doesContainsDownStation = stations.contains(section.getDownStation());
-        boolean doesContainsUpStation = stations.contains(section.getUpStation());
+    private static boolean sameDownStationOfTopStation(Section newSection, Section topSection) {
+        return topSection.getUpStation().equals(newSection.getDownStation());
+    }
+
+    public void addSection(Section newSection) {
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
+        }
+        checkSection(newSection);
+        Optional<Section> sameUpStationSection = getSameUpStationSection(newSection);
+        if (sameUpStationSection.isPresent()) {
+            insertCenter(newSection, sameUpStationSection.get());
+            return;
+        }
+        Section topSection = getTopSection();
+        if (sameDownStationOfTopStation(newSection, topSection)) {
+            insertTop(newSection);
+            return;
+        }
+        sections.add(newSection);
+    }
+
+    private void checkSection(Section newSection) {
+        List<Station> stations = getStations();
+        boolean doesContainsDownStation = stations.contains(newSection.getDownStation());
+        boolean doesContainsUpStation = stations.contains(newSection.getUpStation());
         if (doesContainsDownStation && doesContainsUpStation) {
             throw new AlreadyConnectedException();
         }
         if (!sections.isEmpty() && !doesContainsDownStation && !doesContainsUpStation) {
             throw new MissingStationException();
         }
-        if (sameUpStationSection.isPresent()) {
-            Section targetSection = sameUpStationSection.get();
-            if (section.getDistance() >= targetSection.getDistance()) {
-                throw new InvalidDistanceException();
-            }
-            sections.remove(targetSection);
-            Station targetDownStation = targetSection.getDownStation();
-            sections.add(section);
-            sections.add(new Section(section.getDownStation(), targetDownStation,
-                    targetSection.getDistance() - section.getDistance()));
-            return;
+    }
+
+    private void insertTop(Section section) {
+        List<Section> targetSections = new ArrayList<>();
+        targetSections.add(section);
+        targetSections.addAll(sections);
+        sections = targetSections;
+    }
+
+    private Section getTopSection() {
+        return sections.get(0);
+    }
+
+    private void insertCenter(Section insertSection, Section targetSection) {
+        if (insertSection.getDistance() >= targetSection.getDistance()) {
+            throw new InvalidDistanceException();
         }
-        if (sections.isEmpty()) {
-            sections.add(section);
-            return;
-        }
-        Section topSection = sections.get(0);
-        if (topSection.getUpStation().equals(section.getDownStation())) {
-            List<Section> targetSections = new ArrayList<>();
-            targetSections.add(section);
-            targetSections.addAll(sections);
-            sections = targetSections;
-            return;
-        }
-        if (!sections.get(sections.size() - 1).canLink(section)) {
-            throw new MismatchedUpstreamStationException();
-        }
-        sections.add(section);
+        sections.remove(targetSection);
+        Station targetDownStation = targetSection.getDownStation();
+        sections.add(insertSection);
+        sections.add(new Section(insertSection.getDownStation(), targetDownStation,
+                targetSection.getDistance() - insertSection.getDistance()));
+    }
+
+    private Optional<Section> getSameUpStationSection(Section section) {
+        return sections.stream()
+                .filter(savedSection -> savedSection.isSameUpStation(section.getUpStation()))
+                .findFirst();
     }
 
     public void deleteStation(Station downStation) {
