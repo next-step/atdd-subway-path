@@ -205,7 +205,7 @@ public class Line {
         return upDownStationMap.values().stream().filter(downStation -> downStation == upStation).findFirst().isEmpty();
     }
 
-    public boolean isDeletableSection(Station station) {
+    public boolean isDeletableStation(Station station) {
         return false;
     }
 

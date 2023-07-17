@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -37,7 +35,7 @@ public class LineServiceMockTest {
         Line line = spy(Line.class);
         Station station = new Station();
 
-        when(line.isDeletableSection(station)).thenReturn(true);
+        when(line.isDeletableStation(station)).thenReturn(true);
         doNothing().when(line).removeStation(station);
 
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
@@ -48,7 +46,7 @@ public class LineServiceMockTest {
 
         // then
         // verify 메서드를 통해 검증
-        verify(line).isDeletableSection(station);
+        verify(line).isDeletableStation(station);
         verify(line).removeStation(station);
     }
 
@@ -60,7 +58,7 @@ public class LineServiceMockTest {
         Line line = spy(Line.class);
         Station station = new Station();
 
-        when(line.isDeletableSection(station)).thenReturn(false);
+        when(line.isDeletableStation(station)).thenReturn(false);
 
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
         when(stationService.findById(any())).thenReturn(station);
