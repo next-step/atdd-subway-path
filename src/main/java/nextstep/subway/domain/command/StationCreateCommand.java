@@ -1,4 +1,4 @@
-package nextstep.subway.service.command;
+package nextstep.subway.domain.command;
 
 public interface StationCreateCommand {
 

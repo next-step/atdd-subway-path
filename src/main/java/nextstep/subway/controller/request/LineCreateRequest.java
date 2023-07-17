@@ -1,7 +1,7 @@
 package nextstep.subway.controller.request;
 
 
-import nextstep.subway.service.command.LineCreateCommand;
+import nextstep.subway.domain.command.LineCreateCommand;
 
 public class LineCreateRequest implements LineCreateCommand {
 

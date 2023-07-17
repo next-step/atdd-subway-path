@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.service.command.StationCreateCommand;
+import nextstep.subway.domain.command.StationCreateCommand;
 
 import javax.persistence.*;
 import java.util.Objects;

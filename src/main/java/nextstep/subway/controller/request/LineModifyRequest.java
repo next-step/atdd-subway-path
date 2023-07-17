@@ -1,6 +1,6 @@
 package nextstep.subway.controller.request;
 
-import nextstep.subway.service.command.LineModifyCommand;
+import nextstep.subway.domain.command.LineModifyCommand;
 
 public class LineModifyRequest implements LineModifyCommand {
 

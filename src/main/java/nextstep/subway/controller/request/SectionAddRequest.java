@@ -1,6 +1,6 @@
 package nextstep.subway.controller.request;
 
-import nextstep.subway.service.command.SectionAddCommand;
+import nextstep.subway.domain.command.SectionAddCommand;
 
 public class SectionAddRequest implements SectionAddCommand {
 

@@ -8,9 +8,9 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
-import nextstep.subway.service.command.LineCreateCommand;
-import nextstep.subway.service.command.LineModifyCommand;
-import nextstep.subway.service.command.SectionAddCommand;
+import nextstep.subway.domain.command.LineCreateCommand;
+import nextstep.subway.domain.command.LineModifyCommand;
+import nextstep.subway.domain.command.SectionAddCommand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

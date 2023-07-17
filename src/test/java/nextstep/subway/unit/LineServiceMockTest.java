@@ -13,7 +13,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.LineService;
-import nextstep.subway.service.command.SectionAddCommand;
+import nextstep.subway.domain.command.SectionAddCommand;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

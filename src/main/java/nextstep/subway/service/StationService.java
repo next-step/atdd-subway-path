@@ -4,7 +4,7 @@ import nextstep.subway.common.NotFoundStationException;
 import nextstep.subway.controller.resonse.StationResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.repository.StationRepository;
-import nextstep.subway.service.command.StationCreateCommand;
+import nextstep.subway.domain.command.StationCreateCommand;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
