@@ -10,6 +10,7 @@ import nextstep.subway.line.DownstreamStationIncludedException;
 import nextstep.subway.line.InvalidDistanceException;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.MismatchedUpstreamStationException;
+import nextstep.subway.line.MissingStationException;
 import nextstep.subway.line.NonDownstreamTerminusException;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.SingleSectionRemovalException;
@@ -113,6 +114,25 @@ class LineTest {
                 .isInstanceOf(AlreadyConnectedException.class);
     }
 
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void insertSectionSuccessBetweenSectionFailedByNotExists() {
+        // given
+        Line line = new Line();
+        Station 강남역 = new Station("강남역");
+        Station 판교역 = new Station("판교역");
+        Section targetSection = new Section(강남역, 판교역, 10);
+        line.addSection(targetSection);
+        Station 양재역 = new Station("양재역");
+        Station 교대역 = new Station("교대역");
+
+        Section insertSection = new Section(양재역, 교대역, 3);
+
+        // when,then
+        assertThatThrownBy(() -> line.addSection(insertSection))
+                .isInstanceOf(MissingStationException.class);
+    }
+
     @Disabled
     @DisplayName("추가할 세션의 하행 스테이션이 Line에 포함 되여 있으면 예외를 던진다")
     @Test
@@ -127,6 +147,7 @@ class LineTest {
         assertThatThrownBy(() -> line.addSection(newSection)).isInstanceOf(DownstreamStationIncludedException.class);
     }
 
+    @Disabled
     @DisplayName("노선 하행 종점역과 추가할 세션의 상행역이 일치하지 않아면 예외를 던진다")
     @Test
     void addSectionFailed() {

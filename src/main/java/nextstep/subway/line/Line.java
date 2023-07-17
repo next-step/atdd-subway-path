@@ -73,8 +73,13 @@ public class Line {
         List<Station> stations = sections.stream()
                 .flatMap(savedSection -> Stream.of(savedSection.getUpStation(), savedSection.getDownStation()))
                 .collect(Collectors.toList());
-        if (stations.contains(section.getDownStation()) && stations.contains(section.getUpStation())) {
+        boolean doesContainsDownStation = stations.contains(section.getDownStation());
+        boolean doesContainsUpStation = stations.contains(section.getUpStation());
+        if (doesContainsDownStation && doesContainsUpStation) {
             throw new AlreadyConnectedException();
+        }
+        if (!sections.isEmpty() && !doesContainsDownStation && !doesContainsUpStation) {
+            throw new MissingStationException();
         }
         if (sameUpStationSection.isPresent()) {
             Section targetSection = sameUpStationSection.get();
