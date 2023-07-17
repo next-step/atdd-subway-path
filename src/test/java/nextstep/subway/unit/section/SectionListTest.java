@@ -19,7 +19,8 @@ class SectionListTest {
     private final Station c = new Station("c");
     private final Station d = new Station("d");
 
-    private final Line line = new Line("line", "bg", new LineLastStations(a, b), 5);
+    private final Section section = new Section(new SectionStations(a, b), 5);
+    private final Line line = new Line("line", "bg",  section);
 
     @Test
     void addSection() {

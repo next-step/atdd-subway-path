@@ -29,7 +29,6 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-
         Station upwardStation = stationService.getStation(lineRequest.getUpStationId());
         Station downwardStation = stationService.getStation(lineRequest.getDownStationId());
         Section section = new Section(new SectionStations(upwardStation, downwardStation), lineRequest.getDistance());
@@ -64,23 +63,10 @@ public class LineService {
     }
 
     private List<LineResponse> createLineResponseList(List<Line> lines) {
-        return lines
-                .stream()
-                .map(line -> {
-                    LineLastStations lineLastStations = line.getLastStations();
-                    return new LineResponse(line.getId(), line.getName(), line.getColor(), getStationResponse(lineLastStations));
-                }).collect(Collectors.toList());
+        return null;
     }
 
     private LineResponse createLineResponse(Line line) {
-        List<StationResponse> stationResponses = getStationResponse(line.getLastStations());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
-    }
-
-    private List<StationResponse> getStationResponse(LineLastStations stations) {
-        List<Station> stationList = stations.getStations();
-        return stationList.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
-                .collect(Collectors.toList());
+        return null;
     }
 }

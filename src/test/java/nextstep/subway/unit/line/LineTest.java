@@ -16,11 +16,12 @@ class LineTest {
     private final Station stationA = new Station(1L, "a");
     private final Station stationB = new Station(2L, "b");
     private final Station stationC = new Station(3L, "c");
-    private final LineLastStations lastStations = new LineLastStations(stationA, stationB);
+    private final Section section = new Section(new SectionStations(stationA, stationB), 1);
+    private final Section section1 = new Section(new SectionStations(stationA, stationB), 5);
 
     @Test
     void updateName() {
-        Line line = new Line("신분당선", "abc", lastStations, 1);
+        Line line = new Line("신분당선", "abc", section);
 
         line.updateName("신신분당선");
 
@@ -29,14 +30,14 @@ class LineTest {
 
     @Test
     void updateNameException() {
-        Line line = new Line("신분당선", "abc", lastStations,1);
+        Line line = new Line("신분당선", "abc", section);
         assertThrows(CustomException.class, () -> line.updateName(""));
         assertThrows(CustomException.class, () -> line.updateName(null));
     }
 
     @Test
     void updateColor() {
-        Line line = new Line("신분당선", "abc", lastStations, 1);
+        Line line = new Line("신분당선", "abc", section);
 
         line.updateColor("abcd");
 
@@ -45,14 +46,14 @@ class LineTest {
 
     @Test
     void updateColorException() {
-        Line line = new Line("신분당선", "abc", lastStations, 1);
+        Line line = new Line("신분당선", "abc", section);
         assertThrows(CustomException.class, () -> line.updateColor(""));
         assertThrows(CustomException.class, () -> line.updateColor(null));
     }
 
     @Test
     void addBaseSection() {
-        Line line = new Line("신분당선", "abc", lastStations, 5);
+        Line line = new Line("신분당선", "abc", section1);
 
         List<Section> sectionList = line.getSectionList();
         assertThat(sectionList).hasSize(1);
@@ -61,21 +62,19 @@ class LineTest {
 
     @Test
     void addSection() {
-        Line line = new Line("신분당선", "abc", lastStations,3);
+        Line line = new Line("신분당선", "abc", section1);
 
         Section section = new Section(line, new SectionStations(stationB, stationC), 3);
         line.addSection(section);
 
         List<Section> sections = line.getSectionList();
-        LineLastStations stations = line.getLastStations();
         assertThat(sections).hasSize(2);
-        assertThat(stations.getDownLastStation()).isEqualTo(stationC);
-        assertThat(line.getDistance()).isEqualTo(6);
+        assertThat(line.getDistance()).isEqualTo(8);
     }
 
     @Test
     void addSectionThrowException() {
-        Line line = new Line("신분당선", "abc", lastStations,1);
+        Line line = new Line("신분당선", "abc", section);
 
         Section sectionA = new Section(line, new SectionStations(stationC, stationB), 3);
         Section sectionB = new Section(line, new SectionStations(stationB, stationA), 3);
@@ -87,7 +86,7 @@ class LineTest {
     @Test
     void deleteStation() {
         //given
-        Line line = new Line("신분당선", "abc", lastStations, 1);
+        Line line = new Line("신분당선", "abc", section);
         Section section = new Section(line, new SectionStations(stationB, stationC), 3);
         line.addSection(section);
 
@@ -96,23 +95,21 @@ class LineTest {
 
         //then
         List<Section> sections = line.getSectionList();
-        LineLastStations stations = line.getLastStations();
         assertThat(sections).hasSize(1);
-        assertThat(stations.getDownLastStation()).isEqualTo(stationB);
         assertThat(line.getDistance()).isEqualTo(1);
     }
 
     @Test
     void deleteStationExceptionWhenOnlyOneSection() {
         //given
-        Line line = new Line("신분당선", "abc", lastStations, 1);
+        Line line = new Line("신분당선", "abc", section);
 
         assertThrows(CustomException.class, () -> line.deleteStation(stationB));
     }
 
     @Test
     void deleteStationExceptionWhenNotLastDownwardStation() {
-        Line line = new Line("신분당선", "abc", lastStations, 1);
+        Line line = new Line("신분당선", "abc", section);
         Section section = new Section(line, new SectionStations(stationB, stationC), 3);
         line.addSection(section);
 

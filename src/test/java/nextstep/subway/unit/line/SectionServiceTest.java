@@ -60,8 +60,6 @@ class SectionServiceTest {
         Line line = lineService.getLine(lineId);
         assertThat(line.getSectionList()).hasSize(2);
         assertThat(line.getDistance()).isEqualTo(5);
-        Station downLastStation = line.getLastStations().getDownLastStation();
-        assertThat(downLastStation).isEqualTo(third);
     }
 
     @Test
@@ -79,7 +77,5 @@ class SectionServiceTest {
         Line line = lineService.getLine(lineId);
         assertThat(line.getSectionList()).hasSize(1);
         assertThat(line.getDistance()).isEqualTo(1);
-        Station downLastStation = line.getLastStations().getDownLastStation();
-        assertThat(downLastStation).isEqualTo(second);
     }
 }
