@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -56,5 +57,27 @@ public class Section {
 
     private boolean isSameAsUpStation(Station station) {
         return this.upStation.equals(station);
+    }
+
+    public boolean isSameUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return getDistance() == section.getDistance() && Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUpStation(), getDownStation(), getDistance());
     }
 }

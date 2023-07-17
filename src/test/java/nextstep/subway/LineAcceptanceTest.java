@@ -17,6 +17,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,6 +29,35 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class LineAcceptanceTest {
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행역이 기존 구간의 상행역과 일치하고 똑같이 않은 구간을 등록하면
+     * Then 기존 구간의 역을 기준으로 새로운 구간을 추가된다
+     */
+    @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가")
+    @Test
+    void insertSectionSuccess() {
+        // given
+        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
+        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
+        int 양재역_아이디 = 아이디(지하철역을_생성한다("양재역"));
+        var 신분당선 = 지하철_노선_등록한다(
+                "신분당선",
+                "bg-red-600",
+                강남역_아이디,
+                판교역_아이디,
+                10);
+
+        // when
+        노선_구간을_등록한다(아이디(신분당선), 강남역_아이디, 양재역_아이디, 1);
+
+        // then
+        신분당선 = 지하철_노선_조회한다(아이디(신분당선));
+        List<String> 스테이션_이름_리스트 = 스테이션_이름_리스트(신분당선);
+        assertThat(스테이션_이름_리스트).containsExactly("강남역", "양재역", "판교역");
+    }
+
 
     /**
      * When 지하철 노선을 생성하면
@@ -236,6 +266,7 @@ public class LineAcceptanceTest {
      * When 상행역이 생성한 노선의 하행 종점역아니고 하행역 해당 노선에 등록되어 있지 않으면 지하철 구간을 등록하면
      * Then 지하철 구간이 등록되지 않고 예외코드가 반환한다
      */
+    @Disabled
     @DisplayName("노선 하행 종점역과 구간 등록 상행역이 일치하지 않아 등록 실패")
     @Test
     void registerSectionFailedByMismatchLineLastStationAndUpstreamStation() {

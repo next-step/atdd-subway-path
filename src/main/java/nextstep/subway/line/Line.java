@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CollectionTable;
@@ -69,6 +70,17 @@ public class Line {
         if (sections.stream()
                 .anyMatch(savedSection -> savedSection.containsStation(section.getDownStation()))) {
             throw new DownstreamStationIncludedException();
+        }
+        Optional<Section> sameUpStation = sections.stream()
+                .filter(savedSection -> savedSection.isSameUpStation(section.getUpStation()))
+                .findFirst();
+        if (sameUpStation.isPresent()) {
+            Section targetStation = sameUpStation.get();
+            sections.remove(targetStation);
+            Station targetDownStation = targetStation.getDownStation();
+            sections.add(section);
+            sections.add(new Section(section.getDownStation(), targetDownStation, 1));
+            return;
         }
         if (!sections.isEmpty() && !sections.get(sections.size() - 1).canLink(section)) {
             throw new MismatchedUpstreamStationException();

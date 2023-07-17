@@ -32,17 +32,37 @@ class LineTest {
         assertThat(line.getSections()).contains(section);
     }
 
+    @DisplayName("추가할 세션의 상행 스테이션이 추가될 노선에 포함되고 추가될 위치의 하행스테이션과 똑같이 아니면 그사이에 추가된다")
+    @Test
+    void insertSectionSuccessBetweenSection() {
+        // given
+        Line line = new Line();
+        Station 강남역 = new Station("강남역");
+        Station 판교역 = new Station("판교역");
+        Section targetSection = new Section(강남역, 판교역, 1);
+        line.addSection(targetSection);
+        Station 양재역 = new Station("양재역");
+        Section insertSection = new Section(강남역, 양재역, 1);
+
+        // when
+        line.addSection(insertSection);
+
+        // then
+        List<Section> sections = line.getSections();
+        assertThat(sections).containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 1));
+    }
+
 
     @DisplayName("추가할 세션의 하행 스테이션이 Line에 포함 되여 있으면 예외를 던진다")
     @Test
     void addSectionFailedByUpStationOfNewSection() {
         // given
         Line line = new Line();
-        Section savedSection = new Section(new Station("강남역"),new Station("양재역"),1);
+        Section savedSection = new Section(new Station("강남역"), new Station("양재역"), 1);
         line.addSection(savedSection);
 
         // when,then
-        Section newSection = new Section(new Station("양재역"),new Station("강남역"),1);
+        Section newSection = new Section(new Station("양재역"), new Station("강남역"), 1);
         assertThatThrownBy(() -> line.addSection(newSection)).isInstanceOf(DownstreamStationIncludedException.class);
     }
 
@@ -51,11 +71,11 @@ class LineTest {
     void addSectionFailed() {
         // given
         Line line = new Line();
-        Section savedSection = new Section(new Station("강남역"),new Station("양재역"),1);
+        Section savedSection = new Section(new Station("강남역"), new Station("양재역"), 1);
         line.addSection(savedSection);
 
         // when,then
-        Section newSection = new Section(new Station("교대역"),new Station("서초역"),1);
+        Section newSection = new Section(new Station("교대역"), new Station("서초역"), 1);
         assertThatThrownBy(() -> line.addSection(newSection)).isInstanceOf(MismatchedUpstreamStationException.class);
     }
 
@@ -138,7 +158,7 @@ class LineTest {
         Line line = new Line("신분당선", "#D31145", new ArrayList<>());
 
         // when
-        line.update("강남선","#D31146");
+        line.update("강남선", "#D31146");
 
         // then
         Assertions.assertAll(
