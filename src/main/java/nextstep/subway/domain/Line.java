@@ -24,6 +24,12 @@ public class Line {
         this.color = color;
     }
 
+    public static Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
+        Line line = new Line(name, color);
+        line.addSection(upStation, downStation, distance);
+        return line;
+    }
+
     public Long getId() {
         return id;
     }
@@ -56,7 +62,7 @@ public class Line {
 
         return this.sections.stream()
                 .filter(it -> it.getUpStation().getId() == upStationId && it.getDownStation().getId() == downStationId)
-                .findFirst().orElseThrow(IllegalArgumentException::new);
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("sections이 존재하지 않습니다."));
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
