@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
-
     private Long 강남역;
     private Long 양재역;
     private Long 정자역;
