@@ -1,6 +1,9 @@
 package nextstep.subway.line.entity;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.station.entity.Station;
 
 import javax.persistence.*;
@@ -8,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
 
     @Id
@@ -26,7 +30,13 @@ public class Line {
     @Embedded
     private Sections sections;
 
-    public Line() {}
+    public Line(Long id, String name, String color, Integer distance, Station upStation, Station downStation) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.distance = distance;
+        this.sections = Sections.init(new Section(this, upStation, downStation, distance));
+    }
 
     public Line(String name, String color, Integer distance, Station upStation, Station downStation) {
         this.name = name;

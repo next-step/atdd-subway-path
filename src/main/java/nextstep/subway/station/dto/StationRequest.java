@@ -9,4 +9,8 @@ public class StationRequest {
 
     private Long id;
     private String name;
+
+    public StationRequest(String name) {
+        this.name = name;
+    }
 }
