@@ -54,7 +54,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long lineId, LineRequest lineRequest) {
         final Line line = this.findLine(lineId);
-        line.update(lineRequest.getName(), lineRequest.getColor());
+        line.updateInfo(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional
@@ -83,9 +83,9 @@ public class LineService {
         Line line = this.findLine(lineId);
         Station station = stationService.findStation(stationId);
 
-        line.validateDeleteSectionRequest(station);
+        line.removeSection(station);
 
-        line.getSections().remove(line.getSections().size() - 1);
+
     }
 
 

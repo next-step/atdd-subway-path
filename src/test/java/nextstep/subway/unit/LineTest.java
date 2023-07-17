@@ -55,7 +55,7 @@ class LineTest {
 
     }
 
-    @DisplayName("라인의 첫 지하철 구간을 등록할 경우.")
+    @DisplayName("새로운 역을 상행 종점으로 등록하고 새로운 역을 하행 종점으로 등록할 경우.")
     @Test
     void addSection1() {
 
