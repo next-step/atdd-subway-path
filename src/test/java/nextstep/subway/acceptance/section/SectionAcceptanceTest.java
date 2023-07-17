@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.acceptance.section;
 
 
 import nextstep.subway.acceptance.AcceptanceTest;
@@ -7,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.line.LineTestUtils.*;
-import static nextstep.subway.section.SectionUtils.*;
-import static nextstep.subway.station.StationTestUtils.*;
+import static nextstep.subway.acceptance.line.LineTestUtils.*;
+import static nextstep.subway.acceptance.section.SectionUtils.*;
+import static nextstep.subway.acceptance.station.StationTestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("지하철 구간 관련 기능")

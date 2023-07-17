@@ -1,10 +1,10 @@
-package nextstep.subway.line;
+package nextstep.subway.acceptance.line;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.station.StationTestUtils;
+import nextstep.subway.acceptance.station.StationTestUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 

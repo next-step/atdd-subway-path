@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.acceptance.line;
 
 import com.jayway.jsonpath.JsonPath;
 import io.restassured.response.ExtractableResponse;
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static nextstep.subway.line.LineTestUtils.*;
-import static nextstep.subway.station.StationTestUtils.*;
+import static nextstep.subway.acceptance.line.LineTestUtils.*;
+import static nextstep.subway.acceptance.station.StationTestUtils.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {

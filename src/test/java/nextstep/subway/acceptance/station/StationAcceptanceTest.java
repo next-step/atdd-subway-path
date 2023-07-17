@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static nextstep.subway.station.StationTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -25,10 +24,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        지하철역_생성(강남역_정보);
+        StationTestUtils.지하철역_생성(StationTestUtils.강남역_정보);
 
         // then
-        노선_조회시_역이름을_조회할수_있다(지하철역_조회(), 강남역_정보);
+        노선_조회시_역이름을_조회할수_있다(StationTestUtils.지하철역_조회(), StationTestUtils.강남역_정보);
     }
 
 
@@ -41,11 +40,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void selectStations() {
         // given
-        지하철역_생성(강남역_정보);
-        지하철역_생성(역삼역_정보);
+        StationTestUtils.지하철역_생성(StationTestUtils.강남역_정보);
+        StationTestUtils.지하철역_생성(StationTestUtils.역삼역_정보);
 
         // when
-        ExtractableResponse<Response> response = 지하철역_조회();
+        ExtractableResponse<Response> response = StationTestUtils.지하철역_조회();
 
         // then
         생성한_지하철_역이_모두_조회된다(response, 2);
@@ -60,14 +59,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String stationUrl = 지하철역_생성(강남역_정보);
-        지하철역_생성(역삼역_정보);
+        String stationUrl = StationTestUtils.지하철역_생성(StationTestUtils.강남역_정보);
+        StationTestUtils.지하철역_생성(StationTestUtils.역삼역_정보);
 
         // when
-        지하철역_삭제(stationUrl);
+        StationTestUtils.지하철역_삭제(stationUrl);
 
         // then
-        역을_조회할수_없다(지하철역_조회(), 강남역_정보);
+        역을_조회할수_없다(StationTestUtils.지하철역_조회(), StationTestUtils.강남역_정보);
     }
 
     private static void 생성한_지하철_역이_모두_조회된다(ExtractableResponse<Response> response, int targetCount) {
