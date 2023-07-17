@@ -1,4 +1,4 @@
-package subway;
+package subway.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -17,6 +17,8 @@ import subway.dto.request.LineRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+import subway.fixture.LineFixture;
+import subway.fixture.StationFixture;
 
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @DisplayName("지하철 노선 관련 기능")
@@ -35,9 +37,9 @@ public class LineAcceptanceTest {
     }
 
     private static void addStationCache() {
-        Long id1 = StationAcceptanceTest.createStation("지하철역").jsonPath().getLong("id");
-        Long id2 = StationAcceptanceTest.createStation("새로운지하철역").jsonPath().getLong("id");
-        Long id3 = StationAcceptanceTest.createStation("또다른지하철역").jsonPath().getLong("id");
+        Long id1 = StationFixture.createStation("지하철역").jsonPath().getLong("id");
+        Long id2 = StationFixture.createStation("새로운지하철역").jsonPath().getLong("id");
+        Long id3 = StationFixture.createStation("또다른지하철역").jsonPath().getLong("id");
 
         stationIds.add(id1);
         stationIds.add(id2);
@@ -54,19 +56,10 @@ public class LineAcceptanceTest {
     void createLineAndFindList() {
         //when
         LineRequest request = mockRequest_신분당선();
-        this.createLine(request);
+        LineFixture.createLine(request);
         //then
         List<String> names = this.findLines().jsonPath().getList("name", String.class);
         Assertions.assertThat(names).contains(request.getName());
-    }
-
-    public static ExtractableResponse<Response> createLine(LineRequest dto) {
-        return RestAssured.given().log().all()
-                .body(dto)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
     }
 
     private static ExtractableResponse<Response> findLines() {
@@ -86,8 +79,8 @@ public class LineAcceptanceTest {
     @Test
     void create2LineAndFindLines() {
         //when
-        this.createLine(mockRequest_신분당선());
-        this.createLine(mockRequest_분당선());
+        LineFixture.createLine(mockRequest_신분당선());
+        LineFixture.createLine(mockRequest_분당선());
 
         //then
         List<String> names = this.findLines().jsonPath().getList("name", String.class);
@@ -104,21 +97,13 @@ public class LineAcceptanceTest {
     void create2LineAndfindLine() {
         //when
         LineRequest request = mockRequest_신분당선();
-        Long id = this.createLine(request).jsonPath().getLong("id");
+        Long id = LineFixture.createLine(request).jsonPath().getLong("id");
 
         //then
-        String name = this.findLine(id).jsonPath().get("name");
+        String name = LineFixture.findLine(id).jsonPath().get("name");
         Assertions.assertThat(name).isEqualTo(request.getName());
     }
 
-
-    public static ExtractableResponse<Response> findLine(Long id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/{id}", id)
-                .then().log().all()
-                .extract();
-    }
 
     /**
      * Given 지하철 노선을 생성하고
@@ -130,7 +115,7 @@ public class LineAcceptanceTest {
     void createLineAndModifyLine() {
         //given
         LineRequest request = mockRequest_신분당선();
-        Long id = this.createLine(request).jsonPath().getLong("id");
+        Long id = LineFixture.createLine(request).jsonPath().getLong("id");
 
         //when
         LineModifyRequest modify = LineModifyRequest.builder()
@@ -138,20 +123,11 @@ public class LineAcceptanceTest {
                 .color("bg-red-600")
                 .build();
 
-        this.modifyLine(id, modify);
+        LineFixture.modifyLine(id, modify);
 
         //then
-        String name = findLine(id).jsonPath().get("name");
+        String name = LineFixture.findLine(id).jsonPath().get("name");
         Assertions.assertThat(name).isEqualTo(modify.getName());
-    }
-
-    private static ExtractableResponse<Response> modifyLine(Long id, LineModifyRequest request) {
-        return RestAssured.given()
-                .body(request).log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}", id)
-                .then().log().all()
-                .extract();
     }
 
     /**
@@ -164,7 +140,7 @@ public class LineAcceptanceTest {
     void createLineAndDeleteLine() {
         //when
         LineRequest request = mockRequest_신분당선();
-        Long id = this.createLine(request).jsonPath().getLong("id");
+        Long id = LineFixture.createLine(request).jsonPath().getLong("id");
 
         deleteLine(id);
 

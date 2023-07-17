@@ -36,7 +36,7 @@ public class Sections {
         }
 
         // 마지막 구간의 하행역과 추가하려는 구간의 상행역과 일치하는지 확인
-        var lastSection = sections.get(sections.size() - 1);
+        var lastSection = this.lastSection();
         if(!lastSection.getDownStation().equals(section.getUpStation())) {
             throw new ApiException(ErrorCode.INVALID_SECTION_REGISTRATION);
         }
@@ -52,7 +52,7 @@ public class Sections {
         }
 
         // 마지막 구간의 하행역 아이디와 일치하는지 확인
-        var lastSection = sections.get(size - 1);
+        var lastSection = this.lastSection();
         if(!lastSection.getDownStation().getId().equals(stationId)) {
             throw new ApiException(ErrorCode.DELETE_BY_TERMINATE_STATION);
         }
@@ -69,5 +69,9 @@ public class Sections {
             .flatMap(o -> o.stream())
             .distinct()
             .collect(Collectors.toList());
+    }
+
+    public Long totalDistance() {
+        return this.sections.stream().mapToLong(o -> o.getDistance()).sum();
     }
 }

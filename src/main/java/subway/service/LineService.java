@@ -40,23 +40,13 @@ public class LineService {
                 .section(section)
                 .build());
 
-        return this.toLineResponse(line);
+        return LineResponse.from(line);
     }
 
     public LineResponse findLineResponse(Long id) {
-        return this.toLineResponse(findLine(id));
+        return LineResponse.from(findLine(id));
     }
 
-    public LineResponse toLineResponse(Line line) {
-        return LineResponse.builder()
-            .id(line.getId())
-            .name(line.getName())
-            .color(line.getColor())
-            .stations(line.getStations().stream()
-                .map(this::toStationResponse)
-                .collect(Collectors.toList()))
-            .build();
-    }
 
     public StationResponse toStationResponse(Station station) {
         return StationResponse.builder()
@@ -70,7 +60,7 @@ public class LineService {
 
     public List<LineResponse> findLines() {
         return lineRepository.findAll().stream()
-            .map(this::toLineResponse)
+            .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 

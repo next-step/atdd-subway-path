@@ -1,6 +1,7 @@
 package subway.dto.response;
 
 import lombok.Builder;
+import subway.entity.Station;
 
 public class StationResponse {
     private Long id;
@@ -18,5 +19,13 @@ public class StationResponse {
 
     public String getName() {
         return name;
+    }
+
+
+    public static StationResponse from(Station station) {
+        return StationResponse.builder()
+            .id(station.getId())
+            .name(station.getName())
+            .build();
     }
 }

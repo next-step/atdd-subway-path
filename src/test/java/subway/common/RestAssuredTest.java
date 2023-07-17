@@ -1,4 +1,4 @@
-package subway;
+package subway.common;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
