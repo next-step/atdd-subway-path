@@ -39,8 +39,11 @@ public class Section {
     }
 
     public void divideBy(Section section) {
-        // 기존 구간 변경
-        this.upStation = section.downStation;
+        if (this.upStation.equalsId(section.getUpStation())) {
+            this.upStation = section.downStation;
+        } else if (this.downStation.equalsId(section.getDownStation())) {
+            this.downStation = section.upStation;
+        }
         this.distance -= section.getDistance();
     }
 }

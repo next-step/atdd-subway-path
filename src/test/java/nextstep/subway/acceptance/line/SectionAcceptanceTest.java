@@ -15,10 +15,6 @@ import static org.assertj.core.api.Assertions.*;
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
-
-    final int BIG_SIZE = 10;
-    final int MEDIUM_SIZE = 5;
-
     String 강남역_URL;
     String 역삼역_URL;
     String 이호선_URL;
@@ -57,6 +53,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSectionACAB() {
         // when
         지하철_구간_등록(이호선_URL, 강남역_URL, 익명역_URL,SectionDistance.MEDIUM);
+
+        // then
+        지하철_구간이_성공적으로_등록됐다(이호선_URL);
+    }
+
+    /**
+     * Given 기존 구간 A-C가 등록돼있을 때
+     * When 기존 구간 A-C에 신규 구간 B-C를 추가하면
+     * Then 노선 조회시, 역 3개가 조회된다.
+     * */
+    @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 B-C 추가")
+    @Test
+    void addSectionACBC() {
+        // when
+        지하철_구간_등록(이호선_URL, 익명역_URL, 역삼역_URL,SectionDistance.MEDIUM);
 
         // then
         지하철_구간이_성공적으로_등록됐다(이호선_URL);

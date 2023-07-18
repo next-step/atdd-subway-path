@@ -51,16 +51,16 @@ public class Sections {
     public void addSection(Section section) {
         Validator.validateEnrollment(this, section);
 
-        if (newSectionUpStationMatchLastStation(section)) {
-            divideExistingSectionWith(section);
+        if (newSectionUpStationMatchAnyUpStation(section)) {
+            Section existingSection = getSectionByUpStation(section.getUpStation());
+            existingSection.divideBy(section);
+        } else if (newSectionDownStationMatchAnyDownStation(section)) {
+            Section existingSection = getSectionByDownStation(section.getDownStation());
+            existingSection.divideBy(section);
         }
         sections.add(section);
     }
 
-    private void divideExistingSectionWith(Section section) {
-        Section existingSection = getSectionByUpStation(section.getUpStation());
-        existingSection.divideBy(section);
-    }
 
     private Section getSectionByUpStation(Station upStation) {
         return sections.stream()
@@ -73,7 +73,7 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.getDownStation().equalsId(downStation))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("구간을 찾을 수 없습니다. 상행역id:%s", downStation.getId())));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("구간을 찾을 수 없습니다. 하역id:%s", downStation.getId())));
     }
 
     public void remove(Station station) {
@@ -115,8 +115,12 @@ public class Sections {
         return getLastStation().equalsId(station);
     }
 
-    private boolean newSectionUpStationMatchLastStation(Section section) {
+    private boolean newSectionUpStationMatchAnyUpStation(Section section) {
         return getUpStations().contains(section.getUpStation());
+    }
+
+    private boolean newSectionDownStationMatchAnyDownStation(Section section) {
+        return getDownStations().contains(section.getDownStation());
     }
 
     private List<Station> getUpStations() {
@@ -142,6 +146,9 @@ public class Sections {
             if (newSectionDownStationMatchTopStation(sections, section)) {
                 return;
             }
+            if (newSectionDownStationMatchLastStation(sections, section)) {
+                return;
+            }
             if (newStationUpStationMatchTopStation(sections, section)) {
                 return;
             }
@@ -149,6 +156,10 @@ public class Sections {
             // 새로운 역을 하행 종점역으로 등록할 경우엔 통과
             throw new IllegalArgumentException(String.format("새 구간을 등록할 수 없습니다. 새구간 상행역id:%s, 하행역id:%d",
                     section.getUpStation().getId(), section.getDownStation().getId()));
+        }
+
+        private static boolean newSectionDownStationMatchLastStation(Sections sections, Section section) {
+            return sections.equalsLastStation(section.getDownStation());
         }
 
         private static boolean newSectionUpStationMatchLastStation(Sections sections, Section section) {
