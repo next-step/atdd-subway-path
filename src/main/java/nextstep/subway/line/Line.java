@@ -42,7 +42,7 @@ public class Line {
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
         validateSection(upStation, downStation);
-        this.sections.add(this, upStation, downStation, distance);
+        this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public Section getLastSection() {
