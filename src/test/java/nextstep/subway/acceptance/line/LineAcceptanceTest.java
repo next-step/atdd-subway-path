@@ -82,7 +82,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void getLine() {
         // Given
         String 이호선_URL = 지하철_노선_생성(이호선_생성_요청, 역삼역_URL, 삼성역_URL);
-        지하철_구간_등록(이호선_URL, 구간_등록_요청, 강남역_URL, 역삼역_URL);
+        지하철_구간_등록(이호선_URL, 강남역_URL, 역삼역_URL, SectionDistance.BIG);
 
         // when
         ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회(이호선_URL);

@@ -16,27 +16,32 @@ import static org.assertj.core.api.Assertions.*;
 public class SectionAcceptanceTest extends AcceptanceTest {
 
 
-    String 상행종착역_URL;
-    String 하행종착역_URL;
+    final int BIG_SIZE = 10;
+    final int MEDIUM_SIZE = 5;
+
+    String 강남역_URL;
+    String 역삼역_URL;
     String 이호선_URL;
-    String 새로운_하행역_URL;
+    String 삼성역_URL;
+    String 익명역_URL;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
         // given
-        상행종착역_URL = 지하철역_생성(강남역_정보);
-        하행종착역_URL = 지하철역_생성(역삼역_정보);
-        이호선_URL = 지하철_노선_생성(이호선_생성_요청, 상행종착역_URL, 하행종착역_URL);
+        강남역_URL = 지하철역_생성(강남역_정보);
+        역삼역_URL = 지하철역_생성(역삼역_정보);
+        이호선_URL = 지하철_노선_생성(이호선_생성_요청, 강남역_URL, 역삼역_URL);
 
-        새로운_하행역_URL = 지하철역_생성(삼성역_정보);
+        삼성역_URL = 지하철역_생성(삼성역_정보);
+        익명역_URL = 지하철역_생성(익명역_정보);
     }
 
     @DisplayName("구간을 등록한다. 기존 구간 A-B에 신규 구간 B-C 추가")
     @Test
     void addSectionABBC() {
         // when
-        지하철_구간_등록(이호선_URL, 구간_등록_요청, 하행종착역_URL, 새로운_하행역_URL);
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
 
         // then
         지하철_구간이_성공적으로_등록됐다(이호선_URL);
@@ -45,23 +50,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 기존 구간 A-C가 등록돼있을 때
      * When 기존 구간 A-C에 신규 구간 A-B를 추가하면
-     * Then 노선 조회시, 구간 A-B, B-C가 조회된다.
+     * Then 노선 조회시, 역 3개가 조회된다.
      * */
     @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 A-B 추가")
     @Test
     void addSectionACAB() {
+        // when
+        지하철_구간_등록(이호선_URL, 강남역_URL, 익명역_URL,SectionDistance.MEDIUM);
 
+        // then
+        지하철_구간이_성공적으로_등록됐다(이호선_URL);
     }
 
     /**
      * Given 기존 구간 A-C가 등록돼있을 때
      * When 기존 구간 A-C에 신규 구간 B-A를 추가하면
-     * Then 노선 조회시, 구간 B-A, A-C가 조회된다.
+     * Then 노선 조회시, 역 3개가 조회된다.
      * */
     @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 B-A 추가")
     @Test
     void addSectionACBA() {
+        // when
+        지하철_구간_등록(이호선_URL, 익명역_URL, 강남역_URL,SectionDistance.BIG);
 
+        // then
+        지하철_구간이_성공적으로_등록됐다(이호선_URL);
     }
 
 
@@ -69,7 +82,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void enrollSectionErrorByInconsistency() {
         // when
-        지하철_구간_등록_실패(이호선_URL, 구간_등록_요청, 새로운_하행역_URL, 새로운_하행역_URL);
+        지하철_구간_등록_실패(이호선_URL, 삼성역_URL, 삼성역_URL, SectionDistance.BIG);
 
         // then
         지하철_구간이_등록되지_않았다(이호선_URL);
@@ -79,7 +92,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void enrollSectionErrorByNewDownStationExists() {
         // when
-        지하철_구간_등록_실패(이호선_URL, 구간_등록_요청, 하행종착역_URL, 상행종착역_URL);
+        지하철_구간_등록_실패(이호선_URL, 역삼역_URL, 강남역_URL, SectionDistance.BIG);
         // then
         지하철_구간이_등록되지_않았다(이호선_URL);
     }
@@ -88,10 +101,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSection() {
         // given
-        지하철_구간_등록(이호선_URL, 구간_등록_요청, 하행종착역_URL, 새로운_하행역_URL);
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
 
         // when
-        지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(새로운_하행역_URL));
+        지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(삼성역_URL));
 
         // then
         노선에서_조회되는_역이_줄어든다(이호선_URL, 2);
@@ -101,10 +114,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSectionErrorByRemovingNonLastSection() {
         // given
-        지하철_구간_등록(이호선_URL, 구간_등록_요청, 하행종착역_URL, 새로운_하행역_URL);
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
 
         // when
-        지하철_구간_삭제_실패(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(상행종착역_URL));
+        지하철_구간_삭제_실패(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(강남역_URL));
 
         // then
         노선의역_개수_변화가_없다(이호선_URL, 3);
@@ -114,7 +127,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSectionErrorByOnlyOneSectionLeft() {
         // when
-        지하철_구간_삭제_실패(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(하행종착역_URL));
+        지하철_구간_삭제_실패(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(역삼역_URL));
 
         // then
         노선의역_개수_변화가_없다(이호선_URL, 2);

@@ -10,28 +10,26 @@ import nextstep.subway.acceptance.station.StationTestUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+import static nextstep.subway.acceptance.station.StationTestUtils.지하철_아이디_획득;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SectionUtils {
 
-    public static final Map<String, String> 구간_등록_요청 = new HashMap<>();
-
-    static {
-        구간_등록_요청.putAll(
-                Map.of(
-                        "downStationId", "",
-                        "upStationId", "",
-                        "distance", "10"
-                )
-        );
+    enum SectionDistance {
+        SMALL,
+        MEDIUM,
+        BIG
     }
 
     private SectionUtils() {}
 
-    public static String 지하철_구간_등록(String 노선_url, Map<String, String> 구간_등록_요청, String 새구간_상행역_url, String 새구간_하행역_url) {
+    public static String 지하철_구간_등록(String 노선_url, String 새구간_상행역_url, String 새구간_하행역_url, SectionDistance distance) {
 
-        구간_등록_요청.put("downStationId", String.valueOf(StationTestUtils.지하철_아이디_획득(새구간_하행역_url)));
-        구간_등록_요청.put("upStationId", String.valueOf(StationTestUtils.지하철_아이디_획득(새구간_상행역_url)));
+        Map<String, String> 구간_등록_요청 = Map.of(
+                "upStationId", String.valueOf(지하철_아이디_획득(새구간_상행역_url)),
+                "downStationId", String.valueOf(지하철_아이디_획득(새구간_하행역_url)),
+                "distance", String.valueOf(distance.ordinal())
+        );
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
@@ -47,10 +45,13 @@ public class SectionUtils {
         return response.header("Location");
     }
 
-    public static void 지하철_구간_등록_실패(String 노선_url, Map<String, String> 구간_등록_요청, String 새구간_상행역_url, String 새구간_하행역_url) {
+    public static void 지하철_구간_등록_실패(String 노선_url, String 새구간_상행역_url, String 새구간_하행역_url, SectionDistance distance) {
 
-        구간_등록_요청.put("downStationId", String.valueOf(StationTestUtils.지하철_아이디_획득(새구간_하행역_url)));
-        구간_등록_요청.put("upStationId", String.valueOf(StationTestUtils.지하철_아이디_획득(새구간_상행역_url)));
+        Map<String, String> 구간_등록_요청 = Map.of(
+                "upStationId", String.valueOf(지하철_아이디_획득(새구간_상행역_url)),
+                "downStationId", String.valueOf(지하철_아이디_획득(새구간_하행역_url)),
+                "distance", String.valueOf(distance.ordinal())
+        );
 
         ExtractableResponse<Response> response = RestAssured
                 .given().log().all()
