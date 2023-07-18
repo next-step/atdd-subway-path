@@ -23,7 +23,7 @@ class SectionListTest {
     private final Line line = new Line("line", "bg",  section);
 
     @Test
-    void addSection() {
+    void addSectionInterStationWhenHasSameUpwardStation() {
         SectionList sectionList = line.getSections();
         Section newSection = new Section(line, new SectionStations(a, c), 4);
 
@@ -31,8 +31,37 @@ class SectionListTest {
 
         List<Section> addedSection = sectionList.getSections();
         assertThat(addedSection).hasSize(2);
-        assertThat(addedSection.get(0).getDistance()).isEqualTo(1);
-        assertThat(addedSection.get(1).getDistance()).isEqualTo(4);
+
+        Section sectionAC = addedSection.get(0);
+        assertThat(sectionAC.getUpwardStation()).isEqualTo(a);
+        assertThat(sectionAC.getDownwardStation()).isEqualTo(c);
+        assertThat(sectionAC.getDistance()).isEqualTo(1);
+
+        Section sectionBC = addedSection.get(1);
+        assertThat(sectionBC.getUpwardStation()).isEqualTo(c);
+        assertThat(sectionBC.getDownwardStation()).isEqualTo(b);
+        assertThat(sectionBC.getDistance()).isEqualTo(4);
+    }
+
+    @Test
+    void addSectionInterStationWhenHasSameDownwardStation() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(d, b), 4);
+
+        sectionList.addSection(newSection);
+
+        List<Section> addedSection = sectionList.getSections();
+        assertThat(addedSection).hasSize(2);
+
+        Section sectionAD = addedSection.get(0);
+        assertThat(sectionAD.getUpwardStation()).isEqualTo(a);
+        assertThat(sectionAD.getDownwardStation()).isEqualTo(d);
+        assertThat(sectionAD.getDistance()).isEqualTo(4);
+
+        Section sectionDB = addedSection.get(1);
+        assertThat(sectionDB.getUpwardStation()).isEqualTo(d);
+        assertThat(sectionDB.getDownwardStation()).isEqualTo(b);
+        assertThat(sectionDB.getDistance()).isEqualTo(1);
     }
 
     @Test
