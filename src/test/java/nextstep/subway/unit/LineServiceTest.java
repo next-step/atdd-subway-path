@@ -1,10 +1,5 @@
 package nextstep.subway.unit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
@@ -19,6 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.NoSuchElementException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -38,10 +38,10 @@ public class LineServiceTest {
     private LineService lineService;
 
     static Long LINE_ID_1 = 1L;
-    static String LINE_NAME_1 = "분당선";
-    static String LINE_COLOR_1 = "Yellow";
-    static String LINE_NAME_UPDATE = "신분당선";
-    static String LINE_COLOR_UPDATE = "RED";
+    static String 분당선 = "분당선";
+    static String 노란색 = "Yellow";
+    static String 신분당선 = "신분당선";
+    static String 빨간색 = "RED";
     static Long LINE_ID_1000 = 1000L;
     static Long STATION_ID_1 = 1L;
     static Long STATION_ID_2 = 2L;
@@ -52,7 +52,7 @@ public class LineServiceTest {
     @DisplayName("새로운 노선을 저장")
     void saveLine() {
         // given
-        LineRequest request = new LineRequest(LINE_NAME_1, LINE_COLOR_1, STATION_ID_1, STATION_ID_2,
+        LineRequest request = new LineRequest(분당선, 노란색, STATION_ID_1, STATION_ID_2,
                 DISTANCE_10);
 
         // when
@@ -60,14 +60,14 @@ public class LineServiceTest {
 
         // then
         assertThat(response.getName()).isNotNull();
-        assertThat(response.getName()).isEqualTo(LINE_NAME_1);
+        assertThat(response.getName()).isEqualTo(분당선);
     }
 
     @Test
     @DisplayName("기존 노선을 수정")
     void updateLine() {
         // given
-        LineRequest request = new LineRequest(LINE_NAME_UPDATE, LINE_COLOR_UPDATE);
+        LineRequest request = new LineRequest(신분당선, 빨간색);
 
         // when
         lineService.updateLine(LINE_ID_1000, request);
@@ -75,8 +75,8 @@ public class LineServiceTest {
         // then
         Line line = lineRepository.findById(LINE_ID_1000).orElseThrow();
 
-        assertThat(line.getName()).isEqualTo(LINE_NAME_UPDATE);
-        assertThat(line.getColor()).isEqualTo(LINE_COLOR_UPDATE);
+        assertThat(line.getName()).isEqualTo(신분당선);
+        assertThat(line.getColor()).isEqualTo(빨간색);
     }
 
     @Test

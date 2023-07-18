@@ -17,15 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-    Long STATION_ID_1;
-    Long STATION_ID_2;
-    Long STATION_ID_3;
+    Long 강남역_ID;
+    Long 역삼역_ID;
+    Long 선릉역_ID;
 
     @BeforeEach
     void setup() {
-        STATION_ID_1 = 역_생성_ID_추출(지하철역_생성_요청(강남역));
-        STATION_ID_2 = 역_생성_ID_추출(지하철역_생성_요청(역삼역));
-        STATION_ID_3 = 역_생성_ID_추출(지하철역_생성_요청(선릉역));
+        강남역_ID = 역_생성_ID_추출(지하철역_생성_요청(강남역));
+        역삼역_ID = 역_생성_ID_추출(지하철역_생성_요청(역삼역));
+        선릉역_ID = 역_생성_ID_추출(지하철역_생성_요청(선릉역));
     }
 
     /**
@@ -119,6 +119,6 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 노선_삭제_요청(createdId);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        상태코드_확인(response, HttpStatus.NO_CONTENT);
     }
 }

@@ -3,8 +3,9 @@ package nextstep.subway.utils;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Map;
 import org.springframework.http.MediaType;
+
+import java.util.Map;
 
 public class CustomRestAssuredRequest {
 
@@ -31,7 +32,7 @@ public class CustomRestAssuredRequest {
     }
 
     public static ExtractableResponse<Response> requestPost(String path,
-            Map<String, ?> bodyParams) {
+                                                            Map<String, ?> bodyParams) {
         return RestAssured.given().log().all().body(bodyParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(path)
@@ -39,7 +40,7 @@ public class CustomRestAssuredRequest {
     }
 
     public static ExtractableResponse<Response> requestPost(String path, Map<String, ?> pathParams,
-            Map<String, ?> bodyParams) {
+                                                            Map<String, ?> bodyParams) {
         return RestAssured.given().log().all().body(bodyParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(path, pathParams)
@@ -54,7 +55,7 @@ public class CustomRestAssuredRequest {
     }
 
     public static ExtractableResponse<Response> requestPut(String path, Map<String, ?> pathParams,
-            Map<String, ?> bodyParams) {
+                                                           Map<String, ?> bodyParams) {
         return RestAssured.given().log().all().body(bodyParams)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put(path, pathParams)
@@ -68,7 +69,7 @@ public class CustomRestAssuredRequest {
     }
 
     public static ExtractableResponse<Response> requestDelete(String path,
-            Map<String, ?> pathParams) {
+                                                              Map<String, ?> pathParams) {
         return RestAssured.given().log().all()
                 .when().delete(path, pathParams)
                 .then().log().all().extract();

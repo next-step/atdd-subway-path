@@ -17,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
-    Long STATION_ID_1;
-    Long STATION_ID_2;
-    Long STATION_ID_3;
-    Long LINE_ID_1;
+    Long 강남역_ID;
+    Long 역삼역_ID;
+    Long 선릉역_ID;
+    Long 분당선_ID;
 
     /**
      * Given 지하철역과 노선 생성을 요청 하고
@@ -28,10 +28,10 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        STATION_ID_1 = 역_생성_ID_추출(지하철역_생성_요청(강남역));
-        STATION_ID_2 = 역_생성_ID_추출(지하철역_생성_요청(역삼역));
-        STATION_ID_3 = 역_생성_ID_추출(지하철역_생성_요청(선릉역));
-        LINE_ID_1 = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선, 빨간색, STATION_ID_1, STATION_ID_2, DISTANCE_10));
+        강남역_ID = 역_생성_ID_추출(지하철역_생성_요청(강남역));
+        역삼역_ID = 역_생성_ID_추출(지하철역_생성_요청(역삼역));
+        선릉역_ID = 역_생성_ID_추출(지하철역_생성_요청(선릉역));
+        분당선_ID = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선, 빨간색, 강남역_ID, 역삼역_ID, DISTANCE_10));
     }
 
     /**
@@ -42,12 +42,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(LINE_ID_1, STATION_ID_2, STATION_ID_3, DISTANCE_10);
+        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, DISTANCE_10);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(LINE_ID_1);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(분당선_ID);
         상태코드_확인(response, HttpStatus.OK);
-        assertThat(노선의_역이름_목록_추출(response)).containsExactly(강남역, 역삼역, 선릉역);
+        assertThat(노선의_역ID_목록_추출(response)).containsExactly(강남역_ID, 역삼역_ID, 선릉역_ID);
     }
 
     /**
@@ -59,14 +59,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        지하철_노선에_지하철_구간_생성_요청(LINE_ID_1, STATION_ID_2, STATION_ID_3, DISTANCE_10);
+        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, DISTANCE_10);
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(LINE_ID_1, STATION_ID_3);
+        지하철_노선에_지하철_구간_제거_요청(분당선_ID, 선릉역_ID);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(LINE_ID_1);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(분당선_ID);
         상태코드_확인(response, HttpStatus.OK);
-        assertThat(노선의_역이름_목록_추출(response)).containsExactly(강남역, 역삼역);
+        assertThat(노선의_역ID_목록_추출(response)).containsExactly(강남역_ID, 역삼역_ID);
     }
 }

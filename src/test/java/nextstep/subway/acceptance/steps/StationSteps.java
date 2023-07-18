@@ -1,14 +1,13 @@
 package nextstep.subway.acceptance.steps;
 
-import static nextstep.subway.utils.CustomRestAssuredRequest.requestDelete;
-import static nextstep.subway.utils.CustomRestAssuredRequest.requestGet;
-import static nextstep.subway.utils.CustomRestAssuredRequest.requestPost;
-
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static nextstep.subway.utils.CustomRestAssuredRequest.*;
 
 public class StationSteps {
 
