@@ -20,6 +20,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     String 이호선_URL;
     String 삼성역_URL;
     String 익명역_URL;
+    String 판교역_URL;
 
     @BeforeEach
     public void setUp() {
@@ -31,6 +32,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         삼성역_URL = 지하철역_생성(삼성역_정보);
         익명역_URL = 지하철역_생성(익명역_정보);
+        판교역_URL = 지하철역_생성(판교역_정보);
     }
 
     @DisplayName("구간을 등록한다. 기존 구간 A-B에 신규 구간 B-C 추가")
@@ -43,46 +45,31 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철_구간이_성공적으로_등록됐다(이호선_URL);
     }
 
-    /**
-     * Given 기존 구간 A-C가 등록돼있을 때
-     * When 기존 구간 A-C에 신규 구간 A-B를 추가하면
-     * Then 노선 조회시, 역 3개가 조회된다.
-     * */
     @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 A-B 추가")
     @Test
     void addSectionACAB() {
         // when
-        지하철_구간_등록(이호선_URL, 강남역_URL, 익명역_URL,SectionDistance.MEDIUM);
+        지하철_구간_등록(이호선_URL, 강남역_URL, 익명역_URL, SectionDistance.MEDIUM);
 
         // then
         지하철_구간이_성공적으로_등록됐다(이호선_URL);
     }
 
-    /**
-     * Given 기존 구간 A-C가 등록돼있을 때
-     * When 기존 구간 A-C에 신규 구간 B-C를 추가하면
-     * Then 노선 조회시, 역 3개가 조회된다.
-     * */
     @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 B-C 추가")
     @Test
     void addSectionACBC() {
         // when
-        지하철_구간_등록(이호선_URL, 익명역_URL, 역삼역_URL,SectionDistance.MEDIUM);
+        지하철_구간_등록(이호선_URL, 익명역_URL, 역삼역_URL, SectionDistance.MEDIUM);
 
         // then
         지하철_구간이_성공적으로_등록됐다(이호선_URL);
     }
 
-    /**
-     * Given 기존 구간 A-C가 등록돼있을 때
-     * When 기존 구간 A-C에 신규 구간 B-A를 추가하면
-     * Then 노선 조회시, 역 3개가 조회된다.
-     * */
     @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 B-A 추가")
     @Test
     void addSectionACBA() {
         // when
-        지하철_구간_등록(이호선_URL, 익명역_URL, 강남역_URL,SectionDistance.BIG);
+        지하철_구간_등록(이호선_URL, 익명역_URL, 강남역_URL, SectionDistance.BIG);
 
         // then
         지하철_구간이_성공적으로_등록됐다(이호선_URL);
@@ -104,6 +91,59 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void enrollSectionErrorByNewDownStationExists() {
         // when
         지하철_구간_등록_실패(이호선_URL, 역삼역_URL, 강남역_URL, SectionDistance.BIG);
+
+        // then
+        지하철_구간이_등록되지_않았다(이호선_URL);
+    }
+
+    /**
+     * Given 기존 구간 A-C가 등록돼있을때
+     * When 기존 구간 A-C보다 길이가 크거나 같은 신규 구간 B-C를 추가하면
+     * Then 노선 조회시, 역 2개가 조회된다.
+     * */
+    @DisplayName("구간 등록 에러, 역 사이에 새로운 역 등록, 기존 역 사이 길이보다 크거나 같음")
+    @Test
+    void stationRegistrationBetweenStationsFailBySameOrBiggerDistance() {
+        // when
+        지하철_구간_등록(이호선_URL, 익명역_URL, 역삼역_URL, SectionDistance.BIG);
+
+        // then
+        지하철_구간이_등록되지_않았다(이호선_URL);
+    }
+
+    /**
+     * Given 기존 구간 A-B,B-C가 등록돼있을때
+     * When 상행역과 하행역이 이미 모두 노선에 등록돼있는 구간을 추가하면
+     * Then 노선 조회시, 역 2개가 조회된다.
+     * */
+    @DisplayName("구간 등록 에러, 상행역과 하행역이 이미 모두 노선에 등록돼있는 구간을 추가")
+    @Test
+    void stationRegistrationFailByAlreadyExistingTopStationAndDownStation() {
+        // given
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+
+        // when
+        지하철_구간_등록_실패(이호선_URL, 강남역_URL, 역삼역_URL, SectionDistance.MEDIUM);
+        지하철_구간_등록_실패(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.MEDIUM);
+
+        // then
+        지하철_구간이_등록되지_않았다(이호선_URL);
+    }
+
+    /**
+     * Given 기존 구간 A-B,B-C가 등록돼있을때
+     * When 상행역과 하행역이 모두 노선에 포함되있지 않은 구간을 추가하면
+     * Then 노선 조회시, 역 2개가 조회된다.
+     * */
+    @DisplayName("구간 등록 에러, 상행역과 하행역이 모두 노선에 포함되있지 않은 구간을 추가")
+    @Test
+    void stationRegistrationFailByLineDoNotContainSectionRelatedStations() {
+        // given
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+
+        // when
+        지하철_구간_등록_실패(이호선_URL, 익명역_URL, 판교역_URL, SectionDistance.MEDIUM);
+
         // then
         지하철_구간이_등록되지_않았다(이호선_URL);
     }
