@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance.section;
+package nextstep.subway.acceptance.line;
 
 
 import nextstep.subway.acceptance.AcceptanceTest;
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.acceptance.line.LineTestUtils.*;
-import static nextstep.subway.acceptance.section.SectionUtils.*;
+import static nextstep.subway.acceptance.line.SectionUtils.*;
 import static nextstep.subway.acceptance.station.StationTestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -32,15 +32,38 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         새로운_하행역_URL = 지하철역_생성(삼성역_정보);
     }
 
-    @DisplayName("구간을 등록한다.")
+    @DisplayName("구간을 등록한다. 기존 구간 A-B에 신규 구간 B-C 추가")
     @Test
-    void enrollSection() {
+    void addSectionABBC() {
         // when
         지하철_구간_등록(이호선_URL, 구간_등록_요청, 하행종착역_URL, 새로운_하행역_URL);
 
         // then
         지하철_구간이_성공적으로_등록됐다(이호선_URL);
     }
+
+    /**
+     * Given 기존 구간 A-C가 등록돼있을 때
+     * When 기존 구간 A-C에 신규 구간 A-B를 추가하면
+     * Then 노선 조회시, 구간 A-B, B-C가 조회된다.
+     * */
+    @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 A-B 추가")
+    @Test
+    void addSectionACAB() {
+
+    }
+
+    /**
+     * Given 기존 구간 A-C가 등록돼있을 때
+     * When 기존 구간 A-C에 신규 구간 B-A를 추가하면
+     * Then 노선 조회시, 구간 B-A, A-C가 조회된다.
+     * */
+    @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 B-A 추가")
+    @Test
+    void addSectionACBA() {
+
+    }
+
 
     @DisplayName("구간 등록 에러, 기존 하행종착역-새 구간 상행역 불일치")
     @Test
