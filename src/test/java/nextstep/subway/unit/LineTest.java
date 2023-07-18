@@ -33,21 +33,33 @@ class LineTest {
     @Test
     void addSectionBetweenStations() {
         // given
-        Station 강남역 = new Station("강남역");
-        Station 양재시민의숲역 = new Station("양재시민의숲역");
-        Section section = new Section(강남역, 양재시민의숲역, 10);
+        Station 강남역 = new Station(1L, "강남역");
+        Station 양재시민의숲역 = new Station(2L, "양재시민의숲역");
+        Section sectionForLine = new Section(강남역, 양재시민의숲역, 10);
 
-        Line 신분당선 = new Line("신분당선", "bg-red-600", section);
+        Line 신분당선 = new Line("신분당선", "bg-red-600", sectionForLine);
 
-        Station 양재역 = new Station("양재역");
+        Station 양재역 = new Station(3L, "양재역");
         Section newSection = new Section(강남역, 양재역, 4);
 
         // when
         신분당선.addSectionVer2(newSection);
 
-        // then : 강남역-양재역 & 양재역-양재시민의숲역
+        // then : 강남역-양재역 & 양재역-양재시민의숲역 구간이 있어야함 각각 길이는 4, 6
         List<Section> sections = 신분당선.getSections();
         assertThat(sections).hasSize(2);
+
+        Section firstSection = sections.get(0);
+        assertSection(firstSection, "강남역", "양재역", 4);
+
+        Section secondSection = sections.get(1);
+        assertSection(secondSection, "양재역", "양재시민의숲역", 6);
+    }
+
+    private static void assertSection(Section target, String upStationName, String downStationName, int distance) {
+        assertThat(target.getUpStationName()).isEqualTo(upStationName);
+        assertThat(target.getDownStationName()).isEqualTo(downStationName);
+        assertThat(target.getDistance()).isEqualTo(distance);
     }
 
     @Test
