@@ -3,7 +3,6 @@ package subway.path.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import subway.line.model.Line;
-import subway.line.model.LineSections;
 import subway.line.model.Section;
 import subway.line.service.LineService;
 import subway.path.component.PathFinder;
@@ -13,7 +12,6 @@ import subway.station.service.StationService;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor

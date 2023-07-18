@@ -1,4 +1,4 @@
-package subway.unit;
+package subway.unit.section;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

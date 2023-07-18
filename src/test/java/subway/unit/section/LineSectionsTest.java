@@ -1,8 +1,9 @@
-package subway.unit;
+package subway.unit.section;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import subway.exception.SubwayBadRequestException;
+import subway.exception.SubwayNotFoundException;
 import subway.line.model.Line;
 import subway.line.model.LineSections;
 import subway.line.model.Section;
@@ -11,6 +12,7 @@ import subway.station.model.Station;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class LineSectionsTest {
@@ -232,7 +234,25 @@ class LineSectionsTest {
         이호선_구간.removeSectionByStation(stations.get(1));
     }
 
-    // TODO : 역으로 구간 제거 기능 예외 테스트 https://github.com/next-step/atdd-subway-path/pull/598#discussion_r1265292893
+    /**
+     * Given 구간을 가진 노선이 있을 떄
+     * When 구간이 연결되지 않은 역을 삭제 하려고 하면
+     * Then 구간이 삭제되지 않는다.
+     */
+    @DisplayName("역으로 구간 제거 기능 : 없는 역 삭제")
+    @Test
+    void removeSectionByNotExistStation() {
+        // given
+        Line 이호선 = 이호선_기본구간_설정();
+        Station 선릉역 = new Station(3L, "선릉역");
+        구간_추가(이호선, 선릉역);
+
+        // when/then
+        LineSections 이호선_구간 = 이호선.getLineSections();
+        List<Station> stations = 이호선.getStations();
+        assertThatThrownBy(() -> 이호선_구간.removeSectionByStation(new Station(99L, "차고지")))
+                .isInstanceOf(SubwayNotFoundException.class);
+    }
 
     private Line 이호선_기본구간_설정() {
         Section 기본_구간 = 기본_구간();

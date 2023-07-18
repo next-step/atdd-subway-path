@@ -18,7 +18,8 @@ public enum SubwayMessage {
     STATION_DELETE_MINIMAL_VALID(3000L, "역은 %d개 이하일 수 없습니다."),
     STATION_NOT_FOUND(3001L, "존재하지 않는 역 입니다"),
     STATION_IS_ALREADY_EXIST_IN_LINE(3002L, "이미 %s과 %s의 구간이 존재합니다."),
-    STATION_NOT_FOUND_IN_SECTION(3003L, "삭제 할 역을 구간에서 찾을 수 없습니다.");
+    STATION_NOT_FOUND_IN_SECTION(3003L, "삭제 할 역을 구간에서 찾을 수 없습니다."),
+    PATH_NOT_CONNECTED_IN_SECTION(4000L, "역이 연결되어 있지 않습니다.");
 
     private final long code;
     private final String message;

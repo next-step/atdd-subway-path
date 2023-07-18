@@ -6,11 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import subway.acceptance.AcceptanceTest;
 import subway.acceptance.station.StationFixture;
-import subway.acceptance.station.StationSteps;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static subway.acceptance.station.StationFixture.getStationId;
@@ -238,8 +235,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
-
 
 
     // week 2-2

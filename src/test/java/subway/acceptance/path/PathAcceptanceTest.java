@@ -11,7 +11,6 @@ import subway.acceptance.line.LineFixture;
 import subway.acceptance.line.LineSteps;
 import subway.acceptance.line.SectionFixture;
 import subway.acceptance.station.StationFixture;
-import subway.acceptance.station.StationSteps;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +41,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         var 이호선_요청 = LineFixture.generateLineCreateRequest("2호선", "bg-green-600", getStationId("강남역"), getStationId("교대역"), 10L);
         LineSteps.노선_생성_API(이호선_요청);
 
-        var 삼호선_요청 = LineFixture.generateLineCreateRequest("3호선","bg-amber-600", getStationId("교대역"), getStationId("남부터미널역"),2L);
+        var 삼호선_요청 = LineFixture.generateLineCreateRequest("3호선", "bg-amber-600", getStationId("교대역"), getStationId("남부터미널역"), 2L);
         var createResponse = LineSteps.노선_생성_API(삼호선_요청);
         var createdLocation = createResponse.header("Location");
         var appendLocation = createdLocation + "/sections";
@@ -50,7 +49,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         var 삼호선_끝에_구간_추가 = SectionFixture.구간_요청_만들기(getStationId("남부터미널역"), getStationId("양재역"), 3L);
         LineSteps.구간_추가_API(appendLocation, 삼호선_끝에_구간_추가);
 
-        var 신분당선_요청 = LineFixture.generateLineCreateRequest("신분당선","bg-hotpink-600", getStationId("강남역"), getStationId("양재역"),10L);
+        var 신분당선_요청 = LineFixture.generateLineCreateRequest("신분당선", "bg-hotpink-600", getStationId("강남역"), getStationId("양재역"), 10L);
         LineSteps.노선_생성_API(신분당선_요청);
 
         LineSteps.노선_목록_조회_API();
@@ -84,7 +83,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 각 구간을 가진 3개의 서로 연결된 노선이 있고
+     * Given 3개의 서로 연결된 노선이 있고
      * When 다른 노선을 모두 통과하는 경로를 조회하면
      * Then 경로 조회 결과가 나온다
      * Then 구간의 모든 거리의 합이 출력된다
@@ -108,7 +107,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 각 구간을 가진 3개의 서로 연결된 노선이 있고
+     * Given 3개의 서로 연결된 노선이 있고
      * When 연결되지 않은 경로를 조회하면
      * Then 경로가 조회되지 않는다
      */
@@ -131,7 +130,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 각 구간을 가진 3개의 서로 연결된 노선이 있고
+     * Given 3개의 서로 연결된 노선이 있고
      * When 시작과 끝을 같은 역을 조회하면
      * Then 경로가 조회되지 않는다
      */
@@ -155,7 +154,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 각 구간을 가진 3개의 서로 연결된 노선이 있고
+     * Given 3개의 서로 연결된 노선이 있고
      * When 존재 하지 않는 역으로 경로를 조회하면
      * Then 경로가 조회되지 않는다
      */

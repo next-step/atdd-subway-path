@@ -4,6 +4,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Component;
+import subway.constant.SubwayMessage;
 import subway.exception.SubwayBadRequestException;
 import subway.line.model.Section;
 import subway.path.dto.PathRetrieveResponse;
@@ -39,7 +40,7 @@ public class PathFinder {
             DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
             return dijkstraShortestPath.getPathWeight(sourceStation, targetStation);
         } catch (NullPointerException e) {
-            throw new SubwayBadRequestException(9999L, "역이 연결되어 있지 않습니다."); // TODO: constant
+            throw new SubwayBadRequestException(SubwayMessage.PATH_NOT_CONNECTED_IN_SECTION); // TODO: constant
         }
     }
 
@@ -51,7 +52,7 @@ public class PathFinder {
             return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
             // TODO : java.lang.IllegalArgumentException: graph must contain the sink vertex
         } catch (NullPointerException e) {
-            throw new SubwayBadRequestException(9999L, "역이 연결되어 있지 않습니다.");
+            throw new SubwayBadRequestException(SubwayMessage.PATH_NOT_CONNECTED_IN_SECTION);
         }
     }
 
