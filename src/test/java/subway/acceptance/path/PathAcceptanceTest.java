@@ -10,9 +10,7 @@ import subway.acceptance.line.LineSteps;
 import subway.acceptance.line.SectionFixture;
 import subway.acceptance.station.StationFixture;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static subway.acceptance.station.StationFixture.getStationId;
@@ -35,9 +33,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void createLine() {
-        StationFixture.기본_역_생성();
+        StationFixture.기본_역_생성_호출();
 
-        이호선_삼호선_신분당선_A호선_생성();
+        이호선_삼호선_신분당선_A호선_생성_호출();
 
         LineSteps.노선_목록_조회_API();
     }
@@ -132,7 +130,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private void 이호선_삼호선_신분당선_A호선_생성() {
+    private void 이호선_삼호선_신분당선_A호선_생성_호출() {
         var 이호선_요청 = LineFixture.generateLineCreateRequest("2호선", "bg-green-600", getStationId("강남역"), getStationId("교대역"), 10L);
         LineSteps.노선_생성_API(이호선_요청);
 

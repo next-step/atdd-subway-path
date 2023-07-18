@@ -162,7 +162,7 @@ class LineTest {
     void deleteSectionByStation() {
         // given
         Line line = SectionFixture.이호선_기본구간_생성();
-        Section section = SectionFixture.기본구간에_구간추가(line);
+        Section section = SectionFixture.기본구간에_기본구간추가(line);
 
         // when
         line.deleteSectionByStation(section.getDownStation());

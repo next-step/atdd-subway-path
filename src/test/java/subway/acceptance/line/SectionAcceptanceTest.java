@@ -18,7 +18,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     void addLine() {
         // "교대역", "강남역", "역삼역", "선릉역", "삼성역", "잠실역", "강변역", "건대역", "성수역", "왕십리역"
-        StationFixture.기본_역_생성();
+        StationFixture.기본_역_생성_호출();
     }
 
     // Week 1

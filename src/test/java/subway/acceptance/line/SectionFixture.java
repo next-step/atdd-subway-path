@@ -17,7 +17,6 @@ public class SectionFixture {
         request.put("distance", String.valueOf(distance));
         return request;
     }
-
     public static Line 이호선_기본구간_생성() {
         Station 강남역 = new Station(1L, "강남역");
         Station 역삼역 = new Station(2L, "역삼역");
@@ -39,7 +38,7 @@ public class SectionFixture {
         return line;
     }
 
-    public static Section 기본구간에_구간추가(Line line) {
+    public static Section 기본구간에_기본구간추가(Line line) {
         Station upStation = new Station(2L, "역삼역");
         Station downStation = new Station(5L, "잠실역");
 

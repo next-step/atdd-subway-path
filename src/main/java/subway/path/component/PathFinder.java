@@ -17,8 +17,6 @@ import java.util.stream.Stream;
 
 @Component
 public class PathFinder {
-
-    // TODO: 단위 테스트 - 모킹
     public PathRetrieveResponse findShortestPath(List<Section> sections,
                                                  Station sourceStation,
                                                  Station targetStation) {

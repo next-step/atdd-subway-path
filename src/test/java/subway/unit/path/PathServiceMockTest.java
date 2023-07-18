@@ -72,6 +72,6 @@ public class PathServiceMockTest {
                 .containsExactlyInAnyOrder("강남역", "역삼역", "선릉역");
 
         // then
-        assertThat(response.getDistance()).isEqualTo(10L);
+        assertThat(shortestPath.getDistance()).isEqualTo(10L);
     }
 }

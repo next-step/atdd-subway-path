@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class PathService {
 
-    // TODO: 서비스 단위 테스트 작성 - 모킹
-
     private final StationService stationService;
     private final LineService lineService;
     private final PathFinder pathFinder;
@@ -27,11 +25,11 @@ public class PathService {
         Station sourceStation = stationService.findStationById(sourceStationId);
         Station targetStation = stationService.findStationById(targetStationId);
         List<Line> lines = lineService.findByStation(sourceStation, targetStation);
-        List<Section> sections = getSections(lines);
+        List<Section> sections = getAllSections(lines);
         return pathFinder.findShortestPath(sections, sourceStation, targetStation);
     }
 
-    private List<Section> getSections(List<Line> lines) {
+    private List<Section> getAllSections(List<Line> lines) {
         return lines.stream()
                 .flatMap(line -> line.getLineSections().getSections().stream())
                 .collect(Collectors.toList());

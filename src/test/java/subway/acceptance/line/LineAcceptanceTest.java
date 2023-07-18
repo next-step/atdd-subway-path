@@ -8,9 +8,7 @@ import subway.acceptance.AcceptanceTest;
 import subway.acceptance.station.StationFixture;
 import subway.acceptance.station.StationSteps;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static subway.acceptance.station.StationFixture.getStationId;
@@ -21,7 +19,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     void addStations() {
         // "교대역", "강남역", "역삼역", "선릉역", "삼성역", "잠실역", "강변역", "건대역", "성수역", "왕십리역"
-        StationFixture.기본_역_생성();
+        StationFixture.기본_역_생성_호출();
     }
 
     /**
