@@ -17,6 +17,7 @@ class LineTest {
     Station 역삼역;
     Station 선릉역;
     Station 익명역;
+    Station 판교역;
     Line 이호선;
 
     @BeforeEach
@@ -25,6 +26,7 @@ class LineTest {
         역삼역 = new Station(2L, "역삼역");
         선릉역 = new Station(3L, "선릉역");
         익명역 = new Station(4L, "익명역");
+        판교역 = new Station(5L, "판교역");
         이호선 = new Line("이호선", "Green", 10, 강남역, 역삼역);
     }
 
@@ -69,6 +71,45 @@ class LineTest {
 
         // then
         assertThat(이호선.getStations()).contains(익명역);
+    }
+
+    @DisplayName("구간을 등록 실패. 기존 구간 A-C 보다 신규 구간 B-C 길이가 크거나 같음")
+    @Test
+    void stationRegistrationBetweenStationsFailBySameOrBiggerDistance() {
+        // when
+        int sameDistanceComparedToSectionAC = 이호선.getDistance();
+        이호선.addSection(new Section(이호선, 익명역, 역삼역, sameDistanceComparedToSectionAC));
+
+        // then
+        assertThat(이호선.getStations()).doesNotContain(익명역);
+    }
+
+    @DisplayName("구간 등록 실패, 상행역과 하행역이 이미 모두 노선에 등록돼있는 구간을 추가")
+    @Test
+    void stationRegistrationFailByAlreadyExistingTopStationAndDownStation() {
+        // given
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
+
+        // when
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
+
+        // then
+        assertThat(이호선.getStations()).hasSize(3);
+    }
+
+    @DisplayName("구간 등록 에러, 상행역과 하행역이 모두 노선에 포함되있지 않은 구간을 추가")
+    @Test
+    void stationRegistrationFailByLineDoNotContainSectionRelatedStations() {
+        // given
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
+
+        // when
+        이호선.addSection(new Section(이호선, 익명역, 판교역, 10));
+
+        // then
+        assertThat(이호선.getStations()).doesNotContain(익명역);
+        assertThat(이호선.getStations()).doesNotContain(판교역);
     }
 
     @DisplayName("모든 지하철 조회")
