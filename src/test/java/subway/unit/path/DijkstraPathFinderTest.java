@@ -7,8 +7,8 @@ import subway.acceptance.station.StationFixture;
 import subway.exception.SubwayBadRequestException;
 import subway.line.model.Line;
 import subway.line.model.Section;
+import subway.path.component.DijkstraPathFinder;
 import subway.path.component.PathFinder;
-import subway.path.dto.PathRetrieveResponse;
 import subway.path.model.Path;
 import subway.station.dto.StationResponse;
 import subway.station.model.Station;
@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static subway.acceptance.station.StationFixture.getStation;
 
-@DisplayName("PathFinder 단위 테스트")
-public class PathFinderTest {
+@DisplayName("DijkstraPathFinder 단위 테스트")
+public class DijkstraPathFinderTest {
     private PathFinder pathFinder;
 
     private Line 이호선;
@@ -44,7 +44,7 @@ public class PathFinderTest {
 
     @BeforeEach
     void beforeEach() {
-        pathFinder = new PathFinder();
+        pathFinder = new DijkstraPathFinder();
 
         StationFixture.기본_역_생성();
 
