@@ -5,7 +5,6 @@ import static nextstep.subway.utils.LineTestRequests.지하철_노선_삭제;
 import static nextstep.subway.utils.LineTestRequests.지하철_노선_수정;
 import static nextstep.subway.utils.LineTestRequests.지하철_노선_조회;
 import static nextstep.subway.utils.LineTestRequests.지하철_노선도_등록;
-import static nextstep.subway.utils.StationTestRequests.지하철_역_등록;
 import static nextstep.subway.utils.StationTestRequests.지하철_역_등록_Id_획득;
 import static nextstep.subway.utils.StatusCodeAssertions.응답코드_검증;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,10 +76,10 @@ class LineAcceptanceTest {
         assertThat(lines).hasSize(2);
 
         LineResponse 신분당선 = lines.get(0);
-        노선도_기댓값_검증(신분당선, 첫번째역, "신분당선", "bg-red-600");
+        노선도_기댓값_검증(신분당선, 1L, "신분당선", "bg-red-600");
 
         LineResponse line7 = lines.get(1);
-        노선도_기댓값_검증(line7, 첫번째역, "7호선", "bg-red-100");
+        노선도_기댓값_검증(line7, 2L, "7호선", "bg-red-100");
     }
 
     /**

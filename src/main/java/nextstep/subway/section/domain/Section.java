@@ -65,12 +65,36 @@ public class Section {
         return currentDownwardStation.equals(station);
     }
 
-    public void shareSectionDistance(Section section) {
+    public void insertDownwardInterStation(Section section) {
+        checkValidDistance(section);
+
+        SectionStations oldOne = new SectionStations(stations.getUpStation(), section.getDownwardStation());
+        SectionStations newOne = new SectionStations(section.getDownwardStation(), stations.getDownStation());
+
+        this.stations = oldOne;
+        section.stations = newOne;
+
+        this.distance -= section.distance;
+    }
+
+    public void insertUpwardInterStation(Section section) {
+        checkValidDistance(section);
+
+        SectionStations oldOne = new SectionStations(stations.getUpStation(), section.getUpwardStation());
+        SectionStations newOne = new SectionStations(section.getUpwardStation(), stations.getDownStation());
+
+        this.stations = oldOne;
+        section.stations = newOne;
+
+        int newDistance = this.distance - section.distance;
+        section.distance = newDistance;
+        this.distance -= newDistance;
+    }
+
+    private void checkValidDistance(Section section) {
         if (section.distance >= this.distance) {
             throw new CustomException(ErrorCode.INVALID_INTER_STATION_DISTANCE);
         }
-
-        this.distance -= section.distance;
     }
 
     public Integer getDistance() {

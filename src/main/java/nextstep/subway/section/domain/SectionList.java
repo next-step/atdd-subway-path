@@ -21,22 +21,24 @@ public class SectionList {
 
     public void addSection(Section newSection) {
         checkValidStations(newSection.getUpwardStation(), newSection.getDownwardStation());
-        changeInterStationDistance(newSection);
-        this.sections.add(newSection);
+        addNewSection(newSection);
     }
 
-    private void changeInterStationDistance(Section newSection) {
+    private void addNewSection(Section newSection) {
         for (Section section : sections) {
             if (section.hasSameUpwardStation(newSection.getUpwardStation())) {
-                section.shareSectionDistance(newSection);
-                break;
+                section.insertDownwardInterStation(newSection);
+                sections.add(newSection);
+                return;
             }
 
             if (section.hasSameDownwardStation(newSection.getDownwardStation())) {
-                section.shareSectionDistance(newSection);
-                break;
+                section.insertUpwardInterStation(newSection);
+                sections.add(newSection);
+                return;
             }
         }
+        sections.add(newSection);
     }
 
     private void checkValidStations(Station upStation, Station downStation) {
