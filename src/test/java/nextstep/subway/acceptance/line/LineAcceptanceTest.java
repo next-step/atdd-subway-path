@@ -148,7 +148,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(노선_조회_결과.jsonPath().getString("name")).isEqualTo(노선_생성_요청_정보.get("name"));
         assertThat(노선_조회_결과.jsonPath().getString("color")).isEqualTo(노선_생성_요청_정보.get("color"));
         assertThat(노선_조회_결과.jsonPath().getList("stations", StationResponse.class))
-                .hasSize(2)
+                .hasSize(3)
                 .extracting("id").containsExactly(
                         station1Id,
                         station2Id,

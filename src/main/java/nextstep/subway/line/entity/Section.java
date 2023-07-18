@@ -37,4 +37,10 @@ public class Section {
         this.downStation = downStation;
         this.distance = distance;
     }
+
+    public void divideBy(Section section) {
+        // 기존 구간 변경
+        this.upStation = section.downStation;
+        this.distance -= section.getDistance();
+    }
 }

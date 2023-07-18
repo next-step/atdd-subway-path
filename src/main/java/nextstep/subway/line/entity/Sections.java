@@ -30,23 +30,50 @@ public class Sections {
 
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
-        stations.add(getFirstStation());
-        sections.forEach(section -> stations.add(section.getDownStation()));
+        Station station = getFirstStation();
+        Station lastStation = getLastStation();
+        while (!station.equalsId(lastStation)) {
+            stations.add(station);
+            station = getDownStation(station);
+        }
+        stations.add(station);
         return stations;
+    }
+
+    private Station getDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equalsId(station))
+                .findAny()
+                .map(section -> section.getDownStation())
+                .orElseThrow(() -> new IllegalArgumentException(String.format("하행역이 존재하지 않습니다. 기준역id:%s", station.getId())));
     }
 
     public void addSection(Section section) {
         Validator.validateEnrollment(this, section);
 
-        if (doesNewStationDivideExistingSection(section)) {
-            sections.add(section);
+        if (newSectionUpStationMatchLastStation(section)) {
+            divideExistingSectionWith(section);
         }
-        if (isNewStationToBeUpBound(section)) {
-            sections.add(0, section);
-        }
-        if (isNewStationToBeDownBound(section)) {
-            sections.add(section);
-        }
+        sections.add(section);
+    }
+
+    private void divideExistingSectionWith(Section section) {
+        Section existingSection = getSectionByUpStation(section.getUpStation());
+        existingSection.divideBy(section);
+    }
+
+    private Section getSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(s -> s.getUpStation().equalsId(upStation))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("구간을 찾을 수 없습니다. 상행역id:%s", upStation.getId())));
+    }
+
+    private Section getSectionByDownStation(Station downStation) {
+        return sections.stream()
+                .filter(s -> s.getDownStation().equalsId(downStation))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("구간을 찾을 수 없습니다. 상행역id:%s", downStation.getId())));
     }
 
     public void remove(Station station) {
@@ -55,15 +82,25 @@ public class Sections {
     }
 
     public Section getLastSection() {
-        return sections.get(sections.size() - 1);
+        return getSectionByDownStation(getLastStation());
     }
 
     public Station getFirstStation() {
-        return sections.get(FIRST_IDX).getUpStation();
+        List<Station> downStations = getDownStations();
+        return sections.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .map(section -> section.getUpStation())
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("노선 내 상행종착역을 찾을 수 없습니다."));
     }
 
     public Station getLastStation() {
-        return getLastSection().getDownStation();
+        List<Station> upStations = getUpStations();
+        return sections.stream()
+                .filter(section -> !upStations.contains(section.getDownStation()))
+                .map(section -> section.getDownStation())
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("노선 내 하행종착역을 찾을 수 없습니다."));
     }
 
     private int size() {
@@ -78,15 +115,7 @@ public class Sections {
         return getLastStation().equalsId(station);
     }
 
-    private boolean isNewStationToBeDownBound(Section section) {
-        return equalsLastStation(section.getUpStation());
-    }
-
-    private boolean isNewStationToBeUpBound(Section section) {
-        return getFirstStation().equalsId(section.getDownStation());
-    }
-
-    private boolean doesNewStationDivideExistingSection(Section section) {
+    private boolean newSectionUpStationMatchLastStation(Section section) {
         return getUpStations().contains(section.getUpStation());
     }
 
@@ -96,30 +125,41 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    private List<Station> getDownStations() {
+        return sections.stream()
+                .map(section -> section.getDownStation())
+                .collect(Collectors.toList());
+    }
+
     private static class Validator {
         static void validateEnrollment(Sections sections, Section section) {
-            if (isNewStationInExistingSection(sections, section)) {
 
-            }
-            if (isNewStationToBeUpBound(sections, section)) {
-
-            }
-            if (isNewStationToBeDownBound(sections, section)) {
+            if (newSectionUpStationMatchLastStation(sections, section)) {
                 validateNewSectionUpStationEqualsLineDownStation(sections, section);
                 validateNewSectionDownStationIsNewcomer(sections, section);
+                return;
             }
+            if (newSectionDownStationMatchTopStation(sections, section)) {
+                return;
+            }
+            if (newStationUpStationMatchTopStation(sections, section)) {
+                return;
+            }
+
+            // 새로운 역을 하행 종점역으로 등록할 경우엔 통과
+            throw new IllegalArgumentException(String.format("새 구간을 등록할 수 없습니다. 새구간 상행역id:%s, 하행역id:%d",
+                    section.getUpStation().getId(), section.getDownStation().getId()));
         }
 
-        private static boolean isNewStationToBeDownBound(Sections sections, Section section) {
+        private static boolean newSectionUpStationMatchLastStation(Sections sections, Section section) {
             return sections.equalsLastStation(section.getUpStation());
         }
 
-        private static boolean isNewStationToBeUpBound(Sections sections, Section section) {
-            return false;
+        private static boolean newSectionDownStationMatchTopStation(Sections sections, Section section) {
+            return sections.getFirstStation().equalsId(section.getDownStation());
         }
-
-        private static boolean isNewStationInExistingSection(Sections sections, Section section) {
-            return false;
+        private static boolean newStationUpStationMatchTopStation(Sections sections, Section section) {
+            return sections.getUpStations().contains(section.getUpStation());
         }
 
         private static void validateDeletion(Sections sections, Station Station) {
