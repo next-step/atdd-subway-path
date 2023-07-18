@@ -24,26 +24,24 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
     private int distance;
-    private int sequence;
 
     public Section() {
     }
 
     public Section(final Station upStation, final Station downStation, final int distance) {
-        this(null, null, upStation, downStation, distance, 1);
+        this(null, null, upStation, downStation, distance);
     }
 
-    public Section(final Line line, final Station upStation, final Station downStation, final int distance, final int sequence) {
-        this(null, line, upStation, downStation, distance, sequence);
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
+        this(null, line, upStation, downStation, distance);
     }
 
-    public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance, final int sequence) {
+    public Section(final Long id, final Line line, final Station upStation, final Station downStation, final int distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.sequence = sequence;
     }
 
     public Long getId() {
@@ -64,10 +62,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public int getSequence() {
-        return sequence;
     }
 
     public void updateLine(Line line) {

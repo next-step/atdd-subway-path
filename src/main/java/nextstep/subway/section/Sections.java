@@ -31,7 +31,7 @@ public class Sections {
 
     public void add(final Line line, final Station upStation, final Station downStation,
         final int distance) {
-        Section section = new Section(line, upStation, downStation, distance, decideSequence());
+        Section section = new Section(line, upStation, downStation, distance);
         sections.add(section);
     }
 
@@ -67,14 +67,6 @@ public class Sections {
         return this.sections;
     }
 
-    private int decideSequence() {
-        if (this.sections.size() == 0) {
-            return 1;
-        }
-
-        return getLastSection().getSequence() + 1;
-    }
-
     private List<Station> toStations() {
         return Stream.concat(Stream.of(this.sections.get(0).getUpStation()),
                 this.sections.stream().map(Section::getDownStation))
@@ -96,8 +88,6 @@ public class Sections {
     }
 
     public Section getLastSection() {
-        return this.sections.stream()
-            .max(Comparator.comparing(Section::getSequence))
-            .orElseThrow();
+        return this.sections.get(this.sections.size() - 1);
     }
 }

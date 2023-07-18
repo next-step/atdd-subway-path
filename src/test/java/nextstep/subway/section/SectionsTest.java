@@ -27,8 +27,7 @@ public class SectionsTest {
 
         assertAll(
             () -> assertThat(newSection.getUpStation().getId()).isEqualTo(2L),
-            () -> assertThat(newSection.getDownStation().getId()).isEqualTo(3L),
-            () -> assertThat(newSection.getSequence()).isEqualTo(2)
+            () -> assertThat(newSection.getDownStation().getId()).isEqualTo(3L)
         );
     }
 
@@ -58,7 +57,7 @@ public class SectionsTest {
     void validateSection_fail_upStationDoesNotMatchWithDownEndStation() {
         // given
         Section firstSection = SectionBuilder.aSection().build();
-        Section midSection = SectionBuilder.aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).withSequence(2).build();
+        Section midSection = SectionBuilder.aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
         Sections sections = new Sections(List.of(firstSection, midSection));
 
         // when & then
@@ -71,7 +70,7 @@ public class SectionsTest {
     void deleteSection() {
         // given
         Section firstSection = SectionBuilder.aSection().build();
-        Section secondSection = SectionBuilder.aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).withSequence(2).build();
+        Section secondSection = SectionBuilder.aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
         Sections sections = new Sections(new ArrayList<>(List.of(firstSection, secondSection)));
 
         // when
@@ -86,7 +85,7 @@ public class SectionsTest {
     void deleteSection_fail_notDownEndStation() {
         // given
         Section firstSection = SectionBuilder.aSection().build();
-        Section secondSection = SectionBuilder.aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).withSequence(2).build();
+        Section secondSection = SectionBuilder.aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
         Sections sections = new Sections(new ArrayList<>(List.of(firstSection, secondSection)));
 
         // when
