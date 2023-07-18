@@ -22,7 +22,6 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
     class 구간_등록_성공 {
 
         /**
-         *
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
@@ -220,6 +219,41 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
 
     @Nested
     class 구간_제거_성공 {
+
+        /**
+         * 지하철노선 구간 제거
+         * Given 지하철 노선을 생성하고 생성한 지하철 노선에 추가로 구간을 등록한뒤
+         * When 상행 종점역을 제거한뒤
+         * Then 다시 조회하면 제거된 역을 제외한 상행역과 하행역이 조회되고 거리도 줄어든다
+         */
+        @Test
+        void 상행역_구간_제거_성공() {
+            //given
+            long distance = 10L;
+            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+            long createdLineId = getId(lineCratedResponse);
+            long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
+            long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
+
+            ValidatableResponse stationCreatedResponse = createStation("길음역");
+            StationResponse stationResponse = stationCreatedResponse.extract().as(StationResponse.class);
+            Long newDownStationId = stationResponse.getId();
+            long newSectionDistance = 3L;
+
+            createSection(createdLineId, downStationId, newDownStationId, newSectionDistance);
+
+            //when
+            ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + upStationId);
+
+            //then
+            verifyResponseStatus(sectionDeletedResponse, HttpStatus.NO_CONTENT);
+
+            ValidatableResponse foundLineResponse = getResource(LINES_RESOURCE_URL + "/" + createdLineId);
+            verifyResponseStatus(foundLineResponse, HttpStatus.OK);
+
+            verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "언주역", "길음역");
+        }
+
         /**
          * 지하철노선 구간 제거
          * Given 지하철 노선을 생성하고 생성한 지하철 노선에 추가로 구간을 등록한뒤
@@ -227,7 +261,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * Then 다시 조회하면 제거된 역을 제외한 상행역과 하행역이 조회되고 거리도 줄어든다
          */
         @Test
-        void 지하철노선_구간_제거_성공() {
+        void 하행역_구간_제거_성공() {
             //given
             long distance = 10L;
             ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
@@ -252,61 +286,15 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
 
             verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "강남역", "언주역");
         }
-    }
-
-    @Nested
-    class 구간_제거_실패 {
-        /** TODO
-         * 지하철노선 구간 제거
-         * Given 지하철 노선을 생성하고 생성한 지하철 노선에 추가로 구간을 등록한뒤
-         * When 중간에 있는 역을 제거하려 하면
-         * Then 예외가 발생하고 실패한다.
-         */
-        @Test
-        void 지하철노선_구간_제거시_하행_종점역이_아니면_실패() {
-            //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
-            long createdLineId = getId(lineCratedResponse);
-            long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
-
-            ValidatableResponse stationCreatedResponse = createStation("길음역");
-            Long newStationId = getId(stationCreatedResponse);
-            createSection(createdLineId, downStationId, newStationId, 3L);
-
-            //when
-            ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + downStationId);
-
-            //then
-            verifyResponseStatus(sectionDeletedResponse, HttpStatus.BAD_REQUEST);
-        }
 
         /**
          * 지하철노선 구간 제거
-         * Given 지하철 노선을 생성하고
-         * When 하행역을 제거하려 하면
-         * Then 예외가 발생하고 실패한다.
+         * Given 지하철 노선을 생성하고 생성한 지하철 노선에 추가로 구간을 등록한뒤
+         * When 중간 역을 제거한뒤
+         * Then 다시 조회하면 제거된 역을 제외한 상행역과 하행역이 조회 된다
          */
         @Test
-        void 지하철노선_구간_제거시_구간이_한개인_경우_실패() {
-            //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
-            Long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
-
-            //when
-            ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + downStationId);
-
-            //then
-            verifyResponseStatus(sectionDeletedResponse, HttpStatus.BAD_REQUEST);
-        }
-
-        /** TODO
-         * 지하철노선 구간 등록
-         * Given 지하철 노선을 생성하고 구간을 추가 한뒤
-         * When 지하철 노선 구간을 제거하려 할때 요청한 역이 노선의 하행역 아니면 역이면
-         * Then 구간 등록에 실패한다
-         */
-        @Test
-        void 지하철노선_구간_제거_하행역이_아니어서_실패() {
+        void 중간역_구간_제거_성공() {
             //given
             long distance = 10L;
             ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
@@ -324,8 +312,77 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
             ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + downStationId);
 
             //then
+            verifyResponseStatus(sectionDeletedResponse, HttpStatus.NO_CONTENT);
+
+            ValidatableResponse foundLineResponse = getResource(LINES_RESOURCE_URL + "/" + createdLineId);
+            verifyResponseStatus(foundLineResponse, HttpStatus.OK);
+
+            verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "강남역", "길음역");
+        }
+
+
+    }
+
+    @Nested
+    class 구간_제거_실패 {
+
+        /**
+         * 지하철노선 구간 제거
+         * Given 지하철 노선을 생성하고
+         * When 상행역을 제거하려 하면
+         * Then 예외가 발생하고 실패한다.
+         */
+        @Test
+        void 지하철노선_구간_제거시_구간이_한개인_경우_상행역_제거_실패() {
+            //given
+            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            Long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
+
+            //when
+            ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + upStationId);
+
+            //then
             verifyResponseStatus(sectionDeletedResponse, HttpStatus.BAD_REQUEST);
         }
+
+        /**
+         * 지하철노선 구간 제거
+         * Given 지하철 노선을 생성하고
+         * When 하행역을 제거하려 하면
+         * Then 예외가 발생하고 실패한다.
+         */
+        @Test
+        void 지하철노선_구간_제거시_구간이_한개인_경우_하행역_제거_실패() {
+            //given
+            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            Long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
+
+            //when
+            ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + downStationId);
+
+            //then
+            verifyResponseStatus(sectionDeletedResponse, HttpStatus.BAD_REQUEST);
+        }
+
+        /**
+         * 지하철노선 구간 제거
+         * Given 지하철 노선을 생성하고
+         * When 노선에 없는 역을 제거하려 하면
+         * Then 예외가 발생하고 실패한다.
+         */
+        @Test
+        void 지하철노선_구간_제거시_구간에_없는_역인_경우_실패() {
+            //given
+            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            Long notInSectionStationId = getId(createStation("성수역"));
+
+            //when
+            ValidatableResponse sectionDeletedResponse = deleteResource(getLocation(lineCratedResponse) + SECTION_RESOURCE_URL + "?stationId=" + notInSectionStationId);
+
+            //then
+            verifyResponseStatus(sectionDeletedResponse, HttpStatus.BAD_REQUEST);
+        }
+
 
     }
 }
