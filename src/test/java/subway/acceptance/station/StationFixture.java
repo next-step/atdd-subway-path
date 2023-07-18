@@ -7,7 +7,7 @@ import java.util.Map;
 public class StationFixture {
     public static final Map<String, Long> stationsMap = new HashMap<>();
 
-    public static Map<String, Long> 기본_역_생성() {
+    public static void 기본_역_생성() {
         List.of("교대역", "강남역", "역삼역", "선릉역", "삼성역", "잠실역", "강변역", "건대역", "성수역", "왕십리역", // 2호선
                         "남부터미널역", "양재역", // 3호선
                         "신논현역", "양재시민의숲역") // 신분당선
@@ -17,7 +17,6 @@ public class StationFixture {
         for (Map<String, Object> station : jsonResponse) {
             stationsMap.put((String) station.get("name"), ((Number) station.get("id")).longValue());
         }
-        return stationsMap;
     }
 
     public static Long getStationId(String name) {

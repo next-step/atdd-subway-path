@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import subway.station.model.Station;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ToString
 @Getter
 @Builder
 @AllArgsConstructor

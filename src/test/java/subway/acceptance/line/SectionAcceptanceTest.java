@@ -14,7 +14,6 @@ import static subway.acceptance.station.StationFixture.getStationId;
 
 @DisplayName("지하철노선 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-//    public Map<String, Long> stationsMap = new HashMap<>();
 
     @BeforeEach
     void addLine() {

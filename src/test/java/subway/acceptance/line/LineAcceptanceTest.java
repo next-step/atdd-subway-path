@@ -18,12 +18,10 @@ import static subway.acceptance.station.StationFixture.getStationId;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    public Map<String, Long> stationsMap = new HashMap<>();
-
     @BeforeEach
     void addStations() {
         // "교대역", "강남역", "역삼역", "선릉역", "삼성역", "잠실역", "강변역", "건대역", "성수역", "왕십리역"
-        stationsMap = StationFixture.기본_역_생성();
+        StationFixture.기본_역_생성();
     }
 
     /**
