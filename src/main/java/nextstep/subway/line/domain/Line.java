@@ -3,12 +3,8 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
+
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.exception.AlreadyRegisteredStationException;
 import nextstep.subway.section.exception.CanNotDeleteOnlyOneSectionException;
@@ -26,6 +22,12 @@ public class Line {
 
     private String color;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private Section firstSection;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Section lastSection;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -35,6 +37,8 @@ public class Line {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
+        this.firstSection = section;
+        this.lastSection = section;
 
         sections.add(section);
         section.assignLine(this);
@@ -131,33 +135,31 @@ public class Line {
                     throw new AlreadyRegisteredStationException();
                 });
 
-        // 1. newStation의 상행역 또는 하행역을 갖는 구간을 서치
+        // 상행 종점에 등록
+        // 상행 종점의 상행역과 새로운 구간의 하행역이 같은지?
+
+        // 하행 종점에 등록
+
+        addSectionBetweenStations(newSection);
+    }
+
+    private void addSectionBetweenStations(Section newSection) {
         Section existingSection = sections.stream()
                 .filter(section -> section.hasOnlyOneSameStation(newSection))
                 .findAny()
                 .orElseThrow(InvalidSectionRegistrationException::new);
 
-        // 1-2. 거리가 같으면 예외
         if (existingSection.hasSameDistance(newSection)) {
             throw new InvalidSectionRegistrationException();  //TODO: 더 알맞는 예외는 나중에...
         }
 
-        // 2. 상행역이 같은지, 하행역이 같은지 확인
-
-        // 새로운 섹션을 추가
         sections.add(newSection);
-
-        // 기존 구간을 제거
         sections.remove(existingSection);
 
         Section downSection;
         if (existingSection.hasSameUpStation(newSection)) {
-            // 상행역이 기존 구간과 같은경우
-            // 새 구간의 하행을 상행으로, 기존 구간의 하행을 하행으로 갖는 section 추가
             downSection = new Section(newSection.getDownStation(), existingSection.getDownStation(), existingSection.getDistance() - newSection.getDistance());
         } else {
-            // 하행역이 기존 구간과 같은 경우
-            // 기존 구간의 상행을 상행으로, 새 구간의 상행을 하행으로 갖는 section 추가
             downSection = new Section(existingSection.getUpStation(), newSection.getUpStation(), existingSection.getDistance() - newSection.getDistance());
         }
 

@@ -56,7 +56,7 @@ class LineTest {
         assertSection(secondSection, "양재역", "양재시민의숲역", 6);
     }
 
-    private static void assertSection(Section target, String upStationName, String downStationName, int distance) {
+    private void assertSection(Section target, String upStationName, String downStationName, int distance) {
         assertThat(target.getUpStationName()).isEqualTo(upStationName);
         assertThat(target.getDownStationName()).isEqualTo(downStationName);
         assertThat(target.getDistance()).isEqualTo(distance);
@@ -64,7 +64,22 @@ class LineTest {
 
     @Test
     void addSectionUpStation() {
+        // given
+        Station 강남역 = new Station(1L, "강남역");
+        Station 양재역 = new Station(2L, "양재역");
+        Section sectionForLine = new Section(강남역, 양재역, 10);
 
+        Line 신분당선 = new Line("신분당선", "bg-red-600", sectionForLine);
+
+        Station 신논현역 = new Station(3L, "신논현역");
+        Section newSection = new Section(신논현역, 강남역, 5);
+
+        // when
+        신분당선.addSectionVer2(newSection);
+
+        // then
+        List<Section> sections = 신분당선.getSections();
+        assertThat(sections).hasSize(2);
     }
 
     @Test
