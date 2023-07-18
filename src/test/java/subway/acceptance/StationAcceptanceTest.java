@@ -1,4 +1,4 @@
-package subway;
+package subway.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -9,11 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import subway.fixture.StationFixture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,7 +42,7 @@ public class StationAcceptanceTest {
         String 강남역 = "강남역";
         params.put("name", 강남역);
 
-        ExtractableResponse<Response> response = this.createStation(강남역);
+        ExtractableResponse<Response> response = StationFixture.createStation(강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -63,26 +63,14 @@ public class StationAcceptanceTest {
         //given
         String 강남역 = "강남역";
         String 양재역 = "양재역";
-        this.createStation(강남역);
-        this.createStation(양재역);
+        StationFixture.createStation(강남역);
+        StationFixture.createStation(양재역);
 
         //when
         List<String> stationNames = this.getStationNames();
 
         //then
         assertThat(stationNames).containsAnyOf(강남역, 양재역);
-    }
-
-    public static ExtractableResponse<Response> createStation(String name) {
-        Map<String ,String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
     }
 
 
@@ -96,10 +84,10 @@ public class StationAcceptanceTest {
     void deleteStation() {
         //given
         String 강남역 = "강남역";
-        Long id = this.createStation(강남역).jsonPath().getLong("id");
+        Long id = StationFixture.createStation(강남역).jsonPath().getLong("id");
 
         //when
-        this.deleteStation(id);
+        StationFixture.deleteStation(id);
         List<String> stationNames = this.getStationNames();
 
         //then
@@ -115,11 +103,4 @@ public class StationAcceptanceTest {
         return stationNames;
     }
 
-    private ExtractableResponse<Response> deleteStation(Long id) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().delete("/stations/{id}", id)
-            .then().log().all()
-            .extract();
-    }
 }

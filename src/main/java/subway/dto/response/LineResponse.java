@@ -1,8 +1,10 @@
 package subway.dto.response;
 
 
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
+import subway.entity.Line;
 import subway.entity.Station;
 
 import java.util.List;
@@ -20,5 +22,16 @@ public class LineResponse {
         this.name = name;
         this.color = color;
         this.stations = stations;
+    }
+
+    public static LineResponse from(Line line) {
+        return LineResponse.builder()
+            .id(line.getId())
+            .name(line.getName())
+            .color(line.getColor())
+            .stations(line.getStations().stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList()))
+            .build();
     }
 }

@@ -1,4 +1,4 @@
-package subway;
+package subway.common;
 
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.EntityType;

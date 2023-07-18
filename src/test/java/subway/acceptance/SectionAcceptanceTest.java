@@ -3,7 +3,6 @@ package subway;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -16,9 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import subway.common.DatabaseCleaner;
 import subway.dto.request.LineRequest;
+import subway.dto.response.LineResponse;
+import subway.dto.response.StationResponse;
+import subway.fixture.LineFixture;
+import subway.fixture.SectionFixture;
+import subway.fixture.StationFixture;
 
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -49,7 +52,7 @@ public class SectionAcceptanceTest {
         Long 양재역 = createStation("양재역");
 
         //라인 생성(신논현 - 강남)
-        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(LineRequest.builder()
+        ExtractableResponse<Response> response = LineFixture.createLine(LineRequest.builder()
             .name("신분당선")
             .color("bg-red-600")
             .upStationId(신논현역)
@@ -60,35 +63,15 @@ public class SectionAcceptanceTest {
         lineId = response.jsonPath().getLong("id");
 
         //구간 추가(강남 - 양재)
-        this.createSection(강남역, 양재역, 10);
+        SectionFixture.createSection(lineId, 강남역, 양재역, 10);
     }
 
     Long createStation(String name) {
-        Long id = StationAcceptanceTest.createStation(name).jsonPath().getLong("id");
+        Long id = StationFixture.createStation(name).jsonPath().getLong("id");
         stationMaps.put(name, id);
         return id;
     }
 
-
-    /**
-     * POST /lines/1/sections
-     *
-     * @return
-     */
-    ExtractableResponse<Response> createSection(Long upStationId, Long downStationId, Integer distance) {
-        Map<String ,String> params = new HashMap<>();
-        params.put("upStationId", upStationId.toString());
-        params.put("downStationId", downStationId.toString());
-        params.put("distance", distance.toString());
-
-        return RestAssured.given().log().all()
-            .body(params)
-            .pathParam("lineId", lineId)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines/{lineId}/sections")
-            .then().log().all()
-            .extract();
-    }
 
     /**
      * When 지하철 구간을 생성하면
@@ -102,15 +85,18 @@ public class SectionAcceptanceTest {
         Long 양재시민의숲역 = createStation("양재시민의숲역");
 
         // when
-        ExtractableResponse<Response> response = this.createSection(양재역, 양재시민의숲역, 10);
+        ExtractableResponse<Response> response = SectionFixture.createSection(lineId, 양재역, 양재시민의숲역, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stations = LineAcceptanceTest.findLine(lineId).jsonPath()
+        List<String> stations = LineFixture.findLine(lineId).jsonPath()
             .getList("stations.name", String.class);
         assertThat(stations).containsAnyOf("양재시민의숲역");
+
+        var lineResponse = LineFixture.findLine(lineId).as(LineResponse.class);
+        assertThat(lineResponse.getStations().stream().map(StationResponse::getName)).containsAnyOf("양재시민의숲역");
     }
 
     /**
@@ -126,14 +112,14 @@ public class SectionAcceptanceTest {
         Long 판교역 = createStation("판교역");
 
         // when
-        this.createSection(양재역, 판교역, 50);
-        ExtractableResponse<Response> response = this.createSection(양재역, 양재시민의숲역, 20);
+        SectionFixture.createSection(양재역, 판교역, 50);
+        ExtractableResponse<Response> response = SectionFixture.createSection(양재역, 양재시민의숲역, 20);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        JsonPath line = LineAcceptanceTest.findLine(lineId).jsonPath();
+        JsonPath line = LineFixture.findLine(lineId).jsonPath();
         List<String> stations = line.getList("stations.name", String.class);
         assertThat(stations).containsAnyOf("양재시민의숲역", "판교역");
     }
@@ -149,7 +135,7 @@ public class SectionAcceptanceTest {
         Long 논현역 = createStation("논현역");
 
         // when
-        ExtractableResponse<Response> response = this.createSection(신사역, 논현역, 10);
+        ExtractableResponse<Response> response = SectionFixture.createSection(lineId, 신사역, 논현역, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -193,7 +179,7 @@ public class SectionAcceptanceTest {
 
 
     /**
-     * When 하행 역으로 시작하지 않는 지하철 구간을 생성하면
+     * When 등록되어 있는 하행역 정보로 지하철 구간을 생성하면
      * Then 지하철 구간이 생성되지 않는다.
      */
     @DisplayName("지하철 구간 생성 실패 - 새로운 구간의 하행역은 해당 노선에 등록되어있는 역일 수 없다.(상/하행 다 같을 때)")
@@ -203,27 +189,12 @@ public class SectionAcceptanceTest {
         Long 양재역 = stationMaps.get("양재역");
 
         // when
-        ExtractableResponse<Response> response = this.createSection(강남역, 양재역, 10);
+        ExtractableResponse<Response> response = SectionFixture.createSection(lineId, 강남역, 양재역, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    /**
-     * DELETE /lines/1/sections?stationId=2
-     *
-     * @return
-     */
-    ExtractableResponse<Response> deleteSection(Long stationId) {
-
-        return RestAssured.given().log().all()
-            .pathParam("lineId", lineId)
-            .queryParam("stationId", stationId)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().delete("/lines/{lineId}/sections")
-            .then().log().all()
-            .extract();
-    }
 
     /**
      * Given 2개 구간을 가지고 있는 라인을 생성한다.
@@ -238,7 +209,7 @@ public class SectionAcceptanceTest {
         Long 양재역 = stationMaps.get("양재역");
 
         // when
-        ExtractableResponse<Response> response = this.deleteSection(양재역);
+        ExtractableResponse<Response> response = SectionFixture.deleteSection(lineId, 양재역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -257,7 +228,7 @@ public class SectionAcceptanceTest {
         Long 시청역 = createStation("시청역");
 
         // when
-        ExtractableResponse<Response> response = this.deleteSection(시청역);
+        ExtractableResponse<Response> response = SectionFixture.deleteSection(lineId, 시청역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -265,7 +236,7 @@ public class SectionAcceptanceTest {
     }
 
     private List<String> getStations() {
-        List<String> stations = LineAcceptanceTest.findLine(lineId).jsonPath().getList("stations");
+        List<String> stations = LineFixture.findLine(lineId).jsonPath().getList("stations");
         return stations;
     }
 
@@ -280,7 +251,7 @@ public class SectionAcceptanceTest {
         Long 강남역 = stationMaps.get("강남역");
 
         // when
-        ExtractableResponse<Response> response = this.deleteSection(강남역);
+        ExtractableResponse<Response> response = SectionFixture.deleteSection(lineId, 강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -298,10 +269,10 @@ public class SectionAcceptanceTest {
         Long 강남역 = stationMaps.get("강남역");
         Long 양재역 = stationMaps.get("양재역");
         // given 구간 한개로
-        this.deleteSection(양재역);
+        SectionFixture.deleteSection(lineId, 양재역);
 
         // then
-        ExtractableResponse<Response> response = this.deleteSection(강남역);
+        ExtractableResponse<Response> response = SectionFixture.deleteSection(lineId, 강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
