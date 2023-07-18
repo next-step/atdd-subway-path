@@ -26,6 +26,8 @@ class PathFinderTest {
     private Line 신분당선;
     private Line 육호선;
 
+    private PathFinder pathFinder;
+
     /**
      * 교대역    --- *2호선* ---   강남역
      * |           10             |
@@ -53,6 +55,8 @@ class PathFinderTest {
         이호선.addSection(new Section(이호선, 교대역, 강남역, 10));
         신분당선.addSection(new Section(신분당선, 강남역, 양재역, 10));
         육호선.addSection(new Section(육호선, 독바위역, 불광역, 5));
+
+        pathFinder = new PathFinder();
     }
 
     @DisplayName("지하철 경로를 조회한다")
@@ -62,7 +66,7 @@ class PathFinderTest {
         List<Line> lines = List.of(삼호선, 이호선, 신분당선);
 
         // when
-        List<Station> shortestPath = PathFinder.findPath(lines, 교대역, 양재역);
+        List<Station> shortestPath = pathFinder.findPath(lines, 교대역, 양재역);
 
         // then
         assertThat(shortestPath.stream().map(Station::getName))
@@ -76,7 +80,7 @@ class PathFinderTest {
         List<Line> lines = List.of(삼호선, 이호선, 신분당선);
 
         // when
-        double shortestPathWeight = PathFinder.findPathWeight(lines, 교대역, 양재역);
+        double shortestPathWeight = pathFinder.findPathWeight(lines, 교대역, 양재역);
 
         // then
         assertThat(shortestPathWeight).isEqualTo(5);
@@ -89,7 +93,7 @@ class PathFinderTest {
         List<Line> lines = List.of(삼호선, 이호선, 신분당선, 육호선);
 
         // when, then
-        assertThatThrownBy(() -> PathFinder.findPath(lines, 교대역, 독바위역))
+        assertThatThrownBy(() -> pathFinder.findPath(lines, 교대역, 독바위역))
                 .isInstanceOf(DataIntegrityViolationException.class)
                 .message()
                 .isEqualTo("출발역과 도착역이 연결되어 있지 않습니다.");
