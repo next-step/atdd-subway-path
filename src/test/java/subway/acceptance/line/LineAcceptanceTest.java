@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import subway.acceptance.AcceptanceTest;
+import subway.acceptance.station.StationFixture;
 import subway.acceptance.station.StationSteps;
 
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static subway.acceptance.station.StationFixture.getStationId;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -21,7 +23,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     void addStations() {
         // "교대역", "강남역", "역삼역", "선릉역", "삼성역", "잠실역", "강변역", "건대역", "성수역", "왕십리역"
-        stationsMap = StationSteps.기본_역_생성();
+        stationsMap = StationFixture.기본_역_생성();
     }
 
     /**
@@ -32,7 +34,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        var 이호선 = LineRequestGenerator.이호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
+        var 이호선 = LineFixture.이호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
         LineSteps.노선_생성_API(이호선);
 
         // then
@@ -50,10 +52,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void retrieveLines() {
         // given
-        var 일호선 = LineRequestGenerator.일호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
+        var 일호선 = LineFixture.일호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
         LineSteps.노선_생성_API(일호선);
 
-        var 이호선 = LineRequestGenerator.이호선_요청_만들기(getStationId("삼성역"), getStationId("잠실역"));
+        var 이호선 = LineFixture.이호선_요청_만들기(getStationId("삼성역"), getStationId("잠실역"));
         LineSteps.노선_생성_API(이호선);
 
         // when
@@ -62,8 +64,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(lineNames).containsExactlyInAnyOrder("1호선", "2호선");
-
-
     }
 
     /**
@@ -75,9 +75,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineAndRetrieve() {
         // given
-        var 일호선 = LineRequestGenerator.일호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
+        var 일호선 = LineFixture.일호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
         var createLineResponse = LineSteps.노선_생성_API(일호선);
-        final String createdLocation = createLineResponse.header("Location");
+        var createdLocation = createLineResponse.header("Location");
 
         // when
         var retrieveLineResponse = LineSteps.노선_조회_API(createdLocation);
@@ -85,7 +85,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(lineName).isEqualTo(일호선.get("name"));
-
     }
 
     /**
@@ -97,12 +96,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        var 일호선 = LineRequestGenerator.일호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
+        var 일호선 = LineFixture.일호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
         var createLineResponse = LineSteps.노선_생성_API(일호선);
-        final String createdLocation = createLineResponse.header("Location");
+        var createdLocation = createLineResponse.header("Location");
 
         // when
-        var 일호선_수정 = LineRequestGenerator.generateLineModifyRequest("1호선천안", "bg-blue-800");
+        var 일호선_수정 = LineFixture.generateLineModifyRequest("1호선천안", "bg-blue-800");
         var modifyLineResponse = LineSteps.노선_수정_API(createdLocation, 일호선_수정);
 
         // then
@@ -118,9 +117,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        var 일호선 = LineRequestGenerator.일호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
+        var 일호선 = LineFixture.일호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
         var createLineResponse = LineSteps.노선_생성_API(일호선);
-        final String createdLocation = createLineResponse.header("Location");
+        var createdLocation = createLineResponse.header("Location");
         final Integer createdId = createLineResponse.body().jsonPath().get("id");
 
         // when
@@ -130,9 +129,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         var 노선_목록 = LineSteps.노선_목록_조회_API();
         assertThat(노선_목록.body().jsonPath().getList("id")).doesNotContain(createdId);
-    }
-
-    private Long getStationId(String name) {
-        return stationsMap.get(name);
     }
 }

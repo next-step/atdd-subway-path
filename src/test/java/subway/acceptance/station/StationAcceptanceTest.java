@@ -3,13 +3,11 @@ package subway.acceptance.station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
 import subway.acceptance.AcceptanceTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -23,7 +21,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        final String stationName = "강남역";
+        var stationName = "강남역";
         var createStationResponse = StationSteps.역_생성_API(stationName);
 
         // then
@@ -44,7 +42,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     void retrieveStations() {
         // given
         final List<String> createStationNames = List.of("강남역", "역삼역");
-        final int createdStations = createStationNames.size();
+        var createdStations = createStationNames.size();
         createStationNames.forEach(StationSteps::역_생성_API);
 
         // when
@@ -65,9 +63,9 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void removeStation() {
         // given
-        final String stationName = "강남역";
+        var stationName = "강남역";
         var createResponse = StationSteps.역_생성_API(stationName);
-        final String createdLocation = createResponse.header("Location");
+        var createdLocation = createResponse.header("Location");
         final Integer createdId = createResponse.body().jsonPath().get("id");
 
         // when

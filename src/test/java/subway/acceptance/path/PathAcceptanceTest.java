@@ -1,22 +1,23 @@
 package subway.acceptance.path;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import subway.acceptance.AcceptanceTest;
-import subway.acceptance.line.LineRequestGenerator;
+import subway.acceptance.line.LineFixture;
 import subway.acceptance.line.LineSteps;
 import subway.acceptance.line.SectionFixture;
+import subway.acceptance.station.StationFixture;
 import subway.acceptance.station.StationSteps;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static subway.acceptance.station.StationFixture.getStationId;
 
 @DisplayName("경로 관련 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -36,20 +37,20 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void createLine() {
-        stationsMap = StationSteps.기본_역_생성();
+        stationsMap = StationFixture.기본_역_생성();
 
-        var 이호선_요청 = LineRequestGenerator.generateLineCreateRequest("2호선", "bg-green-600", getStationId("강남역"), getStationId("교대역"), 10L);
+        var 이호선_요청 = LineFixture.generateLineCreateRequest("2호선", "bg-green-600", getStationId("강남역"), getStationId("교대역"), 10L);
         LineSteps.노선_생성_API(이호선_요청);
 
-        var 삼호선_요청 = LineRequestGenerator.generateLineCreateRequest("3호선","bg-amber-600", getStationId("교대역"), getStationId("남부터미널역"),2L);
+        var 삼호선_요청 = LineFixture.generateLineCreateRequest("3호선","bg-amber-600", getStationId("교대역"), getStationId("남부터미널역"),2L);
         var createResponse = LineSteps.노선_생성_API(삼호선_요청);
-        final String createdLocation = createResponse.header("Location");
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = createResponse.header("Location");
+        var appendLocation = createdLocation + "/sections";
 
         var 삼호선_끝에_구간_추가 = SectionFixture.구간_요청_만들기(getStationId("남부터미널역"), getStationId("양재역"), 3L);
         LineSteps.구간_추가_API(appendLocation, 삼호선_끝에_구간_추가);
 
-        var 신분당선_요청 = LineRequestGenerator.generateLineCreateRequest("신분당선","bg-hotpink-600", getStationId("강남역"), getStationId("양재역"),10L);
+        var 신분당선_요청 = LineFixture.generateLineCreateRequest("신분당선","bg-hotpink-600", getStationId("강남역"), getStationId("양재역"),10L);
         LineSteps.노선_생성_API(신분당선_요청);
 
         LineSteps.노선_목록_조회_API();
@@ -175,10 +176,4 @@ public class PathAcceptanceTest extends AcceptanceTest {
         System.out.println(list);
         System.out.println(distance);
     }
-
-    private Long getStationId(String name) {
-        return stationsMap.get(name);
-    }
-
-
 }

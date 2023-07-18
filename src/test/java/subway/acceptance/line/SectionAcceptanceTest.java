@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import subway.acceptance.AcceptanceTest;
+import subway.acceptance.station.StationFixture;
 import subway.acceptance.station.StationSteps;
 
 import java.util.HashMap;
@@ -12,15 +13,16 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static subway.acceptance.station.StationFixture.getStationId;
 
 @DisplayName("지하철노선 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
-    public Map<String, Long> stationsMap = new HashMap<>();
+//    public Map<String, Long> stationsMap = new HashMap<>();
 
     @BeforeEach
     void addLine() {
         // "교대역", "강남역", "역삼역", "선릉역", "삼성역", "잠실역", "강변역", "건대역", "성수역", "왕십리역"
-        stationsMap = StationSteps.기본_역_생성();
+        StationFixture.기본_역_생성();
     }
 
     // Week 1
@@ -34,9 +36,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         // when
-        var 이호선_요청 = LineRequestGenerator.이호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
+        var 이호선_요청 = LineFixture.이호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
         var createLineResponse = LineSteps.노선_생성_API(이호선_요청);
-        final String createdLocation = createLineResponse.header("Location");
+        var createdLocation = createLineResponse.header("Location");
 
         // then
         assertThat(createLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -56,14 +58,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void appendStationToSection() {
         // when
-        var 이호선_요청 = LineRequestGenerator.이호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
+        var 이호선_요청 = LineFixture.이호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
         var createLineResponse = LineSteps.노선_생성_API(이호선_요청);
-        final String createdLocation = createLineResponse.header("Location");
+        var createdLocation = createLineResponse.header("Location");
 
         // then
         var 구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("선릉역"), 10L);
-        final String appendLocation = createdLocation + "/sections";
-        var createSectionResponse = LineSteps.구간_추가_API(appendLocation, 구간_요청);
+        var createSectionResponse = LineSteps.구간_추가_API(createdLocation, 구간_요청);
         LineSteps.노선_조회_API(createdLocation);
 
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -81,14 +82,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void deleteStationFromMinimalSection() {
         // given
         String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var appendLocation = createdLocation + "/sections";
 
         // when
-        final Long stationId = getStationId("선릉역");
+        var stationId = getStationId("선릉역");
         LineSteps.구간_제거_API(appendLocation, stationId);
 
         // when
-        final Long additionalDeleteLocation = getStationId("역삼역");
+        var additionalDeleteLocation = getStationId("역삼역");
         var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, additionalDeleteLocation);
 
         // then
@@ -106,12 +107,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void appendSectionBeforeLine() {
         // given
-        String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
 
         // when
         var 상행에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("교대역"), getStationId("강남역"), 10L);
-        var response = LineSteps.구간_추가_API(appendLocation, 상행에_추가하는_구간_요청);
+        var response = LineSteps.구간_추가_API(createdLocation, 상행에_추가하는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -128,12 +128,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void appendSectionBehindLine() {
         // given
-        String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
 
         // when
         var 하행에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("선릉역"), getStationId("삼성역"), 10L);
-        var response = LineSteps.구간_추가_API(appendLocation, 하행에_추가하는_구간_요청);
+        var response = LineSteps.구간_추가_API(createdLocation, 하행에_추가하는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -149,12 +148,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void appendSectionNewUpStationExistUpStationIsInMiddleOfLine() {
         // given
-        String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
 
         // when
         var 노선_중간에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("왕십리역"), 5L);
-        var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
+        var response = LineSteps.구간_추가_API(createdLocation, 노선_중간에_추가하는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -170,12 +168,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void appendSectionNewDownStationExistDownStationIsInMiddleOfLine() {
         // given
-        String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
 
         // when
         var 노선_중간에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("왕십리역"), getStationId("역삼역"), 5L);
-        var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
+        var response = LineSteps.구간_추가_API(createdLocation, 노선_중간에_추가하는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -192,12 +189,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void appendSectionOverLineDistance() {
         // given
-        String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
 
         // when
         var 노선_중간에_추가하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("왕십리역"), getStationId("역삼역"), 11L);
-        var response = LineSteps.구간_추가_API(appendLocation, 노선_중간에_추가하는_구간_요청);
+        var response = LineSteps.구간_추가_API(createdLocation, 노선_중간에_추가하는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -213,12 +209,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void appendSectionWithBothUpStationAndDownStationAlreadyExistInLine() {
         // given
-        String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
 
         // when
         var 이미_존재하는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("삼성역"), 10L);
-        var response = LineSteps.구간_추가_API(appendLocation, 이미_존재하는_구간_요청);
+        var response = LineSteps.구간_추가_API(createdLocation, 이미_존재하는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -234,35 +229,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void appendSectionWithNeitherUpStationNorDownStationExistInLine() {
         // given
-        String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
 
         // when
         var 존재하지_않는_구간_요청 = SectionFixture.구간_요청_만들기(getStationId("왕십리역"), getStationId("성수역"), 10L);
-        var response = LineSteps.구간_추가_API(appendLocation, 존재하지_않는_구간_요청);
+        var response = LineSteps.구간_추가_API(createdLocation, 존재하지_않는_구간_요청);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 
-    // TODO : to fixture
 
-    private Long getStationId(String name) {
-        return stationsMap.get(name);
-    }
-
-    private String 세구간이_포함된_노선_생성_작업() {
-        var stringStringMap = LineRequestGenerator.이호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
-        var 노선_생성 = LineSteps.노선_생성_API(stringStringMap);
-        final String createdLocation = 노선_생성.header("Location");
-        final String appendLocation = createdLocation + "/sections";
-
-        var 구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("선릉역"), 10L);
-        LineSteps.구간_추가_API(appendLocation, 구간_요청);
-
-        return createdLocation;
-    }
 
     // week 2-2
 
@@ -275,12 +253,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStationInMiddleOfSection() {
         // given
-        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections"; // TODO : uri를 사용처에서 조합하도록 변경하기
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
+        var appendLocation = createdLocation + "/sections";
         LineSteps.노선_조회_API(createdLocation);
 
         // when
-        final Long stationId = getStationId("역삼역");
+        var stationId = getStationId("역삼역");
         var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
 
         // then
@@ -298,8 +276,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSectionAtFrontOfLine() {
         // given
-        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
+        var appendLocation = createdLocation + "/sections";
 
         // when
         var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, getStationId("강남역"));
@@ -310,7 +288,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         var lineRetrieveResponse = LineSteps.노선_조회_API(createdLocation);
         List<String> stations = lineRetrieveResponse.jsonPath().getList("stations.name", String.class);
-        assertThat(stations.size()).isEqualTo(2); // TODO : containsExactlyInAnyOrder() 로 변경
+        assertThat(stations).containsExactlyInAnyOrder("역삼역", "선릉역");
     }
 
     /**
@@ -323,8 +301,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSectionAtEndOfLine() {
         // given
-        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
+        var appendLocation = createdLocation + "/sections";
 
         // when
         var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, getStationId("선릉역"));
@@ -334,7 +312,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         var lineRetrieveResponse = LineSteps.노선_조회_API(createdLocation);
-        List<String> stations = lineRetrieveResponse.jsonPath().getList("stations.name", String.class);
+        var stations = lineRetrieveResponse.jsonPath().getList("stations.name", String.class);
         assertThat(stations.size()).isEqualTo(2);
     }
 
@@ -347,16 +325,28 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteNotExistStationInMiddleOfSection() {
         // given
-        final String createdLocation = 세구간이_포함된_노선_생성_작업();
-        final String appendLocation = createdLocation + "/sections";
+        var createdLocation = 세구간이_포함된_노선_생성_작업();
+        var appendLocation = createdLocation + "/sections";
         LineSteps.노선_조회_API(createdLocation);
 
         // when
-        final Long stationId = getStationId("강변역");
+        var stationId = getStationId("강변역");
         var deleteSectionResponse = LineSteps.구간_제거_API(appendLocation, stationId);
 
         // then
         assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+
+    private String 세구간이_포함된_노선_생성_작업() {
+        var 이호선_요청 = LineFixture.이호선_요청_만들기(getStationId("강남역"), getStationId("역삼역"));
+        var 노선_생성 = LineSteps.노선_생성_API(이호선_요청);
+        var createdLocation = 노선_생성.header("Location");
+
+        var 구간_요청 = SectionFixture.구간_요청_만들기(getStationId("역삼역"), getStationId("선릉역"), 10L);
+        LineSteps.구간_추가_API(createdLocation, 구간_요청);
+
+        return createdLocation;
     }
 }
 
