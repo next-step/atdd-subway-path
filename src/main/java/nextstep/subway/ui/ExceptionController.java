@@ -1,8 +1,7 @@
 package nextstep.subway.ui;
 
-import nextstep.subway.exception.DuplicateSectionException;
-import nextstep.subway.exception.InvalidDistanceException;
-import nextstep.subway.exception.NoConnectedSectionException;
+import nextstep.subway.applicaion.dto.ErrorResponse;
+import nextstep.subway.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,17 +12,37 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DuplicateSectionException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(DuplicateSectionException e) {
-        return ResponseEntity.badRequest().build();
+    public ErrorResponse handleIllegalArgsException(DuplicateSectionException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.toString());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidDistanceException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(InvalidDistanceException e) {
-        return ResponseEntity.badRequest().build();
+    public ErrorResponse handleIllegalArgsException(InvalidDistanceException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.toString());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NoConnectedSectionException.class)
-    public ResponseEntity<Void> handleIllegalArgsException(NoConnectedSectionException e) {
-        return ResponseEntity.badRequest().build();
+    public ErrorResponse handleIllegalArgsException(NoConnectedSectionException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.toString());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundStationException.class)
+    public ErrorResponse handleIllegalArgsException(NotFoundStationException e) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.toString());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundLineException.class)
+    public ErrorResponse handleIllegalArgsException(NotFoundLineException e) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.toString());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NotLastStationException.class)
+    public ErrorResponse handleIllegalArgsException(NotLastStationException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.toString());
     }
 }
