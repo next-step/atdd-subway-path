@@ -10,13 +10,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.station.Station;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,9 +29,6 @@ public class Line {
     @Embedded
     private LineSections sections;
 
-    private static final LineSectionAppender LINE_SECTION_APPENDER = new LineSectionAppender();
-    private static final LineSectionRemover LINE_SECTION_REMOVER = new LineSectionRemover();
-
     public Line(final String name, final String color, final Station upStation, final Station downStation,
                 final int distance) {
         this.name = name;
@@ -47,14 +42,38 @@ public class Line {
     }
 
     public void appendSection(final Section section) {
-        sections.append(LINE_SECTION_APPENDER, section);
+        sections.append(section);
     }
 
     public void removeSection(final Station station) {
-        sections.remove(LINE_SECTION_REMOVER, station);
+        sections.remove(station);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<Section> getSections() {
+        return sections.getValue();
     }
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public Station getFirstStation() {
+        return sections.getFirstStation();
+    }
+
+    public Station getLastStation() {
+        return sections.getLastStation();
     }
 }

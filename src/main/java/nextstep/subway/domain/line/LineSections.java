@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -29,6 +30,8 @@ public class LineSections {
     )
     private final List<Section> value = new ArrayList<>();
 
+    private static final LineSectionAppender LINE_SECTION_APPENDER = new LineSectionAppender();
+    private static final LineSectionRemover LINE_SECTION_REMOVER = new LineSectionRemover();
 
     public static LineSections init(final Section section) {
         final var sections = new LineSections();
@@ -36,12 +39,12 @@ public class LineSections {
         return sections;
     }
 
-    public void append(final LineSectionAppender sectionAppender, final Section section) {
-        sectionAppender.append(this, section);
+    public void append(final Section section) {
+        LINE_SECTION_APPENDER.append(this, section);
     }
 
-    public void remove(final LineSectionRemover sectionRemover, final Station station) {
-        sectionRemover.remove(this, station);
+    public void remove(final Station station) {
+        LINE_SECTION_REMOVER.remove(this, station);
     }
 
     public Station getFirstStation() {
@@ -103,15 +106,9 @@ public class LineSections {
     }
 
     public List<Station> getStations() {
-        final var upStation = getFirstStation();
-        final var downStations = value.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toUnmodifiableList());
-
-        final var stations = new ArrayList<Station>();
-        stations.add(upStation);
-        stations.addAll(downStations);
-        return stations.stream()
+        return value.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
                 .collect(Collectors.toUnmodifiableList());
     }
 }

@@ -14,13 +14,14 @@ import nextstep.subway.applicaion.line.response.LineResponse;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.line.Section;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
+import nextstep.subway.support.SubwayShortestPath;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class LineService {
-    private final LineGraphService lineGraphService;
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -89,6 +90,15 @@ public class LineService {
     }
 
     public LineResponse convertToLineResponse(final Line line) {
-        return LineResponse.toResponse(line, lineGraphService.orderedStations(line.getSections()));
+        return LineResponse.toResponse(line, orderedStationsOf(line));
+    }
+
+    private List<Station> orderedStationsOf(final Line line) {
+        final var shortestPath = SubwayShortestPath.builder(line.getStations(), line.getSections())
+                .source(line.getFirstStation())
+                .target(line.getLastStation())
+                .build();
+
+        return shortestPath.getStation();
     }
 }

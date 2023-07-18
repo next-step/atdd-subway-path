@@ -16,6 +16,11 @@ public class LineSteps {
 
     public static final String BASE_URL = "/lines";
 
+    public static LineResponse 지하철노선을_생성한다(final Long upStationId, final Long downStationId, final int distance) {
+        final var request = new LineCreateRequest("신분당선", "bg-red-600", upStationId, downStationId, distance);
+        return 지하철노선을_생성한다(request);
+    }
+
     public static LineResponse 지하철노선을_생성한다(final LineCreateRequest request) {
         final var response = RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
