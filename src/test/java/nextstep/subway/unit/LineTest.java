@@ -50,6 +50,17 @@ class LineTest {
         assertThat(이호선.getStations()).contains(익명역);
     }
 
+    @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 B-C 추가")
+    @Test
+    void addSectionACBC() {
+        // when
+        int smallerDistanceThanSectionAC = 이호선.getDistance() - 1;
+        이호선.addSection(new Section(이호선, 익명역, 역삼역, smallerDistanceThanSectionAC));
+
+        // then
+        assertThat(이호선.getStations()).contains(익명역);
+    }
+
     @DisplayName("구간을 등록한다. 기존 구간 A-C에 신규 구간 B-A 추가")
     @Test
     void addSectionACBA() {
