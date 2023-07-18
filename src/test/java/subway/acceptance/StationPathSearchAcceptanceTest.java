@@ -14,9 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.BDDMockito.given;
-import static utils.AcceptanceUtils.createStationLine;
-import static utils.AcceptanceUtils.createStationLineSection;
+import static utils.AcceptanceUtils.*;
 
 @DisplayName("지하철 경로 조회 기능")
 @Sql(scripts = "classpath:reset.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -24,21 +22,20 @@ import static utils.AcceptanceUtils.createStationLineSection;
 public class StationPathSearchAcceptanceTest {
 
     /**
-     * Given 1호선 (종로3가, 종로5가, 동대문, 동묘앞)로 이뤄진 노선을 생성한다
-     * Given 4호선 (혜화, 동대문, 동대문역사문화공원)로 이뤄진 노선을 생성한다
-     * Given 부산2호선 (양산, 남양산)로 이뤄진 노선을 생성한다
+     * Given 1호선 (종로3가 -3KM- 종로5가 -5KM- 동대문 -5KM- 동묘앞)로 이뤄진 노선을 생성한다
+     * Given 4호선 (혜화 -1KM- 동대문 -10KM- 동대문역사문화공원)로 이뤄진 노선을 생성한다
+     * Given 부산2호선 (양산 -10KM- 남양산)로 이뤄진 노선을 생성한다
      */
     Map<String, Long> stationIdByName;
 
     @BeforeEach
     void setUp() {
         //given
-        stationIdByName = AcceptanceUtils.createStationsAndGetStationMap(List.of("혜화", "동대문", "동대문역사문화공원", "종로3가", "종로5가", "동묘앞", "양산", "남양산"));
+        stationIdByName = createStationsAndGetStationMap(List.of("혜화", "동대문", "동대문역사문화공원", "종로3가", "종로5가", "동묘앞", "양산", "남양산"));
 
         final Long line1 = createStationLine("1호선", "blue", stationIdByName.get("종로3가"), stationIdByName.get("종로5가"), BigDecimal.valueOf(3L));
         createStationLineSection(line1, stationIdByName.get("종로5가"), stationIdByName.get("동대문"), BigDecimal.valueOf(5L));
         createStationLineSection(line1, stationIdByName.get("동대문"), stationIdByName.get("동묘앞"), BigDecimal.valueOf(5L));
-
 
         final Long line2 = createStationLine("4호선", "mint", stationIdByName.get("혜화"), stationIdByName.get("동대문"), BigDecimal.ONE);
         createStationLineSection(line2, stationIdByName.get("동대문"), stationIdByName.get("동대문역사문화공원"), BigDecimal.TEN);
@@ -55,7 +52,7 @@ public class StationPathSearchAcceptanceTest {
     @Test
     void searchStationPath() {
         //when
-        final JsonPath response = AcceptanceUtils.searchStationPath(stationIdByName.get("종로3가"), stationIdByName.get("동대문역사문화공원"), HttpStatus.OK);
+        final JsonPath response = AcceptanceUtils.searchStationPath("종로3가", "동대문역사문화공원", HttpStatus.OK);
         final BigDecimal distance = response.getObject("distance", BigDecimal.class);
         final List<String> pathStationNames = response.getList("stations.name", String.class);
 
@@ -73,7 +70,7 @@ public class StationPathSearchAcceptanceTest {
     @Test
     void searchStationPath_Same_SourceStation_And_TargetStation() {
         //when & then
-        AcceptanceUtils.searchStationPath(stationIdByName.get("종로3가"), stationIdByName.get("종로3가"), HttpStatus.BAD_REQUEST);
+        AcceptanceUtils.searchStationPath("종로3가", "종로3가", HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -84,6 +81,6 @@ public class StationPathSearchAcceptanceTest {
     @Test
     void searchStationPath_Not_Linked_SourceStation_And_TargetStation() {
         //when & then
-        AcceptanceUtils.searchStationPath(stationIdByName.get("종로3가"), stationIdByName.get("양산"), HttpStatus.BAD_REQUEST);
+        AcceptanceUtils.searchStationPath("종로3가", "양산", HttpStatus.BAD_REQUEST);
     }
 }

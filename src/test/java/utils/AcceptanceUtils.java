@@ -4,6 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import subway.domain.Station;
+import subway.service.dto.StationResponse;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -143,10 +145,14 @@ public class AcceptanceUtils {
                 .jsonPath().getLong("id");
     }
 
-    public static JsonPath searchStationPath(Long startStationId, Long destinationStationId, HttpStatus status) {
+    public static JsonPath searchStationPath(String startStation, String destinationStation, HttpStatus status) {
+        final Map<String, Long> stationIdByName = getStations().getList("$", StationResponse.class)
+                .stream()
+                .collect(Collectors.toMap(StationResponse::getName, StationResponse::getId));
+
         return RestAssured.given().log().all()
-                .queryParam("source", startStationId)
-                .queryParam("target", destinationStationId)
+                .queryParam("source", stationIdByName.get(startStation))
+                .queryParam("target", stationIdByName.get(destinationStation))
                 .get("/paths")
                 .then().log().all()
                 .statusCode(status.value())
