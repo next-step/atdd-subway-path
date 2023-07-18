@@ -17,7 +17,6 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -402,72 +401,6 @@ public class LineAcceptanceTest {
         );
     }
 
-    /**
-     * Given 지하철 노선을 생성하고
-     * When 상행역이 생성한 노선의 하행 종점역아니고 하행역 해당 노선에 등록되어 있지 않으면 지하철 구간을 등록하면
-     * Then 지하철 구간이 등록되지 않고 예외코드가 반환한다
-     */
-    @Disabled
-    @DisplayName("노선 하행 종점역과 구간 등록 상행역이 일치하지 않아 등록 실패")
-    @Test
-    void registerSectionFailedByMismatchLineLastStationAndUpstreamStation() {
-        // given
-        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
-        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
-        int 정자역_아이디 = 아이디(지하철역을_생성한다("정자역"));
-        var 신분당선 = 지하철_노선_등록한다(
-                "신분당선",
-                "bg-red-600",
-                강남역_아이디,
-                판교역_아이디,
-                10);
-        int 신분당선_아이디 = 아이디(신분당선);
-
-        // when
-        var 노선_구간을_등록_결과 = 노선_구간을_등록한다(신분당선_아이디, 강남역_아이디, 정자역_아이디, 1);
-
-        // then
-        var 조회된_신분당선 = 지하철_노선_조회한다(신분당선_아이디);
-        assertAll(
-                () -> assertThat(노선_구간을_등록_결과.statusCode()).isEqualTo(
-                        HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(스테이션_이름_리스트(조회된_신분당선)).doesNotContain("정자역"),
-                () -> assertThat(스테이션_아이디_리스트(조회된_신분당선)).doesNotContain(정자역_아이디)
-        );
-    }
-
-    /**
-     * Given 지하철 노선을 생성하고
-     * When 상행역이 생성한 노선의 하행 종점역이고 하행역 해당 노선에 등록되어 있는 지하철 구간을 등록하면
-     * Then 지하철 구간이 등록되지 않고 예외코드가 반환한다
-     */
-    @Disabled
-    @DisplayName("구간 등록 하행역이 노선에 포함되여 있어서 등록 실패")
-    @Test
-    void registerSectionFailedByLineContainsDownStation() {
-        // given
-        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
-        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
-        var 신분당선 = 지하철_노선_등록한다(
-                "신분당선",
-                "bg-red-600",
-                강남역_아이디,
-                판교역_아이디,
-                10);
-        int 신분당선_아이디 = 아이디(신분당선);
-
-        // when
-        var 노선_구간을_등록_결과 = 노선_구간을_등록한다(신분당선_아이디, 판교역_아이디, 강남역_아이디, 1);
-
-        // then
-        var 조회된_신분당선 = 지하철_노선_조회한다(신분당선_아이디);
-        assertAll(
-                () -> assertThat(노선_구간을_등록_결과.statusCode()).isEqualTo(
-                        HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(스테이션_이름_리스트(조회된_신분당선)).size().isEqualTo(2),
-                () -> assertThat(스테이션_아이디_리스트(조회된_신분당선)).size().isEqualTo(2)
-        );
-    }
 
     /**
      * Given 지하철 노선을 생성하고

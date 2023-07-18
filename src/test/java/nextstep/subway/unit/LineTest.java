@@ -6,17 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.ArrayList;
 import java.util.List;
 import nextstep.subway.line.AlreadyConnectedException;
-import nextstep.subway.line.DownstreamStationIncludedException;
 import nextstep.subway.line.InvalidDistanceException;
 import nextstep.subway.line.Line;
-import nextstep.subway.line.MismatchedUpstreamStationException;
 import nextstep.subway.line.MissingStationException;
 import nextstep.subway.line.NonDownstreamTerminusException;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.SingleSectionRemovalException;
 import nextstep.subway.station.Station;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -133,34 +130,6 @@ class LineTest {
                 .isInstanceOf(MissingStationException.class);
     }
 
-    @Disabled
-    @DisplayName("추가할 세션의 하행 스테이션이 Line에 포함 되여 있으면 예외를 던진다")
-    @Test
-    void addSectionFailedByUpStationOfNewSection() {
-        // given
-        Line line = new Line();
-        Section savedSection = new Section(new Station("강남역"), new Station("양재역"), 1);
-        line.addSection(savedSection);
-
-        // when,then
-        Section newSection = new Section(new Station("양재역"), new Station("강남역"), 1);
-        assertThatThrownBy(() -> line.addSection(newSection)).isInstanceOf(DownstreamStationIncludedException.class);
-    }
-
-    @Disabled
-    @DisplayName("노선 하행 종점역과 추가할 세션의 상행역이 일치하지 않아면 예외를 던진다")
-    @Test
-    void addSectionFailed() {
-        // given
-        Line line = new Line();
-        Section savedSection = new Section(new Station("강남역"), new Station("양재역"), 1);
-        line.addSection(savedSection);
-
-        // when,then
-        Section newSection = new Section(new Station("교대역"), new Station("서초역"), 1);
-        assertThatThrownBy(() -> line.addSection(newSection)).isInstanceOf(MismatchedUpstreamStationException.class);
-    }
-
     @DisplayName("노선에 포함한 스테이션을 가져온다")
     @Test
     void getStations() {
@@ -192,7 +161,7 @@ class LineTest {
         line.addSection(section);
 
         // when
-        line.deleteStation(pangyoStation);
+        line.deleteSectionByStation(pangyoStation);
 
         // then
         boolean exists = line.getSections().stream()
@@ -211,7 +180,7 @@ class LineTest {
         line.addSection(section);
 
         // when,then
-        assertThatThrownBy(() -> line.deleteStation(yangjaeStation))
+        assertThatThrownBy(() -> line.deleteSectionByStation(yangjaeStation))
                 .isInstanceOf(SingleSectionRemovalException.class);
     }
 
@@ -229,7 +198,7 @@ class LineTest {
         line.addSection(section);
 
         // when,then
-        assertThatThrownBy(() -> line.deleteStation(yangjaeStation))
+        assertThatThrownBy(() -> line.deleteSectionByStation(yangjaeStation))
                 .isInstanceOf(NonDownstreamTerminusException.class);
     }
 
