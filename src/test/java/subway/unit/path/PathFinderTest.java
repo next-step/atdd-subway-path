@@ -3,9 +3,6 @@ package subway.unit.path;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 import subway.acceptance.station.StationFixture;
 import subway.exception.SubwayBadRequestException;
 import subway.line.model.Line;
@@ -23,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static subway.acceptance.station.StationFixture.getStation;
 
 @DisplayName("PathFinder 단위 테스트")
-public class PathFinderMockTest {
+public class PathFinderTest {
     private PathFinder pathFinder;
 
     private Line 이호선;
@@ -128,7 +125,7 @@ public class PathFinderMockTest {
     @Test
     void getShortestPathNotExistStation() {
         // when/then
-        assertThatThrownBy(() -> pathFinder.findShortestPath(구간목록, new Station(99L,"그런역"),  new Station(98L,"저런역")))
+        assertThatThrownBy(() -> pathFinder.findShortestPath(구간목록, new Station(99L, "그런역"), new Station(98L, "저런역")))
                 .isInstanceOf(SubwayBadRequestException.class);
     }
 
