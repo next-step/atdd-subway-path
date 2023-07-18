@@ -12,7 +12,7 @@ import nextstep.subway.station.domain.Station;
 @Embeddable
 public class SectionList {
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<Section> sections;
 
     public SectionList() {
@@ -76,6 +76,10 @@ public class SectionList {
     public void removeSection(Station targetStation){
 
         if (sections.size() <= 1) {
+            throw new CustomException(ErrorCode.CAN_NOT_REMOVE_STATION);
+        }
+
+        if (!getDownLastStation().equals(targetStation)) {
             throw new CustomException(ErrorCode.CAN_NOT_REMOVE_STATION);
         }
 

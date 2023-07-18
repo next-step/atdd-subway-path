@@ -266,7 +266,6 @@ class SectionAcceptanceTest {
         지하철_노선도_등록("7호선", "bg-1234", 1L, 2L, 5);
         지하철_구간_등록(1L, 2L, 3L, 7);
 
-
         //when
         ExtractableResponse<Response> response = 지하철_구간_삭제(1L, 4L);
 
