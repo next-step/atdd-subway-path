@@ -129,13 +129,13 @@ public class Line {
                 .findFirst();
     }
 
-    public void deleteStation(Station downStation) {
+    public void deleteSection(Station bottomStation) {
         if (sections.size() == 1) {
             throw new SingleSectionRemovalException();
         }
         int lastIndex = sections.size() - 1;
         Section section = sections.get(lastIndex);
-        if (section.isSameDownStation(downStation)) {
+        if (section.isSameDownStation(bottomStation)) {
             sections.remove(section);
             return;
         }

@@ -161,7 +161,7 @@ class LineTest {
         line.addSection(section);
 
         // when
-        line.deleteSectionByStation(pangyoStation);
+        line.deleteSection(pangyoStation);
 
         // then
         boolean exists = line.getSections().stream()
@@ -180,7 +180,7 @@ class LineTest {
         line.addSection(section);
 
         // when,then
-        assertThatThrownBy(() -> line.deleteSectionByStation(yangjaeStation))
+        assertThatThrownBy(() -> line.deleteSection(yangjaeStation))
                 .isInstanceOf(SingleSectionRemovalException.class);
     }
 
@@ -198,7 +198,7 @@ class LineTest {
         line.addSection(section);
 
         // when,then
-        assertThatThrownBy(() -> line.deleteSectionByStation(yangjaeStation))
+        assertThatThrownBy(() -> line.deleteSection(yangjaeStation))
                 .isInstanceOf(NonDownstreamTerminusException.class);
     }
 

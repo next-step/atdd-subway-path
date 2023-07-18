@@ -75,6 +75,6 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
         Line line = lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
-        line.deleteStation(downStreamTerminusStation);
+        line.deleteSection(downStreamTerminusStation);
     }
 }
