@@ -81,12 +81,32 @@ public class Line {
             insertCenter(newSection, sameUpStationSection.get());
             return;
         }
+        Optional<Section> targetSection = sections.stream()
+                .filter(section -> section.isSameDownStation(newSection.getDownStation()))
+                .findFirst();
+        if (targetSection.isPresent()) {
+            insertByDownStation(newSection, targetSection.get());
+            return;
+        }
         Section topSection = getTopSection();
         if (sameDownStationOfTopStation(newSection, topSection)) {
             insertTop(newSection);
             return;
         }
         sections.add(newSection);
+    }
+
+    private void insertByDownStation(Section inserSection, Section targetSection) {
+        int targetSectionDistance = targetSection.getDistance();
+        int insertSectionDistance = inserSection.getDistance();
+        if (targetSectionDistance <= insertSectionDistance) {
+            throw new InvalidDistanceException();
+        }
+        sections.remove(targetSection);
+        Station targetUpStation = targetSection.getUpStation();
+        sections.add(new Section(targetUpStation, inserSection.getUpStation(),
+                targetSectionDistance - insertSectionDistance));
+        sections.add(inserSection);
     }
 
     private void checkSection(Section newSection) {

@@ -57,7 +57,7 @@ class LineTest {
 
     @DisplayName("추가할 세션의 상행 스테이션이 추가될 노선에 포함되고 추가될 위치의 하행스테이션과 똑같이 아니면 그사이에 추가된다")
     @Test
-    void insertSectionSuccessBetweenSectionSuccess() {
+    void insertSectionSuccessBySameUpStationOfSection() {
         // given
         Line line = new Line();
         Station 강남역 = new Station("강남역");
@@ -66,6 +66,26 @@ class LineTest {
         line.addSection(targetSection);
         Station 양재역 = new Station("양재역");
         Section insertSection = new Section(강남역, 양재역, 1);
+
+        // when
+        line.addSection(insertSection);
+
+        // then
+        List<Section> sections = line.getSections();
+        assertThat(sections).containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 9));
+    }
+
+    @DisplayName("추가할 세션의 하행 스테이션이 추가될 노선에 포함되고 추가될 위치의 상행스테이션과 똑같이 아니면 그사이에 추가된다")
+    @Test
+    void insertSectionSuccessBySameDownStationOfSection() {
+        // given
+        Line line = new Line();
+        Station 강남역 = new Station("강남역");
+        Station 판교역 = new Station("판교역");
+        Section targetSection = new Section(강남역, 판교역, 10);
+        line.addSection(targetSection);
+        Station 양재역 = new Station("양재역");
+        Section insertSection = new Section(양재역, 판교역, 9);
 
         // when
         line.addSection(insertSection);
