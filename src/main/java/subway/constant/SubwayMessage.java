@@ -19,7 +19,8 @@ public enum SubwayMessage {
     STATION_NOT_FOUND(3001L, "존재하지 않는 역 입니다"),
     STATION_IS_ALREADY_EXIST_IN_LINE(3002L, "이미 %s과 %s의 구간이 존재합니다."),
     STATION_NOT_FOUND_IN_SECTION(3003L, "삭제 할 역을 구간에서 찾을 수 없습니다."),
-    PATH_NOT_CONNECTED_IN_SECTION(4000L, "역이 연결되어 있지 않습니다.");
+    PATH_NOT_CONNECTED_IN_SECTION(4000L, "역이 연결되어 있지 않습니다."),
+    PATH_REQUEST_STATION_IS_SAME_ORIGIN(4001L, "요청 경로의 시작과 종료가 동일합니다.");
 
     private final long code;
     private final String message;

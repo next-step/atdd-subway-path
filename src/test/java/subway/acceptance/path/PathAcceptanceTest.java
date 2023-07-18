@@ -1,56 +1,42 @@
 package subway.acceptance.path;
 
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.http.HttpStatus;
 import subway.acceptance.AcceptanceTest;
-import subway.acceptance.line.LineFixture;
 import subway.acceptance.line.LineSteps;
-import subway.acceptance.line.SectionFixture;
 import subway.acceptance.station.StationFixture;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static subway.acceptance.station.StationFixture.getStationId;
 
 @DisplayName("경로 관련 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
     private Map<String, Long> stationsMap = new HashMap<>();
 
-
-    // TODO: 인수 테스트 작성
-
     /**
+     * <pre>
      * 교대역  ---- *2호선* --- d:10 ------  강남역
      * |                                    |
      * *3호선*                            *신분당선*
      * d:2                                 d:10
      * |                                   |
      * 남부터미널역  --- *3호선* -- d:3 --- 양재역
+     *
+     * 건대역 ---- *A호선* --- d:7 ---- 성수역 ---- d:3 ---- 왕십리역
+     * </pre>
      */
 
     @BeforeEach
     void createLine() {
         stationsMap = StationFixture.기본_역_생성();
 
-        var 이호선_요청 = LineFixture.generateLineCreateRequest("2호선", "bg-green-600", getStationId("강남역"), getStationId("교대역"), 10L);
-        LineSteps.노선_생성_API(이호선_요청);
-
-        var 삼호선_요청 = LineFixture.generateLineCreateRequest("3호선", "bg-amber-600", getStationId("교대역"), getStationId("남부터미널역"), 2L);
-        var createResponse = LineSteps.노선_생성_API(삼호선_요청);
-        var createdLocation = createResponse.header("Location");
-        var appendLocation = createdLocation + "/sections";
-
-        var 삼호선_끝에_구간_추가 = SectionFixture.구간_요청_만들기(getStationId("남부터미널역"), getStationId("양재역"), 3L);
-        LineSteps.구간_추가_API(appendLocation, 삼호선_끝에_구간_추가);
-
-        var 신분당선_요청 = LineFixture.generateLineCreateRequest("신분당선", "bg-hotpink-600", getStationId("강남역"), getStationId("양재역"), 10L);
-        LineSteps.노선_생성_API(신분당선_요청);
+        PathFixture.이호선_삼호선_신분당선_A호선_생성();
 
         LineSteps.노선_목록_조회_API();
     }
@@ -65,21 +51,15 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @Test
     void getPath() {
         // when
-        // TODO : 여기서 부터 하면 됨
-        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
-                .fromUriString("/path")
-                .queryParam("source", getStationId("교대역"))
-                .queryParam("target", getStationId("양재역"))
-                .build();
-        var extract = RestAssured.given().log().all()
-                .when().get(retrieveQueryWithBaseUri.toUri())
-                .then().log().all()
-                .extract();
-        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
-        Integer distance = extract.response().jsonPath().get("distance");
-        System.out.println(list);
-        System.out.println(distance);
+        var response = PathSteps.getShortestPath(getStationId("교대역"), getStationId("양재역"));
 
+        // then
+        List<String> list = response.jsonPath().getList("stations.name", String.class);
+        assertThat(list).containsExactlyInAnyOrder("교대역", "남부터미널역", "양재역");
+
+        // then
+        var distance = response.jsonPath().get("distance");
+        assertThat(distance).isEqualTo(5);
     }
 
     /**
@@ -91,19 +71,16 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("다른 노선에 있는 지하철 경로를 조회한다")
     @Test
     void getPathWithOtherLine() {
-        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
-                .fromUriString("/path")
-                .queryParam("source", getStationId("강남역"))
-                .queryParam("target", getStationId("남부터미널역"))
-                .build();
-        var extract = RestAssured.given().log().all()
-                .when().get(retrieveQueryWithBaseUri.toUri())
-                .then().log().all()
-                .extract();
-        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
-        Integer distance = extract.response().jsonPath().get("distance");
-        System.out.println(list);
-        System.out.println(distance);
+        // when
+        var response = PathSteps.getShortestPath(getStationId("강남역"), getStationId("남부터미널역"));
+
+        // then
+        List<String> list = response.jsonPath().getList("stations.name", String.class);
+        assertThat(list).containsExactlyInAnyOrder("강남역", "교대역", "남부터미널역");
+
+        // then
+        var distance = response.jsonPath().get("distance");
+        assertThat(distance).isEqualTo(12);
     }
 
     /**
@@ -114,19 +91,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("연결되지 않은 경로를 조회한다")
     @Test
     void getPathWithNotConnected() {
-        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
-                .fromUriString("/path")
-                .queryParam("source", getStationId("강남역"))
-                .queryParam("target", getStationId("역삼역"))
-                .build();
-        var extract = RestAssured.given().log().all()
-                .when().get(retrieveQueryWithBaseUri.toUri())
-                .then().log().all()
-                .extract();
-        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
-        Integer distance = extract.response().jsonPath().get("distance");
-        System.out.println(list);
-        System.out.println(distance);
+        // when
+        var response = PathSteps.getShortestPath(getStationId("교대역"), getStationId("왕십리역"));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -137,20 +106,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("시작과 끝이 같은 역의 경로를 조회한다.")
     @Test
     void getPathWithSameStation() {
-        // TODO : 이거 조회가 되네.
-        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
-                .fromUriString("/path")
-                .queryParam("source", getStationId("강남역"))
-                .queryParam("target", getStationId("강남역"))
-                .build();
-        var extract = RestAssured.given().log().all()
-                .when().get(retrieveQueryWithBaseUri.toUri())
-                .then().log().all()
-                .extract();
-        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
-        Integer distance = extract.response().jsonPath().get("distance");
-        System.out.println(list);
-        System.out.println(distance);
+        // when
+        var response = PathSteps.getShortestPath(getStationId("강남역"), getStationId("강남역"));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+
     }
 
     /**
@@ -161,18 +123,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("존재하지 않는 역으로 경로를 조회한다")
     @Test
     void getPathWithNotExistStation() {
-        UriComponents retrieveQueryWithBaseUri = UriComponentsBuilder
-                .fromUriString("/path")
-                .queryParam("source", 22)
-                .queryParam("target", 33)
-                .build();
-        var extract = RestAssured.given().log().all()
-                .when().get(retrieveQueryWithBaseUri.toUri())
-                .then().log().all()
-                .extract();
-        List<String> list = extract.response().jsonPath().getList("stations.name", String.class);
-        Integer distance = extract.response().jsonPath().get("distance");
-        System.out.println(list);
-        System.out.println(distance);
+        // when
+        var response = PathSteps.getShortestPath(99L, 98L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 }
