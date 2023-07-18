@@ -98,10 +98,40 @@ public class SectionList {
     }
 
     public Station getDownLastStation() {
-        return null;
+        if (sections.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_PARAM);
+        }
+
+        Station downwardStation = null;
+        for (Section section : sections) {
+            if (downwardStation == null) {
+                downwardStation = section.getDownwardStation();
+                continue;
+            }
+
+            if (section.hasSameUpwardStation(downwardStation)) {
+                downwardStation = section.getDownwardStation();
+            }
+        }
+        return downwardStation;
     }
 
     public Station getUpLastStation() {
-        return null;
+        if (sections.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_PARAM);
+        }
+
+        Station upwardStation = null;
+        for (Section section : sections) {
+            if (upwardStation == null) {
+                upwardStation = section.getUpwardStation();
+                continue;
+            }
+
+            if (section.hasSameDownwardStation(upwardStation)) {
+                upwardStation = section.getUpwardStation();
+            }
+        }
+        return upwardStation;
     }
 }

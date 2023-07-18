@@ -83,6 +83,15 @@ class SectionListTest {
     @Test
     void getDownLastStation() {
         SectionList sectionList = line.getSections();
+
+        Station lastDownStation = sectionList.getDownLastStation();
+
+        assertThat(lastDownStation).isEqualTo(b);
+    }
+
+    @Test
+    void getDownLastStationWhenAddSection() {
+        SectionList sectionList = line.getSections();
         Section newSection = new Section(line, new SectionStations(b, c), 4);
         sectionList.addSection(newSection);
 
@@ -95,8 +104,19 @@ class SectionListTest {
     void getUpLastStation() {
         SectionList sectionList = line.getSections();
 
-        Station lastDownStation = sectionList.getUpLastStation();
+        Station lastUpStation = sectionList.getUpLastStation();
 
-        assertThat(lastDownStation).isEqualTo(a);
+        assertThat(lastUpStation).isEqualTo(a);
+    }
+
+    @Test
+    void getUpLastStationWhenAddUpwardStation() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(c, a), 4);
+        sectionList.addSection(newSection);
+
+        Station lastUpstation = sectionList.getUpLastStation();
+
+        assertThat(lastUpstation).isEqualTo(c);
     }
 }
