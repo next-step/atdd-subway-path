@@ -78,6 +78,10 @@ public class LineSteps {
         return requestDelete("/lines/{lineId}/sections?stationId={stationId}", pathParams);
     }
 
+    public static List<String> 노선의_역이름_목록_추출(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.name", String.class);
+    }
+
     public static List<String> 노선_이름_목록_추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("name", String.class);
     }
