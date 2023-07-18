@@ -1,8 +1,10 @@
 package subway.service;
 
+import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import subway.dto.response.LineResponse;
 import subway.entity.Section;
 import subway.dto.request.SectionRequest;
 
@@ -13,19 +15,19 @@ public class SectionService {
     private final StationService stationService;
 
     @Transactional
-    public Section addSection(Long lineId, SectionRequest request) {
-        var sections = lineService.findLine(lineId).getSections();
+    public LineResponse addSection(Long lineId, SectionRequest request) {
+        var line = lineService.findLine(lineId);
 
         var upStation = stationService.findStation(request.getUpStationId());
         var downStation = stationService.findStation(request.getDownStationId());
 
-        sections.addSection(Section.builder()
+        line.getSections().addSection(Section.builder()
             .upStation(upStation)
             .downStation(downStation)
             .distance(request.getDistance())
             .build());
 
-        return sections.lastSection();
+        return LineResponse.from(line);
     }
 
     @Transactional

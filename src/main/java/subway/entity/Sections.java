@@ -30,18 +30,71 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        // 이미 등록된 구간인 경우
-        if(stations().stream().anyMatch(o -> o.equals(section.getDownStation()))) {
-            throw new ApiException(ErrorCode.ALREADY_REGISTERED_STATION);
+        var existDownStation = stations().stream().anyMatch(o -> o.equals(section.getDownStation()));
+        var existUpStation = stations().stream().anyMatch(o -> o.equals(section.getUpStation()));
+
+        // 이미 등록된 구간인 경우( 상행 하행 둘다 등록 )
+        if(existDownStation && existUpStation) {
+            throw new ApiException(ErrorCode.ALREADY_REGISTERED_SECTION);
         }
 
-        // 마지막 구간의 하행역과 추가하려는 구간의 상행역과 일치하는지 확인
-        var lastSection = this.lastSection();
-        if(!lastSection.getDownStation().equals(section.getUpStation())) {
-            throw new ApiException(ErrorCode.INVALID_SECTION_REGISTRATION);
+        // 연결 될 수 없는 구간인 경우( 상행 하행 둘다 등록 안됨 )
+        if(!existDownStation && !existUpStation) {
+            throw new ApiException(ErrorCode.NOT_CHAINING_SECTION);
         }
 
-        sections.add(section);
+        var lastAttend = this.lastSection().getDownStation().equals(section.getUpStation());
+        var firstAttend = this.firstSection().getUpStation().equals(section.getDownStation());
+
+        if(lastAttend) {
+            sections.add(section);
+            return;
+        }
+
+        if(firstAttend) {
+            List<Section> replaceSections = new ArrayList<>();
+            replaceSections.add(section);
+            replaceSections.addAll(this.sections);
+            sections = replaceSections;
+            return;
+        }
+
+        sections = middleAttend(section);
+    }
+
+    private List<Section> middleAttend(Section section) {
+        //새로 등록하려는 구간이 같거나 큰 경우
+        if(sections.stream()
+            .filter(o -> (o.getUpStation().equals(section.getUpStation()) || o.getDownStation().equals(section.getDownStation())))
+            .anyMatch(o -> o.getDistance() <= section.getDistance())) {
+            throw new ApiException(ErrorCode.INVALID_SECTION_DISTANCE);
+        }
+
+        List<Section> replaceSections = new ArrayList<>();
+
+        sections.stream().forEach(o -> {
+            if(o.getUpStation().equals(section.getUpStation())) {
+                replaceSections.add(section);
+                var distance = o.getDistance() - section.getDistance();
+                replaceSections.add(Section.builder()
+                    .upStation(section.getDownStation())
+                    .downStation(o.getDownStation())
+                    .distance(distance)
+                    .build());
+            } else if(o.getDownStation().equals(section.getDownStation())) {
+                var distance = o.getDistance() - section.getDistance();
+                replaceSections.add(Section.builder()
+                    .upStation(o.getUpStation())
+                    .downStation(section.getUpStation())
+                    .distance(distance)
+                    .build());
+                replaceSections.add(section);
+            } else {
+                replaceSections.add(o);
+            }
+        });
+
+        return replaceSections;
     }
 
     public void deleteSection(Long stationId) {
@@ -62,6 +115,10 @@ public class Sections {
 
     public Section lastSection() {
         return sections.get(sections.size() - 1);
+    }
+
+    public Section firstSection() {
+        return sections.get(0);
     }
 
     public List<Station> stations() {

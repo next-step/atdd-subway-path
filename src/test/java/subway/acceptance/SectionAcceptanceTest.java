@@ -1,8 +1,9 @@
-package subway;
+package subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -50,6 +51,7 @@ public class SectionAcceptanceTest {
         Long 신논현역 = createStation("신논현역");
         Long 강남역 = createStation("강남역");
         Long 양재역 = createStation("양재역");
+        Long 판교역 = createStation("판교역");
 
         //라인 생성(신논현 - 강남)
         ExtractableResponse<Response> response = LineFixture.createLine(LineRequest.builder()
@@ -64,6 +66,9 @@ public class SectionAcceptanceTest {
 
         //구간 추가(강남 - 양재)
         SectionFixture.createSection(lineId, 강남역, 양재역, 10);
+
+        //구간 추가(양재 - 판교)
+        SectionFixture.createSection(lineId, 양재역, 판교역, 50);
     }
 
     Long createStation(String name) {
@@ -74,54 +79,105 @@ public class SectionAcceptanceTest {
 
 
     /**
-     * When 지하철 구간을 생성하면
+     * When 기존 구간의 종점을 시작으로 하는 지하철 구간을 생성하면
      * Then 지하철 구간이 생성된다
      * Then 지하철 라인 역 목록 조회 시 추가 한 구간의 종점 역을 찾을 수 있다.
      */
-    @DisplayName("지하철 구간을 생성한다.")
+    @DisplayName("지하철 구간을 생성한다. 구간의 종점에 생성")
     @Test
-    void createSection() {
-        Long 양재역 = stationMaps.get("양재역");
-        Long 양재시민의숲역 = createStation("양재시민의숲역");
+    void createSectionByDownStation() {
+        Long 판교역 = stationMaps.get("판교역");
+        Long 정자역 = createStation("정자역");
 
         // when
-        ExtractableResponse<Response> response = SectionFixture.createSection(lineId, 양재역, 양재시민의숲역, 10);
+        ExtractableResponse<Response> response = SectionFixture.createSection(lineId, 판교역, 정자역, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stations = LineFixture.findLine(lineId).jsonPath()
-            .getList("stations.name", String.class);
-        assertThat(stations).containsAnyOf("양재시민의숲역");
+        var lineResponse = response.as(LineResponse.class);
+        assertThat(lineResponse.getStations().stream().map(StationResponse::getName)).containsAnyOf("정자역");
 
-        var lineResponse = LineFixture.findLine(lineId).as(LineResponse.class);
-        assertThat(lineResponse.getStations().stream().map(StationResponse::getName)).containsAnyOf("양재시민의숲역");
+        assertThat(lineResponse.getTotalDistance()).isEqualTo(80);
     }
 
     /**
-     * When 장 거리의 지하철 구간을 생성하고, 중간 거리의 지하철 구간을 생성
+     * When 기존 구간의 시작점을 종점으로 하는 지하철 구간을 생성하면
      * Then 지하철 구간이 생성된다
-     * Then 지하철 라인 역 목록 조회 시 추가 한 구간의 종점 역을 찾을 수 있다.
+     * Then 지하철 라인 역 목록 조회 시 추가 한 구간의 역을 찾을 수 있다.
      */
-    @DisplayName("지하철 구간을 생성한다. 구간의 중간에 생성")
+    @DisplayName("지하철 구간을 생성한다. 구간의 시작점에 생성")
     @Test
-    void createSectionMiddle() {
-        Long 양재역 = stationMaps.get("양재역");
-        Long 양재시민의숲역 = createStation("양재시민의숲역");
-        Long 판교역 = createStation("판교역");
+    void createSectionByUpstation() {
+        Long 신논현역 = stationMaps.get("신논현역");
+        Long 논현역 = createStation("논현역");
 
         // when
-        SectionFixture.createSection(양재역, 판교역, 50);
-        ExtractableResponse<Response> response = SectionFixture.createSection(양재역, 양재시민의숲역, 20);
+        ExtractableResponse<Response> response = SectionFixture.createSection(lineId, 논현역, 신논현역, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        JsonPath line = LineFixture.findLine(lineId).jsonPath();
+        var lineResponse = response.as(LineResponse.class);
+        assertThat(lineResponse.getStations().stream().map(StationResponse::getName)).containsAnyOf("논현역");
+
+        assertThat(lineResponse.getTotalDistance()).isEqualTo(80);
+    }
+
+    /**
+     * When 중간 거리의 지하철 구간을 생성(upStation 이 같은)
+     * Then 지하철 구간이 생성된다
+     * Then 지하철 라인 역 목록 조회 시 추가 한 구간의 종점 역을 찾을 수 있다.
+     */
+    @DisplayName("지하철 구간을 생성한다. 구간의 중간에 생성 - upStation 을 동일하게")
+    @Test
+    void createSectionMiddleWithSameUpStation() {
+        Long 양재역 = stationMaps.get("양재역");
+        Long 양재시민의숲역 = createStation("양재시민의숲역");
+
+        // when
+        ExtractableResponse<Response> response = SectionFixture.createSection(lineId, 양재역, 양재시민의숲역, 20);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        JsonPath line = response.jsonPath();
         List<String> stations = line.getList("stations.name", String.class);
-        assertThat(stations).containsAnyOf("양재시민의숲역", "판교역");
+        assertThat(stations).containsAnyOf("양재시민의숲역");
+        assertThat(stations).hasSize(5);
+
+        var totalDistance = line.getLong("totalDistance");
+        assertThat(totalDistance).isEqualTo(70);
+    }
+
+    /**
+     * When 장 거리의 지하철 구간을 생성하고, 중간 거리의 지하철 구간을 생성(downStation 이 같은)
+     * Then 지하철 구간이 생성된다
+     * Then 지하철 라인 역 목록 조회 시 추가 한 구간의 종점 역을 찾을 수 있다.
+     */
+    @DisplayName("지하철 구간을 생성한다. 구간의 중간에 생성 - downStation 을 동일하게")
+    @Test
+    void createSectionMiddleWithSameDownStation() {
+        Long 양재시민의숲역 = createStation("양재시민의숲역");
+        Long 판교역 = stationMaps.get("판교역");
+
+        // when
+        ExtractableResponse<Response> response = SectionFixture.createSection(lineId, 양재시민의숲역, 판교역, 30);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        JsonPath line = response.jsonPath();
+        List<String> stations = line.getList("stations.name", String.class);
+        assertThat(stations).containsAnyOf("양재시민의숲역");
+        assertThat(stations).hasSize(5);
+
+        var totalDistance = line.getLong("totalDistance");
+        assertThat(totalDistance).isEqualTo(70);
     }
 
     /**
@@ -146,17 +202,24 @@ public class SectionAcceptanceTest {
      * When 상행 역은 포함하고, 하행 역은 포함되어 있지 않는 구간을 생성할때 거리를 기존과 같게 설정한 경우
      * Then 지하철 구간이 생성되지 않는다.
      */
-    @DisplayName("지하철 구간 생성 실패 - 상행만 포함되어 있때, 등록 된 거리와 같을 경우)")
+    @DisplayName("지하철 구간 생성 실패 - 등록 된 거리와 같을 경우")
     @Test
     void failToCreateSectionBySameDistance() {
-        Long 강남역 = stationMaps.get("강남역");
+        Long 양재역 = stationMaps.get("양재역");
         Long 양재시민의숲역 = createStation("양재시민의숲역");
+        Long 판교역 = stationMaps.get("판교역");
 
         // when
-        ExtractableResponse<Response> response = this.createSection(강남역, 양재시민의숲역, 10);
+        ExtractableResponse<Response> 양재역_양재시민의숲역 = SectionFixture.createSection(lineId, 양재역, 양재시민의숲역, 50);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(양재역_양재시민의숲역.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        // when
+        ExtractableResponse<Response> 양재시민의숲역_판교역 = SectionFixture.createSection(lineId, 양재시민의숲역, 판교역, 50);
+
+        // then
+        assertThat(양재시민의숲역_판교역.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -164,17 +227,24 @@ public class SectionAcceptanceTest {
      * When 상행 역은 포함하고, 하행 역은  포함되어 있지 않는 구간을 생성할때 거리를 기존보다 크게 설정한 경우
      * Then 지하철 구간이 생성되지 않는다.
      */
-    @DisplayName("지하철 구간 생성 실패 - 상행만 포함되어 있을때, 등록 된 거리 보다 클 경우)")
+    @DisplayName("지하철 구간 생성 실패 - 등록 된 거리 보다 클 경우")
     @Test
     void failToCreateSectionByLongDistance() {
-        Long 강남역 = stationMaps.get("강남역");
-        Long 청계산역 = createStation("청계산역");
+        Long 양재역 = stationMaps.get("양재역");
+        Long 양재시민의숲역 = createStation("양재시민의숲역");
+        Long 판교역 = stationMaps.get("판교역");
 
         // when
-        ExtractableResponse<Response> response = this.createSection(강남역, 청계산역, 20);
+        ExtractableResponse<Response> 양재역_양재시민의숲역 = SectionFixture.createSection(lineId, 양재역, 양재시민의숲역, 100);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(양재역_양재시민의숲역.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        // when
+        ExtractableResponse<Response> 양재시민의숲역_판교역 = SectionFixture.createSection(lineId, 양재시민의숲역, 판교역, 100);
+
+        // then
+        assertThat(양재시민의숲역_판교역.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 
@@ -202,18 +272,18 @@ public class SectionAcceptanceTest {
      * Then 지하철 구간이 삭제된다.
      * Then 1개 구간 -> 2개의 station 만 존재함.
      */
-    @DisplayName("지하철 구간을 삭제한다.")
+    @DisplayName("지하철 구간을 삭제한다. - 성공")
     @Test
     void deleteSection() {
         //given
-        Long 양재역 = stationMaps.get("양재역");
+        Long 판교역 = stationMaps.get("판교역");
 
         // when
-        ExtractableResponse<Response> response = SectionFixture.deleteSection(lineId, 양재역);
+        ExtractableResponse<Response> response = SectionFixture.deleteSection(lineId, 판교역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(getStations()).hasSize(2);
+        assertThat(getStations()).hasSize(3);
     }
 
     /**
@@ -232,7 +302,7 @@ public class SectionAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(getStations()).hasSize(3);
+        assertThat(getStations()).hasSize(4);
     }
 
     private List<String> getStations() {
@@ -255,7 +325,7 @@ public class SectionAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(getStations()).hasSize(3);
+        assertThat(getStations()).hasSize(4);
     }
 
     /**
@@ -268,7 +338,9 @@ public class SectionAcceptanceTest {
         //given
         Long 강남역 = stationMaps.get("강남역");
         Long 양재역 = stationMaps.get("양재역");
+        Long 판교역 = stationMaps.get("판교역");
         // given 구간 한개로
+        SectionFixture.deleteSection(lineId, 판교역);
         SectionFixture.deleteSection(lineId, 양재역);
 
         // then

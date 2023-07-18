@@ -1,11 +1,15 @@
 package subway.service;
 
+import static subway.exception.ErrorCode.STATION_NOT_FOUND;
+
 import java.util.NoSuchElementException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.dto.request.StationRequest;
 import subway.dto.response.StationResponse;
 import subway.entity.Station;
+import subway.exception.ApiException;
+import subway.exception.ErrorCode;
 import subway.repository.StationRepository;
 
 import java.util.List;
@@ -45,6 +49,6 @@ public class StationService {
     }
 
     public Station findStation(Long id) {
-        return stationRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
+        return stationRepository.findById(id).orElseThrow(() -> new ApiException(STATION_NOT_FOUND));
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import subway.dto.request.SectionRequest;
+import subway.dto.response.LineResponse;
 import subway.service.SectionService;
 
 @RequestMapping("/lines/{id}/sections")
@@ -20,9 +21,9 @@ public class SectionController {
     private final SectionService sectionService;
 
     @PostMapping
-    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
-        var section = sectionService.addSection(id, request);
-        return ResponseEntity.created(URI.create(String.format("/lines/%d/sections/%d", id, section.getId()))).build();
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
+        LineResponse line = sectionService.addSection(id, request);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @DeleteMapping

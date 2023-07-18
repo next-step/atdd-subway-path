@@ -1,5 +1,7 @@
 package subway.service;
 
+import static subway.exception.ErrorCode.LINE_NOT_FOUND;
+
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -7,6 +9,7 @@ import subway.dto.response.StationResponse;
 import subway.entity.Line;
 import subway.entity.Section;
 import subway.entity.Station;
+import subway.exception.ApiException;
 import subway.repository.LineRepository;
 import subway.repository.StationRepository;
 import subway.dto.request.LineModifyRequest;
@@ -55,7 +58,7 @@ public class LineService {
             .build();
     }
     public Line findLine(Long id) {
-        return lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException());
+        return lineRepository.findById(id).orElseThrow(() -> new ApiException(LINE_NOT_FOUND));
     }
 
     public List<LineResponse> findLines() {
