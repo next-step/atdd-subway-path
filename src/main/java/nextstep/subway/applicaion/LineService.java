@@ -70,8 +70,12 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
+        Line line = getLineById(lineId);
         line.addSection(Section.of(line, upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    private Line getLineById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -96,7 +100,7 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
+        Line line = getLineById(lineId);
         Station station = stationService.findById(stationId);
 
         boolean isRemoved = line.remove(station);
