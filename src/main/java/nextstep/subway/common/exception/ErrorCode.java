@@ -1,8 +1,8 @@
 package nextstep.subway.common.exception;
 
 public enum ErrorCode {
-    INVALID_SECTION_REGISTRATION(400, "새로운 구간의 상행역은 노선에 등록된 마지막 구간의 하행역과 같아야 합니다."),
-    ALREADY_REGISTERED_STATION(400, "새로운 구간의 하행역은 노선에 등록되어 있는 구간들의 역과 중복될 수 없습니다."),
+    INVALID_SECTION_REGISTRATION(400, "새로운 구간을 등록할 조건을 만족하지 못했습니다. (상행역 또는 하행역이 기존 구간에 존재해야함)"),
+    ALREADY_REGISTERED_STATION(400, "같은 구간을 중복하여 등록할 수 없습니다."),
     DELETE_ONLY_TERMINUS_STATION(400, "구간 삭제 시 하행 종점역을 입력해야 합니다."),
     CAN_NOT_DELETE_ONLY_ONE_SECTION(400, "노선에 하나의 구간만 있을 경우 삭제할 수 없습니다."),
 
