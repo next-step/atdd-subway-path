@@ -8,6 +8,7 @@ import subway.constant.SubwayMessage;
 import subway.exception.SubwayBadRequestException;
 import subway.line.model.Section;
 import subway.path.dto.PathRetrieveResponse;
+import subway.path.model.Path;
 import subway.station.dto.StationResponse;
 import subway.station.model.Station;
 
@@ -17,9 +18,9 @@ import java.util.stream.Stream;
 
 @Component
 public class PathFinder {
-    public PathRetrieveResponse findShortestPath(List<Section> sections,
-                                                 Station sourceStation,
-                                                 Station targetStation) {
+    public Path findPath(List<Section> sections,
+                         Station sourceStation,
+                         Station targetStation) {
         validIsSameOriginStation(sourceStation, targetStation);
 
         List<Station> stations = getStations(sections);
@@ -28,7 +29,7 @@ public class PathFinder {
         List<Station> stationsInShortestPath = getShortestPath(graph, sourceStation, targetStation);
         Double minimumWeight = getWeightOfShortestPath(graph, sourceStation, targetStation);
 
-        return PathRetrieveResponse.builder()
+        return Path.builder()
                 .stations(StationResponse.from(stationsInShortestPath))
                 .distance(minimumWeight.longValue())
                 .build();

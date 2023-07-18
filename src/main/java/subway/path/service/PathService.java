@@ -7,6 +7,7 @@ import subway.line.model.Section;
 import subway.line.service.LineService;
 import subway.path.component.PathFinder;
 import subway.path.dto.PathRetrieveResponse;
+import subway.path.model.Path;
 import subway.station.model.Station;
 import subway.station.service.StationService;
 
@@ -26,7 +27,8 @@ public class PathService {
         Station targetStation = stationService.findStationById(targetStationId);
         List<Line> lines = lineService.findByStation(sourceStation, targetStation);
         List<Section> sections = getAllSections(lines);
-        return pathFinder.findShortestPath(sections, sourceStation, targetStation);
+        Path path = pathFinder.findPath(sections, sourceStation, targetStation);
+        return PathRetrieveResponse.from(path);
     }
 
     private List<Section> getAllSections(List<Line> lines) {

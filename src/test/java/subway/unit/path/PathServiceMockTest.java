@@ -11,6 +11,7 @@ import subway.line.model.Section;
 import subway.line.service.LineService;
 import subway.path.component.PathFinder;
 import subway.path.dto.PathRetrieveResponse;
+import subway.path.model.Path;
 import subway.path.service.PathService;
 import subway.station.dto.StationResponse;
 import subway.station.model.Station;
@@ -56,12 +57,12 @@ public class PathServiceMockTest {
         이호선.addSection(이호선_2구간);
 
         List<StationResponse> stationResponses = List.of(StationResponse.from(강남역), StationResponse.from(역삼역), StationResponse.from(선릉역));
-        PathRetrieveResponse response = PathRetrieveResponse.builder().distance(10L).stations(stationResponses).build();
+        Path response = Path.builder().distance(10L).stations(stationResponses).build();
 
         when(stationService.findStationById(1L)).thenReturn(강남역);
         when(stationService.findStationById(3L)).thenReturn(선릉역);
         when(lineService.findByStation(강남역, 선릉역)).thenReturn(List.of(이호선));
-        when(pathFinder.findShortestPath(이호선.getLineSections().getSections(), 강남역, 선릉역)).thenReturn(response);
+        when(pathFinder.findPath(이호선.getLineSections().getSections(), 강남역, 선릉역)).thenReturn(response);
 
         // when
         PathRetrieveResponse shortestPath = pathService.getShortestPath(강남역.getId(), 선릉역.getId());

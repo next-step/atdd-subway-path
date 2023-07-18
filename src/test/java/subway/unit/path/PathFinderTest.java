@@ -9,6 +9,7 @@ import subway.line.model.Line;
 import subway.line.model.Section;
 import subway.path.component.PathFinder;
 import subway.path.dto.PathRetrieveResponse;
+import subway.path.model.Path;
 import subway.station.dto.StationResponse;
 import subway.station.model.Station;
 
@@ -79,7 +80,7 @@ public class PathFinderTest {
     @Test
     void getShortestPath() {
         // when
-        PathRetrieveResponse shortestPath = pathFinder.findShortestPath(구간목록, getStation("교대역"), getStation("양재역"));
+        Path shortestPath = pathFinder.findPath(구간목록, getStation("교대역"), getStation("양재역"));
 
         // then
         assertThat(shortestPath.getStations())
@@ -99,7 +100,7 @@ public class PathFinderTest {
     @Test
     void getShortestPathWithSameOrigin() {
         // when/then
-        assertThatThrownBy(() -> pathFinder.findShortestPath(구간목록, getStation("교대역"), getStation("교대역")))
+        assertThatThrownBy(() -> pathFinder.findPath(구간목록, getStation("교대역"), getStation("교대역")))
                 .isInstanceOf(SubwayBadRequestException.class);
     }
 
@@ -112,7 +113,7 @@ public class PathFinderTest {
     @Test
     void getShortestPathNotConnectedSection() {
         // when/then
-        assertThatThrownBy(() -> pathFinder.findShortestPath(구간목록, getStation("교대역"), getStation("왕십리역")))
+        assertThatThrownBy(() -> pathFinder.findPath(구간목록, getStation("교대역"), getStation("왕십리역")))
                 .isInstanceOf(SubwayBadRequestException.class);
     }
 
@@ -125,7 +126,7 @@ public class PathFinderTest {
     @Test
     void getShortestPathNotExistStation() {
         // when/then
-        assertThatThrownBy(() -> pathFinder.findShortestPath(구간목록, new Station(99L, "그런역"), new Station(98L, "저런역")))
+        assertThatThrownBy(() -> pathFinder.findPath(구간목록, new Station(99L, "그런역"), new Station(98L, "저런역")))
                 .isInstanceOf(SubwayBadRequestException.class);
     }
 
