@@ -27,11 +27,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long 삼호선;
 
     /**
+     * 10
      * 교대역    --- *2호선* ---   강남역
      * |                        |
+     * | 2                      | 10
      * *3호선*                   *신분당선*
      * |                        |
      * 남부터미널역  --- *3호선* ---   양재
+     * 3
      */
     @BeforeEach
     public void setUp() {
@@ -90,9 +93,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 경로 조회 시 출발역과 도착역이 연결되어 있지 않으면 에러가 발생한다")
     @Test
     void getPaths_startAndEndStationNotConnection_Exception() {
+        // given
         Long 독바위역 = 지하철역_생성_요청("독바위역").jsonPath().getLong("id");
         Long 불광역 = 지하철역_생성_요청("불광역").jsonPath().getLong("id");
-        Long 육호선 = 지하철_노선_생성_요청("6호선", "brown", 독바위역, 불광역, 20);
+        지하철_노선_생성_요청("6호선", "brown", 독바위역, 불광역, 20);
 
         // when
         ExtractableResponse<Response> response = 지하철_경로_조회_요청(교대역, 독바위역);
@@ -138,7 +142,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private ExtractableResponse<Response> 지하철_경로_조회_요청(Long source, Long target) {
         return RestAssured
                 .given().log().all()
-                .when().get("/paths?source=" + source + "&target=" + target)
+                .when()
+                .get("/paths?source=" + source + "&target=" + target)
                 .then().log().all()
                 .extract();
     }

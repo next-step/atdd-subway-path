@@ -33,11 +33,11 @@ public class PathFinder {
         return dijkstraShortestPath.getPath(source, target).getVertexList();
     }
 
-    public static double findPathWeight(List<Line> lines, Station source, Station target) {
+    public static int findPathWeight(List<Line> lines, Station source, Station target) {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(buildGraph(lines));
         validateGraph(source, target, dijkstraShortestPath);
 
-        return dijkstraShortestPath.getPathWeight(source, target);
+        return (int)dijkstraShortestPath.getPathWeight(source, target);
     }
 
     private static void validateGraph(Station source, Station target, DijkstraShortestPath dijkstraShortestPath) {
