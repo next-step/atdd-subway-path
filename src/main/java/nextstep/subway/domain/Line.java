@@ -3,10 +3,14 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.DuplicateSectionException;
 import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.NoConnectedSectionException;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -62,6 +66,28 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Station> stations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        stations.add(Objects.requireNonNull(CollectionUtils.lastElement(sections)).getDownStation());
+        return stations;
+    }
+
+    public boolean remove(Station station) {
+        if (sections.isEmpty()) {
+            return false;
+        }
+        int lastIndex = sections.size() - 1;
+        if (!sections.get(lastIndex).getDownStation().equals(station)) {
+            return false;
+        }
+
+        sections.remove(lastIndex);
+        return true;
     }
 
     public void addSection(Section section) {

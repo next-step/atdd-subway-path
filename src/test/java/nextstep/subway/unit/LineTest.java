@@ -157,11 +157,41 @@ class LineTest {
                 () -> line.addSection(Section.of(line, noStation1, noStation2, distance)));
     }
 
+    @DisplayName("지하철역을 조회한다")
     @Test
     void getStations() {
+        // given
+        Line line = new Line("1호선", "남색");
+        Station station1 = new Station("station1");
+        Station station2 = new Station("station2");
+        Station station3 = new Station("station3");
+        int distance = 10;
+        line.addSection(Section.of(line, station1, station2, distance));
+        line.addSection(Section.of(line, station2, station3, distance));
+
+        // when
+        List<Station> stations = line.getStations();
+
+        // then
+        assertThat(stations).containsExactly(station1, station2, station3);
     }
 
+    @DisplayName("지하철 라인에서 역을 제거한다")
     @Test
     void removeSection() {
+        // given
+        Line line = new Line("1호선", "남색");
+        Station station1 = new Station("station1");
+        Station station2 = new Station("station2");
+        Station station3 = new Station("station3");
+        int distance = 10;
+        line.addSection(Section.of(line, station1, station2, distance));
+        line.addSection(Section.of(line, station2, station3, distance));
+
+        // when
+        line.remove(station3);
+
+        // then
+        assertThat(line.getStations()).containsExactly(station1, station2);
     }
 }
