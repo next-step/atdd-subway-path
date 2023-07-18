@@ -60,6 +60,10 @@ public class Sections {
         return sections.size();
     }
 
+    private boolean hasStation(Station downStation) {
+        return getStations().contains(downStation);
+    }
+
     private static class Validator {
         static void validateEnrollment(Sections sections, Section section) {
             validateNewSectionUpStationEqualsLineDownStation(sections, section);
@@ -72,7 +76,7 @@ public class Sections {
         }
 
         private static void validateNewSectionDownStationIsNewcomer(Sections sections, Section section) {
-            if (sections.getStations().contains(section.getDownStation())) {
+            if (sections.hasStation(section.getDownStation())) {
                 throw new IllegalArgumentException("새로운 구간의 하행역이 해당 노선에 등록되어있는 역임.");
             }
         }
