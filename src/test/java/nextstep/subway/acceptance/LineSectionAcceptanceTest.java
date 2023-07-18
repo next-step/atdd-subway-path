@@ -10,14 +10,14 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.handler.LineHandler.*;
+import static nextstep.subway.handler.StationHandler.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
-    private Long 신분당선;
 
+    private Long 신분당선;
     private Long 강남역;
     private Long 양재역;
 

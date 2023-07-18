@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.handler.StationHandler.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -25,18 +25,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        지하철_역_생성됨(강남역);
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        List<String> 조회된_지하철_역_이름_목록 = 지하철_역_이름_목록_조회_요청();
+        지하철_역_이름_조회됨(조회된_지하철_역_이름_목록);
     }
 
     /**
@@ -52,14 +48,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철역_생성_요청("역삼역");
 
         // when
-        ExtractableResponse<Response> stationResponse = RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 지하철_역_목록_조회_결과 = 지하철_역_목록_조회_요청();
 
         // then
-        List<StationResponse> stations = stationResponse.jsonPath().getList(".", StationResponse.class);
-        assertThat(stations).hasSize(2);
+        두개의_지하철_역_응답됨(지하철_역_목록_조회_결과);
     }
 
     /**
@@ -71,22 +63,56 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
 
         // when
-        String location = createResponse.header("location");
-        RestAssured.given().log().all()
-                .when()
-                .delete(location)
-                .then().log().all()
-                .extract();
+        지하철_역_삭제_요청(강남역);
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> 조회된_지하철_역_이름_목록 = 지하철_역_이름_목록_조회_요청();
+        지하철_역_삭제됨(조회된_지하철_역_이름_목록);
+    }
+
+    private ExtractableResponse<Response> 지하철_역_목록_조회_요청() {
+        return RestAssured
+                .given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private List<String> 지하철_역_이름_목록_조회_요청() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract()
+                    .jsonPath().getList("name", String.class);
+    }
+
+    private void 지하철_역_삭제_요청(ExtractableResponse<Response> response) {
+        String location = response.header("location");
+        RestAssured
+                .given().log().all()
+                .when()
+                    .delete(location)
+                .then().log().all()
+                .extract();
+    }
+
+    private void 지하철_역_생성됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_역_이름_조회됨(List<String> stationNames) {
+        assertThat(stationNames).containsAnyOf("강남역");
+    }
+
+    private void 두개의_지하철_역_응답됨(ExtractableResponse<Response> response) {
+        List<StationResponse> stations = response.jsonPath().getList(".", StationResponse.class);
+        assertThat(stations).hasSize(2);
+    }
+
+    private void 지하철_역_삭제됨(List<String> stationNames) {
         assertThat(stationNames).doesNotContain("강남역");
     }
 }
