@@ -189,7 +189,7 @@ class LineTest {
         line.addSection(Section.of(line, station2, station3, distance));
 
         // when
-        line.remove(station3);
+        line.removeStation(station3);
 
         // then
         assertThat(line.getStations()).containsExactly(station1, station2);

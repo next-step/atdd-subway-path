@@ -103,7 +103,7 @@ public class LineService {
         Line line = getLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        boolean isRemoved = line.remove(station);
+        boolean isRemoved = line.removeStation(station);
         if (!isRemoved) {
             throw new NotLastStationException();
         }
