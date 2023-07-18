@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,7 +37,16 @@ public class Sections {
 
     public void addSection(Section section) {
         Validator.validateEnrollment(this, section);
-        sections.add(section);
+
+        if (doesNewStationDivideExistingSection(section)) {
+            sections.add(section);
+        }
+        if (isNewStationToBeUpBound(section)) {
+            sections.add(0, section);
+        }
+        if (isNewStationToBeDownBound(section)) {
+            sections.add(section);
+        }
     }
 
     public void remove(Station station) {
@@ -64,10 +74,52 @@ public class Sections {
         return getStations().contains(downStation);
     }
 
+    private boolean equalsLastStation(Station station) {
+        return getLastStation().equalsId(station);
+    }
+
+    private boolean isNewStationToBeDownBound(Section section) {
+        return equalsLastStation(section.getUpStation());
+    }
+
+    private boolean isNewStationToBeUpBound(Section section) {
+        return getFirstStation().equalsId(section.getDownStation());
+    }
+
+    private boolean doesNewStationDivideExistingSection(Section section) {
+        return getUpStations().contains(section.getUpStation());
+    }
+
+    private List<Station> getUpStations() {
+        return sections.stream()
+                .map(section -> section.getUpStation())
+                .collect(Collectors.toList());
+    }
+
     private static class Validator {
         static void validateEnrollment(Sections sections, Section section) {
-            validateNewSectionUpStationEqualsLineDownStation(sections, section);
-            validateNewSectionDownStationIsNewcomer(sections, section);
+            if (isNewStationInExistingSection(sections, section)) {
+
+            }
+            if (isNewStationToBeUpBound(sections, section)) {
+
+            }
+            if (isNewStationToBeDownBound(sections, section)) {
+                validateNewSectionUpStationEqualsLineDownStation(sections, section);
+                validateNewSectionDownStationIsNewcomer(sections, section);
+            }
+        }
+
+        private static boolean isNewStationToBeDownBound(Sections sections, Section section) {
+            return sections.equalsLastStation(section.getUpStation());
+        }
+
+        private static boolean isNewStationToBeUpBound(Sections sections, Section section) {
+            return false;
+        }
+
+        private static boolean isNewStationInExistingSection(Sections sections, Section section) {
+            return false;
         }
 
         private static void validateDeletion(Sections sections, Station Station) {
