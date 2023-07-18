@@ -1,18 +1,28 @@
-package nextstep.subway.applicaion.dto;
+package subway.dto.request;
 
-public class LineRequest {
-    private String name;
+public class LineCreateRequest {
+
+    private Long id;
+
+
     private String color;
+    private String name;
+
     private Long upStationId;
     private Long downStationId;
+
     private int distance;
 
-    public String getName() {
-        return name;
+    public Long getId() {
+        return id;
     }
 
     public String getColor() {
         return color;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Long getUpStationId() {

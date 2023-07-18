@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance;
+package nextstep.subway.acceptance.steps;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -9,6 +9,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LineSteps {
+
+
+    public static ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String,Object> param =new HashMap<>();
+        param.put("name",name);
+        param.put("color",color);
+        param.put("upStationId",upStationId);
+        param.put("downStationId",downStationId);
+        param.put("distance",distance);
+
+        return RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+
+    public static ExtractableResponse<Response> getLines() {
+        return RestAssured.given().log().all()
+                .when().get("lines")
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);

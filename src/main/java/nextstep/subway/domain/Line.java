@@ -1,53 +1,74 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
+@Getter
 public class Line {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+
+    @Column(name = "COLOR")
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Column(name = "NAME")
+    private String name;
+
+    @Column(name = "DISTANCE")
+    private int distance;
+
+    @Embedded
+    private LineSections sections = new LineSections();
 
     public Line() {
     }
 
-    public Line(String name, String color) {
-        this.name = name;
+    public Line(String color, String name) {
         this.color = color;
+        this.name = name;
     }
 
-    public Long getId() {
-        return id;
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.color = color;
+        this.name = name;
+        this.sections = sections.init(new Section(this,upStation,downStation,distance));
     }
-
-    public void setId(Long id) {
+    public Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
         this.color = color;
+        this.name = name;
+        this.sections = sections.init(new Section(this,upStation,downStation,distance));
     }
 
-    public List<Section> getSections() {
-        return sections;
+
+    public void changeColor(String color) {
+        if(color != null ){
+            this.color = color;
+        }
+    }
+
+    public void changeName(String name) {
+        if(name != null) {
+            this.name = name;
+        }
+    }
+
+    public void addSections(Section sections) {
+        this.sections.add(sections);
+    }
+
+    public void removeSections(Station station) {
+        this.sections.remove(station);
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
     }
 }
