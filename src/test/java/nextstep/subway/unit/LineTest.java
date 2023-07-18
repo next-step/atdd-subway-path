@@ -43,7 +43,7 @@ class LineTest {
     @Test
     void addSectionACAB() {
         // when
-        int smallerDistanceThanSectionAC = 1;
+        int smallerDistanceThanSectionAC = 이호선.getDistance() - 1;
         이호선.addSection(new Section(이호선, 강남역, 익명역, smallerDistanceThanSectionAC));
 
         // then
@@ -60,6 +60,7 @@ class LineTest {
         assertThat(이호선.getStations()).contains(익명역);
     }
 
+    @DisplayName("모든 지하철 조회")
     @Test
     void getStations() {
         // when
@@ -69,6 +70,21 @@ class LineTest {
         assertThat(stations).containsExactly(강남역, 역삼역);
     }
 
+    @DisplayName("모든 지하철 조회 시, 상행종착역-하행종착역 순으로 반환")
+    @Test
+    void checkGetStationsReturnInOrder() {
+        // given
+        int smallerDistanceThanSectionAC = 이호선.getDistance() - 1;
+        이호선.addSection(new Section(이호선, 강남역, 익명역, smallerDistanceThanSectionAC));
+
+        // when
+        List<Station> stations = 이호선.getStations();
+
+        // then
+        assertThat(stations).containsExactly(강남역, 익명역, 역삼역);
+    }
+
+    @DisplayName("지하철 삭제")
     @Test
     void removeSection() {
         // given
