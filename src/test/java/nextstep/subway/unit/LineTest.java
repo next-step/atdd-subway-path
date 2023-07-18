@@ -185,26 +185,129 @@ class LineTest {
                 .containsExactly(upStation, downStation);
     }
 
-    @Test
-    void 구간_제거() {
-        // given
-        Station upStation = createStation("강남역", 1L);
-        Station downStation = createStation("언주역", 2L);
-        Station newSectionStation = createStation("성수역", 3L);
+    @Nested
+    class 구간_제거 {
 
-        Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-        line.add(Section.of(downStation, newSectionStation, 3L));
+        @Test
+        void 상행역_구간_제거() {
+            // given
+            Station upStation = createStation("강남역", 1L);
+            Station downStation = createStation("언주역", 2L);
+            Station newSectionStation = createStation("성수역", 3L);
 
-        // when
-        line.remove(newSectionStation);
+            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
+            line.add(Section.of(downStation, newSectionStation, 3L));
 
-        // then
-        Assertions.assertEquals(upStation, line.getStartOfLine());
-        Assertions.assertEquals(downStation, line.getEndOfLine());
-        Assertions.assertEquals(10L, line.getDistance());
+            // when
+            line.remove(upStation);
+
+            // then
+            List<Station> stations = line.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(downStation, newSectionStation);
+            Assertions.assertEquals(3L, line.getDistance());
+        }
+
+        @Test
+        void 하행역_구간_제거() {
+            // given
+            Station upStation = createStation("강남역", 1L);
+            Station downStation = createStation("언주역", 2L);
+            Station newSectionStation = createStation("성수역", 3L);
+
+            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
+            line.add(Section.of(downStation, newSectionStation, 3L));
+
+            // when
+            line.remove(newSectionStation);
+
+            // then
+            List<Station> stations = line.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(upStation, downStation);
+            Assertions.assertEquals(10L, line.getDistance());
+        }
+
+        @Test
+        void 중간역_구간_제거() {
+            // given
+            Station upStation = createStation("강남역", 1L);
+            Station downStation = createStation("언주역", 2L);
+            Station newSectionStation = createStation("성수역", 3L);
+
+            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
+            line.add(Section.of(downStation, newSectionStation, 3L));
+
+            // when
+            line.remove(downStation);
+
+            // then
+            List<Station> stations = line.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(upStation, newSectionStation);
+            Assertions.assertEquals(13L, line.getDistance());
+        }
+
+        @Test
+        void 없는_역을_제거_할수_없다() {
+            // given
+            Station upStation = createStation("강남역", 1L);
+            Station downStation = createStation("언주역", 2L);
+            Station newSectionStation = createStation("성수역", 3L);
+            Station notInLineStation = createStation("보라매역", 4L);
+
+            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
+            line.add(Section.of(downStation, newSectionStation, 3L));
+
+            // when & then
+            thenCode(() -> line.remove(notInLineStation)).isInstanceOf(Exception.class);
+
+            // then
+            List<Station> stations = line.getStations();
+            assertThat(stations).hasSize(3)
+                    .containsExactly(upStation, downStation, newSectionStation);
+            Assertions.assertEquals(13L, line.getDistance());
+        }
+
+        @Test
+        void 단일_구간_상행역_제거_불가() {
+            // given
+            Station upStation = createStation("강남역", 1L);
+            Station downStation = createStation("언주역", 2L);
+
+            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
+
+            // when & then
+            thenCode(() -> line.remove(upStation)).isInstanceOf(Exception.class);
+
+            // then
+            List<Station> stations = line.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(upStation, downStation);
+            Assertions.assertEquals(10L, line.getDistance());
+        }
+
+        @Test
+        void 단일_구간_하행역_제거_불가() {
+            // given
+            Station upStation = createStation("강남역", 1L);
+            Station downStation = createStation("언주역", 2L);
+
+            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
+
+            // when & then
+            thenCode(() -> line.remove(downStation)).isInstanceOf(Exception.class);
+
+            // then
+            List<Station> stations = line.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(upStation, downStation);
+            Assertions.assertEquals(10L, line.getDistance());
+        }
     }
 
-    private Line createLine(String name, String color, Long distance, Station upStation, Station downStation, Long id) {
+
+    private static Line createLine(String name, String color, Long distance, Station upStation, Station downStation, Long id) {
         Line line = spy(Line.builder()
                 .name(name)
                 .color(color)
@@ -216,7 +319,7 @@ class LineTest {
         return line;
     }
 
-    private Station createStation(String name, Long id) {
+    private static Station createStation(String name, Long id) {
         Station station = spy(Station.create(() -> name));
         given(station.getId()).willReturn(id);
         return station;
