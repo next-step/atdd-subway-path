@@ -22,30 +22,20 @@ public class SectionService {
     public Section create(Line line,Station upStation, Station downStation,
         int distance) {
 
-        return save(line, upStation, downStation, distance);
+        return save(Section.firstCreate(line, upStation, downStation, distance));
     }
 
-    private Section save(Line line, Station upStation, Station downStation,
-        int distance) {
-        return sectionRepository.save(
-            new Section(
-                line,
-                upStation,
-                downStation,
-                distance
-            )
-        );
+    private Section save(Section section){
+        return sectionRepository.save(section);
     }
 
-    public Section add(Line line, Station upStation, Station downStation, int distance) {
+    public void add(Line line, Station upStation, Station downStation, int distance) {
 
-        SectionGroup group = SectionGroup.of(findAllByLineId(line.getId()));
-        group.validateAdd(upStation.getId(), downStation.getId());
+        SectionGroup group = line.getSections();
+        Section section = group.add(line, upStation, downStation, distance);
 
-
-        return save(line, upStation, downStation, distance);
+        sectionRepository.save(section);
     }
-
 
     public List<Section> findAllByLineId(Long lineId) {
 

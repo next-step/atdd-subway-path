@@ -25,7 +25,7 @@ public class SectionFacade {
         this.lineService = lineService;
     }
 
-    public void addStationLineSection(long id, SectionRequest request) {
+    public void addSection(long id, SectionRequest request) {
 
         sectionService.add(
             lineService.findById(id),

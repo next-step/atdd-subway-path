@@ -33,6 +33,12 @@ public class Section {
     @Column(nullable = false)
     private int distance;
 
+    @Column(nullable = false)
+    private boolean isUpEndPointSection;
+
+    @Column(nullable = false)
+    private boolean isDownEndPointSection;
+
     public Section() {
     }
 
@@ -44,8 +50,39 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Line line, Station upStation, Station downStation, int distance,
+        boolean isUpEndPointSection, boolean isDownEndPointSection) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+        this.isUpEndPointSection = isUpEndPointSection;
+        this.isDownEndPointSection = isDownEndPointSection;
+    }
+
+    public static Section firstCreate(Line line, Station upStation, Station downStation,
+        int distance) {
+        return new Section(line, upStation, downStation, distance, true, true);
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Long getUpStationId() {
+        return upStation.getId();
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Long getDownStationId() {
@@ -56,7 +93,45 @@ public class Section {
         return List.of(upStation.getId(), downStation.getId());
     }
 
+    public boolean isUpEndPointSection() {
+        return isUpEndPointSection;
+    }
+
+    public boolean isDownEndPointSection() {
+        return isDownEndPointSection;
+    }
+
     public boolean isEqualsDownStation(long downStationId) {
         return this.downStation.getId().equals(downStationId);
+    }
+
+    public boolean isEqualsUpStation(long stationId) {
+        return this.upStation.getId().equals(stationId);
+    }
+
+    public void cancelOfUpEndPoint() {
+        this.isUpEndPointSection = false;
+    }
+
+    public void cancelOfDownEndPoint() {
+        this.isDownEndPointSection = false;
+    }
+
+    public void validationAddDistance(int distance) {
+        if (this.distance <= distance){
+            throw new IllegalArgumentException("추가할려는 구간이 기존 구간 길이와 같거나 더 깁니다.");
+        }
+    }
+
+    public void changeUpStation(Station changeStation) {
+        this.upStation = changeStation;
+    }
+
+    public void changeDownStation(Station changeStation) {
+        this.downStation = changeStation;
+    }
+
+    public void minusDistance(int distance) {
+        this.distance -= distance;
     }
 }

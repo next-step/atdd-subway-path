@@ -2,13 +2,18 @@ package nextstep.subway.entity.group;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
+import nextstep.subway.entity.Station;
+import nextstep.subway.entity.group.factory.AddNone;
+import nextstep.subway.entity.group.factory.SectionAddAction;
+import nextstep.subway.entity.group.factory.SectionAddActionFactory;
 
 @Embeddable
 public class SectionGroup {
@@ -38,54 +43,65 @@ public class SectionGroup {
             .collect(Collectors.toList());
     }
 
+    public Section add(Line line, Station upStation, Station downStation, int distance) {
 
-    public Section getEndDownStation() {
-        return sections.stream()
-            .sorted(Comparator.comparing(Section::getId).reversed())
-            .limit(1)
-            .collect(Collectors.toList())
-            .get(0);
-    }
+        final Section ascEndUpSection = getEndUpSection();
 
-    public void validateAdd(long upStationId, long downStationId) {
+        SectionAddAction action = SectionAddActionFactory.make(upStation.getId(),
+            downStation.getId(), ascEndUpSection);
 
-        validAddedSectionUpStation(upStationId);
-        validAddedSectionDownStation(downStationId);
-    }
+        Optional<Section> currentSection = Optional.of(ascEndUpSection);
 
-    private void validAddedSectionUpStation(long upStationId) {
-        if (!isEqualDownEndStation(upStationId)) {
-            throw new IllegalArgumentException("추가하고자 하는 구간의 상행역이, 노선의 하행종점역이 아닙니다.");
+        while (existNext(currentSection.get()) && !action.isAdd()) {
+
+            currentSection = findNext(currentSection.get());
+
+            action = SectionAddActionFactory.make(upStation.getId(),
+                downStation.getId(), currentSection.get());
+
         }
-    }
 
-    private void validAddedSectionDownStation(long downStationId) {
-        if (isExistDownEndStation(downStationId)) {
-            throw new IllegalArgumentException("추가하고자 하는 구간의 하행역이 이미 구간에 존재합니다.");
+        if (action instanceof AddNone) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 전체구간에 포함되지 않습니다.");
         }
+
+        return action.add(line, upStation, downStation, distance, currentSection.get(), this);
     }
 
-    public boolean isEqualDownEndStation(long addUpStationId) {
-
+    private Section getEndUpSection() {
         return sections.stream()
-            .sorted(Comparator.comparing(Section::getId).reversed())
-            .limit(1)
-            .anyMatch(
-                section -> section.getDownStationId().equals(addUpStationId)
+            .filter(Section::isUpEndPointSection)
+            .findFirst()
+            .orElseThrow(
+                () -> new IllegalArgumentException("해당 노선의 상행 종점역이 존재하지 않습니다.")
             );
     }
 
-    public boolean isExistDownEndStation(long downStationId) {
+    private Optional<Section> findNext(Section now) {
+
         return sections.stream()
-            .anyMatch(
-                section -> section.getDownStationId().equals(downStationId)
-            );
+            .filter(section -> section.getUpStationId().equals(now.getDownStationId()))
+            .findFirst();
+    }
+
+    private boolean existNext(Section now) {
+        return sections.stream()
+            .anyMatch(section -> section.getUpStationId().equals(now.getDownStationId()));
     }
 
     public void delete(long deleteStationId) {
 
         validateDelete(deleteStationId);
         sections.remove(getEndDownStation());
+    }
+
+    public Section getEndDownStation() {
+        return sections.stream()
+            .filter(Section::isDownEndPointSection)
+            .findFirst()
+            .orElseThrow(
+                () -> new IllegalArgumentException("해당 노선의 하행종점역이 존재하지 않습니다.")
+            );
     }
 
     private void validateDelete(long deleteStationId) {
@@ -104,5 +120,43 @@ public class SectionGroup {
         if (!getEndDownStation().isEqualsDownStation(deleteStationId)) {
             throw new IllegalArgumentException("하행 종점역이 아니면 삭제할 수 없습니다.");
         }
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
+    public void validateExistStation(long stationId) {
+
+        if (isExistStation(stationId)) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어있습니다.");
+        }
+    }
+
+    private boolean isExistStation(long stationId) {
+
+        return sections.stream()
+            .anyMatch(
+                section ->
+                    section.isEqualsDownStation(stationId) || section.isEqualsUpStation(stationId)
+            );
+    }
+
+    public List<Station> getStationsInOrder() {
+
+        Section start = getEndUpSection();
+
+        List<Station> result = new ArrayList<>();
+        result.add(start.getUpStation());
+        result.add(start.getDownStation());
+
+        Optional<Section> next = findNext(start);
+
+        while (next.isPresent()) {
+            result.add(next.get().getDownStation());
+            next = findNext(next.get());
+        }
+
+        return result;
     }
 }

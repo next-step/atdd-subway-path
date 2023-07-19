@@ -26,7 +26,7 @@ public class SectionController {
         @PathVariable long id,
         @RequestBody SectionRequest request) {
 
-        facade.addStationLineSection(id, request);
+        facade.addSection(id, request);
         return ResponseEntity.created(URI.create("/lines/" + id)).build();
     }
 
