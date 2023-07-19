@@ -145,6 +145,60 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         노선에서_조회되는_역이_줄어든다(이호선_URL, 2);
     }
 
+    /**
+     * Given 구간 A-B-C가 있을 때
+     * When 지하철 B를 삭제하면
+     * Then 노선에서 조회되는 역이 줄어든다(2개)
+     * */
+    @DisplayName("구간을 제거한다. 상행, 하행 종착역 아닌 역 제거")
+    @Test
+    void removeSectionWhereDeletionStationIsNotTopOrLastStation() {
+        // given
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+
+        // when
+        지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(역삼역_URL));
+
+        // then
+        노선에서_조회되는_역이_줄어든다(이호선_URL, 2);
+    }
+
+    /**
+     * Given 구간 A-B-C가 있을 때
+     * When 지하철 A를 삭제하면
+     * Then 노선에서 조회되는 역이 줄어든다(2개)
+     * */
+    @DisplayName("구간을 제거한다. 상행 종착역 제거")
+    @Test
+    void removeSectionWhereDeletionStationIsTopStation() {
+        // given
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+
+        // when
+        지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(강남역_URL));
+
+        // then
+        노선에서_조회되는_역이_줄어든다(이호선_URL, 2);
+    }
+
+    /**
+     * Given 구간 A-B-C가 있을 때
+     * When 지하철 C를 삭제하면
+     * Then 노선에서 조회되는 역이 줄어든다(2개)
+     * */
+    @DisplayName("구간을 제거한다. 하행 종착역 제거")
+    @Test
+    void removeSectionWhereDeletionStationIsLastStation() {
+        // given
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+
+        // when
+        지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(삼성역_URL));
+
+        // then
+        노선에서_조회되는_역이_줄어든다(이호선_URL, 2);
+    }
+
     @DisplayName("구간을 제거 에러, 마지막 구간 아닌 구간 제거")
     @Test
     void removeSectionErrorByRemovingNonLastSection() {

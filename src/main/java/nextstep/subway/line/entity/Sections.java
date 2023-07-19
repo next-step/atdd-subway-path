@@ -118,14 +118,6 @@ public class Sections {
         return getLastStation().equalsId(station);
     }
 
-    private boolean newSectionUpStationMatchAnyUpStation(Section section) {
-        return getUpStations().contains(section.getUpStation());
-    }
-
-    private boolean newSectionDownStationMatchAnyDownStation(Section section) {
-        return getDownStations().contains(section.getDownStation());
-    }
-
     private List<Station> getUpStations() {
         return sections.stream()
                 .map(section -> section.getUpStation())
@@ -136,6 +128,22 @@ public class Sections {
         return sections.stream()
                 .map(section -> section.getDownStation())
                 .collect(Collectors.toList());
+    }
+
+    private boolean newSectionUpStationMatchAnyUpStation(Section section) {
+        return getUpStations().contains(section.getUpStation());
+    }
+
+    private boolean newSectionDownStationMatchAnyDownStation(Section section) {
+        return getDownStations().contains(section.getDownStation());
+    }
+
+    private boolean checkDownStationsContains(Station station) {
+        return getDownStations().contains(station);
+    }
+
+    private boolean checkUpStationsContains(Station station) {
+        return getUpStations().contains(station);
     }
 
     private static class Validator {
@@ -219,13 +227,5 @@ public class Sections {
                 throw new CreationValidationException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
             }
         }
-    }
-
-    private boolean checkDownStationsContains(Station station) {
-        return getDownStations().contains(station);
-    }
-
-    private boolean checkUpStationsContains(Station station) {
-        return getUpStations().contains(station);
     }
 }
