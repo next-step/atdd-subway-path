@@ -35,12 +35,12 @@ class SectionListTest {
         Section sectionAC = addedSection.get(0);
         assertThat(sectionAC.getUpwardStation()).isEqualTo(a);
         assertThat(sectionAC.getDownwardStation()).isEqualTo(c);
-        assertThat(sectionAC.getDistance()).isEqualTo(1);
+        assertThat(sectionAC.getDistance()).isEqualTo(4);
 
         Section sectionBC = addedSection.get(1);
         assertThat(sectionBC.getUpwardStation()).isEqualTo(c);
         assertThat(sectionBC.getDownwardStation()).isEqualTo(b);
-        assertThat(sectionBC.getDistance()).isEqualTo(4);
+        assertThat(sectionBC.getDistance()).isEqualTo(1);
     }
 
     @Test
@@ -56,12 +56,12 @@ class SectionListTest {
         Section sectionAD = addedSection.get(0);
         assertThat(sectionAD.getUpwardStation()).isEqualTo(a);
         assertThat(sectionAD.getDownwardStation()).isEqualTo(d);
-        assertThat(sectionAD.getDistance()).isEqualTo(4);
+        assertThat(sectionAD.getDistance()).isEqualTo(1);
 
         Section sectionDB = addedSection.get(1);
         assertThat(sectionDB.getUpwardStation()).isEqualTo(d);
         assertThat(sectionDB.getDownwardStation()).isEqualTo(b);
-        assertThat(sectionDB.getDistance()).isEqualTo(1);
+        assertThat(sectionDB.getDistance()).isEqualTo(4);
     }
 
     @Test
@@ -144,8 +144,8 @@ class SectionListTest {
         Section newSection = new Section(line, new SectionStations(c, a), 4);
         sectionList.addSection(newSection);
 
-        Station lastUpstation = sectionList.getUpLastStation();
+        Station lastUpStation = sectionList.getUpLastStation();
 
-        assertThat(lastUpstation).isEqualTo(c);
+        assertThat(lastUpStation).isEqualTo(c);
     }
 }

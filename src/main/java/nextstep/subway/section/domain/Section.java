@@ -74,7 +74,9 @@ public class Section {
         this.stations = oldOne;
         section.stations = newOne;
 
-        this.distance -= section.distance;
+        int newDistance = this.distance - section.distance;
+        section.distance = newDistance;
+        this.distance -= newDistance;
     }
 
     public void insertUpwardInterStation(Section section) {
@@ -86,9 +88,7 @@ public class Section {
         this.stations = oldOne;
         section.stations = newOne;
 
-        int newDistance = this.distance - section.distance;
-        section.distance = newDistance;
-        this.distance -= newDistance;
+        this.distance -= section.distance;
     }
 
     private void checkValidDistance(Section section) {

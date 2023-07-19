@@ -22,11 +22,11 @@ class SectionTest {
 
     assertThat(sectionAB.getUpwardStation()).isEqualTo(a);
     assertThat(sectionAB.getDownwardStation()).isEqualTo(c);
-    assertThat(sectionAB.getDistance()).isEqualTo(8);
+    assertThat(sectionAB.getDistance()).isEqualTo(2);
 
     assertThat(sectionAC.getUpwardStation()).isEqualTo(c);
     assertThat(sectionAC.getDownwardStation()).isEqualTo(b);
-    assertThat(sectionAC.getDistance()).isEqualTo(2);
+    assertThat(sectionAC.getDistance()).isEqualTo(8);
   }
 
 
@@ -39,10 +39,10 @@ class SectionTest {
 
     assertThat(sectionAB.getUpwardStation()).isEqualTo(a);
     assertThat(sectionAB.getDownwardStation()).isEqualTo(c);
-    assertThat(sectionAB.getDistance()).isEqualTo(2);
+    assertThat(sectionAB.getDistance()).isEqualTo(8);
 
     assertThat(sectionCB.getUpwardStation()).isEqualTo(c);
     assertThat(sectionCB.getDownwardStation()).isEqualTo(b);
-    assertThat(sectionCB.getDistance()).isEqualTo(8);
+    assertThat(sectionCB.getDistance()).isEqualTo(2);
   }
 }
