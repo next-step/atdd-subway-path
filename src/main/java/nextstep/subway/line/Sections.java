@@ -19,8 +19,11 @@ public class Sections {
     @CollectionTable(name = "line_section", joinColumns = @JoinColumn(name = "line_id"))
     private List<Section> sections = new ArrayList<>();
 
-    public void addAll(List<Section> sections) {
-        this.sections.addAll(sections);
+    public Sections() {
+    }
+
+    public Sections(Station upStation, Station downStation, int distance) {
+        this.sections = new ArrayList<>(List.of(new Section(upStation, downStation, distance)));
     }
 
     public List<Station> getStations() {

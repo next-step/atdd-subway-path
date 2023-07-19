@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import nextstep.subway.line.Line;
@@ -17,7 +16,6 @@ import nextstep.subway.line.LineRepository;
 import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
-import nextstep.subway.line.Section;
 import nextstep.subway.line.SectionRequest;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
@@ -82,9 +80,10 @@ public class LineServiceMockTest {
         // given
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(new Line()));
         given(stationRepository.findById(any())).willReturn(Optional.empty());
+
         // when
         assertThatThrownBy(
-                () -> lineService.addSection(1L, new SectionRequest(1L, 1L, 1))
+                () -> lineService.addSection(1L, new SectionRequest(1L, 2L, 1))
         ).isInstanceOf(StationNotFoundException.class);
     }
 
@@ -92,13 +91,16 @@ public class LineServiceMockTest {
     @Test
     void saveLineSuccess() {
         // given
-        Line line = new Line("신분당선", "#123123", new ArrayList<>());
-        given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station()));
+        Station gangnamStation = new Station("강남역");
+        Station yangjaeStation = new Station("양재역");
+        Line line = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
+        given(stationRepository.findById(1L)).willReturn(Optional.of(gangnamStation));
+        given(stationRepository.findById(2L)).willReturn(Optional.of(yangjaeStation));
         given(lineRepository.save(any(Line.class))).willReturn(line);
 
         // when
         LineResponse lineResponse =
-                lineService.saveLine(new LineRequest("신분당선", "#123123", 1L, 2L, 3));
+                lineService.saveLine(new LineRequest("신분당선", "#D31145", 1L, 2L, 3));
 
         // then
         assertThat(lineResponse).isEqualTo(LineResponse.from(line));
@@ -119,22 +121,30 @@ public class LineServiceMockTest {
     @Test
     void showLines() {
         // given
-        Line line1 = new Line("신분당선", "#123123", new ArrayList<>());
-        Line line2 = new Line("분당선", "#123124", new ArrayList<>());
-        given(lineRepository.findAll()).willReturn(List.of(line1, line2));
+        Station gangnamStation = new Station("강남역");
+        Station yangjaeStation = new Station("양재역");
+        Station pangyoStation = new Station("판교역");
+        Line shinundangLine = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
+        shinundangLine.addSection(yangjaeStation, pangyoStation, 2);
+
+        Line shinshinundangLine = new Line("신신분당선", "#D31146", pangyoStation, yangjaeStation, 2);
+        shinshinundangLine.addSection(yangjaeStation, gangnamStation, 1);
+        given(lineRepository.findAll()).willReturn(List.of(shinundangLine, shinshinundangLine));
 
         // when
         List<LineResponse> lineResponses = lineService.showLines();
 
         // then
-        assertThat(lineResponses).contains(LineResponse.from(line1), LineResponse.from(line2));
+        assertThat(lineResponses).contains(LineResponse.from(shinundangLine), LineResponse.from(shinshinundangLine));
     }
 
     @DisplayName("아이디로 노선 조회 성공")
     @Test
     void searchByIdSuccess() {
         // given
-        Line line = new Line("신분당선", "#123123", new ArrayList<>());
+        Station gangnamStation = new Station("강남역");
+        Station yangjaeStation = new Station("양재역");
+        Line line = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
@@ -158,7 +168,9 @@ public class LineServiceMockTest {
     @Test
     void updateSuccess() {
         // given
-        Line line = new Line("신분당선", "#123123", new ArrayList<>());
+        Station gangnamStation = new Station("강남역");
+        Station yangjaeStation = new Station("양재역");
+        Line line = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
@@ -196,14 +208,11 @@ public class LineServiceMockTest {
     @Test
     void deleteSectionSuccess() {
         // given
+        Station pangyoStation = new Station("판교역");
         Station gangnamStation = new Station("강남역");
         Station yangjaeStation = new Station("양재역");
-        Station pangyoStation = new Station("판교역");
-        Line line = new Line();
-        Section section = new Section(gangnamStation, yangjaeStation, 10);
-        line.addSection(section);
-        section = new Section(yangjaeStation, pangyoStation, 10);
-        line.addSection(section);
+        Line line = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
+        line.addSection(yangjaeStation, pangyoStation, 10);
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(pangyoStation));
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
@@ -211,9 +220,7 @@ public class LineServiceMockTest {
         lineService.deleteSection(1L, 1L);
 
         // then
-        boolean exists = line.getSections().getSections().stream()
-                .anyMatch(savedSection -> savedSection.containsStation(pangyoStation));
-        assertThat(exists).isFalse();
+        assertThat(line.getStations()).doesNotContain(pangyoStation);
     }
 
     @DisplayName("마지막 하행스테이션으로 세션을 삭제 요청시 대상 라인이 존재하지 않으면 예외를 던진다")

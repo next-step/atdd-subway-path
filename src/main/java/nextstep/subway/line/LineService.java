@@ -26,9 +26,8 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
                 .orElseThrow(StationNotFoundException::new);
-        Section section = new Section(upStation, downStation, lineRequest.getDistance());
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
-                List.of(section));
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation,
+                downStation, lineRequest.getDistance());
         return LineResponse.from(lineRepository.save(line));
     }
 
@@ -64,8 +63,7 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(StationNotFoundException::new);
-        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
-        line.addSection(section);
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
         return LineResponse.from(line);
     }
 
