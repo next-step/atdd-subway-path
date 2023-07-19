@@ -32,7 +32,7 @@ public class Sections {
     }
 
     public void deleteSection(Station downStation) {
-        if (sections.stream().count() <= 2) {
+        if (sections.stream().count() <= 1) {
             throw new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다.");
         }
         Section lastSection = getLastSection();
@@ -40,7 +40,7 @@ public class Sections {
             throw new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다.");
         }
         getStations().stream().filter(station -> station.equals(downStation)).findAny().ifPresent(x -> new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다."));
-        sections.remove(downStation);
+        sections.remove(sections.size()-1);
     }
 
     public List<Station> getStations() {
@@ -54,7 +54,7 @@ public class Sections {
         return stationList;
     }
 
-    private Section getLastSection() {
+    public Section getLastSection() {
         if (sections.size() <= 1) {
             throw new IllegalStateException("마지막 section이 존재하지 않습니다.");
         }
