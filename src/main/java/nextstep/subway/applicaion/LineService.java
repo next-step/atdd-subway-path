@@ -43,12 +43,8 @@ public class LineService {
     public void updateLine(Long lineId, LineUpdateRequest lineRequest) {
         Line line = findLineById(lineId);
 
-        if (lineRequest.getName() != null) {
-            line.updateName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.updateColor(lineRequest.getColor());
-        }
+        line.updateName(lineRequest.getName());
+        line.updateColor(lineRequest.getColor());
     }
 
     @Transactional
@@ -78,11 +74,11 @@ public class LineService {
         Line line = findLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        if (!line.isDeletableSection(station)) {
-            throw new IllegalArgumentException("해당 line을 삭제할 수 없습니다.");
+        if (!line.isDeletableStation(station)) {
+            throw new IllegalArgumentException("해당 정거장을 라인에서 삭제할 수 없습니다.");
         }
 
-        line.getSections().remove(line.getSections().size() - 1);
+        line.removeStation(station);
     }
 
     public SectionResponse findSection(Long lineId, Long upStationId, Long downStationId) {

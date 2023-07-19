@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 class LineTest {
 
@@ -235,9 +238,149 @@ class LineTest {
         assertThat(stations).hasSize(0);
     }
 
-    @Test
-    void removeSection() {
+
+    @Nested
+    @DisplayName("isDeletableSection 테스트")
+    public class IsDeletableSection {
+
+        private Station station1;
+        private Station station2;
+        private Station station3;
+
+        @BeforeEach
+        void init() {
+            station1 = new Station();
+            station2 = new Station();
+            station3 = new Station();
+        }
+
+        @DisplayName("삭제 가능한 경우")
+        @Test
+        void isDeletableSection_true() {
+
+            // given
+            Line line = new Line();
+            Station targetStation = new Station();
+            line.addSection(targetStation, station2, 1);
+            line.addSection(station2, station3, 2);
+
+            // when
+            boolean result = line.isDeletableStation(targetStation);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @DisplayName("삭제 불가능한 경우 - 구간이 1개")
+        @Test
+        void isDeletableSection_false_oneSection() {
+
+            // given
+            Line line = new Line();
+            Station targetStation = new Station();
+            line.addSection(targetStation, station2, 1);
+
+            // when
+            boolean result = line.isDeletableStation(targetStation);
+
+            // then
+            assertThat(result).isFalse();
+        }
+
+        @DisplayName("삭제 불가능한 경우 - 존재하지 않는 정거장")
+        @Test
+        void isDeletableSection_false_noExistStation() {
+
+            // given
+            Line line = new Line();
+            Station targetStation = new Station();
+            line.addSection(station1, station2, 1);
+            line.addSection(station2, station3, 1);
+
+            // when
+            boolean result = line.isDeletableStation(targetStation);
+
+            // then
+            assertThat(result).isFalse();
+        }
     }
+
+    @Nested
+    @DisplayName("removeSection 테스트")
+    public class RemoveSection {
+
+        private final Long stationId1 = 1L;
+        private final Long stationId2 = 2L;
+        private final Long stationId3 = 3L;
+        private Station station1;
+        private Station station2;
+        private Station station3;
+
+        @BeforeEach
+        void init() {
+            station1 = spy(Station.class);
+            station2 = spy(Station.class);
+            station3 = spy(Station.class);
+
+            when(station1.getId()).thenReturn(stationId1);
+            when(station2.getId()).thenReturn(stationId2);
+            when(station3.getId()).thenReturn(stationId3);
+        }
+
+        @DisplayName("첫 번째 정거장 삭제")
+        @Test
+        void removeSection_firstStation() {
+
+            // given
+            Line line = new Line();
+            line.addSection(station1, station2, 1);
+            line.addSection(station2, station3, 2);
+
+            // when
+            line.removeStation(station1);
+
+            // then
+            assertThat(line.getStations()).containsExactly(station2, station3);
+        }
+
+        @DisplayName("가운데 정거장 삭제")
+        @Test
+        void removeSection_middleStation() {
+
+            // given
+            Line line = new Line();
+            int distance1 = 1;
+            int distance2 = 2;
+            line.addSection(station1, station2, distance1);
+            line.addSection(station2, station3, distance2);
+
+            // when
+            line.removeStation(station2);
+
+            // then
+            assertThat(line.getStations()).containsExactly(station1, station3);
+            assertThat(line.getSection(stationId1, stationId3).getDistance()).isEqualTo(distance1 + distance2);
+        }
+
+        @DisplayName("마지막 정거장 삭제")
+        @Test
+        void removeSection_lastStation() {
+
+            // given
+            Line line = new Line();
+            int distance1 = 1;
+            int distance2 = 2;
+            line.addSection(station1, station2, distance1);
+            line.addSection(station2, station3, distance2);
+
+            // when
+            line.removeStation(station3);
+
+            // then
+            assertThat(line.getStations()).containsExactly(station1, station2);
+        }
+    }
+
 
 
     @Test

@@ -203,7 +203,37 @@ public class Line {
         return upDownStationMap.values().stream().filter(downStation -> downStation == upStation).findFirst().isEmpty();
     }
 
-    public boolean isDeletableSection(Station station) {
-        return getSections().get(getSections().size() - 1).getDownStation().equals(station);
+    public boolean isDeletableStation(Station station) {
+
+        if (this.sections.size() <= 1) {
+            return false;
+        }
+
+        if (!getStations().contains(station)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 삭제 대상 정거장을 포함하고 있는 section을 삭제한다.
+     * 앞 뒤로 정거장이 붙어있는 경우에는 해당 정거장들을 상/하행역으로 하는 구간을 만든다.
+     */
+    public void removeStation(Station station) {
+
+        Optional<Section> upperSectionOptional = this.sections.stream().filter(it -> it.getUpStation() == station).findFirst();
+        Optional<Section> lowerSectionOptional = this.sections.stream().filter(it -> it.getDownStation() == station).findFirst();
+
+        upperSectionOptional.ifPresent(this.sections::remove);
+        lowerSectionOptional.ifPresent(this.sections::remove);
+
+        if (upperSectionOptional.isPresent() && lowerSectionOptional.isPresent()) {
+
+            Section upperSection = lowerSectionOptional.get();
+            Section lowerSection = upperSectionOptional.get();
+
+            addSection(upperSection.getUpStation(), lowerSection.getDownStation(), upperSection.getDistance() + lowerSection.getDistance());
+        }
     }
 }
