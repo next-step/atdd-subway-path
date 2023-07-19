@@ -153,9 +153,9 @@ class LineTest {
         assertThat(stations).containsExactly(강남역, 익명역, 역삼역);
     }
 
-    @DisplayName("지하철 삭제")
+    @DisplayName("구간 삭제, 해행 종착역 노선에서 제거")
     @Test
-    void removeSection() {
+    void removeSectionRemoveLastStationFromLine() {
         // given
         이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
@@ -164,5 +164,31 @@ class LineTest {
 
         // then
         assertThat(이호선.getStations()).doesNotContain(선릉역);
+    }
+
+    @DisplayName("구간 삭제, 상행 종착역 노선에서 제거")
+    @Test
+    void removeSectionRemoveTopStationFromLine() {
+        // given
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+
+        // when
+        이호선.removeSection(강남역);
+
+        // then
+        assertThat(이호선.getStations()).doesNotContain(강남역);
+    }
+
+    @DisplayName("구간 삭제, 상행&하행 종착역이 아닌 역 노선에서 제거")
+    @Test
+    void removeSectionRemoveNotTopNotLastStationFromLine() {
+        // given
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+
+        // when
+        이호선.removeSection(역삼역);
+
+        // then
+        assertThat(이호선.getStations()).doesNotContain(역삼역);
     }
 }
