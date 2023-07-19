@@ -66,30 +66,43 @@ public class Sections {
     }
 
     public void remove(Station targetStation) {
+        if (isLastStationOfLine(targetStation)) {
+            removeLastStationOfLine(targetStation);
+            return;
+        }
+
+        removeMiddleStationOfLine(targetStation);
+    }
+
+    private boolean isLastStationOfLine(Station targetStation) {
         Station startOfLine = getStartOfLine();
-        if (Objects.equals(targetStation, startOfLine)) {
-            this.sections.stream()
-                    .filter(section -> section.isUpStation(startOfLine))
-                    .findAny()
-                    .ifPresent(this.sections::remove);
-            return;
-        }
-
         Station endOfLine = getEndOfLine();
-        if (Objects.equals(targetStation, endOfLine)) {
-            this.sections.stream()
-                    .filter(section -> section.isDownStation(endOfLine))
-                    .findAny()
-                    .ifPresent(this.sections::remove);
-            return;
-        }
+        return Objects.equals(targetStation, startOfLine)
+                || Objects.equals(targetStation, endOfLine);
+    }
 
+    private void removeLastStationOfLine(Station targetStation) {
+        Station startOfLine = getStartOfLine();
+        Station endOfLine = getEndOfLine();
+        this.sections.stream()
+                .filter(section -> Objects.equals(targetStation, startOfLine)
+                        ? section.isUpStation(startOfLine)
+                        : section.isDownStation(endOfLine))
+                .findAny()
+                .ifPresent(this.sections::remove);
+    }
+
+    private void removeMiddleStationOfLine(Station targetStation) {
         Section upStationSection = this.getStationSection(section -> section.isDownStation(targetStation))
                 .orElseThrow(IllegalSectionStationException::new);
         Section downStationSection = this.getStationSection(section -> section.isUpStation(targetStation))
                 .orElseThrow(IllegalSectionStationException::new);
 
-        Section newUpSection = Section.of(upStationSection.getUpStation(), downStationSection.getDownStation(), upStationSection.getDistance() + downStationSection.getDistance());
+        Station newUpStation = upStationSection.getUpStation();
+        Station newDownStation = downStationSection.getDownStation();
+        long newDistance = upStationSection.getDistance() + downStationSection.getDistance();
+        Section newUpSection = Section.of(newUpStation, newDownStation, newDistance);
+
         this.sections.add(newUpSection);
         this.sections.remove(upStationSection);
         this.sections.remove(downStationSection);
