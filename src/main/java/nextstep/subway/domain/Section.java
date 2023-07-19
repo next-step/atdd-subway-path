@@ -1,61 +1,50 @@
 package nextstep.subway.domain;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "line_id")
     private Line line;
+    @Column
+    private Long distance;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
-
-    public Section() {
-
-    }
-
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
+    @Builder
+    public Section(Long id, Station upStation, Station downStation, Long distance, Line line) {
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.line = line;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    public static Section of(Line line, Long distance, Station upStation, Station downStation) {
+        return Section.builder().distance(distance).line(line).upStation(upStation).downStation(downStation).build();
     }
 }

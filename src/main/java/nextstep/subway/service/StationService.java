@@ -1,13 +1,13 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.applicaion.dto.StationRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import nextstep.subway.domain.Station;
+import nextstep.subway.dto.StationRequest;
+import nextstep.subway.dto.StationResponse;
+import nextstep.subway.repository.StationRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,14 +35,10 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public StationResponse createStationResponse(Station station) {
+    private StationResponse createStationResponse(Station station) {
         return new StationResponse(
                 station.getId(),
                 station.getName()
         );
-    }
-
-    public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 }
