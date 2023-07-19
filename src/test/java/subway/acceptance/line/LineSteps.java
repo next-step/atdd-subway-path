@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 public class LineSteps {
@@ -43,7 +44,9 @@ public class LineSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 구간_추가_API(final String appendLocation, final Map<String, String> request) {
+    public static ExtractableResponse<Response> 구간_추가_API(final String createdLocation, final Map<String, String> request) {
+        final String appendLocation = createdLocation + "/sections";
+
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
