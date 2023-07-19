@@ -33,9 +33,8 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        Station 첫번째역 = new Station(1L,"첫번째역");
-        Station 두번째역 = new Station(2L,"두번째역");
+        Station 첫번째역 = new Station(1L, "첫번째역");
+        Station 두번째역 = new Station(2L, "두번째역");
         Line 첫번째노선 = new Line("첫번째노선", "BLUE");
 
         when(lineRepository.findById(첫번째노선.getId())).thenReturn(Optional.of(첫번째노선));
@@ -43,12 +42,10 @@ public class LineServiceMockTest {
         when(stationRepository.findById(두번째역.getId())).thenReturn(Optional.of(두번째역));
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(첫번째노선.getId(),
             SectionRequest.builder().upStationId(첫번째역.getId()).downStationId(두번째역.getId())
                 .distance(10L).build());
         // then
-        // lineService.findLineById 메서드를 통해 검증
         LineResponse response = lineService.findLineById(첫번째노선.getId());
         assertThat(response.getColor()).isEqualTo("BLUE");
         assertThat(response.getStations().stream().map(station -> station.getName()).collect(
