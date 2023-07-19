@@ -2,6 +2,11 @@ package nextstep.subway.line.entity;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import nextstep.subway.common.exception.CreationValidationException;
+import nextstep.subway.common.exception.DeletionValidationException;
+import nextstep.subway.common.exception.ValidationException;
+import nextstep.subway.line.exception.SectionNotFoundException;
+import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.entity.Station;
 
 import javax.persistence.CascadeType;
@@ -43,7 +48,7 @@ public class Sections {
                 .filter(section -> section.getUpStation().equalsId(station))
                 .findAny()
                 .map(section -> section.getDownStation())
-                .orElseThrow(() -> new IllegalArgumentException(String.format("하행역이 존재하지 않습니다. 기준역id:%s", station.getId())));
+                .orElseThrow(() -> new StationNotFoundException(String.format("하행역이 존재하지 않습니다. 기준역id:%s", station.getId())));
     }
 
     public void addSection(Section section) {
@@ -64,14 +69,14 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.getUpStation().equalsId(upStation))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("구간을 찾을 수 없습니다. 상행역id:%s", upStation.getId())));
+                .orElseThrow(() -> new SectionNotFoundException(String.format("구간을 찾을 수 없습니다. 상행역id:%s", upStation.getId())));
     }
 
     private Section getSectionByDownStation(Station downStation) {
         return sections.stream()
                 .filter(s -> s.getDownStation().equalsId(downStation))
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("구간을 찾을 수 없습니다. 하역id:%s", downStation.getId())));
+                .orElseThrow(() -> new SectionNotFoundException(String.format("구간을 찾을 수 없습니다. 하역id:%s", downStation.getId())));
     }
 
     public void remove(Station station) {
@@ -89,7 +94,7 @@ public class Sections {
                 .filter(section -> !downStations.contains(section.getUpStation()))
                 .map(section -> section.getUpStation())
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("노선 내 상행종착역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new StationNotFoundException("노선 내 상행종착역을 찾을 수 없습니다."));
     }
 
     public Station getLastStation() {
@@ -98,7 +103,7 @@ public class Sections {
                 .filter(section -> !upStations.contains(section.getDownStation()))
                 .map(section -> section.getDownStation())
                 .findAny()
-                .orElseThrow(() -> new RuntimeException("노선 내 하행종착역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new StationNotFoundException("노선 내 하행종착역을 찾을 수 없습니다."));
     }
 
     private int size() {
@@ -155,18 +160,9 @@ public class Sections {
                 return;
             }
 
-            // 새로운 역을 하행 종점역으로 등록할 경우엔 통과
-            throw new IllegalArgumentException(String.format("새 구간을 등록할 수 없습니다. 새구간 상행역id:%s, 하행역id:%d",
+            throw new CreationValidationException(String.format("새 구간을 등록할 수 없습니다. 새구간 상행역id:%s, 하행역id:%d",
                     section.getUpStation().getId(), section.getDownStation().getId()));
         }
-
-        private static void validateOnlyOneStationIsEnrolledInLine(Sections sections, Section section) {
-            if (sections.getUpStations().contains(section.getUpStation()) &&
-                    sections.getDownStations().contains(section.getDownStation())) {
-                throw new IllegalArgumentException("새로운 구간의 상행역과 하행역 둘중 한개는 노선에 등록돼있어야합니다.");
-            }
-        }
-
 
         private static boolean newSectionUpStationMatchLastStation(Sections sections, Section section) {
             return sections.equalsLastStation(section.getUpStation());
@@ -187,33 +183,40 @@ public class Sections {
             validateTwoMoreSectionExists(sections);
         }
 
+        private static void validateOnlyOneStationIsEnrolledInLine(Sections sections, Section section) {
+            if (sections.getUpStations().contains(section.getUpStation()) &&
+                    sections.getDownStations().contains(section.getDownStation())) {
+                throw new CreationValidationException("새로운 구간의 상행역과 하행역 둘중 한개는 노선에 등록돼있어야합니다.");
+            }
+        }
+
         private static void validateNewSectionDownStationIsNewcomer(Sections sections, Section section) {
             if (sections.hasStation(section.getDownStation())) {
-                throw new IllegalArgumentException("새로운 구간의 하행역이 해당 노선에 등록되어있는 역임.");
+                throw new CreationValidationException("새로운 구간의 하행역이 해당 노선에 등록되어있는 역임.");
             }
         }
 
         private static void validateNewSectionUpStationEqualsLineDownStation(Sections sections, Section section) {
             if (!section.getUpStation().equalsId(sections.getLastStation())) {
-                throw new IllegalArgumentException("새로운 구간의 상행 역이 해당 노선에 등록되어있는 하행 종착역이 아님.");
+                throw new CreationValidationException("새로운 구간의 상행 역이 해당 노선에 등록되어있는 하행 종착역이 아님.");
             }
         }
 
         private static void validateTwoMoreSectionExists(Sections sections) {
             if (sections.size() == 1) {
-                throw new IllegalArgumentException("상행 종점역과 하행 종점역만 존재합니다.");
+                throw new DeletionValidationException("상행 종점역과 하행 종점역만 존재합니다.");
             }
         }
 
         private static void validateDeletionEqualsLineDownStation(Sections sections, Station station) {
             if (!sections.getLastStation().equalsId(station)) {
-                throw new IllegalArgumentException(String.format("노선의 마지막 역이 아닙니다. 역id:%s", station.getId()));
+                throw new DeletionValidationException(String.format("노선의 마지막 역이 아닙니다. 역id:%s", station.getId()));
             }
         }
 
         private static void validateNewSectionLengthSmaller(Section originalSection, Section section) {
             if (section.getDistance().compareTo(originalSection.getDistance()) != -1) {
-                throw new IllegalArgumentException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
+                throw new CreationValidationException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
             }
         }
     }

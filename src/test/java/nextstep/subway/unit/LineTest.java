@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.Section;
 import nextstep.subway.station.entity.Station;
@@ -80,7 +81,7 @@ class LineTest {
         // when
         int sameDistanceComparedToSectionAC = 이호선.getDistance();
         Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 익명역, 역삼역, sameDistanceComparedToSectionAC)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CreationValidationException.class);
 
         // then
         assertThat(이호선.getStations()).doesNotContain(익명역);
@@ -94,9 +95,9 @@ class LineTest {
 
         // when
         Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 강남역, 역삼역, 10)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CreationValidationException.class);
         Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CreationValidationException.class);
     }
 
     @DisplayName("구간 등록 실패, 상행역과 하행역이 모두 노선에 포함되있지 않은 구간을 추가")
@@ -107,7 +108,7 @@ class LineTest {
 
         // when
         Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 익명역, 판교역, 10)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(CreationValidationException.class);
 
         // then
         assertThat(이호선.getStations()).doesNotContain(익명역);
