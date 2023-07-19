@@ -10,11 +10,11 @@ public class SectionStep {
     private SectionStep() {
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_구간을_등록한다(long lineId, long upStationId, long downStationId) {
+    public static ExtractableResponse<Response> 지하철_노선_구간을_등록한다(long lineId, long upStationId, long downStationId, int distance) {
         Map<String, ? extends Number> params = Map.of(
                 "upStationId", upStationId,
                 "downStationId", downStationId,
-                "distance", 10
+                "distance", distance
         );
 
         return RestAssured.given().log().all()

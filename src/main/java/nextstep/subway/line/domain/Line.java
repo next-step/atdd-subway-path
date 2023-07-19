@@ -22,11 +22,9 @@ public class Line {
 
     private String color;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Section firstSection;
+    private String firstStationName;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Section lastSection;
+    private String lastStationName;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -37,32 +35,11 @@ public class Line {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.firstSection = section;
-        this.lastSection = section;
+        this.firstStationName = section.getUpStationName();
+        this.lastStationName = section.getDownStationName();
 
         sections.add(section);
         section.assignLine(this);
-    }
-
-    public void addSection(Section newSection) {
-        Section lastSection = getLastSectionVer0();
-        validateLastStationEqualToNewUpStation(lastSection, newSection);
-        validateDuplicationOfStationInLine(newSection);
-
-        sections.add(newSection);
-        newSection.assignLine(this);
-    }
-
-    private void validateLastStationEqualToNewUpStation(Section lastSection, Section newSection) {
-        if (!lastSection.downStationEqualsToUpStationOf(newSection)) {
-            throw new InvalidSectionRegistrationException();
-        }
-    }
-
-    private void validateDuplicationOfStationInLine(Section newSection) {
-        if (hasStation(newSection.getDownStation())) {
-            throw new AlreadyRegisteredStationException();
-        }
     }
 
     public void update(String name, String color) {
@@ -86,12 +63,12 @@ public class Line {
         return sections;
     }
 
-    public Section getFirstSection() {
-        return firstSection;
+    public String getFirstStationName() {
+        return firstStationName;
     }
 
-    public Section getLastSection() {
-        return lastSection;
+    public String getLastStationName() {
+        return lastStationName;
     }
 
     public boolean hasStation(Station downStation) {
@@ -145,16 +122,17 @@ public class Line {
 
         // 상행 종점에 등록
         // 상행 종점의 상행역과 새로운 구간의 하행역이 같은지?
-        if (firstSection.upStationEqualsTo(newSection.getDownStation())) {
+        //firstSection.upStationEqualsTo(newSection.getDownStation())
+        if (newSection.downStationNameEqualsTo(firstStationName)) {
             // 같다면 상행 종점을 새로운 구간으로 교체
-            firstSection = newSection;
+            firstStationName = newSection.getUpStationName();
             sections.add(newSection);
             return;
         }
 
         // 하행 종점에 등록
-        if (lastSection.downStationEqualsTo(newSection.getUpStation())) {
-            lastSection = newSection;
+        if (newSection.upStationNameEqualsTo(lastStationName)) {
+            lastStationName = newSection.getDownStationName();
             sections.add(newSection);
             return;
         }
@@ -172,8 +150,6 @@ public class Line {
             throw new InvalidSectionRegistrationException();  //TODO: 더 알맞는 예외는 나중에...
         }
 
-        sections.add(newSection);
-        sections.remove(existingSection);
 
         Section downSection;
         if (existingSection.hasSameUpStation(newSection)) {
@@ -182,6 +158,9 @@ public class Line {
             downSection = new Section(existingSection.getUpStation(), newSection.getUpStation(), existingSection.getDistance() - newSection.getDistance());
         }
 
+        sections.remove(existingSection);
+
+        sections.add(newSection);
         sections.add(downSection);
     }
 }

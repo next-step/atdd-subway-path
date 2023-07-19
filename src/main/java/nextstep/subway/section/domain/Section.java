@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
+import java.util.Objects;
+
 @Entity
 public class Section {
     @Id
@@ -102,10 +104,6 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean downStationEqualsToUpStationOf(Section newSection) {
-        return downStation.equals(newSection.upStation);
-    }
-
     public boolean hasOnlyOneSameStation(Section section) {
         return !hasAllSameStations(section)
                 && hasSameUpStation(section)
@@ -126,5 +124,26 @@ public class Section {
 
     public boolean hasSameDistance(Section newSection) {
         return distance.equals(newSection.distance);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Section)) return false;
+        Section section = (Section) o;
+        return Objects.equals(id, section.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public boolean upStationNameEqualsTo(String stationName) {
+        return stationName.equals(upStation.getName());
+    }
+
+    public boolean downStationNameEqualsTo(String stationName) {
+        return stationName.equals(downStation.getName());
     }
 }

@@ -89,7 +89,8 @@ public class LineService {
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
 
         Line line = getLine(lineId);
-        line.addSection(section);
+        line.addSectionVer2(section);
+        //TODO 왜 저장이 안되지?
 
         return SectionResponse.of(section);
     }

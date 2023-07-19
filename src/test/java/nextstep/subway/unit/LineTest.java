@@ -79,8 +79,8 @@ class LineTest {
         신분당선.addSectionVer2(newSection);
 
         // then
-        Section 상행_종점 = 신분당선.getFirstSection();
-        assertSection(상행_종점, "신논현역", "강남역", 5);
+        String 상행_종점 = 신분당선.getFirstStationName();
+        assertThat(상행_종점).isEqualTo("신논현역");
 
         List<Section> sections = 신분당선.getSections();
         assertThat(sections).hasSize(2);
@@ -95,7 +95,7 @@ class LineTest {
     @DisplayName("하행역에 새로운 구간 추가")
     @Test
     void addSectionDownStation() {
-// given
+        // given
         Station 강남역 = new Station(1L, "강남역");
         Station 양재역 = new Station(2L, "양재역");
         Section sectionForLine = new Section(강남역, 양재역, 10);
@@ -109,8 +109,8 @@ class LineTest {
         신분당선.addSectionVer2(newSection);
 
         // then
-        Section 하행_종점 = 신분당선.getLastSection();
-        assertSection(하행_종점, "양재역", "양재시민의숲역", 5);
+        String 하행_종점 = 신분당선.getLastStationName();
+        assertThat(하행_종점).isEqualTo("양재시민의숲역");
 
         List<Section> sections = 신분당선.getSections();
         assertThat(sections).hasSize(2);
