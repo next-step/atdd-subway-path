@@ -12,7 +12,6 @@ import nextstep.subway.line.Section;
 import nextstep.subway.line.Sections;
 import nextstep.subway.line.SingleSectionRemovalException;
 import nextstep.subway.station.Station;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,79 +19,68 @@ import org.junit.jupiter.api.Test;
 public class SectionsTest {
 
     Sections sections;
-    Station 강남역;
-    Station 판교역;
+    Station gangnamStation;
+    Station pangyoStation;
 
     @BeforeEach
     void setUp() {
         sections = new Sections();
-        강남역 = new Station("강남역");
-        판교역 = new Station("판교역");
+        gangnamStation = new Station("강남역");
+        pangyoStation = new Station("판교역");
     }
 
     @DisplayName("추가할 세션의 하행 스테이션이 노선의 상행 종점일 때 추가할 세션이 상행 좀점 세션으로 등록된다")
     @Test
     void insertSectionSuccessToTop() {
         // given
-        Section targetSection = new Section(강남역, 판교역, 1);
-        sections.addSection(targetSection);
-        Station 교대역 = new Station("교대역");
-        Section insertSection = new Section(교대역, 강남역, 1);
+        sections.addSection(new Section(gangnamStation, pangyoStation, 1));
+        Station sadangStation = new Station("사당역");
 
         // when
-        sections.addSection(insertSection);
+        sections.addSection(new Section(sadangStation, gangnamStation, 1));
 
         // then
-        Assertions.assertAll(
-                () -> assertThat(sections.getSections().get(0)).isEqualTo(insertSection),
-                () -> assertThat(sections.getSections().get(1)).isEqualTo(targetSection)
-        );
+        assertThat(sections.getStations()).containsExactly(sadangStation, gangnamStation, pangyoStation);
     }
 
     @DisplayName("추가할 세션의 상행 스테이션이 추가될 노선에 포함되고 추가될 위치의 하행스테이션과 똑같이 아니면 그사이에 추가된다")
     @Test
     void insertSectionSuccessBySameUpStationOfSection() {
         // given
-        Section targetSection = new Section(강남역, 판교역, 10);
-        sections.addSection(targetSection);
-        Station 양재역 = new Station("양재역");
-        Section insertSection = new Section(강남역, 양재역, 1);
+        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        Station yangjaeStation = new Station("양재역");
 
         // when
-        sections.addSection(insertSection);
+        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
 
         // then
-        assertThat(sections.getSections())
-                .containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 9));
+        assertThat(sections.getStations())
+                .containsExactly(gangnamStation, yangjaeStation, pangyoStation);
     }
 
     @DisplayName("추가할 세션의 하행 스테이션이 추가될 노선에 포함되고 추가될 위치의 상행스테이션과 똑같이 아니면 그사이에 추가된다")
     @Test
     void insertSectionSuccessBySameDownStationOfSection() {
         // given
-        Section targetSection = new Section(강남역, 판교역, 10);
-        sections.addSection(targetSection);
-        Station 양재역 = new Station("양재역");
-        Section insertSection = new Section(양재역, 판교역, 9);
+        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        Station yangjaeStation = new Station("양재역");
 
         // when
-        sections.addSection(insertSection);
+        sections.addSection(new Section(yangjaeStation, pangyoStation, 9));
 
         // then
-        assertThat(sections.getSections()).containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 9));
+        assertThat(sections.getStations()).containsExactly(gangnamStation, yangjaeStation, pangyoStation);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
     void insertSectionSuccessBetweenSectionFailedByDistance() {
         // given
-        Section targetSection = new Section(강남역, 판교역, 1);
-        sections.addSection(targetSection);
-        Station 양재역 = new Station("양재역");
-        Section insertSection = new Section(강남역, 양재역, 1);
+        sections.addSection(new Section(gangnamStation, pangyoStation, 1));
+        Station yangjaeStation = new Station("양재역");
 
         // when,then
-        assertThatThrownBy(() -> sections.addSection(insertSection))
+        assertThatThrownBy(() -> sections.addSection(new Section(gangnamStation, yangjaeStation, 1)))
                 .isInstanceOf(InvalidDistanceException.class);
     }
 
@@ -100,15 +88,12 @@ public class SectionsTest {
     @Test
     void insertSectionSuccessBetweenSectionFailedByExists() {
         // given
-        Section targetSection = new Section(강남역, 판교역, 10);
-        sections.addSection(targetSection);
-        Station 양재역 = new Station("양재역");
-        Section exampleSection = new Section(강남역, 양재역, 4);
-        sections.addSection(exampleSection);
-        Section insertSection = new Section(강남역, 판교역, 3);
+        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        Station yangjaeStation = new Station("양재역");
+        sections.addSection(new Section(gangnamStation, yangjaeStation, 4));
 
         // when,then
-        assertThatThrownBy(() -> sections.addSection(insertSection))
+        assertThatThrownBy(() -> sections.addSection(new Section(gangnamStation, pangyoStation, 3)))
                 .isInstanceOf(AlreadyConnectedException.class);
     }
 
@@ -116,15 +101,12 @@ public class SectionsTest {
     @Test
     void insertSectionSuccessBetweenSectionFailedByNotExists() {
         // given
-        Section targetSection = new Section(강남역, 판교역, 10);
-        sections.addSection(targetSection);
-        Station 양재역 = new Station("양재역");
-        Station 교대역 = new Station("교대역");
-
-        Section insertSection = new Section(양재역, 교대역, 3);
+        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        Station yangjaeStation = new Station("양재역");
+        Station sadangStation = new Station("사당역");
 
         // when,then
-        assertThatThrownBy(() -> sections.addSection(insertSection))
+        assertThatThrownBy(() -> sections.addSection(new Section(yangjaeStation, sadangStation, 3)))
                 .isInstanceOf(MissingStationException.class);
     }
 
@@ -132,53 +114,45 @@ public class SectionsTest {
     @Test
     void getStations() {
         // given
-        Station 양재역 = new Station("양재역");
-        Station 선릉역 = new Station("선릉역");
-        Station 역삼역 = new Station("역삼역");
-        Section section = new Section(강남역, 판교역, 10);
-        sections.addSection(section);
-        section = new Section(강남역, 양재역, 1);
-        sections.addSection(section);
-        section = new Section(양재역, 역삼역, 3);
-        sections.addSection(section);
-        section = new Section(양재역, 선릉역, 1);
-        sections.addSection(section);
+        Station yangjaeStation = new Station("양재역");
+        Station seolleungStation = new Station("선릉역");
+        Station yeoksamStation = new Station("역삼역");
+        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
+        sections.addSection(new Section(yangjaeStation, yeoksamStation, 3));
+        sections.addSection(new Section(yangjaeStation, seolleungStation, 1));
 
         // when
         List<Station> stations = sections.getStations();
 
         // then
-        assertThat(stations).containsExactly(강남역, 양재역, 선릉역, 역삼역, 판교역);
+        assertThat(stations).containsExactly(gangnamStation, yangjaeStation, seolleungStation, yeoksamStation,
+                pangyoStation);
     }
 
     @DisplayName("노선에서 등록된 station을 성공적으로 삭제한다")
     @Test
     void deleteSectionSuccess() {
         // given
-        Station 양재역 = new Station("양재역");
-        Section section = new Section(강남역, 양재역, 10);
-        sections.addSection(section);
-        section = new Section(양재역, 판교역, 10);
-        sections.addSection(section);
+        Station yangjaeStation = new Station("양재역");
+        sections.addSection(new Section(gangnamStation, yangjaeStation, 10));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, 10));
 
         // when
-        sections.deleteSection(판교역);
+        sections.deleteSection(pangyoStation);
 
         // then
-        boolean exists = sections.getSections().stream()
-                .anyMatch(savedSection -> savedSection.containsStation(판교역));
-        assertThat(exists).isFalse();
+        assertThat(sections.getStations()).doesNotContain(pangyoStation);
     }
 
     @DisplayName("노선의 section이 하나 뿐이면 station를 삭제 할 때 예외를 던진다")
     @Test
     void deleteSectionFailedBySingleSection() {
         // given
-        Section section = new Section(강남역, 판교역, 10);
-        sections.addSection(section);
+        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
 
         // when,then
-        assertThatThrownBy(() -> sections.deleteSection(판교역))
+        assertThatThrownBy(() -> sections.deleteSection(pangyoStation))
                 .isInstanceOf(SingleSectionRemovalException.class);
     }
 
@@ -186,14 +160,12 @@ public class SectionsTest {
     @Test
     void deleteSectionFailed() {
         // given
-        Station 양재역 = new Station("양재역");
-        Section section = new Section(강남역, 양재역, 10);
-        sections.addSection(section);
-        section = new Section(양재역, 판교역, 10);
-        sections.addSection(section);
+        Station yangjaeStation = new Station("양재역");
+        sections.addSection(new Section(gangnamStation, yangjaeStation, 10));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, 10));
 
         // when,then
-        assertThatThrownBy(() -> sections.deleteSection(양재역))
+        assertThatThrownBy(() -> sections.deleteSection(yangjaeStation))
                 .isInstanceOf(NonDownstreamTerminusException.class);
     }
 
