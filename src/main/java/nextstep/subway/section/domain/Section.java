@@ -10,8 +10,6 @@ import javax.persistence.ManyToOne;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-import java.util.Objects;
-
 @Entity
 public class Section {
     @Id
@@ -92,7 +90,7 @@ public class Section {
         return downStation.getName();
     }
 
-    public boolean hasStation(Station downStation) {
+    public boolean upStationEqualsTo(Station downStation) {
         return downStation.equals(upStation) || downStation.equals(this.downStation);
     }
 

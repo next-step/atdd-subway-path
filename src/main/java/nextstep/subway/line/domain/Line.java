@@ -88,7 +88,7 @@ public class Line {
 
     public boolean hasStation(Station downStation) {
         return sections.stream()
-                .anyMatch(section -> section.hasStation(downStation));
+                .anyMatch(section -> section.upStationEqualsTo(downStation));
     }
 
     public void deleteSection(Station station) {
@@ -137,6 +137,12 @@ public class Line {
 
         // 상행 종점에 등록
         // 상행 종점의 상행역과 새로운 구간의 하행역이 같은지?
+        if (firstSection.upStationEqualsTo(newSection.getDownStation())) {
+            // 같다면 상행 종점을 새로운 구간으로 교체
+            firstSection = newSection;
+            sections.add(newSection);
+            return;
+        }
 
         // 하행 종점에 등록
 
