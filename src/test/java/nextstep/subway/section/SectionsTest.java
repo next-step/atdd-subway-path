@@ -130,9 +130,9 @@ public class SectionsTest {
     @DisplayName("getStations() : 구간에 등록된 역 목록을 상행 종점역부터 순서대로 반환한다")
     @Test
     void getStations() {
-        Section oldSection = aSection().withDownStation(new Station(3L, 지하철역)).build();
+        Section oldSection = aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
         Sections sections = new Sections(new ArrayList<>(List.of(oldSection)));
-        Section newSection = aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역))
+        Section newSection = aSection().withDownStation(new Station(2L, 신논현역))
             .withDistance(5).build();
         sections.add(newSection);
 
