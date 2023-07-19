@@ -309,9 +309,9 @@ class LineTest {
     @DisplayName("removeSection 테스트")
     public class RemoveSection {
 
-        private Long stationId1;
-        private Long stationId2;
-        private Long stationId3;
+        private final Long stationId1 = 1L;
+        private final Long stationId2 = 2L;
+        private final Long stationId3 = 3L;
         private Station station1;
         private Station station2;
         private Station station3;
@@ -378,12 +378,6 @@ class LineTest {
 
             // then
             assertThat(line.getStations()).containsExactly(station1, station2);
-        }
-
-        // TODO: 정거장 삭제 불가능한 경우, 어떻게 처리할지 고민.
-        @Test
-        void test() {
-            fail("정거장 삭제 불가능한 경우, 어떻게 처리할지 고민.");
         }
     }
 

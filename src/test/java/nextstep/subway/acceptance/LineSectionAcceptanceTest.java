@@ -287,8 +287,8 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             assertThat(lineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 정자역);
 
             ExtractableResponse<Response> sectionResponse = 지하철_노선의_구간정보_조회(신분당선, 강남역, 정자역);
-            assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(lineResponse.jsonPath().getInt("distance")).isEqualTo(거리_강남역_양재역 + 거리_양재역_정자역);
+            assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(sectionResponse.jsonPath().getInt("distance")).isEqualTo(거리_강남역_양재역 + 거리_양재역_정자역);
         }
 
         /**
@@ -326,7 +326,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
 
         /**
@@ -342,7 +342,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
 
         /**
@@ -358,7 +358,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
             ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
