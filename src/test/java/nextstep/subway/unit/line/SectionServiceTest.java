@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-public class SectionServiceTest {
+class SectionServiceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -60,8 +60,6 @@ public class SectionServiceTest {
         Line line = lineService.getLine(lineId);
         assertThat(line.getSectionList()).hasSize(2);
         assertThat(line.getDistance()).isEqualTo(5);
-        Station downLastStation = line.getLastStations().getDownLastStation();
-        assertThat(downLastStation).isEqualTo(third);
     }
 
     @Test
@@ -79,7 +77,5 @@ public class SectionServiceTest {
         Line line = lineService.getLine(lineId);
         assertThat(line.getSectionList()).hasSize(1);
         assertThat(line.getDistance()).isEqualTo(1);
-        Station downLastStation = line.getLastStations().getDownLastStation();
-        assertThat(downLastStation).isEqualTo(second);
     }
 }

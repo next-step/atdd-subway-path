@@ -10,7 +10,7 @@ public class SubwayExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponseDto> customExceptionHandler(CustomException e) {
-        return ResponseEntity.ok().body(new ErrorResponseDto(e.getCode(), e.getMessage()));
+        return ResponseEntity.badRequest().body(new ErrorResponseDto(e.getCode(), e.getMessage()));
     }
 
     @ExceptionHandler(NoSuchElementException.class)

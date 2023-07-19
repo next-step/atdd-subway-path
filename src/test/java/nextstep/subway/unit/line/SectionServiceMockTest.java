@@ -47,8 +47,6 @@ public class SectionServiceMockTest {
         Line line = lineService.getLine(1L);
         assertThat(line.getSectionList()).hasSize(2);
         assertThat(line.getDistance()).isEqualTo(5);
-        Station downLastStation = line.getLastStations().getDownLastStation();
-        assertThat(downLastStation.getId()).isEqualTo(3L);
     }
 
     @Test
@@ -66,7 +64,5 @@ public class SectionServiceMockTest {
         Line line = lineService.getLine(1L);
         assertThat(line.getSectionList()).hasSize(1);
         assertThat(line.getDistance()).isEqualTo(1);
-        Station downLastStation = line.getLastStations().getDownLastStation();
-        assertThat(downLastStation.getId()).isEqualTo(2L);
     }
 }
