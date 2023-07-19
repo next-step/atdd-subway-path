@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -51,6 +52,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(남부터미널역, 양재역, 3));
     }
 
+    @DisplayName("경료 조회 테스트")
     @Test
     void searchPath() {
 
@@ -79,24 +81,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     private static class StationTestResponse {
         private Long id;
+        private String name;
 
         public Long getId() {
             return id;
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-            StationTestResponse that = (StationTestResponse) o;
-            return Objects.equals(id, that.id);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(id);
+        public String getName() {
+            return name;
         }
     }
 }

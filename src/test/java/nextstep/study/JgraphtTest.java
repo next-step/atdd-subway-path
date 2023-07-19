@@ -18,15 +18,16 @@ class JgraphtTest {
         String source = "v3";
         String target = "v1";
 
-        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         graph.addVertex("v1");
         graph.addVertex("v2");
+        graph.addVertex("v3");
         graph.addVertex("v3");
         graph.setEdgeWeight(graph.addEdge("v1", "v2"), 2);
         graph.setEdgeWeight(graph.addEdge("v2", "v3"), 2);
         graph.setEdgeWeight(graph.addEdge("v1", "v3"), 100);
 
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
 
         assertThat(shortestPath.size()).isEqualTo(3);
