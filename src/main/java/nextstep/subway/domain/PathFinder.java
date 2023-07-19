@@ -11,17 +11,19 @@ import java.util.Objects;
 
 @Component
 public class PathFinder {
-    public List<Station> findPath(List<Line> lines, Station source, Station target) {
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(buildGraph(lines));
-        validateGraph(source, target, dijkstraShortestPath);
+    private DijkstraShortestPath dijkstraShortestPath;
 
+    public void init(List<Line> lines) {
+        dijkstraShortestPath = new DijkstraShortestPath(buildGraph(lines));
+    }
+
+    public List<Station> findPath(Station source, Station target) {
+        validateGraph(source, target, dijkstraShortestPath);
         return dijkstraShortestPath.getPath(source, target).getVertexList();
     }
 
-    public int findPathWeight(List<Line> lines, Station source, Station target) {
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(buildGraph(lines));
+    public int findPathWeight(Station source, Station target) {
         validateGraph(source, target, dijkstraShortestPath);
-
         return (int) dijkstraShortestPath.getPathWeight(source, target);
     }
 
