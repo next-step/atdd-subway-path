@@ -8,8 +8,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.NotLastStationException;
 import nextstep.subway.exception.NotFoundLineException;
+import nextstep.subway.exception.NotLastStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +45,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
+    }
+
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(NotFoundLineException::new));
+        return createLineResponse(findLineById(id));
     }
 
     @Transactional
