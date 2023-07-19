@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class StationController {
 
-    private StationService stationService;
+    private final StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
@@ -24,17 +24,20 @@ public class StationController {
     public ResponseEntity<StationResponse> createStation(
             @RequestBody StationRequest stationRequest) {
         StationResponse station = stationService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
+        return ResponseEntity.created(URI.create("/stations/" + station.getId()))
+                .body(station);
     }
 
     @GetMapping(value = "/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations());
+        return ResponseEntity.ok()
+                .body(stationService.findAllStations());
     }
 
     @GetMapping("/stations/{id}")
     public ResponseEntity<Station> getStation(@PathVariable Long id) {
-        return ResponseEntity.ok().body(stationService.findStation(id));
+        return ResponseEntity.ok()
+                .body(stationService.findStation(id));
     }
 
     @PutMapping("/stations/{id}")
@@ -42,12 +45,14 @@ public class StationController {
             @PathVariable Long id,
             @RequestBody StationRequest stationRequest
     ) {
-        return ResponseEntity.ok().body(stationService.updateStation(id, stationRequest));
+        return ResponseEntity.ok()
+                .body(stationService.updateStation(id, stationRequest));
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 }

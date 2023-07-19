@@ -29,90 +29,179 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class LineAcceptanceTest {
 
-    private static ExtractableResponse<Response> 지하철_노선_등록한다(String 노선이름, String 노선색상,
-            int 상행종점역, int 하행종점역, int 거리) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", 노선이름);
-        params.put("color", 노선색상);
-        params.put("upStationId", 상행종점역);
-        params.put("downStationId", 하행종점역);
-        params.put("distance", 거리);
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행역이 노선 하행 종점인 구간을 등록하면
+     * Then 구간의 하행역이 노선 하행 종점역으로 등록된다
+     */
+    @DisplayName("새로운 역을 하행 종점에 등록한다")
+    @Test
+    void insertSectionToDownTerminalStationSuccess() {
+        // given
+        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
+        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
+        int 교대역_아이디 = 아이디(지하철역을_생성한다("교대역"));
+        var 신분당선 = 지하철_노선_등록한다(
+                "신분당선",
+                "bg-red-600",
+                강남역_아이디,
+                판교역_아이디,
+                10);
 
-        return RestAssured
-                .given().accept(ContentType.JSON).contentType(ContentType.JSON).body(params).log()
-                .all()
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        // when
+        노선_구간을_등록한다(아이디(신분당선), 판교역_아이디, 교대역_아이디, 1);
+
+        // then
+        신분당선 = 지하철_노선_조회한다(아이디(신분당선));
+        List<String> 스테이션_이름_리스트 = 스테이션_이름_리스트(신분당선);
+        assertThat(스테이션_이름_리스트).containsExactly("강남역", "판교역", "교대역");
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_목록_조회한다() {
-        return RestAssured
-                .given().accept(ContentType.JSON).log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 하행역이 노선 상행 종점인 구간을 등록하면
+     * Then 구간의 상행역이 노선 상행 종점역으로 등록된다
+     */
+    @DisplayName("새로운 역을 상행 종점에 등록한다")
+    @Test
+    void insertSectionToUpTerminalStationSuccess() {
+        // given
+        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
+        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
+        int 교대역_아이디 = 아이디(지하철역을_생성한다("교대역"));
+        var 신분당선 = 지하철_노선_등록한다(
+                "신분당선",
+                "bg-red-600",
+                강남역_아이디,
+                판교역_아이디,
+                10);
+
+        // when
+        노선_구간을_등록한다(아이디(신분당선), 교대역_아이디, 강남역_아이디, 1);
+
+        // then
+        신분당선 = 지하철_노선_조회한다(아이디(신분당선));
+        List<String> 스테이션_이름_리스트 = 스테이션_이름_리스트(신분당선);
+        assertThat(스테이션_이름_리스트).containsExactly("교대역", "강남역", "판교역");
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_수정한다(int 수정될_지하철_노선_아이디, String 수정될_이름,
-            String 수정될_컬러) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", 수정될_이름);
-        params.put("color", 수정될_컬러);
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행역이 기존 구간의 상행역과 일치하고 똑같이 않은 구간을 등록하면
+     * Then 기존 구간의 역을 기준으로 새로운 구간을 추가된다
+     */
+    @DisplayName("기존 구간의 역을 기준으로 새로운 구간을 추가")
+    @Test
+    void insertSectionToCenterSuccess() {
+        // given
+        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
+        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
+        int 양재역_아이디 = 아이디(지하철역을_생성한다("양재역"));
+        int 선릉역_아이디 = 아이디(지하철역을_생성한다("선릉역"));
+        int 역삼역_아이디 = 아이디(지하철역을_생성한다("역삼역"));
+        var 신분당선 = 지하철_노선_등록한다(
+                "신분당선",
+                "bg-red-600",
+                강남역_아이디,
+                판교역_아이디,
+                10);
 
-        return RestAssured
-                .given().accept(ContentType.JSON).contentType(ContentType.JSON).body(params)
-                .when().put("/lines/" + 수정될_지하철_노선_아이디)
-                .then().log().all()
-                .extract();
+        // when
+        노선_구간을_등록한다(아이디(신분당선), 강남역_아이디, 양재역_아이디, 1);
+        노선_구간을_등록한다(아이디(신분당선), 양재역_아이디, 역삼역_아이디, 3);
+        노선_구간을_등록한다(아이디(신분당선), 양재역_아이디, 선릉역_아이디, 1);
+
+        // then
+        신분당선 = 지하철_노선_조회한다(아이디(신분당선));
+        List<String> 스테이션_이름_리스트 = 스테이션_이름_리스트(신분당선);
+        assertThat(스테이션_이름_리스트).containsExactly("강남역", "양재역", "선릉역", "역삼역", "판교역");
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_삭제한다(int 신분당선_아이디) {
-        return RestAssured
-                .given().log().all()
-                .when().delete("/lines/" + 신분당선_아이디)
-                .then().log().all()
-                .extract();
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행역이 기존 구간의 상행역과 일치하고 똑같이 않은 구간을 등록할 경우
+     * Then 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+     */
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void insertSectionToCenterFailedByDistance() {
+        // given
+        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
+        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
+        int 양재역_아이디 = 아이디(지하철역을_생성한다("양재역"));
+        var 신분당선 = 지하철_노선_등록한다(
+                "신분당선",
+                "bg-red-600",
+                강남역_아이디,
+                판교역_아이디,
+                10);
+
+        // when
+        노선_구간을_등록한다(아이디(신분당선), 강남역_아이디, 양재역_아이디, 10);
+
+        // then
+        신분당선 = 지하철_노선_조회한다(아이디(신분당선));
+        List<String> 스테이션_이름_리스트 = 스테이션_이름_리스트(신분당선);
+        assertThat(스테이션_이름_리스트).containsExactly("강남역", "판교역");
     }
 
-    private static ExtractableResponse<Response> 노선_구간을_등록한다(int 노선_아이디, int 상행역, int 하행역,
-            int 거리) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", 하행역);
-        params.put("upStationId", 상행역);
-        params.put("distance", 거리);
-        return RestAssured
-                .given().body(params).log().all()
-                .contentType(ContentType.JSON).accept(ContentType.JSON)
-                .when().post("/lines/" + 노선_아이디 + "/sections")
-                .then().log().all()
-                .extract();
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 기존에 역이 모두 포함한 구간을 등록할 경우
+     * Then 등록을 할 수 없음
+     */
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void insertSectionToCenterFailedByExists() {
+        // given
+        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
+        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
+        int 양재역_아이디 = 아이디(지하철역을_생성한다("양재역"));
+        var 신분당선 = 지하철_노선_등록한다(
+                "신분당선",
+                "bg-red-600",
+                강남역_아이디,
+                판교역_아이디,
+                10);
+        노선_구간을_등록한다(아이디(신분당선), 강남역_아이디, 양재역_아이디, 4);
+
+        // when
+        노선_구간을_등록한다(아이디(신분당선), 강남역_아이디, 판교역_아이디, 3);
+
+        // then
+        신분당선 = 지하철_노선_조회한다(아이디(신분당선));
+        List<String> 스테이션_이름_리스트 = 스테이션_이름_리스트(신분당선);
+        assertThat(스테이션_이름_리스트).containsExactly("강남역", "양재역", "판교역");
     }
 
-    private static ExtractableResponse<Response> 노선에서_구간_제거한다(int 종점역_아이디, int 노선_아이디) {
-        return RestAssured
-                .given().log().all().param("stationId", 종점역_아이디)
-                .when().delete("/lines/" + 노선_아이디 + "/sections")
-                .then().log().all()
-                .extract();
-    }
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 기존에 역이 모두 포함되어 있지 않는 구간을 등록할 경우
+     * Then 등록을 할 수 없음
+     */
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void insertSectionToCenterFailedByNotExists() {
+        // given
+        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
+        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
+        int 양재역_아이디 = 아이디(지하철역을_생성한다("양재역"));
+        int 교대역_아이디 = 아이디(지하철역을_생성한다("교대역"));
+        var 신분당선 = 지하철_노선_등록한다(
+                "신분당선",
+                "bg-red-600",
+                강남역_아이디,
+                판교역_아이디,
+                10);
 
-    private static List<String> 스테이션_이름_리스트(ExtractableResponse<Response> 지하철_노선_목록, int 위치) {
-        return 지하철_노선_목록.jsonPath().getList("stations[" + 위치 + "].name", String.class);
-    }
+        // when
+        노선_구간을_등록한다(아이디(신분당선), 양재역_아이디, 교대역_아이디, 3);
 
-    private static List<Integer> 스테이션_아이디_리스트(ExtractableResponse<Response> 지하철_노선_목록, int 위치) {
-        return 지하철_노선_목록.jsonPath().getList("stations[" + 위치 + "].id", Integer.class);
+        // then
+        신분당선 = 지하철_노선_조회한다(아이디(신분당선));
+        List<String> 스테이션_이름_리스트 = 스테이션_이름_리스트(신분당선);
+        assertThat(스테이션_이름_리스트).containsExactly("강남역", "판교역");
     }
-
-    private static List<String> 스테이션_이름_리스트(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList("stations.name", String.class);
-    }
-
-    private static List<Integer> 스테이션_아이디_리스트(ExtractableResponse<Response> response) {
-        return response.jsonPath().getList("stations.id", Integer.class);
-    }
-
 
     /**
      * When 지하철 노선을 생성하면
@@ -316,70 +405,6 @@ public class LineAcceptanceTest {
         );
     }
 
-    /**
-     * Given 지하철 노선을 생성하고
-     * When 상행역이 생성한 노선의 하행 종점역아니고 하행역 해당 노선에 등록되어 있지 않으면 지하철 구간을 등록하면
-     * Then 지하철 구간이 등록되지 않고 예외코드가 반환한다
-     */
-    @DisplayName("노선 하행 종점역과 구간 등록 상행역이 일치하지 않아 등록 실패")
-    @Test
-    void registerSectionFailedByMismatchLineLastStationAndUpstreamStation() {
-        // given
-        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
-        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
-        int 정자역_아이디 = 아이디(지하철역을_생성한다("정자역"));
-        var 신분당선 = 지하철_노선_등록한다(
-                "신분당선",
-                "bg-red-600",
-                강남역_아이디,
-                판교역_아이디,
-                10);
-        int 신분당선_아이디 = 아이디(신분당선);
-
-        // when
-        var 노선_구간을_등록_결과 = 노선_구간을_등록한다(신분당선_아이디, 강남역_아이디, 정자역_아이디, 1);
-
-        // then
-        var 조회된_신분당선 = 지하철_노선_조회한다(신분당선_아이디);
-        assertAll(
-                () -> assertThat(노선_구간을_등록_결과.statusCode()).isEqualTo(
-                        HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(스테이션_이름_리스트(조회된_신분당선)).doesNotContain("정자역"),
-                () -> assertThat(스테이션_아이디_리스트(조회된_신분당선)).doesNotContain(정자역_아이디)
-        );
-    }
-
-    /**
-     * Given 지하철 노선을 생성하고
-     * When 상행역이 생성한 노선의 하행 종점역이고 하행역 해당 노선에 등록되어 있는 지하철 구간을 등록하면
-     * Then 지하철 구간이 등록되지 않고 예외코드가 반환한다
-     */
-    @DisplayName("구간 등록 하행역이 노선에 포함되여 있어서 등록 실패")
-    @Test
-    void registerSectionFailedByLineContainsDownStation() {
-        // given
-        int 강남역_아이디 = 아이디(지하철역을_생성한다("강남역"));
-        int 판교역_아이디 = 아이디(지하철역을_생성한다("판교역"));
-        var 신분당선 = 지하철_노선_등록한다(
-                "신분당선",
-                "bg-red-600",
-                강남역_아이디,
-                판교역_아이디,
-                10);
-        int 신분당선_아이디 = 아이디(신분당선);
-
-        // when
-        var 노선_구간을_등록_결과 = 노선_구간을_등록한다(신분당선_아이디, 판교역_아이디, 강남역_아이디, 1);
-
-        // then
-        var 조회된_신분당선 = 지하철_노선_조회한다(신분당선_아이디);
-        assertAll(
-                () -> assertThat(노선_구간을_등록_결과.statusCode()).isEqualTo(
-                        HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(스테이션_이름_리스트(조회된_신분당선)).size().isEqualTo(2),
-                () -> assertThat(스테이션_아이디_리스트(조회된_신분당선)).size().isEqualTo(2)
-        );
-    }
 
     /**
      * Given 지하철 노선을 생성하고
@@ -483,5 +508,87 @@ public class LineAcceptanceTest {
         );
     }
 
+    private static ExtractableResponse<Response> 지하철_노선_등록한다(String 노선이름, String 노선색상,
+            int 상행종점역, int 하행종점역, int 거리) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", 노선이름);
+        params.put("color", 노선색상);
+        params.put("upStationId", 상행종점역);
+        params.put("downStationId", 하행종점역);
+        params.put("distance", 거리);
 
+        return RestAssured
+                .given().accept(ContentType.JSON).contentType(ContentType.JSON).body(params).log()
+                .all()
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철_노선_목록_조회한다() {
+        return RestAssured
+                .given().accept(ContentType.JSON).log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철_노선_수정한다(int 수정될_지하철_노선_아이디, String 수정될_이름,
+            String 수정될_컬러) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", 수정될_이름);
+        params.put("color", 수정될_컬러);
+
+        return RestAssured
+                .given().accept(ContentType.JSON).contentType(ContentType.JSON).body(params)
+                .when().put("/lines/" + 수정될_지하철_노선_아이디)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철_노선_삭제한다(int 신분당선_아이디) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/" + 신분당선_아이디)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 노선_구간을_등록한다(int 노선_아이디, int 상행역, int 하행역,
+            int 거리) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("downStationId", 하행역);
+        params.put("upStationId", 상행역);
+        params.put("distance", 거리);
+        return RestAssured
+                .given().body(params).log().all()
+                .contentType(ContentType.JSON).accept(ContentType.JSON)
+                .when().post("/lines/" + 노선_아이디 + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 노선에서_구간_제거한다(int 종점역_아이디, int 노선_아이디) {
+        return RestAssured
+                .given().log().all().param("stationId", 종점역_아이디)
+                .when().delete("/lines/" + 노선_아이디 + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private static List<String> 스테이션_이름_리스트(ExtractableResponse<Response> 지하철_노선_목록, int 위치) {
+        return 지하철_노선_목록.jsonPath().getList("stations[" + 위치 + "].name", String.class);
+    }
+
+    private static List<Integer> 스테이션_아이디_리스트(ExtractableResponse<Response> 지하철_노선_목록, int 위치) {
+        return 지하철_노선_목록.jsonPath().getList("stations[" + 위치 + "].id", Integer.class);
+    }
+
+    private static List<String> 스테이션_이름_리스트(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.name", String.class);
+    }
+
+    private static List<Integer> 스테이션_아이디_리스트(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.id", Integer.class);
+    }
 }

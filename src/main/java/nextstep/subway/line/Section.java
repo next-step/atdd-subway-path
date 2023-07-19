@@ -2,24 +2,14 @@ package nextstep.subway.line;
 
 import java.util.Objects;
 import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.station.Station;
 
-@Entity
+@Embeddable
 public class Section {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "line_id")
-    private Line line;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "up_station_id")
@@ -34,19 +24,10 @@ public class Section {
     public Section() {
     }
 
-    public Section(Long id, Station upStation, Station downStation, int distance) {
-        this.id = id;
+    public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -61,22 +42,6 @@ public class Section {
         return distance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Section)) {
-            return false;
-        }
-        Section section = (Section) o;
-        return id.equals(section.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 
     public boolean containsStation(Station station) {
         return this.downStation.equals(station) || this.upStation.equals(station);
@@ -92,5 +57,27 @@ public class Section {
 
     private boolean isSameAsUpStation(Station station) {
         return this.upStation.equals(station);
+    }
+
+    public boolean isSameUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return getDistance() == section.getDistance() && Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUpStation(), getDownStation(), getDistance());
     }
 }

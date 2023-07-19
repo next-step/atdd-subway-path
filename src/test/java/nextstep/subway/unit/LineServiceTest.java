@@ -12,12 +12,12 @@ import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.line.Section;
-import nextstep.subway.line.SectionRepository;
 import nextstep.subway.line.SectionRequest;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,33 +32,31 @@ public class LineServiceTest {
     private StationRepository stationRepository;
     @Autowired
     private LineRepository lineRepository;
-
-    @Autowired
-    private SectionRepository sectionRepository;
-
     @Autowired
     private LineService lineService;
+    Station gangnamStation;
+    Station yangjaeStation;
+
+    @BeforeEach
+    void setUp() {
+        gangnamStation = stationRepository.save(new Station("강남역"));
+        yangjaeStation = stationRepository.save(new Station("양재역"));
+    }
 
     @DisplayName("노선에 section을 추가한다")
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line line = new Line("신분당선", "#D31145", new ArrayList<>());
         lineRepository.save(line);
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("양재역"));
-        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 1);
+        SectionRequest sectionRequest = new SectionRequest(gangnamStation.getId(), yangjaeStation.getId(), 1);
 
         // when
-        // lineService.addSection 호출
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(
-                line.getSections().stream()
-                        .anyMatch(section -> section.containsStation(upStation) && section.containsStation(downStation))
+                line.getSections().getSections().contains(new Section(gangnamStation, yangjaeStation, 1))
         ).isTrue();
     }
 
@@ -66,36 +64,25 @@ public class LineServiceTest {
     @Test
     void saveLine() {
         // given
-        Station upStation = stationRepository.save(new Station("강남역"));
-        Station downStation = stationRepository.save(new Station("양재역"));
-        LineRequest lineRequest = new LineRequest("신분당선", "#D31145", upStation.getId(), downStation.getId(), 1);
+        LineRequest lineRequest = new LineRequest("신분당선", "#D31145", gangnamStation.getId(), yangjaeStation.getId(), 1);
 
         // when
         LineResponse lineResponse = lineService.saveLine(lineRequest);
 
         // then
         Line savedLine = lineRepository.getReferenceById(lineResponse.getId());
-        Assertions.assertAll(
-                () -> assertThat(savedLine.getName()).isEqualTo("신분당선"),
-                () -> assertThat(savedLine.getColor()).isEqualTo("#D31145"),
-                () -> assertThat(
-                        savedLine.getSections().stream()
-                                .anyMatch(section -> section.containsStation(upStation) && section.containsStation(
-                                        downStation))
-                ).isTrue());
+        assertThat(lineResponse).isEqualTo(LineResponse.from(savedLine));
     }
 
     @DisplayName("모든 노선을 보낸다")
     @Test
     void showLines() {
         // given
-        Station gangnamStation = stationRepository.save(new Station("강남역"));
-        Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
-        Section pangyoToYangjae = sectionRepository.save(new Section(null, pangyoStation, yangjaeStation, 2));
-        Section yangjaeToGangnam = sectionRepository.save(new Section(null, yangjaeStation, gangnamStation, 1));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
+        Section pangyoToYangjae = new Section(pangyoStation, yangjaeStation, 2);
+        Section yangjaeToGangnam = new Section(yangjaeStation, gangnamStation, 1);
 
         Line shinundangLine = lineRepository.save(
                 new Line("신분당선", "#D31145", List.of(gangnamToYangjae, yangjaeToPangyo)));
@@ -107,7 +94,7 @@ public class LineServiceTest {
 
         // then
         Assertions.assertAll(
-                () -> assertThat(lineResponses).contains(
+                () -> assertThat(lineResponses).containsOnly(
                         LineResponse.from(shinshinundangLine), LineResponse.from(shinundangLine))
         );
     }
@@ -116,11 +103,9 @@ public class LineServiceTest {
     @Test
     void searchById() {
         // given
-        Station gangnamStation = stationRepository.save(new Station("강남역"));
-        Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
 
         Line line = lineRepository.save(
                 new Line("신분당선", "#D31145", List.of(gangnamToYangjae, yangjaeToPangyo)));
@@ -136,11 +121,9 @@ public class LineServiceTest {
     @Test
     void update() {
         // given
-        Station gangnamStation = stationRepository.save(new Station("강남역"));
-        Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
         Line line = lineRepository.save(
                 new Line("신분당선", "#D31145", List.of(gangnamToYangjae, yangjaeToPangyo)));
         UpdateLineRequest updateLineRequest = new UpdateLineRequest("분당선", "#D31146");
@@ -160,11 +143,9 @@ public class LineServiceTest {
     @Test
     void deleteById() {
         // given
-        Station gangnamStation = stationRepository.save(new Station("강남역"));
-        Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
         Line line = lineRepository.save(
                 new Line("신분당선", "#D31145", List.of(gangnamToYangjae, yangjaeToPangyo)));
 
@@ -180,11 +161,9 @@ public class LineServiceTest {
     @Test
     void deleteSection() {
         // given
-        Station gangnamStation = stationRepository.save(new Station("강남역"));
-        Station yangjaeStation = stationRepository.save(new Station("양재역"));
         Station pangyoStation = stationRepository.save(new Station("판교역"));
-        Section gangnamToYangjae = sectionRepository.save(new Section(null, gangnamStation, yangjaeStation, 1));
-        Section yangjaeToPangyo = sectionRepository.save(new Section(null, yangjaeStation, pangyoStation, 2));
+        Section gangnamToYangjae = new Section(gangnamStation, yangjaeStation, 1);
+        Section yangjaeToPangyo = new Section(yangjaeStation, pangyoStation, 2);
         List<Section> sections = new ArrayList<>();
         sections.add(gangnamToYangjae);
         sections.add(yangjaeToPangyo);
@@ -192,18 +171,14 @@ public class LineServiceTest {
                 new Line("신분당선", "#D31145", sections));
 
         // when
-        lineService.deleteSection(line.getId(), pangyoStation);
+        lineService.deleteSection(line.getId(), pangyoStation.getId());
 
         // then
         Line savedLine = lineRepository.findById(line.getId()).orElseThrow(LineNotFoundException::new);
         Assertions.assertAll(
-                () -> assertThat(savedLine.getSections().size()).isEqualTo(1),
+                () -> assertThat(savedLine.getSections().getSections().size()).isEqualTo(1),
                 () -> assertThat(
-                        savedLine.getSections().stream()
-                                .anyMatch(section -> section.containsStation(yangjaeStation) && section.containsStation(
-                                        pangyoStation))
-
-                ).isFalse()
+                        savedLine.getSections().getSections().contains(yangjaeToPangyo)).isFalse()
         );
     }
 

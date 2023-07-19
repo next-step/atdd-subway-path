@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
@@ -17,7 +18,6 @@ import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.line.Section;
-import nextstep.subway.line.SectionRepository;
 import nextstep.subway.line.SectionRequest;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
@@ -40,34 +40,27 @@ public class LineServiceMockTest {
     @Mock
     private StationRepository stationRepository;
 
-    @Mock
-    private SectionRepository sectionRepository;
 
     private LineService lineService;
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository, stationRepository, sectionRepository);
+        lineService = new LineService(lineRepository, stationRepository);
     }
 
     @DisplayName("노선에 section을 추가하기 성공한다")
     @Test
     void addSectionSuccess() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        Line line = new Line("신분당선", "#123123", new ArrayList<>());
+        Line line = mock(Line.class);
+        given(line.getId()).willReturn(1L);
         given(lineRepository.findById(any())).willReturn(Optional.of(line));
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station()));
-        Section section = new Section(1L, new Station("강남역"), new Station("양재역"), 1);
-        given(sectionRepository.save(any())).willReturn(
-                section);
 
         // when
-        // lineService.addSection 호출
-        LineResponse lineResponse = lineService.addSection(1L, new SectionRequest(1L, 1L, 1));
+        LineResponse lineResponse = lineService.addSection(1L, new SectionRequest(1L, 2L, 1));
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
         assertThat(lineService.searchById(lineResponse.getId())).isEqualTo(lineResponse);
     }
 
@@ -101,8 +94,6 @@ public class LineServiceMockTest {
         // given
         Line line = new Line("신분당선", "#123123", new ArrayList<>());
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station()));
-        Section section = new Section(1L, new Station("강남역"), new Station("양재역"), 1);
-        given(sectionRepository.save(any())).willReturn(section);
         given(lineRepository.save(any(Line.class))).willReturn(line);
 
         // when
@@ -209,29 +200,43 @@ public class LineServiceMockTest {
         Station yangjaeStation = new Station("양재역");
         Station pangyoStation = new Station("판교역");
         Line line = new Line();
-        Section section = new Section(1L, gangnamStation, yangjaeStation, 10);
+        Section section = new Section(gangnamStation, yangjaeStation, 10);
         line.addSection(section);
-        section = new Section(2L, yangjaeStation, pangyoStation, 10);
+        section = new Section(yangjaeStation, pangyoStation, 10);
         line.addSection(section);
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(pangyoStation));
         given(lineRepository.findById(anyLong())).willReturn(Optional.of(line));
 
         // when
-        lineService.deleteSection(1L, pangyoStation);
+        lineService.deleteSection(1L, 1L);
 
         // then
-        boolean exists = line.getSections().stream()
+        boolean exists = line.getSections().getSections().stream()
                 .anyMatch(savedSection -> savedSection.containsStation(pangyoStation));
         assertThat(exists).isFalse();
     }
 
     @DisplayName("마지막 하행스테이션으로 세션을 삭제 요청시 대상 라인이 존재하지 않으면 예외를 던진다")
     @Test
-    void deleteSectionFailed() {
+    void deleteSectionFailedByLineNotExist() {
         // given
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station("강남역")));
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when,then
-        assertThatThrownBy(() -> lineService.deleteSection(1L, new Station())).isInstanceOf(
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L)).isInstanceOf(
+                LineNotFoundException.class);
+    }
+
+    @DisplayName("마지막 하행스테이션으로 세션을 삭제 요청시 대상 스테이션이 존재하지 않으면 예외를 던진다")
+    @Test
+    void deleteSectionFailedByStationNotExist() {
+        // given
+        given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station("강남역")));
+        given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when,then
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L)).isInstanceOf(
                 LineNotFoundException.class);
     }
 }

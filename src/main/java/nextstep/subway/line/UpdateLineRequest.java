@@ -2,8 +2,11 @@ package nextstep.subway.line;
 
 public class UpdateLineRequest {
 
-    private final String name;
-    private final String color;
+    private String name;
+    private String color;
+
+    public UpdateLineRequest() {
+    }
 
     public UpdateLineRequest(String name, String color) {
         this.name = name;
