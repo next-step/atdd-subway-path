@@ -31,16 +31,16 @@ import static nextstep.subway.fixture.when.LineApiFixture.지하철역_노선_�
 import static nextstep.subway.fixture.when.LineApiFixture.지하철역_노선_삭제;
 import static nextstep.subway.fixture.when.LineApiFixture.지하철역_노선_수정;
 import static nextstep.subway.fixture.when.StationApiFixture.지하철역_생성_요청;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("지하철 노선 관련 기능")
-class LineAcceptanceTestConfig extends AcceptanceTestConfig {
+class LineAcceptanceTest extends AcceptanceTestConfig {
 
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -54,7 +54,7 @@ class LineAcceptanceTestConfig extends AcceptanceTestConfig {
         ExtractableResponse<Response> 노선등록응답값 = 지하철역_노선_등록_요청(신분당선, red, 지하철역_id, 새로운지하철역_id, distance);
 
         //then
-        Assertions.assertAll(
+        assertAll(
             () -> API_생성_응답코드_검사(노선등록응답값),
             () -> 노선_응답값_id_검사(노선등록응답값, 1L),
             () -> 노선_응답값_노선이름_검사(노선등록응답값, 신분당선),
@@ -82,7 +82,7 @@ class LineAcceptanceTestConfig extends AcceptanceTestConfig {
         ExtractableResponse<Response> 노선목록조회결과_응답값 = 지하철역_노선_목록_조회_요청();
 
         //then
-        Assertions.assertAll(
+        assertAll(
             () -> API_요청성공_응답코드_검사(노선목록조회결과_응답값),
             () -> 노선목록_크기_검사(노선목록조회결과_응답값, 2),
             () -> 노선목록_노선이름_포함_검사(노선목록조회결과_응답값, List.of(신분당선, 분당선))
@@ -103,7 +103,7 @@ class LineAcceptanceTestConfig extends AcceptanceTestConfig {
         ExtractableResponse<Response> response = 지하철역_노선_단건_조회(신규등록_노선_id);
 
         //then
-        Assertions.assertAll(
+        assertAll(
             () -> API_요청성공_응답코드_검사(response),
             () -> 노선_응답값_id_검사(response, 1L),
             () -> 노선_응답값_노선이름_검사(response, 신분당선),
@@ -129,7 +129,7 @@ class LineAcceptanceTestConfig extends AcceptanceTestConfig {
         //then
         ExtractableResponse<Response> 노선조회응답값 = 지하철역_노선_단건_조회(신규등록_노선_id);
 
-        Assertions.assertAll(
+        assertAll(
             () -> API_요청성공_응답코드_검사(노선조회응답값),
             () -> 노선_응답값_노선이름_검사(노선조회응답값, 다른분당선),
             () -> 노선_응답값_노선색_검사(노선조회응답값, red)
@@ -151,7 +151,7 @@ class LineAcceptanceTestConfig extends AcceptanceTestConfig {
         //then
         ExtractableResponse<Response> response = 지하철역_노선_단건_조회(신규등록_노선_id);
 
-        Assertions.assertAll(
+        assertAll(
             () -> API_잘못된요청_응답코드_검사(response),
             () -> 없는노선조회시_에러표출_검사(response)
         );

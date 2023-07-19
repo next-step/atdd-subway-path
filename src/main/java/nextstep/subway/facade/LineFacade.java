@@ -33,6 +33,7 @@ public class LineFacade {
     public LineResponse lineCreate(LineRequest request) {
 
         final Line line = lineService.create(request);
+
         final Section section = sectionService.create(
             line,
             stationService.findById(request.getUpStationId()),
@@ -59,9 +60,9 @@ public class LineFacade {
             sectionService.findAllByLineId(line.getId())
         );
 
-        final List<StationResponse> stationResponses = stationService.findAllIn(
-            sectionGroup.getStationsId()
-        );
+        final List<StationResponse> stationResponses = sectionGroup.getStationsInOrder().stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
 
         return LineResponse.of(line, stationResponses);
     }
