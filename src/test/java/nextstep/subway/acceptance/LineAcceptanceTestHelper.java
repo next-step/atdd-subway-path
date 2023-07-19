@@ -26,11 +26,12 @@ class LineAcceptanceTestHelper extends StationAcceptanceTestHelper {
         return createResource(LINES_RESOURCE_URL, params);
     }
 
-    protected void verifyFoundLine(ValidatableResponse foundLineResponse, String lineName, String color, String... names) {
+    protected void verifyFoundLine(ValidatableResponse foundLineResponse, String lineName, String color, long distance, String... names) {
         JsonPath jsonPath = foundLineResponse.extract().jsonPath();
 
         assertThat(jsonPath.getString("name")).isEqualTo(lineName);
         assertThat(jsonPath.getString("color")).isEqualTo(color);
+        assertThat(jsonPath.getLong("distance")).isEqualTo(distance);
         assertThat(jsonPath.getList("stations.name", String.class)).containsExactly(names);
     }
 

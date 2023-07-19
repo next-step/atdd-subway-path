@@ -25,7 +25,8 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
     @Test
     void 지하철노선을_생성한다() {
         //when
-        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10);
+        int distance = 10;
+        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
 
         //then
         verifyResponseStatus(lineCratedResponse, HttpStatus.CREATED);
@@ -33,7 +34,7 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
         ValidatableResponse foundLineResponse = getResource(getLocation(lineCratedResponse));
         verifyResponseStatus(foundLineResponse, HttpStatus.OK);
 
-        verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "강남역", "언주역");
+        verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", distance, "강남역", "언주역");
     }
 
     /**
@@ -67,7 +68,8 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
     @Test
     void 지하철노선을_조회한다() {
         //given
-        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10);
+        int distance = 10;
+        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
 
         //when
         ValidatableResponse foundLineResponse = getResource(getLocation(lineCratedResponse));
@@ -75,7 +77,7 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
         //then
         verifyResponseStatus(foundLineResponse, HttpStatus.OK);
 
-        verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "강남역", "언주역");
+        verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", distance, "강남역", "언주역");
     }
 
     /**
@@ -87,7 +89,8 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
     @Test
     void 지하철_노선을_수정한다() {
         //given
-        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10);
+        int distance = 10;
+        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
 
         //when
         ValidatableResponse modifiedLineResponse = modifyLine("바뀐 분당선", "bg-green-600", getLocation(lineCratedResponse));
@@ -97,7 +100,7 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
 
         ValidatableResponse foundLineResponse = getResource(getLocation(lineCratedResponse));
         verifyResponseStatus(foundLineResponse, HttpStatus.OK);
-        verifyFoundLine(foundLineResponse, "바뀐 분당선", "bg-green-600", "강남역", "언주역");
+        verifyFoundLine(foundLineResponse, "바뀐 분당선", "bg-green-600", distance, "강남역", "언주역");
     }
 
 

@@ -251,7 +251,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
             ValidatableResponse foundLineResponse = getResource(LINES_RESOURCE_URL + "/" + createdLineId);
             verifyResponseStatus(foundLineResponse, HttpStatus.OK);
 
-            verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "언주역", "길음역");
+            verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", newSectionDistance, "언주역", "길음역");
         }
 
         /**
@@ -284,7 +284,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
             ValidatableResponse foundLineResponse = getResource(LINES_RESOURCE_URL + "/" + createdLineId);
             verifyResponseStatus(foundLineResponse, HttpStatus.OK);
 
-            verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "강남역", "언주역");
+            verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", distance, "강남역", "언주역");
         }
 
         /**
@@ -317,7 +317,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
             ValidatableResponse foundLineResponse = getResource(LINES_RESOURCE_URL + "/" + createdLineId);
             verifyResponseStatus(foundLineResponse, HttpStatus.OK);
 
-            verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", "강남역", "길음역");
+            verifyFoundLine(foundLineResponse, "신분당선", "bg-red-600", distance + newSectionDistance, "강남역", "길음역");
         }
 
 
