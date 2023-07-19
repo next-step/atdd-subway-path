@@ -62,6 +62,7 @@ class LineTest {
         assertThat(target.getDistance()).isEqualTo(distance);
     }
 
+    @DisplayName("상행역에 새로운 구간 추가")
     @Test
     void addSectionUpStation() {
         // given
@@ -78,6 +79,9 @@ class LineTest {
         신분당선.addSectionVer2(newSection);
 
         // then
+        Section 상행_종점 = 신분당선.getFirstSection();
+        assertSection(상행_종점, "신논현역", "강남역", 5);
+
         List<Section> sections = 신분당선.getSections();
         assertThat(sections).hasSize(2);
 
@@ -88,9 +92,34 @@ class LineTest {
         assertSection(secondSection, "신논현역", "강남역", 5);
     }
 
+    @DisplayName("하행역에 새로운 구간 추가")
     @Test
     void addSectionDownStation() {
+// given
+        Station 강남역 = new Station(1L, "강남역");
+        Station 양재역 = new Station(2L, "양재역");
+        Section sectionForLine = new Section(강남역, 양재역, 10);
 
+        Line 신분당선 = new Line("신분당선", "bg-red-600", sectionForLine);
+
+        Station 양재시민의숲역 = new Station(3L, "양재시민의숲역");
+        Section newSection = new Section(양재역, 양재시민의숲역, 5);
+
+        // when
+        신분당선.addSectionVer2(newSection);
+
+        // then
+        Section 하행_종점 = 신분당선.getLastSection();
+        assertSection(하행_종점, "양재역", "양재시민의숲역", 5);
+
+        List<Section> sections = 신분당선.getSections();
+        assertThat(sections).hasSize(2);
+
+        Section firstSection = sections.get(0);
+        assertSection(firstSection, "강남역", "양재역", 10);
+
+        Section secondSection = sections.get(1);
+        assertSection(secondSection, "양재역", "양재시민의숲역", 5);
     }
 
     @Test
