@@ -33,11 +33,6 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (this.sections.isEmpty()) {
-            this.sections.add(section);
-            return;
-        }
-
         Station upEndStation = getUpEndStation();
 
         // 역 기준으로 하행 구간을 역으로 찾을 수 있다
@@ -86,7 +81,24 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return toStations();
+        Station upEndStation = getUpEndStation();
+        List<Station> stations = new ArrayList<>();
+        stations.add(upEndStation);
+
+        // 역 기준으로 하행 구간을 역으로 찾을 수 있다
+        Map<Station, Section> upSectionMap = new HashMap<>();
+        for (Section oldSection : sections) {
+            upSectionMap.put(oldSection.getUpStation(), oldSection);
+        }
+
+        Station currentUpStation = upEndStation;
+        while (upSectionMap.containsKey(currentUpStation)) {
+            Section currentSection = upSectionMap.get(currentUpStation);
+            stations.add(currentSection.getDownStation());
+            currentUpStation = currentSection.getDownStation();
+        }
+
+        return stations;
     }
 
     public List<Section> getSections() {
@@ -110,43 +122,4 @@ public class Sections {
 
         throw new BusinessException("상행 종점역을 찾을 수 없습니다.");
     }
-
-    private Station getDownEndStation() {
-        Set<Station> upStations = new HashSet<>();
-        Set<Station> downStations = new HashSet<>();
-
-        for (Section section : sections) {
-            upStations.add(section.getUpStation());
-            downStations.add(section.getDownStation());
-        }
-
-        for (Station downStation : downStations) {
-            if (!upStations.contains(downStation)) {
-                return downStation;
-            }
-        }
-
-        throw new BusinessException("하행 종점역을 찾을 수 없습니다.");
-    }
-
-    private List<Station> toStations() {
-        return Stream.concat(Stream.of(this.sections.get(0).getUpStation()),
-                this.sections.stream().map(Section::getDownStation))
-            .collect(Collectors.toList());
-    }
-
-    private boolean isAlreadyRegisteredDownStation(final Station downStation) {
-        if (isAlreadyRegisteredInFirstUpStation(downStation)) {
-            return true;
-        }
-
-        return this.sections.stream()
-            .anyMatch(localSection -> localSection.getDownStation().equals(downStation));
-    }
-
-    private boolean isAlreadyRegisteredInFirstUpStation(final Station downStation) {
-        return this.sections.stream().findFirst().orElseThrow()
-            .getUpStation().equals(downStation);
-    }
-
 }
