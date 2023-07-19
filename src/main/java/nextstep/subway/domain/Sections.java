@@ -122,32 +122,57 @@ public class Sections {
         return List.copyOf(orderedSections);
     }
 
-    private Optional<Section> findSectionByUpStation(Long upStationId) {
+    public Optional<Section> findSectionByUpStation(Long upStationId) {
         return this.sectionList.stream()
                 .filter(section -> section.getUpStation().getId()==upStationId)
                 .findFirst();
     }
 
-    private Optional<Section> findSectionByDownStation(Long downStationId) {
+    public Optional<Section> findSectionByDownStation(Long downStationId) {
         return this.sectionList.stream()
                 .filter(section -> section.getDownStation().getId()==downStationId)
                 .findFirst();
     }
 
-    public void removeSection(Station station){
-        validateDeleteSectionRequest(station);
-        sectionList.remove(sectionList.size() - 1);
+    public void removeSection(Line line ,Station station){
+        List<Station> orderedStationList = getOrderedStationList(line);
+
+
+        validateDeleteSectionRequest(orderedStationList,station);
+        boolean isFirstUpStation = orderedStationList.get(0) == station;
+        boolean isLastDownStation = orderedStationList.get(orderedStationList.size()-1)==station;
+
+
+        //상행종점을 삭제할 경우
+        if(isFirstUpStation){
+            line.updateFirstUpStation(orderedStationList.get(1));
+            Section removingSection = findSectionByUpStation(station.getId()).get();
+            sectionList.remove(removingSection);
+        }
+        //하행종점을 삭제할 경우
+        if(isLastDownStation){
+            line.updateLastDownStation(orderedStationList.get(orderedStationList.size()-2));
+            Section removingSection = findSectionByDownStation(station.getId()).get();
+            sectionList.remove(removingSection);
+        }
+        //중간역을 삭제할 경우
+        if(!isFirstUpStation&&!isLastDownStation){
+            Section removingUpSection = findSectionByDownStation(station.getId()).get();
+            Section removingDownSection = findSectionByUpStation(station.getId()).get();
+            sectionList.add(new Section(line, removingUpSection.getUpStation(), removingDownSection.getDownStation(), removingUpSection.getDistance()+ removingDownSection.getDistance()));
+            sectionList.remove(removingUpSection);
+            sectionList.remove(removingDownSection);
+        }
     }
 
-    public void validateDeleteSectionRequest(Station station){
+    public void validateDeleteSectionRequest(List<Station> orderedStationList, Station station){
 
-        List<Section> sections = this.sectionList;
-
-        if (!sections.get(sections.size()-1).getUpStation().getId().equals(station.getId())){
-            throw new IllegalArgumentException("지하철 노선에 등록된 역(하행 종점역)만 제거할 수 있음");
+        if(!orderedStationList.contains(station)){
+            throw new IllegalArgumentException("지하철 노선에 등록되지 않은 역을 삭제할 수 없습니다.");
         }
-        if(sections.size()<=1){
-            throw new IllegalArgumentException("구간이 1개인 경우 역을 삭제할 수 없음");
+
+        if(orderedStationList.size()<=2){
+            throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 삭제할 수 없습니다.");
         }
 
     }

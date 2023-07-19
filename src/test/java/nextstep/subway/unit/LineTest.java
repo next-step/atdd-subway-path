@@ -162,4 +162,76 @@ class LineTest {
                 .hasMessage("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음");
     }
 
+    @DisplayName("상행종점과 하행종점을 삭제")
+    @Test
+    void deleteSection1() {
+        //given
+        이호선.addSection(강남역삼구간);
+        이호선.addSection(역삼선릉구간);
+        이호선.addSection(선릉잠실구간);
+
+        //when
+        이호선.removeSection(강남역);
+        이호선.removeSection(잠실역);
+
+        //then
+        assertThat(이호선.getOrderedStationList()).containsExactly(역삼역,선릉역);
+        assertThat(이호선.getFirstUpStation()).isEqualTo(역삼역);
+        assertThat(이호선.getLastDownStation()).isEqualTo(선릉역);
+    }
+
+    @DisplayName("중간역을 삭제")
+    @Test
+    void deleteSection2() {
+        //given
+        이호선.addSection(강남역삼구간);
+        이호선.addSection(역삼선릉구간);
+        이호선.addSection(선릉잠실구간);
+
+        //when
+        이호선.removeSection(역삼역);
+        이호선.removeSection(선릉역);
+
+        //then
+
+        assertThat(이호선.getOrderedStationList()).containsExactly(강남역,잠실역);
+        assertThat(이호선.getFirstUpStation()).isEqualTo(강남역);
+        assertThat(이호선.getLastDownStation()).isEqualTo(잠실역);
+        assertThat(강남역삼구간거리+역삼선릉구간거리+선릉잠실구간거리).isEqualTo(이호선.getSections().findSectionByUpStation(강남역.getId()).get().getDistance());
+
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역을 제거할 수 없음")
+    @Test
+    void invalidRemoveSection1() {
+        //given
+        이호선.addSection(강남역삼구간);
+        이호선.addSection(역삼선릉구간);
+
+
+        //when
+        이호선.removeSection(역삼역);
+
+        //then
+        assertThatThrownBy(() ->  이호선.removeSection(역삼역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("지하철 노선에 등록되지 않은 역을 삭제할 수 없습니다.");
+    }
+
+    @DisplayName("구간이 하나인 노선에서 구간을 삭제할 수 없음")
+    @Test
+    void invalidRemoveSection2() {
+        //given
+        이호선.addSection(강남역삼구간);
+        이호선.addSection(역삼선릉구간);
+
+        //when
+        이호선.removeSection(역삼역);
+
+        //then
+        assertThatThrownBy(() ->  이호선.removeSection(선릉역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("구간이 하나인 노선에서 구간을 삭제할 수 없습니다.");
+    }
+
 }

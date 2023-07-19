@@ -34,7 +34,7 @@ public class StationService {
 
     public Station findStation(Long stationId){
        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new EntityNotFoundException("upStation not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Station not found"));
     }
 
     @Transactional
