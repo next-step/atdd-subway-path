@@ -11,6 +11,7 @@ import nextstep.subway.line.Line;
 import nextstep.subway.line.MissingStationException;
 import nextstep.subway.line.NonDownstreamTerminusException;
 import nextstep.subway.line.Section;
+import nextstep.subway.line.Sections;
 import nextstep.subway.line.SingleSectionRemovalException;
 import nextstep.subway.station.Station;
 import org.junit.jupiter.api.Assertions;
@@ -30,7 +31,7 @@ class LineTest {
         line.addSection(section);
 
         // then
-        assertThat(line.getSections()).contains(section);
+        assertThat(line.getSections().getSections().contains(section)).isTrue();
     }
 
     @DisplayName("추가할 세션의 하행 스테이션이 노선의 상행 종점일 때 추가할 세션이 상행 좀점 세션으로 등록된다")
@@ -50,8 +51,8 @@ class LineTest {
 
         // then
         Assertions.assertAll(
-                () -> assertThat(line.getSections().get(0)).isEqualTo(insertSection),
-                () -> assertThat(line.getSections().get(1)).isEqualTo(targetSection)
+                () -> assertThat(line.getSections().getSections().get(0)).isEqualTo(insertSection),
+                () -> assertThat(line.getSections().getSections().get(1)).isEqualTo(targetSection)
         );
     }
 
@@ -71,8 +72,9 @@ class LineTest {
         line.addSection(insertSection);
 
         // then
-        List<Section> sections = line.getSections();
-        assertThat(sections).containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 9));
+        Sections sections = line.getSections();
+        assertThat(sections.getSections())
+                .containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 9));
     }
 
     @DisplayName("추가할 세션의 하행 스테이션이 추가될 노선에 포함되고 추가될 위치의 상행스테이션과 똑같이 아니면 그사이에 추가된다")
@@ -91,7 +93,7 @@ class LineTest {
         line.addSection(insertSection);
 
         // then
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSections().getSections();
         assertThat(sections).containsOnly(new Section(강남역, 양재역, 1), new Section(양재역, 판교역, 9));
     }
 
@@ -184,7 +186,7 @@ class LineTest {
         line.deleteSection(pangyoStation);
 
         // then
-        boolean exists = line.getSections().stream()
+        boolean exists = line.getSections().getSections().stream()
                 .anyMatch(savedSection -> savedSection.containsStation(pangyoStation));
         assertThat(exists).isFalse();
     }

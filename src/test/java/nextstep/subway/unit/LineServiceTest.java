@@ -56,9 +56,7 @@ public class LineServiceTest {
 
         // then
         assertThat(
-                line.getSections().stream()
-                        .anyMatch(section -> section.containsStation(gangnamStation)
-                                && section.containsStation(yangjaeStation))
+                line.getSections().getSections().contains(new Section(gangnamStation, yangjaeStation, 1))
         ).isTrue();
     }
 
@@ -178,13 +176,9 @@ public class LineServiceTest {
         // then
         Line savedLine = lineRepository.findById(line.getId()).orElseThrow(LineNotFoundException::new);
         Assertions.assertAll(
-                () -> assertThat(savedLine.getSections().size()).isEqualTo(1),
+                () -> assertThat(savedLine.getSections().getSections().size()).isEqualTo(1),
                 () -> assertThat(
-                        savedLine.getSections().stream()
-                                .anyMatch(section ->
-                                        section.containsStation(yangjaeStation)
-                                                && section.containsStation(pangyoStation))
-                ).isFalse()
+                        savedLine.getSections().getSections().contains(yangjaeToPangyo)).isFalse()
         );
     }
 

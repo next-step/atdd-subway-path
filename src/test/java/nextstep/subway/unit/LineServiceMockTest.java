@@ -209,7 +209,7 @@ public class LineServiceMockTest {
         lineService.deleteSection(1L, 1L);
 
         // then
-        boolean exists = line.getSections().stream()
+        boolean exists = line.getSections().getSections().stream()
                 .anyMatch(savedSection -> savedSection.containsStation(pangyoStation));
         assertThat(exists).isFalse();
     }
