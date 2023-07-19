@@ -80,6 +80,12 @@ class LineTest {
         // then
         List<Section> sections = 신분당선.getSections();
         assertThat(sections).hasSize(2);
+
+        Section firstSection = sections.get(0);
+        assertSection(firstSection, "강남역", "양재역", 10);
+
+        Section secondSection = sections.get(1);
+        assertSection(secondSection, "신논현역", "강남역", 5);
     }
 
     @Test
