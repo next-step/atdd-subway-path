@@ -1,5 +1,7 @@
 package nextstep.subway.common;
 
+import nextstep.subway.common.exception.BusinessException;
+import nextstep.subway.common.exception.ValidationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class CommonExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(Exception e) {
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .internalServerError()
@@ -16,7 +18,23 @@ public class CommonExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException e) {
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(errorResponse);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(ValidationException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity
                 .badRequest()

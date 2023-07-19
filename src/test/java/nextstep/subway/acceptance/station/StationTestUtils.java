@@ -18,6 +18,8 @@ public class StationTestUtils {
     public static final Map<String, String> 삼성역_정보 = Map.of("name", "삼성역");
     public static final Map<String, String> 판교역_정보 = Map.of("name", "판교역");
 
+    public static final Map<String, String> 익명역_정보 = Map.of("name","익명역");
+
     public static Map<String, String> 역_저장_정보(Map<String, String> 역_정보, Long id) {
         Map<String, String> map = 역_정보.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
