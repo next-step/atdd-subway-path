@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
@@ -51,12 +52,13 @@ public class LineServiceMockTest {
     @Test
     void addSectionSuccess() {
         // given
-        Line line = new Line("신분당선", "#123123", new ArrayList<>());
+        Line line = mock(Line.class);
+        given(line.getId()).willReturn(1L);
         given(lineRepository.findById(any())).willReturn(Optional.of(line));
         given(stationRepository.findById(anyLong())).willReturn(Optional.of(new Station()));
 
         // when
-        LineResponse lineResponse = lineService.addSection(1L, new SectionRequest(1L, 1L, 1));
+        LineResponse lineResponse = lineService.addSection(1L, new SectionRequest(1L, 2L, 1));
 
         // then
         assertThat(lineService.searchById(lineResponse.getId())).isEqualTo(lineResponse);
@@ -222,7 +224,7 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when,then
-        assertThatThrownBy(() -> lineService.deleteSection(1L,1L)).isInstanceOf(
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L)).isInstanceOf(
                 LineNotFoundException.class);
     }
 
@@ -234,7 +236,7 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when,then
-        assertThatThrownBy(() -> lineService.deleteSection(1L,1L)).isInstanceOf(
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 1L)).isInstanceOf(
                 LineNotFoundException.class);
     }
 }

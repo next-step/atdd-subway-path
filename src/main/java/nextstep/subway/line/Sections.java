@@ -28,7 +28,16 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
+        List<Section> answerSection = new ArrayList<>();
+        Optional<Section> nowSectionOption = getTopSection();
+        while (nowSectionOption.isPresent()) {
+            Section nowSection = nowSectionOption.get();
+            answerSection.add(nowSection);
+            nowSectionOption = sections.stream()
+                    .filter(section -> section.getUpStation().equals(nowSection.getDownStation()))
+                    .findFirst();
+        }
+        return answerSection.stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
@@ -67,8 +76,8 @@ public class Sections {
             insertByDownStation(newSection, sameDownStationSection.get());
             return;
         }
-        Section topSection = getTopSection();
-        if (sameDownStationOfTopStation(newSection, topSection)) {
+        Optional<Section> topSection = getTopSection();
+        if (topSection.isPresent() && sameDownStationOfTopStation(newSection, topSection.get())) {
             insertTop(newSection);
             return;
         }
@@ -134,7 +143,7 @@ public class Sections {
         }
     }
 
-    private Section getTopSection() {
-        return sections.get(0);
+    private Optional<Section> getTopSection() {
+        return !sections.isEmpty() ? Optional.of(sections.get(0)) : Optional.empty();
     }
 }
