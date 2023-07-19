@@ -111,17 +111,17 @@ public class Sections {
                 .findFirst();
     }
 
-    private void insertByDownStation(Section inserSection, Section targetSection) {
+    private void insertByDownStation(Section insertSection, Section targetSection) {
         int targetSectionDistance = targetSection.getDistance();
-        int insertSectionDistance = inserSection.getDistance();
+        int insertSectionDistance = insertSection.getDistance();
         if (targetSectionDistance <= insertSectionDistance) {
             throw new InvalidDistanceException();
         }
         sections.remove(targetSection);
         Station targetUpStation = targetSection.getUpStation();
-        sections.add(new Section(targetUpStation, inserSection.getUpStation(),
+        sections.add(new Section(targetUpStation, insertSection.getUpStation(),
                 targetSectionDistance - insertSectionDistance));
-        sections.add(inserSection);
+        sections.add(insertSection);
     }
 
     private void insertTop(Section section) {
