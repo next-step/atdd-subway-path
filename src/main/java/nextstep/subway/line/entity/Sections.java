@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.common.exception.DeletionValidationException;
-import nextstep.subway.common.exception.ValidationException;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.entity.Station;
@@ -81,11 +80,25 @@ public class Sections {
 
     public void remove(Station station) {
         Validator.validateDeletion(this, station);
-        sections.remove(getLastSection());
-    }
+        if (checkDownStationsContains(station) && checkUpStationsContains(station)) {
+            Section sectionIncludesByDownStation = getSectionByDownStation(station);
+            Section sectionIncludesByUpStation = getSectionByUpStation(station);
 
-    public Section getLastSection() {
-        return getSectionByDownStation(getLastStation());
+            sections.remove(sectionIncludesByDownStation);
+            sections.remove(sectionIncludesByUpStation);
+
+            Section newSection = new Section(sectionIncludesByDownStation.getLine(),
+                    sectionIncludesByDownStation.getUpStation(),
+                    sectionIncludesByUpStation.getDownStation(),
+                    sectionIncludesByDownStation.getDistance() + sectionIncludesByUpStation.getDistance());
+            sections.add(newSection);
+        }
+
+        else if (checkDownStationsContains(station)) {
+            sections.remove(getSectionByDownStation(station));
+        } else if (checkUpStationsContains(station)) {
+            sections.remove(getSectionByUpStation(station));
+        }
     }
 
     public Station getFirstStation() {
@@ -187,7 +200,6 @@ public class Sections {
         }
 
         private static void validateDeletion(Sections sections, Station Station) {
-            validateDeletionEqualsLineDownStation(sections, Station);
             validateTwoMoreSectionExists(sections);
         }
 
