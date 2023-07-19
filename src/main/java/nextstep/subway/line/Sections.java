@@ -19,10 +19,6 @@ public class Sections {
     @CollectionTable(name = "line_section", joinColumns = @JoinColumn(name = "line_id"))
     private List<Section> sections = new ArrayList<>();
 
-    private static boolean sameDownStationOfTopStation(Section newSection, Section topSection) {
-        return topSection.getUpStation().equals(newSection.getDownStation());
-    }
-
     public void addAll(List<Section> sections) {
         this.sections.addAll(sections);
     }
@@ -82,6 +78,11 @@ public class Sections {
             return;
         }
         insertBottom(newSection);
+    }
+
+
+    private static boolean sameDownStationOfTopStation(Section newSection, Section topSection) {
+        return topSection.getUpStation().equals(newSection.getDownStation());
     }
 
     private Optional<Section> getSameUpStationOfSection(Section newSection) {
