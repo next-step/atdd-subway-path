@@ -22,8 +22,8 @@ git rebase upstream/songteaheon
 
 ## 3단계 - 경로 조회 기능
 - [X] 인수 테스트 목록 작성
-- [ ] 인수 테스트 작성
-- [ ] 코드 구현
+- [X] 인수 테스트 작성
+- [X] 코드 구현
 
 # 최단 거리 알고리즘 라이브러리
 ## DijkstraShortestPath
