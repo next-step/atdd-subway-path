@@ -53,6 +53,27 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * given 기존 존재하는 구간에 대해(강남역-양재역)
+     * when 한 역을 기준으로 사이에 새로운 구간을 생성 요청할 경우(강남역, 그냥역)
+     * then 새로운 구간이 사이에 생성된다(강남역-그냥역-양재역)
+     */
+    @DisplayName("지하철 구간의 역을 기준으로 새로운 구간 추가")
+    @Test
+    void addNewSectionInPreviousSection() {
+        //given
+        Long 그냥역 = 지하철역_생성_요청("그냥역").jsonPath().getLong("id");
+
+        //when
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 그냥역, 2));
+
+        //then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 그냥역);
+    }
+
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
@@ -89,6 +110,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
+        return params;
+    }
+
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
         return params;
     }
 }
