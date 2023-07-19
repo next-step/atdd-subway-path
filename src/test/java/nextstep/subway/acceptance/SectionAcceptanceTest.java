@@ -329,7 +329,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         /**
          * 지하철노선 구간 제거
          * Given 지하철 노선을 생성하고
-         * When 상행역을 제거하려 하면
+         * When 노선이 하나만 있는 상태에서 상행역을 제거하려 하면
          * Then 예외가 발생하고 실패한다.
          */
         @Test
