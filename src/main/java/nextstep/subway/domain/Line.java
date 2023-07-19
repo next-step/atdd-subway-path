@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.applicaion.dto.LineSaveRequest;
-
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,9 +24,9 @@ public class Line {
         this.color = color;
     }
 
-    public static Line createLine(LineSaveRequest request, Station upStation, Station downStation) {
-        Line line = new Line(request.getName(), request.getColor());
-        line.addSection(upStation, downStation, request.getDistance());
+    public static Line createLine(String name, String color, Station upStation, Station downStation, int distance) {
+        Line line = new Line(name, color);
+        line.addSection(upStation, downStation, distance);
         return line;
     }
 
