@@ -56,7 +56,7 @@ public class Line {
     }
 
     public void removeSection(Station station){
-        sections.removeSection(station);
+        sections.removeSection(this,station);
     }
 
     public List<Station> getOrderedStationList(){

@@ -167,46 +167,75 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
 
-
-
-
-
     /**
      * Given 지하철 역,노선, 구간을 생성하고
-     * When 생성한 구간을 삭제하면
-     * Then 해당 노선 조회 시 삭제된 노선을 조회할 수 없다
+     * When 상행종점과 하행종점을 삭제하면
+     * Then 해당 노선 조회 시 삭제된 구간을 조회할 수 없다
      */
-    @DisplayName("지하철 구간을 삭제한다")
+    @DisplayName("상행종점과 하행종점을 삭제한다")
     @Test
-    void deleteSection() {
+    void deleteSection1() {
         //given
         SectionStep.지하철구간_생성(이호선,강남역,역삼역,10L);
         SectionStep.지하철구간_생성(이호선,역삼역,선릉역,20L);
+        SectionStep.지하철구간_생성(이호선,선릉역,잠실역,20L);
 
         // when
-        ExtractableResponse<Response> response = SectionStep.지하철구간_삭제(이호선, 역삼역);
+        ExtractableResponse<Response> upStationResponse = SectionStep.지하철구간_삭제(이호선, 강남역);
+        ExtractableResponse<Response> downStationResponse = SectionStep.지하철구간_삭제(이호선, 잠실역);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(upStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(downStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        JsonPath lineJsonPath = LineStep.지하철_노선_조회(이호선);
+        assertThat(lineJsonPath.getList("stations.id", Long.class)).containsExactly(역삼역,선릉역);
     }
 
     /**
      * Given 지하철 역,노선, 구간을 생성하고
-     * When 지하철 노선에 등록된 마지막 구간이 아닌 구간을 삭제시도할 경우
-     * Then  Bad Request 400 error가 발생한다
+     * When 중간역을 삭제하면
+     * Then 해당 노선 조회 시 삭제된 구간을 조회할 수 없다
      */
-    @DisplayName("지하철 노선에 등록된 마지막 구간이 아닌 구간을 삭제한다")
+    @DisplayName("중간역을 삭제한다")
     @Test
-    void invalidDeleteSectionNotLastSection() {
+    void deleteSection2() {
         //given
         SectionStep.지하철구간_생성(이호선,강남역,역삼역,10L);
         SectionStep.지하철구간_생성(이호선,역삼역,선릉역,20L);
+        SectionStep.지하철구간_생성(이호선,선릉역,잠실역,20L);
 
         // when
-        ExtractableResponse<Response> response = SectionStep.지하철구간_삭제(이호선, 강남역);
+        ExtractableResponse<Response> upStationResponse = SectionStep.지하철구간_삭제(이호선, 역삼역);
+        ExtractableResponse<Response> downStationResponse = SectionStep.지하철구간_삭제(이호선, 선릉역);
+
+        //then
+        assertThat(upStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(downStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        JsonPath lineJsonPath = LineStep.지하철_노선_조회(이호선);
+        assertThat(lineJsonPath.getList("stations.id", Long.class)).containsExactly(강남역,잠실역);
+    }
+
+
+    /**
+     * Given 지하철 역,노선, 구간을 생성하고
+     * When 존재하지 않는 역을 삭제시도할 경우
+     * Then  Bad Request 400 error가 발생한다
+     */
+    @DisplayName("존재하지 않는 역을 삭제한다.")
+    @Test
+    void InvalidDeleteSectionNotExistsStation() {
+
+        //given
+        SectionStep.지하철구간_생성(이호선,강남역,역삼역,10L);
+        List<Long> stationIds = StationStep.지하철역_목록_전체조회().getList("id", Long.class);
+        Long 존재하지_않는_역의_PK = stationIds.get(stationIds.size() - 1) + 1L;
+
+        // when
+        ExtractableResponse<Response> response = SectionStep.지하철구간_삭제(이호선, 존재하지_않는_역의_PK);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
     }
 
     /**
@@ -227,20 +256,5 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    @DisplayName("존재하지 않는 역을 가진 구간을 삭제한다.")
-    @Test
-    void InvalidDeleteSectionNotExistsStation() {
 
-        //given
-        SectionStep.지하철구간_생성(이호선,강남역,역삼역,10L);
-        List<Long> stationIds = StationStep.지하철역_목록_전체조회().getList("id", Long.class);
-        Long 존재하지_않는_역의_PK = stationIds.get(stationIds.size() - 1) + 1L;
-
-        // when
-        ExtractableResponse<Response> response = SectionStep.지하철구간_삭제(이호선, 존재하지_않는_역의_PK);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-    }
 }
