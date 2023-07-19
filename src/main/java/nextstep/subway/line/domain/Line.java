@@ -45,7 +45,7 @@ public class Line {
     }
 
     public void addSection(Section newSection) {
-        Section lastSection = getLastSection();
+        Section lastSection = getLastSectionVer0();
         validateLastStationEqualToNewUpStation(lastSection, newSection);
         validateDuplicationOfStationInLine(newSection);
 
@@ -86,6 +86,14 @@ public class Line {
         return sections;
     }
 
+    public Section getFirstSection() {
+        return firstSection;
+    }
+
+    public Section getLastSection() {
+        return lastSection;
+    }
+
     public boolean hasStation(Station downStation) {
         return sections.stream()
                 .anyMatch(section -> section.upStationEqualsTo(downStation));
@@ -95,7 +103,7 @@ public class Line {
         validateLineHasOnlyOneSection();
         validateStationIsDownStationOfLastSection(station);
 
-        sections.remove(getLastSection());
+        sections.remove(getLastSectionVer0());
     }
 
     private void validateLineHasOnlyOneSection() {
@@ -109,12 +117,12 @@ public class Line {
     }
 
     private void validateStationIsDownStationOfLastSection(Station station) {
-        if (!getLastSection().downStationEqualsTo(station)) {
+        if (!getLastSectionVer0().downStationEqualsTo(station)) {
             throw new DeleteOnlyTerminusStationException();
         }
     }
 
-    private Section getLastSection() {
+    private Section getLastSectionVer0() {
         sections.sort(Comparator.comparing(Section::getId));
         return sections.get(sections.size() - 1);
     }
@@ -145,6 +153,11 @@ public class Line {
         }
 
         // 하행 종점에 등록
+        if (lastSection.downStationEqualsTo(newSection.getUpStation())) {
+            lastSection = newSection;
+            sections.add(newSection);
+            return;
+        }
 
         addSectionBetweenStations(newSection);
     }
