@@ -1,17 +1,20 @@
 package nextstep.subway.section;
 
+import static common.Constants.강남역;
 import static common.Constants.또다른지하철역;
 import static common.Constants.새로운지하철역;
+import static common.Constants.신논현역;
 import static common.Constants.신분당선;
 import static common.Constants.지하철역;
-import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_생성_요청;
+import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_조회_요청;
+import static nextstep.subway.section.SectionTestStepDefinition.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.station.StationTestStepDefinition.지하철_역_생성_요청;
 
 import common.AcceptanceTest;
 import java.util.List;
 import java.util.stream.Stream;
-import nextstep.subway.line.LineTestStepDefinition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -29,16 +32,69 @@ public class SectionAcceptanceTest {
     @Test
     void createSection() {
         // given
-        var lineCreateResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
         var stationResponse = 지하철_역_생성_요청(또다른지하철역);
 
         // when
-        SectionTestStepDefinition.지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
+        지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
             stationResponse.getId(), 10);
 
         // then
-        var lineResponse = LineTestStepDefinition.지하철_노선_조회_요청(lineCreateResponse.getId());
+        var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
         assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역, 또다른지하철역);
+    }
+
+    // Given 지하철 노선을 생성하고
+    // When 기존 구간과 거리가 같은 구간을 추가하면
+    // Then 구간 추가에 실패한다
+    @DisplayName("지하철 노선에 기존 구간과 거리가 같거나 큰 구간을 역 사이에 추가하면 실패한다.")
+    @Test
+    void createSection_fail_sectionDistanceIsSame() {
+        // given
+        var 강남역응답 = 지하철_역_생성_요청(강남역);
+        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, "bg-red-600", 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 신논현역응답 = 지하철_역_생성_요청(신논현역);
+
+        // when
+        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(),
+            강남역응답.getId(), 신논현역응답.getId(), 10);
+
+        // then
+        assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    // Given 지하철 노선을 생성하고
+    // When 기존 구간의 상행역과 하행역이 같은 구간을 추가하면
+    // Then 구간 추가에 실패한다
+    @DisplayName("이미 등록된 상행역과 하행역을 가진 구간을 추가하면 실패한다")
+    @Test
+    void createSection_fail_sectionAlreadyExist() {
+        // given
+        var 강남역응답 = 지하철_역_생성_요청(강남역);
+        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, "bg-red-600", 강남역응답.getId(), 지하철역응답.getId(), 10);
+
+        // when
+        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 강남역응답.getId(), 지하철역응답.getId(), 10);
+
+        // then
+        assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    // Given 지하철 노선을 생성하고
+    // When 상행역과 하행역 모두 등록되지 않은 구간을 추가하면
+    // Then 구간 추가에 실패한다
+    @DisplayName("상행역과 하행역 모두 등록되지 않은 구간을 추가하면 실패한다")
+    @Test
+    void createSection_fail_sectionNoIntersection() {
+        var 강남역응답 = 지하철_역_생성_요청(강남역);
+        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, "bg-red-600", 강남역응답.getId(), 지하철역응답.getId(), 10);
+
+        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 신논현역, 또다른지하철역, 10);
+
+        assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     // Given 지하철 노선에 구간을 추가하고
@@ -48,16 +104,16 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection() {
         // given
-        var lineCreateResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
         var stationResponse = 지하철_역_생성_요청(또다른지하철역);
-        SectionTestStepDefinition.지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
+        지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
             stationResponse.getId(), 10);
 
         // when
-        SectionTestStepDefinition.지하철_구간_제거_요청(lineCreateResponse.getId(), stationResponse.getId());
+        지하철_구간_제거_요청(lineCreateResponse.getId(), stationResponse.getId());
 
         // then
-        var lineResponse = LineTestStepDefinition.지하철_노선_조회_요청(lineCreateResponse.getId());
+        var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
         assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역);
     }
 
@@ -68,18 +124,18 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection_fail_sectionDoesNotMatchWithDownEndStationOfLine() {
         // given
-        var lineCreateResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
         var stationResponse = 지하철_역_생성_요청(또다른지하철역);
-        SectionTestStepDefinition.지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
+        지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
             stationResponse.getId(), 10);
 
         // when
-        var statusCode = SectionTestStepDefinition.지하철_구간_제거_요청_상태_코드_반환(lineCreateResponse.getId(),
+        var statusCode = 지하철_구간_제거_요청_상태_코드_반환(lineCreateResponse.getId(),
             getUpEndStationId(lineCreateResponse));
 
         // then
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        var lineResponse = LineTestStepDefinition.지하철_노선_조회_요청(lineCreateResponse.getId());
+        var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
         assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역, 또다른지하철역);
     }
 
@@ -90,14 +146,14 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection_fail_sectionOnlyExistsUpAndDownEndStationInLine() {
         // given
-        var lineCreateResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
 
         // when
-        var statusCode = SectionTestStepDefinition.지하철_구간_제거_요청_상태_코드_반환(lineCreateResponse.getId(),
+        var statusCode = 지하철_구간_제거_요청_상태_코드_반환(lineCreateResponse.getId(),
             getUpEndStationId(lineCreateResponse));
 
         // then
-        var lineResponse = LineTestStepDefinition.지하철_노선_조회_요청(lineCreateResponse.getId());
+        var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역);
     }
