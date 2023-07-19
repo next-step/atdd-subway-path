@@ -44,6 +44,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public void update(Section section) {
+        int cache = this.distance;
+        this.distance -= section.distance;
+        section.distance = cache - this.distance;
+
+
+    }
+
     public Long getId() {
         return id;
     }
