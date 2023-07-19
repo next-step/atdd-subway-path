@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
@@ -45,11 +46,19 @@ public class Section {
     }
 
     public void update(Section section) {
+        if (this.distance <= section.distance) {
+            throw new BusinessException(String.format("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다. 기존 역 사이 거리 : %s, 입력된 역 사이 거리 : %s", this.distance, section.distance));
+        }
+
         int cache = this.distance;
         this.distance -= section.distance;
         section.distance = cache - this.distance;
 
-
+        if (this.getUpStation().equals(section.getUpStation())) {
+            this.upStation = section.getDownStation();
+        } else {
+            this.downStation = section.getUpStation();
+        }
     }
 
     public Long getId() {

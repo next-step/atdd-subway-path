@@ -41,7 +41,6 @@ public class Line {
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
-        validateSection(upStation, downStation);
         this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
@@ -71,9 +70,5 @@ public class Line {
 
     public List<Section> getSections() {
         return this.sections.getSections();
-    }
-
-    private void validateSection(final Station upStation, final Station downStation) {
-        this.sections.validate(upStation, downStation);
     }
 }

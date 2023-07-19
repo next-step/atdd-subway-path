@@ -1,8 +1,11 @@
 package nextstep.subway.section;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
@@ -30,19 +33,40 @@ public class Sections {
     }
 
     public void add(Section section) {
+        if (this.sections.isEmpty()) {
+            this.sections.add(section);
+            return;
+        }
+
+        Station upEndStation = getUpEndStation();
+
+        // 역 기준으로 하행 구간을 역으로 찾을 수 있다
+        Map<Station, Section> upSectionMap = new HashMap<>();
+        for (Section oldSection : sections) {
+            upSectionMap.put(oldSection.getUpStation(), oldSection);
+
+            if (oldSection.getUpStation().equals(section.getUpStation()) && oldSection.getDownStation().equals(section.getDownStation())) {
+                throw new BusinessException(String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s", section.getUpStation().getId(), section.getDownStation().getId()));
+            }
+        }
+
+        List<Station> stations = new ArrayList<>(List.of(sections.get(0).getUpStation()));
+        stations.addAll(sections.stream().map(Section::getDownStation).collect(Collectors.toList()));
+        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+            throw new BusinessException(String.format("상행역과 하행역 중 하나는 등록되어 있어야 합니다. 상행역ID: %s, 하행역ID: %s", section.getUpStation().getId(), section.getDownStation().getId()));
+        }
+
+        Station currentUpStation = upEndStation;
+        while (upSectionMap.containsKey(currentUpStation)) {
+            Section currentSection = upSectionMap.get(currentUpStation);
+            if (currentSection.getUpStation().equals(section.getUpStation()) || currentSection.getDownStation().equals(section.getDownStation())) {
+                currentSection.update(section);
+                break;
+            }
+            currentUpStation = currentSection.getDownStation();
+        }
+
         sections.add(section);
-    }
-
-    public void validate(final Station upStation, final Station downStation) {
-        if (isAlreadyRegisteredDownStation(downStation)) {
-            throw new BusinessException(
-                "이미 등록된 역을 하행역으로 가지면 구간을 추가할 수 없습니다. 하행역ID: " + downStation.getId());
-        }
-
-        if (!getLastSection().getDownStation().equals(upStation)) {
-            throw new BusinessException(
-                "하행 종점이 아닌 역을 상행역으로 가지면 구간을 추가할 수 없습니다. 상행역ID: " + upStation.getId());
-        }
     }
 
     public void delete(final Station station) {
@@ -57,12 +81,52 @@ public class Sections {
         sections.remove(getLastSection());
     }
 
+    public Section getLastSection() {
+        return this.sections.get(this.sections.size() - 1);
+    }
+
     public List<Station> getStations() {
         return toStations();
     }
 
     public List<Section> getSections() {
         return this.sections;
+    }
+
+    private Station getUpEndStation() {
+        Set<Station> upStations = new HashSet<>();
+        Set<Station> downStations = new HashSet<>();
+
+        for (Section section : sections) {
+            upStations.add(section.getUpStation());
+            downStations.add(section.getDownStation());
+        }
+
+        for (Station upStation : upStations) {
+            if (!downStations.contains(upStation)) {
+                return upStation;
+            }
+        }
+
+        throw new BusinessException("상행 종점역을 찾을 수 없습니다.");
+    }
+
+    private Station getDownEndStation() {
+        Set<Station> upStations = new HashSet<>();
+        Set<Station> downStations = new HashSet<>();
+
+        for (Section section : sections) {
+            upStations.add(section.getUpStation());
+            downStations.add(section.getDownStation());
+        }
+
+        for (Station downStation : downStations) {
+            if (!upStations.contains(downStation)) {
+                return downStation;
+            }
+        }
+
+        throw new BusinessException("하행 종점역을 찾을 수 없습니다.");
     }
 
     private List<Station> toStations() {
@@ -85,7 +149,4 @@ public class Sections {
             .getUpStation().equals(downStation);
     }
 
-    public Section getLastSection() {
-        return this.sections.get(this.sections.size() - 1);
-    }
 }

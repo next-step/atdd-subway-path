@@ -41,31 +41,7 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(aSection().build()));
 
         // when & then
-        sections.validate(new Station(2L, 신논현역), new Station(3L, 지하철역));
-    }
-
-    @DisplayName("구간 추가시 이미 등록된 역을 하행선으로 가지면 예외를 발생시킨다")
-    @Test
-    void validateSection_fail_duplicatedDownStation() {
-        // given
-        Sections sections = new Sections(List.of(aSection().build()));
-
-        // when & then
-        assertThatThrownBy(() -> sections.validate(new Station(3L, 지하철역), new Station(2L, 신논현역)))
-            .isInstanceOf(BusinessException.class);
-    }
-
-    @DisplayName("구간 추가시 하행 종점역이 아닌 역을 상행선으로 가지면 실패한다")
-    @Test
-    void validateSection_fail_upStationDoesNotMatchWithDownEndStation() {
-        // given
-        Section firstSection = aSection().build();
-        Section midSection = aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
-        Sections sections = new Sections(List.of(firstSection, midSection));
-
-        // when & then
-        assertThatThrownBy(() -> sections.validate(new Station(2L, 신논현역), new Station(4L, 새로운지하철역)))
-            .isInstanceOf(BusinessException.class);
+        sections.add(new Section(null, new Station(2L, 신논현역), new Station(3L, 지하철역), 10));
     }
 
     @DisplayName("add() : 역 사이에 새로운 역을 등록에 성공한다")
@@ -78,7 +54,7 @@ public class SectionsTest {
         sections.add(newSection);
 
         assertAll(
-            () -> assertThat(sections.getStations()).hasSize(2),
+            () -> assertThat(sections.getSections()).hasSize(2),
             () -> assertThat(oldSection.getDistance()).isEqualTo(5),
             () -> assertThat(newSection.getDistance()).isEqualTo(5));
     }
@@ -93,7 +69,7 @@ public class SectionsTest {
         sections.add(newSection);
 
         assertAll(
-            () -> assertThat(sections.getStations()).hasSize(2),
+            () -> assertThat(sections.getSections()).hasSize(2),
             () -> assertThat(oldSection.getDistance()).isEqualTo(10),
             () -> assertThat(newSection.getDistance()).isEqualTo(10));
     }
@@ -108,7 +84,7 @@ public class SectionsTest {
         sections.add(newSection);
 
         assertAll(
-            () -> assertThat(sections.getStations()).hasSize(2),
+            () -> assertThat(sections.getSections()).hasSize(2),
             () -> assertThat(oldSection.getDistance()).isEqualTo(10),
             () -> assertThat(newSection.getDistance()).isEqualTo(10));
     }
