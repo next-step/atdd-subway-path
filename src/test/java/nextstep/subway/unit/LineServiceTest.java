@@ -8,15 +8,15 @@ import nextstep.subway.controller.request.SectionAddRequest;
 import nextstep.subway.controller.resonse.LineResponse;
 import nextstep.subway.controller.resonse.StationResponse;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.command.SectionAddCommand;
 import nextstep.subway.domain.exception.IllegalSectionStationException;
 import nextstep.subway.domain.exception.NotEnoughSectionException;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.LineService;
-import nextstep.subway.domain.command.SectionAddCommand;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +36,23 @@ class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    private Line secondaryLine;
+    private Station gangnameStation;
+    private Station eonjuStation;
+    private Station seongsuStation;
+
+    @BeforeEach
+    void setUp() {
+        gangnameStation = getStation("강남역");
+        eonjuStation = getStation("언주역");
+        seongsuStation = getStation("성수역");
+        secondaryLine = getLine("2호선", "bg-green-300", gangnameStation, eonjuStation, 10L);
+    }
+
     @Test
     void 노선_생성() {
         // given
-        Station upStation = getStation("강남역");
-        Station downStation = getStation("언주역");
-        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "bg-green-300", upStation.getId(), downStation.getId(), 10L);
+        LineCreateRequest lineCreateRequest = new LineCreateRequest("2호선", "bg-green-300", gangnameStation.getId(), eonjuStation.getId(), 10L);
 
         // when
         LineResponse response = lineService.saveLine(lineCreateRequest);
@@ -53,11 +64,6 @@ class LineServiceTest {
 
     @Test
     void 노선_목록_조회() {
-        // given
-        Station upStation = getStation("강남역");
-        Station downStation = getStation("언주역");
-        getLine("2호선", "bg-green-300", upStation, downStation, 10L);
-
         // when
         List<LineResponse> lines = lineService.findAllLines();
 
@@ -70,13 +76,8 @@ class LineServiceTest {
 
     @Test
     void 노선_단건_조회() {
-        // given
-        Station upStation = getStation("강남역");
-        Station downStation = getStation("언주역");
-        Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
-
         // when
-        LineResponse response = lineService.findLineById(line.getId());
+        LineResponse response = lineService.findLineById(secondaryLine.getId());
 
         // then
         verifyLineResponse(response, "2호선", "bg-green-300", 10L);
@@ -86,58 +87,44 @@ class LineServiceTest {
     @Test
     void 노선_단건_조회_했으나_찾지_못한_경우() {
         // when & then
-        thenCode(() -> lineService.findLineById(1L)).isInstanceOf(NotFoundLineException.class);
+        thenCode(() -> lineService.findLineById(10L)).isInstanceOf(NotFoundLineException.class);
     }
 
     @Test
     void 노선_정보_수정() {
         // given
-        Station upStation = getStation("강남역");
-        Station downStation = getStation("언주역");
-        Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
         LineModifyRequest request = new LineModifyRequest(("3호선"), "bg-red-700");
 
         // when
-        lineService.modifyLine(line.getId(), request);
+        lineService.modifyLine(secondaryLine.getId(), request);
 
         // then
-        LineResponse response = lineService.findLineById(line.getId());
+        LineResponse response = lineService.findLineById(secondaryLine.getId());
         verifyLineResponse(response, "3호선", "bg-red-700", 10L);
         verifyStationResponse(response, "강남역", "언주역");
     }
 
     @Test
     void 노선_제거() {
-        // given
-        Station upStation = getStation("강남역");
-        Station downStation = getStation("언주역");
-        Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
-
         // when
-        lineService.deleteLineById(line.getId());
+        lineService.deleteLineById(secondaryLine.getId());
 
         // then
-        thenCode(() -> lineService.findLineById(line.getId())).isInstanceOf(NotFoundLineException.class);
+        thenCode(() -> lineService.findLineById(secondaryLine.getId())).isInstanceOf(NotFoundLineException.class);
     }
 
     @Test
     void 구간_추가() {
         // given
-        Station upStation = getStation("강남역");
-        Station downStation = getStation("언주역");
-        Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
-
-        Station newStation = getStation("길음역");
-
-        SectionAddCommand sectionAddCommand = new SectionAddRequest((downStation.getId()), newStation.getId(), 3L);
+        SectionAddCommand sectionAddCommand = new SectionAddRequest((eonjuStation.getId()), seongsuStation.getId(), 3L);
 
         // when
-        lineService.addSection(line.getId(), sectionAddCommand);
+        lineService.addSection(secondaryLine.getId(), sectionAddCommand);
 
         // then
-        LineResponse response = lineService.findLineById(line.getId());
+        LineResponse response = lineService.findLineById(secondaryLine.getId());
         verifyLineResponse(response, "2호선", "bg-green-300", 13L);
-        verifyStationResponse(response, "강남역", "언주역", "길음역");
+        verifyStationResponse(response, "강남역", "언주역", "성수역");
     }
 
 
@@ -147,49 +134,37 @@ class LineServiceTest {
         @Test
         void 상행역_구간_제거() {
             // given
-            Station upStation = getStation("강남역");
-            Station downStation = getStation("언주역");
-            Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
+            SectionAddCommand sectionAddCommand = new SectionAddRequest((eonjuStation.getId()), seongsuStation.getId(), 3L);
+            lineService.addSection(secondaryLine.getId(), sectionAddCommand);
 
-            Station newStation = getStation("길음역");
-
-            SectionAddCommand sectionAddCommand = new SectionAddRequest((downStation.getId()), newStation.getId(), 3L);
-            lineService.addSection(line.getId(), sectionAddCommand);
-
-            LineResponse savedLineResponse = lineService.findLineById(line.getId());
+            LineResponse savedLineResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(savedLineResponse, "2호선", "bg-green-300", 13L);
-            verifyStationResponse(savedLineResponse, "강남역", "언주역", "길음역");
+            verifyStationResponse(savedLineResponse, "강남역", "언주역", "성수역");
 
             // when
-            lineService.deleteStationAtLine(line.getId(), upStation.getId());
+            lineService.deleteStationAtLine(secondaryLine.getId(), gangnameStation.getId());
 
             // then
-            LineResponse deletedStationResponse = lineService.findLineById(line.getId());
+            LineResponse deletedStationResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(deletedStationResponse, "2호선", "bg-green-300", 3L);
-            verifyStationResponse(deletedStationResponse,  "언주역", "길음역");
+            verifyStationResponse(deletedStationResponse, "언주역", "성수역");
         }
 
         @Test
         void 하행역_구간_제거() {
             // given
-            Station upStation = getStation("강남역");
-            Station downStation = getStation("언주역");
-            Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
+            SectionAddCommand sectionAddCommand = new SectionAddRequest((eonjuStation.getId()), seongsuStation.getId(), 3L);
+            lineService.addSection(secondaryLine.getId(), sectionAddCommand);
 
-            Station newStation = getStation("길음역");
-
-            SectionAddCommand sectionAddCommand = new SectionAddRequest((downStation.getId()), newStation.getId(), 3L);
-            lineService.addSection(line.getId(), sectionAddCommand);
-
-            LineResponse savedLineResponse = lineService.findLineById(line.getId());
+            LineResponse savedLineResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(savedLineResponse, "2호선", "bg-green-300", 13L);
-            verifyStationResponse(savedLineResponse, "강남역", "언주역", "길음역");
+            verifyStationResponse(savedLineResponse, "강남역", "언주역", "성수역");
 
             // when
-            lineService.deleteStationAtLine(line.getId(), newStation.getId());
+            lineService.deleteStationAtLine(secondaryLine.getId(), seongsuStation.getId());
 
             // then
-            LineResponse deletedStationResponse = lineService.findLineById(line.getId());
+            LineResponse deletedStationResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(deletedStationResponse, "2호선", "bg-green-300", 10L);
             verifyStationResponse(deletedStationResponse, "강남역", "언주역");
         }
@@ -197,70 +172,55 @@ class LineServiceTest {
         @Test
         void 중간역_구간_제거() {
             // given
-            Station upStation = getStation("강남역");
-            Station downStation = getStation("언주역");
-            Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
+            SectionAddCommand sectionAddCommand = new SectionAddRequest((eonjuStation.getId()), seongsuStation.getId(), 3L);
+            lineService.addSection(secondaryLine.getId(), sectionAddCommand);
 
-            Station newStation = getStation("길음역");
-
-            SectionAddCommand sectionAddCommand = new SectionAddRequest((downStation.getId()), newStation.getId(), 3L);
-            lineService.addSection(line.getId(), sectionAddCommand);
-
-            LineResponse savedLineResponse = lineService.findLineById(line.getId());
+            LineResponse savedLineResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(savedLineResponse, "2호선", "bg-green-300", 13L);
-            verifyStationResponse(savedLineResponse, "강남역", "언주역", "길음역");
+            verifyStationResponse(savedLineResponse, "강남역", "언주역", "성수역");
 
             // when
-            lineService.deleteStationAtLine(line.getId(), downStation.getId());
+            lineService.deleteStationAtLine(secondaryLine.getId(), eonjuStation.getId());
 
             // then
-            LineResponse deletedStationResponse = lineService.findLineById(line.getId());
+            LineResponse deletedStationResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(deletedStationResponse, "2호선", "bg-green-300", 13L);
-            verifyStationResponse(deletedStationResponse, "강남역", "길음역");
+            verifyStationResponse(deletedStationResponse, "강남역", "성수역");
         }
 
         @Test
         void 없는_역을_제거_할수_없다() {
             // given
-            Station upStation = getStation("강남역");
-            Station downStation = getStation("언주역");
-            Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
-
-            Station newStation = getStation("길음역");
             Station notInSectionStation = getStation("고척역");
 
-            SectionAddCommand sectionAddCommand = new SectionAddRequest((downStation.getId()), newStation.getId(), 3L);
-            lineService.addSection(line.getId(), sectionAddCommand);
+            SectionAddCommand sectionAddCommand = new SectionAddRequest((eonjuStation.getId()), seongsuStation.getId(), 3L);
+            lineService.addSection(secondaryLine.getId(), sectionAddCommand);
 
-            LineResponse savedLineResponse = lineService.findLineById(line.getId());
+            LineResponse savedLineResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(savedLineResponse, "2호선", "bg-green-300", 13L);
-            verifyStationResponse(savedLineResponse, "강남역", "언주역", "길음역");
+            verifyStationResponse(savedLineResponse, "강남역", "언주역", "성수역");
 
             // when & then
-            thenCode(() -> lineService.deleteStationAtLine(line.getId(), notInSectionStation.getId())).isInstanceOf(IllegalSectionStationException.class);
+            thenCode(() -> lineService.deleteStationAtLine(secondaryLine.getId(), notInSectionStation.getId())).isInstanceOf(IllegalSectionStationException.class);
 
             // then
-            LineResponse deletedStationResponse = lineService.findLineById(line.getId());
+            LineResponse deletedStationResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(deletedStationResponse, "2호선", "bg-green-300", 13L);
-            verifyStationResponse(deletedStationResponse, "강남역", "언주역", "길음역");
+            verifyStationResponse(deletedStationResponse, "강남역", "언주역", "성수역");
         }
 
         @Test
         void 단일_구간_상행역_제거_불가() {
             // given
-            Station upStation = getStation("강남역");
-            Station downStation = getStation("언주역");
-            Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
-
-            LineResponse savedLineResponse = lineService.findLineById(line.getId());
+            LineResponse savedLineResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(savedLineResponse, "2호선", "bg-green-300", 10L);
             verifyStationResponse(savedLineResponse, "강남역", "언주역");
 
             // when & then
-            thenCode(() -> lineService.deleteStationAtLine(line.getId(), upStation.getId())).isInstanceOf(NotEnoughSectionException.class);
+            thenCode(() -> lineService.deleteStationAtLine(secondaryLine.getId(), gangnameStation.getId())).isInstanceOf(NotEnoughSectionException.class);
 
             // then
-            LineResponse deletedStationResponse = lineService.findLineById(line.getId());
+            LineResponse deletedStationResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(deletedStationResponse, "2호선", "bg-green-300", 10L);
             verifyStationResponse(deletedStationResponse, "강남역", "언주역");
         }
@@ -268,34 +228,29 @@ class LineServiceTest {
         @Test
         void 단일_구간_하행역_제거_불가() {
             // given
-            Station upStation = getStation("강남역");
-            Station downStation = getStation("언주역");
-            Line line = getLine("2호선", "bg-green-300", upStation, downStation, 10L);
-
-            LineResponse savedLineResponse = lineService.findLineById(line.getId());
+            LineResponse savedLineResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(savedLineResponse, "2호선", "bg-green-300", 10L);
             verifyStationResponse(savedLineResponse, "강남역", "언주역");
 
             // when & then
-            thenCode(() -> lineService.deleteStationAtLine(line.getId(), downStation.getId())).isInstanceOf(NotEnoughSectionException.class);
+            thenCode(() -> lineService.deleteStationAtLine(secondaryLine.getId(), eonjuStation.getId())).isInstanceOf(NotEnoughSectionException.class);
 
             // then
-            LineResponse deletedStationResponse = lineService.findLineById(line.getId());
+            LineResponse deletedStationResponse = lineService.findLineById(secondaryLine.getId());
             verifyLineResponse(deletedStationResponse, "2호선", "bg-green-300", 10L);
             verifyStationResponse(deletedStationResponse, "강남역", "언주역");
         }
     }
 
-
     private Line getLine(String name, String color, Station upStation, Station downStation, long distance) {
-        Line line = Line.builder()
+        Line secondaryLine = Line.builder()
                 .name(name)
                 .color(color)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(distance)
                 .build();
-        return lineRepository.save(line);
+        return lineRepository.save(secondaryLine);
     }
 
     private Station getStation(String name) {
