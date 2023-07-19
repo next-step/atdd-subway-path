@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.Section;
 import nextstep.subway.station.entity.Station;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -78,7 +79,8 @@ class LineTest {
     void stationRegistrationBetweenStationsFailBySameOrBiggerDistance() {
         // when
         int sameDistanceComparedToSectionAC = 이호선.getDistance();
-        이호선.addSection(new Section(이호선, 익명역, 역삼역, sameDistanceComparedToSectionAC));
+        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 익명역, 역삼역, sameDistanceComparedToSectionAC)))
+                .isInstanceOf(IllegalArgumentException.class);
 
         // then
         assertThat(이호선.getStations()).doesNotContain(익명역);
@@ -91,21 +93,21 @@ class LineTest {
         이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
 
         // when
-        이호선.addSection(new Section(이호선, 강남역, 역삼역, 10));
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
-
-        // then
-        assertThat(이호선.getStations()).hasSize(3);
+        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 강남역, 역삼역, 10)))
+                .isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("구간 등록 에러, 상행역과 하행역이 모두 노선에 포함되있지 않은 구간을 추가")
+    @DisplayName("구간 등록 실패, 상행역과 하행역이 모두 노선에 포함되있지 않은 구간을 추가")
     @Test
     void stationRegistrationFailByLineDoNotContainSectionRelatedStations() {
         // given
         이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
 
         // when
-        이호선.addSection(new Section(이호선, 익명역, 판교역, 10));
+        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 익명역, 판교역, 10)))
+                .isInstanceOf(IllegalArgumentException.class);
 
         // then
         assertThat(이호선.getStations()).doesNotContain(익명역);

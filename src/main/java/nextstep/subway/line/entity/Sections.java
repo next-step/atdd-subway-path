@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sections {
 
-    private final int FIRST_IDX = 0;
-
     @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<Section> sections = new ArrayList<>();
 
@@ -138,6 +136,8 @@ public class Sections {
     private static class Validator {
         static void validateEnrollment(Sections sections, Section section) {
 
+            validateOnlyOneStationIsEnrolledInLine(sections, section);
+
             if (newSectionUpStationMatchLastStation(sections, section)) {
                 validateNewSectionUpStationEqualsLineDownStation(sections, section);
                 validateNewSectionDownStationIsNewcomer(sections, section);
@@ -146,10 +146,12 @@ public class Sections {
             if (newSectionDownStationMatchTopStation(sections, section)) {
                 return;
             }
-            if (newSectionDownStationMatchLastStation(sections, section)) {
+            if (newSectionUpStationMatchAnyUpStation(sections, section)) {
+                validateNewSectionLengthSmaller(sections.getSectionByUpStation(section.getUpStation()), section);
                 return;
             }
-            if (newStationUpStationMatchTopStation(sections, section)) {
+            if (newSectionDownStationMatchAnyDownStation(sections, section)) {
+                validateNewSectionLengthSmaller(sections.getSectionByDownStation(section.getDownStation()), section);
                 return;
             }
 
@@ -158,9 +160,13 @@ public class Sections {
                     section.getUpStation().getId(), section.getDownStation().getId()));
         }
 
-        private static boolean newSectionDownStationMatchLastStation(Sections sections, Section section) {
-            return sections.equalsLastStation(section.getDownStation());
+        private static void validateOnlyOneStationIsEnrolledInLine(Sections sections, Section section) {
+            if (sections.getUpStations().contains(section.getUpStation()) &&
+                    sections.getDownStations().contains(section.getDownStation())) {
+                throw new IllegalArgumentException("새로운 구간의 상행역과 하행역 둘중 한개는 노선에 등록돼있어야합니다.");
+            }
         }
+
 
         private static boolean newSectionUpStationMatchLastStation(Sections sections, Section section) {
             return sections.equalsLastStation(section.getUpStation());
@@ -169,8 +175,11 @@ public class Sections {
         private static boolean newSectionDownStationMatchTopStation(Sections sections, Section section) {
             return sections.getFirstStation().equalsId(section.getDownStation());
         }
-        private static boolean newStationUpStationMatchTopStation(Sections sections, Section section) {
+        private static boolean newSectionUpStationMatchAnyUpStation(Sections sections, Section section) {
             return sections.getUpStations().contains(section.getUpStation());
+        }
+        private static boolean newSectionDownStationMatchAnyDownStation(Sections sections, Section section) {
+            return sections.equalsLastStation(section.getDownStation());
         }
 
         private static void validateDeletion(Sections sections, Station Station) {
@@ -199,6 +208,12 @@ public class Sections {
         private static void validateDeletionEqualsLineDownStation(Sections sections, Station station) {
             if (!sections.getLastStation().equalsId(station)) {
                 throw new IllegalArgumentException(String.format("노선의 마지막 역이 아닙니다. 역id:%s", station.getId()));
+            }
+        }
+
+        private static void validateNewSectionLengthSmaller(Section originalSection, Section section) {
+            if (section.getDistance().compareTo(originalSection.getDistance()) != -1) {
+                throw new IllegalArgumentException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
             }
         }
     }
