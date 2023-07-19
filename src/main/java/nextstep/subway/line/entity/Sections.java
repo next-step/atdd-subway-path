@@ -144,11 +144,11 @@ public class Sections {
             validateOnlyOneStationIsEnrolledInLine(sections, section);
 
             if (newSectionUpStationMatchLastStation(sections, section)) {
-                validateNewSectionUpStationEqualsLineDownStation(sections, section);
                 validateNewSectionDownStationIsNewcomer(sections, section);
                 return;
             }
             if (newSectionDownStationMatchTopStation(sections, section)) {
+                validateNewSectionUpStationIsNewcomer(sections, section);
                 return;
             }
             if (newSectionUpStationMatchAnyUpStation(sections, section)) {
@@ -172,7 +172,7 @@ public class Sections {
             return sections.getFirstStation().equalsId(section.getDownStation());
         }
         private static boolean newSectionUpStationMatchAnyUpStation(Sections sections, Section section) {
-            return sections.getUpStations().contains(section.getUpStation());
+            return sections.checkUpStationsContains(section.getUpStation());
         }
         private static boolean newSectionDownStationMatchAnyDownStation(Sections sections, Section section) {
             return sections.equalsLastStation(section.getDownStation());
@@ -184,8 +184,8 @@ public class Sections {
         }
 
         private static void validateOnlyOneStationIsEnrolledInLine(Sections sections, Section section) {
-            if (sections.getUpStations().contains(section.getUpStation()) &&
-                    sections.getDownStations().contains(section.getDownStation())) {
+            if (sections.checkUpStationsContains(section.getUpStation()) &&
+                    sections.checkDownStationsContains(section.getDownStation())) {
                 throw new CreationValidationException("새로운 구간의 상행역과 하행역 둘중 한개는 노선에 등록돼있어야합니다.");
             }
         }
@@ -196,9 +196,9 @@ public class Sections {
             }
         }
 
-        private static void validateNewSectionUpStationEqualsLineDownStation(Sections sections, Section section) {
-            if (!section.getUpStation().equalsId(sections.getLastStation())) {
-                throw new CreationValidationException("새로운 구간의 상행 역이 해당 노선에 등록되어있는 하행 종착역이 아님.");
+        private static void validateNewSectionUpStationIsNewcomer(Sections sections, Section section) {
+            if (sections.hasStation(section.getUpStation())) {
+                throw new CreationValidationException("새로운 구간의 하행역이 해당 노선에 등록되어있는 역임.");
             }
         }
 
@@ -219,5 +219,13 @@ public class Sections {
                 throw new CreationValidationException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
             }
         }
+    }
+
+    private boolean checkDownStationsContains(Station station) {
+        return getDownStations().contains(station);
+    }
+
+    private boolean checkUpStationsContains(Station station) {
+        return getUpStations().contains(station);
     }
 }

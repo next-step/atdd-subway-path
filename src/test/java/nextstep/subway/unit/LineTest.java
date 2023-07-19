@@ -77,6 +77,18 @@ class LineTest {
         assertThat(이호선.getStations()).contains(익명역);
     }
 
+    @DisplayName("구간을 등록 실패. 기존 구간 A-B-C에 새 구간 B-A 추가. B는 이미 존재하는 구간")
+    @Test
+    void stationRegistrationFailByNewTopStationAdvocateAlreadyExists() {
+        // given
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+
+        // when
+        int sameDistanceComparedToSectionAC = 이호선.getDistance();
+        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 강남역, sameDistanceComparedToSectionAC)))
+                .isInstanceOf(CreationValidationException.class);
+    }
+
     @DisplayName("구간을 등록 실패. 기존 구간 A-C 보다 신규 구간 B-C 길이가 크거나 같음")
     @Test
     void stationRegistrationBetweenStationsFailBySameOrBiggerDistance() {
