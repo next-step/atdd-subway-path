@@ -168,14 +168,17 @@ public class Sections {
                 validateNewSectionDownStationIsNewcomer(sections, section);
                 return;
             }
+            
             if (newSectionDownStationMatchTopStation(sections, section)) {
                 validateNewSectionUpStationIsNewcomer(sections, section);
                 return;
             }
+
             if (newSectionUpStationMatchAnyUpStation(sections, section)) {
                 validateNewSectionLengthSmaller(sections.getSectionByUpStation(section.getUpStation()), section);
                 return;
             }
+
             if (newSectionDownStationMatchAnyDownStation(sections, section)) {
                 validateNewSectionLengthSmaller(sections.getSectionByDownStation(section.getDownStation()), section);
                 return;
@@ -192,9 +195,11 @@ public class Sections {
         private static boolean newSectionDownStationMatchTopStation(Sections sections, Section section) {
             return sections.getFirstStation().equalsId(section.getDownStation());
         }
+
         private static boolean newSectionUpStationMatchAnyUpStation(Sections sections, Section section) {
             return sections.checkUpStationsContains(section.getUpStation());
         }
+
         private static boolean newSectionDownStationMatchAnyDownStation(Sections sections, Section section) {
             return sections.equalsLastStation(section.getDownStation());
         }
