@@ -123,8 +123,8 @@ public class Sections {
         return sections.size();
     }
 
-    private boolean hasStation(Station downStation) {
-        return getStations().contains(downStation);
+    private boolean hasStation(Station station) {
+        return getStations().contains(station);
     }
 
     private boolean equalsLastStation(Station station) {
@@ -199,8 +199,9 @@ public class Sections {
             return sections.equalsLastStation(section.getDownStation());
         }
 
-        private static void validateDeletion(Sections sections, Station Station) {
+        private static void validateDeletion(Sections sections, Station station) {
             validateTwoMoreSectionExists(sections);
+            validateExistingStation(sections, station);
         }
 
         private static void validateOnlyOneStationIsEnrolledInLine(Sections sections, Section section) {
@@ -222,21 +223,21 @@ public class Sections {
             }
         }
 
+        private static void validateNewSectionLengthSmaller(Section originalSection, Section section) {
+            if (section.getDistance().compareTo(originalSection.getDistance()) != -1) {
+                throw new CreationValidationException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
+            }
+        }
+
         private static void validateTwoMoreSectionExists(Sections sections) {
             if (sections.size() == 1) {
                 throw new DeletionValidationException("상행 종점역과 하행 종점역만 존재합니다.");
             }
         }
 
-        private static void validateDeletionEqualsLineDownStation(Sections sections, Station station) {
-            if (!sections.getLastStation().equalsId(station)) {
-                throw new DeletionValidationException(String.format("노선의 마지막 역이 아닙니다. 역id:%s", station.getId()));
-            }
-        }
-
-        private static void validateNewSectionLengthSmaller(Section originalSection, Section section) {
-            if (section.getDistance().compareTo(originalSection.getDistance()) != -1) {
-                throw new CreationValidationException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
+        private static void validateExistingStation(Sections sections, Station station) {
+            if (!sections.hasStation(station)) {
+                throw new DeletionValidationException(String.format("역이 존재하지 않습니다. 역 이름:%s", station.getId()));
             }
         }
     }
