@@ -43,12 +43,8 @@ public class LineService {
     public void updateLine(Long lineId, LineUpdateRequest lineRequest) {
         Line line = findLineById(lineId);
 
-        if (lineRequest.getName() != null) {
-            line.updateName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.updateColor(lineRequest.getColor());
-        }
+        line.updateName(lineRequest.getName());
+        line.updateColor(lineRequest.getColor());
     }
 
     @Transactional
