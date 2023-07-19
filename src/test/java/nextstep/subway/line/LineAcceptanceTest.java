@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static common.Constants.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 노선 관련 기능 인수 테스트")
 @AcceptanceTest
 public class LineAcceptanceTest {
 

@@ -17,7 +17,7 @@ import nextstep.subway.station.Station;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-@DisplayName("구간 관련")
+@DisplayName("구간 관리 기능 단위테스트")
 public class SectionsTest {
 
     @DisplayName("마지막 순서의 구간을 만든다")

@@ -10,7 +10,7 @@ import static common.Constants.신논현역;
 import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.station.StationTestStepDefinition.*;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("지하철역 관련 기능 인수 테스트")
 @AcceptanceTest
 public class StationAcceptanceTest {
 

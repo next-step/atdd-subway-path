@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.station.Station;
 
-@DisplayName("지하철 구간 관련 기능")
+@DisplayName("지하철 구간 관련 기능 인수 테스트")
 @AcceptanceTest
 public class SectionAcceptanceTest {
 

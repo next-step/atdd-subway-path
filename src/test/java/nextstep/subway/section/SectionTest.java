@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.station.Station;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+@DisplayName("구간 관련 기능 단위테스트")
 class SectionTest {
 
     @DisplayName("update() : 상행역이 겹치면 거리를 수정하고 상행역을 입력된 상행역으로 수정한다")
@@ -57,8 +57,6 @@ class SectionTest {
         );
     }
 
-    // TODO: 뭔가 유닛테스트인데 시나리오 테스트가 되어가는 느낌...?
-    // TODO: 중복 테스트가 많은 느낌
     @DisplayName("update() : 입력된 구간의 거리가 더 크면 실패한다")
     @ParameterizedTest
     @ValueSource(ints = {10, 12, 13})
