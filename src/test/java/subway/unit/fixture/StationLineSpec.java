@@ -1,4 +1,4 @@
-package fixture;
+package subway.unit.fixture;
 
 import subway.domain.Station;
 import subway.domain.StationLine;

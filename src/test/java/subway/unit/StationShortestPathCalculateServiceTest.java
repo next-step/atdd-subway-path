@@ -1,15 +1,11 @@
 package subway.unit;
 
-import fixture.StationLineSpec;
-import fixture.StationSpec;
+import subway.unit.fixture.StationLineSpec;
+import subway.unit.fixture.StationSpec;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import subway.domain.Station;
 import subway.domain.StationLine;
 import subway.domain.StationLineSection;
@@ -26,15 +22,13 @@ import java.util.stream.Collectors;
 
 import static utils.UnitTestUtils.createEntityTestIds;
 
-@ExtendWith(MockitoExtension.class)
-@SpringBootTest
 public class StationShortestPathCalculateServiceTest {
-    @Autowired
-    StationShortestPathCalculateService stationShortestPathCalculateService;
+    StationShortestPathCalculateService stationShortestPathCalculateService = new StationShortestPathCalculateService();
 
     Map<String, Station> stationByName;
     List<Station> stations;
     List<StationLine> stationLines;
+    List<StationLineSection> stationLineSections;
 
     @BeforeEach
     void setUp() {
@@ -66,6 +60,12 @@ public class StationShortestPathCalculateServiceTest {
         stationLines = List.of(line_1, line_2, line_3, line_4, line_5);
         createEntityTestIds(stationLines, 1L);
 
+        stationLineSections = stationLines.stream()
+                .map(StationLine::getSections)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        createEntityTestIds(stationLineSections, 1L);
+
         final List<StationLineSection> stationLineSections = stationLines.stream()
                 .map(StationLine::getSections)
                 .flatMap(Collection::stream)
@@ -80,8 +80,7 @@ public class StationShortestPathCalculateServiceTest {
         final ShortestStationPath path = stationShortestPathCalculateService.calculateShortestPath(
                 stationByName.get("A역"),
                 stationByName.get("E역"),
-                stations,
-                stationLines);
+                stationLineSections);
 
         //then
         final BigDecimal expectedDistance = BigDecimal.valueOf(17);
@@ -108,8 +107,7 @@ public class StationShortestPathCalculateServiceTest {
                 () -> stationShortestPathCalculateService.calculateShortestPath(
                         stationByName.get("A역"),
                         stationByName.get("Z역"),
-                        stations,
-                        stationLines));
+                        stationLineSections));
 
         //then
         Assertions.assertEquals("there is no path between start station and destination station", throwable.getMessage());

@@ -7,11 +7,10 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 import subway.domain.Station;
-import subway.domain.StationLine;
+import subway.domain.StationLineSection;
 import subway.exception.StationLineSearchFailException;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,10 +20,9 @@ public class StationShortestPathCalculateService {
     public ShortestStationPath calculateShortestPath(
             Station startStation,
             Station destinationStation,
-            List<Station> stations,
-            List<StationLine> stationLines) {
+            List<StationLineSection> stationLineSections) {
 
-        final WeightedMultigraph<Long, DefaultWeightedEdge> graph = makeGraphFrom(stations, stationLines);
+        final WeightedMultigraph<Long, DefaultWeightedEdge> graph = makeGraphFrom(stationLineSections);
 
         final DijkstraShortestPath<Long, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         final GraphPath<Long, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(startStation.getId(), destinationStation.getId());
@@ -39,19 +37,18 @@ public class StationShortestPathCalculateService {
                 .build();
     }
 
-    private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraphFrom(List<Station> stations, List<StationLine> stationLines) {
+    private WeightedMultigraph<Long, DefaultWeightedEdge> makeGraphFrom(List<StationLineSection> stationLineSections) {
         final WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
-        stations.stream()
-                .map(Station::getId)
-                .forEach(graph::addVertex);
+        stationLineSections.forEach(stationLineSection -> {
+            final Long upStationId = stationLineSection.getUpStationId();
+            final Long downStationId = stationLineSection.getDownStationId();
+            final BigDecimal distance = stationLineSection.getDistance();
 
-        stationLines.stream()
-                .map(StationLine::getSections)
-                .flatMap(Collection::stream)
-                .forEach(stationLineSection -> {
-                    graph.setEdgeWeight(graph.addEdge(stationLineSection.getUpStationId(), stationLineSection.getDownStationId()), stationLineSection.getDistance().doubleValue());
-                });
+            graph.addVertex(upStationId);
+            graph.addVertex(downStationId);
+            graph.setEdgeWeight(graph.addEdge(upStationId, downStationId), distance.doubleValue());
+        });
 
         return graph;
     }
