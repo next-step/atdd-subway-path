@@ -27,8 +27,7 @@ public class LineTestUtils {
                         "name", "신분당선",
                         "color", "bg-red-600",
                         "upStationId", "",
-                        "downStationId", "",
-                        "distance", "10"
+                        "downStationId", ""
                 )
         );
 
@@ -37,8 +36,7 @@ public class LineTestUtils {
                         "name", "이호선",
                         "color", "bg-green-600",
                         "upStationId", "",
-                        "downStationId", "",
-                        "distance", "10"
+                        "downStationId", ""
                 )
         );
     }

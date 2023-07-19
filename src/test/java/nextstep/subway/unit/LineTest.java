@@ -15,6 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
 
+    final int SECTION_DEFAULT_DISTANCE = 10;
+
     Station 강남역;
     Station 역삼역;
     Station 선릉역;
@@ -29,7 +31,7 @@ class LineTest {
         선릉역 = new Station(3L, "선릉역");
         익명역 = new Station(4L, "익명역");
         판교역 = new Station(5L, "판교역");
-        이호선 = new Line("이호선", "Green", 10, 강남역, 역삼역);
+        이호선 = new Line("이호선", "Green", SECTION_DEFAULT_DISTANCE, 강남역, 역삼역);
     }
 
 
@@ -37,7 +39,7 @@ class LineTest {
     @Test
     void addSectionACCD() {
         // when
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // then
         assertThat(이호선.getStations()).contains(선릉역);
@@ -69,7 +71,7 @@ class LineTest {
     @Test
     void addSectionACBA() {
         // when
-        이호선.addSection(new Section(이호선, 익명역, 강남역, 10));
+        이호선.addSection(new Section(이호선, 익명역, 강남역, SECTION_DEFAULT_DISTANCE));
 
         // then
         assertThat(이호선.getStations()).contains(익명역);
@@ -91,12 +93,12 @@ class LineTest {
     @Test
     void stationRegistrationFailByAlreadyExistingTopStationAndDownStation() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
-        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 강남역, 역삼역, 10)))
+        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 강남역, 역삼역, SECTION_DEFAULT_DISTANCE)))
                 .isInstanceOf(CreationValidationException.class);
-        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10)))
+        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE)))
                 .isInstanceOf(CreationValidationException.class);
     }
 
@@ -104,10 +106,10 @@ class LineTest {
     @Test
     void stationRegistrationFailByLineDoNotContainSectionRelatedStations() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
-        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 익명역, 판교역, 10)))
+        Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 익명역, 판교역, SECTION_DEFAULT_DISTANCE)))
                 .isInstanceOf(CreationValidationException.class);
 
         // then
@@ -143,7 +145,7 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, 10));
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
         이호선.removeSection(선릉역);
