@@ -114,7 +114,7 @@ public class Sections {
         return sections.size();
     }
 
-    private boolean hasStation(Station downStation) {
+    public boolean hasStation(Station downStation) {
         return getStations().contains(downStation);
     }
 

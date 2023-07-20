@@ -60,4 +60,7 @@ public class Line {
     public void removeSection(Station station) {
         sections.remove(station);
     }
+
+    public boolean hasStation(Station station) {
+        return sections.hasStation(station); }
 }
