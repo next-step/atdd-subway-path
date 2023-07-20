@@ -3,11 +3,21 @@ package nextstep.subway.line.entity.handler;
 import nextstep.subway.line.entity.Section;
 import nextstep.subway.line.entity.Sections;
 
-public interface SectionAdditionHandler {
+public abstract class SectionAdditionHandler {
 
-    boolean checkApplicable(Sections sections, Section section);
+    SectionAdditionHandler nextHandler;
 
-    void validate(Sections sections, Section section);
+    public SectionAdditionHandler(SectionAdditionHandler nextHandler) {
+        this.nextHandler = nextHandler;
+    }
 
-    void apply(Sections sections, Section newSection);
+    public abstract boolean checkApplicable(Sections sections, Section section);
+
+    public void validate(Sections sections, Section section) {
+        if (nextHandler != null) {
+            nextHandler.validate(sections, section);
+        }
+    }
+
+    public abstract void apply(Sections sections, Section newSection);
 }

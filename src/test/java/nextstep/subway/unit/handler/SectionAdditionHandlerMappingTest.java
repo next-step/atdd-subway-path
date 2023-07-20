@@ -17,7 +17,6 @@ public class SectionAdditionHandlerMappingTest {
     Station 역삼역;
     Station 선릉역;
     Station 익명역;
-    Station 판교역;
     Line 이호선;
 
     SectionAdditionHandlerMapping handlerMapping = new SectionAdditionHandlerMapping();

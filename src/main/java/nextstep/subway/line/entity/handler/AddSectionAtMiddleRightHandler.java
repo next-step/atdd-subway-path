@@ -4,7 +4,11 @@ import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.line.entity.Section;
 import nextstep.subway.line.entity.Sections;
 
-public class AddSectionAtMiddleRightHandler implements SectionAdditionHandler{
+public class AddSectionAtMiddleRightHandler extends SectionAdditionHandler {
+    public AddSectionAtMiddleRightHandler(SectionAdditionHandler nextHandler) {
+        super(nextHandler);
+    }
+
     @Override
     public boolean checkApplicable(Sections sections, Section section) {
         return sections.checkDownStationsContains(section.getDownStation());
@@ -13,6 +17,9 @@ public class AddSectionAtMiddleRightHandler implements SectionAdditionHandler{
     @Override
     public void validate(Sections sections, Section section) {
         validateNewSectionLengthSmaller(sections.getSectionByDownStation(section.getDownStation()), section);
+        if (nextHandler != null) {
+            nextHandler.validate(sections, section);
+        }
     }
 
     @Override

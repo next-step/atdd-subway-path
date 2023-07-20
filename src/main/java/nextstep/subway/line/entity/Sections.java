@@ -2,7 +2,6 @@ package nextstep.subway.line.entity;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.common.exception.DeletionValidationException;
 import nextstep.subway.line.entity.handler.SectionAdditionHandler;
 import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
@@ -57,7 +56,7 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        Validator.validateEnrollment(this, section);
+//        Validator.validateEnrollment(this, section);
 
         SectionAdditionHandler handler = SectionAdditionHandlerMapping.getHandler(this, section);
         handler.validate(this, section);
@@ -143,21 +142,10 @@ public class Sections {
     }
 
     private static class Validator {
-        static void validateEnrollment(Sections sections, Section section) {
-
-            validateOnlyOneStationIsEnrolledInLine(sections, section);
-        }
 
         private static void validateDeletion(Sections sections, Station Station) {
             validateDeletionEqualsLineDownStation(sections, Station);
             validateTwoMoreSectionExists(sections);
-        }
-
-        private static void validateOnlyOneStationIsEnrolledInLine(Sections sections, Section section) {
-            if (sections.checkUpStationsContains(section.getUpStation()) &&
-                    sections.checkDownStationsContains(section.getDownStation())) {
-                throw new CreationValidationException("새로운 구간의 상행역과 하행역 둘중 한개는 노선에 등록돼있어야합니다.");
-            }
         }
 
         private static void validateTwoMoreSectionExists(Sections sections) {
