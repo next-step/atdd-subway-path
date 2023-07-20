@@ -89,7 +89,7 @@ public class LineService {
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
 
         Line line = getLine(lineId);
-        line.addSectionVer2(section);
+        line.addSection(section);
 
         return SectionResponse.of(section);
     }

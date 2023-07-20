@@ -71,11 +71,6 @@ public class Line {
         return lastStationName;
     }
 
-    public boolean hasStation(Station downStation) {
-        return sections.stream()
-                .anyMatch(section -> section.upStationEqualsTo(downStation));
-    }
-
     public void deleteSection(Station station) {
         validateLineHasOnlyOneSection();
         validateStationIsDownStationOfLastSection(station);
@@ -104,7 +99,7 @@ public class Line {
         return sections.get(sections.size() - 1);
     }
 
-    public void addSectionVer2(Section newSection) {
+    public void addSection(Section newSection) {
         // 새로운 구간의 상, 하행역이 모두 같은 구간이 이미 존재하는 경우 예외
         sections.stream()
                 .filter(section -> section.hasAllSameStations(newSection))
