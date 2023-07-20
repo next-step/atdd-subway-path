@@ -175,10 +175,10 @@ class SectionAcceptanceTest {
 
     /**
      * Given 노선을 생성한다, 구간을 생성한다.
-     * When  구간을 삭제한다.
+     * When  마지막 역의 구간을 삭제한다.
      * Then  노선의 하행선이 기존 구간을 생성하기 전과 동일해진다.
      */
-    @DisplayName("지하철 구간을 삭제한다.")
+    @DisplayName("마지막 역의 구간을 삭제한다.")
     @Test
     void deleteSection() {
         //given
@@ -196,10 +196,10 @@ class SectionAcceptanceTest {
 
     /**
      * Given 노선을 생성한다, 구간을 생성한다.
-     * When  노선 하행선 마지막 구간이 아닌 역을 삭제한다.
-     * Then  제거 불가능한 에러를 반환한다.
+     * When  노선 하행선 마지막 구간이 아닌 중간에 있는 역을 삭제한다.
+     * Then  제거 및 구간이 1개로 변경된다.
      */
-    @DisplayName("지하철 마지막이 아닌 구간을 삭제한다. 제거 불가능한 에러를 반환한다.")
+    @DisplayName("노선 하행선 마지막 구간이 아닌 중간에 있는 역을 삭제한다. 제거 및 구간이 1개로 변경된다.")
     @Test
     void deleteSectionExceptionWhenNotDownLastStation() {
         //given
@@ -210,8 +210,7 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제(1L, 두번째역);
 
         //then
-        응답코드_검증(response, HttpStatus.BAD_REQUEST);
-        에러코드_검증(response, ErrorCode.CAN_NOT_REMOVE_STATION);
+        응답코드_검증(response, HttpStatus.NO_CONTENT);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         하행_종점역_기대값_검증(line7, 세번째역, "세번째역");
     }
