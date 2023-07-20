@@ -15,7 +15,6 @@ public class LineResponse {
                 .map(SectionOnLineResponse::of)
                 .collect(Collectors.toList());
 
-
         return new LineResponse(
                 line.getId(),
                 line.getName(),

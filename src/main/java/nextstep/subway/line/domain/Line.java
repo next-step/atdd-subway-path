@@ -59,8 +59,18 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        //
-        return sections;
+        List<Section> result = new ArrayList<>();
+        String targetStationName = firstStationName;
+        while (!targetStationName.equals(lastStationName)) {
+            for (Section section : sections) {
+                if (section.upStationNameEqualsTo(targetStationName)) {
+                    result.add(section);
+                    targetStationName = section.getDownStationName();
+                }
+            }
+        }
+
+        return result;
     }
 
     public String getFirstStationName() {
