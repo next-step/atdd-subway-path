@@ -87,10 +87,6 @@ public class Section {
         return downStation.getName();
     }
 
-    public boolean upStationEqualsTo(Station downStation) {
-        return downStation.equals(upStation) || downStation.equals(this.downStation);
-    }
-
     public void assignLine(Line line) {
         this.line = line;
     }
@@ -117,8 +113,8 @@ public class Section {
         return downStation.equals(section.downStation);
     }
 
-    public boolean hasSameDistance(Section newSection) {
-        return distance.equals(newSection.distance);
+    public boolean hasSameOrLongerDistance(Section newSection) {
+        return distance.equals(newSection.distance) || distance < newSection.distance;
     }
 
     @Override

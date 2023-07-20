@@ -110,7 +110,6 @@ public class Line {
     }
 
     public void registerSection(Section newSection) {
-        // 새로운 구간의 상, 하행역이 모두 같은 구간이 이미 존재하는 경우 예외
         validateAlreadyRegisteredSection(newSection);
 
         if (newSection.downStationNameEqualsTo(firstStationName)) {
@@ -138,12 +137,9 @@ public class Line {
     }
 
     private void registerSectionBetweenStations(Section newSection) {
-        Section existingSection = sections.stream()
-                .filter(section -> section.hasOnlyOneSameStation(newSection))
-                .findAny()
-                .orElseThrow(InvalidSectionRegistrationException::new);
+        Section existingSection = findExistingSection(newSection);
 
-        if (existingSection.hasSameDistance(newSection)) {
+        if (existingSection.hasSameOrLongerDistance(newSection)) {
             throw new InvalidSectionRegistrationException();  //TODO: 더 알맞는 예외는 나중에...
         }
 
@@ -158,6 +154,13 @@ public class Line {
 
         addSection(newSection);
         addSection(downSection);
+    }
+
+    private Section findExistingSection(Section newSection) {
+        return sections.stream()
+                .filter(section -> section.hasOnlyOneSameStation(newSection))
+                .findAny()
+                .orElseThrow(InvalidSectionRegistrationException::new);
     }
 
     private void addSection(Section newSection) {
