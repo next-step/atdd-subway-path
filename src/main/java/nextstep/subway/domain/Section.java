@@ -58,10 +58,14 @@ public class Section {
     }
 
     public boolean isConnected(Section section) {
-        return isContain(section) || isUpStation(section.getDownStation()) || isDownStation(section.getUpStation());
+        return isContains(section) || isUpStation(section.getDownStation()) || isDownStation(section.getUpStation());
     }
 
-    public boolean isContain(Section section) {
+    public boolean isContains(Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
+
+    public boolean isContains(Section section) {
         return isUpStation(section.getUpStation()) || isDownStation(section.getDownStation());
     }
 

@@ -64,7 +64,7 @@ public class Line {
         sections.addSection(section);
     }
 
-    public boolean removeStation(Station station) {
-        return sections.remove(station);
+    public void removeStation(Station station) {
+        sections.remove(station);
     }
 }

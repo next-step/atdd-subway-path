@@ -9,7 +9,6 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.NotFoundLineException;
-import nextstep.subway.exception.NotLastStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,9 +106,6 @@ public class LineService {
         Line line = getLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        boolean isRemoved = line.removeStation(station);
-        if (!isRemoved) {
-            throw new NotLastStationException();
-        }
+        line.removeStation(station);
     }
 }

@@ -41,8 +41,8 @@ public class ExceptionController {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(NotLastStationException.class)
-    public ErrorResponse handleIllegalArgsException(NotLastStationException e) {
+    @ExceptionHandler(LastSectionException.class)
+    public ErrorResponse handleIllegalArgsException(LastSectionException e) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.toString());
     }
 }

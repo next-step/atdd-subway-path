@@ -3,9 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.DuplicateSectionException;
-import nextstep.subway.exception.InvalidDistanceException;
-import nextstep.subway.exception.NoConnectedSectionException;
+import nextstep.subway.exception.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.CollectionUtils;
@@ -176,9 +174,9 @@ class LineTest {
         assertThat(stations).containsExactly(station1, station2, station3);
     }
 
-    @DisplayName("지하철 라인에서 역을 제거한다")
+    @DisplayName("지하철 노선 구간의 마지막 역 제거")
     @Test
-    void removeSection() {
+    void removeLineSectionOfLast() {
         // given
         Line line = new Line("1호선", "남색");
         Station station1 = new Station("station1");
@@ -193,5 +191,75 @@ class LineTest {
 
         // then
         assertThat(line.getStations()).containsExactly(station1, station2);
+    }
+
+    @DisplayName("지하철 노선 구간의 중간 역을 제거")
+    @Test
+    void removeLineSectionOfMiddle() {
+        // given
+        Line line = new Line("1호선", "남색");
+        Station station1 = new Station("station1");
+        Station station2 = new Station("station2");
+        Station station3 = new Station("station3");
+        int distance = 10;
+        line.addSection(Section.of(line, station1, station2, distance));
+        line.addSection(Section.of(line, station2, station3, distance));
+
+        // when
+        line.removeStation(station2);
+
+        // then
+        assertThat(line.getStations()).containsExactly(station1, station3);
+        assertThat(line.getSections()).anyMatch(s -> s.getDistance() == distance * 2);
+    }
+
+    @DisplayName("지하철 노선 구간의 첫번째 역을 제거")
+    @Test
+    void removeLineSectionOfFirst() {
+        // given
+        Line line = new Line("1호선", "남색");
+        Station station1 = new Station("station1");
+        Station station2 = new Station("station2");
+        Station station3 = new Station("station3");
+        int distance = 10;
+        line.addSection(Section.of(line, station1, station2, distance));
+        line.addSection(Section.of(line, station2, station3, distance));
+
+        // when
+        line.removeStation(station1);
+
+        // then
+        assertThat(line.getStations()).containsExactly(station2, station3);
+    }
+
+    @DisplayName("지하철 노선 마지막 구간의 역을 제거")
+    @Test
+    void removeLineSectionOfLastSection() {
+        // given
+        Line line = new Line("1호선", "남색");
+        Station station1 = new Station("station1");
+        Station station2 = new Station("station2");
+        int distance = 10;
+        line.addSection(Section.of(line, station1, station2, distance));
+
+        // when & then
+        assertThrows(LastSectionException.class, () -> line.removeStation(station2));
+    }
+
+    @DisplayName("지하철 노선 구간에 존재하지 않는 역을 제거")
+    @Test
+    void removeLineSection() {
+        // given
+        Line line = new Line("1호선", "남색");
+        Station station1 = new Station("station1");
+        Station station2 = new Station("station2");
+        Station station3 = new Station("station3");
+        Station station4 = new Station("station4");
+        int distance = 10;
+        line.addSection(Section.of(line, station1, station2, distance));
+        line.addSection(Section.of(line, station2, station3, distance));
+
+        // when & then
+        assertThrows(NotFoundStationException.class, () -> line.removeStation(station4));
     }
 }
