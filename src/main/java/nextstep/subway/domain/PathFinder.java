@@ -11,10 +11,19 @@ import java.util.Objects;
 
 @Component
 public class PathFinder {
-    private DijkstraShortestPath dijkstraShortestPath;
+    private DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
     public void init(List<Line> lines) {
         dijkstraShortestPath = new DijkstraShortestPath(buildGraph(lines));
+    }
+
+    private WeightedMultigraph<Station, DefaultWeightedEdge> buildGraph(List<Line> lines) {
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+
+        graphAddVertex(lines, graph);
+        graphAddEdge(lines, graph);
+
+        return graph;
     }
 
     public List<Station> findPath(Station source, Station target) {
@@ -25,15 +34,6 @@ public class PathFinder {
     public int findPathWeight(Station source, Station target) {
         validateGraph(source, target, dijkstraShortestPath);
         return (int) dijkstraShortestPath.getPathWeight(source, target);
-    }
-
-    private WeightedMultigraph<Station, DefaultWeightedEdge> buildGraph(List<Line> lines) {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-
-        graphAddVertex(lines, graph);
-        graphAddEdge(lines, graph);
-
-        return graph;
     }
 
     private void graphAddEdge(List<Line> lines, WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
