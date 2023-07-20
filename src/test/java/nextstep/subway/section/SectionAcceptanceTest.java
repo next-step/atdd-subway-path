@@ -2,6 +2,7 @@ package nextstep.subway.section;
 
 import static common.Constants.강남역;
 import static common.Constants.또다른지하철역;
+import static common.Constants.빨간색;
 import static common.Constants.새로운지하철역;
 import static common.Constants.신논현역;
 import static common.Constants.신분당선;
@@ -32,7 +33,7 @@ public class SectionAcceptanceTest {
     @Test
     void createSection() {
         // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨간색, 지하철역, 새로운지하철역, 10);
         var stationResponse = 지하철_역_생성_요청(또다른지하철역);
 
         // when
@@ -53,7 +54,7 @@ public class SectionAcceptanceTest {
         // given
         var 강남역응답 = 지하철_역_생성_요청(강남역);
         var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, "bg-red-600", 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨간색, 강남역응답.getId(), 지하철역응답.getId(), 10);
         var 신논현역응답 = 지하철_역_생성_요청(신논현역);
 
         // when
@@ -73,7 +74,7 @@ public class SectionAcceptanceTest {
         // given
         var 강남역응답 = 지하철_역_생성_요청(강남역);
         var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, "bg-red-600", 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨간색, 강남역응답.getId(), 지하철역응답.getId(), 10);
 
         // when
         var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 강남역응답.getId(), 지하철역응답.getId(), 10);
@@ -90,7 +91,7 @@ public class SectionAcceptanceTest {
     void createSection_fail_sectionNoIntersection() {
         var 강남역응답 = 지하철_역_생성_요청(강남역);
         var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, "bg-red-600", 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨간색, 강남역응답.getId(), 지하철역응답.getId(), 10);
 
         var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 신논현역, 또다른지하철역, 10);
 
@@ -104,7 +105,7 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection() {
         // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨간색, 지하철역, 새로운지하철역, 10);
         var stationResponse = 지하철_역_생성_요청(또다른지하철역);
         지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
             stationResponse.getId(), 10);
@@ -124,7 +125,7 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection_fail_sectionDoesNotMatchWithDownEndStationOfLine() {
         // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨간색, 지하철역, 새로운지하철역, 10);
         var stationResponse = 지하철_역_생성_요청(또다른지하철역);
         지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
             stationResponse.getId(), 10);
@@ -146,7 +147,7 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection_fail_sectionOnlyExistsUpAndDownEndStationInLine() {
         // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, "bg-red-600", 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨간색, 지하철역, 새로운지하철역, 10);
 
         // when
         var statusCode = 지하철_구간_제거_요청_상태_코드_반환(lineCreateResponse.getId(),
