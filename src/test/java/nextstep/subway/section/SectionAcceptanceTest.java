@@ -3,7 +3,6 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.SubwayLineSteps;
 import nextstep.subway.utils.ApiTest;
 import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.line.dto.CreateLineRequest;
@@ -53,7 +52,7 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
-     * Given 3개(당고개역, 이수역, 동작역)의 지하철 역을 생성한다.
+     * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
      * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
      * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
@@ -112,12 +111,33 @@ class SectionAcceptanceTest extends ApiTest {
     /**
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
-     * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
-     * Then 새로운 구간의 상행선이 기존 노선의 하행 종점역이 아니면 예외가 발생한다.
+     * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록할때 길이를 기존 노선보다 크게 등록한다.
+     * Then 신규 역 사이 길이가 기존 역 사이 길이보다 크면  HttpStatus.BAD_REQUEST 예외를 던진다.
      */
-    @DisplayName("새로운 구간을 등록할 시 새로운 구간의 상행선이 기존 노선의 하행 종점역이 아니면 예외가 발생한다.")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 클때 예외 발생")
     @Test
-    void addSectionThrowExceptionIsINVALID_UP_STATION() {
+    void addSectionThrowExceptionIsINVALID_DISTANCE() {
+        // given : 선행조건 기술
+        int distance = 11;
+        CreateSectionRequest request = request(당고개역, 사당역, distance);
+
+        // when : 기능 수행
+        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+
+        // then : 결과 확인
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_DISTANCE.getMessage());
+    }
+
+    /**
+     * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
+     * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
+     * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록할때 길이를 기존 노선보다 크게 등록한다.
+     * Then 신규 역 사이 길이가 기존 역 사이 길이와 같으면 HttpStatus.BAD_REQUEST 예외를 던진다.
+     */
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같을때 예외 발생")
+    @Test
+    void addSectionThrowExceptionIsINVALID_DISTANCE2() {
         // given : 선행조건 기술
         CreateSectionRequest request = request(당고개역, 사당역, distance);
 
@@ -126,27 +146,51 @@ class SectionAcceptanceTest extends ApiTest {
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_UP_STATION.getMessage());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_DISTANCE.getMessage());
     }
 
     /**
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
-     * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
-     * When 새로운 구간(이수역 - 상행 종점, 당고개 - 하행 종점)을 등록한다.
-     * Then 새로운 구간의 상행선이 기존 노선의 하행 종점역이 아니면 예외가 발생한다.
+     * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점, 당고개 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
+     * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
+     * Then 신규 등록하려는 구간이 등록되어 있는 구간이면 예외를 던진다.
      */
-    @DisplayName("새로운 구간을 등록할 시 새로운 구간의 하행역이 기존 노선에 등록되어 있으면 예외가 발생한다.")
+    @DisplayName("새로운 구간을 등록할 시 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void addSectionThrowExceptionIsINVALID_DOWN_STATION() {
+    void addSectionThrowExceptionIsALREADY_SECTION() {
         // given : 선행조건 기술
-        CreateSectionRequest request = request(이수역, 당고개역, distance);
+        기존_노선_등록();
+        CreateSectionRequest request = request(당고개역, 사당역, distance);
 
         // when : 기능 수행
         ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo(ErrorCode.INVALID_DOWN_STATION.getMessage());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo(ErrorCode.ALREADY_SECTION.getMessage());
+    }
+
+    /**
+     * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
+     * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점, 당고개 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
+     * When 새로운 구간(동작역 - 상행 종점, 이촌역 - 하행 종점)을 등록한다.
+     * Then 신규 등록하려는 구간이 상행역과 하행역 둘중 하나도 포함되어 있지 않으면 추가할 수 없다.
+     */
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addSectionThrowExceptionIsCAN_NOT_BE_ADDED_SECTION() {
+        // given : 선행조건 기술
+        기존_노선_등록();
+        Long 동작역 = 역_생성("동작역");
+        Long 이촌역 = 역_생성("이촌역");
+        CreateSectionRequest request = request(동작역, 이촌역, distance);
+
+        // when : 기능 수행
+        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+
+        // then : 결과 확인
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().jsonPath().getString("message")).isEqualTo(ErrorCode.CAN_NOT_BE_ADDED_SECTION.getMessage());
     }
 
     /**
@@ -253,5 +297,16 @@ class SectionAcceptanceTest extends ApiTest {
 
     private static Long 역_생성(String stationName1) {
         return StationSteps.지하철생성요청(StationSteps.지하철생성요청_생성(stationName1)).jsonPath().getLong("id");
+    }
+
+    private void 기존_노선_등록() {
+        // given : 선행조건 기술
+        CreateSectionRequest request = request(당고개역, 사당역, newDistance);
+
+        // when : 기능 수행
+        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+
+        // then : 결과 확인
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

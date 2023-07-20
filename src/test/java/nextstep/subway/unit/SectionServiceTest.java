@@ -1,5 +1,9 @@
 package nextstep.subway.unit;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.section.dto.SectionDto;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -43,8 +48,10 @@ public class SectionServiceTest {
     @DisplayName("구간을 추가한다. - 역 사이에 새로운 역을 등록할 경우")
     @Test
     void addSection() {
+        // given
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
+
         // when
-        sectionDto = sectionDto(당고개역.getId(), 사당역.getId());
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
@@ -59,8 +66,10 @@ public class SectionServiceTest {
     @DisplayName("구간을 추가한다. - 새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void addSection2() {
+        // given
+        sectionDto = sectionDto(사당역.getId(), 당고개역.getId(), 3);
+
         // when
-        sectionDto = sectionDto(사당역.getId(), 당고개역.getId());
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
@@ -75,8 +84,10 @@ public class SectionServiceTest {
     @DisplayName("구간을 추가한다. - 새로운역을 하행 종점으로 등록할 경우")
     @Test
     void addSection3() {
+        // given
+        sectionDto = sectionDto(이수역.getId(), 사당역.getId(), 3);
+
         // when
-        sectionDto = sectionDto(이수역.getId(), 사당역.getId());
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
@@ -86,6 +97,59 @@ public class SectionServiceTest {
                         Tuple.tuple("당고개역", "이수역"),
                         Tuple.tuple("이수역", "사당역")
                 );
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 클때 예외 발생")
+    @Test
+    void addSectionThrowExceptionIsINVALID_DISTANCE() {
+        // given
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 11);
+
+        // when then
+        assertThatThrownBy(() -> sectionService.addSection(line.getId(), sectionDto))
+                .isInstanceOf(SubwayException.class)
+                .hasMessageContaining(ErrorCode.INVALID_DISTANCE.getMessage());
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같을때 예외 발생")
+    @Test
+    void addSectionThrowExceptionIsINVALID_DISTANCE2() {
+        // given
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 10);
+
+        // when then
+        assertThatThrownBy(() -> sectionService.addSection(line.getId(), sectionDto))
+                .isInstanceOf(SubwayException.class)
+                .hasMessageContaining(ErrorCode.INVALID_DISTANCE.getMessage());
+    }
+
+    @DisplayName("새로운 구간을 등록할 시 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void addSectionThrowExceptionIsALREADY_SECTION() {
+        // given
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
+        sectionService.addSection(line.getId(), sectionDto);
+
+        // when then
+        assertThatThrownBy(() -> sectionService.addSection(line.getId(), sectionDto))
+                .isInstanceOf(SubwayException.class)
+                .hasMessageContaining(ErrorCode.ALREADY_SECTION.getMessage());
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void addSectionThrowExceptionIsCAN_NOT_BE_ADDED_SECTION() {
+        // given
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
+        sectionService.addSection(line.getId(), sectionDto);
+        Station 동작역 = stationRepository.save(동작역());
+        Station 이촌역 = stationRepository.save(이촌역());
+        sectionDto = sectionDto(동작역.getId(), 이촌역.getId(), 3);
+
+        // when  then
+        assertThatThrownBy(() -> sectionService.addSection(line.getId(), sectionDto))
+                .isInstanceOf(SubwayException.class)
+                .hasMessageContaining(ErrorCode.CAN_NOT_BE_ADDED_SECTION.getMessage());
     }
 
     @DisplayName("구간을 제거한다.")
@@ -128,6 +192,14 @@ public class SectionServiceTest {
         return new Station("사당역");
     }
 
+    private Station 동작역() {
+        return new Station("동작역");
+    }
+
+    private Station 이촌역() {
+        return new Station("이촌역");
+    }
+
     private Section section(Station upStation, Station downStation) {
         return Section.builder()
                 .upStation(upStation)
@@ -136,11 +208,11 @@ public class SectionServiceTest {
                 .build();
     }
 
-    private SectionDto sectionDto(Long upStationId, Long downStationId) {
+    private SectionDto sectionDto(Long upStationId, Long downStationId, int distance) {
         return SectionDto.builder()
                 .upStationId(upStationId)
                 .downStationId(downStationId)
-                .distance(3)
+                .distance(distance)
                 .build();
     }
 }

@@ -80,6 +80,14 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        if (alreadySection(section)) {
+            throw new SubwayException(ErrorCode.ALREADY_SECTION);
+        }
+
+        if (!cannotAddSection(section)) {
+            throw new SubwayException(ErrorCode.CAN_NOT_BE_ADDED_SECTION);
+        }
+
         // 역 사이에 새로운 역을 등록할 경우
         sections.stream()
                 .filter(oldSection -> oldSection.getUpStation() == section.getUpStation())
@@ -100,6 +108,29 @@ public class Line {
                 .filter(oldSection -> oldSection.getDownStation().equals(section.getUpStation()))
                 .findFirst()
                 .ifPresent(oldSection -> this.sections.add(section));
+    }
+
+    private boolean alreadySection(Section section) {
+        return sections.stream()
+                .anyMatch(oldSection -> oldSection.getUpStation().equals(section.getUpStation()))
+                &&
+                sections.stream()
+                        .anyMatch(oldSection -> oldSection.getDownStation().equals(section.getDownStation()));
+    }
+
+    private boolean cannotAddSection(Section newSection) {
+        return sections.stream()
+                .anyMatch(oldSection -> {
+                    boolean b1 = oldSection.getUpStation().equals(newSection.getUpStation());
+                    boolean b2 = oldSection.getUpStation().equals(newSection.getDownStation());
+                    return b1 || b2;
+                }) ||
+                sections.stream()
+                        .anyMatch(oldSection -> {
+                            boolean b1 = oldSection.getDownStation().equals(newSection.getUpStation());
+                            boolean b2 = oldSection.getDownStation().equals(newSection.getDownStation());
+                            return b1 || b2;
+                        });
     }
 
     public void isExistsDownStation(Station upStation) {
