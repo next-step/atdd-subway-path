@@ -23,12 +23,10 @@ import nextstep.subway.station.exception.StationNotFoundException;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -37,8 +35,6 @@ public class LineService {
         Station downStation = getStation(lineCreateRequest.getDownStationId());
 
         Section section = new Section(upStation, downStation, lineCreateRequest.getDistance());
-        sectionRepository.save(section);
-
         Line line = new Line(lineCreateRequest.getName(), lineCreateRequest.getColor(), section);
         lineRepository.save(line);
 
@@ -75,9 +71,6 @@ public class LineService {
     @Transactional
     public void deleteLine(Long id) {
         Line line = getLine(id);
-        List<Section> sections = line.getSections();
-
-        sectionRepository.deleteAll(sections);
         lineRepository.delete(line);
     }
 
