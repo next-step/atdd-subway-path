@@ -157,10 +157,12 @@ public class StationLineSections {
             throw new StationLineSectionDeleteException("section must be greater or equals than 2");
         }
 
-        getAllStations().stream()
-                .filter(station::equals)
-                .findFirst()
-                .orElseThrow(() -> new StationLineSectionDeleteException("the station not included to this line"));
+        final boolean isStationNotExistsInLine = getAllStations().stream()
+                .noneMatch(station::equals);
+
+        if (isStationNotExistsInLine) {
+            throw new StationLineSectionDeleteException("the station not exists to this line");
+        }
     }
 
     public int getCountOfAllStation() {
@@ -171,7 +173,7 @@ public class StationLineSections {
         return getSections().stream()
                 .map(StationLineSection::getUpStation)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new IllegalStateException("there is no station at this line"));
     }
 
     //associate util method

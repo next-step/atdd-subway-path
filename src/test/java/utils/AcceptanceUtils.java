@@ -4,11 +4,14 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import subway.domain.Station;
+import subway.service.dto.StationResponse;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class AcceptanceUtils {
@@ -108,6 +111,11 @@ public class AcceptanceUtils {
                 .collect(Collectors.toList());
     }
 
+    public static Map<String, Long> createStationsAndGetStationMap(List<String> names) {
+        return names.stream()
+                .collect(Collectors.toMap(Function.identity(), AcceptanceUtils::createStation));
+    }
+
     public static JsonPath getStations() {
         return RestAssured.given().log().all()
                 .get("/stations")
@@ -135,5 +143,20 @@ public class AcceptanceUtils {
                 .then().log().all()
                 .extract()
                 .jsonPath().getLong("id");
+    }
+
+    public static JsonPath searchStationPath(String startStation, String destinationStation, HttpStatus status) {
+        final Map<String, Long> stationIdByName = getStations().getList("$", StationResponse.class)
+                .stream()
+                .collect(Collectors.toMap(StationResponse::getName, StationResponse::getId));
+
+        return RestAssured.given().log().all()
+                .queryParam("source", stationIdByName.get(startStation))
+                .queryParam("target", stationIdByName.get(destinationStation))
+                .get("/paths")
+                .then().log().all()
+                .statusCode(status.value())
+                .extract()
+                .jsonPath();
     }
 }
