@@ -106,6 +106,10 @@ public class Sections {
                 .orElseThrow(() -> new StationNotFoundException("노선 내 하행종착역을 찾을 수 없습니다."));
     }
 
+    public List<Section> getSections() {
+        return List.copyOf(sections);
+    }
+
     private int size() {
         return sections.size();
     }
@@ -114,7 +118,7 @@ public class Sections {
         return getStations().contains(downStation);
     }
 
-    private boolean equalsLastStation(Station station) {
+    public boolean equalsLastStation(Station station) {
         return getLastStation().equalsId(station);
     }
 
@@ -136,6 +140,14 @@ public class Sections {
         return sections.stream()
                 .map(section -> section.getDownStation())
                 .collect(Collectors.toList());
+    }
+
+    private boolean checkDownStationsContains(Station station) {
+        return getDownStations().contains(station);
+    }
+
+    private boolean checkUpStationsContains(Station station) {
+        return getUpStations().contains(station);
     }
 
     private static class Validator {
@@ -219,13 +231,5 @@ public class Sections {
                 throw new CreationValidationException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
             }
         }
-    }
-
-    private boolean checkDownStationsContains(Station station) {
-        return getDownStations().contains(station);
-    }
-
-    private boolean checkUpStationsContains(Station station) {
-        return getUpStations().contains(station);
     }
 }
