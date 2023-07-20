@@ -96,7 +96,7 @@ public class Line {
                                            .map(Section::getUpStation);
         }
 
-        sections.deleteSectionByStationId(station);
+        sections.deleteSectionByStation(station);
 
         maybeNextUpStation.ifPresent(nextUpStation -> this.upStation = nextUpStation);
         maybeNextDownStation.ifPresent(nextDownStation -> this.downStation = nextDownStation);

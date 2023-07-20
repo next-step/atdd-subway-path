@@ -59,10 +59,10 @@ public class Sections {
     }
 
     private Section findDivideTargetSection(Section section) {
-        Optional<Section> maybeTarget = findSectionByStationId(section.getUpStation());
+        Optional<Section> maybeTarget = findSectionByStation(section.getUpStation());
 
         if (maybeTarget.isEmpty()) {
-            maybeTarget = findSectionByStationId(section.getDownStation());
+            maybeTarget = findSectionByStation(section.getDownStation());
         }
 
         return maybeTarget.get();
@@ -108,7 +108,7 @@ public class Sections {
             }
         }
 
-        if (findSectionByStationId(section.getUpStation()).isEmpty() && findSectionByStationId(section.getDownStation()).isEmpty()) {
+        if (findSectionByStation(section.getUpStation()).isEmpty() && findSectionByStation(section.getDownStation()).isEmpty()) {
             return false;
         }
 
@@ -157,8 +157,8 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.containStation(station));
     }
 
-    public void deleteSectionByStationId(Station station) {
-        List<Section> relatedSections = findSectionsByStationId(station);
+    public void deleteSectionByStation(Station station) {
+        List<Section> relatedSections = findSectionsByStation(station);
 
         if (relatedSections.size() == 2) {
             Section newSection = relatedSections.get(0).mergeSection(relatedSections.get(1));
@@ -170,13 +170,13 @@ public class Sections {
         }
     }
 
-    private Optional<Section> findSectionByStationId(Station station) {
+    private Optional<Section> findSectionByStation(Station station) {
         return sections.stream()
                        .filter(section -> section.containStation(station))
                        .findAny();
     }
 
-    private List<Section> findSectionsByStationId(Station station) {
+    private List<Section> findSectionsByStation(Station station) {
         return sections.stream()
                        .filter(section -> section.containStation(station))
                        .collect(Collectors.toList());
