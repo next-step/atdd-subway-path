@@ -3,7 +3,6 @@ package nextstep.subway.line.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.station.entity.Station;
 
 import javax.persistence.*;

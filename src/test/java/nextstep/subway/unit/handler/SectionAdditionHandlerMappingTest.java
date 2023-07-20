@@ -5,6 +5,7 @@ import nextstep.subway.line.entity.Section;
 import nextstep.subway.line.entity.handler.*;
 import nextstep.subway.station.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -31,11 +32,7 @@ public class SectionAdditionHandlerMappingTest {
         이호선 = new Line("이호선", "Green", SECTION_DEFAULT_DISTANCE, 강남역, 역삼역);
     }
 
-    /**
-     * Given 구간 등록 핸들러를 가지고 있는 구간등록핸들러매핑이 존재할 때
-     * When sections(역A-역C)와 section(역B-역C)을 핸들러 매핑에 전달하면 노선 맨 끝에 구간을 추가하는 핸들러를 반환한다.
-     * Then 핸들러를 가지고 section 등록을 진행할 수 있다.
-     */
+    @DisplayName("노선 맨 뒤에 구간 추가 핸들러 반환")
     @Test
     void getAddSectionAtLastHandler() {
         // given
@@ -49,12 +46,7 @@ public class SectionAdditionHandlerMappingTest {
         assertThat(handler.checkApplicable(이호선.getSections(), newSection)).isTrue();
     }
 
-    /**
-     * Given 구간 등록 핸들러를 가지고 있는 구간등록핸들러매핑이 존재하고
-     * AND 구간 강남역(A)-역삼역(C)으로 이호선이 초기화 돼있을 때
-     * When 노선 맨 끝에 구간을 추가하는 핸들러에 section(역C-역B)를 sections(역A-역C) 내에 추가하라고 전달하면
-     * Then sections 내에 역B를 찾을 수 있다.
-     */
+    @DisplayName("노선 맨 끝에 구간 추가 핸들러로 구간 추가 성공")
     @Test
     void applyAddSectionAtLastHandler() {
         // given
@@ -68,11 +60,7 @@ public class SectionAdditionHandlerMappingTest {
         assertThat(이호선.hasStation(선릉역)).isTrue();
     }
 
-    /**
-     * Given 구간 등록 핸들러를 가지고 있는 구간등록핸들러매핑이 존재할 때
-     * When sections(역A-C)와 section(B-A)을 핸들러 매핑에 전달하면 노선 맨 앞에 구간을 추가하는 핸들러를 반환한다.
-     * Then 핸들러를 가지고 section 등록을 진행할 수 있다.
-     */
+    @DisplayName("노선 맨 앞에 구간 추가 핸들러 반환")
     @Test
     void getAddSectionAtFirstHandler() {
         // given
@@ -86,12 +74,7 @@ public class SectionAdditionHandlerMappingTest {
         assertThat(handler.checkApplicable(이호선.getSections(), newSection)).isTrue();
     }
 
-    /**
-     * Given 구간 등록 핸들러를 가지고 있는 구간등록핸들러매핑이 존재하고
-     * AND 구간 강남역(A)-역삼역(C)으로 이호선이 초기화 돼있을 때
-     * When 노선 맨 끝에 구간을 추가하는 핸들러에 section(역B-역A)를 sections(역A-역C) 내에 추가하라고 전달하면
-     * Then sections 내에 역B를 찾을 수 있다.
-     */
+    @DisplayName("노선 맨 앞에 구간 추가 핸들러로 구간 추가 성공")
     @Test
     void applyAddSectionAtFirstHandler() {
         // given
@@ -105,11 +88,7 @@ public class SectionAdditionHandlerMappingTest {
         assertThat(이호선.hasStation(익명역)).isTrue();
     }
 
-    /**
-     * Given 구간 등록 핸들러를 가지고 있는 구간등록핸들러매핑이 존재할 때
-     * When sections(역A-C)와 section(B-C)을 핸들러 매핑에 전달하면 노선 중간에 구간을 추가하는 핸들러를 반환한다.
-     * Then 핸들러를 가지고 section 등록을 진행할 수 있다.
-     */
+    @DisplayName("존재하는 큰 구간을 상행에 가까운 작은 구간으로 만들며 구간을 추가하는 핸들러 반환")
     @Test
     void getAddSectionAtMiddleRightHandler() {
         // given
@@ -123,12 +102,7 @@ public class SectionAdditionHandlerMappingTest {
         assertThat(handler.checkApplicable(이호선.getSections(), newSection)).isTrue();
     }
 
-    /**
-     * Given 구간 등록 핸들러를 가지고 있는 구간등록핸들러매핑이 존재하고
-     * AND 구간 강남역(A)-역삼역(C)으로 이호선이 초기화 돼있을 때
-     * When 노선 맨 끝에 구간을 추가하는 핸들러에 section(역B-역C)를 sections(역A-역C) 내에 추가하라고 전달하면
-     * Then sections 내에 역B를 찾을 수 있다.
-     */
+    @DisplayName("존재하는 큰 구간을 상행에 가까운 작은 구간으로 만들며 구간을 추가하는 핸들러로 구간 추가 성공")
     @Test
     void applyAddSectionAtMiddleRightHandler() {
         // given
@@ -142,11 +116,7 @@ public class SectionAdditionHandlerMappingTest {
         assertThat(이호선.hasStation(익명역)).isTrue();
     }
 
-    /**
-     * Given 구간 등록 핸들러를 가지고 있는 구간등록핸들러매핑이 존재할 때
-     * When sections(역A-C)와 section(A-B)을 핸들러 매핑에 전달하면 노선 중간에 구간을 추가하는 핸들러를 반환한다.
-     * Then 핸들러를 가지고 section 등록을 진행할 수 있다.
-     */
+    @DisplayName("존재하는 큰 구간을 하행에 가까운 작은 구간으로 만들며 구간을 추가하는 핸들러 반환")
     @Test
     void getAddSectionAtMiddleLeftHandler() {
         // given
@@ -160,12 +130,7 @@ public class SectionAdditionHandlerMappingTest {
         assertThat(handler.checkApplicable(이호선.getSections(), newSection)).isTrue();
     }
 
-    /**
-     * Given 구간 등록 핸들러를 가지고 있는 구간등록핸들러매핑이 존재하고
-     * AND 구간 강남역(A)-역삼역(C)으로 이호선이 초기화 돼있을 때
-     * When 노선 맨 끝에 구간을 추가하는 핸들러에 section(역A-역B)를 sections(역A-역C) 내에 추가하라고 전달하면
-     * Then sections 내에 역B를 찾을 수 있다.
-     */
+    @DisplayName("존재하는 큰 구간을 하행에 가까운 작은 구간으로 만들며 구간을 추가하는 핸들러로 구간 추가 성공")
     @Test
     void applyAddSectionAtMiddleLeftHandler() {
         // given

@@ -56,8 +56,6 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-//        Validator.validateEnrollment(this, section);
-
         SectionAdditionHandler handler = SectionAdditionHandlerMapping.getHandler(this, section);
         handler.validate(this, section);
         handler.apply(this, section);
@@ -79,7 +77,9 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Validator.validateDeletion(this, station);
+        if (sections.size() == 1) {
+            throw new DeletionValidationException("상행 종점역과 하행 종점역만 존재합니다.");
+        }
         sections.remove(getLastSection());
     }
 
@@ -109,10 +109,6 @@ public class Sections {
         return List.copyOf(sections);
     }
 
-    private int size() {
-        return sections.size();
-    }
-
     public boolean hasStation(Station downStation) {
         return getStations().contains(downStation);
     }
@@ -139,25 +135,5 @@ public class Sections {
 
     public boolean checkUpStationsContains(Station station) {
         return getUpStations().contains(station);
-    }
-
-    private static class Validator {
-
-        private static void validateDeletion(Sections sections, Station Station) {
-            validateDeletionEqualsLineDownStation(sections, Station);
-            validateTwoMoreSectionExists(sections);
-        }
-
-        private static void validateTwoMoreSectionExists(Sections sections) {
-            if (sections.size() == 1) {
-                throw new DeletionValidationException("상행 종점역과 하행 종점역만 존재합니다.");
-            }
-        }
-
-        private static void validateDeletionEqualsLineDownStation(Sections sections, Station station) {
-            if (!sections.getLastStation().equalsId(station)) {
-                throw new DeletionValidationException(String.format("노선의 마지막 역이 아닙니다. 역id:%s", station.getId()));
-            }
-        }
     }
 }

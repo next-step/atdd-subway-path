@@ -145,17 +145,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         노선에서_조회되는_역이_줄어든다(이호선_URL, 2);
     }
 
-    @DisplayName("구간을 제거 에러, 마지막 구간 아닌 구간 제거")
+    @DisplayName("구간을 제거 성공, 마지막 구간 아닌 구간 제거")
     @Test
     void removeSectionErrorByRemovingNonLastSection() {
         // given
         지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
 
         // when
-        지하철_구간_삭제_실패(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(강남역_URL));
+        지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(강남역_URL));
 
         // then
-        노선의역_개수_변화가_없다(이호선_URL, 3);
+        노선에서_조회되는_역이_줄어든다(이호선_URL, 2);
     }
 
     @DisplayName("구간을 제거 에러, 상행 종점역과 하행 종점역만 있는 경우")
