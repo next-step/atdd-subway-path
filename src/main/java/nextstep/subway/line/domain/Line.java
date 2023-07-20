@@ -127,6 +127,7 @@ public class Line {
             // 같다면 상행 종점을 새로운 구간으로 교체
             firstStationName = newSection.getUpStationName();
             sections.add(newSection);
+            newSection.assignLine(this);
             return;
         }
 
@@ -134,6 +135,7 @@ public class Line {
         if (newSection.upStationNameEqualsTo(lastStationName)) {
             lastStationName = newSection.getDownStationName();
             sections.add(newSection);
+            newSection.assignLine(this);
             return;
         }
 
@@ -162,5 +164,8 @@ public class Line {
 
         sections.add(newSection);
         sections.add(downSection);
+
+        newSection.assignLine(this);
+        downSection.assignLine(this);
     }
 }
