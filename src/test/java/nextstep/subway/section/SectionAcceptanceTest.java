@@ -16,6 +16,7 @@ import static nextstep.subway.station.StationTestStepDefinition.지하철_역_�
 import common.AcceptanceTest;
 import java.util.List;
 import java.util.stream.Stream;
+import nextstep.subway.station.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -201,11 +202,11 @@ public class SectionAcceptanceTest {
     }
 
     private Stream<String> getStationNames(LineResponse response) {
-        return response.getStations().stream().map(Station::getName);
+        return response.getStations().stream().map(StationResponse::getName);
     }
 
     private Long getDownEndStationId(LineResponse response) {
-        List<Station> stations = response.getStations();
+        List<StationResponse> stations = response.getStations();
         return stations.get(stations.size() - 1).getId();
     }
 

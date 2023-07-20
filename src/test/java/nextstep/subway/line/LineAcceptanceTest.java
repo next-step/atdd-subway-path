@@ -112,6 +112,6 @@ public class LineAcceptanceTest {
     }
 
     private Stream<String> getStationNames(LineResponse response) {
-        return response.getStations().stream().map(Station::getName);
+        return response.getStations().stream().map(StationResponse::getName);
     }
 }

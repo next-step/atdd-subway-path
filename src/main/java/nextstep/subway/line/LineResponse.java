@@ -1,24 +1,29 @@
 package nextstep.subway.line;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import nextstep.subway.station.Station;
+import nextstep.subway.station.StationResponse;
 
 public class LineResponse {
 
     private Long id;
     private String name;
     private String color;
-    private List<Station> stations;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
 
     public LineResponse(final Line line) {
-        this(line.getId(), line.getName(), line.getColor(), line.getStations());
+        this(line.getId(), line.getName(), line.getColor(),
+            line.getStations().stream().map(StationResponse::new).collect(Collectors.toList()));
     }
 
-    public LineResponse(final Long id, final String name, final String color, final List<Station> stations) {
+    public LineResponse(final Long id, final String name, final String color,
+        final List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -37,8 +42,14 @@ public class LineResponse {
         return color;
     }
 
-    public List<Station> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
+    }
+
+    private List<StationResponse> toInnerStations(List<Station> stations) {
+        return stations.stream()
+            .map(StationResponse::new)
+            .collect(Collectors.toList());
     }
 
     @Override
