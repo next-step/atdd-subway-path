@@ -1,6 +1,6 @@
-package nextstep.subway.fixture.when;
+package nextstep.subway.fixture.acceptance.when;
 
-import static nextstep.subway.fixture.given.SectionRequestFixture.노선구간추가등록_요청데이터;
+import static nextstep.subway.fixture.acceptance.given.SectionRequestFixture.노선구간추가등록_요청데이터;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;

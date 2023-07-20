@@ -1,6 +1,6 @@
-package nextstep.subway.fixture.then;
+package nextstep.subway.fixture.acceptance.then;
 
-import static nextstep.subway.fixture.when.LineApiFixture.지하철역_노선_목록_조회_요청;
+import static nextstep.subway.fixture.acceptance.when.LineApiFixture.지하철역_노선_목록_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;

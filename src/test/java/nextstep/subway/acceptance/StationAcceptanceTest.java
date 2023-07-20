@@ -1,18 +1,18 @@
 package nextstep.subway.acceptance;
 
-import static nextstep.subway.fixture.given.StationModifyRequestFixture.강남역;
-import static nextstep.subway.fixture.given.StationModifyRequestFixture.새로운지하철역이름;
-import static nextstep.subway.fixture.given.StationModifyRequestFixture.지하철역이름;
-import static nextstep.subway.fixture.then.ApiStatusFixture.API_삭제_응답코드_검사;
-import static nextstep.subway.fixture.then.ApiStatusFixture.API_생성_응답코드_검사;
-import static nextstep.subway.fixture.then.ApiStatusFixture.API_요청성공_응답코드_검사;
-import static nextstep.subway.fixture.then.StationThenFixture.지하철역_목록_리스트_크기_검사;
-import static nextstep.subway.fixture.then.StationThenFixture.지하철역_목록_조회_지하철역_이름_검사;
-import static nextstep.subway.fixture.then.StationThenFixture.지하철역_목록_조회시_생성한역을_포함하는지_검사;
-import static nextstep.subway.fixture.then.StationThenFixture.지하철역_목록_조회시_아무런값도_조회되지않음_검사;
-import static nextstep.subway.fixture.when.StationApiFixture.지하철역_리스트_조회;
-import static nextstep.subway.fixture.when.StationApiFixture.지하철역_삭제;
-import static nextstep.subway.fixture.when.StationApiFixture.지하철역_생성_요청;
+import static nextstep.subway.fixture.acceptance.given.StationModifyRequestFixture.강남역;
+import static nextstep.subway.fixture.acceptance.given.StationModifyRequestFixture.새로운지하철역이름;
+import static nextstep.subway.fixture.acceptance.given.StationModifyRequestFixture.지하철역이름;
+import static nextstep.subway.fixture.acceptance.then.ApiStatusFixture.API_삭제_응답코드_검사;
+import static nextstep.subway.fixture.acceptance.then.ApiStatusFixture.API_생성_응답코드_검사;
+import static nextstep.subway.fixture.acceptance.then.ApiStatusFixture.API_요청성공_응답코드_검사;
+import static nextstep.subway.fixture.acceptance.then.StationThenFixture.지하철역_목록_리스트_크기_검사;
+import static nextstep.subway.fixture.acceptance.then.StationThenFixture.지하철역_목록_조회_지하철역_이름_검사;
+import static nextstep.subway.fixture.acceptance.then.StationThenFixture.지하철역_목록_조회시_생성한역을_포함하는지_검사;
+import static nextstep.subway.fixture.acceptance.then.StationThenFixture.지하철역_목록_조회시_아무런값도_조회되지않음_검사;
+import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_리스트_조회;
+import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_삭제;
+import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_생성_요청;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;

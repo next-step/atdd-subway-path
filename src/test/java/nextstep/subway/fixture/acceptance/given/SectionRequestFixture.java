@@ -1,4 +1,4 @@
-package nextstep.subway.fixture.given;
+package nextstep.subway.fixture.acceptance.given;
 
 import java.util.HashMap;
 import java.util.Map;

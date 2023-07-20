@@ -1,4 +1,4 @@
-package nextstep.subway.fixture.then;
+package nextstep.subway.fixture.acceptance.then;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

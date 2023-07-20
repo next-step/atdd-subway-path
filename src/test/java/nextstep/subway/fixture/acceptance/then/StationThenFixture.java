@@ -1,6 +1,6 @@
-package nextstep.subway.fixture.then;
+package nextstep.subway.fixture.acceptance.then;
 
-import static nextstep.subway.fixture.when.StationApiFixture.지하철역_리스트_조회;
+import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_리스트_조회;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;

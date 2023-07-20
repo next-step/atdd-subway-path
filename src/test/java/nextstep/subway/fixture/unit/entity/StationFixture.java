@@ -1,4 +1,4 @@
-package nextstep.subway.fixture.entity;
+package nextstep.subway.fixture.unit.entity;
 
 import static org.mockito.BDDMockito.when;
 import static org.mockito.Mockito.spy;

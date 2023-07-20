@@ -1,6 +1,6 @@
-package nextstep.subway.fixture.when;
+package nextstep.subway.fixture.acceptance.when;
 
-import static nextstep.subway.fixture.given.StationRequestFixture.*;
+import static nextstep.subway.fixture.acceptance.given.StationRequestFixture.*;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
