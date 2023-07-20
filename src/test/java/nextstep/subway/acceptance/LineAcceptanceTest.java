@@ -70,7 +70,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     /**
      * Given:
      * Given: 지하철 노선을 생성하고
-     * And : 구간을 1개 추가한 후
+     * And : 구간을 2개 추가한 후
      * When: 생성한 지하철 노선을 조회하면
      * Then: 생성한 지하철 노선의 정보를 응답받을 수 있다
      */
@@ -78,12 +78,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLine() {
         // given
-        long 노선_상행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("강남역"));
-        long 노선_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재시민의숲역"));
-        long 구간_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재역"));
+        long 신논현역_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("신논현역"));
+        long 강남역_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("강남역"));
+        long 양재시민의숲역_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재시민의숲역"));
+        long 양재역_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재역"));
 
-        long lineId = 응답_결과에서_Id를_추출한다(LineStep.지하철_노선을_생성한다(노선_상행_Id, 노선_하행_Id, "신분당선", 10));
-        SectionStep.지하철_노선_구간을_등록한다(lineId, 노선_상행_Id, 구간_하행_Id, 5);
+        long lineId = 응답_결과에서_Id를_추출한다(LineStep.지하철_노선을_생성한다(강남역_Id, 양재시민의숲역_Id, "신분당선", 10));
+
+        SectionStep.지하철_노선_구간을_등록한다(lineId, 강남역_Id, 양재역_Id, 5);
+        SectionStep.지하철_노선_구간을_등록한다(lineId, 신논현역_Id, 강남역_Id, 10);
 
         // when
         ExtractableResponse<Response> responseOfFindLine = LineStep.지하철_노선을_조회한다(lineId);
@@ -91,6 +94,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(responseOfFindLine.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(응답_결과에서_Id를_추출한다(responseOfFindLine)).isEqualTo(lineId);
+
+        List<Long> upStationIds = 응답_결과에서_구간의_상행역_Id를_추출한다(responseOfFindLine);
+        assertThat(upStationIds.get(0)).isEqualTo(신논현역_Id);
+        assertThat(upStationIds.get(1)).isEqualTo(강남역_Id);
+        assertThat(upStationIds.get(2)).isEqualTo(양재역_Id);
+    }
+
+    private List<Long> 응답_결과에서_구간의_상행역_Id를_추출한다(ExtractableResponse<Response> responseOfCreateStation) {
+        return responseOfCreateStation.jsonPath().getList("sections.upStationId", Long.class);
     }
 
     /**
