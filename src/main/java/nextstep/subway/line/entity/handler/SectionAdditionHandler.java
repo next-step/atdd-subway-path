@@ -7,5 +7,7 @@ public interface SectionAdditionHandler {
 
     boolean checkApplicable(Sections sections, Section section);
 
+    void validate(Sections sections, Section section);
+
     void apply(Sections sections, Section newSection);
 }

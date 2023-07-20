@@ -46,4 +46,12 @@ public class Section {
         }
         this.distance -= section.getDistance();
     }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
+    }
 }
