@@ -46,12 +46,6 @@ public class LineResponse {
         return stations;
     }
 
-    private List<StationResponse> toInnerStations(List<Station> stations) {
-        return stations.stream()
-            .map(StationResponse::new)
-            .collect(Collectors.toList());
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
