@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -34,32 +33,11 @@ public class Sections {
 
     public void add(Section section) {
         Station upEndStation = getUpEndStation();
-
         // 역 기준으로 하행 구간을 역으로 찾을 수 있다
-        Map<Station, Section> upSectionMap = new HashMap<>();
-        for (Section oldSection : sections) {
-            upSectionMap.put(oldSection.getUpStation(), oldSection);
+        Map<Station, Section> upSectionMap = getStationToUpSectionMap(section);
+        validateIntersection(section);
 
-            if (oldSection.getUpStation().equals(section.getUpStation()) && oldSection.getDownStation().equals(section.getDownStation())) {
-                throw new BusinessException(String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s", section.getUpStation().getId(), section.getDownStation().getId()));
-            }
-        }
-
-        List<Station> stations = new ArrayList<>(List.of(sections.get(0).getUpStation()));
-        stations.addAll(sections.stream().map(Section::getDownStation).collect(Collectors.toList()));
-        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
-            throw new BusinessException(String.format("상행역과 하행역 중 하나는 등록되어 있어야 합니다. 상행역ID: %s, 하행역ID: %s", section.getUpStation().getId(), section.getDownStation().getId()));
-        }
-
-        Station currentUpStation = upEndStation;
-        while (upSectionMap.containsKey(currentUpStation)) {
-            Section currentSection = upSectionMap.get(currentUpStation);
-            if (currentSection.getUpStation().equals(section.getUpStation()) || currentSection.getDownStation().equals(section.getDownStation())) {
-                currentSection.update(section);
-                break;
-            }
-            currentUpStation = currentSection.getDownStation();
-        }
+        updateSectionIfInsert(section, upEndStation, upSectionMap);
 
         sections.add(section);
     }
@@ -103,6 +81,48 @@ public class Sections {
 
     public List<Section> getSections() {
         return this.sections;
+    }
+
+    private void updateSectionIfInsert(Section section, Station upEndStation,
+        Map<Station, Section> upSectionMap) {
+        Station currentUpStation = upEndStation;
+        while (upSectionMap.containsKey(currentUpStation)) {
+            Section currentSection = upSectionMap.get(currentUpStation);
+            if (currentSection.getUpStation().equals(section.getUpStation())
+                || currentSection.getDownStation().equals(
+                section.getDownStation())) {
+                currentSection.update(section);
+                break;
+            }
+            currentUpStation = currentSection.getDownStation();
+        }
+    }
+
+    private void validateIntersection(Section section) {
+        List<Station> stations = new ArrayList<>(List.of(sections.get(0).getUpStation()));
+        stations.addAll(
+            sections.stream().map(Section::getDownStation).collect(Collectors.toList()));
+
+        if (!stations.contains(section.getUpStation()) && !stations.contains(
+            section.getDownStation())) {
+            throw new BusinessException(
+                String.format("상행역과 하행역 중 하나는 등록되어 있어야 합니다. 상행역ID: %s, 하행역ID: %s",
+                    section.getUpStation().getId(), section.getDownStation().getId()));
+        }
+    }
+
+    private Map<Station, Section> getStationToUpSectionMap(Section section) {
+        Map<Station, Section> upSectionMap = new HashMap<>();
+        for (Section oldSection : sections) {
+            upSectionMap.put(oldSection.getUpStation(), oldSection);
+
+            if (oldSection.getUpStation().equals(section.getUpStation())
+                && oldSection.getDownStation().equals(section.getDownStation())) {
+                throw new BusinessException(String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s",
+                    section.getUpStation().getId(), section.getDownStation().getId()));
+            }
+        }
+        return upSectionMap;
     }
 
     private Station getUpEndStation() {
