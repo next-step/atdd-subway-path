@@ -6,6 +6,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.acceptance.step.LineStep;
+import nextstep.subway.acceptance.step.SectionStep;
+import nextstep.subway.acceptance.step.StationStep;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -26,14 +28,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(responseOfCreate.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        long createdLineId = 지하철_노선_Id를_추출한다(responseOfCreate);
+        long createdLineId = 응답_결과에서_Id를_추출한다(responseOfCreate);
         ExtractableResponse<Response> responseOfRead = LineStep.지하철_노선을_조회한다(createdLineId);
 
         String findLineName = 지하철_노선_이름을_추출한다(responseOfRead);
         assertThat(findLineName).isEqualTo(lineName);
     }
 
-    private long 지하철_노선_Id를_추출한다(ExtractableResponse<Response> responseOfCreateStation) {
+    private long 응답_결과에서_Id를_추출한다(ExtractableResponse<Response> responseOfCreateStation) {
         return responseOfCreateStation.jsonPath().getLong("id");
     }
 
@@ -66,7 +68,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given:
      * Given: 지하철 노선을 생성하고
+     * And : 구간을 1개 추가한 후
      * When: 생성한 지하철 노선을 조회하면
      * Then: 생성한 지하철 노선의 정보를 응답받을 수 있다
      */
@@ -74,15 +78,19 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLine() {
         // given
-        ExtractableResponse<Response> responseOfCreateLine = LineStep.지하철_노선을_생성한다("강남역", "양재역", "신분당선");
+        long 노선_상행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("강남역"));
+        long 노선_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재시민의숲역"));
+        long 구간_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재역"));
+
+        long lineId = 응답_결과에서_Id를_추출한다(LineStep.지하철_노선을_생성한다(노선_상행_Id, 노선_하행_Id, "신분당선", 10));
+        SectionStep.지하철_노선_구간을_등록한다(lineId, 노선_상행_Id, 구간_하행_Id, 5);
 
         // when
-        long lineId = 지하철_노선_Id를_추출한다(responseOfCreateLine);
         ExtractableResponse<Response> responseOfFindLine = LineStep.지하철_노선을_조회한다(lineId);
 
         // then
         assertThat(responseOfFindLine.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(지하철_노선_Id를_추출한다(responseOfFindLine)).isEqualTo(lineId);
+        assertThat(응답_결과에서_Id를_추출한다(responseOfFindLine)).isEqualTo(lineId);
     }
 
     /**
@@ -97,7 +105,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> responseOfCreateLine = LineStep.지하철_노선을_생성한다("강남역", "양재역", "신분당선");
 
         // when
-        long lineId = 지하철_노선_Id를_추출한다(responseOfCreateLine);
+        long lineId = 응답_결과에서_Id를_추출한다(responseOfCreateLine);
         String lineNameForUpdate = "구분당선";
         String lineColorForUpdate = "bg-sky-500";
         ExtractableResponse<Response> responseOfUpdateLine = LineStep.지하철_노선을_수정한다(lineId, lineNameForUpdate, lineColorForUpdate);
@@ -126,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> responseOfCreateLine = LineStep.지하철_노선을_생성한다("강남역", "양재역", "신분당선");
 
         // when
-        long lineId = 지하철_노선_Id를_추출한다(responseOfCreateLine);
+        long lineId = 응답_결과에서_Id를_추출한다(responseOfCreateLine);
         ExtractableResponse<Response> responseOfDelete = LineStep.지하철_노선을_삭제한다(lineId);
 
         // then
