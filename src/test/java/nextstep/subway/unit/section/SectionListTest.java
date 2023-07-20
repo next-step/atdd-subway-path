@@ -148,4 +148,19 @@ class SectionListTest {
 
         assertThat(lastUpStation).isEqualTo(c);
     }
+
+    @Test
+    void removeSection() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(b, c), 4);
+        sectionList.addSection(newSection);
+
+        sectionList.removeSection(b);
+
+        assertThat(line.getDistance()).isEqualTo(5);
+        List<Section> sections = line.getSectionList();
+        assertThat(sections).hasSize(1);
+        assertThat(sections.get(0).getUpwardStation()).isEqualTo(a);
+        assertThat(sections.get(0).getUpwardStation()).isEqualTo(c);
+    }
 }
