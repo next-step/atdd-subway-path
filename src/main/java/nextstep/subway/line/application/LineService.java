@@ -90,7 +90,6 @@ public class LineService {
 
         Line line = getLine(lineId);
         line.addSectionVer2(section);
-        //TODO 왜 저장이 안되지?
 
         return SectionResponse.of(section);
     }

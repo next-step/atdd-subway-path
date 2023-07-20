@@ -104,13 +104,6 @@ public class Line {
         return sections.get(sections.size() - 1);
     }
 
-    /**
-     * 1. newSection이 들어갈 수 있는 조건이 있는지 확인한다.
-     *  - 상행 종점에 등록되는 새로운 역인가? -> 상행 종점 정보 필요
-     *  - 하행 종점에 등록되는 새로운 역인가? -> 하행 종점 정보 필요
-     *  - 역 사이에 등록되는 새로운 역인가? -> 위 두 케이스가 아닐 경우, newSection의 상행역 또는 하행역과 같은 상행역 또는 하행역을 갖는 구간 서치 필요
-     * 2. 조건에 맞는 구간 등록을 수행한다.
-     */
     public void addSectionVer2(Section newSection) {
         // 새로운 구간의 상, 하행역이 모두 같은 구간이 이미 존재하는 경우 예외
         sections.stream()
@@ -120,18 +113,13 @@ public class Line {
                     throw new AlreadyRegisteredStationException();
                 });
 
-        // 상행 종점에 등록
-        // 상행 종점의 상행역과 새로운 구간의 하행역이 같은지?
-        //firstSection.upStationEqualsTo(newSection.getDownStation())
         if (newSection.downStationNameEqualsTo(firstStationName)) {
-            // 같다면 상행 종점을 새로운 구간으로 교체
             firstStationName = newSection.getUpStationName();
             sections.add(newSection);
             newSection.assignLine(this);
             return;
         }
 
-        // 하행 종점에 등록
         if (newSection.upStationNameEqualsTo(lastStationName)) {
             lastStationName = newSection.getDownStationName();
             sections.add(newSection);
