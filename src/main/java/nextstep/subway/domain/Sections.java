@@ -159,7 +159,6 @@ public class Sections {
         }
     }
 
-
     private void validateRemoveStation(Station station) {
         if (sections.size() <= MIN_SECTIONS_SIZE) {
             throw new LastSectionException();
