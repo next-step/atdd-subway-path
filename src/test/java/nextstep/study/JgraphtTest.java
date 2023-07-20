@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 class JgraphtTest {
+
     @Test
     void getDijkstraShortestPath() {
         String source = "v3";
