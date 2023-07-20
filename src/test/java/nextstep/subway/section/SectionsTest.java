@@ -20,17 +20,19 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisplayName("구간 관리 기능 단위테스트")
 public class SectionsTest {
 
-    @DisplayName("마지막 순서의 구간을 만든다")
+    @DisplayName("마지막 순서의 구간을 반환한다")
     @Test
     void createLastSection() {
-        Section section = aSection().build();
-        Sections sections = new Sections(new ArrayList<>(List.of(section)));
-        sections.add(new Section(section.getLine(), new Station(2L, 신논현역), new Station(3L, 지하철역), 10));
-        Section newSection = sections.getLastSection();
+        Section oldSection = aSection().withDownStation(new Station(3L, 지하철역)).build();
+        Sections sections = new Sections(new ArrayList<>(List.of(oldSection)));
+        Section newSection = aSection().withDownStation(new Station(2L, 신논현역)).withDistance(5).build();
 
+        sections.add(newSection);
+
+        Section lastSection = sections.getLastSection();
         assertAll(
-            () -> assertThat(newSection.getUpStation().getId()).isEqualTo(2L),
-            () -> assertThat(newSection.getDownStation().getId()).isEqualTo(3L)
+            () -> assertThat(lastSection.getUpStation().getId()).isEqualTo(2L),
+            () -> assertThat(lastSection.getDownStation().getId()).isEqualTo(3L)
         );
     }
 

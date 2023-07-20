@@ -55,7 +55,19 @@ public class Sections {
     }
 
     public Section getLastSection() {
-        return this.sections.get(this.sections.size() - 1);
+        Map<Station, Section> upSectionMap = new HashMap<>();
+        for (Section oldSection : sections) {
+            upSectionMap.put(oldSection.getUpStation(), oldSection);
+        }
+
+        Station currentUpStation = getUpEndStation();
+        Section lastSection = upSectionMap.get(currentUpStation);
+        while (upSectionMap.containsKey(currentUpStation)) {
+            lastSection = upSectionMap.get(currentUpStation);
+            currentUpStation = lastSection.getDownStation();
+        }
+
+        return lastSection;
     }
 
     public List<Station> getStations() {
@@ -120,7 +132,7 @@ public class Sections {
         return upSectionMap;
     }
 
-    private static boolean isSameDownStations(Section section, Section oldSection) {
+    private boolean isSameDownStations(Section section, Section oldSection) {
         return oldSection.getDownStation().equals(section.getDownStation());
     }
 
@@ -151,7 +163,6 @@ public class Sections {
         List<Station> stations = new ArrayList<>(List.of(upEndStation));
 
         Station currentUpStation = upEndStation;
-
         while (upSectionMap.containsKey(currentUpStation)) {
             Section currentSection = upSectionMap.get(currentUpStation);
             stations.add(currentSection.getDownStation());
