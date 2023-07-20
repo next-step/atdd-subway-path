@@ -7,11 +7,12 @@ import java.util.List;
 import nextstep.subway.line.AlreadyConnectedException;
 import nextstep.subway.line.InvalidDistanceException;
 import nextstep.subway.line.MissingStationException;
-import nextstep.subway.line.NonDownstreamTerminusException;
 import nextstep.subway.line.Section;
 import nextstep.subway.line.Sections;
 import nextstep.subway.line.SingleSectionRemovalException;
+import nextstep.subway.line.StationNotIncludedException;
 import nextstep.subway.station.Station;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -130,9 +131,9 @@ public class SectionsTest {
                 pangyoStation);
     }
 
-    @DisplayName("노선에서 등록된 station을 성공적으로 삭제한다")
+    @DisplayName("노선에서 등록된 하행 종점 station을 성공적으로 삭제한다")
     @Test
-    void deleteSectionSuccess() {
+    void deleteBottomSectionSuccess() {
         // given
         Station yangjaeStation = new Station("양재역");
         sections.addSection(new Section(gangnamStation, yangjaeStation, 10));
@@ -143,6 +144,43 @@ public class SectionsTest {
 
         // then
         assertThat(sections.getStations()).doesNotContain(pangyoStation);
+    }
+
+    @DisplayName("노선에서 등록된 상행 종점 station을 성공적으로 삭제한다")
+    @Test
+    void deleteTopSectionSuccess() {
+        // given
+        Station yangjaeStation = new Station("양재역");
+        sections.addSection(new Section(gangnamStation, yangjaeStation, 10));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, 10));
+
+        // when
+        sections.deleteSection(gangnamStation);
+
+        // then
+        assertThat(sections.getStations()).doesNotContain(gangnamStation);
+    }
+
+    @DisplayName("노선에서 중간에 등록된 station을 성공적으로 삭제하면 재비치되고 거리는 두 구간의 거리의 합이다.")
+    @Test
+    void deleteSectionSuccessOnCenter() {
+        // given
+        Station yangjaeStation = new Station("양재역");
+        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, 9));
+
+        // when
+        sections.deleteSection(yangjaeStation);
+
+        // then
+        Section sameUpStationSection = sections.getSameUpStationSection(gangnamStation)
+                .orElseThrow(StationNotIncludedException::new);
+        Assertions.assertAll(
+                () -> assertThat(sections.getStations())
+                        .containsExactly(gangnamStation, pangyoStation),
+                () -> assertThat(sameUpStationSection.getDistance())
+                        .isEqualTo(10)
+        );
     }
 
     @DisplayName("노선의 section이 하나 뿐이면 station를 삭제 할 때 예외를 던진다")
@@ -156,17 +194,16 @@ public class SectionsTest {
                 .isInstanceOf(SingleSectionRemovalException.class);
     }
 
-    @DisplayName("제거할 Station이 노선의 하행 종점역이 아니면 예외를 던진다")
+    @DisplayName("해당 스테이션이 노선에 포함되어 있지 않는 스테이션 삭제 할 때 예외를 던진다")
     @Test
-    void deleteSectionFailed() {
+    void deleteSectionFailedByNotIncluded() {
         // given
         Station yangjaeStation = new Station("양재역");
-        sections.addSection(new Section(gangnamStation, yangjaeStation, 10));
-        sections.addSection(new Section(yangjaeStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, 9));
 
         // when,then
-        assertThatThrownBy(() -> sections.deleteSection(yangjaeStation))
-                .isInstanceOf(NonDownstreamTerminusException.class);
+        assertThatThrownBy(() -> sections.deleteSection(new Station("교대역")))
+                .isInstanceOf(StationNotIncludedException.class);
     }
-
 }
