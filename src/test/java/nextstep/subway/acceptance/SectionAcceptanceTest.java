@@ -274,7 +274,7 @@ class SectionAcceptanceTest {
 
         //then
         응답코드_검증(response, HttpStatus.BAD_REQUEST);
-        에러코드_검증(response, ErrorCode.CAN_NOT_REMOVE_STATION);
+        에러코드_검증(response, ErrorCode.NOT_FOUND);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         하행_종점역_기대값_검증(line7, 세번째역, "세번째역");
     }

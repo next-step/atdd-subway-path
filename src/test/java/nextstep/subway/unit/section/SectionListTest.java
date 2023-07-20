@@ -143,6 +143,8 @@ class SectionListTest {
         SectionList sectionList = line.getSections();
         Section newSection = new Section(line, new SectionStations(c, a), 4);
         sectionList.addSection(newSection);
+        Section newSection1 = new Section(line, new SectionStations(a, d), 1);
+        sectionList.addSection(newSection1);
 
         Station lastUpStation = sectionList.getUpLastStation();
 
@@ -157,10 +159,46 @@ class SectionListTest {
 
         sectionList.removeSection(b);
 
+        assertThat(line.getDistance()).isEqualTo(9);
+        List<Section> sections = line.getSectionList();
+        assertThat(sections).hasSize(1);
+        Section leftSection = sections.get(0);
+        assertThat(leftSection.getDistance()).isEqualTo(9);
+        assertThat(leftSection.getUpwardStation()).isEqualTo(a);
+        assertThat(leftSection.getDownwardStation()).isEqualTo(c);
+    }
+
+    @Test
+    void removeSectionUpLastStation() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(b, c), 4);
+        sectionList.addSection(newSection);
+
+        sectionList.removeSection(a);
+
+        assertThat(line.getDistance()).isEqualTo(4);
+        List<Section> sections = line.getSectionList();
+        assertThat(sections).hasSize(1);
+        Section leftSection = sections.get(0);
+        assertThat(leftSection.getDistance()).isEqualTo(4);
+        assertThat(leftSection.getUpwardStation()).isEqualTo(b);
+        assertThat(leftSection.getDownwardStation()).isEqualTo(c);
+    }
+
+    @Test
+    void removeSectionDownLastStation() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(b, c), 4);
+        sectionList.addSection(newSection);
+
+        sectionList.removeSection(c);
+
         assertThat(line.getDistance()).isEqualTo(5);
         List<Section> sections = line.getSectionList();
         assertThat(sections).hasSize(1);
-        assertThat(sections.get(0).getUpwardStation()).isEqualTo(a);
-        assertThat(sections.get(0).getUpwardStation()).isEqualTo(c);
+        Section leftSection = sections.get(0);
+        assertThat(leftSection.getDistance()).isEqualTo(5);
+        assertThat(leftSection.getUpwardStation()).isEqualTo(a);
+        assertThat(leftSection.getDownwardStation()).isEqualTo(b);
     }
 }
