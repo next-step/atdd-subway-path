@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.exception.CanNotAddSectionException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,193 +20,225 @@ import static org.mockito.Mockito.spy;
 
 class LineTest {
 
+    private Line secondaryLine;
+    private Station gangnameStation;
+    private Station eonjuStation;
+    private Station seongsuStation;
+
+    @BeforeEach
+    void setUp() {
+        gangnameStation = getStation("강남역", 1L);
+        eonjuStation = getStation("언주역", 2L);
+        seongsuStation = getStation("성수역", 3L);
+        secondaryLine = getLine("2호선", "bg-red-600", 10L, gangnameStation, eonjuStation, 1L);
+    }
+
     @Nested
     class 구간_추가 {
 
         @Test
         void 기존_노선_하행역에_신규_구간_하행역_등록_성공() {
             // given
-            Station upStation = createStation("강남역", 1L);
-            Station downStation = createStation("언주역", 2L);
-            Station newSectionStation = createStation("성수역", 3L);
-
-            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-            Section section = Section.of(downStation, newSectionStation, 3L);
+            Section section = Section.of(eonjuStation, seongsuStation, 3L);
 
             // when
-            Assertions.assertDoesNotThrow(() -> line.add(section));
+            Assertions.assertDoesNotThrow(() -> secondaryLine.add(section));
 
             // then
-            assertThat(line.getStations()).map(Station::getName).containsExactly("강남역", "언주역", "성수역");
-            Assertions.assertEquals(13L, line.getDistance());
+            assertThat(secondaryLine.getStations()).map(Station::getName).containsExactly("강남역", "언주역", "성수역");
+            Assertions.assertEquals(13L, secondaryLine.getDistance());
         }
 
         @Test
         void 기존_노선_상행역에_신규_구간_상행역_등록_성공() {
             // given
-            Station upStation = createStation("강남역", 1L);
-            Station downStation = createStation("언주역", 2L);
-            Station newSectionStation = createStation("성수역", 3L);
-
-            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-            Section section = Section.of(newSectionStation, upStation, 3L);
+            Section section = Section.of(seongsuStation, gangnameStation, 3L);
 
             // when
-            Assertions.assertDoesNotThrow(() -> line.add(section));
+            Assertions.assertDoesNotThrow(() -> secondaryLine.add(section));
 
             // then
-            assertThat(line.getStations()).map(Station::getName).containsExactly("성수역", "강남역", "언주역");
-            Assertions.assertEquals(13L, line.getDistance());
+            assertThat(secondaryLine.getStations()).map(Station::getName).containsExactly("성수역", "강남역", "언주역");
+            Assertions.assertEquals(13L, secondaryLine.getDistance());
         }
 
         @Test
         void 기존_노선_하행역에_신규_구간_상행역_등록_성공() {
             // given
-            Station upStation = createStation("강남역", 1L);
-            Station downStation = createStation("언주역", 2L);
-            Station newSectionStation = createStation("성수역", 3L);
-
-            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-            Section section = Section.of(newSectionStation, downStation, 3L);
+            Section section = Section.of(seongsuStation, eonjuStation, 3L);
 
             // when
-            Assertions.assertDoesNotThrow(() -> line.add(section));
+            Assertions.assertDoesNotThrow(() -> secondaryLine.add(section));
 
             // then
-            assertThat(line.getStations()).map(Station::getName).containsExactly("강남역", "성수역", "언주역");
-            Assertions.assertEquals(10L, line.getDistance());
+            assertThat(secondaryLine.getStations()).map(Station::getName).containsExactly("강남역", "성수역", "언주역");
+            Assertions.assertEquals(10L, secondaryLine.getDistance());
         }
 
         @Test
         void 기존_노선_상행역에_신규_구간_하행역_등록_성공() {
             // given
-            Station upStation = createStation("강남역", 1L);
-            Station downStation = createStation("언주역", 2L);
-            Station newSectionStation = createStation("성수역", 3L);
-
-            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-            Section section = Section.of(upStation, newSectionStation, 3L);
+            Section section = Section.of(gangnameStation, seongsuStation, 3L);
 
             // when
-            Assertions.assertDoesNotThrow(() -> line.add(section));
+            Assertions.assertDoesNotThrow(() -> secondaryLine.add(section));
 
             // then
-            assertThat(line.getStations()).map(Station::getName).containsExactly("강남역", "성수역", "언주역");
-            Assertions.assertEquals(10L, line.getDistance());
+            assertThat(secondaryLine.getStations()).map(Station::getName).containsExactly("강남역", "성수역", "언주역");
+            Assertions.assertEquals(10L, secondaryLine.getDistance());
         }
 
         @Test
         void 신규_구간_하행역_기등록_실패() {
             // given
-            Station upStation = createStation("강남역", 1L);
-            Station downStation = createStation("언주역", 2L);
-
-            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-            Section section = Section.of(upStation, downStation, 3L);
+            Section section = Section.of(gangnameStation, eonjuStation, 3L);
 
             // when & then
-            thenCode(() -> line.add(section)).isInstanceOf(CanNotAddSectionException.class);
+            thenCode(() -> secondaryLine.add(section)).isInstanceOf(CanNotAddSectionException.class);
         }
 
         @CsvSource(value = {"10", "11", "12"})
         @ParameterizedTest
         void 신규_구간_길이가_기존과_동일하거나_더_크면_실패(long distance) {
             // given
-            Station upStation = createStation("강남역", 1L);
-            Station downStation = createStation("언주역", 2L);
-
-            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-            Section section = Section.of(upStation, downStation, distance);
+            Section section = Section.of(gangnameStation, eonjuStation, distance);
 
             // when & then
-            thenCode(() -> line.add(section)).isInstanceOf(CanNotAddSectionException.class);
+            thenCode(() -> secondaryLine.add(section)).isInstanceOf(CanNotAddSectionException.class);
         }
 
         @Test
         void 신규_구간_기등록_실패() {
             // given
-            Station upStation = createStation("강남역", 1L);
-            Station downStation = createStation("언주역", 2L);
-
-            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-            Section section = Section.of(downStation, downStation, 10L);
+            Section section = Section.of(eonjuStation, eonjuStation, 10L);
 
             // when & then
-            thenCode(() -> line.add(section)).isInstanceOf(CanNotAddSectionException.class);
+            thenCode(() -> secondaryLine.add(section)).isInstanceOf(CanNotAddSectionException.class);
         }
 
         @Test
         void 신규_구간_노선_구간_상행_하행_모두_미등록_실패() {
             // given
-            Station upStation = createStation("강남역", 1L);
-            Station downStation = createStation("언주역", 2L);
-            Station newUpStation = createStation("성수역", 3L);
-            Station newDownStation = createStation("뚝섬역", 4L);
-
-            Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-            Section section = Section.of(newUpStation, newDownStation, 10L);
+            Station newStation = getStation("뚝섬역", 4L);
+            Section section = Section.of(seongsuStation, newStation, 10L);
 
             // when & then
-            thenCode(() -> line.add(section)).isInstanceOf(CanNotAddSectionException.class);
+            thenCode(() -> secondaryLine.add(section)).isInstanceOf(CanNotAddSectionException.class);
         }
-
     }
-
 
     @Test
     void 노선_정보_수정() {
-        // given
-        Station upStation = createStation("강남역", 1L);
-        Station downStation = createStation("언주역", 2L);
-
-        Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-
         // when
-        line.modify("3호선", "bg-green-400");
+        secondaryLine.modify("3호선", "bg-green-400");
 
         // then
-        Assertions.assertEquals("3호선", line.getName());
-        Assertions.assertEquals("bg-green-400", line.getColor());
+        Assertions.assertEquals("3호선", secondaryLine.getName());
+        Assertions.assertEquals("bg-green-400", secondaryLine.getColor());
     }
 
 
     @Test
     void 모든_역_가져오기() {
-        // given
-        Station upStation = createStation("강남역", 1L);
-        Station downStation = createStation("언주역", 2L);
-
-        Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-
         // when
-        List<Station> stations = line.getStations();
+        List<Station> stations = secondaryLine.getStations();
 
         // then
         assertThat(stations).hasSize(2)
-                .containsExactly(upStation, downStation);
+                .containsExactly(gangnameStation, eonjuStation);
     }
 
-    @Test
-    void 구간_제거() {
-        // given
-        Station upStation = createStation("강남역", 1L);
-        Station downStation = createStation("언주역", 2L);
-        Station newSectionStation = createStation("성수역", 3L);
+    @Nested
+    class 구간_제거 {
 
-        Line line = createLine("2호선", "bg-red-600", 10L, upStation, downStation, 1L);
-        line.add(Section.of(downStation, newSectionStation, 3L));
+        @Test
+        void 상행역_구간_제거() {
+            // given
+            secondaryLine.add(Section.of(eonjuStation, seongsuStation, 3L));
 
-        // when
-        line.remove(newSectionStation);
+            // when
+            secondaryLine.remove(gangnameStation);
 
-        // then
-        Assertions.assertEquals(upStation, line.getStartOfLine());
-        Assertions.assertEquals(downStation, line.getEndOfLine());
-        Assertions.assertEquals(10L, line.getDistance());
+            // then
+            List<Station> stations = secondaryLine.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(eonjuStation, seongsuStation);
+            Assertions.assertEquals(3L, secondaryLine.getDistance());
+        }
+
+        @Test
+        void 하행역_구간_제거() {
+            // given
+            secondaryLine.add(Section.of(eonjuStation, seongsuStation, 3L));
+
+            // when
+            secondaryLine.remove(seongsuStation);
+
+            // then
+            List<Station> stations = secondaryLine.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(gangnameStation, eonjuStation);
+            Assertions.assertEquals(10L, secondaryLine.getDistance());
+        }
+
+        @Test
+        void 중간역_구간_제거() {
+            // given
+            secondaryLine.add(Section.of(eonjuStation, seongsuStation, 3L));
+
+            // when
+            secondaryLine.remove(eonjuStation);
+
+            // then
+            List<Station> stations = secondaryLine.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(gangnameStation, seongsuStation);
+            Assertions.assertEquals(13L, secondaryLine.getDistance());
+        }
+
+        @Test
+        void 없는_역을_제거_할수_없다() {
+            // given
+            Station notInLineStation = getStation("보라매역", 4L);
+            secondaryLine.add(Section.of(eonjuStation, seongsuStation, 3L));
+
+            // when & then
+            thenCode(() -> secondaryLine.remove(notInLineStation)).isInstanceOf(Exception.class);
+
+            // then
+            List<Station> stations = secondaryLine.getStations();
+            assertThat(stations).hasSize(3)
+                    .containsExactly(gangnameStation, eonjuStation, seongsuStation);
+            Assertions.assertEquals(13L, secondaryLine.getDistance());
+        }
+
+        @Test
+        void 단일_구간_상행역_제거_불가() {
+            // when & then
+            thenCode(() -> secondaryLine.remove(gangnameStation)).isInstanceOf(Exception.class);
+
+            // then
+            List<Station> stations = secondaryLine.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(gangnameStation, eonjuStation);
+            Assertions.assertEquals(10L, secondaryLine.getDistance());
+        }
+
+        @Test
+        void 단일_구간_하행역_제거_불가() {
+            // when & then
+            thenCode(() -> secondaryLine.remove(eonjuStation)).isInstanceOf(Exception.class);
+
+            // then
+            List<Station> stations = secondaryLine.getStations();
+            assertThat(stations).hasSize(2)
+                    .containsExactly(gangnameStation, eonjuStation);
+            Assertions.assertEquals(10L, secondaryLine.getDistance());
+        }
     }
 
-    private Line createLine(String name, String color, Long distance, Station upStation, Station downStation, Long id) {
-        Line line = spy(Line.builder()
+    private static Line getLine(String name, String color, Long distance, Station upStation, Station downStation, Long id) {
+        Line secondaryLine = spy(Line.builder()
                 .name(name)
                 .color(color)
                 .distance(distance)
@@ -213,10 +246,10 @@ class LineTest {
                 .downStation(downStation)
                 .build());
         given(upStation.getId()).willReturn(id);
-        return line;
+        return secondaryLine;
     }
 
-    private Station createStation(String name, Long id) {
+    private static Station getStation(String name, Long id) {
         Station station = spy(Station.create(() -> name));
         given(station.getId()).willReturn(id);
         return station;

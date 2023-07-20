@@ -7,6 +7,7 @@ import nextstep.subway.domain.exception.IllegalSectionStationException;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -23,14 +24,12 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        // 새로운 구간의 하행역이 중간 지점인 경우
         Optional<Section> newDownStationInMiddleOfSection = this.getStationSection(section -> section.isUpStation(newSection.getUpStation()));
         if (newDownStationInMiddleOfSection.isPresent()) {
             this.splitSectionUpStationBase(newDownStationInMiddleOfSection.get(), newSection);
             return;
         }
 
-        // 새로운 구간의 상행역이 중간 지점인 경우
         Optional<Section> newUpStationInMiddleOfSection = this.getStationSection(section -> section.isDownStation(newSection.getDownStation()));
         if (newUpStationInMiddleOfSection.isPresent()) {
             this.splitSectionDownStationBase(newUpStationInMiddleOfSection.get(), newSection);
@@ -38,6 +37,24 @@ public class Sections {
         }
 
         this.sections.add(newSection);
+    }
+
+    private void splitSectionUpStationBase(Section oldSection, Section newSection) {
+        this.sections.remove(oldSection);
+        Long newSectionDistance = newSection.getDistance();
+        Section newUpSection = Section.of(newSection.getUpStation(), newSection.getDownStation(), newSectionDistance);
+        Section newDownSection = Section.of(newSection.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - newSectionDistance);
+        this.sections.add(newUpSection);
+        this.sections.add(newDownSection);
+    }
+
+    private void splitSectionDownStationBase(Section oldSection, Section newSection) {
+        this.sections.remove(oldSection);
+        Long newSectionDistance = newSection.getDistance();
+        Section newUpSection = Section.of(oldSection.getUpStation(), newSection.getUpStation(), newSectionDistance);
+        Section newDownSection = Section.of(newSection.getUpStation(), newSection.getDownStation(), oldSection.getDistance() - newSectionDistance);
+        this.sections.add(newUpSection);
+        this.sections.add(newDownSection);
     }
 
     public Long sumOfDistance() {
@@ -49,12 +66,46 @@ public class Sections {
     }
 
     public void remove(Station targetStation) {
-        Section targetSection = this.sections.stream()
-                .filter(section -> section.isDownStation(targetStation))
+        if (isLastStationOfLine(targetStation)) {
+            removeLastStationOfLine(targetStation);
+            return;
+        }
+
+        removeMiddleStationOfLine(targetStation);
+    }
+
+    private boolean isLastStationOfLine(Station targetStation) {
+        Station startOfLine = getStartOfLine();
+        Station endOfLine = getEndOfLine();
+        return Objects.equals(targetStation, startOfLine)
+                || Objects.equals(targetStation, endOfLine);
+    }
+
+    private void removeLastStationOfLine(Station targetStation) {
+        Station startOfLine = getStartOfLine();
+        Station endOfLine = getEndOfLine();
+        this.sections.stream()
+                .filter(section -> Objects.equals(targetStation, startOfLine)
+                        ? section.isUpStation(startOfLine)
+                        : section.isDownStation(endOfLine))
                 .findAny()
+                .ifPresent(this.sections::remove);
+    }
+
+    private void removeMiddleStationOfLine(Station targetStation) {
+        Section upStationSection = this.getStationSection(section -> section.isDownStation(targetStation))
+                .orElseThrow(IllegalSectionStationException::new);
+        Section downStationSection = this.getStationSection(section -> section.isUpStation(targetStation))
                 .orElseThrow(IllegalSectionStationException::new);
 
-        this.sections.remove(targetSection);
+        Station newUpStation = upStationSection.getUpStation();
+        Station newDownStation = downStationSection.getDownStation();
+        long newDistance = upStationSection.getDistance() + downStationSection.getDistance();
+        Section newUpSection = Section.of(newUpStation, newDownStation, newDistance);
+
+        this.sections.add(newUpSection);
+        this.sections.remove(upStationSection);
+        this.sections.remove(downStationSection);
     }
 
     public List<Station> getStations() {
@@ -107,23 +158,5 @@ public class Sections {
 
     public Optional<Section> getStationSection(Predicate<Section> condition) {
         return this.sections.stream().filter(condition).findFirst();
-    }
-
-    public void splitSectionUpStationBase(Section oldSection, Section newSection) {
-        this.sections.remove(oldSection);
-        Long newSectionDistance = newSection.getDistance();
-        Section newUpSection = Section.of(newSection.getUpStation(), newSection.getDownStation(), newSectionDistance);
-        Section newDownSection = Section.of(newSection.getDownStation(), oldSection.getDownStation(), oldSection.getDistance() - newSectionDistance);
-        this.sections.add(newUpSection);
-        this.sections.add(newDownSection);
-    }
-
-    public void splitSectionDownStationBase(Section oldSection, Section newSection) {
-        this.sections.remove(oldSection);
-        Long newSectionDistance = newSection.getDistance();
-        Section newUpSection = Section.of(oldSection.getUpStation(), newSection.getUpStation(), newSectionDistance);
-        Section newDownSection = Section.of(newSection.getUpStation(), newSection.getDownStation(), oldSection.getDistance() - newSectionDistance);
-        this.sections.add(newUpSection);
-        this.sections.add(newDownSection);
     }
 }
