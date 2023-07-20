@@ -59,38 +59,29 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        Station upEndStation = getUpEndStation();
-        List<Station> stations = new ArrayList<>();
-        stations.add(upEndStation);
-
         // 역 기준으로 하행 구간을 역으로 찾을 수 있다
         Map<Station, Section> upSectionMap = new HashMap<>();
         for (Section oldSection : sections) {
             upSectionMap.put(oldSection.getUpStation(), oldSection);
         }
 
-        Station currentUpStation = upEndStation;
-        while (upSectionMap.containsKey(currentUpStation)) {
-            Section currentSection = upSectionMap.get(currentUpStation);
-            stations.add(currentSection.getDownStation());
-            currentUpStation = currentSection.getDownStation();
-        }
-
-        return stations;
+        return getOrderedStations(upSectionMap);
     }
 
     public List<Section> getSections() {
         return this.sections;
     }
 
-    private void updateSectionIfInsert(Section section, Station upEndStation,
-        Map<Station, Section> upSectionMap) {
+    private void updateSectionIfInsert(final Section section, final Station upEndStation,
+        final Map<Station, Section> upSectionMap) {
+
         Station currentUpStation = upEndStation;
         while (upSectionMap.containsKey(currentUpStation)) {
             Section currentSection = upSectionMap.get(currentUpStation);
-            if (currentSection.getUpStation().equals(section.getUpStation())
-                || currentSection.getDownStation().equals(
-                section.getDownStation())) {
+
+            if (isSameUpStations(section, currentSection)
+                || isSameDownStations(section, currentSection)) {
+
                 currentSection.update(section);
                 break;
             }
@@ -98,31 +89,43 @@ public class Sections {
         }
     }
 
-    private void validateIntersection(Section section) {
+    private void validateIntersection(final Section section) {
         List<Station> stations = new ArrayList<>(List.of(sections.get(0).getUpStation()));
         stations.addAll(
             sections.stream().map(Section::getDownStation).collect(Collectors.toList()));
 
-        if (!stations.contains(section.getUpStation()) && !stations.contains(
-            section.getDownStation())) {
+        if (!stations.contains(section.getUpStation())
+            && !stations.contains(section.getDownStation())) {
+
             throw new BusinessException(
                 String.format("상행역과 하행역 중 하나는 등록되어 있어야 합니다. 상행역ID: %s, 하행역ID: %s",
                     section.getUpStation().getId(), section.getDownStation().getId()));
         }
     }
 
-    private Map<Station, Section> getStationToUpSectionMap(Section section) {
+    private Map<Station, Section> getStationToUpSectionMap(final Section section) {
         Map<Station, Section> upSectionMap = new HashMap<>();
         for (Section oldSection : sections) {
             upSectionMap.put(oldSection.getUpStation(), oldSection);
 
-            if (oldSection.getUpStation().equals(section.getUpStation())
-                && oldSection.getDownStation().equals(section.getDownStation())) {
-                throw new BusinessException(String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s",
-                    section.getUpStation().getId(), section.getDownStation().getId()));
+            if (isSameUpStations(section, oldSection) && isSameDownStations(section, oldSection)) {
+
+                throw new BusinessException(
+                    String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s",
+                        section.getUpStation().getId(),
+                        section.getDownStation().getId()));
             }
         }
+
         return upSectionMap;
+    }
+
+    private static boolean isSameDownStations(Section section, Section oldSection) {
+        return oldSection.getDownStation().equals(section.getDownStation());
+    }
+
+    private boolean isSameUpStations(Section section, Section oldSection) {
+        return oldSection.getUpStation().equals(section.getUpStation());
     }
 
     private Station getUpEndStation() {
@@ -141,5 +144,20 @@ public class Sections {
         }
 
         throw new BusinessException("상행 종점역을 찾을 수 없습니다.");
+    }
+
+    private List<Station> getOrderedStations(final Map<Station, Section> upSectionMap) {
+        Station upEndStation = getUpEndStation();
+        List<Station> stations = new ArrayList<>(List.of(upEndStation));
+
+        Station currentUpStation = upEndStation;
+
+        while (upSectionMap.containsKey(currentUpStation)) {
+            Section currentSection = upSectionMap.get(currentUpStation);
+            stations.add(currentSection.getDownStation());
+            currentUpStation = currentSection.getDownStation();
+        }
+
+        return stations;
     }
 }
