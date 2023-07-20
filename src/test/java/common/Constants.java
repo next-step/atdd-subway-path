@@ -12,4 +12,5 @@ public final class Constants {
     public static final String 분당선 = "분당선";
 
     public static final String 빨강색600 = "bg-red-600";
+    public static final String 파랑색600 = "bg-blue-600";
 }
