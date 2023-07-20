@@ -91,6 +91,11 @@ public class Section {
         this.distance -= section.distance;
     }
 
+    public void removeInterStation(Section section) {
+        this.stations = new SectionStations(this.getUpwardStation(), section.getDownwardStation());
+        this.distance += section.distance;
+    }
+
     private void checkValidDistance(Section section) {
         if (section.distance >= this.distance) {
             throw new CustomException(ErrorCode.INVALID_INTER_STATION_DISTANCE);
