@@ -42,7 +42,7 @@ class LineTest {
         Section newSection = new Section(강남역, 양재역, 4);
 
         // when
-        신분당선.addSection(newSection);
+        신분당선.registerSection(newSection);
 
         // then : 강남역-양재역 & 양재역-양재시민의숲역 구간이 있어야함 각각 길이는 4, 6
         List<Section> sections = 신분당선.getSections();
@@ -75,7 +75,7 @@ class LineTest {
         Section newSection = new Section(신논현역, 강남역, 5);
 
         // when
-        신분당선.addSection(newSection);
+        신분당선.registerSection(newSection);
 
         // then
         String 상행_종점 = 신분당선.getFirstStationName();
@@ -105,7 +105,7 @@ class LineTest {
         Section newSection = new Section(양재역, 양재시민의숲역, 5);
 
         // when
-        신분당선.addSection(newSection);
+        신분당선.registerSection(newSection);
 
         // then
         String 하행_종점 = 신분당선.getLastStationName();

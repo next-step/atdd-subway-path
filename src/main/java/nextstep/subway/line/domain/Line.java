@@ -38,8 +38,7 @@ public class Line {
         this.firstStationName = section.getUpStationName();
         this.lastStationName = section.getDownStationName();
 
-        sections.add(section);
-        section.assignLine(this);
+        addSection(section);
     }
 
     public void update(String name, String color) {
@@ -60,6 +59,7 @@ public class Line {
     }
 
     public List<Section> getSections() {
+        //
         return sections;
     }
 
@@ -99,33 +99,35 @@ public class Line {
         return sections.get(sections.size() - 1);
     }
 
-    public void addSection(Section newSection) {
+    public void registerSection(Section newSection) {
         // 새로운 구간의 상, 하행역이 모두 같은 구간이 이미 존재하는 경우 예외
+        validateAlreadyRegisteredSection(newSection);
+
+        if (newSection.downStationNameEqualsTo(firstStationName)) {
+            firstStationName = newSection.getUpStationName();
+            addSection(newSection);
+            return;
+        }
+
+        if (newSection.upStationNameEqualsTo(lastStationName)) {
+            lastStationName = newSection.getDownStationName();
+            addSection(newSection);
+            return;
+        }
+
+        registerSectionBetweenStations(newSection);
+    }
+
+    private void validateAlreadyRegisteredSection(Section newSection) {
         sections.stream()
                 .filter(section -> section.hasAllSameStations(newSection))
                 .findAny()
                 .ifPresent(section -> {
                     throw new AlreadyRegisteredStationException();
                 });
-
-        if (newSection.downStationNameEqualsTo(firstStationName)) {
-            firstStationName = newSection.getUpStationName();
-            sections.add(newSection);
-            newSection.assignLine(this);
-            return;
-        }
-
-        if (newSection.upStationNameEqualsTo(lastStationName)) {
-            lastStationName = newSection.getDownStationName();
-            sections.add(newSection);
-            newSection.assignLine(this);
-            return;
-        }
-
-        addSectionBetweenStations(newSection);
     }
 
-    private void addSectionBetweenStations(Section newSection) {
+    private void registerSectionBetweenStations(Section newSection) {
         Section existingSection = sections.stream()
                 .filter(section -> section.hasOnlyOneSameStation(newSection))
                 .findAny()
@@ -134,7 +136,6 @@ public class Line {
         if (existingSection.hasSameDistance(newSection)) {
             throw new InvalidSectionRegistrationException();  //TODO: 더 알맞는 예외는 나중에...
         }
-
 
         Section downSection;
         if (existingSection.hasSameUpStation(newSection)) {
@@ -145,10 +146,12 @@ public class Line {
 
         sections.remove(existingSection);
 
-        sections.add(newSection);
-        sections.add(downSection);
+        addSection(newSection);
+        addSection(downSection);
+    }
 
+    private void addSection(Section newSection) {
+        sections.add(newSection);
         newSection.assignLine(this);
-        downSection.assignLine(this);
     }
 }
