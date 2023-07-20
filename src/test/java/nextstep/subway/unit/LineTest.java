@@ -10,8 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -240,7 +239,7 @@ class LineTest {
 
 
     @Nested
-    @DisplayName("isDeletableSection 테스트")
+    @DisplayName("removeSection 테스트 - isDeletableSection가 false인 경우 테스트")
     public class IsDeletableSection {
 
         private Station station1;
@@ -254,23 +253,6 @@ class LineTest {
             station3 = new Station();
         }
 
-        @DisplayName("삭제 가능한 경우")
-        @Test
-        void isDeletableSection_true() {
-
-            // given
-            Line line = new Line();
-            Station targetStation = new Station();
-            line.addSection(targetStation, station2, 1);
-            line.addSection(station2, station3, 2);
-
-            // when
-            boolean result = line.isDeletableStation(targetStation);
-
-            // then
-            assertThat(result).isTrue();
-        }
-
         @DisplayName("삭제 불가능한 경우 - 구간이 1개")
         @Test
         void isDeletableSection_false_oneSection() {
@@ -280,11 +262,9 @@ class LineTest {
             Station targetStation = new Station();
             line.addSection(targetStation, station2, 1);
 
-            // when
-            boolean result = line.isDeletableStation(targetStation);
-
-            // then
-            assertThat(result).isFalse();
+            // when & then
+            assertThatThrownBy(() -> line.removeStation(targetStation))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
 
         @DisplayName("삭제 불가능한 경우 - 존재하지 않는 정거장")
@@ -297,16 +277,14 @@ class LineTest {
             line.addSection(station1, station2, 1);
             line.addSection(station2, station3, 1);
 
-            // when
-            boolean result = line.isDeletableStation(targetStation);
-
-            // then
-            assertThat(result).isFalse();
+            // when & then
+            assertThatThrownBy(() -> line.removeStation(targetStation))
+                    .isInstanceOf(IllegalArgumentException.class);
         }
     }
 
     @Nested
-    @DisplayName("removeSection 테스트")
+    @DisplayName("removeSection 테스트 - 정상 케이스")
     public class RemoveSection {
 
         private final Long stationId1 = 1L;

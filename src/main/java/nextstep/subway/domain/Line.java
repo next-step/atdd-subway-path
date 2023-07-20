@@ -222,6 +222,10 @@ public class Line {
      */
     public void removeStation(Station station) {
 
+        if (!isDeletableStation(station)) {
+            throw new IllegalArgumentException("해당 정거장을 라인에서 삭제할 수 없습니다.");
+        }
+
         Optional<Section> upperSectionOptional = this.sections.stream().filter(it -> it.getUpStation() == station).findFirst();
         Optional<Section> lowerSectionOptional = this.sections.stream().filter(it -> it.getDownStation() == station).findFirst();
 
