@@ -27,22 +27,63 @@ import nextstep.subway.station.Station;
 public class SectionAcceptanceTest {
 
     // Given 지하철 노선을 생성하고
-    // When 지하철 노선에 구간을 추가하면
-    // Then 지하철 노선 조회시 추가한 구간이 포함되어있다.
-    @DisplayName("지하철 노선에 구간을 추가한다.")
+    // When 지하철 노선 구간 사이에 존재하는 구간을 추가하면
+    // Then 지하철 노선 조회시 추가한 구간이 중간에 포함되어있다.
+    @DisplayName("지하철 노선 사이에 존재하는 구간을 추가한다.")
     @Test
-    void createSection() {
+    void createSection_pass_insert() {
         // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
-        var stationResponse = 지하철_역_생성_요청(또다른지하철역);
+        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
+        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
 
         // when
-        지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
-            stationResponse.getId(), 10);
+        지하철_구간_생성_요청(신분당선응답.getId(), 지하철역응답.getId(), 또다른지하철역응답.getId(), 5);
 
         // then
-        var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
-        assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역, 또다른지하철역);
+        var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
+        assertThat(getStationNames(노선조회응답)).containsExactly(지하철역, 또다른지하철역, 새로운지하철역);
+    }
+
+    // Given 지하철 노선을 생성하고
+    // When 지하철 노선 상행 종점역을 하행역으로 가지는 구간을 추가하면
+    // Then 지하철 노선 조회시 추가한 구간이 맨 앞에 포함되어있다.
+    @DisplayName("지하철 노선 사이에 존재하는 구간을 추가한다.")
+    @Test
+    void createSection_pass_addHead() {
+        // given
+        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
+        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
+
+        // when
+        지하철_구간_생성_요청(신분당선응답.getId(), 또다른지하철역응답.getId(), 지하철역응답.getId(), 5);
+
+        // then
+        var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
+        assertThat(getStationNames(노선조회응답)).containsExactly(또다른지하철역, 지하철역, 새로운지하철역);
+    }
+
+    // Given 지하철 노선을 생성하고
+    // When 지하철 노선 하행 종점역을 상행역으로 가지는 구간을 추가하면
+    // Then 지하철 노선 조회시 추가한 구간이 맨 뒤에 포함되어있다.
+    @DisplayName("지하철 노선 사이에 존재하는 구간을 추가한다.")
+    @Test
+    void createSection_pass_addTail() {
+        // given
+        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
+        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
+
+        // when
+        지하철_구간_생성_요청(신분당선응답.getId(), 새로운지하철역응답.getId(), 또다른지하철역응답.getId(), 5);
+
+        // then
+        var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
+        assertThat(getStationNames(노선조회응답)).containsExactly(지하철역, 새로운지하철역, 또다른지하철역);
     }
 
     // Given 지하철 노선을 생성하고
