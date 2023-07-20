@@ -208,9 +208,9 @@ public class Sections {
                        .findFirst();
     }
 
-    public Optional<Section> findSectionByDownStation(Long stationId) {
+    public Optional<Section> findSectionByDownStation(Station station) {
         return sections.stream()
-                       .filter(section -> section.equalsDownStation(stationId))
+                       .filter(section -> section.equalsDownStation(station))
                        .findFirst();
     }
 

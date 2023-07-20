@@ -84,7 +84,7 @@ public class SectionDeleteAcceptanceTest {
         @Nested
         class When_remove_not_last_downstation {
 
-            @DisplayName("예외를 던진다")
+            @DisplayName("제거된다")
             @Test
             void shouldThrowError() {
                 section = sectionFixture.구간생성(lineAB.getId(), lineDownstationB.getId(), lineUpstationC.getId(), 4).as(SectionCreateResponse.class);
@@ -94,8 +94,7 @@ public class SectionDeleteAcceptanceTest {
                                                                     .then().log().all()
                                                                     .extract();
 
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-                assertThat(response.as(ErrorResponse.class).getErrorCode()).isEqualTo(ErrorCode.ONLY_LAST_DOWNSTATION_CAN_DELETED);
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
             }
         }
 

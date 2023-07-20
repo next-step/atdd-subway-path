@@ -92,7 +92,7 @@ public class Line {
         }
 
         if (equalDownStation(station)) {
-            maybeNextDownStation = sections.findSectionByDownStation(station.getId())
+            maybeNextDownStation = sections.findSectionByDownStation(station)
                                            .map(Section::getUpStation);
         }
 
