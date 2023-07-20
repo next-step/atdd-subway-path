@@ -68,8 +68,6 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        System.out.println("station : " + station);
-        System.out.println("sections : " + sections);
         validateRemoveStation(station);
 
         if (isFirst(station)) {
@@ -195,6 +193,6 @@ public class Sections {
     }
 
     private Section getSection(Station station) {
-        return sections.stream().filter(s -> s.isDownStation(station)).findAny().get();
+        return sections.stream().filter(s -> s.isDownStation(station)).findAny().orElseThrow();
     }
 }
