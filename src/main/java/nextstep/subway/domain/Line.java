@@ -15,12 +15,17 @@ public class Line {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public Line() {
-    }
+    public Line() { }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+        this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public Long getId() {
@@ -49,5 +54,29 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public void deleteSectionByUpStation(Station upStation) {
+        for (Section savedSection : this.sections) {
+            Station savedUpStation = savedSection.getUpStation();
+            if (savedUpStation.getName().equals(upStation.getName())) {
+                this.sections.remove(savedSection);
+                return;
+            }
+        }
+    }
+
+    public void deleteSectionByDownStation(Station downStation) {
+        for (Section savedSection : this.sections) {
+            Station savedUpStation = savedSection.getUpStation();
+            if (savedUpStation.getName().equals(downStation.getName())) {
+                this.sections.remove(savedSection);
+                return;
+            }
+        }
     }
 }
