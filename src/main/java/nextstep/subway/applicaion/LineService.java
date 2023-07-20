@@ -8,6 +8,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.NotFoundLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSection(Section.of(line, upStation, downStation, request.getDistance()));
         }
         return createLineResponse(line);
     }
@@ -43,13 +44,17 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
+    }
+
     public LineResponse findById(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
+        return createLineResponse(findLineById(id));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundLineException::new);
 
         if (lineRequest.getName() != null) {
             line.setName(lineRequest.getName());
@@ -68,9 +73,12 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = getLineById(lineId);
+        line.addSection(Section.of(line, upStation, downStation, sectionRequest.getDistance()));
+    }
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    private Line getLineById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(NotFoundLineException::new);
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -86,12 +94,7 @@ public class LineService {
         if (line.getSections().isEmpty()) {
             return Collections.emptyList();
         }
-
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = line.getStations();
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
@@ -100,13 +103,9 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+        Line line = getLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+        line.removeStation(station);
     }
 }

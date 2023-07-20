@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -8,29 +9,32 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     private int distance;
 
     public Section() {
-
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    private Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -51,5 +55,42 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public boolean isConnected(Section section) {
+        return isContains(section) || isUpStation(section.getDownStation()) || isDownStation(section.getUpStation());
+    }
+
+    public boolean isContains(Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
+
+    public boolean isContains(Section section) {
+        return isUpStation(section.getUpStation()) || isDownStation(section.getDownStation());
+    }
+
+    public boolean isUpStation(Station station) {
+        if (Objects.isNull(upStation) || Objects.isNull(station)) {
+            return false;
+        }
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        if (Objects.isNull(downStation) || Objects.isNull(station)) {
+            return false;
+        }
+        return downStation.equals(station);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }
