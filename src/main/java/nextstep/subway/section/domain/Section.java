@@ -45,24 +45,20 @@ public class Section {
 
     private int distance;
 
-    public boolean containStation(Long stationId) {
-        return Objects.equals(upStation.getId(), stationId) || Objects.equals(downStation.getId(), stationId);
+    public boolean containStation(Station station) {
+        return Objects.equals(upStation.getId(), station.getId()) || Objects.equals(downStation.getId(), station.getId());
     }
 
     public void attachToLine(Line line) {
         this.line = line;
     }
 
-    public boolean equalsUpstation(Long stationId) {
-        return Objects.equals(upStation.getId(), stationId);
+    public boolean equalsUpstation(Station station) {
+        return Objects.equals(upStation, station);
     }
 
-    public boolean equalsDownStation(Long stationId) {
-        return Objects.equals(downStation.getId(), stationId);
-    }
-
-    private boolean equalsById(Long id) {
-        return Objects.equals(this.id, id);
+    public boolean equalsDownStation(Station station) {
+        return Objects.equals(downStation, station);
     }
 
     public void changeUpStation(Station upStation) {
@@ -81,7 +77,25 @@ public class Section {
         return this.distance <=distance;
     }
 
-    public Long getUpstationId() {
-        return upStation.getId();
+    public Section mergeSection(Section section) {
+        Station newUpStation = this.upStation;
+        Station newDownStation = this.downStation;
+
+        if (this.upStation.equals(section.getDownStation())) {
+            newUpStation = section.getUpStation();
+            newDownStation = this.downStation;
+        }
+
+        if (this.downStation.equals(section.getUpStation())) {
+            newUpStation = this.upStation;
+            newDownStation = section.getDownStation();
+        }
+
+        return Section.builder()
+                      .upStation(newUpStation)
+                      .downStation(newDownStation)
+                      .line(line)
+                      .distance(this.distance + section.distance)
+                      .build();
     }
 }

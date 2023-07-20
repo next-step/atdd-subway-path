@@ -72,7 +72,7 @@ public class LineManageService {
     public void delete(Long lineId, Long stationId) {
         Line line = lineReadService.getLine(lineId);
 
-        line.deleteSection(stationId);
+        line.deleteSection(stationService.get(stationId));
     }
 
 }

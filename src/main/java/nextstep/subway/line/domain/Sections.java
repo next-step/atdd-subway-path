@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -19,6 +20,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.exception.InvalidSectionDeleteException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.support.ErrorCode;
+import nextstep.subway.support.SubwayException;
 
 
 @Getter
@@ -29,14 +31,6 @@ public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
-
-    public boolean isLastDownStation(Long stationId) {
-        if (CollectionUtils.isEmpty(this.sections)) {
-            return false;
-        }
-
-        return getLastSection().equalsDownStation(stationId);
-    }
 
     public boolean hasOneSection() {
         if (CollectionUtils.isEmpty(this.sections)) {
@@ -50,11 +44,11 @@ public class Sections {
         if (requireSectionDivide(section)) {
             Section divideTargetSection = findDivideTargetSection(section);
 
-            if (divideTargetSection.equalsUpstation(section.getUpStation().getId())) {
+            if (divideTargetSection.equalsUpstation(section.getUpStation())) {
                 divideTargetSection.changeUpStation(section.getDownStation());
             }
 
-            if (divideTargetSection.equalsDownStation(section.getDownStation().getId())) {
+            if (divideTargetSection.equalsDownStation(section.getDownStation())) {
                 divideTargetSection.changeDownStation(section.getUpStation());
             }
 
@@ -65,17 +59,17 @@ public class Sections {
     }
 
     private Section findDivideTargetSection(Section section) {
-        Optional<Section> maybeTarget = findSectionByStationId(section.getUpStation().getId());
+        Optional<Section> maybeTarget = findSectionByStation(section.getUpStation());
 
         if (maybeTarget.isEmpty()) {
-            maybeTarget = findSectionByStationId(section.getDownStation().getId());
+            maybeTarget = findSectionByStation(section.getDownStation());
         }
 
         return maybeTarget.get();
     }
 
     private boolean requireSectionDivide(Section section) {
-        return hasSameUpStationInSection(section.getUpStation().getId()) || hasSameDownstationInSection(section.getDownStation().getId());
+        return hasSameUpStationInSection(section.getUpStation()) || hasSameDownstationInSection(section.getDownStation());
     }
 
     public boolean isEmpty() {
@@ -90,31 +84,31 @@ public class Sections {
         /**
          * 역의 양 끝에 추가하는 경우
          */
-        if (hasSameUpStationInSection(section.getDownStation().getId())) {
+        if (hasSameUpStationInSection(section.getDownStation())) {
             return true;
         }
 
-        if (hasSameDownstationInSection(section.getUpStation().getId())) {
+        if (hasSameDownstationInSection(section.getUpStation())) {
             return true;
         }
 
-        if (hasSameUpStationInSection(section.getUpStation().getId()) && hasSameDownstationInSection(section.getDownStation().getId())) {
+        if (hasSameUpStationInSection(section.getUpStation()) && hasSameDownstationInSection(section.getDownStation())) {
             return false;
         }
 
-        if (hasSameUpStationInSection(section.getUpStation().getId())) {
-            if (findSameUpStationSection(section.getUpStation().getId()).get().distanceIsLessThanEquals(section.getDistance())) {
+        if (hasSameUpStationInSection(section.getUpStation())) {
+            if (findSameUpStationSection(section.getUpStation()).get().distanceIsLessThanEquals(section.getDistance())) {
                 return false;
             }
         }
 
-        if (hasSameDownstationInSection(section.getDownStation().getId())) {
-            if (findSameDownStation(section.getDownStation().getId()).get().getDistance() <= section.getDistance()) {
+        if (hasSameDownstationInSection(section.getDownStation())) {
+            if (findSameDownStation(section.getDownStation()).get().getDistance() <= section.getDistance()) {
                 return false;
             }
         }
 
-        if (findSectionByStationId(section.getUpStation().getId()).isEmpty() && findSectionByStationId(section.getDownStation().getId()).isEmpty()) {
+        if (findSectionByStation(section.getUpStation()).isEmpty() && findSectionByStation(section.getDownStation()).isEmpty()) {
             return false;
         }
 
@@ -122,70 +116,102 @@ public class Sections {
     }
 
     public boolean requireUpStationChange(Section section) {
-        return hasSameUpStationInSection(section.getDownStation().getId());
+        return hasSameUpStationInSection(section.getDownStation());
     }
 
     public boolean requireDownStationChange(Section section) {
-        return hasSameDownstationInSection(section.getUpStation().getId());
+        return hasSameDownstationInSection(section.getUpStation());
     }
 
-    private Optional<Section> findSameUpStationSection(Long stationId) {
+    private Optional<Section> findSameUpStationSection(Station station) {
         return sections.stream()
-                       .filter(section -> section.equalsUpstation(stationId))
+                       .filter(section -> section.equalsUpstation(station))
                        .findFirst();
     }
 
-    private Optional<Section> findSameDownStation(Long stationId) {
+    private Optional<Section> findSameDownStation(Station station) {
         return sections.stream()
-                       .filter(section -> section.equalsDownStation(stationId))
+                       .filter(section -> section.equalsDownStation(station))
                        .findFirst();
     }
 
-    private boolean hasSameDownstationInSection(Long stationId) {
-        return findSameDownStation(stationId).isPresent();
+    private boolean hasSameDownstationInSection(Station station) {
+        return findSameDownStation(station).isPresent();
     }
 
-    private boolean hasSameUpStationInSection(Long stationId) {
-        return findSameUpStationSection(stationId).isPresent();
+    private boolean hasSameUpStationInSection(Station station) {
+        return findSameUpStationSection(station).isPresent();
     }
 
-    public boolean possibleToDeleteSection(Long stationId) {
+    public void possibleToDeleteSection(Station station) {
         if (hasOneSection()) {
             throw new InvalidSectionDeleteException(ErrorCode.SECTION_DELETE_FAIL_BY_LAST_SECTION_CANNOT_DELETED);
         }
 
-        if (!isLastDownStation(stationId)) {
-            throw new InvalidSectionDeleteException(ErrorCode.ONLY_LAST_DOWNSTATION_CAN_DELETED);
+        if (!isStationOnSections(station)) {
+            throw new SubwayException(ErrorCode.STATION_NOT_ON_SECTIONS);
         }
-
-        return true;
     }
 
-    public void deleteSectionByStationId(Long stationId) {
-        findSectionByStationId(stationId).ifPresent(section -> sections.remove(section));
+    private boolean isStationOnSections(Station station) {
+        return sections.stream().anyMatch(section -> section.containStation(station));
     }
 
-    private Optional<Section> findSectionByStationId(Long stationId) {
+    public void deleteSectionByStation(Station station) {
+        List<Section> relatedSections = findSectionsByStation(station);
+
+        if (relatedSections.size() == 2) {
+            Section newSection = relatedSections.get(0).mergeSection(relatedSections.get(1));
+
+            this.sections.removeAll(relatedSections);
+            this.sections.add(newSection);
+        } else if (relatedSections.size() == 1) {
+            this.sections.remove(relatedSections.get(0));
+        }
+    }
+
+    private Optional<Section> findSectionByStation(Station station) {
         return sections.stream()
-                       .filter(section -> section.containStation(stationId))
+                       .filter(section -> section.containStation(station))
                        .findAny();
     }
 
-    private Section getLastSection() {
-        return sections.get(sections.size()-1);
+    private List<Section> findSectionsByStation(Station station) {
+        return sections.stream()
+                       .filter(section -> section.containStation(station))
+                       .collect(Collectors.toList());
     }
 
     public List<Section> toOrderedList(Station lastUpStation) {
         List<Section> orderedSections = new ArrayList<>();
 
-        Section iterateSection = findSameUpStationSection(lastUpStation.getId()).get();
+        Section iterateSection = findSameUpStationSection(lastUpStation).get();
         orderedSections.add(iterateSection);
 
-        while(findSameUpStationSection(iterateSection.getDownStation().getId()).isPresent()) {
-            iterateSection = findSameUpStationSection(iterateSection.getDownStation().getId()).get();
+        while(findSameUpStationSection(iterateSection.getDownStation()).isPresent()) {
+            iterateSection = findSameUpStationSection(iterateSection.getDownStation()).get();
             orderedSections.add(iterateSection);
         }
 
         return List.copyOf(orderedSections);
     }
+
+    public int allDistance() {
+        return sections.stream()
+                       .map(Section::getDistance)
+                       .reduce(0, Integer::sum);
+    }
+
+    public Optional<Section> findSectionByUpStation(Station station) {
+        return sections.stream()
+                       .filter(section -> section.equalsUpstation(station))
+                       .findFirst();
+    }
+
+    public Optional<Section> findSectionByDownStation(Station station) {
+        return sections.stream()
+                       .filter(section -> section.equalsDownStation(station))
+                       .findFirst();
+    }
+
 }

@@ -1,5 +1,7 @@
 package nextstep.sections;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.support.SubwayException;
 
 public class SectionsTest {
     Station stationA = new Station(10L, "stationA");
@@ -66,7 +69,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThat(lineAB.equalUpStation(stationC.getId())).isTrue();
+                Assertions.assertThat(lineAB.equalUpStation(stationC)).isTrue();
             }
         }
 
@@ -89,7 +92,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThat(lineAB.equalDownStation(stationC.getId())).isTrue();
+                Assertions.assertThat(lineAB.equalDownStation(stationC)).isTrue();
             }
         }
     }
@@ -130,7 +133,7 @@ public class SectionsTest {
 
                 lineAB.addSection(givenAddSection);
 
-                Assertions.assertThat(lineAB.equalDownStation(stationC.getId())).isTrue();
+                Assertions.assertThat(lineAB.equalDownStation(stationB)).isTrue();
             }
         }
     }
@@ -209,7 +212,71 @@ public class SectionsTest {
                 Assertions.assertThat(orderedSections.get(1).getDownStation()).isEqualTo(stationB);
             }
         }
+    }
 
+    @Nested
+    class Given_노선에_구간이_2개이상일때 {
+
+        @Nested
+        class When_중간역을_제거하면 {
+
+            @Test
+            void 거리가_합쳐진다() {
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                lineAB.deleteSection(stationB);
+
+                Assertions.assertThat(lineAB.getSections().allDistance()).isEqualTo(15);
+            }
+        }
+
+        @Nested
+        class When_상행_종점역을_제거하면 {
+
+            @Test
+            void 제거된다() {
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                lineAB.deleteSection(stationA);
+
+                Assertions.assertThat(lineAB.getSections().hasOneSection()).isTrue();
+            }
+        }
+
+        @Nested
+        class When_하행_종점역을_제거하면 {
+
+            @Test
+            void 제거된다() {
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                lineAB.deleteSection(stationC);
+
+                Assertions.assertThat(lineAB.getSections().hasOneSection()).isTrue();
+            }
+        }
+
+        @Nested
+        class When_없는역을_제거하면 {
+
+            @Test
+            void 오류가_발생한다() {
+                Station givenOtherStation = new Station(14L, "otherStation");
+                Section givenAddSection = new Section(2L, lineAB, stationB, stationC,5);
+
+                lineAB.addSection(givenAddSection);
+
+                assertThrows(SubwayException.class, () -> {
+                    lineAB.deleteSection(givenOtherStation);
+                });
+            }
+        }
     }
 
 

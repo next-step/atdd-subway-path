@@ -6,7 +6,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.EqualsAndHashCode;
+
 @Entity
+@EqualsAndHashCode(of = "id")
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

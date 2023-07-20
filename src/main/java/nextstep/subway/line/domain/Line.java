@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -78,18 +79,35 @@ public class Line {
         sections.appendSection(section);
     }
 
-    public void deleteSection(Long stationId) {
-        if (sections.possibleToDeleteSection(stationId)) {
-            sections.deleteSectionByStationId(stationId);
+    public void deleteSection(Station station) {
+        sections.possibleToDeleteSection(station);
+
+        Optional<Station> maybeNextUpStation = Optional.empty();
+        Optional<Station> maybeNextDownStation = Optional.empty();
+
+        // 상행 종점역 제거시
+        if (equalUpStation(station)) {
+            maybeNextUpStation = sections.findSectionByUpStation(station)
+                                         .map(Section::getDownStation);
         }
+
+        if (equalDownStation(station)) {
+            maybeNextDownStation = sections.findSectionByDownStation(station)
+                                           .map(Section::getUpStation);
+        }
+
+        sections.deleteSectionByStation(station);
+
+        maybeNextUpStation.ifPresent(nextUpStation -> this.upStation = nextUpStation);
+        maybeNextDownStation.ifPresent(nextDownStation -> this.downStation = nextDownStation);
     }
 
-    public boolean equalUpStation(Long stationId) {
-        return Objects.equals(upStation.getId(), stationId);
+    public boolean equalUpStation(Station station) {
+        return Objects.equals(upStation, station);
     }
 
-    public boolean equalDownStation(Long stationId) {
-        return Objects.equals(downStation.getId(), stationId);
+    public boolean equalDownStation(Station station) {
+        return Objects.equals(downStation, station);
     }
 
     public List<Section> orderedSections() {
