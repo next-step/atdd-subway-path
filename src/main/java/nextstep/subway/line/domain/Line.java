@@ -6,10 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.exception.AlreadyRegisteredStationException;
-import nextstep.subway.section.exception.CanNotDeleteOnlyOneSectionException;
-import nextstep.subway.section.exception.DeleteOnlyTerminusStationException;
-import nextstep.subway.section.exception.InvalidSectionRegistrationException;
+import nextstep.subway.section.exception.*;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -140,7 +137,7 @@ public class Line {
         Section existingSection = findExistingSection(newSection);
 
         if (existingSection.hasSameOrLongerDistance(newSection)) {
-            throw new InvalidSectionRegistrationException();  //TODO: 더 알맞는 예외는 나중에...
+            throw new DistanceNotLongerThanExistingSectionException();
         }
 
         Section downSection;
