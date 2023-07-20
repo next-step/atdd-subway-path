@@ -38,13 +38,45 @@ public class SectionServiceTest {
         이수역 = stationRepository.save(이수역());
         사당역 = stationRepository.save(사당역());
         line = lineRepository.save(line(당고개역, 이수역));
-        sectionDto = sectionDto(이수역.getId(), 사당역.getId());
     }
 
-    @DisplayName("구간을 추가한다.")
+    @DisplayName("구간을 추가한다. - 역 사이에 새로운 역을 등록할 경우")
     @Test
     void addSection() {
         // when
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId());
+        sectionService.addSection(line.getId(), sectionDto);
+
+        // then
+        assertThat(line.getSections()).hasSize(2)
+                .extracting("upStation.name", "downStation.name")
+                .containsExactlyInAnyOrder(
+                        Tuple.tuple("당고개역", "사당역"),
+                        Tuple.tuple("사당역", "이수역")
+                );
+    }
+
+    @DisplayName("구간을 추가한다. - 새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSection2() {
+        // when
+        sectionDto = sectionDto(사당역.getId(), 당고개역.getId());
+        sectionService.addSection(line.getId(), sectionDto);
+
+        // then
+        assertThat(line.getSections()).hasSize(2)
+                .extracting("upStation.name", "downStation.name")
+                .containsExactlyInAnyOrder(
+                        Tuple.tuple("사당역", "당고개역"),
+                        Tuple.tuple("당고개역", "이수역")
+                );
+    }
+
+    @DisplayName("구간을 추가한다. - 새로운역을 하행 종점으로 등록할 경우")
+    @Test
+    void addSection3() {
+        // when
+        sectionDto = sectionDto(이수역.getId(), 사당역.getId());
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
@@ -108,7 +140,7 @@ public class SectionServiceTest {
         return SectionDto.builder()
                 .upStationId(upStationId)
                 .downStationId(downStationId)
-                .distance(10)
+                .distance(3)
                 .build();
     }
 }

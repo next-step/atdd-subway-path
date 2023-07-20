@@ -80,14 +80,26 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        // 역 사이에 새로운 역을 등록할 경우
         sections.stream()
-                .filter(oldSection -> oldSection.getUpStation().equals(section.getUpStation()))
+                .filter(oldSection -> oldSection.getUpStation() == section.getUpStation())
                 .findFirst()
                 .ifPresent(oldSection -> {
-                    this.sections.add(Section.of(oldSection.getUpStation(), oldSection.getDownStation(), oldSection.getDistance() - section.getDistance(), this));
-                    sections.remove(oldSection);
+                    this.sections.add(Section.of(section.getDownStation(), oldSection.getDownStation(), validationDistance(oldSection.getDistance(), section.getDistance()), this));
+                    this.sections.remove(oldSection);
                 });
-        this.sections.add(section);
+
+        // 새로운 역을 상행 종점으로 등록할 경우
+        sections.stream()
+                .filter(oldSection -> oldSection.getUpStation().equals(section.getDownStation()))
+                .findFirst()
+                .ifPresent(oldSection -> this.sections.add(section));
+
+        // 새로운 역을 하행 종점으로 등록할 경우
+        sections.stream()
+                .filter(oldSection -> oldSection.getDownStation().equals(section.getUpStation()))
+                .findFirst()
+                .ifPresent(oldSection -> this.sections.add(section));
     }
 
     public void isExistsDownStation(Station upStation) {
@@ -128,6 +140,14 @@ public class Line {
         } else {
             return Optional.of(sections.get(sections.size() - 1));
         }
+    }
+
+    private int validationDistance(int oldDistance, int newDistance) {
+        int distance = oldDistance - newDistance;
+        if (distance <= 0) {
+            throw new SubwayException(ErrorCode.INVALID_DISTANCE);
+        }
+        return distance;
     }
 
     public void validationStations(Station upStation, Station downStation) {
