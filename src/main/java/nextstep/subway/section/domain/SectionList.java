@@ -114,6 +114,29 @@ public class SectionList {
         return sections;
     }
 
+    public List<Station> getStationsByOrder() {
+        List<Station> result = new ArrayList<>();
+
+        Section firstSection = getFirstSection();
+        result.add(firstSection.getUpwardStation());
+        result.add(firstSection.getDownwardStation());
+        Station pivot = getNextStation(firstSection.getDownwardStation());
+        while (pivot != null) {
+            result.add(pivot);
+            pivot = getNextStation(pivot);
+        }
+        return result;
+    }
+
+    private Station getNextStation(Station station) {
+        for (Section section : sections) {
+            if (section.hasSameUpwardStation(station)) {
+                return section.getDownwardStation();
+            }
+        }
+        return null;
+    }
+
     public Station getDownLastStation() {
         if (sections.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_PARAM);
@@ -130,6 +153,16 @@ public class SectionList {
 
         Section anySection = sections.get(0);
         return getUpLastStation(anySection.getUpwardStation());
+    }
+
+    private Section getFirstSection() {
+        Station firstStation = getUpLastStation();
+        for (Section section : sections) {
+            if (section.hasSameUpwardStation(firstStation)) {
+                return section;
+            }
+        }
+        throw new CustomException(ErrorCode.NOT_FOUND);
     }
 
     private Station getUpLastStation(Station targetStation) {

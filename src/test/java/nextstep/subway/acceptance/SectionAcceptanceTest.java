@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.line.controller.dto.LineResponse;
 import nextstep.subway.station.controller.dto.StationResponse;
@@ -61,6 +62,7 @@ class SectionAcceptanceTest {
         응답코드_검증(response, HttpStatus.OK);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         상행_종점역_기대값_검증(line7, 첫번째역, "첫번째역");
+        역_위치_기대값_검증(line7, 두번째역, "두번째역", 1);
         하행_종점역_기대값_검증(line7, 세번째역, "세번째역");
     }
 
@@ -287,8 +289,17 @@ class SectionAcceptanceTest {
         );
     }
 
+    private void 역_위치_기대값_검증(LineResponse response, Long stationId, String stationName, Integer index) {
+        StationResponse upwardLastStation = response.getStations().get(index);
+        assertAll(
+                () -> assertThat(upwardLastStation.getId()).isEqualTo(stationId),
+                () -> assertThat(upwardLastStation.getName()).isEqualTo(stationName)
+        );
+    }
+
     private void 하행_종점역_기대값_검증(LineResponse response, Long stationId, String stationName) {
-        StationResponse downwardLastStation = response.getStations().get(1);
+        List<StationResponse> stationResponses = response.getStations();
+        StationResponse downwardLastStation = response.getStations().get(stationResponses.size()-1);
         assertAll(
             () -> assertThat(downwardLastStation.getId()).isEqualTo(stationId),
             () -> assertThat(downwardLastStation.getName()).isEqualTo(stationName)

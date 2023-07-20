@@ -201,4 +201,19 @@ class SectionListTest {
         assertThat(leftSection.getUpwardStation()).isEqualTo(a);
         assertThat(leftSection.getDownwardStation()).isEqualTo(b);
     }
+
+    @Test
+    void getStationsByOrder() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(c, a), 4);
+        sectionList.addSection(newSection);
+        Section newSection1 = new Section(line, new SectionStations(a, d), 1);
+        sectionList.addSection(newSection1);
+
+        List<Station> stations = sectionList.getStationsByOrder();
+        assertThat(stations.get(0)).isEqualTo(c);
+        assertThat(stations.get(1)).isEqualTo(a);
+        assertThat(stations.get(2)).isEqualTo(d);
+        assertThat(stations.get(3)).isEqualTo(b);
+    }
 }

@@ -103,4 +103,8 @@ public class Line {
     public Station getDownLastStation() {
         return sections.getDownLastStation();
     }
+
+    public List<Station> getStationsByOrder() {
+        return sections.getStationsByOrder();
+    }
 }
