@@ -24,13 +24,11 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
-        Line line = new Line(lineRequest.getName(),
-            lineRequest.getColor(),
-            new Section(findStationById(lineRequest.getUpStationId()),
-                findStationById(lineRequest.getDownStationId()),
-                lineRequest.getDistance())
-        );
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
+        Section section = new Section(upStation, downStation, lineRequest.getDistance());
 
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), section);
         lineRepository.save(line);
 
         return new LineResponse(line);
