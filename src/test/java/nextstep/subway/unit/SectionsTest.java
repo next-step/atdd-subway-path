@@ -194,7 +194,7 @@ public class SectionsTest {
                 .isInstanceOf(SingleSectionRemovalException.class);
     }
 
-    @DisplayName("해당 스테이션이 노선에 포함되어 있지 않는 스테이션 삭제 할 때 예외를 던진다")
+    @DisplayName("해당 노선에 포함되어 있지 않는 스테이션을 삭제 할 때 예외를 던진다")
     @Test
     void deleteSectionFailedByNotIncluded() {
         // given
