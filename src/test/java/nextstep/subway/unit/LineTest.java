@@ -118,10 +118,29 @@ class LineTest {
             }
         
         }
-        
+
         @DisplayName("실패 케이스")
         @Nested
         class Fail {
+            @DisplayName("새로운 구간 내에 기존 구간들의 역들 중에 하나라도 포함되어있지 않으면 예외 발생")
+            @Test
+            void registerSectionFailByDoNotHaveAtLeastOneSameStation() {
+                // given
+                Station 강남역 = new Station(1L, "강남역");
+                Station 양재역 = new Station(2L, "양재역");
+                Section sectionForLine = new Section(강남역, 양재역, 10);
+
+                Line 신분당선 = new Line("신분당선", "bg-red-600", sectionForLine);
+
+                Station 여의도역 = new Station(3L, "여의도역");
+                Station 샛강역 = new Station(4L, "샛강역");
+                Section newSection = new Section(여의도역, 샛강역, 12);
+
+                // when, then
+                assertThatThrownBy(() -> 신분당선.registerSection(newSection))
+                        .isInstanceOf(InvalidSectionRegistrationException.class);
+            }
+
             @DisplayName("이미 등록된 구간을 추가하면 예외 발생")
             @Test
             void registerSectionFailByAlreadyRegisteredSection() {
