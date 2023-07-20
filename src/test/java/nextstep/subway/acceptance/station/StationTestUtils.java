@@ -9,8 +9,6 @@ import org.springframework.http.MediaType;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class StationTestUtils {
 
     public static final Map<String, String> 강남역_정보 = Map.of("name", "강남역");
@@ -42,9 +40,8 @@ public class StationTestUtils {
                 .when()
                 .delete(stationUrl)
                 .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public static String 지하철역_생성(Map<String, String> 지하철_정보) {
@@ -56,10 +53,8 @@ public class StationTestUtils {
                 .when()
                 .post("/stations")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
         return response.header("Location");
     }
 
@@ -69,10 +64,8 @@ public class StationTestUtils {
                 .when()
                 .get("/stations")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
         return response;
     }
 }

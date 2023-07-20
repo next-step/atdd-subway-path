@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.station.StationTestUtils.지하철_아이디_획득;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineTestUtils {
 
@@ -56,9 +55,8 @@ public class LineTestUtils {
                 .when()
                 .post("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         return response.header("Location");
     }
 
@@ -69,9 +67,8 @@ public class LineTestUtils {
                 .accept(ContentType.JSON)
                 .get("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         return response;
     }
 
@@ -82,9 +79,8 @@ public class LineTestUtils {
                 .accept(ContentType.JSON)
                 .get(lineUrl)
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         return response;
     }
 
@@ -96,8 +92,8 @@ public class LineTestUtils {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .put(lineUrl)
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         return response;
     }
 
@@ -107,8 +103,8 @@ public class LineTestUtils {
                 .when()
                 .delete(lineUrl)
                 .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         return response;
     }
 
@@ -132,10 +128,8 @@ public class LineTestUtils {
                 .when()
                 .post(노선_url + "/sections")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
         return response.header("Location");
     }
 
@@ -154,9 +148,8 @@ public class LineTestUtils {
                 .when()
                 .post(노선_url + "/sections")
                 .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static void 지하철_구간_삭제(String 구간_url) {
@@ -165,9 +158,8 @@ public class LineTestUtils {
                 .when()
                 .delete(구간_url)
                 .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public static void 지하철_구간_삭제_실패(String 구간_url) {
@@ -176,8 +168,7 @@ public class LineTestUtils {
                 .when()
                 .delete(구간_url)
                 .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
