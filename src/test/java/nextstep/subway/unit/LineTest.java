@@ -81,10 +81,10 @@ class LineTest {
                 assertThat(sections).hasSize(2);
 
                 Section firstSection = sections.get(0);
-                assertSection(firstSection, "강남역", "양재역", 10);
+                assertSection(firstSection, "신논현역", "강남역", 5);
 
                 Section secondSection = sections.get(1);
-                assertSection(secondSection, "신논현역", "강남역", 5);
+                assertSection(secondSection, "강남역", "양재역", 10);
             }
 
             @DisplayName("하행역에 새로운 구간 추가")
