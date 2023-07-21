@@ -31,7 +31,7 @@ public class AnyStationPreExistCheckHandler extends SectionAdditionHandler {
     private void validateOnlyOneStationIsEnrolledInLine(Sections sections, Section section) {
         if (sections.checkUpStationsContains(section.getUpStation()) &&
                 sections.checkDownStationsContains(section.getDownStation())) {
-            throw new CreationValidationException("새로운 구간의 상행역과 하행역 둘중 한개는 노선에 등록돼있어야합니다.");
+            throw new CreationValidationException("section.0003");
         }
     }
 }

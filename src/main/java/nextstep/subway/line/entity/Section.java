@@ -38,15 +38,6 @@ public class Section {
         this.distance = distance;
     }
 
-    public void divideBy(Section section) {
-        if (this.upStation.equalsId(section.getUpStation())) {
-            this.upStation = section.downStation;
-        } else if (this.downStation.equalsId(section.getDownStation())) {
-            this.downStation = section.upStation;
-        }
-        this.distance -= section.getDistance();
-    }
-
     public void changeUpStation(Station station) {
         this.upStation = station;
     }

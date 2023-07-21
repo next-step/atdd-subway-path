@@ -31,7 +31,7 @@ public class AddSectionAtMiddleLeftHandler extends SectionAdditionHandler {
 
     private void validateNewSectionLengthSmaller(Section originalSection, Section section) {
         if (section.getDistance().compareTo(originalSection.getDistance()) != -1) {
-            throw new CreationValidationException(String.format("구간의 길이가 기존 구간 보다 작아야합니다. 기존 구간 길이:%s 새 구간 길이:%s", originalSection.getDistance(), section.getDistance()));
+            throw new CreationValidationException("section.0002");
         }
     }
 }

@@ -21,6 +21,6 @@ public class SectionAdditionHandlerMapping {
                 return handler;
             }
         }
-        throw new CreationValidationException("구간 정보에 맞는 핸들러가 존재하지 않습니다.");
+        throw new CreationValidationException("section.0004");
     }
 }

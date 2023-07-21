@@ -48,7 +48,7 @@ public class Sections {
                 .filter(section -> section.getUpStation().equalsId(station))
                 .findAny()
                 .map(section -> section.getDownStation())
-                .orElseThrow(() -> new StationNotFoundException(String.format("하행역이 존재하지 않습니다. 기준역id:%s", station.getId())));
+                .orElseThrow(() -> new StationNotFoundException("station.down.not.found"));
     }
 
     public void forceSectionAddition(Section section) {
@@ -66,19 +66,19 @@ public class Sections {
         return sections.stream()
                 .filter(s -> s.getUpStation().equalsId(upStation))
                 .findAny()
-                .orElseThrow(() -> new SectionNotFoundException(String.format("구간을 찾을 수 없습니다. 상행역id:%s", upStation.getId())));
+                .orElseThrow(() -> new SectionNotFoundException("section.not.found"));
     }
 
     public Section getSectionByDownStation(Station downStation) {
         return sections.stream()
                 .filter(s -> s.getDownStation().equalsId(downStation))
                 .findAny()
-                .orElseThrow(() -> new SectionNotFoundException(String.format("구간을 찾을 수 없습니다. 하역id:%s", downStation.getId())));
+                .orElseThrow(() -> new SectionNotFoundException("section.not.found"));
     }
 
     public void remove(Station station) {
         if (sections.size() == 1) {
-            throw new DeletionValidationException("상행 종점역과 하행 종점역만 존재합니다.");
+            throw new DeletionValidationException("section.is.singular");
         }
         sections.remove(getLastSection());
     }
@@ -93,7 +93,7 @@ public class Sections {
                 .filter(section -> !downStations.contains(section.getUpStation()))
                 .map(section -> section.getUpStation())
                 .findAny()
-                .orElseThrow(() -> new StationNotFoundException("노선 내 상행종착역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new StationNotFoundException("station.top.not.found"));
     }
 
     public Station getLastStation() {
@@ -102,7 +102,7 @@ public class Sections {
                 .filter(section -> !upStations.contains(section.getDownStation()))
                 .map(section -> section.getDownStation())
                 .findAny()
-                .orElseThrow(() -> new StationNotFoundException("노선 내 하행종착역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new StationNotFoundException("station.last.not.found"));
     }
 
     public List<Section> getSections() {

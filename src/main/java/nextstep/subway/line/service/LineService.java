@@ -2,6 +2,8 @@ package nextstep.subway.line.service;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.entity.Section;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.dto.*;
@@ -35,16 +37,14 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("노선이 존재하지 않습니다. id:%s", id)));
+        Line line = getLine(id);
 
         return LineResponse.from(line);
     }
 
     @Transactional
     public void updateLine(Long id, ModifyLineRequest request) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("노선이 존재하지 않습니다. id:%s", id)));
+        Line line = getLine(id);
 
         line.update(request.getName(), request.getColor());
     }
@@ -81,12 +81,12 @@ public class LineService {
 
     private Line getLine(long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 호선입니다. 호선id:%s", lineId)));
+                .orElseThrow(() -> new LineNotFoundException("line.not.found"));
     }
 
     private Station getStation(Long lineDto) {
         Station upStation = stationRepository.findById(lineDto)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("역이 존재하지 않습니다. id:%s", lineDto)));
+                .orElseThrow(() -> new StationNotFoundException("station.not.found"));
         return upStation;
     }
 
