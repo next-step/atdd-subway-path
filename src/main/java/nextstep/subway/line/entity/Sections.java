@@ -55,8 +55,8 @@ public class Sections {
         sections.add(section);
     }
 
-    public void addSection(Section section) {
-        SectionAdditionHandler handler = SectionAdditionHandlerMapping.getHandler(this, section);
+    public void addSection(SectionAdditionHandlerMapping handlerMapping, Section section) {
+        SectionAdditionHandler handler = handlerMapping.getHandler(this, section);
         handler.validate(this, section);
         handler.apply(this, section);
     }

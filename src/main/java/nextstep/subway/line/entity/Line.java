@@ -3,6 +3,7 @@ package nextstep.subway.line.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.station.entity.Station;
 
 import javax.persistence.*;
@@ -53,8 +54,8 @@ public class Line {
         return sections.getStations();
     }
 
-    public void addSection(Section section) {
-        sections.addSection(section);
+    public void addSection(SectionAdditionHandlerMapping handlerMapping, Section section) {
+        sections.addSection(handlerMapping, section);
     }
 
     public void removeSection(Station station) {

@@ -2,6 +2,7 @@ package nextstep.subway.line.service;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.entity.Section;
+import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionAdditionHandlerMapping sectionAdditionHandlerMapping;
 
     @Transactional
     public LineResponse save(LineRequest request) {
@@ -60,7 +62,7 @@ public class LineService {
 
         Section newSection = getSection(request, line);
 
-        line.addSection(newSection);
+        line.addSection(sectionAdditionHandlerMapping, newSection);
     }
 
     @Transactional

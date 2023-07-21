@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.Section;
+import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.station.entity.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ class LineTest {
         @Test
         void addSectionACCD() {
             // when
-            이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+            이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
             // then
             assertThat(이호선.getStations()).contains(선릉역);
@@ -53,7 +54,7 @@ class LineTest {
         void addSectionACAB() {
             // when
             int smallerDistanceThanSectionAC = 이호선.getDistance() - 1;
-            이호선.addSection(new Section(이호선, 강남역, 익명역, smallerDistanceThanSectionAC));
+            이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 강남역, 익명역, smallerDistanceThanSectionAC));
 
             // then
             assertThat(이호선.getStations()).contains(익명역);
@@ -64,7 +65,7 @@ class LineTest {
         void addSectionACBC() {
             // when
             int smallerDistanceThanSectionAC = 이호선.getDistance() - 1;
-            이호선.addSection(new Section(이호선, 익명역, 역삼역, smallerDistanceThanSectionAC));
+            이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 익명역, 역삼역, smallerDistanceThanSectionAC));
 
             // then
             assertThat(이호선.getStations()).contains(익명역);
@@ -74,7 +75,7 @@ class LineTest {
         @Test
         void addSectionACBA() {
             // when
-            이호선.addSection(new Section(이호선, 익명역, 강남역, SECTION_DEFAULT_DISTANCE));
+            이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 익명역, 강남역, SECTION_DEFAULT_DISTANCE));
 
             // then
             assertThat(이호선.getStations()).contains(익명역);
@@ -88,14 +89,14 @@ class LineTest {
         @DisplayName("구간 내 역이 A-B-C인 상황에서")
         @BeforeEach
         void addAdditionalSection() {
-            이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+            이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
         }
 
         @DisplayName("새 구간 B-A를 추가할 때 B가 이미 존재하는 역인 경우에 발생.")
         @Test
         void stationRegistrationFailByNewTopStationAdvocateAlreadyExists() {
             // when
-            Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 강남역, SECTION_DEFAULT_DISTANCE)))
+            Assertions.assertThatThrownBy(() -> 이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 강남역, SECTION_DEFAULT_DISTANCE)))
                     .isInstanceOf(CreationValidationException.class);
         }
 
@@ -104,7 +105,7 @@ class LineTest {
         void stationRegistrationBetweenStationsFailBySameOrBiggerDistance() {
             // when
             int sameDistanceComparedToSectionAC = SECTION_DEFAULT_DISTANCE;
-            Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 익명역, 역삼역, sameDistanceComparedToSectionAC)))
+            Assertions.assertThatThrownBy(() -> 이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 익명역, 역삼역, sameDistanceComparedToSectionAC)))
                     .isInstanceOf(CreationValidationException.class);
 
             // then
@@ -115,9 +116,9 @@ class LineTest {
         @Test
         void stationRegistrationFailByAlreadyExistingTopStationAndDownStation() {
             // when
-            Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 강남역, 역삼역, SECTION_DEFAULT_DISTANCE)))
+            Assertions.assertThatThrownBy(() -> 이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 강남역, 역삼역, SECTION_DEFAULT_DISTANCE)))
                     .isInstanceOf(CreationValidationException.class);
-            Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE)))
+            Assertions.assertThatThrownBy(() -> 이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE)))
                     .isInstanceOf(CreationValidationException.class);
         }
 
@@ -125,7 +126,7 @@ class LineTest {
         @Test
         void stationRegistrationFailByLineDoNotContainSectionRelatedStations() {
             // when
-            Assertions.assertThatThrownBy(() -> 이호선.addSection(new Section(이호선, 익명역, 판교역, SECTION_DEFAULT_DISTANCE)))
+            Assertions.assertThatThrownBy(() -> 이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 익명역, 판교역, SECTION_DEFAULT_DISTANCE)))
                     .isInstanceOf(CreationValidationException.class);
 
             // then
@@ -150,7 +151,7 @@ class LineTest {
     void checkGetStationsReturnInOrder() {
         // given
         int smallerDistanceThanSectionAC = 이호선.getDistance() - 1;
-        이호선.addSection(new Section(이호선, 강남역, 익명역, smallerDistanceThanSectionAC));
+        이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 강남역, 익명역, smallerDistanceThanSectionAC));
 
         // when
         List<Station> stations = 이호선.getStations();
@@ -163,7 +164,7 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+        이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
         이호선.removeSection(선릉역);
