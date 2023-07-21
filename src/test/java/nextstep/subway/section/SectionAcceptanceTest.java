@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 
 import static nextstep.subway.line.SubwayLineSteps.지하철노선등록요청;
 import static nextstep.subway.line.SubwayLineSteps.지하철노선등록요청_생성;
+import static nextstep.subway.section.SectionSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionAcceptanceTest extends ApiTest {
@@ -42,10 +43,10 @@ class SectionAcceptanceTest extends ApiTest {
     @Test
     void addSection() {
         // given : 선행조건 기술
-        CreateSectionRequest request = request(이수역, 사당역, distance);
+        CreateSectionRequest request = 구간등록요청_생성(이수역, 사당역, distance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -61,10 +62,10 @@ class SectionAcceptanceTest extends ApiTest {
     @Test
     void addSection2() {
         // given : 선행조건 기술
-        CreateSectionRequest request = request(당고개역, 사당역, newDistance);
+        CreateSectionRequest request = 구간등록요청_생성(당고개역, 사당역, newDistance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -80,10 +81,10 @@ class SectionAcceptanceTest extends ApiTest {
     @Test
     void addSection3() {
         // given : 선행조건 기술
-        CreateSectionRequest request = request(사당역, 당고개역, newDistance);
+        CreateSectionRequest request = 구간등록요청_생성(사당역, 당고개역, newDistance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -99,10 +100,10 @@ class SectionAcceptanceTest extends ApiTest {
     @Test
     void addSection4() {
         // given : 선행조건 기술
-        CreateSectionRequest request = request(이수역, 사당역, distance);
+        CreateSectionRequest request = 구간등록요청_생성(이수역, 사당역, distance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -119,10 +120,10 @@ class SectionAcceptanceTest extends ApiTest {
     void addSectionThrowExceptionIsINVALID_DISTANCE() {
         // given : 선행조건 기술
         int distance = 11;
-        CreateSectionRequest request = request(당고개역, 사당역, distance);
+        CreateSectionRequest request = 구간등록요청_생성(당고개역, 사당역, distance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -139,10 +140,10 @@ class SectionAcceptanceTest extends ApiTest {
     @Test
     void addSectionThrowExceptionIsINVALID_DISTANCE2() {
         // given : 선행조건 기술
-        CreateSectionRequest request = request(당고개역, 사당역, distance);
+        CreateSectionRequest request = 구간등록요청_생성(당고개역, 사당역, distance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -160,10 +161,10 @@ class SectionAcceptanceTest extends ApiTest {
     void addSectionThrowExceptionIsALREADY_SECTION() {
         // given : 선행조건 기술
         기존_노선_등록();
-        CreateSectionRequest request = request(당고개역, 사당역, distance);
+        CreateSectionRequest request = 구간등록요청_생성(당고개역, 사당역, distance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -183,10 +184,10 @@ class SectionAcceptanceTest extends ApiTest {
         기존_노선_등록();
         Long 동작역 = 역_생성("동작역");
         Long 이촌역 = 역_생성("이촌역");
-        CreateSectionRequest request = request(동작역, 이촌역, distance);
+        CreateSectionRequest request = 구간등록요청_생성(동작역, 이촌역, distance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -262,18 +263,9 @@ class SectionAcceptanceTest extends ApiTest {
         return 지하철노선등록요청(당고개역부터_이수역까지의_기존_노선).jsonPath().getLong("id");
     }
 
-    private ExtractableResponse<Response> 새로운_노선_구간_등록(CreateSectionRequest request) {
-        return RestAssured.given().log().all()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/{lineId}/sections", 1L)
-                .then().log().all()
-                .extract();
-    }
-
     private void 이수역부터_사당역까지의_신규노선_생성(Long 당고개역부터_이수역까지의_기존_노선_ID) {
         ExtractableResponse<Response> 이수역부터_사당역까지의_신규구간_생성 = RestAssured.given().log().all()
-                .body(request(이수역, 사당역, 10))
+                .body(구간등록요청_생성(이수역, 사당역, 10))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{lineId}/sections", 당고개역부터_이수역까지의_기존_노선_ID)
                 .then().log().all()
@@ -290,10 +282,7 @@ class SectionAcceptanceTest extends ApiTest {
                 .then().log().all()
                 .extract();
     }
-
-    private CreateSectionRequest request(Long newUpStationId, Long newDownStationId, int distance) {
-        return new CreateSectionRequest(newUpStationId, newDownStationId, distance);
-    }
+    
 
     private static Long 역_생성(String stationName1) {
         return StationSteps.지하철생성요청(StationSteps.지하철생성요청_생성(stationName1)).jsonPath().getLong("id");
@@ -301,10 +290,10 @@ class SectionAcceptanceTest extends ApiTest {
 
     private void 기존_노선_등록() {
         // given : 선행조건 기술
-        CreateSectionRequest request = request(당고개역, 사당역, newDistance);
+        CreateSectionRequest request = 구간등록요청_생성(당고개역, 사당역, newDistance);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 새로운_노선_구간_등록(request);
+        ExtractableResponse<Response> response = 구간등록요청(request);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

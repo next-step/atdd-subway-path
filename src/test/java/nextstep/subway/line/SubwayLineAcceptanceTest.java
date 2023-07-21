@@ -19,6 +19,8 @@ import static nextstep.subway.line.SubwayLineSteps.지하철노선삭제요청;
 import static nextstep.subway.line.SubwayLineSteps.지하철노선수정요청;
 import static nextstep.subway.line.SubwayLineSteps.지하철노선수정요청_생성;
 import static nextstep.subway.line.SubwayLineSteps.지하철노선조회요청;
+import static nextstep.subway.section.SectionSteps.구간등록요청;
+import static nextstep.subway.section.SectionSteps.구간등록요청_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -76,6 +78,34 @@ class SubwayLineAcceptanceTest extends ApiTest {
 
         // then
         지하철_노선_목록_조회_검증(첫번째_지하철_노선_ID, 두번째_지하철_노선_ID, stationName1, stationName2, stationName3, subwayLineName1, subwayLineName2, color1, color2, distance, stationId1, stationId2, stationId3, response);
+    }
+
+    /**
+     * Given 1개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 1개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void getSubwayLines2() {
+        // given
+        String stationName1 = "오이도역";
+        String stationName2 = "이수역";
+        String stationName3 = "남성역";
+        String subwayLineName1 = "4호선";
+        String color1 = "bg-blue-600";
+        int distance = 50;
+        Long stationId1 = 역_생성(stationName1);
+        Long stationId2 = 역_생성(stationName2);
+        Long stationId3 = 역_생성(stationName3);
+        Long 첫번째_지하철_노선_ID = 지하철_노선_생성(subwayLineName1, color1, distance, stationId1, stationId2);
+        구간등록요청(구간등록요청_생성(stationId1, stationId3, 3));
+
+        // when
+        ExtractableResponse<Response> response = 지하철노선목록조회요청();
+
+        // then
+        지하철_노선_목록_조회_검증(첫번째_지하철_노선_ID, response, stationId1, stationId2, stationId3);
     }
 
     /**
@@ -189,6 +219,13 @@ class SubwayLineAcceptanceTest extends ApiTest {
                 .containsExactlyInAnyOrder(stationName2, stationName3);
         assertThat(response.jsonPath().getList("stations[1].id", Long.class)).hasSize(2)
                 .containsExactlyInAnyOrder(stationId2, stationId3);
+    }
+
+    private void 지하철_노선_목록_조회_검증(Long lineId,  ExtractableResponse<Response> response, Long stationId1, Long stationId2, Long stationId3) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("id", Long.class)).hasSize(1).containsExactlyInAnyOrder(lineId);
+        assertThat(response.jsonPath().getList("stations[0].id", Long.class)).hasSize(3)
+                .containsExactlyInAnyOrder(stationId1, stationId2, stationId3);
     }
 
     private Long 지하철_노선_생성(String subwayLineName, String color, int distance, Long upStationId, Long downStationId) {
