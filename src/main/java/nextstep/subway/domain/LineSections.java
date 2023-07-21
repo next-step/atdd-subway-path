@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -158,7 +159,10 @@ public class LineSections {
 
         if (hasUpStationSection(removeStation) && hasDownStationSection(removeStation)) {
             removeMiddleSection(removeStation);
+            return;
         }
+
+        throw new DataIntegrityViolationException("올바르지 않은 구간 삭제 입니다.");
     }
 
     private void removeMiddleSection(Station removeStation) {
@@ -223,5 +227,9 @@ public class LineSections {
 
     public int getLineSectionsTotalDistance() {
         return lineSections.stream().mapToInt(Section::getDistance).sum();
+    }
+
+    public List<Section> getLineSections() {
+        return Collections.unmodifiableList(lineSections);
     }
 }
