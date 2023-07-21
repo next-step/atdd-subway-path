@@ -1,7 +1,5 @@
 package nextstep.subway.unit;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.SectionService;
 import nextstep.subway.applicaion.dto.request.SectionRequest;
@@ -16,13 +14,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
-import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_등록;
-import static nextstep.subway.acceptance.steps.StationSteps.createStationAndGetInfo;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 서비스 단위 테스트 without Mock")
 @SpringBootTest
@@ -40,30 +34,53 @@ public class LineServiceTest {
 
     private final String COLOR_RED = "bg-red-600";
 
-    private final String COLOR_BLUE = "bg-blue-600";
     private final int DISTANCE = 10;
 
-    private Station 신사역, 광교역, 강남역;
+    private Station 신사역, 논현역, 신논현역, 광교역, 강남역;
     private Line 신분당선;
     @BeforeEach
     void set(){
         신사역 = stationRepository.save(new Station("신사역"));
+        논현역 = stationRepository.save(new Station("논현역"));
+        신논현역 = stationRepository.save(new Station("신논현역"));
         강남역 = stationRepository.save(new Station("강남역"));
         광교역 = stationRepository.save(new Station("광교역"));
 
-        신분당선 = lineRepository.save(new Line("신분당선", COLOR_RED, 신사역, 강남역, DISTANCE));
+        신분당선 = lineRepository.save(new Line("신분당선", COLOR_RED, 논현역, 강남역, 30));
     }
 
 
-    @DisplayName("노선에 구간을 등록")
+    @DisplayName("노선의 상행 종점역 구간을 등록")
     @Test
-    void addSection() {
+    void addFirstSection() {
+
+        // when
+        sectionService.saveSection(신분당선.getId(),new SectionRequest(신사역.getId(),논현역.getId(),DISTANCE));
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(신사역,논현역,강남역);
+    }
+
+    @DisplayName("기존 구간 중간에 신규 구간을 등록")
+    @Test
+    void addMiddleSection() {
+
+        // when
+        sectionService.saveSection(신분당선.getId(),new SectionRequest(논현역.getId(),신논현역.getId(),DISTANCE));
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(논현역,신논현역,강남역);
+    }
+
+    @DisplayName("노선의 하행 종점역 구간을 등록")
+    @Test
+    void addLastSection() {
 
         // when
         sectionService.saveSection(신분당선.getId(),new SectionRequest(강남역.getId(),광교역.getId(),DISTANCE));
 
         // then
-        assertThat(신분당선.getStations()).contains(광교역);
+        assertThat(신분당선.getStations()).containsExactly(논현역,강남역,광교역);
     }
 
     @DisplayName("노선에서 구간을 삭제")
