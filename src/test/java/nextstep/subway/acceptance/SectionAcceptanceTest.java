@@ -142,9 +142,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * # 변경된 스펙
      * 구간 삭제에 대한 제약 사항 변경 구현
      * 기존에는 마지막 역 삭제만 가능했는데 위치에 상관 없이 삭제가 가능하도록 수정
+     *
      * 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+     *
      * 중간역이 제거될 경우 재배치를 함
      * 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
+     * - ex: 강남역 - 양재역 - 양재시민의숲역 -> 양재역 제거 -> 강남역 - 양재시민의숲역 (구간이 2개에서 1개로 줄어듦)
      * 거리는 두 구간의 거리의 합으로 정함
      *
      * 구간이 하나인 노선에서 마지막 구간을 제거할 때 -> 제거할 수 없음
@@ -159,29 +162,34 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * Given : 지하철역을 3개 생성하고
      * And : 지하철 노선을 1개 생성하고
      * And : 새로운 구간을 1개 등록한 후
-     * When : 하행 종점역을 제거하면
+     * When : 가운데 역을 제거하면
      * Then : 구간이 삭제된다
      */
-    @DisplayName("지하철 구간 삭제")
-//    @Test
-    void deleteSectionOk() {
+    @DisplayName("지하철 구간 삭제 : 가운데 역 제거")
+    @Test
+    void deleteSectionMidStation() {
         // given
-        long 노선_상행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("강남역"));
-        long 노선_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재역"));
-        long 구간_하행_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재시민의숲역"));
+        long 상행종점_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("강남역"));
+        long 중간역_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재역"));
+        long 하행종점_Id = 응답_결과에서_Id를_추출한다(StationStep.지하철역을_생성한다("양재시민의숲역"));
 
-        long lineId = 응답_결과에서_Id를_추출한다(LineStep.지하철_노선을_생성한다(노선_상행_Id, 노선_하행_Id, "신분당선", 10));
+        long lineId = 응답_결과에서_Id를_추출한다(LineStep.지하철_노선을_생성한다(상행종점_Id, 중간역_Id, "신분당선", 10));
 
-        SectionStep.지하철_노선_구간을_등록한다(lineId, 노선_하행_Id, 구간_하행_Id, 5);
+        SectionStep.지하철_노선_구간을_등록한다(lineId, 중간역_Id, 하행종점_Id, 5);
 
         // when
-        ExtractableResponse<Response> deleteSectionResponse = SectionStep.지하철_구간을_삭제한다(lineId, 구간_하행_Id);
+        ExtractableResponse<Response> deleteSectionResponse = SectionStep.지하철_구간을_삭제한다(lineId, 중간역_Id);
 
         // then
         assertThat(deleteSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         ExtractableResponse<Response> showLineResponse = LineStep.지하철_노선을_조회한다(lineId);
-        assertThat(지하철_구간_목록을_추출한다(showLineResponse)).hasSize(1);
+        List<String> 상행역_이름_목록 = 지하철_구간_목록의_상행역_이름을_추출한다(showLineResponse);
+        List<String> 하행역_이름_목록 = 지하철_구간_목록의_하행역_이름을_추출한다(showLineResponse);
+
+        assertThat(상행역_이름_목록).hasSize(1);
+        assertThat(상행역_이름_목록.get(0)).isEqualTo("강남역");
+        assertThat(하행역_이름_목록.get(0)).isEqualTo("양재시민의숲역");
     }
 
     /**
