@@ -12,9 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.line.controller.dto.LineResponse;
 import nextstep.subway.station.controller.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.utils.DBCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,8 +64,7 @@ class SectionAcceptanceTest {
         //then
         응답코드_검증(response, HttpStatus.OK);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
-        상행_종점역_기대값_검증(line7, 첫번째역, "첫번째역");
-        하행_종점역_기대값_검증(line7, 세번째역, "세번째역");
+        역_위치_기대값_검증(line7, Arrays.asList(첫번째역, 두번째역, 세번째역));
     }
 
     /**
@@ -175,10 +178,10 @@ class SectionAcceptanceTest {
 
     /**
      * Given 노선을 생성한다, 구간을 생성한다.
-     * When  구간을 삭제한다.
+     * When  마지막 역의 구간을 삭제한다.
      * Then  노선의 하행선이 기존 구간을 생성하기 전과 동일해진다.
      */
-    @DisplayName("지하철 구간을 삭제한다.")
+    @DisplayName("마지막 역의 구간을 삭제한다.")
     @Test
     void deleteSection() {
         //given
@@ -192,14 +195,15 @@ class SectionAcceptanceTest {
         응답코드_검증(response, HttpStatus.NO_CONTENT);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         하행_종점역_기대값_검증(line7, 두번째역, "두번째역");
+        역_삭제_기대값_검증(line7, 세번째역);
     }
 
     /**
      * Given 노선을 생성한다, 구간을 생성한다.
-     * When  노선 하행선 마지막 구간이 아닌 역을 삭제한다.
-     * Then  제거 불가능한 에러를 반환한다.
+     * When  노선 하행선 마지막 구간이 아닌 중간에 있는 역을 삭제한다.
+     * Then  제거 및 구간이 1개로 변경된다.
      */
-    @DisplayName("지하철 마지막이 아닌 구간을 삭제한다. 제거 불가능한 에러를 반환한다.")
+    @DisplayName("노선 하행선 마지막 구간이 아닌 중간에 있는 역을 삭제한다. 제거 및 구간이 1개로 변경된다.")
     @Test
     void deleteSectionExceptionWhenNotDownLastStation() {
         //given
@@ -210,10 +214,9 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_삭제(1L, 두번째역);
 
         //then
-        응답코드_검증(response, HttpStatus.BAD_REQUEST);
-        에러코드_검증(response, ErrorCode.CAN_NOT_REMOVE_STATION);
+        응답코드_검증(response, HttpStatus.NO_CONTENT);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
-        하행_종점역_기대값_검증(line7, 세번째역, "세번째역");
+        역_삭제_기대값_검증(line7, 두번째역);
     }
 
     /**
@@ -257,6 +260,25 @@ class SectionAcceptanceTest {
         응답코드_검증(response, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Given 노선을 생성한다.
+     * When  테이블에 존재하지 않는 역을 삭제한다.
+     * Then  제거 불가능한 에러를 반환한다.
+     */
+    @DisplayName("존재하지 않는 노선에서 역을 삭제할 때 에러를 반환한다.")
+    @Test
+    void deleteSectionExceptionWhenDoesNotExistsStation() {
+        //given
+        지하철_노선도_등록("7호선", "bg-1234", 첫번째역, 두번째역, 5);
+        지하철_구간_등록(1L, 두번째역, 세번째역, 7);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(2L, -1L);
+
+        //then
+        응답코드_검증(response, HttpStatus.NOT_FOUND);
+    }
+
 
     /**
      * Given 노선을 생성한다.
@@ -275,7 +297,7 @@ class SectionAcceptanceTest {
 
         //then
         응답코드_검증(response, HttpStatus.BAD_REQUEST);
-        에러코드_검증(response, ErrorCode.CAN_NOT_REMOVE_STATION);
+        에러코드_검증(response, ErrorCode.NOT_FOUND);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         하행_종점역_기대값_검증(line7, 세번째역, "세번째역");
     }
@@ -288,11 +310,29 @@ class SectionAcceptanceTest {
         );
     }
 
+    private void 역_위치_기대값_검증(LineResponse response, List<Long> stationIds) {
+        List<StationResponse> upwardLastStation = response.getStations();
+        List<Long> responseStationIds = upwardLastStation
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(responseStationIds).containsExactly(stationIds.toArray(Long[]::new));
+    }
+
     private void 하행_종점역_기대값_검증(LineResponse response, Long stationId, String stationName) {
-        StationResponse downwardLastStation = response.getStations().get(1);
+        List<StationResponse> stationResponses = response.getStations();
+        StationResponse downwardLastStation = response.getStations().get(stationResponses.size()-1);
         assertAll(
             () -> assertThat(downwardLastStation.getId()).isEqualTo(stationId),
             () -> assertThat(downwardLastStation.getName()).isEqualTo(stationName)
         );
+    }
+
+    private void 역_삭제_기대값_검증(LineResponse response, Long stationId) {
+        List<StationResponse> stationResponses = response.getStations();
+        for (StationResponse stationResponse : stationResponses) {
+            assertThat(stationResponse.getId()).isNotEqualTo(stationId);
+        }
     }
 }

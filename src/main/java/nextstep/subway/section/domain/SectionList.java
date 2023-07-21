@@ -76,23 +76,34 @@ public class SectionList {
     }
 
     public void removeSection(Station targetStation){
+        SectionRemoveChecker stationRemoveChecker = new SectionRemoveChecker(sections, targetStation);
 
+        if (stationRemoveChecker.isNotFound()) {
+            throw new CustomException(ErrorCode.NOT_FOUND);
+        }
+
+        if (stationRemoveChecker.isUpLastDelete()) {
+            checkLastSection();
+            sections.remove(stationRemoveChecker.getUpwardIncludeSection());
+            return;
+        }
+
+        if (stationRemoveChecker.isDownLastDelete()) {
+            checkLastSection();
+            sections.remove(stationRemoveChecker.getDownwardIncludeSection());
+            return;
+        }
+
+        Section baseSection = stationRemoveChecker.getDownwardIncludeSection();
+        Section deleteSection = stationRemoveChecker.getUpwardIncludeSection();
+        baseSection.removeInterStation(deleteSection);
+        sections.remove(deleteSection);
+    }
+
+    private void checkLastSection() {
         if (sections.size() <= 1) {
             throw new CustomException(ErrorCode.CAN_NOT_REMOVE_STATION);
         }
-
-        if (!getDownLastStation().equals(targetStation)) {
-            throw new CustomException(ErrorCode.CAN_NOT_REMOVE_STATION);
-        }
-
-        for (Section section : sections) {
-            if (section.hasSameDownwardStation(targetStation)) {
-                sections.remove(section);
-                return;
-            }
-        }
-
-        throw new CustomException(ErrorCode.NOT_FOUND);
     }
 
     public Integer getDistance() {
@@ -103,23 +114,36 @@ public class SectionList {
         return sections;
     }
 
+    public List<Station> getStationsByOrder() {
+        List<Station> result = new ArrayList<>();
+
+        Section firstSection = getFirstSection();
+        result.add(firstSection.getUpwardStation());
+        result.add(firstSection.getDownwardStation());
+        Station pivot = getNextStation(firstSection.getDownwardStation());
+        while (pivot != null) {
+            result.add(pivot);
+            pivot = getNextStation(pivot);
+        }
+        return result;
+    }
+
+    private Station getNextStation(Station station) {
+        for (Section section : sections) {
+            if (section.hasSameUpwardStation(station)) {
+                return section.getDownwardStation();
+            }
+        }
+        return null;
+    }
+
     public Station getDownLastStation() {
         if (sections.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_PARAM);
         }
 
-        Station downwardStation = null;
-        for (Section section : sections) {
-            if (downwardStation == null) {
-                downwardStation = section.getDownwardStation();
-                continue;
-            }
-
-            if (section.hasSameUpwardStation(downwardStation)) {
-                downwardStation = section.getDownwardStation();
-            }
-        }
-        return downwardStation;
+        Section anySection = sections.get(0);
+        return getDownLastStation(anySection.getDownwardStation());
     }
 
     public Station getUpLastStation() {
@@ -127,17 +151,37 @@ public class SectionList {
             throw new CustomException(ErrorCode.INVALID_PARAM);
         }
 
-        Station upwardStation = null;
-        for (Section section : sections) {
-            if (upwardStation == null) {
-                upwardStation = section.getUpwardStation();
-                continue;
-            }
+        Section anySection = sections.get(0);
+        return getUpLastStation(anySection.getUpwardStation());
+    }
 
-            if (section.hasSameDownwardStation(upwardStation)) {
-                upwardStation = section.getUpwardStation();
+    private Section getFirstSection() {
+        Station firstStation = getUpLastStation();
+        for (Section section : sections) {
+            if (section.hasSameUpwardStation(firstStation)) {
+                return section;
             }
         }
-        return upwardStation;
+        throw new CustomException(ErrorCode.NOT_FOUND);
+    }
+
+    private Station getUpLastStation(Station targetStation) {
+        for (Section section : sections) {
+            if (section.hasSameDownwardStation(targetStation)) {
+                targetStation = section.getUpwardStation();
+                getUpLastStation(targetStation);
+            }
+        }
+        return targetStation;
+    }
+
+    private Station getDownLastStation(Station targetStation) {
+        for (Section section : sections) {
+            if (section.hasSameUpwardStation(targetStation)) {
+                targetStation = section.getDownwardStation();
+                getDownLastStation(targetStation);
+            }
+        }
+        return targetStation;
     }
 }

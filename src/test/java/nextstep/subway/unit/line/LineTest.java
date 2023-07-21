@@ -108,15 +108,6 @@ class LineTest {
     }
 
     @Test
-    void deleteStationExceptionWhenNotLastDownwardStation() {
-        Line line = new Line("신분당선", "abc", section);
-        Section section = new Section(line, new SectionStations(stationB, stationC), 3);
-        line.addSection(section);
-
-        assertThrows(CustomException.class, ()->line.deleteStation(stationB));
-    }
-
-    @Test
     void getUpLastStation() {
         Line line = new Line("신분당선", "abc", section);
         Section newSection = new Section(new SectionStations(stationB, stationC), 5);

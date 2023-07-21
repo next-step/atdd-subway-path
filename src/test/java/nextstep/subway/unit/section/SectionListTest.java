@@ -35,12 +35,12 @@ class SectionListTest {
         Section sectionAC = addedSection.get(0);
         assertThat(sectionAC.getUpwardStation()).isEqualTo(a);
         assertThat(sectionAC.getDownwardStation()).isEqualTo(c);
-        assertThat(sectionAC.getDistance()).isEqualTo(1);
+        assertThat(sectionAC.getDistance()).isEqualTo(4);
 
         Section sectionBC = addedSection.get(1);
         assertThat(sectionBC.getUpwardStation()).isEqualTo(c);
         assertThat(sectionBC.getDownwardStation()).isEqualTo(b);
-        assertThat(sectionBC.getDistance()).isEqualTo(4);
+        assertThat(sectionBC.getDistance()).isEqualTo(1);
     }
 
     @Test
@@ -56,12 +56,12 @@ class SectionListTest {
         Section sectionAD = addedSection.get(0);
         assertThat(sectionAD.getUpwardStation()).isEqualTo(a);
         assertThat(sectionAD.getDownwardStation()).isEqualTo(d);
-        assertThat(sectionAD.getDistance()).isEqualTo(4);
+        assertThat(sectionAD.getDistance()).isEqualTo(1);
 
         Section sectionDB = addedSection.get(1);
         assertThat(sectionDB.getUpwardStation()).isEqualTo(d);
         assertThat(sectionDB.getDownwardStation()).isEqualTo(b);
-        assertThat(sectionDB.getDistance()).isEqualTo(1);
+        assertThat(sectionDB.getDistance()).isEqualTo(4);
     }
 
     @Test
@@ -143,9 +143,74 @@ class SectionListTest {
         SectionList sectionList = line.getSections();
         Section newSection = new Section(line, new SectionStations(c, a), 4);
         sectionList.addSection(newSection);
+        Section newSection1 = new Section(line, new SectionStations(a, d), 1);
+        sectionList.addSection(newSection1);
 
-        Station lastUpstation = sectionList.getUpLastStation();
+        Station lastUpStation = sectionList.getUpLastStation();
 
-        assertThat(lastUpstation).isEqualTo(c);
+        assertThat(lastUpStation).isEqualTo(c);
+    }
+
+    @Test
+    void removeSection() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(b, c), 4);
+        sectionList.addSection(newSection);
+
+        sectionList.removeSection(b);
+
+        assertThat(line.getDistance()).isEqualTo(9);
+        List<Section> sections = line.getSectionList();
+        assertThat(sections).hasSize(1);
+        Section leftSection = sections.get(0);
+        assertThat(leftSection.getDistance()).isEqualTo(9);
+        assertThat(leftSection.getUpwardStation()).isEqualTo(a);
+        assertThat(leftSection.getDownwardStation()).isEqualTo(c);
+    }
+
+    @Test
+    void removeSectionUpLastStation() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(b, c), 4);
+        sectionList.addSection(newSection);
+
+        sectionList.removeSection(a);
+
+        assertThat(line.getDistance()).isEqualTo(4);
+        List<Section> sections = line.getSectionList();
+        assertThat(sections).hasSize(1);
+        Section leftSection = sections.get(0);
+        assertThat(leftSection.getDistance()).isEqualTo(4);
+        assertThat(leftSection.getUpwardStation()).isEqualTo(b);
+        assertThat(leftSection.getDownwardStation()).isEqualTo(c);
+    }
+
+    @Test
+    void removeSectionDownLastStation() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(b, c), 4);
+        sectionList.addSection(newSection);
+
+        sectionList.removeSection(c);
+
+        assertThat(line.getDistance()).isEqualTo(5);
+        List<Section> sections = line.getSectionList();
+        assertThat(sections).hasSize(1);
+        Section leftSection = sections.get(0);
+        assertThat(leftSection.getDistance()).isEqualTo(5);
+        assertThat(leftSection.getUpwardStation()).isEqualTo(a);
+        assertThat(leftSection.getDownwardStation()).isEqualTo(b);
+    }
+
+    @Test
+    void getStationsByOrder() {
+        SectionList sectionList = line.getSections();
+        Section newSection = new Section(line, new SectionStations(c, a), 4);
+        sectionList.addSection(newSection);
+        Section newSection1 = new Section(line, new SectionStations(a, d), 1);
+        sectionList.addSection(newSection1);
+
+        List<Station> stations = sectionList.getStationsByOrder();
+        assertThat(stations).containsExactly(c, a, d, b);
     }
 }
