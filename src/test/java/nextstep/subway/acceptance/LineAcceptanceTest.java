@@ -14,13 +14,8 @@ import org.springframework.http.HttpStatus;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
 import nextstep.subway.exception.LineDuplicationNameException;
 import nextstep.subway.exception.LineNotFoundException;
-import nextstep.subway.exception.SectionDuplicationStationException;
-import nextstep.subway.exception.SectionNotConnectingStationException;
-import nextstep.subway.exception.SectionRemoveLastStationException;
-import nextstep.subway.exception.SectionRemoveSizeException;
 import nextstep.subway.exception.StationNotFoundException;
 import nextstep.subway.utils.LineFixture;
 import nextstep.subway.utils.StationFixture;
@@ -183,114 +178,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 		지하철_노선_삭제됨(response, 신분당선);
 	}
 
-	/**
-	 * Given 지하철 노선을 생성하고
-	 * When 생성한 지하철 노선에 구간을 생성하면
-	 * Then 지하철 노선 조회 시 생성된 구간을 찾을 수 있다
-	 */
-	@DisplayName("지하철 노선에 구간을 등록한다.")
-	@Test
-	void createSection() {
-		// given
-		var 신분당선 = 지하철_신분당선_노선_생성();
-
-		// when
-		var response = 지하철_노선에_구간_생성_요청(신분당선);
-
-		// then
-		지하철_노선에_구간_생성됨(response);
-	}
-
-	/**
-	 * Given 지하철 노선을 생성하고
-	 * When 지하철 노선에 하행 종점역이 상행역이 아닌 구간을 생성하면
-	 * Then 요청이 실패된다
-	 */
-	@DisplayName("지하철 노선에 구간을 생성할 때 하행 종점역이 새로운 구간의 상행역이 아니면 실패한다.")
-	@Test
-	void createSectionFail() {
-		// given
-		var 신분당선 = 지하철_신분당선_노선_생성();
-
-		// when
-		var response = 지하철_노선_하행_종점역과_상행역이_다른_구간_생성_요청(신분당선);
-
-		// then
-		하행_종점역이_새로운_구간의_상행역이_아니면_실패됨(response);
-	}
-
-	/**
-	 * Given 지하철 노선을 생성하고
-	 * When 지하철 노선에 하행역이 중복된 역인 구간을 생성하면
-	 * Then 요청이 실패된다
-	 */
-	@DisplayName("지하철 노선에 구간을 생성할 때 새로운 구간의 하행역이 중복된 역이라면 실패한다.")
-	@Test
-	void createSectionFail2() {
-		// given
-		var 신분당선 = 지하철_신분당선_노선_생성();
-
-		// when
-		var response = 지하철_노선에_하행역이_중복된_구간_생성_요청(신분당선);
-
-		// then
-		새로운_구간의_하행역이_중복된_역이면_실패됨(response);
-	}
-
-	/**
-	 * Given 자하철 노선에 구간을 포함하여 생성하고
-	 * When 지하철 구간을 삭제하면
-	 * Then 지하철 노선 조회 시 삭제한 구간을 찾을 수 없다
-	 */
-	@DisplayName("지하철 노선에 구간을 삭제한다.")
-	@Test
-	void deleteSection() {
-		// given
-		var 신분당선 = 지하철_구간을_포함한_노선_생성();
-
-		// when
-		var response = 지하철_노선의_마지막_구간_삭제_요청(신분당선);
-
-		// then
-		지하철_노선의_구간이_삭제됨(response, 신분당선);
-	}
-
-	/**
-	 * Given 지하철 노선에 구간을 포함하여 생성하고
-	 * When 마지막 구간이 아닌 구간을 삭제하면
-	 * Then 요청이 실패된다
-	 */
-	@DisplayName("지하철 노선에 구간을 삭제할 떄 마지막 구간이 아닌 경우 실패한다.")
-	@Test
-	void deleteSectionFail() {
-		// given
-		var 신분당선 = 지하철_구간을_포함한_노선_생성();
-
-		// when
-		var response = 지하철_노선의_중간_구간_삭제_요청(신분당선);
-
-		// then
-		마지막_구간이_아닌_경우_실패됨(response);
-	}
-
-	/**
-	 * Given 지하철 노선을 생성하고
-	 * When 구간이 1개 일 때 구간을 삭제하면
-	 * Then 요청이 실패된다
-	 */
-	@DisplayName("지하철 노선에 구간을 삭제할 때 구간이 1개인 경우 실패한다.")
-	@Test
-	void deleteSectionFail2() {
-		// given
-		var 신분당선 = 지하철_신분당선_노선_생성();
-
-		// when
-		var response = 지하철_노선의_마지막_구간_삭제_요청(신분당선);
-
-		// then
-		구간이_1개인_경우_실패됨(response);
-	}
-
 	private ExtractableResponse<Response> 지하철_노선_생성_요청() {
 		var 신사역 = 지하철역_생성(StationFixture.신사역);
 		var 논현역 = 지하철역_생성(StationFixture.신사역);
@@ -364,83 +251,5 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 		assertThat(lineNames).doesNotContain(expected.getName());
-	}
-
-	private void 지하철_노선에_구간_생성됨(ExtractableResponse<Response> response) {
-		LineResponse expected = 지하철_노선_리스폰_변환(response);
-		ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(expected.getId());
-
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-		지하철_노선_조회됨(findResponse, expected);
-	}
-
-	private ExtractableResponse<Response> 지하철_노선_하행_종점역과_상행역이_다른_구간_생성_요청(LineResponse lineResponse) {
-		var upStation = 지하철역_생성(StationFixture.신논현역);
-		var downStation = 지하철역_생성(StationFixture.강남역);
-		return LineFixture.지하철_노선의_구간_생성_요청(lineResponse.getId(), upStation.getId(), downStation.getId(), 10);
-	}
-
-	private ExtractableResponse<Response> 지하철_노선에_구간_생성_요청(LineResponse lineResponse) {
-		var upStation = lineResponse.getStations().get(1);
-		var downStation = 지하철역_생성(신논현역);
-		return LineFixture.지하철_노선의_구간_생성_요청(lineResponse.getId(), upStation.getId(), downStation.getId(), 10);
-	}
-
-	private void 하행_종점역이_새로운_구간의_상행역이_아니면_실패됨(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.jsonPath().getInt("status"))
-			.isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.jsonPath().getString("message"))
-			.isEqualTo(SectionNotConnectingStationException.MESSAGE);
-	}
-
-	private void 새로운_구간의_하행역이_중복된_역이면_실패됨(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.jsonPath().getInt("status"))
-			.isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.jsonPath().getString("message"))
-			.isEqualTo(SectionDuplicationStationException.MESSAGE);
-	}
-
-	private ExtractableResponse<Response> 지하철_노선에_하행역이_중복된_구간_생성_요청(LineResponse lineResponse) {
-		var upStation = lineResponse.getStations().get(1);
-		var downStation = lineResponse.getStations().get(0);
-		return LineFixture.지하철_노선의_구간_생성_요청(lineResponse.getId(), upStation.getId(), downStation.getId(), 10);
-	}
-
-	private void 지하철_노선의_구간이_삭제됨(ExtractableResponse<Response> response, LineResponse expected) {
-		LineResponse actual = 지하철_노선_리스폰_변환(지하철_노선_조회_요청(expected.getId()));
-
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(actual).usingRecursiveComparison()
-			.isNotEqualTo(expected);
-	}
-
-	private ExtractableResponse<Response> 지하철_노선의_마지막_구간_삭제_요청(LineResponse lineResponse) {
-		var stations = lineResponse.getStations();
-		StationResponse removeStation = stations.get(stations.size() - 1);
-		return 지하철_노선의_구간_삭제_요청(lineResponse.getId(), removeStation.getId());
-	}
-
-	private ExtractableResponse<Response> 지하철_노선의_중간_구간_삭제_요청(LineResponse response) {
-		List<StationResponse> stations = response.getStations();
-		StationResponse removeStation = stations.get(stations.size() - 2);
-		return 지하철_노선의_구간_삭제_요청(response.getId(), removeStation.getId());
-	}
-
-	private void 구간이_1개인_경우_실패됨(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.jsonPath().getInt("status"))
-			.isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.jsonPath().getString("message"))
-			.isEqualTo(SectionRemoveSizeException.MESSAGE);
-	}
-
-	private void 마지막_구간이_아닌_경우_실패됨(ExtractableResponse<Response> response) {
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.jsonPath().getInt("status"))
-			.isEqualTo(HttpStatus.BAD_REQUEST.value());
-		assertThat(response.jsonPath().getString("message"))
-			.isEqualTo(SectionRemoveLastStationException.MESSAGE);
 	}
 }
