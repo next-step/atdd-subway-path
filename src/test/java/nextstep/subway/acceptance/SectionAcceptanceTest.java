@@ -12,10 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.line.controller.dto.LineResponse;
 import nextstep.subway.station.controller.dto.StationResponse;
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.utils.DBCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,9 +64,7 @@ class SectionAcceptanceTest {
         //then
         응답코드_검증(response, HttpStatus.OK);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
-        상행_종점역_기대값_검증(line7, 첫번째역, "첫번째역");
-        역_위치_기대값_검증(line7, 두번째역, "두번째역", 1);
-        하행_종점역_기대값_검증(line7, 세번째역, "세번째역");
+        역_위치_기대값_검증(line7, Arrays.asList(첫번째역, 두번째역, 세번째역));
     }
 
     /**
@@ -194,6 +195,7 @@ class SectionAcceptanceTest {
         응답코드_검증(response, HttpStatus.NO_CONTENT);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
         하행_종점역_기대값_검증(line7, 두번째역, "두번째역");
+        역_삭제_기대값_검증(line7, 세번째역);
     }
 
     /**
@@ -214,7 +216,7 @@ class SectionAcceptanceTest {
         //then
         응답코드_검증(response, HttpStatus.NO_CONTENT);
         LineResponse line7 = 지하철_노선_조회_응답값_반환(1L);
-        하행_종점역_기대값_검증(line7, 세번째역, "세번째역");
+        역_삭제_기대값_검증(line7, 두번째역);
     }
 
     /**
@@ -289,12 +291,14 @@ class SectionAcceptanceTest {
         );
     }
 
-    private void 역_위치_기대값_검증(LineResponse response, Long stationId, String stationName, Integer index) {
-        StationResponse upwardLastStation = response.getStations().get(index);
-        assertAll(
-                () -> assertThat(upwardLastStation.getId()).isEqualTo(stationId),
-                () -> assertThat(upwardLastStation.getName()).isEqualTo(stationName)
-        );
+    private void 역_위치_기대값_검증(LineResponse response, List<Long> stationIds) {
+        List<StationResponse> upwardLastStation = response.getStations();
+        List<Long> responseStationIds = upwardLastStation
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+        assertThat(responseStationIds).containsExactly(stationIds.toArray(Long[]::new));
     }
 
     private void 하행_종점역_기대값_검증(LineResponse response, Long stationId, String stationName) {
@@ -304,5 +308,12 @@ class SectionAcceptanceTest {
             () -> assertThat(downwardLastStation.getId()).isEqualTo(stationId),
             () -> assertThat(downwardLastStation.getName()).isEqualTo(stationName)
         );
+    }
+
+    private void 역_삭제_기대값_검증(LineResponse response, Long stationId) {
+        List<StationResponse> stationResponses = response.getStations();
+        for (StationResponse stationResponse : stationResponses) {
+            assertThat(stationResponse.getId()).isNotEqualTo(stationId);
+        }
     }
 }
