@@ -1,13 +1,10 @@
 package nextstep.subway.line.domain;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import javax.persistence.*;
 
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
-import nextstep.subway.section.exception.*;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -63,8 +60,8 @@ public class Line {
         return sections.getLastStationId();
     }
 
-    public void deleteSection(Station station) {
-        sections.deleteSection(station);
+    public void removeSection(Station station) {
+        sections.removeSection(station, this);
     }
 
     public void registerSection(Section newSection) {

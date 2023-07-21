@@ -216,7 +216,7 @@ class LineTest {
                 assertThat(sections).hasSize(1);
 
                 Section remainSection = sections.get(0);
-                assertThat(remainSection.getUpStationName()).isEqualTo("상행_종점에_추가될_역");
+                assertThat(remainSection.getUpStationName()).isEqualTo("상행종점에_추가될_역");
                 assertThat(remainSection.getDownStationName()).isEqualTo("노선_상행_역");
                 assertThat(remainSection.getDistance()).isEqualTo(5);
             }

@@ -11,7 +11,6 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.station.domain.Station;
@@ -92,6 +91,6 @@ public class LineService {
         Line line = getLine(lineId);
         Station station = getStation(stationId);
 
-        line.deleteSection(station);
+        line.removeSection(station);
     }
 }

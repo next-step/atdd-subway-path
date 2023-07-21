@@ -10,7 +10,7 @@ public enum ErrorCode {
 
     STATION_NOT_FOUND(404, "없는 지하철역입니다."),
     LINE_NOT_FOUND(404, "없는 지하철 노선입니다."),
-    ;
+    SECTION_NOT_FOUND(404, "없는 지하철 구간입니다.");
 
     private final int status;
     private final String message;

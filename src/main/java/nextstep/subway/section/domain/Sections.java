@@ -8,8 +8,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
@@ -117,11 +117,63 @@ public class Sections {
         return result;
     }
 
-    public void deleteSection(Station station) {
+    /*
+     * 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+     *
+     * 중간역이 제거될 경우 재배치를 함
+     * 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
+     * - ex: 강남역 - 양재역 - 양재시민의숲역 -> 양재역 제거 -> 강남역 - 양재시민의숲역 (구간이 2개에서 1개로 줄어듦)
+     * 거리는 두 구간의 거리의 합으로 정함
+     */
+    public void removeSection(Station station, Line line) {
         validateLineHasOnlyOneSection();
-        validateStationIsDownStationOfLastSection(station);
 
-        sections.remove(getLastSectionVer0());
+        Long stationId = station.getId();
+        if (firstStationId.equals(stationId)) {
+            removeFirstStation();
+            return;
+        }
+
+        if (lastStationId.equals(stationId)) {
+            removeLastStation();
+            return;
+        }
+
+        removeStationBetweenSections(station, line);
+    }
+
+    private void removeFirstStation() {
+        Section firstSection = findSection(section -> section.hasSameUpStationId(firstStationId));
+        Section secondSection = findSection(section -> section.hasSameUpStation(firstSection.getDownStation()));
+
+        sections.remove(firstSection);
+        firstStationId = secondSection.getUpStationId();
+    }
+
+    private void removeLastStation() {
+        Section lastSection = findSection(section -> section.hasSameDownStationId(lastStationId));
+        Section prevSection = findSection(section -> section.hasSameDownStation(lastSection.getUpStation()));
+
+        sections.remove(lastSection);
+        lastStationId = prevSection.getDownStationId();
+    }
+
+    private void removeStationBetweenSections(Station station, Line line) {
+        Section prevSection = findSection(section -> section.hasSameDownStation(station));
+        Section nextSection = findSection(section -> section.hasSameUpStation(station));
+
+        sections.remove(prevSection);
+        sections.remove(nextSection);
+
+        Section newSection = new Section(prevSection.getUpStation(), nextSection.getDownStation(), prevSection.getDistance() + nextSection.getDistance());
+        registerSection(newSection, line);
+    }
+
+    private Section findSection(Predicate<Section> filterCondition) {
+        return sections.stream()
+                .filter(filterCondition)
+                .findAny()
+                .orElseThrow(SectionNotFoundException::new);
     }
 
     private void validateLineHasOnlyOneSection() {
@@ -132,17 +184,6 @@ public class Sections {
 
     private boolean hasOnlyOneSection() {
         return sections.size() == 1;
-    }
-
-    private void validateStationIsDownStationOfLastSection(Station station) {
-        if (!getLastSectionVer0().downStationEqualsTo(station)) {
-            throw new DeleteOnlyTerminusStationException();
-        }
-    }
-
-    private Section getLastSectionVer0() {
-        sections.sort(Comparator.comparing(Section::getId));
-        return sections.get(sections.size() - 1);
     }
 
     public Long getFirstStationId() {

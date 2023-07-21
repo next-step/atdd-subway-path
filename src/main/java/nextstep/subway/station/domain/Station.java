@@ -53,4 +53,8 @@ public class Station {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public boolean hasEqualId(Long upStationId) {
+        return id.equals(upStationId);
+    }
 }
