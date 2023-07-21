@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.common.exception.CreationValidationException;
+import nextstep.subway.common.exception.DeletionValidationException;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.Section;
 import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
@@ -160,24 +161,11 @@ class LineTest {
         assertThat(stations).containsExactly(강남역, 익명역, 역삼역);
     }
 
-    @DisplayName("지하철 삭제")
-    @Test
-    void checkGetStationsReturnInOrder() {
-        // given
-        이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
-
-        // when
-        이호선.removeSection(선릉역);
-
-        // then
-        assertThat(이호선.getStations()).doesNotContain(선릉역);
-    }
-
     @DisplayName("구간 삭제, 상행 종착역 노선에서 제거")
     @Test
     void removeSectionRemoveTopStationFromLine() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+        이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
         이호선.removeSection(강남역);
@@ -190,7 +178,7 @@ class LineTest {
     @Test
     void removeSectionRemoveNotTopNotLastStationFromLine() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+        이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
         이호선.removeSection(역삼역);
@@ -216,7 +204,7 @@ class LineTest {
     @Test
     void removeSectionFailedByNotExistingStation() {
         // given
-        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+        이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
         Assertions.assertThatThrownBy(() -> 이호선.removeSection(익명역))

@@ -22,6 +22,8 @@ import static nextstep.subway.acceptance.station.StationTestUtils.*;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
+    final int DEFAULT_SECTION_DISTANCE = 10;
+
     String 강남역_URL;
     String 판교역_URL;
     String 역삼역_URL;
@@ -41,7 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 판교역_URL, SectionDistance.BIG);
+        지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 판교역_URL, DEFAULT_SECTION_DISTANCE);
 
         // then
         ExtractableResponse<Response> 노선_목록_조회_결과 = 지하철_노선_목록_조회();
@@ -56,8 +58,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 판교역_URL, SectionDistance.BIG);
-        지하철_노선_생성(이호선_생성_요청, 강남역_URL, 삼성역_URL, SectionDistance.BIG);
+        지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 판교역_URL, DEFAULT_SECTION_DISTANCE);
+        지하철_노선_생성(이호선_생성_요청, 강남역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
 
         // when
         ExtractableResponse<Response> 노선_목록_조회_결과 = 지하철_노선_목록_조회();
@@ -80,8 +82,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // Given
-        String 이호선_URL = 지하철_노선_생성(이호선_생성_요청, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
-        지하철_구간_등록(이호선_URL, 강남역_URL, 역삼역_URL, SectionDistance.BIG);
+        String 이호선_URL = 지하철_노선_생성(이호선_생성_요청, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
+        지하철_구간_등록(이호선_URL, 강남역_URL, 역삼역_URL, DEFAULT_SECTION_DISTANCE);
 
         // when
         ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회(이호선_URL);
@@ -98,7 +100,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 "name", "다른분당선",
                 "color", "bg-red-700"
         );
-        String lineUrl = 지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 판교역_URL, SectionDistance.BIG);
+        String lineUrl = 지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 판교역_URL, DEFAULT_SECTION_DISTANCE);
 
         // when
         지하철_노선_수정_요청(lineUrl, 노선_수정_요청_정보);
@@ -111,7 +113,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        String lineUrl = 지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 판교역_URL, SectionDistance.BIG);
+        String lineUrl = 지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 판교역_URL, DEFAULT_SECTION_DISTANCE);
 
         // when
         지하철_노선_삭제(lineUrl);

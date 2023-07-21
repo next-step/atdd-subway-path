@@ -80,7 +80,29 @@ public class Sections {
         if (sections.size() == 1) {
             throw new DeletionValidationException("section.is.singular");
         }
-        sections.remove(getLastSection());
+        if (!hasStation(station)) {
+            throw new DeletionValidationException(String.format("역이 존재하지 않습니다. 역 이름:%s", station.getId()));
+        }
+
+        if (checkDownStationsContains(station) && checkUpStationsContains(station)) {
+            Section sectionIncludesByDownStation = getSectionByDownStation(station);
+            Section sectionIncludesByUpStation = getSectionByUpStation(station);
+
+            sections.remove(sectionIncludesByDownStation);
+            sections.remove(sectionIncludesByUpStation);
+
+            Section newSection = new Section(sectionIncludesByDownStation.getLine(),
+                    sectionIncludesByDownStation.getUpStation(),
+                    sectionIncludesByUpStation.getDownStation(),
+                    sectionIncludesByDownStation.getDistance() + sectionIncludesByUpStation.getDistance());
+            sections.add(newSection);
+        }
+
+        else if (checkDownStationsContains(station)) {
+            sections.remove(getSectionByDownStation(station));
+        } else if (checkUpStationsContains(station)) {
+            sections.remove(getSectionByUpStation(station));
+        }
     }
 
     public Section getLastSection() {
@@ -109,8 +131,8 @@ public class Sections {
         return List.copyOf(sections);
     }
 
-    public boolean hasStation(Station downStation) {
-        return getStations().contains(downStation);
+    public boolean hasStation(Station station) {
+        return getStations().contains(station);
     }
 
     public boolean equalsLastStation(Station station) {

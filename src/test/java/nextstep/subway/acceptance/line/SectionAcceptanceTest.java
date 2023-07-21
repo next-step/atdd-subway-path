@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.*;
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
+    final int DEFAULT_SECTION_DISTANCE = 10;
     String 강남역_URL;
     String 역삼역_URL;
     String 이호선_URL;
@@ -28,7 +29,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         강남역_URL = 지하철역_생성(강남역_정보);
         역삼역_URL = 지하철역_생성(역삼역_정보);
-        이호선_URL = 지하철_노선_생성(이호선_생성_요청, 강남역_URL, 역삼역_URL, SectionDistance.BIG);
+        이호선_URL = 지하철_노선_생성(이호선_생성_요청, 강남역_URL, 역삼역_URL, DEFAULT_SECTION_DISTANCE);
 
         삼성역_URL = 지하철역_생성(삼성역_정보);
         익명역_URL = 지하철역_생성(익명역_정보);
@@ -42,7 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void addSectionABBC() {
             // when
-            지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+            지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
 
             // then
             지하철_구간이_성공적으로_등록됐다(이호선_URL);
@@ -52,7 +53,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void addSectionACAB() {
             // when
-            지하철_구간_등록(이호선_URL, 강남역_URL, 익명역_URL, SectionDistance.MEDIUM);
+            지하철_구간_등록(이호선_URL, 강남역_URL, 익명역_URL, DEFAULT_SECTION_DISTANCE - 1);
 
             // then
             지하철_구간이_성공적으로_등록됐다(이호선_URL);
@@ -62,7 +63,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void addSectionACBC() {
             // when
-            지하철_구간_등록(이호선_URL, 익명역_URL, 역삼역_URL, SectionDistance.MEDIUM);
+            지하철_구간_등록(이호선_URL, 익명역_URL, 역삼역_URL, DEFAULT_SECTION_DISTANCE - 1);
 
             // then
             지하철_구간이_성공적으로_등록됐다(이호선_URL);
@@ -72,7 +73,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void addSectionACBA() {
             // when
-            지하철_구간_등록(이호선_URL, 익명역_URL, 강남역_URL, SectionDistance.BIG);
+            지하철_구간_등록(이호선_URL, 익명역_URL, 강남역_URL, DEFAULT_SECTION_DISTANCE);
 
             // then
             지하철_구간이_성공적으로_등록됐다(이호선_URL);
@@ -86,7 +87,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void enrollSectionErrorByInconsistency() {
             // when
-            지하철_구간_등록_실패(이호선_URL, 삼성역_URL, 삼성역_URL, SectionDistance.BIG);
+            지하철_구간_등록_실패(이호선_URL, 삼성역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
 
             // then
             지하철_구간이_등록되지_않았다(이호선_URL);
@@ -96,7 +97,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void enrollSectionErrorByNewDownStationExists() {
             // when
-            지하철_구간_등록_실패(이호선_URL, 역삼역_URL, 강남역_URL, SectionDistance.BIG);
+            지하철_구간_등록_실패(이호선_URL, 역삼역_URL, 강남역_URL, DEFAULT_SECTION_DISTANCE);
 
             // then
             지하철_구간이_등록되지_않았다(이호선_URL);
@@ -106,7 +107,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void stationRegistrationBetweenStationsFailBySameOrBiggerDistance() {
             // when
-            지하철_구간_등록_실패(이호선_URL, 익명역_URL, 역삼역_URL, SectionDistance.BIG);
+            지하철_구간_등록_실패(이호선_URL, 익명역_URL, 역삼역_URL, DEFAULT_SECTION_DISTANCE);
 
             // then
             지하철_구간이_등록되지_않았다(이호선_URL);
@@ -116,11 +117,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void stationRegistrationFailByAlreadyExistingTopStationAndDownStation() {
             // given
-            지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+            지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
 
             // when
-            지하철_구간_등록_실패(이호선_URL, 강남역_URL, 역삼역_URL, SectionDistance.MEDIUM);
-            지하철_구간_등록_실패(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.MEDIUM);
+            지하철_구간_등록_실패(이호선_URL, 강남역_URL, 역삼역_URL, DEFAULT_SECTION_DISTANCE - 1);
+            지하철_구간_등록_실패(이호선_URL, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE - 1);
 
             // then
             노선의역_개수_변화가_없다(이호선_URL, 3);
@@ -130,10 +131,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void stationRegistrationFailByLineDoNotContainSectionRelatedStations() {
             // given
-            지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+            지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
 
             // when
-            지하철_구간_등록_실패(이호선_URL, 익명역_URL, 판교역_URL, SectionDistance.MEDIUM);
+            지하철_구간_등록_실패(이호선_URL, 익명역_URL, 판교역_URL, DEFAULT_SECTION_DISTANCE - 1);
 
             // then
             노선의역_개수_변화가_없다(이호선_URL, 3);
@@ -144,7 +145,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSection() {
         // given
-        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
 
         // when
         지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(삼성역_URL));
@@ -157,7 +158,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSectionErrorByRemovingNonLastSection() {
         // given
-        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, SectionDistance.BIG);
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
 
         // when
         지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(강남역_URL));

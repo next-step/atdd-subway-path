@@ -11,11 +11,21 @@ import java.util.stream.Collectors;
 
 public class StationTestUtils {
 
+    // 2호선
     public static final Map<String, String> 강남역_정보 = Map.of("name", "강남역");
     public static final Map<String, String> 역삼역_정보 = Map.of("name", "역삼역");
     public static final Map<String, String> 삼성역_정보 = Map.of("name", "삼성역");
-    public static final Map<String, String> 판교역_정보 = Map.of("name", "판교역");
 
+    // 신분당선
+    public static final Map<String, String> 판교역_정보 = Map.of("name", "판교역");
+    public static final Map<String, String> 양재역_정보 = Map.of("name", "양재역");
+
+    // 3호선
+    public static final Map<String, String> 교대역_정보 = Map.of("name", "교대역");
+    public static final Map<String, String> 남부터미널역_정보 = Map.of("name", "남부터미널역");
+
+
+    // 기타
     public static final Map<String, String> 익명역_정보 = Map.of("name","익명역");
 
     public static Map<String, String> 역_저장_정보(Map<String, String> 역_정보, Long id) {

@@ -63,5 +63,6 @@ public class Line {
     }
 
     public boolean hasStation(Station station) {
-        return sections.hasStation(station); }
+        return sections.hasStation(station);
+    }
 }
