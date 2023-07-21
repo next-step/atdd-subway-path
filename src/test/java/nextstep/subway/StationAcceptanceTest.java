@@ -26,49 +26,6 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class StationAcceptanceTest {
 
-    private static ExtractableResponse<Response> 지하철역_목록_조회() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철역을_생성한다(String 역이름) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", 역이름);
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private static ExtractableResponse<Response> 지할척역_제거한다(int stationId) {
-        return RestAssured.given().log().all()
-                .when().delete("/stations/" + stationId)
-                .then().log().all()
-                .extract();
-    }
-
-    private static ExtractableResponse<Response> 지하철역_조회한다(int id) {
-        return RestAssured.given().log().all()
-                .when().get("/stations/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-    private static ExtractableResponse<Response> 지하철역을_수정한다(int 수정할_자하철역_아이디, String 수정네이밍) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", 수정네이밍);
-        return RestAssured
-                .given().log().all().body(params).contentType(ContentType.JSON)
-                .when().put("/stations/" + 수정할_자하철역_아이디)
-                .then().log().all()
-                .extract();
-    }
-
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -167,4 +124,45 @@ public class StationAcceptanceTest {
     }
 
 
+    private static ExtractableResponse<Response> 지하철역_목록_조회() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철역을_생성한다(String 역이름) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", 역이름);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지할척역_제거한다(int stationId) {
+        return RestAssured.given().log().all()
+                .when().delete("/stations/" + stationId)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철역_조회한다(int id) {
+        return RestAssured.given().log().all()
+                .when().get("/stations/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철역을_수정한다(int 수정할_자하철역_아이디, String 수정네이밍) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", 수정네이밍);
+        return RestAssured
+                .given().log().all().body(params).contentType(ContentType.JSON)
+                .when().put("/stations/" + 수정할_자하철역_아이디)
+                .then().log().all()
+                .extract();
+    }
 }

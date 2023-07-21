@@ -19,15 +19,15 @@ public class Line {
     private String name;
     private String color;
     @Embedded
-    private Sections sections = new Sections();
+    private Sections sections;
 
     public Line() {
     }
 
-    public Line(String name, String color, List<Section> sections) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections.addAll(sections);
+        this.sections = new Sections(upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -42,10 +42,6 @@ public class Line {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
     public List<Station> getStations() {
         return sections.getStations();
     }
@@ -55,11 +51,11 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(Section newSection) {
-        sections.addSection(newSection);
-    }
-
     public void deleteSection(Station bottomStation) {
         sections.deleteSection(bottomStation);
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.addSection(new Section(upStation, downStation, distance));
     }
 }
