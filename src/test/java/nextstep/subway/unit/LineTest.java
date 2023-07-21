@@ -132,6 +132,7 @@ class LineTest {
                 .hasMessageContaining(ErrorCode.CAN_NOT_BE_ADDED_SECTION.getMessage());
     }
 
+    @DisplayName("노선 조회시 응답 역 목록은 상행역에서 하행역 순으로 정렬되어야 한다.")
     @Test
     void getSections() {
         // given : 선행조건 기술
@@ -145,15 +146,15 @@ class LineTest {
         assertThat(sections).hasSize(2)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(
-                        Tuple.tuple("당고개역", "이수역"),
-                        Tuple.tuple("이수역", "사당역")
+                        Tuple.tuple("당고개역", "사당역"),
+                        Tuple.tuple("사당역", "이수역")
                 );
     }
 
     @Test
     void removeSection() {
         Line line = line(당고개역, 이수역);
-        Section section = section(line, 당고개역, 이수역, 3);
+        Section section = section(line, 당고개역, 사당역, 3);
         line.addSection(section);
         Station 사당역 = section.getDownStation();
 
@@ -165,7 +166,7 @@ class LineTest {
         assertThat(sections).hasSize(1)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(
-                        Tuple.tuple("당고개역", "이수역")
+                        Tuple.tuple("사당역", "이수역")
                 );
     }
 

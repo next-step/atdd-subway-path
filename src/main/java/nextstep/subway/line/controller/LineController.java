@@ -2,6 +2,7 @@ package nextstep.subway.line.controller;
 
 
 import nextstep.subway.line.dto.CreateLineRequest;
+import nextstep.subway.line.dto.LineDto;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.ModifyLineRequest;
 import nextstep.subway.line.service.LineService;
@@ -37,7 +38,10 @@ public class LineController {
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
-        return ResponseEntity.ok().body(lineService.getLines().stream().map(LineResponse::from).collect(Collectors.toList()));
+        List<LineDto> lines = lineService.getLines();
+        return ResponseEntity.ok().body(lines.stream()
+                .map(LineResponse::from)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/{id}")

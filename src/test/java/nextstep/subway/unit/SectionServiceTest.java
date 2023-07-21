@@ -1,7 +1,5 @@
 package nextstep.subway.unit;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.entity.Line;
@@ -19,8 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -156,6 +154,7 @@ public class SectionServiceTest {
     @Test
     void removeSection() {
         // given : 선행조건 기술
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
         sectionService.addSection(line.getId(), sectionDto);
 
         // when : 기능 수행
@@ -165,7 +164,7 @@ public class SectionServiceTest {
         assertThat(line.getSections()).hasSize(1)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(
-                        Tuple.tuple("당고개역", "이수역")
+                        Tuple.tuple("사당역", "이수역")
                 );
     }
 

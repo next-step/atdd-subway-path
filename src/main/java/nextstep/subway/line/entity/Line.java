@@ -80,15 +80,63 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        // 이미 등록된 구간인지 확인
         if (alreadySection(section)) {
             throw new SubwayException(ErrorCode.ALREADY_SECTION);
         }
 
+        // 등록하려는 구간이 기존 구간에 포함되는지 확인
         if (!cannotAddSection(section)) {
             throw new SubwayException(ErrorCode.CAN_NOT_BE_ADDED_SECTION);
         }
 
         // 역 사이에 새로운 역을 등록할 경우
+        addNewStationBetweenExistingStation(section);
+
+        // 새로운 역을 상행 종점으로 등록할 경우
+        addNewStationAsAnUpStation(section);
+
+        // 새로운 역을 하행 종점으로 등록할 경우
+        addNewStationAsAnDownStation(section);
+    }
+
+    public void isExistsDownStation(Station upStation) {
+        if (!this.downStation.equals(upStation)) {
+            throw new SubwayException(ErrorCode.INVALID_UP_STATION);
+        }
+    }
+
+    public void isExistsStations(Station station) {
+        if (Arrays.asList(upStation, downStation).contains(station)) {
+            throw new SubwayException(ErrorCode.INVALID_DOWN_STATION);
+        }
+    }
+
+    public void removeSection(Station downStation) {
+        if (isSectionOne()) {
+            throw new SubwayException(ErrorCode.SECTION_IS_ONE);
+        }
+        if (!isLastSection(downStation)) {
+            throw new SubwayException(ErrorCode.NOT_DOWN_STATION);
+        }
+        this.sections.removeIf(section -> section.isDownStation(downStation));
+    }
+
+    private void addNewStationAsAnDownStation(Section section) {
+        sections.stream()
+                .filter(oldSection -> oldSection.getDownStation().equals(section.getUpStation()))
+                .findFirst()
+                .ifPresent(oldSection -> this.sections.add(section));
+    }
+
+    private void addNewStationAsAnUpStation(Section section) {
+        sections.stream()
+                .filter(oldSection -> oldSection.getUpStation().equals(section.getDownStation()))
+                .findFirst()
+                .ifPresent(oldSection -> this.sections.add(section));
+    }
+
+    private void addNewStationBetweenExistingStation(Section section) {
         sections.stream()
                 .filter(oldSection -> oldSection.getUpStation() == section.getUpStation())
                 .findFirst()
@@ -96,18 +144,6 @@ public class Line {
                     this.sections.add(Section.of(section.getDownStation(), oldSection.getDownStation(), validationDistance(oldSection.getDistance(), section.getDistance()), this));
                     this.sections.remove(oldSection);
                 });
-
-        // 새로운 역을 상행 종점으로 등록할 경우
-        sections.stream()
-                .filter(oldSection -> oldSection.getUpStation().equals(section.getDownStation()))
-                .findFirst()
-                .ifPresent(oldSection -> this.sections.add(section));
-
-        // 새로운 역을 하행 종점으로 등록할 경우
-        sections.stream()
-                .filter(oldSection -> oldSection.getDownStation().equals(section.getUpStation()))
-                .findFirst()
-                .ifPresent(oldSection -> this.sections.add(section));
     }
 
     private boolean alreadySection(Section section) {
@@ -131,28 +167,6 @@ public class Line {
                             boolean b2 = oldSection.getDownStation().equals(newSection.getDownStation());
                             return b1 || b2;
                         });
-    }
-
-    public void isExistsDownStation(Station upStation) {
-        if (!this.downStation.equals(upStation)) {
-            throw new SubwayException(ErrorCode.INVALID_UP_STATION);
-        }
-    }
-
-    public void isExistsStations(Station station) {
-        if (Arrays.asList(upStation, downStation).contains(station)) {
-            throw new SubwayException(ErrorCode.INVALID_DOWN_STATION);
-        }
-    }
-
-    public void removeSection(Station downStation) {
-        if (isSectionOne()) {
-            throw new SubwayException(ErrorCode.SECTION_IS_ONE);
-        }
-        if (!isLastSection(downStation)) {
-            throw new SubwayException(ErrorCode.NOT_DOWN_STATION);
-        }
-        this.sections.removeIf(section -> section.isDownStation(downStation));
     }
 
     private boolean isSectionOne() {
