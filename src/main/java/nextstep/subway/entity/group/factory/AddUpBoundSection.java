@@ -1,39 +1,32 @@
 package nextstep.subway.entity.group.factory;
 
-import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
-import nextstep.subway.entity.Station;
-import nextstep.subway.entity.group.SectionGroup;
 
 public class AddUpBoundSection implements SectionAddAction {
 
-    @Override
-    public void validate(Station upStation, Station downStation, int distance, Section section,
-        SectionGroup sectionGroup) {
+    private final Section newSection;
+    private final Section originSection;
 
-        section.validationAddDistance(distance);
+    private AddUpBoundSection(Section newSection, Section originSection) {
+        this.newSection = newSection;
+        this.originSection = originSection;
+    }
 
-        sectionGroup.validateExistStation(downStation.getId());
-
+    public static AddUpBoundSection of(Section newSection, Section originSection) {
+        return new AddUpBoundSection(newSection, originSection);
     }
 
     @Override
-    public Section addAction(Line line, Station upStation, Station downStation, int distance,
-        Section nowSection, SectionGroup sectionGroup) {
-
-        nowSection.changeUpStation(downStation);
-        nowSection.minusDistance(distance);
-
-        if (nowSection.isUpEndPointSection()) {
-            nowSection.cancelOfUpEndPoint();
-            return new Section(line, upStation, downStation, distance, true, false);
-        }
-
-        return new Section(line, upStation, downStation, distance, false, false);
+    public void validate() {
+        originSection.validationAddDistance(newSection.getDistance());
     }
 
     @Override
-    public boolean isAdd() {
-        return true;
+    public void addAction() {
+
+        originSection.changeUpStation(newSection.getDownStation());
+        originSection.minusDistance(newSection.getDistance());
+
     }
+
 }

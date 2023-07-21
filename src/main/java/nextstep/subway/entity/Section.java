@@ -33,12 +33,6 @@ public class Section {
     @Column(nullable = false)
     private int distance;
 
-    @Column(nullable = false)
-    private boolean isUpEndPointSection;
-
-    @Column(nullable = false)
-    private boolean isDownEndPointSection;
-
     public Section() {
     }
 
@@ -50,19 +44,8 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance,
-        boolean isUpEndPointSection, boolean isDownEndPointSection) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-        this.isUpEndPointSection = isUpEndPointSection;
-        this.isDownEndPointSection = isDownEndPointSection;
-    }
-
-    public static Section firstCreate(Line line, Station upStation, Station downStation,
-        int distance) {
-        return new Section(line, upStation, downStation, distance, true, true);
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        return new Section(line, upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -93,28 +76,12 @@ public class Section {
         return List.of(upStation.getId(), downStation.getId());
     }
 
-    public boolean isUpEndPointSection() {
-        return isUpEndPointSection;
-    }
-
-    public boolean isDownEndPointSection() {
-        return isDownEndPointSection;
-    }
-
     public boolean isEqualsDownStation(long downStationId) {
         return this.downStation.getId().equals(downStationId);
     }
 
     public boolean isEqualsUpStation(long stationId) {
         return this.upStation.getId().equals(stationId);
-    }
-
-    public void cancelOfUpEndPoint() {
-        this.isUpEndPointSection = false;
-    }
-
-    public void cancelOfDownEndPoint() {
-        this.isDownEndPointSection = false;
     }
 
     public void validationAddDistance(int distance) {

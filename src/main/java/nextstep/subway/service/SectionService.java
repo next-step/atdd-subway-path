@@ -22,7 +22,7 @@ public class SectionService {
     public Section create(Line line,Station upStation, Station downStation,
         int distance) {
 
-        return save(Section.firstCreate(line, upStation, downStation, distance));
+        return save(Section.of(line, upStation, downStation, distance));
     }
 
     private Section save(Section section){
