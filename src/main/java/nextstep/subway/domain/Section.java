@@ -46,8 +46,8 @@ public class Section {
 		this(null, line, upStation, downStation, distance);
 	}
 
-	public boolean isNotSameDownStation(Long stationId) {
-		return !downStation.equalsId(stationId);
+	public boolean isSameDownStation(Long stationId) {
+		return downStation.equalsId(stationId);
 	}
 
 	public boolean isSameUpStation(Long stationId) {
