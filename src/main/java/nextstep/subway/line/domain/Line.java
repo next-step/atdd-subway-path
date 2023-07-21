@@ -19,9 +19,9 @@ public class Line {
 
     private String color;
 
-    private String firstStationName;
+    private Long firstStationId;
 
-    private String lastStationName;
+    private Long lastStationId;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -32,8 +32,8 @@ public class Line {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.firstStationName = section.getUpStationName();
-        this.lastStationName = section.getDownStationName();
+        this.firstStationId = section.getUpStationId();
+        this.lastStationId = section.getDownStationId();
 
         addSection(section);
     }
@@ -57,12 +57,12 @@ public class Line {
 
     public List<Section> getSections() {
         List<Section> result = new ArrayList<>();
-        String targetStationName = firstStationName;
-        while (!targetStationName.equals(lastStationName)) {
+        Long targetStationId = firstStationId;
+        while (targetStationId != null && !targetStationId.equals(lastStationId)) {
             for (Section section : sections) {
-                if (section.upStationNameEqualsTo(targetStationName)) {
+                if (section.upStationIdEqualsTo(targetStationId)) {
                     result.add(section);
-                    targetStationName = section.getDownStationName();
+                    targetStationId = section.getDownStationId();
                 }
             }
         }
@@ -70,12 +70,12 @@ public class Line {
         return result;
     }
 
-    public String getFirstStationName() {
-        return firstStationName;
+    public Long getFirstStationId() {
+        return firstStationId;
     }
 
-    public String getLastStationName() {
-        return lastStationName;
+    public Long getLastStationId() {
+        return lastStationId;
     }
 
     public void deleteSection(Station station) {
@@ -109,14 +109,14 @@ public class Line {
     public void registerSection(Section newSection) {
         validateAlreadyRegisteredSection(newSection);
 
-        if (newSection.downStationNameEqualsTo(firstStationName)) {
-            firstStationName = newSection.getUpStationName();
+        if (newSection.downStationIdEqualsTo(firstStationId)) {
+            firstStationId = newSection.getUpStationId();
             addSection(newSection);
             return;
         }
 
-        if (newSection.upStationNameEqualsTo(lastStationName)) {
-            lastStationName = newSection.getDownStationName();
+        if (newSection.upStationIdEqualsTo(lastStationId)) {
+            lastStationId = newSection.getDownStationId();
             addSection(newSection);
             return;
         }

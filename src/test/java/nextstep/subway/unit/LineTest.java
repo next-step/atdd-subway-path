@@ -74,8 +74,8 @@ class LineTest {
                 신분당선.registerSection(newSection);
 
                 // then
-                String 상행_종점 = 신분당선.getFirstStationName();
-                assertThat(상행_종점).isEqualTo("상행종점에_추가될_역");
+                Long 상행_종점 = 신분당선.getFirstStationId();
+                assertThat(상행_종점).isEqualTo(상행종점에_추가될_역.getId());
 
                 List<Section> sections = 신분당선.getSections();
                 assertThat(sections).hasSize(2);
@@ -98,8 +98,8 @@ class LineTest {
                 신분당선.registerSection(newSection);
 
                 // then
-                String 하행_종점 = 신분당선.getLastStationName();
-                assertThat(하행_종점).isEqualTo("하행종점에_추가될_역");
+                Long 하행_종점 = 신분당선.getLastStationId();
+                assertThat(하행_종점).isEqualTo(하행종점에_추가될_역.getId());
 
                 List<Section> sections = 신분당선.getSections();
                 assertThat(sections).hasSize(2);

@@ -130,11 +130,11 @@ public class Section {
         return Objects.hash(id);
     }
 
-    public boolean upStationNameEqualsTo(String stationName) {
-        return stationName.equals(upStation.getName());
+    public boolean upStationIdEqualsTo(Long targetStationId) {
+        return getUpStationId().equals(targetStationId);
     }
 
-    public boolean downStationNameEqualsTo(String stationName) {
-        return stationName.equals(downStation.getName());
+    public boolean downStationIdEqualsTo(Long firstStationId) {
+        return getDownStationId().equals(firstStationId);
     }
 }
