@@ -1,5 +1,7 @@
 package nextstep.subway.unit;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.SectionService;
 import nextstep.subway.applicaion.dto.request.SectionRequest;
@@ -7,14 +9,20 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.BadRequestSectionsException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_등록;
+import static nextstep.subway.acceptance.steps.StationSteps.createStationAndGetInfo;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 서비스 단위 테스트 without Mock")
 @SpringBootTest
@@ -47,7 +55,7 @@ public class LineServiceTest {
     }
 
 
-    @DisplayName("노선에 구간을 추가")
+    @DisplayName("노선에 구간을 등록")
     @Test
     void addSection() {
 
@@ -69,6 +77,14 @@ public class LineServiceTest {
 
         // then
         assertThat(신분당선.getStations()).doesNotContain(광교역);
+    }
+
+    @DisplayName("노선에서 등록되지 않은 구간을 삭제할 경우 에러를 던짐")
+    @Test
+    void removeSectionWhenNotExist() {
+        // then
+        Assertions.assertThrows(BadRequestSectionsException.class
+                                ,()->sectionService.removeSection(신분당선.getId(),광교역.getId()));
     }
 
 }

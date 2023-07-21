@@ -31,8 +31,6 @@ public class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
-    private StationRepository stationRepository;
-    @Mock
     private StationService stationService;
     @InjectMocks
     private SectionService sectionService;

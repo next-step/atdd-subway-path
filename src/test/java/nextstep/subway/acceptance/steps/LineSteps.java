@@ -28,7 +28,7 @@ public class LineSteps {
     }
 
 
-    public static ExtractableResponse<Response> getLines() {
+    public static ExtractableResponse<Response> 지하철_노선_조회() {
         return RestAssured.given().log().all()
                 .when().get("lines")
                 .then().log().all()

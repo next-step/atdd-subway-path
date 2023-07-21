@@ -4,10 +4,12 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.exception.BadRequestSectionsException;
+import nextstep.subway.exception.NullPointerSectionsException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,20 +20,67 @@ import java.util.stream.Collectors;
 public class LineSections {
 
     private static final int MIN_LIMIT = 1;
-    @OneToMany(mappedBy = "line" , cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+
 
     private LineSections(Section section) {
         sections.add(section);
     }
 
+    @OneToMany(mappedBy = "line" , cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OrderColumn(name = "POSITION")
+    private List<Section> sections = new ArrayList<>();
+
     public static LineSections init(Section section) {
         return new LineSections(section);
     }
-    public List<Section> add(Section section){
-        isAddableSections(section);
-        sections.add(section);
+    public List<Section> add(Section newSection){
+        checkRequestValidation(newSection);
+
+        if(isAddableFirstSections(newSection)){
+            sections.add(newSection);
+            return sections;
+        }
+        if(isAddableLastSections(newSection)){
+            sections.add(newSection);
+            return sections;
+        }
+
+        addMiddleSections(newSection);
+
         return sections;
+    }
+
+    private void addMiddleSections(Section newSection) {
+        Section orgSection = sections.stream()
+                                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                                .findFirst()
+                                .orElseThrow(() -> new BadRequestSectionsException("상행선 정보가 잘못되었습니다."));
+
+        if(orgSection.getDistance()< newSection.getDistance()){
+            throw new BadRequestSectionsException("구간 사이의 새 구간의 길이는 기존 구간의 길이와 같거나 초과할 수 없습니다.");
+        }
+
+        int distance = orgSection.getDistance()-newSection.getDistance();
+        Section changeSections = Section.builder()
+                                            .line(orgSection.getLine())
+                                            .upStation(newSection.getDownStation())
+                                            .downStation(orgSection.getDownStation())
+                                            .distance(distance)
+                                            .build();
+
+        sections.remove(orgSection);
+        sections.add(newSection);
+        sections.add(changeSections);
+    }
+
+    private boolean isAddableLastSections(Section newSection) {
+        Station lastStation = sections.get(sections.size()-1).getDownStation();
+        return newSection.getUpStation().equals(lastStation);
+    }
+
+    private boolean isAddableFirstSections(Section newSection) {
+        Station firstStation = sections.get(0).getUpStation();
+        return newSection.getDownStation().equals(firstStation);
     }
 
     public void remove(Station station){
@@ -47,26 +96,35 @@ public class LineSections {
 
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> stations = sections
+                                        .stream()
+                                        .map(Section::getUpStation)
+                                        .collect(Collectors.toList());
         stations.add(getLastSections().getDownStation());
         return stations;
     }
 
     private Section getLastSections() {
-        return sections.get(sections.size()- 1);
+        return sections.stream()
+                            .filter(it -> !sections
+                                            .stream()
+                                            .anyMatch(temp->it.getDownStation().equals(temp.getUpStation())))
+                            .findFirst()
+                            .orElseThrow(()->new NullPointerSectionsException("해당 노선의 하행 종점역을 찾을 수 없습니다."));
     }
 
 
-    private void isAddableSections(Section newSection) {
+    private void checkRequestValidation(Section newSection) {
         if(sections.isEmpty()) {
             return;
         }
-        Station lastStation = sections.get(sections.size() - 1).getDownStation();
-        if(!newSection.getUpStation().equals(lastStation)){
-            throw new BadRequestSectionsException("구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야합니다.");
+        boolean isExistUpStation = getStations().stream().anyMatch(it->it.equals(newSection.getUpStation()));
+        boolean isExistDownStation = getStations().stream().anyMatch(it->it.equals(newSection.getDownStation()));
+        if(isExistUpStation && isExistDownStation){
+            throw new BadRequestSectionsException("상행선과 하행선이 이미 해당 노선에 등록되어있는 역입니다.");
         }
-        if(sections.stream().anyMatch(section->section.getDownStation().equals(newSection))){
-            throw new BadRequestSectionsException("이미 해당 노선에 등록되어있는 역입니다.");
+        if(!isExistUpStation && !isExistDownStation){
+            throw new BadRequestSectionsException("상행선과 하행선이 모두 해당 노선에 등록되어있지 않은 역입니다.");
         }
     }
 

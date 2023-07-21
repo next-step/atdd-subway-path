@@ -47,6 +47,10 @@ public class Section {
     }
 
 
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -64,7 +68,14 @@ public class Section {
         return Objects.hash(id);
     }
 
-    public boolean hasDownStation(Station station) {
-        return downStation.equals(station);
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }
