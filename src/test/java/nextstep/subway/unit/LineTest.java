@@ -23,13 +23,15 @@ import static org.assertj.core.api.Assertions.*;
 class LineTest {
     private Station 노선_상행_역;
     private Station 노선_하행_역;
+    private Section 노선에_등록할_구간;
     private Line 노선;
 
     @BeforeEach
     void setUp() {
         노선_상행_역 = new Station(1L, "노선_상행_역");
         노선_하행_역 = new Station(2L, "노선_하행_역");
-        노선 = new Line("노선", "bg-red-600", new Section(노선_상행_역, 노선_하행_역, 10));
+        노선에_등록할_구간 = new Section(노선_상행_역, 노선_하행_역, 10);
+        노선 = new Line("노선", "bg-red-600", 노선에_등록할_구간);
     }
 
     @DisplayName("구간 추가 기능 테스트")
@@ -169,8 +171,7 @@ class LineTest {
         List<Section> sections = 노선.getSections();
 
         // then
-        assertThat(sections.get(0).getUpStation()).isEqualTo(상행종점에_추가될_역);
-        assertThat(sections.get(1).getUpStation()).isEqualTo(노선_상행_역);
+        assertThat(sections).containsExactly(newSection, 노선에_등록할_구간);
     }
 
     @DisplayName("구간 삭제 기능 테스트")
