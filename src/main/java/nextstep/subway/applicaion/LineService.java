@@ -10,7 +10,9 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,11 +31,10 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
-            Station upStation = stationService.findById(request.getUpStationId());
-            Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
-        }
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+
         return createLineResponse(line);
     }
 

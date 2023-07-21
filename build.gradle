@@ -12,6 +12,12 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
 dependencies {
     // spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -22,6 +28,13 @@ dependencies {
 
     // jgraph
     implementation 'org.jgrapht:jgrapht-core:1.0.1'
+
+    // lombok
+    implementation 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.4'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.rest-assured:rest-assured:4.5.1'

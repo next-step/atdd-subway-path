@@ -2,6 +2,8 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,8 +50,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        LineResponse lineResponse = response.as(LineResponse.class);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        assertThat(lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId))
+                .containsExactly(강남역, 양재역, 정자역);
     }
 
     /**

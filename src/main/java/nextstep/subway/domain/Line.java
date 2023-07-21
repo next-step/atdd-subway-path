@@ -56,25 +56,31 @@ public class Line {
         return sections;
     }
 
+    private List<Section> getThisSections() { return this.sections; }
+
     public void addSection(Section section) {
-        this.sections.add(section);
+        sections.add(section);
     }
 
     public void deleteSectionByUpStation(Station upStation) {
-        for (Section savedSection : this.sections) {
+        List<Section> sections = getThisSections();
+
+        for (Section savedSection : sections) {
             Station savedUpStation = savedSection.getUpStation();
             if (savedUpStation.getName().equals(upStation.getName())) {
-                this.sections.remove(savedSection);
+                sections.remove(savedSection);
                 return;
             }
         }
     }
 
     public void deleteSectionByDownStation(Station downStation) {
-        for (Section savedSection : this.sections) {
+        List<Section> sections = getThisSections();
+
+        for (Section savedSection : sections) {
             Station savedUpStation = savedSection.getUpStation();
             if (savedUpStation.getName().equals(downStation.getName())) {
-                this.sections.remove(savedSection);
+                sections.remove(savedSection);
                 return;
             }
         }
