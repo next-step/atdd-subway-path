@@ -14,4 +14,8 @@ public class StationFixture {
 
         return station;
     }
+
+    public static Station of(String name) {
+        return new Station(name);
+    }
 }

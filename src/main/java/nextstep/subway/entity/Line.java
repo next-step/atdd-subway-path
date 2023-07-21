@@ -1,5 +1,6 @@
 package nextstep.subway.entity;
 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -54,5 +55,19 @@ public class Line {
 
     public void updateColor(String color) {
         this.color = color;
+    }
+
+    public Section addSection(Station upStation, Station downStation, int distance) {
+        return sections.add(this, upStation, downStation, distance);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStationsInOrder();
+    }
+
+    public void removeSection(final Section section) {
+
+        sections.delete(section.getDownStationId());
+
     }
 }

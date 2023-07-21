@@ -1,4 +1,4 @@
-package nextstep.subway.entity.group;
+package nextstep.subway.unit.group;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.util.stream.Stream;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
+import nextstep.subway.entity.group.SectionGroup;
 import nextstep.subway.fixture.unit.entity.StationFixture;
 import nextstep.subway.fixture.unit.group.SectionGroupFixture;
 import org.junit.jupiter.api.Assertions;

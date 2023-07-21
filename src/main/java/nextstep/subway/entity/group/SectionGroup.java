@@ -18,7 +18,7 @@ import nextstep.subway.entity.group.factory.SectionAddActionFactory;
 public class SectionGroup {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private final List<Section> sections;
+    private List<Section> sections;
 
     public SectionGroup() {
         sections = new ArrayList<>();
@@ -36,9 +36,15 @@ public class SectionGroup {
 
         Section newSection = new Section(line, upStation, downStation, distance);
 
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return newSection;
+        }
         validateAdd(upStation.getId(), downStation.getId());
 
         SectionAddActionFactory.make(newSection, findAddSection(newSection)).action();
+
+        sections.add(newSection);
 
         return newSection;
     }

@@ -4,7 +4,6 @@ import java.util.List;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
-import nextstep.subway.entity.group.SectionGroup;
 import nextstep.subway.repository.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,16 +24,8 @@ public class SectionService {
         return save(Section.of(line, upStation, downStation, distance));
     }
 
-    private Section save(Section section){
+    public Section save(Section section){
         return sectionRepository.save(section);
-    }
-
-    public void add(Line line, Station upStation, Station downStation, int distance) {
-
-        SectionGroup group = line.getSections();
-        Section section = group.add(line, upStation, downStation, distance);
-
-        sectionRepository.save(section);
     }
 
     public List<Section> findAllByLineId(Long lineId) {

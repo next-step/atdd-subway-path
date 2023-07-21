@@ -1,6 +1,7 @@
 package nextstep.subway.facade;
 
 import nextstep.subway.entity.Line;
+import nextstep.subway.entity.Station;
 import nextstep.subway.entity.group.SectionGroup;
 import nextstep.subway.service.LineService;
 import nextstep.subway.service.StationService;
@@ -27,12 +28,12 @@ public class SectionFacade {
 
     public void addSection(long id, SectionRequest request) {
 
-        sectionService.add(
-            lineService.findById(id),
-            stationService.findById(request.getUpStationId()),
-            stationService.findById(request.getDownStationId()),
-            request.getDistance()
-        );
+        Line line = lineService.findById(id);
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+
+        sectionService.save(line.addSection(upStation, downStation, request.getDistance()));
+
     }
 
     public void deleteSection(long lineId, long stationId) {
