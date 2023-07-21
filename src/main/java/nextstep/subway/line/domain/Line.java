@@ -140,17 +140,19 @@ public class Line {
             throw new DistanceNotLongerThanExistingSectionException();
         }
 
-        Section downSection;
+        Section additionalSection;
+        int additionalSectionDistance = existingSection.getDistance() - newSection.getDistance();
+
         if (existingSection.hasSameUpStation(newSection)) {
-            downSection = new Section(newSection.getDownStation(), existingSection.getDownStation(), existingSection.getDistance() - newSection.getDistance());
+            additionalSection = new Section(newSection.getDownStation(), existingSection.getDownStation(), additionalSectionDistance);
         } else {
-            downSection = new Section(existingSection.getUpStation(), newSection.getUpStation(), existingSection.getDistance() - newSection.getDistance());
+            additionalSection = new Section(existingSection.getUpStation(), newSection.getUpStation(), additionalSectionDistance);
         }
 
         sections.remove(existingSection);
 
         addSection(newSection);
-        addSection(downSection);
+        addSection(additionalSection);
     }
 
     private Section findExistingSection(Section newSection) {
