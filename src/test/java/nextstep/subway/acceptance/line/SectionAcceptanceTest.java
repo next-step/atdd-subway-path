@@ -158,7 +158,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeSectionErrorByRemovingNonLastSection() {
         // given
-        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE);
+        지하철_구간_등록(이호선_URL, 역삼역_URL, 삼성역_URL, DEFAULT_SECTION_DISTANCE
+        );
 
         // when
         지하철_구간_삭제(이호선_URL + "/sections?stationId=" + 지하철_아이디_획득(강남역_URL));
