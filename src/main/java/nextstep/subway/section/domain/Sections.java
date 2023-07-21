@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import java.util.function.Supplier;
+import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.exception.*;
 import nextstep.subway.station.domain.Station;
@@ -69,7 +71,7 @@ public class Sections {
     }
 
     private void registerSectionBetweenStations(Section newSection, Line line) {
-        Section existingSection = findExistingSection(newSection);
+        Section existingSection = findSectionForRegistration(newSection);
 
         if (existingSection.hasSameOrLongerDistance(newSection)) {
             throw new DistanceNotLongerThanExistingSectionException();
@@ -90,11 +92,19 @@ public class Sections {
         addSection(additionalSection, line);
     }
 
-    private Section findExistingSection(Section newSection) {
+    private Section findSectionForRegistration(Section newSection) {
+        return findSection(section -> section.hasOnlyOneSameStation(newSection), InvalidSectionRegistrationException::new);
+    }
+
+    private Section findSection(Predicate<Section> filterCondition) {
+        return findSection(filterCondition, SectionNotFoundException::new);
+    }
+
+    private Section findSection(Predicate<Section> filterCondition, Supplier<BusinessException> exceptionSupplier) {
         return sections.stream()
-                .filter(section -> section.hasOnlyOneSameStation(newSection))
+                .filter(filterCondition)
                 .findAny()
-                .orElseThrow(InvalidSectionRegistrationException::new);
+                .orElseThrow(exceptionSupplier);
     }
 
     private void addSection(Section newSection, Line line) {
@@ -159,13 +169,6 @@ public class Sections {
 
         Section newSection = new Section(prevSection.getUpStation(), nextSection.getDownStation(), prevSection.getDistance() + nextSection.getDistance());
         registerSection(newSection, line);
-    }
-
-    private Section findSection(Predicate<Section> filterCondition) {
-        return sections.stream()
-                .filter(filterCondition)
-                .findAny()
-                .orElseThrow(SectionNotFoundException::new);
     }
 
     private void validateLineHasOnlyOneSection() {
