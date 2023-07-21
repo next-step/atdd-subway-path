@@ -37,7 +37,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> showLineResponse = LineStep.지하철_노선을_조회한다(lineId);
-        assertThat(지하철_구간_목록을_추출한다(showLineResponse)).hasSize(2);
+        List<String> 상행역_이름_목록 = 지하철_구간_목록의_상행역_이름을_추출한다(showLineResponse);
+
+        assertThat(상행역_이름_목록).hasSize(2);
+        assertThat(상행역_이름_목록.get(0)).isEqualTo("강남역");
+        assertThat(상행역_이름_목록.get(1)).isEqualTo("양재역");
     }
 
     /**
@@ -63,7 +67,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> showLineResponse = LineStep.지하철_노선을_조회한다(lineId);
-        assertThat(지하철_구간_목록을_추출한다(showLineResponse)).hasSize(2);
+        List<String> 상행역_이름_목록 = 지하철_구간_목록의_상행역_이름을_추출한다(showLineResponse);
+
+        assertThat(상행역_이름_목록).hasSize(2);
+        assertThat(상행역_이름_목록.get(0)).isEqualTo("신논현역");
+        assertThat(상행역_이름_목록.get(1)).isEqualTo("강남역");
     }
 
     /**
@@ -89,7 +97,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         ExtractableResponse<Response> showLineResponse = LineStep.지하철_노선을_조회한다(lineId);
-        assertThat(지하철_구간_목록을_추출한다(showLineResponse)).hasSize(2);
+        List<String> 하행역_이름_목록 = 지하철_구간_목록의_하행역_이름을_추출한다(showLineResponse);
+
+        assertThat(하행역_이름_목록).hasSize(2);
+        assertThat(하행역_이름_목록.get(0)).isEqualTo("양재역");
+        assertThat(하행역_이름_목록.get(1)).isEqualTo("양재시민의숲역");
     }
 
     private long 응답_결과에서_Id를_추출한다(ExtractableResponse<Response> responseOfCreateStation) {
@@ -100,6 +112,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return showLineResponse.jsonPath().getList("sections");
     }
 
+    private List<String> 지하철_구간_목록의_상행역_이름을_추출한다(ExtractableResponse<Response> showLineResponse) {
+        return showLineResponse.jsonPath().getList("sections.upStationName");
+    }
+
+    private List<String> 지하철_구간_목록의_하행역_이름을_추출한다(ExtractableResponse<Response> showLineResponse) {
+        return showLineResponse.jsonPath().getList("sections.downStationName");
+    }
     /**
      * Given : 지하철역을 3개 생성하고
      * And : 지하철 노선을 1개 생성하고
