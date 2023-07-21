@@ -1,4 +1,4 @@
-package nextstep.subway.unit.handler;
+package nextstep.subway.unit.line.handler;
 
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.Section;

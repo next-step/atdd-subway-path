@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;

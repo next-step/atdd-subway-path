@@ -26,12 +26,4 @@ public class Station {
     public boolean equalsId(final Station other) {
         return this.id.equals(other.getId());
     }
-
-    @Override
-    public String toString() {
-        return "Station{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }

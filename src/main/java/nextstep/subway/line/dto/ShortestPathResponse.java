@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class PathResponse {
+public class ShortestPathResponse {
 
     private List<StationResponse> stations;
     private Integer distance;

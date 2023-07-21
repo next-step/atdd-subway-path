@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.common.exception.DeletionValidationException;

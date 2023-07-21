@@ -5,13 +5,8 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.AcceptanceTest;
-import nextstep.subway.acceptance.line.LineTestUtils;
-import nextstep.subway.acceptance.station.StationTestUtils;
-import nextstep.subway.line.dto.PathResponse;
-import nextstep.subway.line.entity.Line;
-import nextstep.subway.station.dto.StationResponse;
-import nextstep.subway.station.entity.Station;
-import org.assertj.core.api.Assertions;
+import nextstep.subway.line.dto.ShortestPathResponse;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,8 +69,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
         // then
-        PathResponse pathResponse = response.body().as(PathResponse.class);
-        assertThat(pathResponse.getStations()).hasSize(3);
-        assertThat(pathResponse.getDistance()).isEqualTo(7);
+        ShortestPathResponse shortestPathResponse = response.body().as(ShortestPathResponse.class);
+        assertThat(shortestPathResponse.getStations()).hasSize(3);
+        assertThat(shortestPathResponse.getDistance()).isEqualTo(7);
     }
 }

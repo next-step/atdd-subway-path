@@ -54,6 +54,10 @@ public class Line {
         return sections.getStations();
     }
 
+    public List<Section> getSectionList() {
+        return sections.getSections();
+    }
+
     public void addSection(SectionAdditionHandlerMapping handlerMapping, Section section) {
         sections.addSection(handlerMapping, section);
     }
