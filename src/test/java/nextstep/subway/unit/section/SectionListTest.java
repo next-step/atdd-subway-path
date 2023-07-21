@@ -211,9 +211,6 @@ class SectionListTest {
         sectionList.addSection(newSection1);
 
         List<Station> stations = sectionList.getStationsByOrder();
-        assertThat(stations.get(0)).isEqualTo(c);
-        assertThat(stations.get(1)).isEqualTo(a);
-        assertThat(stations.get(2)).isEqualTo(d);
-        assertThat(stations.get(3)).isEqualTo(b);
+        assertThat(stations).containsExactly(c, a, d, b);
     }
 }

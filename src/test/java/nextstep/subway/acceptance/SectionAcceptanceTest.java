@@ -260,6 +260,25 @@ class SectionAcceptanceTest {
         응답코드_검증(response, HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Given 노선을 생성한다.
+     * When  테이블에 존재하지 않는 역을 삭제한다.
+     * Then  제거 불가능한 에러를 반환한다.
+     */
+    @DisplayName("존재하지 않는 노선에서 역을 삭제할 때 에러를 반환한다.")
+    @Test
+    void deleteSectionExceptionWhenDoesNotExistsStation() {
+        //given
+        지하철_노선도_등록("7호선", "bg-1234", 첫번째역, 두번째역, 5);
+        지하철_구간_등록(1L, 두번째역, 세번째역, 7);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(2L, -1L);
+
+        //then
+        응답코드_검증(response, HttpStatus.NOT_FOUND);
+    }
+
 
     /**
      * Given 노선을 생성한다.
