@@ -44,13 +44,13 @@ public class Sections {
 
         validateAlreadyRegisteredSection(newSection);
 
-        if (newSection.downStationIdEqualsTo(firstStationId)) {
+        if (newSection.hasSameDownStationId(firstStationId)) {
             firstStationId = newSection.getUpStationId();
             addSection(newSection, line);
             return;
         }
 
-        if (newSection.upStationIdEqualsTo(lastStationId)) {
+        if (newSection.hasSameUpStationId(lastStationId)) {
             lastStationId = newSection.getDownStationId();
             addSection(newSection, line);
             return;
@@ -107,7 +107,7 @@ public class Sections {
         Long targetStationId = firstStationId;
         while (targetStationId != null && !targetStationId.equals(lastStationId)) {
             for (Section section : sections) {
-                if (section.upStationIdEqualsTo(targetStationId)) {
+                if (section.hasSameUpStationId(targetStationId)) {
                     result.add(section);
                     targetStationId = section.getDownStationId();
                 }
@@ -117,14 +117,6 @@ public class Sections {
         return result;
     }
 
-    /*
-     * 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
-     *
-     * 중간역이 제거될 경우 재배치를 함
-     * 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
-     * - ex: 강남역 - 양재역 - 양재시민의숲역 -> 양재역 제거 -> 강남역 - 양재시민의숲역 (구간이 2개에서 1개로 줄어듦)
-     * 거리는 두 구간의 거리의 합으로 정함
-     */
     public void removeSection(Station station, Line line) {
         validateLineHasOnlyOneSection();
 

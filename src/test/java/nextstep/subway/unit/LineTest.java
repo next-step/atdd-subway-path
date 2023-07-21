@@ -3,8 +3,10 @@ package nextstep.subway.unit;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.exception.AlreadyRegisteredStationException;
+import nextstep.subway.section.exception.CanNotDeleteOnlyOneSectionException;
 import nextstep.subway.section.exception.DistanceNotLongerThanExistingSectionException;
 import nextstep.subway.section.exception.InvalidSectionRegistrationException;
+import nextstep.subway.section.exception.SectionNotFoundException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -247,7 +249,28 @@ class LineTest {
         @DisplayName("실패 케이스")
         @Nested
         class Fail {
+            @DisplayName("구간이 하나인 노선에서 구간 제거")
+            @Test
+            void removeWhenLineHasOnlyOneSection() {
+                // when, then
+                assertThatThrownBy(() -> 노선.removeSection(노선_하행_역))
+                        .isInstanceOf(CanNotDeleteOnlyOneSectionException.class);
+            }
 
+            @DisplayName("노선에 등록 되어있지 않은 역 제거")
+            @Test
+            void removeSectionNotInLine() {
+                // given
+                Station 상행종점에_추가될_역 = new Station(3L, "상행종점에_추가될_역");
+                Section newSection = new Section(상행종점에_추가될_역, 노선_상행_역, 5);
+                노선.registerSection(newSection);
+
+                Station 노선에_없는_역 = new Station(4L, "노선에 없는 역");
+
+                // when, then
+                assertThatThrownBy(() -> 노선.removeSection(노선에_없는_역))
+                        .isInstanceOf(SectionNotFoundException.class);
+            }
         }
     }
 }

@@ -60,11 +60,11 @@ public class Line {
         return sections.getLastStationId();
     }
 
-    public void removeSection(Station station) {
-        sections.removeSection(station, this);
-    }
-
     public void registerSection(Section newSection) {
         sections.registerSection(newSection, this);
+    }
+
+    public void removeSection(Station station) {
+        sections.removeSection(station, this);
     }
 }

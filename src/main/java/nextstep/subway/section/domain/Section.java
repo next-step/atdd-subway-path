@@ -89,10 +89,6 @@ public class Section {
         this.line = line;
     }
 
-    public boolean downStationEqualsTo(Station station) {
-        return downStation.equals(station);
-    }
-
     public boolean hasOnlyOneSameStation(Section section) {
         return !hasAllSameStations(section)
                 && hasSameUpStation(section)
@@ -121,14 +117,6 @@ public class Section {
 
     public boolean hasSameOrLongerDistance(Section newSection) {
         return distance.equals(newSection.distance) || distance < newSection.distance;
-    }
-
-    public boolean upStationIdEqualsTo(Long targetStationId) {
-        return getUpStationId().equals(targetStationId);
-    }
-
-    public boolean downStationIdEqualsTo(Long firstStationId) {
-        return getDownStationId().equals(firstStationId);
     }
 
     public boolean hasSameUpStationId(Long upStationId) {
