@@ -37,7 +37,7 @@ public class LineSections {
         checkRequestValidation(newSection);
 
         if(isAddableFirstSections(newSection)){
-            sections.add(newSection);
+            sections.add(0,newSection);
             return sections;
         }
         if(isAddableLastSections(newSection)){
@@ -56,7 +56,7 @@ public class LineSections {
                                 .findFirst()
                                 .orElseThrow(() -> new BadRequestSectionsException("상행선 정보가 잘못되었습니다."));
 
-        if(orgSection.getDistance()< newSection.getDistance()){
+        if(orgSection.getDistance() <= newSection.getDistance()){
             throw new BadRequestSectionsException("구간 사이의 새 구간의 길이는 기존 구간의 길이와 같거나 초과할 수 없습니다.");
         }
 
@@ -96,12 +96,32 @@ public class LineSections {
 
 
     public List<Station> getStations() {
-        List<Station> stations = sections
-                                        .stream()
-                                        .map(Section::getUpStation)
-                                        .collect(Collectors.toList());
-        stations.add(getLastSections().getDownStation());
+        Section section = getFirstSections();
+        List<Station> stations = new ArrayList<>();
+        stations.add(section.getUpStation());
+
+        for(int i=0; i <= sections.size()-2; i++){
+            Station curDownStation = section.getDownStation();
+            for(Section s : sections){
+                if(curDownStation.equals(s.getUpStation())) {
+                    section = s;
+                    stations.add(s.getUpStation());
+                    break;
+                }
+            }
+        }
+        stations.add(section.getDownStation());
+
         return stations;
+    }
+
+    private Section getFirstSections() {
+        return sections.stream()
+                .filter(it -> !sections
+                        .stream()
+                        .anyMatch(temp->it.getUpStation().equals(temp.getDownStation())))
+                .findFirst()
+                .orElseThrow(()->new NullPointerSectionsException("해당 노선의 상행 종점역을 찾을 수 없습니다."));
     }
 
     private Section getLastSections() {

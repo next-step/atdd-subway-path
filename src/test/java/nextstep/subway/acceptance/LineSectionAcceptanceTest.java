@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
     private static final int DISTANCE = 10;
-    private Long 신사역,논현역, 신논현역,강남역,광교역;
+    private Long 신사역, 논현역, 신논현역, 강남역, 광교역;
 
     private Long 신분당선;
 
