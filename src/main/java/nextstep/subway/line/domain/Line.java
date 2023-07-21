@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.section.exception.*;
 import nextstep.subway.station.domain.Station;
 
@@ -19,12 +20,8 @@ public class Line {
 
     private String color;
 
-    private Long firstStationId;
-
-    private Long lastStationId;
-
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
@@ -32,10 +29,9 @@ public class Line {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.firstStationId = section.getUpStationId();
-        this.lastStationId = section.getDownStationId();
+        sections = new Sections(section.getUpStationId(), section.getDownStationId());
 
-        addSection(section);
+        sections.registerSection(section, this);
     }
 
     public void update(String name, String color) {
@@ -56,114 +52,22 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        List<Section> result = new ArrayList<>();
-        Long targetStationId = firstStationId;
-        while (targetStationId != null && !targetStationId.equals(lastStationId)) {
-            for (Section section : sections) {
-                if (section.upStationIdEqualsTo(targetStationId)) {
-                    result.add(section);
-                    targetStationId = section.getDownStationId();
-                }
-            }
-        }
-
-        return result;
+        return sections.getSections();
     }
 
     public Long getFirstStationId() {
-        return firstStationId;
+        return sections.getFirstStationId();
     }
 
     public Long getLastStationId() {
-        return lastStationId;
+        return sections.getLastStationId();
     }
 
     public void deleteSection(Station station) {
-        validateLineHasOnlyOneSection();
-        validateStationIsDownStationOfLastSection(station);
-
-        sections.remove(getLastSectionVer0());
-    }
-
-    private void validateLineHasOnlyOneSection() {
-        if (hasOnlyOneSection()) {
-            throw new CanNotDeleteOnlyOneSectionException();
-        }
-    }
-
-    private boolean hasOnlyOneSection() {
-        return sections.size() == 1;
-    }
-
-    private void validateStationIsDownStationOfLastSection(Station station) {
-        if (!getLastSectionVer0().downStationEqualsTo(station)) {
-            throw new DeleteOnlyTerminusStationException();
-        }
-    }
-
-    private Section getLastSectionVer0() {
-        sections.sort(Comparator.comparing(Section::getId));
-        return sections.get(sections.size() - 1);
+        sections.deleteSection(station);
     }
 
     public void registerSection(Section newSection) {
-        validateAlreadyRegisteredSection(newSection);
-
-        if (newSection.downStationIdEqualsTo(firstStationId)) {
-            firstStationId = newSection.getUpStationId();
-            addSection(newSection);
-            return;
-        }
-
-        if (newSection.upStationIdEqualsTo(lastStationId)) {
-            lastStationId = newSection.getDownStationId();
-            addSection(newSection);
-            return;
-        }
-
-        registerSectionBetweenStations(newSection);
-    }
-
-    private void validateAlreadyRegisteredSection(Section newSection) {
-        sections.stream()
-                .filter(section -> section.hasAllSameStations(newSection))
-                .findAny()
-                .ifPresent(section -> {
-                    throw new AlreadyRegisteredStationException();
-                });
-    }
-
-    private void registerSectionBetweenStations(Section newSection) {
-        Section existingSection = findExistingSection(newSection);
-
-        if (existingSection.hasSameOrLongerDistance(newSection)) {
-            throw new DistanceNotLongerThanExistingSectionException();
-        }
-
-        Section additionalSection;
-        int additionalSectionDistance = existingSection.getDistance() - newSection.getDistance();
-
-        if (existingSection.hasSameUpStation(newSection)) {
-            additionalSection = new Section(newSection.getDownStation(), existingSection.getDownStation(), additionalSectionDistance);
-        } else {
-            additionalSection = new Section(existingSection.getUpStation(), newSection.getUpStation(), additionalSectionDistance);
-        }
-
-        sections.remove(existingSection);
-
-        addSection(newSection);
-        addSection(additionalSection);
-    }
-
-    private Section findExistingSection(Section newSection) {
-        return sections.stream()
-                .filter(section -> section.hasOnlyOneSameStation(newSection))
-                .findAny()
-                .orElseThrow(InvalidSectionRegistrationException::new);
-    }
-
-    private void addSection(Section newSection) {
-        sections.add(newSection);
-        newSection.assignLine(this);
+        sections.registerSection(newSection, this);
     }
 }

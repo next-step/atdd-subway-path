@@ -6,6 +6,7 @@ public enum ErrorCode {
     DISTANCE_NOT_LONGER_THAN_EXISTING_SECTION(400, "역 사이에 새로운 구간을 등록할 때, 거리가 기존 구간보다 짧아야 합니다."),
     DELETE_ONLY_TERMINUS_STATION(400, "구간 삭제 시 하행 종점역을 입력해야 합니다."),
     CAN_NOT_DELETE_ONLY_ONE_SECTION(400, "노선에 하나의 구간만 있을 경우 삭제할 수 없습니다."),
+    DUPLICATED_STATION_ID(400, "상행 종점역과 하행 종점역의 Id는 서로 같을 수 없습니다."),
 
     STATION_NOT_FOUND(404, "없는 지하철역입니다."),
     LINE_NOT_FOUND(404, "없는 지하철 노선입니다."),
