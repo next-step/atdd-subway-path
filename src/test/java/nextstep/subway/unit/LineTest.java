@@ -162,7 +162,7 @@ class LineTest {
 
     @DisplayName("지하철 삭제")
     @Test
-    void removeSection() {
+    void checkGetStationsReturnInOrder() {
         // given
         이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
@@ -171,5 +171,55 @@ class LineTest {
 
         // then
         assertThat(이호선.getStations()).doesNotContain(선릉역);
+    }
+
+    @DisplayName("구간 삭제, 상행 종착역 노선에서 제거")
+    @Test
+    void removeSectionRemoveTopStationFromLine() {
+        // given
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+
+        // when
+        이호선.removeSection(강남역);
+
+        // then
+        assertThat(이호선.getStations()).doesNotContain(강남역);
+    }
+
+    @DisplayName("구간 삭제, 상행&하행 종착역이 아닌 역 노선에서 제거")
+    @Test
+    void removeSectionRemoveNotTopNotLastStationFromLine() {
+        // given
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+
+        // when
+        이호선.removeSection(역삼역);
+
+        // then
+        assertThat(이호선.getStations()).doesNotContain(역삼역);
+    }
+
+    @DisplayName("구간 삭제 실패, 노선 내 하나의 구간만 존재")
+    @Test
+    void removeSectionFailedByOnlyOneSectionExists() {
+        // when
+        Assertions.assertThatThrownBy(() -> 이호선.removeSection(강남역))
+                .isInstanceOf(DeletionValidationException.class);
+        Assertions.assertThatThrownBy(() -> 이호선.removeSection(역삼역))
+                .isInstanceOf(DeletionValidationException.class);
+
+        // then
+        assertThat(이호선.getStations()).hasSize(2);
+    }
+
+    @DisplayName("구간 삭제 실패, 노선에 등록돼있지 않은 역 제거")
+    @Test
+    void removeSectionFailedByNotExistingStation() {
+        // given
+        이호선.addSection(new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
+
+        // when
+        Assertions.assertThatThrownBy(() -> 이호선.removeSection(익명역))
+                .isInstanceOf(DeletionValidationException.class);
     }
 }
