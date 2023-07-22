@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -49,5 +50,13 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section){
+        this.getSections().add(section);
+    }
+
+    public void removeSection(Section section){
+        sections.remove(section);
     }
 }
