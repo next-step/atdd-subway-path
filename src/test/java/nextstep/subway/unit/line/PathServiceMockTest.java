@@ -1,5 +1,6 @@
-package nextstep.subway.unit.path;
+package nextstep.subway.unit.line;
 
+import nextstep.subway.line.algorithm.ShortestPathFinder;
 import nextstep.subway.line.dto.ShortestPathResponse;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.LineRepository;
@@ -63,7 +64,7 @@ public class PathServiceMockTest {
         // given
         LineRepository lineRepository = mock(LineRepository.class);
         StationRepository stationRepository = mock(StationRepository.class);
-        PathService pathService = new PathService(lineRepository, stationRepository);
+        PathService pathService = new PathService(lineRepository, stationRepository, new ShortestPathFinder());
         List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
 
         when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
@@ -88,7 +89,7 @@ public class PathServiceMockTest {
         // given
         LineRepository lineRepository = mock(LineRepository.class);
         StationRepository stationRepository = mock(StationRepository.class);
-        PathService pathService = new PathService(lineRepository, stationRepository);
+        PathService pathService = new PathService(lineRepository, stationRepository, new ShortestPathFinder());
         List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
 
         when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));

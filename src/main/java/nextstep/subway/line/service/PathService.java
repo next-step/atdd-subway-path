@@ -1,7 +1,7 @@
 package nextstep.subway.line.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.algorithm.DijkstraUtils;
+import nextstep.subway.line.algorithm.ShortestPathFinder;
 import nextstep.subway.line.dto.ShortestPathResponse;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.LineRepository;
@@ -23,6 +23,7 @@ public class PathService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final ShortestPathFinder shortestPathFinder;
 
     public ShortestPathResponse getShortestPath(long sourceStationId, long targetStationId) {
 
@@ -30,11 +31,10 @@ public class PathService {
         Station targetStation = getStation(targetStationId);
 
         List<Line> lineList = lineRepository.findAll();
-        List<Section> sections = new ArrayList<>();
-        lineList.forEach(l -> sections.addAll(l.getSectionList()));
 
-        List<Station> searchedPath = DijkstraUtils.searchPath(sections, sourceStation, targetStation);
-        BigInteger weight = DijkstraUtils.getShortestWeight(sections, sourceStation, targetStation);
+
+        List<Station> searchedPath = shortestPathFinder.searchPath(lineList, sourceStation, targetStation);
+        BigInteger weight = shortestPathFinder.getShortestWeight(lineList, sourceStation, targetStation);
         return new ShortestPathResponse(searchedPath.stream().map(StationResponse::from).collect(Collectors.toList()), weight);
     }
 

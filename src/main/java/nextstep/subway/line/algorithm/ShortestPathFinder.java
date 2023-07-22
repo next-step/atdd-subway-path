@@ -1,19 +1,24 @@
 package nextstep.subway.line.algorithm;
 
+import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.Section;
 import nextstep.subway.station.entity.Station;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
-public class DijkstraUtils {
+@Component
+public class ShortestPathFinder {
 
-    private DijkstraUtils() {}
+    public List<Station> searchPath(List<Line> lineList, Station source, Station target) {
+        List<Section> sectionList = new ArrayList<>();
+        lineList.forEach(l -> sectionList.addAll(l.getSectionList()));
 
-    public static List<Station> searchPath(List<Section> sectionList, Station source, Station target) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         sectionList.forEach(s -> {
             graph.addVertex(s.getUpStation());
@@ -24,7 +29,10 @@ public class DijkstraUtils {
         return new DijkstraShortestPath(graph).getPath(source, target).getVertexList();
     }
 
-    public static BigInteger getShortestWeight(List<Section> sectionList, Station source, Station target) {
+    public BigInteger getShortestWeight(List<Line> lineList, Station source, Station target) {
+        List<Section> sectionList = new ArrayList<>();
+        lineList.forEach(l -> sectionList.addAll(l.getSectionList()));
+
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         sectionList.forEach(s -> {
             graph.addVertex(s.getUpStation());
