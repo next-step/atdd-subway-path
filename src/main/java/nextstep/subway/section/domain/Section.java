@@ -5,8 +5,6 @@ import javax.persistence.*;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 
-import java.util.Objects;
-
 @Entity
 public class Section {
     @Id
@@ -91,10 +89,6 @@ public class Section {
         this.line = line;
     }
 
-    public boolean downStationEqualsTo(Station station) {
-        return downStation.equals(station);
-    }
-
     public boolean hasOnlyOneSameStation(Section section) {
         return !hasAllSameStations(section)
                 && hasSameUpStation(section)
@@ -109,32 +103,27 @@ public class Section {
         return upStation.equals(section.upStation);
     }
 
+    public boolean hasSameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public boolean hasSameDownStation(Section section) {
         return downStation.equals(section.downStation);
+    }
+
+    public boolean hasSameDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public boolean hasSameOrLongerDistance(Section newSection) {
         return distance.equals(newSection.distance) || distance < newSection.distance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Section)) return false;
-        Section section = (Section) o;
-        return Objects.equals(id, section.getId());
+    public boolean hasSameUpStationId(Long upStationId) {
+        return upStation.hasEqualId(upStationId);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-    public boolean upStationIdEqualsTo(Long targetStationId) {
-        return getUpStationId().equals(targetStationId);
-    }
-
-    public boolean downStationIdEqualsTo(Long firstStationId) {
-        return getDownStationId().equals(firstStationId);
+    public boolean hasSameDownStationId(Long lastStationId) {
+        return downStation.hasEqualId(lastStationId);
     }
 }
