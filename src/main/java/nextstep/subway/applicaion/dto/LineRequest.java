@@ -1,33 +1,33 @@
 package nextstep.subway.applicaion.dto;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+
 public class LineRequest {
 
+    @NotNull(message = "name must be a not null")
     private String name;
+
+    @NotNull(message = "color id must be a not null")
     private String color;
+
+    @NotNull(message = "upStation id must be a not null")
     private Long upStationId;
+
+    @NotNull(message = "downStation id must be a not null")
     private Long downStationId;
+
+    @Positive(message = "distance must be a positive value")
     private int distance;
 
     public LineRequest() {}
 
-
+    public LineRequest(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
 
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
-        /**
-         * TODO
-         * - private Validation Method 구현
-         * - Custom Exception 이용
-         */
-        if(upStationId == null) {
-            throw new IllegalArgumentException("upStation id must be a not null");
-        } else if (upStationId == null) {
-            throw new IllegalArgumentException("downStation id must be a not null");
-        }
-
-        if (distance < 1) {
-            throw new IllegalArgumentException("Distance must be a positive value");
-        }
-
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
