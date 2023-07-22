@@ -7,5 +7,4 @@ import nextstep.subway.section.domain.Section;
 
 @Repository
 public interface SectionRepository extends JpaRepository<Section, Long> {
-
 }

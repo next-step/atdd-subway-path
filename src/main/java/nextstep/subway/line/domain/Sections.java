@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
@@ -29,7 +30,7 @@ import nextstep.subway.support.SubwayException;
 @AllArgsConstructor
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
     public boolean hasOneSection() {
@@ -213,5 +214,4 @@ public class Sections {
                        .filter(section -> section.equalsDownStation(station))
                        .findFirst();
     }
-
 }

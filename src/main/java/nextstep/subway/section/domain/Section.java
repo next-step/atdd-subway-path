@@ -25,6 +25,7 @@ import nextstep.subway.station.domain.Station;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+//@EqualsAndHashCode(of = "id")
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
