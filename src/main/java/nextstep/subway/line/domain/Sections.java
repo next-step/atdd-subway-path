@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import lombok.AccessLevel;
@@ -29,7 +30,7 @@ import nextstep.subway.support.SubwayException;
 @AllArgsConstructor
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Section> sections = new ArrayList<>();
 
     public boolean hasOneSection() {
@@ -218,33 +219,6 @@ public class Sections {
         return sections.stream()
                        .filter(section -> (section.equalsUpstation(upStation) && section.equalsDownStation(downStation)) || (section.equalsUpstation(downStation) && section.equalsDownStation(upStation)))
                        .findAny();
-    }
-
-    public List<Section> findSectionsByUpStation(Station station) {
-        return sections.stream()
-                       .filter(section -> section.equalsUpstation(station))
-                       .collect(Collectors.toList());
-    }
-
-    public Sections getSubSections(Station sourceStation, Station targetStation) {
-//        Section sourceSection = findSectionByStation(sourceStation).orElseThrow(() -> new SubwayException(ErrorCode.SECTION_NOT_FOUND));
-        List<Section> relatedSections = new ArrayList<>();
-
-        List<Section> iterators = findSectionsByUpStation(sourceStation);
-
-        for (Section targetSection : iterators) {
-            relatedSections.add(targetSection);
-
-            if (!targetSection.getDownStation().equals(targetStation)) {
-                relatedSections.addAll(getSubSections(targetSection.getDownStation(), targetStation).sections);
-            }
-        }
-
-        return new Sections(relatedSections);
-    }
-
-    public boolean containsSection(Section section) {
-        return sections.contains(section);
     }
 
 }
