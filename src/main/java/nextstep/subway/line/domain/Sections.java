@@ -214,11 +214,4 @@ public class Sections {
                        .filter(section -> section.equalsDownStation(station))
                        .findFirst();
     }
-
-    public Optional<Section> findSectionByStations(Station upStation, Station downStation) {
-        return sections.stream()
-                       .filter(section -> (section.equalsUpstation(upStation) && section.equalsDownStation(downStation)) || (section.equalsUpstation(downStation) && section.equalsDownStation(upStation)))
-                       .findAny();
-    }
-
 }
