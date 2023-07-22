@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import nextstep.subway.section.Section;
 
 public class StationResponse {
     private Long id;

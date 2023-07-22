@@ -18,10 +18,4 @@ public class SectionController {
     sectionService.createSection(lineId, request);
     return ResponseEntity.ok().build();
   }
-
-  @DeleteMapping("/{stationId}")
-  public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @PathVariable Long stationId) {
-      sectionService.deleteSection(lineId, stationId);
-      return ResponseEntity.noContent().build();
-  }
 }

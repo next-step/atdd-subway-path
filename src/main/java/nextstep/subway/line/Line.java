@@ -1,5 +1,7 @@
 package nextstep.subway.line;
 
+import nextstep.subway.section.Section;
+import nextstep.subway.section.Sections;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
@@ -18,28 +20,25 @@ public class Line {
     @Column(length = 20, nullable = false)
     private String color;
 
-    public Long getDistance() {
-        return distance;
-    }
-
-    @Column(nullable = false)
-    private Long distance = 0L;
-
     @Embedded
-    private LineStations lineStations;
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(final String name, final String color, final Long distance, final List<Section> lineStations) {
+    public Line(final Long id, final String name, final String color, final List<Section> lineStations) {
+        this.id = id;
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.lineStations = new LineStations(lineStations);
+        this.sections = new Sections(lineStations);
     }
 
-    public Line(final String name, final String color, final Long distance) {
-        this(name, color, distance, new ArrayList<>());
+    public Line(final String name, final String color, final List<Section> lineStations) {
+        this(null, name, color, lineStations);
+    }
+
+    public Line(final String name, final String color) {
+        this(name, color, new ArrayList<>());
     }
 
     public Long getId() {
@@ -59,23 +58,28 @@ public class Line {
         this.color = color;
     }
 
-    public boolean isLastStation(Station station) {
-        return lineStations.isLastStation(station);
-    }
-
-    public Section addSection(Station downStation, Long distance) {
-        return lineStations.addSection(new Section(this, downStation, distance));
+    public List<Section> addSection(Station upStation, Station downStation, Long distance) {
+        return sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public List<Station> getStations() {
-        return lineStations.getStations();
+        return sections.getStations();
     }
 
-    public Section removeSection(Station station) {
-        return this.lineStations.removeSection(station);
-    }
 
     public long countOfStations() {
-        return lineStations.countOfStations();
+        return sections.countOfStations();
+    }
+
+    public List<Section> getSections() {
+        return this.sections.getSections();
+    }
+
+    public Section getLastSection() {
+        return this.sections.getSections()
+            .stream()
+            .filter(e -> e.getDownStation() == null)
+            .findFirst()
+            .orElseThrow();
     }
 }

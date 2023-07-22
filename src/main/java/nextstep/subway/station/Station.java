@@ -3,7 +3,7 @@ package nextstep.subway.station;
 import javax.persistence.*;
 
 @Entity
-public class Station implements Comparable<Station> {
+public class Station {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,13 +11,15 @@ public class Station implements Comparable<Station> {
     @Column(length = 20, nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private long sequence = 0L;
-
     public Station() {
     }
 
     public Station(String name) {
+        this(null, name);
+    }
+
+    public Station(Long id, String name) {
+        this.id = id;
         this.name = name;
     }
 
@@ -27,11 +29,6 @@ public class Station implements Comparable<Station> {
 
     public String getName() {
         return name;
-    }
-
-    @Override
-    public int compareTo(Station o) {
-        return Long.compare(this.sequence, o.sequence);
     }
 
     @Override
@@ -45,5 +42,13 @@ public class Station implements Comparable<Station> {
     @Override
     public int hashCode() {
         return this.id.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            '}';
     }
 }

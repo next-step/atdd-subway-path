@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.section.SectionRepository;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
@@ -14,12 +15,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final LineStationRepository lineStationRepository;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, final StationRepository stationRepository, LineStationRepository lineStationRepository) {
+    public LineService(LineRepository lineRepository, final StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.lineStationRepository = lineStationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional(readOnly = true)
@@ -48,14 +49,12 @@ public class LineService {
 
   public LineResponse saveLine(LineRequest lineRequest) {
       final Line line = lineRepository.save(new Line(lineRequest.getName(),
-          lineRequest.getColor(),
-          lineRequest.getDistance()));
+          lineRequest.getColor()));
 
       if (lineRequest.getUpStationId() != null && lineRequest.getDownStationId() != null) {
           final Station upStation = getStationById(lineRequest.getUpStationId());
           final Station downStation = getStationById(lineRequest.getDownStationId());
-          lineStationRepository.save(line.addSection(upStation, lineRequest.getDistance()));
-          lineStationRepository.save(line.addSection(downStation, lineRequest.getDistance()));
+          sectionRepository.saveAll(line.addSection(upStation, downStation, lineRequest.getDistance()));
       }
 
       return createLineResponse(line);
