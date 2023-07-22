@@ -81,6 +81,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * Given : 출발역과 도착역을 포함하는 2개의 구간을 생성하고
      * When : 최단 경로 조회를 요청하면
      * Then : 경로와 거리를 응답한다.
+     * ---
+     * # 예외
+     * - 출발역과 도착역이 같은 경우
+     * - 출발역과 도착역이 연결이 되어 있지 않은 경우
+     * - 존재하지 않은 출발역이나 도착역을 조회 할 경우
      */
     @DisplayName("출발역으로 부터 도착역으로의 최단경로 조회")
     @Test
