@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,11 +65,14 @@ public class PathServiceMockTest {
         // given
         LineRepository lineRepository = mock(LineRepository.class);
         StationRepository stationRepository = mock(StationRepository.class);
-        PathService pathService = new PathService(lineRepository, stationRepository, new ShortestPathFinder());
+        ShortestPathFinder shortestPathFinder = mock(ShortestPathFinder.class);
+        PathService pathService = new PathService(lineRepository, stationRepository, shortestPathFinder);
         List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
 
         when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(강남역));
+        when(shortestPathFinder.searchPath(any(), any(), any())).thenReturn(List.of(교대역, 남부터미널역, 양재역, 강남역));
+        when(shortestPathFinder.getShortestWeight(any(), any(), any())).thenReturn(BigInteger.valueOf(8));
         when(lineRepository.findAll()).thenReturn(lineList);
 
         // when
@@ -89,11 +93,14 @@ public class PathServiceMockTest {
         // given
         LineRepository lineRepository = mock(LineRepository.class);
         StationRepository stationRepository = mock(StationRepository.class);
-        PathService pathService = new PathService(lineRepository, stationRepository, new ShortestPathFinder());
+        ShortestPathFinder shortestPathFinder = mock(ShortestPathFinder.class);
+        PathService pathService = new PathService(lineRepository, stationRepository, shortestPathFinder);
         List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
 
         when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(강남역));
+        when(shortestPathFinder.searchPath(any(), any(), any())).thenReturn(List.of(강남역, 양재역, 남부터미널역, 교대역));
+        when(shortestPathFinder.getShortestWeight(any(), any(), any())).thenReturn(BigInteger.valueOf(8));
         when(lineRepository.findAll()).thenReturn(lineList);
 
         // when
