@@ -1,5 +1,6 @@
 package subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -7,16 +8,19 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Embeddable
-@AllArgsConstructor
 @NoArgsConstructor
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST }, orphanRemoval = true)
     private List<Section> sections;
+
+    public Sections(Section section) {
+        sections = new ArrayList<>();
+        sections.add(section);
+    }
 
     public void add(Section section) {
         sections.add(section);

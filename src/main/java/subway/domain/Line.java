@@ -33,21 +33,21 @@ public class Line {
     private Long distance;
 
     @Embedded
-    private Sections sections = new Sections();
+    private Sections sections;
 
     @Builder
     public Line(String name, String color, Long distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
         this.distance = distance;
-        this.sections = new Sections(List.of(
+        this.sections = new Sections(
             Section.builder()
                 .line(this)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(distance)
                 .build()
-        ));
+        );
     }
 
     public void update(LineRequest request) {
