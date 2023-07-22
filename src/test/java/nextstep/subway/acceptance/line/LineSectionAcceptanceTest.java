@@ -264,7 +264,7 @@ public class LineSectionAcceptanceTest {
 
         // when
         ExtractableResponse<Response> deleteLineSectionByStationIdResponse =
-                deleteLineSectionByStationId(판교역_아이디);
+                deleteLineSectionByStationId(강남역_아이디);
 
         // then
         assertAll(
