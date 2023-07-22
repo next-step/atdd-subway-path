@@ -44,7 +44,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         남부터미널역_URL = 지하철역_생성(남부터미널역_정보);
         이호선_URL= 지하철_노선_생성(이호선_생성_요청, 교대역_URL, 강남역_URL, 10);
         신분당선_URL = 지하철_노선_생성(신분당선_생성_요청, 강남역_URL, 양재역_URL, 2);
-        삼호선_URL = 지하철_노선_생성(삼호선_생성_요청, 교대역_URL, 남부터미널역_URL, 2);
+        삼호선_URL = 지하철_노선_생성(삼호선_생성_요청, 교대역_URL, 남부터미널역_URL, 3);
         지하철_구간_등록(삼호선_URL, 남부터미널역_URL, 양재역_URL, 3);
     }
 
@@ -70,7 +70,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .extract();
         // then
         ShortestPathResponse shortestPathResponse = response.body().as(ShortestPathResponse.class);
-        assertThat(shortestPathResponse.getStations()).hasSize(3);
-        assertThat(shortestPathResponse.getDistance()).isEqualTo(7);
+        assertThat(shortestPathResponse.getStations()).hasSize(4);
+        assertThat(shortestPathResponse.getDistance()).isEqualTo(8);
     }
 }

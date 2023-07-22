@@ -11,7 +11,7 @@ public class AddSectionAtFirstHandler extends SectionAdditionHandler{
 
     @Override
     public boolean checkApplicable(Sections sections, Section section) {
-        return sections.getFirstStation().equalsId(section.getDownStation());
+        return sections.getFirstStation().equals(section.getDownStation());
     }
 
     @Override

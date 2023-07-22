@@ -24,7 +24,16 @@ public class Station {
         this.name = name;
     }
 
-    public boolean equalsId(final Station other) {
-        return this.id.equals(other.getId());
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Station)) return false;
+        Station station = (Station) o;
+        return Objects.equals(id, station.getId()) && Objects.equals(name, station.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

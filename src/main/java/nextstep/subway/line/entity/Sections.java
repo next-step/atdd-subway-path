@@ -35,7 +35,7 @@ public class Sections {
         List<Station> stations = new ArrayList<>();
         Station station = getFirstStation();
         Station lastStation = getLastStation();
-        while (!station.equalsId(lastStation)) {
+        while (!station.equals(lastStation)) {
             stations.add(station);
             station = getDownStation(station);
         }
@@ -45,7 +45,7 @@ public class Sections {
 
     private Station getDownStation(Station station) {
         return sections.stream()
-                .filter(section -> section.getUpStation().equalsId(station))
+                .filter(section -> section.getUpStation().equals(station))
                 .findAny()
                 .map(section -> section.getDownStation())
                 .orElseThrow(() -> new StationNotFoundException("station.down.not.found"));
@@ -64,14 +64,14 @@ public class Sections {
 
     public Section getSectionByUpStation(Station upStation) {
         return sections.stream()
-                .filter(s -> s.getUpStation().equalsId(upStation))
+                .filter(s -> s.getUpStation().equals(upStation))
                 .findAny()
                 .orElseThrow(() -> new SectionNotFoundException("section.not.found"));
     }
 
     public Section getSectionByDownStation(Station downStation) {
         return sections.stream()
-                .filter(s -> s.getDownStation().equalsId(downStation))
+                .filter(s -> s.getDownStation().equals(downStation))
                 .findAny()
                 .orElseThrow(() -> new SectionNotFoundException("section.not.found"));
     }
@@ -136,7 +136,7 @@ public class Sections {
     }
 
     public boolean equalsLastStation(Station station) {
-        return getLastStation().equalsId(station);
+        return getLastStation().equals(station);
     }
 
     private List<Station> getUpStations() {

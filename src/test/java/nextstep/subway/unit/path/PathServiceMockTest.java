@@ -79,7 +79,7 @@ public class PathServiceMockTest {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList()))
                 .containsExactly(교대역.getId(), 남부터미널역.getId(), 양재역.getId(), 강남역.getId());
-        assertThat(response.getDistance()).isEqualTo(7 + 1);
+        assertThat(response.getDistance()).isEqualTo(8);
     }
 
     @DisplayName("최단 경로 길 찾기, 양방향")
@@ -104,6 +104,6 @@ public class PathServiceMockTest {
                 .map(StationResponse::getId)
                 .collect(Collectors.toList()))
                 .containsExactly(강남역.getId(), 양재역.getId(), 남부터미널역.getId(), 교대역.getId());
-        assertThat(response.getDistance()).isEqualTo(7 + 1);
+        assertThat(response.getDistance()).isEqualTo(8);
     }
 }
