@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +26,7 @@ import nextstep.subway.station.domain.Station;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(of = "id")
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
