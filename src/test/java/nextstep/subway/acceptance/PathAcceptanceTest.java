@@ -1,10 +1,19 @@
 package nextstep.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.*;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import java.util.List;
+import java.util.Map;
 import nextstep.subway.acceptance.step.LineStep;
 import nextstep.subway.acceptance.step.SectionStep;
 import nextstep.subway.acceptance.step.StationStep;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 @DisplayName("경로 관련 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -71,4 +80,25 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * When : 최단 경로 조회를 요청하면
      * Then : 경로와 거리를 응답한다.
      */
+    @DisplayName("출발역으로 부터 도착역으로의 최단경로 조회")
+    @Test
+    void searchPath() {
+        Map<String, Integer> params = Map.of(
+                "source", 1,
+                "target", 3
+        );
+
+        ExtractableResponse<Response> pathsResponse = RestAssured.given().log().all()
+                .queryParams(params)
+                .when().get("/paths")
+                .then().log().all()
+                .extract();
+
+        List<String> stationNames = pathsResponse.jsonPath().getList("stations.name", String.class);
+        int distance = pathsResponse.jsonPath().getInt("distance");
+
+        assertThat(stationNames).hasSize(3);
+        assertThat(stationNames).containsExactly("교대역", "남부터미널역", "양재역");
+        assertThat(distance).isEqualTo(5);
+    }
 }
