@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.handler.LineHandler.*;
+import static nextstep.subway.handler.LineHandler.지하철_노선에_지하철_구간_생성_요청;
 import static nextstep.subway.handler.StationHandler.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,6 +80,72 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * When 노선의 구간 사이에 새로운 구간을 추가하면
+     * Then 새로운 구간이 추가된다.
+     */
+    @DisplayName("구간 사이에 새로운 구간 추가")
+    @Test
+    public void addSectionBetweenSavedSection() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 새로운_구간_요청_값(강남역, 정자역, 4));
+
+        // then
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회_요청(신분당선);
+        LineResponse 신분당선 = 지하철_노선_조회_결과.as(LineResponse.class);
+
+        assertThat(지하철_노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(신분당선.getStations()
+                .stream()
+                .map(StationResponse::getId))
+                .containsExactly(강남역, 정자역, 양재역);
+    }
+
+    /**
+     * When 노선의 상행 종점에 새로운 구간을 추가하면
+     * Then 새로운 구간이 추가된다.
+     */
+    @DisplayName("상행 종점에 새로운 구간 추가")
+    @Test
+    public void addSectionAtStartingPoint() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 새로운_구간_요청_값(정자역, 강남역, 4));
+
+        // then
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회_요청(신분당선);
+        LineResponse 신분당선 = 지하철_노선_조회_결과.as(LineResponse.class);
+
+        assertThat(지하철_노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(신분당선.getStations()
+                .stream()
+                .map(StationResponse::getId))
+                .containsExactly(정자역, 강남역, 양재역);
+    }
+
+    /**
+     * When 노선의 하행 종점에 새로운 구간을 추가하면
+     * Then 새로운 구간이 추가된다.
+     */
+    @DisplayName("하행 종점에 새로운 구간 추가")
+    @Test
+    public void addSectionAtEndPoint() {
+        // when
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 새로운_구간_요청_값(양재역, 정자역, 4));
+
+        // then
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회_요청(신분당선);
+        LineResponse 신분당선 = 지하철_노선_조회_결과.as(LineResponse.class);
+
+        assertThat(지하철_노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(신분당선.getStations()
+                .stream()
+                .map(StationResponse::getId))
+                .containsExactly(강남역, 양재역, 정자역);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -95,6 +162,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
+        return params;
+    }
+
+    private Map<String, String> 새로운_구간_요청_값(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
         return params;
     }
 }

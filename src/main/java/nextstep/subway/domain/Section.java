@@ -52,4 +52,10 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void updateSection(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 }

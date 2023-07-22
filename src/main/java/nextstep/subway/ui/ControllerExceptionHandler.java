@@ -16,6 +16,6 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public void handleMethodArgumentNotValidException(IllegalArgumentException e) {
-        log.info("[ControllerExceptionHandler] Check validation exception : {}" + e.getMessage());
+        log.info("[ControllerExceptionHandler] Check validation exception : " + e.getMessage());
     }
 }

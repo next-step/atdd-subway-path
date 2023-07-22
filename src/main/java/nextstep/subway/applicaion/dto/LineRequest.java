@@ -10,7 +10,14 @@ public class LineRequest {
 
     public LineRequest() {}
 
+
+
     public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
+        /**
+         * TODO
+         * - private Validation Method 구현
+         * - Custom Exception 이용
+         */
         if(upStationId == null) {
             throw new IllegalArgumentException("upStation id must be a not null");
         } else if (upStationId == null) {
