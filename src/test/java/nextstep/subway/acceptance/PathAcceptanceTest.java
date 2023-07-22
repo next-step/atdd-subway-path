@@ -8,12 +8,14 @@ import io.restassured.response.Response;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.acceptance.step.LineStep;
+import nextstep.subway.acceptance.step.PathStep;
 import nextstep.subway.acceptance.step.SectionStep;
 import nextstep.subway.acceptance.step.StationStep;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 @DisplayName("경로 관련 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -83,17 +85,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
     @DisplayName("출발역으로 부터 도착역으로의 최단경로 조회")
     @Test
     void searchPath() {
-        Map<String, Integer> params = Map.of(
-                "source", 1,
-                "target", 3
-        );
+        // when
+        ExtractableResponse<Response> pathsResponse = PathStep.출발_역에서_도착_역까지의_최단거리_조회(1, 3);
 
-        ExtractableResponse<Response> pathsResponse = RestAssured.given().log().all()
-                .queryParams(params)
-                .when().get("/paths")
-                .then().log().all()
-                .extract();
-
+        // then
+        assertThat(pathsResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<String> stationNames = pathsResponse.jsonPath().getList("stations.name", String.class);
         int distance = pathsResponse.jsonPath().getInt("distance");
 
