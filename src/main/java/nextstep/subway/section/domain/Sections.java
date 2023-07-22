@@ -93,18 +93,18 @@ public class Sections {
     }
 
     private Section findSectionForRegistration(Section newSection) {
-        return findSection(section -> section.hasOnlyOneSameStation(newSection), InvalidSectionRegistrationException::new);
+        return findSectionOrElseThrow(section -> section.hasOnlyOneSameStation(newSection), new InvalidSectionRegistrationException());
     }
 
     private Section findSection(Predicate<Section> filterCondition) {
-        return findSection(filterCondition, SectionNotFoundException::new);
+        return findSectionOrElseThrow(filterCondition, new SectionNotFoundException());
     }
 
-    private Section findSection(Predicate<Section> filterCondition, Supplier<BusinessException> exceptionSupplier) {
+    private Section findSectionOrElseThrow(Predicate<Section> filterCondition, BusinessException exception) {
         return sections.stream()
                 .filter(filterCondition)
                 .findAny()
-                .orElseThrow(exceptionSupplier);
+                .orElseThrow(() -> exception);
     }
 
     private void addSection(Section newSection, Line line) {
