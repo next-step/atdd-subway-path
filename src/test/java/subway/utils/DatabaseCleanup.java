@@ -1,4 +1,4 @@
-package nextstep.subway.utils;
+package subway.utils;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;

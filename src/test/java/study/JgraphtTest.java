@@ -1,4 +1,4 @@
-package nextstep.study;
+package study;
 
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;

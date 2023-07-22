@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package subway.unit;
 
 import org.junit.jupiter.api.Test;
 

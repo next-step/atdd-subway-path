@@ -1,9 +1,12 @@
-package nextstep.subway.unit;
+package subway.unit;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import subway.repository.LineRepository;
+import subway.repository.StationRepository;
+import subway.service.LineService;
 
 @SpringBootTest
 @Transactional
