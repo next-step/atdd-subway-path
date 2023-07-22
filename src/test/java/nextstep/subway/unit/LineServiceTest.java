@@ -7,6 +7,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.BadRequestSectionsException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,30 +34,53 @@ public class LineServiceTest {
 
     private final String COLOR_RED = "bg-red-600";
 
-    private final String COLOR_BLUE = "bg-blue-600";
     private final int DISTANCE = 10;
 
-    private Station 신사역, 광교역, 강남역;
+    private Station 신사역, 논현역, 신논현역, 광교역, 강남역;
     private Line 신분당선;
     @BeforeEach
     void set(){
         신사역 = stationRepository.save(new Station("신사역"));
+        논현역 = stationRepository.save(new Station("논현역"));
+        신논현역 = stationRepository.save(new Station("신논현역"));
         강남역 = stationRepository.save(new Station("강남역"));
         광교역 = stationRepository.save(new Station("광교역"));
 
-        신분당선 = lineRepository.save(new Line("신분당선", COLOR_RED, 신사역, 강남역, DISTANCE));
+        신분당선 = lineRepository.save(new Line("신분당선", COLOR_RED, 논현역, 강남역, 30));
     }
 
 
-    @DisplayName("노선에 구간을 추가")
+    @DisplayName("노선의 상행 종점역 구간을 등록")
     @Test
-    void addSection() {
+    void addFirstSection() {
+
+        // when
+        sectionService.saveSection(신분당선.getId(),new SectionRequest(신사역.getId(),논현역.getId(),DISTANCE));
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(신사역,논현역,강남역);
+    }
+
+    @DisplayName("기존 구간 중간에 신규 구간을 등록")
+    @Test
+    void addMiddleSection() {
+
+        // when
+        sectionService.saveSection(신분당선.getId(),new SectionRequest(논현역.getId(),신논현역.getId(),DISTANCE));
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(논현역,신논현역,강남역);
+    }
+
+    @DisplayName("노선의 하행 종점역 구간을 등록")
+    @Test
+    void addLastSection() {
 
         // when
         sectionService.saveSection(신분당선.getId(),new SectionRequest(강남역.getId(),광교역.getId(),DISTANCE));
 
         // then
-        assertThat(신분당선.getStations()).contains(광교역);
+        assertThat(신분당선.getStations()).containsExactly(논현역,강남역,광교역);
     }
 
     @DisplayName("노선에서 구간을 삭제")
@@ -69,6 +94,14 @@ public class LineServiceTest {
 
         // then
         assertThat(신분당선.getStations()).doesNotContain(광교역);
+    }
+
+    @DisplayName("노선에서 등록되지 않은 구간을 삭제할 경우 에러를 던짐")
+    @Test
+    void removeSectionWhenNotExist() {
+        // then
+        Assertions.assertThrows(BadRequestSectionsException.class
+                                ,()->sectionService.removeSection(신분당선.getId(),광교역.getId()));
     }
 
 }

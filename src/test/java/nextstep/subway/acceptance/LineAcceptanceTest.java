@@ -8,20 +8,17 @@ import nextstep.subway.applicaion.dto.response.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.steps.LineSteps.createLine;
-import static nextstep.subway.acceptance.steps.LineSteps.getLines;
+import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선_조회;
 import static nextstep.subway.acceptance.steps.StationSteps.createStationAndGetInfo;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -55,7 +52,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        LineResponse line = getLines().jsonPath().getList("",LineResponse.class).get(0);
+        LineResponse line = 지하철_노선_조회().jsonPath().getList("",LineResponse.class).get(0);
 
         assertThat(line.getName()).isEqualTo("신분당선");
         assertThat(line.getColor()).isEqualTo(COLOR_RED);
@@ -76,7 +73,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLine("1호선", COLOR_BLUE,  소요산역.getId(), 광명역.getId(), DISTANCE);
 
         //when
-        ExtractableResponse<Response> response = getLines();
+        ExtractableResponse<Response> response = 지하철_노선_조회();
         List<String> lines = response.jsonPath().getList("name", String.class);
 
         //then
@@ -98,7 +95,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         createLine("신분당선",COLOR_RED, 신사역.getId(), 광교역.getId() , DISTANCE);
 
         //when
-        ExtractableResponse<Response> response = getLines();
+        ExtractableResponse<Response> response = 지하철_노선_조회();
         LineResponse line = response.jsonPath().getList("", LineResponse.class).get(0);
 
         //then
@@ -166,7 +163,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
 
-        List<String> names = getLines().jsonPath().getList("name", String.class);
+        List<String> names = 지하철_노선_조회().jsonPath().getList("name", String.class);
 
         assertThat(names).isEmpty();
     }
