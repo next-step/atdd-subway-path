@@ -2,6 +2,7 @@ package subway.controller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,13 +31,17 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+        Line line = lineService.saveLine(lineRequest);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId()))
+            .body(LineResponse.from(line));
     }
 
     @GetMapping
     public ResponseEntity<List<LineResponse>> getLines() {
-        return ResponseEntity.ok().body(lineService.findAllLines());
+        List<LineResponse> lines = lineService.findAllLines().stream()
+            .map(LineResponse::from)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok().body(lines);
     }
 
     @GetMapping("/{id}")
@@ -47,7 +52,8 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
-        return ResponseEntity.ok().body(lineService.updateLine(id, request));
+        Line line = lineService.updateLine(id, request);
+        return ResponseEntity.ok().body(LineResponse.from(line));
     }
 
     @DeleteMapping("/{id}")

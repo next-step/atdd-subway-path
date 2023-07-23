@@ -9,13 +9,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import subway.domain.Line;
-import subway.domain.Section;
 import subway.domain.Station;
 import subway.dto.SectionRequest;
-import subway.exception.impl.LineNotFoundException;
 import subway.repository.LineRepository;
 import subway.service.LineService;
 import subway.service.StationService;
@@ -64,8 +61,8 @@ public class LineServiceMockTest {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         when(lineRepository.findById(any())).thenReturn(Optional.of(신분당선));
-        when(stationService.findStation(2L)).thenReturn(논현역); // 기존 구간의 상행종점역
-        when(stationService.findStation(3L)).thenReturn(광교역); // 새로운 구간의 하행종점역
+        when(stationService.findStationById(2L)).thenReturn(논현역); // 기존 구간의 상행종점역
+        when(stationService.findStationById(3L)).thenReturn(광교역); // 새로운 구간의 하행종점역
         SectionRequest request = SectionRequest.builder()
             .upStationId(2L)
             .downStationId(3L)

@@ -14,25 +14,22 @@ import subway.repository.StationRepository;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
     }
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(Station.from(stationRequest));
-        return StationResponse.from(station);
+    public Station saveStation(StationRequest stationRequest) {
+        return stationRepository.save(Station.from(stationRequest));
     }
 
-    public List<StationResponse> findAllStations() {
-        return stationRepository.findAll().stream()
-                .map(StationResponse::from)
-                .collect(Collectors.toList());
+    public List<Station> findAllStations() {
+        return stationRepository.findAll();
     }
 
-    public Station findStation(Long id) {
+    public Station findStationById(Long id) {
         return stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
     }
 

@@ -1,10 +1,12 @@
 package subway.controller;
 
+import java.util.stream.Collectors;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import subway.domain.Station;
 import subway.dto.StationRequest;
 import subway.dto.StationResponse;
 import subway.service.StationService;
@@ -19,13 +21,17 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse station = stationService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
+        Station station = stationService.saveStation(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + station.getId()))
+            .body(StationResponse.from(station));
     }
 
     @GetMapping(value = "/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations());
+        List<StationResponse> stations = stationService.findAllStations().stream()
+            .map(StationResponse::from)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok().body(stations);
     }
 
     @DeleteMapping("/stations/{id}")

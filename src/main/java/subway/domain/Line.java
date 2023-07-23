@@ -50,9 +50,10 @@ public class Line {
         );
     }
 
-    public void update(LineRequest request) {
+    public Line update(LineRequest request) {
         this.name = request.getName().isBlank() ? this.name : request.getName();
         this.color = request.getColor().isBlank() ? this.color : request.getColor();
+        return this;
     }
 
     public void addSection(Section section) {

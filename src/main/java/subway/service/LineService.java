@@ -1,7 +1,6 @@
 package subway.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.domain.Line;
@@ -9,14 +8,12 @@ import subway.domain.Section;
 import subway.domain.Sections;
 import subway.domain.Station;
 import subway.dto.LineRequest;
-import subway.dto.LineResponse;
 import subway.dto.SectionRequest;
 import subway.exception.impl.AlreadyExistDownStation;
 import subway.exception.impl.LineNotFoundException;
 import subway.exception.impl.NoMatchStationException;
 import subway.exception.impl.NonLastStationDeleteNotAllowedException;
 import subway.exception.impl.SingleSectionDeleteNotAllowedException;
-import subway.exception.impl.StationNotFoundException;
 import subway.repository.LineRepository;
 
 @Service
@@ -32,18 +29,15 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationService.findStation(request.getUpStationId());
-        Station downStation = stationService.findStation(request.getDownStationId());
+    public Line saveLine(LineRequest request) {
+        Station upStation = stationService.findStationById(request.getUpStationId());
+        Station downStation = stationService.findStationById(request.getDownStationId());
 
-        Line line = lineRepository.save(request.toLine(upStation, downStation));
-        return LineResponse.from(line);
+        return lineRepository.save(request.toLine(upStation, downStation));
     }
 
-    public List<LineResponse> findAllLines() {
-        return lineRepository.findAll().stream()
-            .map(LineResponse::from)
-            .collect(Collectors.toList());
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
     }
 
     public Line findLineById(Long id) {
@@ -51,10 +45,9 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse updateLine(Long id, LineRequest request) {
+    public Line updateLine(Long id, LineRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
-        line.update(request);
-        return LineResponse.from(line);
+        return line.update(request);
     }
 
     @Transactional
@@ -74,8 +67,8 @@ public class LineService {
             throw new AlreadyExistDownStation();
         }
 
-        Station upStation = stationService.findStation(request.getUpStationId());
-        Station downStation = stationService.findStation(request.getDownStationId());
+        Station upStation = stationService.findStationById(request.getUpStationId());
+        Station downStation = stationService.findStationById(request.getDownStationId());
 
         Section section = request.toSection(line, upStation, downStation);
         line.addSection(section);
