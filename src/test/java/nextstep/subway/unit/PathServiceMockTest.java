@@ -76,11 +76,12 @@ class PathServiceMockTest {
      * line2: station2 - (2) - station3
      * line3: station3 - (10) - station4 - (11) - station1
      *
+     * GIVEN 정점 4개, 간선 4개
      * WHEN station1에서 station3으로 가는 경로 조회하면
-     * THEN: station1-station2-station3으로 경로가 나온다.
+     * THEN station1-station2-station3으로 경로가 나온다.
      */
     @Test
-    @DisplayName("경로 조회 테스트 1 (환승 있는 경우1)")
+    @DisplayName("경로 조회 테스트 1 (환승 있는 경우1) - 정점 4개, 간선 4개")
     void searchPath1() {
 
         // given
@@ -112,11 +113,12 @@ class PathServiceMockTest {
      * line2: station2 - (15) - station3
      * line3: station3 - (10) - station4 - (11) - station1
      *
+     * GIVEN 정점 4개, 간선 4개
      * WHEN station1에서 station3으로 가는 경로 조회하면
      * THEN: station1-station2-station3으로 경로가 나온다.
      */
     @Test
-    @DisplayName("경로 조회 테스트 2 (환승 있는 경우2)")
+    @DisplayName("경로 조회 테스트 2 (환승 있는 경우2) - 정점 4개, 간선 4개")
     void searchPath2() {
 
         // given
@@ -146,11 +148,12 @@ class PathServiceMockTest {
      *
      * line1: station1 - (10) - station2 - (9) - station3
      *
+     * GIVEN 정점 3개, 간선 2개
      * WHEN station1에서 station3으로 가는 경로 조회하면
      * THEN: station1-station2-station3으로 경로가 나온다.
      */
     @Test
-    @DisplayName("경로 조회 테스트 3 (환승 없는 경우)")
+    @DisplayName("경로 조회 테스트 3 (환승 없는 경우) - 정점 3개, 간선 2개")
     void searchPath3() {
 
         // given
@@ -179,11 +182,12 @@ class PathServiceMockTest {
      * line1: station1 - (2) - station2 - (3) - station3 - (3) - station4
      * line2: station5 - (7) - station2 - (2)  - station6 - (2) - station7 - (4) - station4
      *
+     * GIVEN 정점 7개, 간선 7개
      * WHEN station1에서 station4으로 가는 경로 조회하면
      * THEN: station1-station2-station3-station4으로 경로가 나온다.
      */
     @Test
-    @DisplayName("경로 조회 테스트 4 (환승 없는게 빠른 경우)")
+    @DisplayName("경로 조회 테스트 4 (환승 없는게 빠른 경우) - 정점 7개, 간선 7개")
     void searchPath4() {
 
         // given
@@ -219,11 +223,12 @@ class PathServiceMockTest {
      * line1: station1 - (12) - station2 - (10) - station3 - (20) - station4
      * line2: station5 - (7) - station2 - (2)  - station6 - (2) - station7 - (4) - station4
      *
+     * GIVEN 정점 7개, 간선 7개
      * WHEN station1에서 station4으로 가는 경로 조회하면
      * THEN: station1-station2-station6-station7-station4으로 경로가 나온다.
      */
     @Test
-    @DisplayName("경로 조회 테스트 5 (환승 하는게 빠른 경우)")
+    @DisplayName("경로 조회 테스트 5 (환승 하는게 빠른 경우) - 정점 7개, 간선 7개")
     void searchPath5() {
 
         // given
