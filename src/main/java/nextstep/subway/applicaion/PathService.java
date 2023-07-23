@@ -4,7 +4,6 @@ import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.utils.DijkstraUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +29,8 @@ public class PathService {
 
         List<Section> allSections = sectionService.findAllSections();
 
-        List<StationResponse> stationResponses = DijkstraUtils.searchPath(allSections, sourceStation, targetStation)
+        DijkstraService dijkstraService = new DijkstraService(allSections);
+        List<StationResponse> stationResponses = dijkstraService.searchPath(sourceStation, targetStation)
                 .stream().map(StationResponse::from)
                 .collect(Collectors.toList());
         return new PathResponse(stationResponses);

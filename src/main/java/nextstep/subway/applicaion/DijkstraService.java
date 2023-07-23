@@ -1,4 +1,4 @@
-package nextstep.subway.utils;
+package nextstep.subway.applicaion;
 
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -8,22 +8,21 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
 
-public class DijkstraUtils {
-    private DijkstraUtils() {
-    }
+public class DijkstraService {
 
-    public static List<Station> searchPath(List<Section> sections, Station source, Station target) {
+    WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+    DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
 
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-
+    public DijkstraService(List<Section> sections) {
         sections.forEach(section -> {
             graph.addVertex(section.getUpStation());
             graph.addVertex(section.getDownStation());
             graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
             graph.setEdgeWeight(graph.addEdge(section.getDownStation(), section.getUpStation()), section.getDistance());
         });
+    }
 
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+    public List<Station> searchPath(Station source, Station target) {
         return dijkstraShortestPath.getPath(source, target).getVertexList();
     }
 }
