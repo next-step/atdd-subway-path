@@ -14,13 +14,14 @@ public class SectionGroupFixture {
     private static final int distance = 10;
 
     public static SectionGroup make() {
-        return SectionGroup.of(
-            List.of(
-                new Section(line, StationFixture.of(1), StationFixture.of(3), distance),
-                new Section(line, StationFixture.of(3), StationFixture.of(5), distance),
-                new Section(line, StationFixture.of(5), StationFixture.of(7), distance)
-            )
-        );
+
+        ArrayList<Section> sections = new ArrayList<>();
+
+        sections.add(new Section(line, StationFixture.of(1), StationFixture.of(3), distance));
+        sections.add(new Section(line, StationFixture.of(3), StationFixture.of(5), distance));
+        sections.add(new Section(line, StationFixture.of(5), StationFixture.of(7), distance));
+
+        return SectionGroup.of(sections);
     }
 
     public static SectionGroup make(List<Section> sections, Section section) {
