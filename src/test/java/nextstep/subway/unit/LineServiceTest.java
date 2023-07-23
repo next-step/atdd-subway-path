@@ -71,17 +71,30 @@ public class LineServiceTest {
     }
 
     void 구간들이_위치에_맞게_등록되었는지_검증한다(Long lineId, Long 상행_종착역, Long 하행_종착역, Long 중간역) {
+        List<Long> sectionIds = 주어진_노선에_속하는_구간의_역들을_순서대로_정렬한다(lineId);
+        Long 상행_종착역_중간역_구간_아이디 = sectionIds.get(0);
+        Long 중간역_하행_종착역_구간_아이디 = sectionIds.get(1);
+
+        Section 상행_종착역_중간역_구간 = 주어진_구간_아이디를_바탕으로_노선의_구간_조회(lineId, 상행_종착역_중간역_구간_아이디);
+        Section 중간역_하행_종착역_구간 = 주어진_구간_아이디를_바탕으로_노선의_구간_조회(lineId, 중간역_하행_종착역_구간_아이디);
+
+        Assertions.assertThat(상행_종착역_중간역_구간.getUpStationId()).isEqualTo(상행_종착역);
+        Assertions.assertThat(상행_종착역_중간역_구간.getDownStationId()).isEqualTo(중간역);
+        Assertions.assertThat(중간역_하행_종착역_구간.getUpStationId()).isEqualTo(중간역);
+        Assertions.assertThat(중간역_하행_종착역_구간.getDownStationId()).isEqualTo(하행_종착역);
+    }
+
+    Section 주어진_구간_아이디를_바탕으로_노선의_구간_조회(Long lineId, Long sectionId) {
         Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
-        List<Long> stationIds = 주어진_노선에_속하는_구간의_역들을_순서대로_정렬한다(lineId);
         List<Section> sections = line.getSections();
 
-        final int 상행_종착역_위치 = 0;
-        final int 하행_종착역_위치 = sections.size()-1;
-        final int 중간역_위치 = (상행_종착역_위치 + 하행_종착역_위치)/2;
+        for (Section section : sections) {
+            if(section.getId() == sectionId) {
+                return section;
+            }
+        }
 
-        Assertions.assertThat(stationIds.get(상행_종착역_위치)).isEqualTo(상행_종착역);
-        Assertions.assertThat(stationIds.get(하행_종착역_위치)).isEqualTo(하행_종착역);
-        Assertions.assertThat(stationIds.get(중간역_위치)).isEqualTo(중간역);
+        throw new NoSuchElementException();
     }
 
     Long 주어진_종착역을_바탕으로_신분당선_노선을_생성한다(Long finalUpStationId, Long finalDownStationId, int distance) {
