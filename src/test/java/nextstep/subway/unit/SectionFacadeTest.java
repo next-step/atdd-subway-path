@@ -43,6 +43,6 @@ public class SectionFacadeTest {
         sectionFacade.addSection(line.getId(), sectionRequest);
 
         // then
-        Assertions.assertThat(line.getSections().getSections()).hasSize(2);
+        Assertions.assertThat(line.getSectionList()).hasSize(2);
     }
 }

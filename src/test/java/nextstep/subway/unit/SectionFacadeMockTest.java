@@ -52,12 +52,11 @@ public class SectionFacadeMockTest {
         when(stationService.findById(양재역.getId())).thenReturn(양재역);
         when(stationService.findById(남영역.getId())).thenReturn(남영역);
 
-
         // when
         sectionFacade.addSection(line.getId(), sectionRequest);
 
         // then
-        Assertions.assertThat(line.getSections().getSections()).hasSize(2);
+        Assertions.assertThat(line.getSectionList()).hasSize(2);
 
     }
 }

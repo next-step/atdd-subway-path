@@ -49,6 +49,10 @@ public class Line {
         return sections;
     }
 
+    public List<Section> getSectionList() {
+        return sections.getSections();
+    }
+
     public void updateName(String name) {
         this.name = name;
     }
@@ -66,8 +70,6 @@ public class Line {
     }
 
     public void removeSection(final Section section) {
-
         sections.delete(section.getDownStationId());
-
     }
 }

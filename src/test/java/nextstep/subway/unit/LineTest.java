@@ -23,7 +23,7 @@ class LineTest {
         line.addSection(upStation, downStation, distance);
 
         // then
-        assertThat(line.getSections().getSections()).hasSize(1);
+        assertThat(line.getSectionList()).hasSize(1);
     }
 
 
