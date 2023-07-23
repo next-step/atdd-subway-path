@@ -38,8 +38,12 @@ public class LineService {
         return createLineResponse(line);
     }
 
+    public List<Line> findAll() {
+        return lineRepository.findAll();
+    }
+
     public List<LineResponse> showLines() {
-        return lineRepository.findAll().stream()
+        return findAll().stream()
                 .map(this::createLineResponse)
                 .collect(Collectors.toList());
     }
