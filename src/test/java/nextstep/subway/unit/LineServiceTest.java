@@ -22,11 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-@Sql(scripts = {
-        "classpath:/script/01.InsertStation.sql",
-        "classpath:/script/02.InsertLine.sql",
-        "classpath:/script/03.InsertSection.sql",
-})
+@Sql(scripts = {"classpath:/script/01.InsertStation.sql", "classpath:/script/02.InsertLine.sql", "classpath:/script/03.InsertSection.sql",})
 public class LineServiceTest {
 
     @Autowired
@@ -52,8 +48,8 @@ public class LineServiceTest {
     @DisplayName("새로운 노선을 저장")
     void saveLine() {
         // given
-        LineRequest request = new LineRequest(분당선, 노란색, STATION_ID_1, STATION_ID_2,
-                DISTANCE_10);
+        LineRequest request = LineRequest.builder()
+                .name(분당선).color(노란색).upStationId(STATION_ID_1).downStationId(STATION_ID_2).distance(DISTANCE_10).build();
 
         // when
         LineResponse response = lineService.saveLine(request);
@@ -67,7 +63,8 @@ public class LineServiceTest {
     @DisplayName("기존 노선을 수정")
     void updateLine() {
         // given
-        LineRequest request = new LineRequest(신분당선, 빨간색);
+        LineRequest request = LineRequest.builder()
+                .name(신분당선).color(빨간색).build();
 
         // when
         lineService.updateLine(LINE_ID_1000, request);
@@ -86,8 +83,7 @@ public class LineServiceTest {
         lineService.deleteLine(LINE_ID_1000);
 
         // then
-        assertThatThrownBy(() -> lineRepository.findById(LINE_ID_1000).orElseThrow())
-                .isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> lineRepository.findById(LINE_ID_1000).orElseThrow()).isInstanceOf(NoSuchElementException.class);
     }
 
 

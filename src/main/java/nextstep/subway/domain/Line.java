@@ -71,6 +71,14 @@ public class Line {
         return stations;
     }
 
+    public void addSections(Section section) {
+        sections.add(section);
+    }
+
+    public Station getLastStation(){
+        return sections.get(sections.size() - 1).getDownStation();
+    }
+
     public void removeSection(Station station) {
         this.sections.remove(this.sections.size() - 1);
     }

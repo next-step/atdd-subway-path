@@ -60,8 +60,8 @@ public class LineServiceMockTest {
     @DisplayName("새로운 노선을 저장")
     void saveLine() {
         // given
-        LineRequest request = new LineRequest(LINE_NAME_1, LINE_COLOR_1, STATION_ID_1, STATION_ID_2,
-                DISTANCE_10);
+        LineRequest request = LineRequest.builder().name(LINE_NAME_1).color(LINE_COLOR_1)
+                .upStationId(STATION_ID_1).downStationId(STATION_ID_2).distance(DISTANCE_10).build();
         Line line = new Line(request.getName(), request.getColor());
         given(lineRepository.save(any())).willReturn(line);
         given(stationService.findById(STATION_ID_1)).willReturn(station_1);
@@ -79,7 +79,7 @@ public class LineServiceMockTest {
     @DisplayName("기존 노선을 수정")
     void updateLine() {
         // given
-        LineRequest request = new LineRequest(LINE_NAME_UPDATE, LINE_COLOR_UPDATE);
+        LineRequest request = LineRequest.builder().name(LINE_NAME_UPDATE).color(LINE_COLOR_UPDATE).build();
         Line line = new Line(LINE_NAME_1, LINE_COLOR_1);
         given(lineRepository.findById(any())).willReturn(
                 Optional.of(line));

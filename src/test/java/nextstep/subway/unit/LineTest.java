@@ -33,7 +33,7 @@ class LineTest {
     void addSection() {
         //when
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.getSections().add(강남역_역삼역_구간);
+        분당선.addSections(강남역_역삼역_구간);
 
         //then
         List<Section> sections = 분당선.getSections();
@@ -46,9 +46,9 @@ class LineTest {
     void getStations() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.getSections().add(강남역_역삼역_구간);
+        분당선.addSections(강남역_역삼역_구간);
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
-        분당선.getSections().add(역삼역_선릉역_구간);
+        분당선.addSections(역삼역_선릉역_구간);
 
         //when
         List<Station> stations = 분당선.getStations();
@@ -62,9 +62,9 @@ class LineTest {
     void removeSection() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.getSections().add(강남역_역삼역_구간);
+        분당선.addSections(강남역_역삼역_구간);
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
-        분당선.getSections().add(역삼역_선릉역_구간);
+        분당선.addSections(역삼역_선릉역_구간);
 
         //when
         분당선.removeSection(선릉역);
