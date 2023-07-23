@@ -67,10 +67,6 @@ public class Section {
                 || isDownStation(section.getDownStation());
     }
 
-    public boolean contains(Station station) {
-        return isUpStation(station) || isDownStation(station);
-    }
-
     public boolean isUpStation(Station station) {
         return Objects.equals(this.upStation, station);
     }

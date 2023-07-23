@@ -23,6 +23,10 @@ public class Sections {
     public Sections() {
     }
 
+    public List<Section> getValue() {
+        return sections;
+    }
+
     public void add(Section newSection) {
         Optional<Section> newDownStationInMiddleOfSection = this.getStationSection(section -> section.isUpStation(newSection.getUpStation()));
         if (newDownStationInMiddleOfSection.isPresent()) {
@@ -153,7 +157,13 @@ public class Sections {
         return this.sections.stream()
                 .filter(section -> section.isDifferentAs(newSection))
                 .filter(section -> section.isExpandable(newSection))
-                .anyMatch(newSection::isShorterThan);
+                .anyMatch(section -> this.isLastSectionOfLine(newSection)
+                        || !this.isLastSectionOfLine(newSection) && section.isShorterThan(newSection));
+    }
+
+    private boolean isLastSectionOfLine(Section section) {
+        return isLastStationOfLine(section.getUpStation())
+                || isLastStationOfLine(section.getDownStation());
     }
 
     public Optional<Section> getStationSection(Predicate<Section> condition) {

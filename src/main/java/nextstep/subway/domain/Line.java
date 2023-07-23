@@ -33,12 +33,8 @@ public class Line {
         this.sections.add(Section.of(upStation, downStation, distance));
     }
 
-    public Station getStartOfLine() {
-        return this.sections.getStartOfLine();
-    }
-
-    public Station getEndOfLine() {
-        return this.sections.getEndOfLine();
+    public List<Section> getSections() {
+        return sections.getValue();
     }
 
     public static Builder builder() {
