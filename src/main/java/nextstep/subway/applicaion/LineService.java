@@ -74,10 +74,6 @@ public class LineService {
         Line line = findLineById(lineId);
         Station station = stationService.findById(stationId);
 
-        if (!line.isDeletableStation(station)) {
-            throw new IllegalArgumentException("해당 정거장을 라인에서 삭제할 수 없습니다.");
-        }
-
         line.removeStation(station);
     }
 

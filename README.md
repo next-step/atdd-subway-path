@@ -15,7 +15,23 @@ git rebase upstream/songteaheon
 - [X] 인수 테스트 작성
 - [X] 코드 구현
 
-## 2단계 - 지하철 구간 추가 기능 개션
+## 2단계 - 지하철 구간 삭제 기능 개션
 - [X] 인수 테스트 목록 작성
 - [X] 인수 테스트 작성
 - [X] 코드 구현
+
+## 3단계 - 경로 조회 기능
+- [X] 인수 테스트 목록 작성
+- [X] 인수 테스트 작성
+- [X] 코드 구현
+
+# 최단 거리 알고리즘 라이브러리
+## DijkstraShortestPath
+https://jgrapht.org/javadoc/org.jgrapht.core/org/jgrapht/alg/shortestpath/DijkstraShortestPath.html
+
+## KShortestPaths
+https://jgrapht.org/javadoc-1.0.1/org/jgrapht/alg/shortestpath/KShortestPaths.html
+- k개의 최단거리를 weight의 오름차순으로 찾는다.
+- Bellman-Ford algorithm
+- 음수 간선도 포함될 수 있음.
+- 다익스트라에 비해 시간 오래 걸림

@@ -35,7 +35,6 @@ public class LineServiceMockTest {
         Line line = spy(Line.class);
         Station station = new Station();
 
-        when(line.isDeletableStation(station)).thenReturn(true);
         doNothing().when(line).removeStation(station);
 
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
@@ -46,7 +45,6 @@ public class LineServiceMockTest {
 
         // then
         // verify 메서드를 통해 검증
-        verify(line).isDeletableStation(station);
         verify(line).removeStation(station);
     }
 
@@ -58,10 +56,9 @@ public class LineServiceMockTest {
         Line line = spy(Line.class);
         Station station = new Station();
 
-        when(line.isDeletableStation(station)).thenReturn(false);
-
         when(lineRepository.findById(any())).thenReturn(Optional.of(line));
         when(stationService.findById(any())).thenReturn(station);
+        doThrow(IllegalArgumentException.class).when(line).removeStation(any());
 
         // when & then
         assertThatThrownBy(() -> lineService.deleteSection(1L, 2L))
