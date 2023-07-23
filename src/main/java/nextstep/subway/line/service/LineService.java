@@ -1,15 +1,15 @@
 package nextstep.subway.line.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.entity.Section;
-import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.Section;
+import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.dto.*;
-import nextstep.subway.line.entity.Line;
-import nextstep.subway.line.entity.LineRepository;
+import nextstep.subway.line.domain.entity.Line;
+import nextstep.subway.line.domain.entity.LineRepository;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.entity.StationRepository;
 

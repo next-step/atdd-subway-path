@@ -1,9 +1,9 @@
 package nextstep.subway.unit.line;
 
-import nextstep.subway.line.algorithm.ShortestPathFinder;
-import nextstep.subway.line.entity.Line;
-import nextstep.subway.line.entity.Section;
-import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.ShortestPathFinder;
+import nextstep.subway.line.domain.entity.Line;
+import nextstep.subway.line.domain.entity.Section;
+import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.station.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,12 +47,12 @@ public class ShortestPathFinderTest {
     @Test
     void findShortestPath() {
         // given
-        ShortestPathFinder pathFinder = new ShortestPathFinder();
         List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
 
         // when
-        List<Station> searchedPath = pathFinder.searchPath(lineList, 교대역, 강남역);
-        BigInteger weight = pathFinder.getShortestWeight(lineList, 교대역, 강남역);
+        ShortestPathFinder pathFinder = new ShortestPathFinder(lineList, 교대역, 강남역);
+        List<Station> searchedPath = pathFinder.getPath();
+        BigInteger weight = pathFinder.getWeight();
 
         // then
         assertThat(searchedPath.stream()
@@ -66,12 +66,12 @@ public class ShortestPathFinderTest {
     @Test
     void findShortestPathReverse() {
         // given
-        ShortestPathFinder pathFinder = new ShortestPathFinder();
         List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
 
         // when
-        List<Station> searchedPath = pathFinder.searchPath(lineList, 강남역, 교대역);
-        BigInteger weight = pathFinder.getShortestWeight(lineList, 강남역, 교대역);
+        ShortestPathFinder pathFinder = new ShortestPathFinder(lineList, 강남역, 교대역);
+        List<Station> searchedPath = pathFinder.getPath();
+        BigInteger weight = pathFinder.getWeight();
 
         // then
         assertThat(searchedPath.stream()

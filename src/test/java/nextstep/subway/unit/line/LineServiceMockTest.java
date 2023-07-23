@@ -1,9 +1,9 @@
 package nextstep.subway.unit.line;
 
 import nextstep.subway.line.dto.SectionRequest;
-import nextstep.subway.line.entity.Line;
-import nextstep.subway.line.entity.LineRepository;
-import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.Line;
+import nextstep.subway.line.domain.entity.LineRepository;
+import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.entity.StationRepository;

@@ -1,7 +1,7 @@
-package nextstep.subway.line.entity.handler;
+package nextstep.subway.line.domain.entity.handler;
 
-import nextstep.subway.line.entity.Section;
-import nextstep.subway.line.entity.Sections;
+import nextstep.subway.line.domain.entity.Section;
+import nextstep.subway.line.domain.vo.Sections;
 
 public abstract class SectionAdditionHandler {
 

@@ -1,9 +1,10 @@
-package nextstep.subway.line.entity;
+package nextstep.subway.line.domain.entity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.vo.Sections;
 import nextstep.subway.station.entity.Station;
 
 import javax.persistence.*;

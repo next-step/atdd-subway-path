@@ -1,8 +1,8 @@
-package nextstep.subway.line.entity.handler;
+package nextstep.subway.line.domain.entity.handler;
 
 import nextstep.subway.common.exception.CreationValidationException;
-import nextstep.subway.line.entity.Section;
-import nextstep.subway.line.entity.Sections;
+import nextstep.subway.line.domain.entity.Section;
+import nextstep.subway.line.domain.vo.Sections;
 
 public class AddSectionAtMiddleLeftHandler extends SectionAdditionHandler {
     public AddSectionAtMiddleLeftHandler(SectionAdditionHandler nextHandler) {

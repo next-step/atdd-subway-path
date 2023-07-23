@@ -1,10 +1,11 @@
-package nextstep.subway.line.entity;
+package nextstep.subway.line.domain.vo;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import nextstep.subway.common.exception.DeletionValidationException;
-import nextstep.subway.line.entity.handler.SectionAdditionHandler;
-import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.Section;
+import nextstep.subway.line.domain.entity.handler.SectionAdditionHandler;
+import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.entity.Station;

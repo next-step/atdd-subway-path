@@ -1,22 +1,22 @@
-package nextstep.subway.line.entity.handler;
+package nextstep.subway.line.domain.entity.handler;
 
 import nextstep.subway.common.exception.CreationValidationException;
-import nextstep.subway.line.entity.Section;
-import nextstep.subway.line.entity.Sections;
+import nextstep.subway.line.domain.entity.Section;
+import nextstep.subway.line.domain.vo.Sections;
 
-public class AddSectionAtLastHandler extends SectionAdditionHandler {
-    public AddSectionAtLastHandler(SectionAdditionHandler nextHandler) {
+public class AddSectionAtFirstHandler extends SectionAdditionHandler{
+    public AddSectionAtFirstHandler(SectionAdditionHandler nextHandler) {
         super(nextHandler);
     }
 
     @Override
     public boolean checkApplicable(Sections sections, Section section) {
-        return sections.equalsLastStation(section.getUpStation());
+        return sections.getFirstStation().equals(section.getDownStation());
     }
 
     @Override
     public void validate(Sections sections, Section section) {
-        validateNewSectionDownStationIsNewcomer(sections, section);
+        validateNewSectionUpStationIsNewcomer(sections, section);
         if (nextHandler != null) {
             nextHandler.validate(sections, section);
         }
@@ -27,8 +27,8 @@ public class AddSectionAtLastHandler extends SectionAdditionHandler {
         sections.forceSectionAddition(newSection);
     }
 
-    private void validateNewSectionDownStationIsNewcomer(Sections sections, Section section) {
-        if (sections.hasStation(section.getDownStation())) {
+    private void validateNewSectionUpStationIsNewcomer(Sections sections, Section section) {
+        if (sections.hasStation(section.getUpStation())) {
             throw new CreationValidationException("section.0001");
         }
     }

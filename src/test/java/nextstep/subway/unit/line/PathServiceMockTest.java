@@ -1,11 +1,10 @@
 package nextstep.subway.unit.line;
 
-import nextstep.subway.line.algorithm.ShortestPathFinder;
 import nextstep.subway.line.dto.ShortestPathResponse;
-import nextstep.subway.line.entity.Line;
-import nextstep.subway.line.entity.LineRepository;
-import nextstep.subway.line.entity.Section;
-import nextstep.subway.line.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.Line;
+import nextstep.subway.line.domain.entity.LineRepository;
+import nextstep.subway.line.domain.entity.Section;
+import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
 import nextstep.subway.line.service.PathService;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.entity.Station;
@@ -16,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
