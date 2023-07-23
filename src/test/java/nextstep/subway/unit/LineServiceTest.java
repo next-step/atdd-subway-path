@@ -59,28 +59,85 @@ public class LineServiceTest {
                         .name("신분당선")
                         .color("#f5222d")
                         .upStation(신사역)
-                        .downStation(강남역)
-                        .distance(15)
+                        .downStation(판교역)
+                        .distance(23)
                         .build()
         );
     }
 
     @Test
-    @DisplayName("구간을 추가한다.")
-    void addSection() {
-        // when
-        SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = SaveLineSectionRequestDto.builder()
-                .upStationId(노선의_하행_종점역_아이디를_찾는다(신분당선))
+    @DisplayName("지하철 노선의 하행 종점역에 구간을 추가한다.")
+    void addLastLineSection() {
+        // when: 신사역 - 판교역 노선에 판교역 - 광교역 노선을 추가
+        SaveLineSectionRequestDto 판교역_광교역_노선 = SaveLineSectionRequestDto.builder()
+                .upStationId(판교역.getId())
                 .downStationId(광교역.getId())
-                .distance(13)
+                .distance(5)
                 .build();
 
-        LineResponseDto lineResponseDto = lineService.saveLineSection(신분당선.getId(), 광교역이_하행_종점역인_구간);
+        LineResponseDto lineResponseDto = lineService.saveLineSection(신분당선.getId(), 판교역_광교역_노선);
 
-        // then
-        Long 노선의_하행_종점역_아이디 = 노선의_하행_종점역_아이디를_찾는다(lineResponseDto);
+        // then: 신사역 - 판교역 - 광교역이 조회
+        List<Long> 등록된_지하철역_아이디_목록 = lineResponseDto.getStations()
+                .stream()
+                .map(StationResponseDto::getId)
+                .collect(Collectors.toList());
 
-        assertThat(노선의_하행_종점역_아이디).isEqualTo(광교역이_하행_종점역인_구간.getDownStationId());
+        assertThat(등록된_지하철역_아이디_목록).containsExactly(
+                        신사역.getId(),
+                        판교역.getId(),
+                        광교역.getId()
+                );
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 상행 종점역과 하행 종점역 사이에 구간을 추가한다.")
+    void addMiddleLineSection() {
+        // when: 신사역 - 판교역 노선에 신사역 - 강남역 노선을 추가
+        SaveLineSectionRequestDto 신사역_강남역_노선 = SaveLineSectionRequestDto.builder()
+                .upStationId(신사역.getId())
+                .downStationId(강남역.getId())
+                .distance(15)
+                .build();
+
+        LineResponseDto lineResponseDto = lineService.saveLineSection(신분당선.getId(), 신사역_강남역_노선);
+
+        // then: 신사역 - 강남역 - 판교역이 조회
+        List<Long> 등록된_지하철역_아이디_목록 = lineResponseDto.getStations()
+                .stream()
+                .map(StationResponseDto::getId)
+                .collect(Collectors.toList());
+
+        assertThat(등록된_지하철역_아이디_목록).containsExactly(
+                신사역.getId(),
+                강남역.getId(),
+                판교역.getId()
+        );
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 상행 종점역이 하행역인 구간을 추가한다.")
+    void addFirstLineSection() {
+        // when: 신사역 - 판교역 노선에 강남역 - 신사역 노선을 추가
+        SaveLineSectionRequestDto 강남역_신사역_노선 = SaveLineSectionRequestDto.builder()
+                .upStationId(강남역.getId())
+                .downStationId(신사역.getId())
+                .distance(15)
+                .build();
+
+        LineResponseDto lineResponseDto = lineService.saveLineSection(신분당선.getId(), 강남역_신사역_노선);
+
+        // then: 강남역 - 신사역 - 판교역이 조회
+        List<Long> 등록된_지하철역_아이디_목록 = lineResponseDto.getStations()
+                .stream()
+                .map(StationResponseDto::getId)
+                .collect(Collectors.toList());
+
+        assertThat(등록된_지하철역_아이디_목록).containsExactly(
+                강남역.getId(),
+                신사역.getId(),
+                판교역.getId()
+        );
     }
 
     @Test
@@ -100,29 +157,51 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("이미 등록되어 있는 역이 하행 종점역인 구간을 추가한다.")
-    void addAlreadyRegisteredDownStation() {
-        // given
-        Long 신분당선_아이디 = 신분당선.getId();
-
-        SaveLineSectionRequestDto 판교역이_하행_종점역인_구간 = SaveLineSectionRequestDto.builder()
-                .upStationId(노선의_하행_종점역_아이디를_찾는다(신분당선))
-                .downStationId(판교역.getId())
-                .distance(5)
+    @DisplayName("역 사이에 기존 역 사이 길이보다 크거나 같은 노선을 등록한다.")
+    void addInvalidDistanceLineSection() {
+        // given: 신사역 - 강남역 노선(23m)
+        SaveLineSectionRequestDto 신사역_강남역_노선 = SaveLineSectionRequestDto.builder()
+                .upStationId(신사역.getId())
+                .downStationId(강남역.getId())
+                .distance(23)
                 .build();
-
-        lineService.saveLineSection(신분당선_아이디, 판교역이_하행_종점역인_구간);
 
         // when & then
-        SaveLineSectionRequestDto 이미_등록된_역이_하행_종점역인_구간 = SaveLineSectionRequestDto.builder()
-                .upStationId(판교역.getId())
-                .downStationId(노선의_하행_종점역_아이디를_찾는다(신분당선))
-                .distance(5)
+        assertThatThrownBy(() -> lineService.saveLineSection(신분당선.getId(), 신사역_강남역_노선))
+                .isInstanceOf(InvalidLineSectionException.class)
+                .hasMessageContaining(ErrorCode.INVALID_DISTANCE.getMessage());
+    }
+
+    @Test
+    @DisplayName("이미 등록되어 있는 노선을 등록한다.")
+    void addAlreadyRegisteredLineSection() {
+        // given
+        SaveLineSectionRequestDto 신사역_판교역_노선 = SaveLineSectionRequestDto.builder()
+                .upStationId(신사역.getId())
+                .downStationId(판교역.getId())
+                .distance(24)
                 .build();
 
-        assertThatThrownBy(() -> lineService.saveLineSection(신분당선_아이디, 이미_등록된_역이_하행_종점역인_구간))
+        // when & then
+        assertThatThrownBy(() -> lineService.saveLineSection(신분당선.getId(), 신사역_판교역_노선))
                 .isInstanceOf(InvalidLineSectionException.class)
-                .hasMessageContaining(ErrorCode.ALREADY_REGISTERED_STATION.getMessage());
+                .hasMessageContaining(ErrorCode.ALREADY_REGISTERED_SECTION.getMessage());
+    }
+
+    @Test
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않은 노선을 등록한다.")
+    void addLineSectionWithUnregisteredStation() {
+        // given
+        SaveLineSectionRequestDto 강남역_광교역_노선 = SaveLineSectionRequestDto.builder()
+                .upStationId(강남역.getId())
+                .downStationId(광교역.getId())
+                .distance(13)
+                .build();
+
+        // when & then
+        assertThatThrownBy(() -> lineService.saveLineSection(신분당선.getId(), 강남역_광교역_노선))
+                .isInstanceOf(InvalidLineSectionException.class)
+                .hasMessageContaining(ErrorCode.UNREGISTERED_STATION.getMessage());
     }
 
     @Test
@@ -155,7 +234,7 @@ public class LineServiceTest {
     @DisplayName("등록되어 있지 않은 구간을 삭제한다.")
     void deleteNotExistSection() {
         // when & then
-        assertThatThrownBy(() -> lineService.deleteLineSectionByStationId(신분당선.getId(), 판교역.getId()))
+        assertThatThrownBy(() -> lineService.deleteLineSectionByStationId(신분당선.getId(), 강남역.getId()))
                 .isInstanceOf(InvalidLineSectionException.class)
                 .hasMessageContaining(ErrorCode.UNREGISTERED_STATION.getMessage());
     }
@@ -164,7 +243,7 @@ public class LineServiceTest {
     @DisplayName("구간이 1개일 때 삭제한다.")
     void deleteStandaloneSection() {
         // when & then
-        assertThatThrownBy(() -> lineService.deleteLineSectionByStationId(신분당선.getId(), 강남역.getId()))
+        assertThatThrownBy(() -> lineService.deleteLineSectionByStationId(신분당선.getId(), 판교역.getId()))
                 .isInstanceOf(InvalidLineSectionException.class)
                 .hasMessageContaining(ErrorCode.STAND_ALONE_LINE_SECTION.getMessage());
     }
