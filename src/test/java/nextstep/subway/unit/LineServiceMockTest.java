@@ -15,7 +15,7 @@ public class LineServiceMockTest {
     private StationService stationService;
 
     @Test
-    void addSection() {
+    void addSectionInPreviousSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
 
