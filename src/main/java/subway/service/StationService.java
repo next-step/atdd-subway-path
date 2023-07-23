@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import subway.domain.Station;
 import subway.dto.StationRequest;
 import subway.dto.StationResponse;
+import subway.exception.impl.StationNotFoundException;
 import subway.repository.StationRepository;
 
 @Service
@@ -29,6 +30,10 @@ public class StationService {
         return stationRepository.findAll().stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    public Station findStation(Long id) {
+        return stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
     }
 
     @Transactional

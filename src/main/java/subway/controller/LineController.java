@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import subway.domain.Line;
 import subway.dto.LineRequest;
 import subway.dto.LineResponse;
 import subway.dto.SectionRequest;
-import subway.dto.SectionResponse;
 import subway.service.LineService;
 
 @RestController
@@ -41,7 +41,8 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLine(id));
+        Line line = lineService.findLineById(id);
+        return ResponseEntity.ok().body(LineResponse.from(line));
     }
 
     @PutMapping("/{id}")
@@ -58,12 +59,13 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> createSection(@PathVariable Long id, @RequestBody
         SectionRequest request) {
-        return ResponseEntity.ok().body(lineService.createSection(id, request));
+        Line line = lineService.addSection(id, request);
+        return ResponseEntity.ok().body(LineResponse.from(line));
     }
 
     @DeleteMapping("/{id}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        lineService.deleteSection(id, stationId);
+        lineService.removeSection(id, stationId);
         return ResponseEntity.noContent().build();
     }
 }

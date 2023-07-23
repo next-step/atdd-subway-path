@@ -22,4 +22,10 @@ public class StationResponse {
             .build();
     }
 
+    public static Station toStation(StationResponse response) {
+        return Station.builder()
+            .id(response.getId())
+            .name(response.getName())
+            .build();
+    }
 }

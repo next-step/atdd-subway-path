@@ -11,7 +11,6 @@ import subway.domain.Station;
 import subway.dto.LineRequest;
 import subway.dto.LineResponse;
 import subway.dto.SectionRequest;
-import subway.dto.SectionResponse;
 import subway.exception.impl.AlreadyExistDownStation;
 import subway.exception.impl.LineNotFoundException;
 import subway.exception.impl.NoMatchStationException;
@@ -19,30 +18,23 @@ import subway.exception.impl.NonLastStationDeleteNotAllowedException;
 import subway.exception.impl.SingleSectionDeleteNotAllowedException;
 import subway.exception.impl.StationNotFoundException;
 import subway.repository.LineRepository;
-import subway.repository.SectionRepository;
-import subway.repository.StationRepository;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository,
-        StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(StationNotFoundException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(StationNotFoundException::new);
+        Station upStation = stationService.findStation(request.getUpStationId());
+        Station downStation = stationService.findStation(request.getDownStationId());
 
         Line line = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.from(line);
@@ -54,9 +46,8 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
-        return LineResponse.from(line);
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
     }
 
     @Transactional
@@ -72,7 +63,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse createSection(Long id, SectionRequest request) {
+    public Line addSection(Long id, SectionRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         Sections sections = line.getSections();
         if (sections.noMatchDownStation(request.getUpStationId())) {
@@ -83,19 +74,17 @@ public class LineService {
             throw new AlreadyExistDownStation();
         }
 
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(StationNotFoundException::new);
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(StationNotFoundException::new);
+        Station upStation = stationService.findStation(request.getUpStationId());
+        Station downStation = stationService.findStation(request.getDownStationId());
 
         Section section = request.toSection(line, upStation, downStation);
         line.addSection(section);
 
-        return LineResponse.from(line);
+        return line;
     }
 
     @Transactional
-    public void deleteSection(Long id, Long stationId) {
+    public void removeSection(Long id, Long stationId) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
         Sections sections = line.getSections();
 
