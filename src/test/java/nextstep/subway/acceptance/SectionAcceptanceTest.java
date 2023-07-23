@@ -64,14 +64,32 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long 그냥역 = 지하철역_생성_요청("그냥역").jsonPath().getLong("id");
 
         //when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 그냥역, 2));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 그냥역, 2));
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 그냥역);
+        ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선);
+        assertThat(노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(노선_조회_결과.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 그냥역);
     }
 
+    /**
+     * given 기존 존재하는 구간에 대해(강남역-양재역)
+     * when 한 역을 기준으로 사이에 새로운 구간을 생성 요청는데(강남역, 그냥역) 거리가 기존보다 큰 경우
+     * then 새로운 구간이 사이에 생성될 수 없다
+     */
+    @DisplayName("지하철 구간의 역을 기준으로 새로운 구간 추가 시 거리가 기존보다 클 경우 실패")
+    @Test
+    void addNewSectionInPreviousSectionFail() {
+        //given
+        Long 그냥역 = 지하철역_생성_요청("그냥역").jsonPath().getLong("id");
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 그냥역, 12));
+
+        //then
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
+    }
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
