@@ -4,14 +4,16 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.*;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -77,7 +79,7 @@ public class LineService {
         line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
-    void updateSectionInformation(Line line,
+    private void updateSectionInformation(Line line,
                                   Station newUpStation,
                                   Station newDownStation,
                                   int newSectionDistance) {
@@ -126,7 +128,7 @@ public class LineService {
         }
     }
 
-    void validateAddSectionConditions(Line line, Long newUpStationId, Long newDownStationId) {
+    private void validateAddSectionConditions(Line line, Long newUpStationId, Long newDownStationId) {
         List<Section> sections = line.getSections();
 
         List<Long> sectionUpStationIds = sections.stream()
@@ -147,27 +149,6 @@ public class LineService {
         if (!stationIds.contains(newUpStationId) && !stationIds.contains(newDownStationId)) {
             throw new IllegalArgumentException();
         }
-    }
-
-
-    List<Long> sortLineSectionsByOrder(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
-        List<Section> sections = line.getSections();
-
-        Long source = line.getFinalUpStationId();
-        Long target = line.getFinalDownStationId();
-
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        for (Section s : sections) {
-            graph.addVertex(s.getUpStationId());
-            graph.addVertex(s.getDownStationId());
-            graph.setEdgeWeight(graph.addEdge(s.getUpStationId(), s.getDownStationId()), s.getDistance());
-        }
-
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<Long> vertexList = dijkstraShortestPath.getPath(source, target).getVertexList();
-
-        return vertexList;
     }
 
     private LineResponse createLineResponse(Line line) {
