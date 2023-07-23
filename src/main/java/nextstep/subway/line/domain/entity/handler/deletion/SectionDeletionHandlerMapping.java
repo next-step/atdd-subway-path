@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain.entity.handler.deletion;
 
 import nextstep.subway.common.exception.CreationValidationException;
+import nextstep.subway.common.exception.DeletionValidationException;
 import nextstep.subway.line.domain.vo.Sections;
 import nextstep.subway.station.entity.Station;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,9 @@ import java.util.List;
 public class SectionDeletionHandlerMapping {
 
     private final List<SectionDeletionHandler> handlerList = List.of(
+            new DeleteSectionAtLastHandler(),
+            new DeleteSectionAtTopHandler(),
+            new DeleteSectionAtMiddleHandler()
     );
 
     public SectionDeletionHandler getHandler(Sections sections, Station station) {
@@ -19,6 +23,6 @@ public class SectionDeletionHandlerMapping {
                 return handler;
             }
         }
-        throw new CreationValidationException("section.0004");
+        throw new DeletionValidationException("section.0004");
     }
 }
