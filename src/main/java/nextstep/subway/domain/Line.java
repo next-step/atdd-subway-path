@@ -24,6 +24,7 @@ public class Line {
         this.color = color;
     }
 
+
     public Long getId() {
         return id;
     }

@@ -47,6 +47,10 @@ public class LineService {
         return createLineResponse(lineRepository.findById(id).orElseThrow(IllegalArgumentException::new));
     }
 
+    public Line findByLineId(Long lineId){
+        return lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
+    }
+
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
