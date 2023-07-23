@@ -20,6 +20,12 @@ import org.junit.jupiter.api.Test;
 
 class SectionsTest {
 
+    public static final int SADANG_TO_YANGJAE_DISTANCE = 4;
+    public static final int GANGNAM_TO_YANGJAE_DISTANCE = 1;
+    public static final int YANGJAE_TO_PANGYO_DISTANCE = 9;
+    public static final int GANGNAM_TO_PANGYO_DISTANCE = 10;
+    public static final int YANGJAE_TO_YEOKSAM_DISTANCE = 3;
+    public static final int YANGJAE_TO_SEOLLEUNG_DISTANCE = 1;
     Sections sections;
     Station gangnamStation;
     Station pangyoStation;
@@ -35,11 +41,11 @@ class SectionsTest {
     @Test
     void insertSectionSuccessToTop() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 1));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
         Station sadangStation = new Station("사당역");
 
         // when
-        sections.addSection(new Section(sadangStation, gangnamStation, 1));
+        sections.addSection(new Section(sadangStation, gangnamStation, SADANG_TO_YANGJAE_DISTANCE));
 
         // then
         assertThat(sections.getStations()).containsExactly(sadangStation, gangnamStation, pangyoStation);
@@ -49,11 +55,11 @@ class SectionsTest {
     @Test
     void insertSectionSuccessBySameUpStationOfSection() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
         Station yangjaeStation = new Station("양재역");
 
         // when
-        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, SADANG_TO_YANGJAE_DISTANCE));
 
         // then
         assertThat(sections.getStations())
@@ -64,11 +70,11 @@ class SectionsTest {
     @Test
     void insertSectionSuccessBySameDownStationOfSection() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
         Station yangjaeStation = new Station("양재역");
 
         // when
-        sections.addSection(new Section(yangjaeStation, pangyoStation, 9));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, YANGJAE_TO_PANGYO_DISTANCE));
 
         // then
         List<Station> stations = sections.getStations();
@@ -79,11 +85,11 @@ class SectionsTest {
     @Test
     void insertSectionSuccessBetweenSectionFailedByDistance() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 1));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
         Station yangjaeStation = new Station("양재역");
 
         // when,then
-        Section tooLongDistanceSection = new Section(gangnamStation, yangjaeStation, 1);
+        Section tooLongDistanceSection = new Section(gangnamStation, yangjaeStation, GANGNAM_TO_PANGYO_DISTANCE + 1);
         assertThatThrownBy(() -> sections.addSection(tooLongDistanceSection))
                 .isInstanceOf(InvalidDistanceException.class);
     }
@@ -92,12 +98,12 @@ class SectionsTest {
     @Test
     void insertSectionSuccessBetweenSectionFailedByExists() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
         Station yangjaeStation = new Station("양재역");
         sections.addSection(new Section(gangnamStation, yangjaeStation, 4));
 
         // when,then
-        Section existsSection = new Section(gangnamStation, pangyoStation, 3);
+        Section existsSection = new Section(gangnamStation, pangyoStation, YANGJAE_TO_YEOKSAM_DISTANCE);
         assertThatThrownBy(() -> sections.addSection(existsSection))
                 .isInstanceOf(AlreadyConnectedException.class);
     }
@@ -106,12 +112,13 @@ class SectionsTest {
     @Test
     void insertSectionSuccessBetweenSectionFailedByNotExists() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
         Station yangjaeStation = new Station("양재역");
         Station sadangStation = new Station("사당역");
 
         // when,then
-        Section sectionsNotContainsStationOfSection = new Section(yangjaeStation, sadangStation, 3);
+        Section sectionsNotContainsStationOfSection = new Section(yangjaeStation, sadangStation,
+                SADANG_TO_YANGJAE_DISTANCE);
         assertThatThrownBy(() -> sections.addSection(sectionsNotContainsStationOfSection))
                 .isInstanceOf(MissingStationException.class);
     }
@@ -123,10 +130,10 @@ class SectionsTest {
         Station yangjaeStation = new Station("양재역");
         Station seolleungStation = new Station("선릉역");
         Station yeoksamStation = new Station("역삼역");
-        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
-        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
-        sections.addSection(new Section(yangjaeStation, yeoksamStation, 3));
-        sections.addSection(new Section(yangjaeStation, seolleungStation, 1));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
+        sections.addSection(new Section(yangjaeStation, yeoksamStation, YANGJAE_TO_YEOKSAM_DISTANCE));
+        sections.addSection(new Section(yangjaeStation, seolleungStation, YANGJAE_TO_SEOLLEUNG_DISTANCE));
 
         // when
         List<Station> stations = sections.getStations();
@@ -141,8 +148,8 @@ class SectionsTest {
     void deleteBottomSectionSuccess() {
         // given
         Station yangjaeStation = new Station("양재역");
-        sections.addSection(new Section(gangnamStation, yangjaeStation, 10));
-        sections.addSection(new Section(yangjaeStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, YANGJAE_TO_PANGYO_DISTANCE));
 
         // when
         sections.deleteSection(pangyoStation);
@@ -156,8 +163,8 @@ class SectionsTest {
     void deleteTopSectionSuccess() {
         // given
         Station yangjaeStation = new Station("양재역");
-        sections.addSection(new Section(gangnamStation, yangjaeStation, 10));
-        sections.addSection(new Section(yangjaeStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, YANGJAE_TO_PANGYO_DISTANCE));
 
         // when
         sections.deleteSection(gangnamStation);
@@ -171,8 +178,8 @@ class SectionsTest {
     void deleteSectionSuccessOnCenter() {
         // given
         Station yangjaeStation = new Station("양재역");
-        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
-        sections.addSection(new Section(yangjaeStation, pangyoStation, 9));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, YANGJAE_TO_PANGYO_DISTANCE));
 
         // when
         sections.deleteSection(yangjaeStation);
@@ -183,7 +190,7 @@ class SectionsTest {
                 () -> assertThat(sections.getStations())
                         .containsExactly(gangnamStation, pangyoStation),
                 () -> assertThat(sameUpStationSection.getDistance())
-                        .isEqualTo(10)
+                        .isEqualTo(GANGNAM_TO_PANGYO_DISTANCE)
         );
     }
 
@@ -191,7 +198,7 @@ class SectionsTest {
     @Test
     void deleteSectionFailedBySingleSection() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 10));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
 
         // when,then
         assertThatThrownBy(() -> sections.deleteSection(pangyoStation))
@@ -203,8 +210,8 @@ class SectionsTest {
     void deleteSectionFailedByNotIncluded() {
         // given
         Station yangjaeStation = new Station("양재역");
-        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
-        sections.addSection(new Section(yangjaeStation, pangyoStation, 9));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
+        sections.addSection(new Section(yangjaeStation, pangyoStation, YANGJAE_TO_PANGYO_DISTANCE));
 
         // when,then
         Station notExistsStation = new Station("교대역");
@@ -216,7 +223,7 @@ class SectionsTest {
     @Test
     void getSameUpStationSectionSuccess() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 9));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
 
         // when
         Section sameUpStationSection = sections.getSameUpStationSection(gangnamStation);
@@ -229,7 +236,7 @@ class SectionsTest {
     @Test
     void getSameUpStationSectionFailedByNotExists() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 1));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
 
         // when/then
         assertThatThrownBy(() -> sections.getSameUpStationSection(pangyoStation))
@@ -241,7 +248,7 @@ class SectionsTest {
     @Test
     void getSameDownStationSectionSuccess() {
         // given
-        sections.addSection(new Section(gangnamStation, pangyoStation, 9));
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
 
         // when
         Section sameUpStationSection = sections.getSameDownStationSection(pangyoStation);
@@ -255,7 +262,7 @@ class SectionsTest {
     void getSameDownStationSectionFailedByNotExists() {
         // given
         Station yangjaeStation = new Station("양재역");
-        sections.addSection(new Section(gangnamStation, yangjaeStation, 1));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
 
         // when/then
         assertThatThrownBy(() -> sections.getSameDownStationSection(gangnamStation))
