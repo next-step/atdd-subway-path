@@ -45,8 +45,7 @@ public class Line {
                             .distance(distance)
                             .build()
                     );
-                }},
-                distance
+                }}
         );
     }
 
