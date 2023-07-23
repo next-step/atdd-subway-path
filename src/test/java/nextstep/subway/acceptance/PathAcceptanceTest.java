@@ -31,7 +31,6 @@ public class PathAcceptanceTest extends PathAcceptanceTestHelper {
      */
     @BeforeEach
     void setUp() {
-
         교대역 = getId(createStation("교대역"));
         강남역 = getId(createStation("강남역"));
         양재역 = getId(createStation("양재역"));
@@ -57,21 +56,21 @@ public class PathAcceptanceTest extends PathAcceptanceTestHelper {
         }
 
         @Test
-        void 강남역에서_남부터미널역을_가는_최단_경로는_강남_양재_남부터미널_13미터이다() {
+        void 강남역에서_남부터미널역을_가는_최단_경로는_강남_교대_남부터미널_12미터이다() {
             // when
             ValidatableResponse pathResponse = getPath(강남역, 남부터미널역);
 
             // then
-            verifyFoundPath(pathResponse, 13L, "강남역", "양재역", "남부터미널역");
+            verifyFoundPath(pathResponse, 12L, "강남역", "교대역", "남부터미널역");
         }
 
         @Test
-        void 강남역에서_양재역을_가는_최단_경로는_강남_양재_2미터이다() {
+        void 강남역에서_양재역을_가는_최단_경로는_강남_양재_10미터이다() {
             // when
             ValidatableResponse pathResponse = getPath(강남역, 양재역);
 
             // then
-            verifyFoundPath(pathResponse, 2L, "강남역", "양재역");
+            verifyFoundPath(pathResponse, 10L, "강남역", "양재역");
         }
 
     }
@@ -104,7 +103,7 @@ public class PathAcceptanceTest extends PathAcceptanceTestHelper {
             ValidatableResponse pathResponse = getPath(10000L, 강남역);
 
             // then
-            verifyResponseStatus(pathResponse, HttpStatus.BAD_REQUEST);
+            verifyResponseStatus(pathResponse, HttpStatus.NOT_FOUND);
         }
     }
 }

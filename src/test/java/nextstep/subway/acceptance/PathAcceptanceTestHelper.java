@@ -15,15 +15,15 @@ class PathAcceptanceTestHelper extends SectionAcceptanceTestHelper {
 
     protected ValidatableResponse getPath(Long sourceStationId, Long targetStationId) {
         Map<String, Object> params = new HashMap<>();
-        params.put("sourceId", sourceStationId);
-        params.put("targetId", targetStationId);
+        params.put("source", sourceStationId);
+        params.put("target", targetStationId);
 
         return getResource(PATH_RESOURCE_URL, params);
     }
 
     protected void verifyFoundPath(ValidatableResponse foundPathResponse, long distance, String... stationNames) {
         JsonPath jsonPath = foundPathResponse.extract().jsonPath();
-        assertThat(jsonPath.getList("stations.name", String.class)).containsExactly(stationNames);
+        assertThat(jsonPath.getList("stationResponses.name", String.class)).containsExactly(stationNames);
         assertThat(jsonPath.getLong("distance")).isEqualTo(distance);
     }
 }
