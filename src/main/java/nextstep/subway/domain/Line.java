@@ -71,4 +71,8 @@ public class Line {
     public List<Station> getStations() {
         return this.sections.getStations();
     }
+
+    public int getTotalDistance(){
+        return this.sections.getTotalDistancs();
+    }
 }
