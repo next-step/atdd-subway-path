@@ -179,8 +179,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> 지하철_노선_생성_요청() {
-		var 신사역 = 지하철역_생성(StationFixture.신사역);
-		var 논현역 = 지하철역_생성(StationFixture.신사역);
+		var 신사역 = 지하철역_생성(StationFixture.신사역_이름);
+		var 논현역 = 지하철역_생성(StationFixture.신사역_이름);
 		return LineFixture.지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 신사역.getId(), 논현역.getId(), 10);
 	}
 

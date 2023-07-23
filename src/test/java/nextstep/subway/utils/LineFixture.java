@@ -86,28 +86,27 @@ public class LineFixture {
 	}
 
 	public static LineResponse 지하철_신분당선_노선_생성() {
-		StationResponse upStation = 지하철역_리스폰_변환(지하철역_생성_요청(신사역));
-		StationResponse downStation = 지하철역_리스폰_변환(지하철역_생성_요청(논현역));
+		StationResponse upStation = 지하철역_리스폰_변환(지하철역_생성_요청(신사역_이름));
+		StationResponse downStation = 지하철역_리스폰_변환(지하철역_생성_요청(논현역_이름));
 		return 지하철_노선_리스폰_변환(지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, upStation.getId(), downStation.getId(), 10));
 	}
 
 	public static LineResponse 지하철_경강선_노선_생성() {
-		StationResponse upStation = 지하철역_리스폰_변환(지하철역_생성_요청(판교역));
-		StationResponse downStation = 지하철역_리스폰_변환(지하철역_생성_요청(이매역));
+		StationResponse upStation = 지하철역_리스폰_변환(지하철역_생성_요청(판교역_이름));
+		StationResponse downStation = 지하철역_리스폰_변환(지하철역_생성_요청(이매역_이름));
 		return 지하철_노선_리스폰_변환(지하철_노선_생성_요청(경강선_이름, 경강선_색상, upStation.getId(), downStation.getId(), 10));
 	}
 
 	public static LineResponse 지하철_구간을_포함한_노선_생성() {
-		StationResponse upStation = 지하철역_리스폰_변환(지하철역_생성_요청(신사역));
-		StationResponse downStation = 지하철역_리스폰_변환(지하철역_생성_요청(논현역));
-		StationResponse newDownStation = 지하철역_리스폰_변환(지하철역_생성_요청(신논현역));
+		StationResponse upStation = 지하철역_리스폰_변환(지하철역_생성_요청(신사역_이름));
+		StationResponse downStation = 지하철역_리스폰_변환(지하철역_생성_요청(논현역_이름));
+		StationResponse newDownStation = 지하철역_리스폰_변환(지하철역_생성_요청(신논현역_이름));
 		LineResponse 신분당선 = 지하철_노선_리스폰_변환(지하철_노선_생성_요청(신분당선_이름, 신분당선_색상,
 			upStation.getId(), downStation.getId(), 10));
 		return 지하철_노선_리스폰_변환(지하철_노선의_구간_추가_요청(신분당선.getId(), downStation.getId(), newDownStation.getId(), 10));
 	}
 
 	public static LineResponse 지하철_노선_리스폰_변환(ExtractableResponse<Response> response) {
-		return response.response()
-			.as(LineResponse.class);
+		return response.as(LineResponse.class);
 	}
 }
