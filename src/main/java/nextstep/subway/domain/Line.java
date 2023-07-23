@@ -72,4 +72,12 @@ public class Line {
         sections.add(section);
         section.updateLine(this);
     }
+
+    public void updateFinalUpStationId(Long finalUpStationId) {
+        this.finalUpStationId = finalUpStationId;
+    }
+
+    public void updateFinalDownStationId(Long finalDownStationId) {
+        this.finalDownStationId = finalDownStationId;
+    }
 }

@@ -4,16 +4,16 @@ import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -71,7 +71,103 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
+        validateAddSectionConditions(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        updateSectionInformation(line, upStation, downStation, sectionRequest.getDistance());
+
         line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    void updateSectionInformation(Line line,
+                                  Station newUpStation,
+                                  Station newDownStation,
+                                  int newSectionDistance) {
+        List<Section> alreadyExistSections = line.getSections();
+        for (Section section : alreadyExistSections) {
+
+            //기존 구간의 상행역 == 새로 추가하는 구간의 상행역
+            if (section.getUpStationId() == newUpStation.getId()) {
+                if (section.getDistance() <= newSectionDistance) {
+                    throw new IllegalArgumentException();
+                }
+                section.updateUpStation(newDownStation);
+                section.updateDistance(section.getDistance() - newSectionDistance);
+                break;
+            }
+
+            //기존 구간의 하행역 == 새로 추가하는 구간의 하행역
+            if (section.getDownStationId() == newDownStation.getId()) {
+                if (section.getDistance() <= newSectionDistance) {
+                    throw new IllegalArgumentException();
+                }
+                section.updateDownStation(newUpStation);
+                section.updateDistance(section.getDistance() - newSectionDistance);
+                break;
+            }
+
+            //기존 구간의 상행 종착역 == 새로 추가하는 구간의 하행역
+            if ((section.getUpStationId() == newDownStation.getId())
+                    && (section.getUpStationId() == line.getFinalUpStationId())) {
+                if (section.getDistance() <= newSectionDistance) {
+                    throw new IllegalArgumentException();
+                }
+                line.updateFinalUpStationId(newUpStation.getId());
+                break;
+            }
+
+            //기존 구간의 하행 종착역 == 새로 추가하는 구간의 상행역
+            if ((section.getDownStationId() == newUpStation.getId())
+                    && (section.getDownStationId() == line.getFinalDownStationId())) {
+                if (section.getDistance() <= newSectionDistance) {
+                    throw new IllegalArgumentException();
+                }
+                line.updateFinalDownStationId(newDownStation.getId());
+                break;
+            }
+        }
+    }
+
+    void validateAddSectionConditions(Line line, Long newUpStationId, Long newDownStationId) {
+        List<Section> sections = line.getSections();
+
+        List<Long> sectionUpStationIds = sections.stream()
+                .map(s -> s.getUpStationId())
+                .collect(Collectors.toList());
+        List<Long> sectionDownStationIds = sections.stream()
+                .map(s -> s.getDownStationId())
+                .collect(Collectors.toList());
+
+        Set<Long> stationIds = Stream.of(sectionUpStationIds, sectionDownStationIds)
+                .flatMap(x -> x.stream())
+                .collect(Collectors.toSet());
+
+        if (stationIds.contains(newUpStationId) && stationIds.contains(newDownStationId)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!stationIds.contains(newUpStationId) && !stationIds.contains(newDownStationId)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+
+    List<Long> sortLineSectionsByOrder(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        List<Section> sections = line.getSections();
+
+        Long source = line.getFinalUpStationId();
+        Long target = line.getFinalDownStationId();
+
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        for (Section s : sections) {
+            graph.addVertex(s.getUpStationId());
+            graph.addVertex(s.getDownStationId());
+            graph.setEdgeWeight(graph.addEdge(s.getUpStationId(), s.getDownStationId()), s.getDistance());
+        }
+
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        List<Long> vertexList = dijkstraShortestPath.getPath(source, target).getVertexList();
+
+        return vertexList;
     }
 
     private LineResponse createLineResponse(Line line) {

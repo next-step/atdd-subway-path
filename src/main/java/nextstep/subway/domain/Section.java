@@ -64,4 +64,16 @@ public class Section {
     public Long getDownStationId() {
         return downStation.getId();
     }
+
+    public void updateUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void updateDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    public void updateDistance(int distance){
+        this.distance = distance;
+    }
 }
