@@ -1,8 +1,10 @@
-package nextstep.subway.applicaion.exception;
+package nextstep.subway.applicaion.exception.domain;
 
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public abstract class CustomException extends RuntimeException {
 
     private String message;

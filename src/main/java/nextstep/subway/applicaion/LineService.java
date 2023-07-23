@@ -14,8 +14,10 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -72,8 +74,19 @@ public class LineService {
 
         if (addSectionByStationPoint(line, sectionRequest)) { return; }
 
-        log.info("[LineService] Add section at end point");
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        log.info("[LineService] Add section between saved section");
+        for (Section savedSection : line.getSections()) {
+            if (savedSection.getUpStation().getId() == sectionRequest.getUpStationId()) {
+                beforeAddSection(line, savedSection, sectionRequest);
+
+                int calculatedDistance = savedSection.getDistance() - sectionRequest.getDistance();
+                line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+                savedSection.updateSection(savedSection.getUpStation(), savedSection.getDownStation(), calculatedDistance);
+                return;
+            }
+        }
+
+        throw new SectionException("Requested sections`s stations is not saved");
     }
 
     @Transactional
@@ -82,25 +95,30 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         int requestedDistance = sectionRequest.getDistance();
 
-        // 기준 - 지하철 노선에 역이 2개만 존재하는 경우
         List<Section> savedSections = line.getSections();
         Section startSection = savedSections.get(0);
         Station startStation = startSection.getUpStation();
         Station endStation = startSection.getDownStation();
 
-        if (upStation.getId() == startStation.getId()) {
-            log.info("[LineService] Add section between saved section");
-            int calculatedDistance = startSection.getDistance() - requestedDistance;
-            startSection.updateSection(upStation, downStation, calculatedDistance);
-            line.getSections().add(new Section(line, upStation, endStation, calculatedDistance));
-            return true;
-        } else if (downStation.getId() == startStation.getId()) {
+        if (downStation.getId().equals(startStation.getId())) {
             log.info("[LineService] Add Section at starting point");
             startSection.updateSection(upStation, startStation, requestedDistance);
             line.getSections().add(new Section(line, downStation, endStation, startSection.getDistance()));
             return true;
+        } else if (savedSections.get(savedSections.size() -1).getDownStation().getId().equals(upStation.getId())) {
+            log.info("[LineService] Add section at end point");
+            line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+            return true;
         }
         return false;
+    }
+
+    private void beforeAddSection(Line line, Section savedSection, SectionRequest sectionRequest) {
+        if (sectionRequest.getDistance() >= savedSection.getDistance()) {
+            throw new SectionException("Requested distance size is equal or larger than the total saved size.");
+        } else if (line.checkDuplicatedSectionByStationId(sectionRequest.getUpStationId(), sectionRequest.getDownStationId())) {
+            throw new SectionException("Requested sections is duplicated");
+        }
     }
 
     @Transactional
@@ -109,7 +127,7 @@ public class LineService {
         Station station = stationService.findById(stationId);
 
         if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new SectionException();
+            throw new SectionException("Check requested stationId or lineId.");
         }
 
         line.getSections().remove(line.getSections().size() - 1);
@@ -134,6 +152,24 @@ public class LineService {
                 .collect(Collectors.toList());
 
         stations.add(0, line.getSections().get(0).getUpStation());
+
+        return stations.stream()
+                .map(it -> stationService.createStationResponse(it))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * TODO
+     * - 단위 테스트로 검증
+     */
+    private List<StationResponse> createOrderedStationResponses(Line line) {
+        List<Station> stations = new ArrayList<>();
+        Optional<Section> section = Optional.ofNullable(line.getSections().get(0));
+
+        while (section != null) {
+            stations.add(section.get().getUpStation());
+            section = line.findSectionByDownStationId(section.get().getDownStation().getId());
+        }
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))

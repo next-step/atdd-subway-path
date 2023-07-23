@@ -1,6 +1,7 @@
 package nextstep.subway.applicaion.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import nextstep.subway.applicaion.exception.domain.CustomException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,13 +10,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class ApplicationExceptionHandler {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity handleIllegalArgumentException(IllegalArgumentException e) {
-        log.info("[ControllerExceptionHandler] An IllegalArgumentException occurred");
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity handleCustomException(CustomException e) {
+        log.info("[ControllerExceptionHandler] An CustomException occurred");
         e.printStackTrace();
 
         return ResponseEntity
-                .badRequest()
-                .body(e.getMessage());
+                .status(e.getStatus())
+                .body(new ExceptionResponse(e.getMessage()));
     }
 }

@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -59,7 +60,32 @@ public class Line {
     private List<Section> getThisSections() { return this.sections; }
 
     public void addSection(Section section) {
+        List<Section> sections = getThisSections();
         sections.add(section);
+    }
+
+    public Optional<Section> findSectionByUpStationId(Long upStationId) {
+        List<Section> sections = getThisSections();
+
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId().equals(upStationId))
+                .findFirst();
+    }
+
+    public Optional<Section> findSectionByDownStationId(Long downStationId) {
+        List<Section> sections = getThisSections();
+
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId().equals(downStationId))
+                .findFirst();
+    }
+
+    public boolean checkDuplicatedSectionByStationId(Long upStationId, Long downStationId) {
+        List<Section> sections = getThisSections();
+
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().getId().equals(upStationId)
+                        && section.getDownStation().getId().equals(downStationId));
     }
 
     public void deleteSectionByUpStation(Station upStation) {
@@ -68,18 +94,6 @@ public class Line {
         for (Section savedSection : sections) {
             Station savedUpStation = savedSection.getUpStation();
             if (savedUpStation.getName().equals(upStation.getName())) {
-                sections.remove(savedSection);
-                return;
-            }
-        }
-    }
-
-    public void deleteSectionByDownStation(Station downStation) {
-        List<Section> sections = getThisSections();
-
-        for (Section savedSection : sections) {
-            Station savedUpStation = savedSection.getUpStation();
-            if (savedUpStation.getName().equals(downStation.getName())) {
                 sections.remove(savedSection);
                 return;
             }

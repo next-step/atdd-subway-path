@@ -1,6 +1,5 @@
 package nextstep.subway.applicaion.exception.domain;
 
-import nextstep.subway.applicaion.exception.CustomException;
 import org.springframework.http.HttpStatus;
 
 public class LineException extends CustomException {
@@ -10,6 +9,8 @@ public class LineException extends CustomException {
     public LineException() {
         super(MESSAGE);
     }
+
+    public LineException(String message) { super(message); }
 
     @Override
     public HttpStatus getStatus() {
