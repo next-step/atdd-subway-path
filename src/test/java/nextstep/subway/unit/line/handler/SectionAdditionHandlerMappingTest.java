@@ -32,7 +32,6 @@ public class SectionAdditionHandlerMappingTest {
         이호선 = new Line("이호선", "Green", SECTION_DEFAULT_DISTANCE, 강남역, 역삼역);
     }
 
-    @DisplayName("노선 맨 뒤에 구간 추가 핸들러 반환")
     @Test
     void getAddSectionAtLastHandler() {
         // given

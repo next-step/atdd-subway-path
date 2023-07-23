@@ -106,10 +106,6 @@ public class Sections {
         }
     }
 
-    public Section getLastSection() {
-        return getSectionByDownStation(getLastStation());
-    }
-
     public Station getFirstStation() {
         List<Station> downStations = getDownStations();
         return sections.stream()

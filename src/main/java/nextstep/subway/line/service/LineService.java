@@ -86,7 +86,7 @@ public class LineService {
                 .orElseThrow(() -> new LineNotFoundException("line.not.found"));
     }
 
-    private Station getStation(Long stationId) {
+    private Station  getStation(Long stationId) {
         Station upStation = stationRepository.findById(stationId)
                 .orElseThrow(() -> new StationNotFoundException("station.not.found"));
         return upStation;
