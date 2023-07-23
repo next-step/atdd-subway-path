@@ -10,7 +10,8 @@ public enum ErrorMessage {
     INVALID_DISTANCE_EXCEPTION("역 사이의 거리가 유효하지 않습니다."),
     ALREADY_CONNECTED_EXCEPTION("상행역과 하행역은 이미 노선에 등록되어 있습니다."),
     MISSING_STATION_EXCEPTION("상행역과 하행역 중 적어도 하나는 노선에 포함되어야 추가할 수 있습니다."),
-    STATION_NOT_INCLUDED_EXCEPTION("해당 스테이션이 노선에 포함되어 있지 않습니다.");
+    STATION_NOT_INCLUDED_EXCEPTION("해당 스테이션이 노선에 포함되어 있지 않습니다."),
+    SECTION_NOT_FOUND_EXCEPTION("요청한 세션이 존재하지 않습니다!");
 
     private final String message;
 

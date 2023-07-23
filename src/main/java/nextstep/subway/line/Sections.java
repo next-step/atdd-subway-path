@@ -60,18 +60,19 @@ public class Sections {
             return;
         }
         checkSection(newSection);
-        Optional<Section> sameUpStationSection = getSameUpStationOfSection(newSection);
-        if (sameUpStationSection.isPresent()) {
-            insertSection(newSection, sameUpStationSection.get(), StationType.DOWN);
+        Station upStation = newSection.getUpStation();
+        if (existsSameUpStationSection(upStation)) {
+            insertSection(newSection, getSameUpStationSection(upStation), StationType.DOWN);
             return;
         }
-        Optional<Section> sameDownStationSection = getSameDownStationOfSection(newSection);
-        if (sameDownStationSection.isPresent()) {
-            insertSection(newSection, sameDownStationSection.get(), StationType.UP);
+        Station downStation = newSection.getDownStation();
+        if (existsSameDownStationSection(downStation)) {
+            insertSection(newSection, getSameDownStationSection(downStation), StationType.UP);
             return;
         }
         sectionCollection.add(newSection);
     }
+
 
     private boolean isTopSection(Section targetSection) {
         return sectionCollection.stream()
@@ -90,6 +91,11 @@ public class Sections {
         }
     }
 
+    private boolean existsSameUpStationSection(Station station) {
+        return sectionCollection.stream()
+                .anyMatch(section -> section.getUpStation().equals(station));
+    }
+
     private void insertSection(Section insertSection, Section targetSection, StationType stationType) {
         validDistance(insertSection, targetSection);
         sectionCollection.remove(targetSection);
@@ -103,53 +109,56 @@ public class Sections {
                 targetSection.getDistance() - insertSection.getDistance()));
     }
 
-    private Optional<Section> getSameUpStationOfSection(Section newSection) {
-        return getSameUpStationSection(newSection.getUpStation());
+    private boolean existsSameDownStationSection(Station station) {
+        return sectionCollection.stream()
+                .anyMatch(section -> section.getDownStation().equals(station));
     }
 
-    public Optional<Section> getSameUpStationSection(Station station) {
+    public Section getSameUpStationSection(Station station) {
         return sectionCollection.stream()
                 .filter(section -> section.isSameUpStation(station))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(SectionNotFoundException::new);
     }
 
-    private Optional<Section> getSameDownStationOfSection(Section newSection) {
-        return getSameDownStationSection(newSection.getDownStation());
-    }
-
-    public Optional<Section> getSameDownStationSection(Station station) {
+    public Section getSameDownStationSection(Station station) {
         return sectionCollection.stream()
                 .filter(section -> section.isSameDownStation(station))
-                .findFirst();
+                .findFirst()
+                .orElseThrow(SectionNotFoundException::new);
     }
 
     public void deleteSection(Station station) {
-        if (sectionCollection.size() == 1) {
-            throw new SingleSectionRemovalException();
-        }
-        Optional<Section> sameDownStationSection = getSameDownStationSection(station);
-        Optional<Section> sameUpStationSection = getSameUpStationSection(station);
-        boolean sameUpStationSectionExists = sameUpStationSection.isPresent();
-        boolean sameDownStationSectionExists = sameDownStationSection.isPresent();
+        checkSingleSection();
+        boolean sameUpStationSectionExists = existsSameUpStationSection(station);
+        boolean sameDownStationSectionExists = existsSameDownStationSection(station);
         if (sameUpStationSectionExists && sameDownStationSectionExists) {
-            deleteCenterSection(sameDownStationSection.get(), sameUpStationSection.get());
+            deleteCenterSection(getSameUpStationSection(station), getSameDownStationSection(station));
             return;
         }
-        if (!sameUpStationSectionExists && sameDownStationSectionExists) {
-            sectionCollection.remove(sameDownStationSection.get());
+        if (sameDownStationSectionExists) {
+            sectionCollection.remove(getSameDownStationSection(station));
             return;
         }
         if (sameUpStationSectionExists) {
-            sectionCollection.remove(sameUpStationSection.get());
+            sectionCollection.remove(getSameUpStationSection(station));
             return;
         }
         throw new StationNotIncludedException();
     }
 
-    private void deleteCenterSection(Section upStationSection, Section downStationSection) {
-        sectionCollection.remove(upStationSection);
-        sectionCollection.remove(downStationSection);
-        sectionCollection.add(new Section(upStationSection.getUpStation(), downStationSection.getDownStation(),
-                upStationSection.getDistance() + downStationSection.getDistance()));
+    private void checkSingleSection() {
+        if (sectionCollection.size() == 1) {
+            throw new SingleSectionRemovalException();
+        }
+    }
+
+    private void deleteCenterSection(Section downSection, Section upSection) {
+        sectionCollection.remove(downSection);
+        sectionCollection.remove(upSection);
+        Station upStation = upSection.getUpStation();
+        Station downStation = downSection.getDownStation();
+        int distance = upSection.getDistance() + downSection.getDistance();
+        sectionCollection.add(new Section(upStation, downStation, distance));
     }
 }
