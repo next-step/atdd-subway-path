@@ -1,10 +1,9 @@
 package subway.unit;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +15,7 @@ import subway.dto.SectionRequest;
 import subway.repository.LineRepository;
 import subway.service.LineService;
 import subway.service.StationService;
+import subway.utils.LineAssertions;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -72,15 +72,13 @@ public class LineServiceMockTest {
         // when
         // lineService.addSection 호출
         LineService lineService = new LineService(lineRepository, stationService);
-        Line 구간추가후_노선 = lineService.addSection(1L, request);
+        Line 구간저장후_노선 = lineService.addSection(1L, request);
 
         // then
         // lineService.findLineById 메서드를 통해 검증
-        when(lineRepository.findById(any())).thenReturn(Optional.of(구간추가후_노선));
+        when(lineRepository.findById(any())).thenReturn(Optional.of(구간저장후_노선));
         Line 조회한_노선 = lineService.findLineById(any());
 
-        Assertions.assertThat(조회한_노선.getSections().getLastStation().getName()).isEqualTo("광교역");
-        Assertions.assertThat(조회한_노선.getDistance()).isEqualTo(40L);
-
+        LineAssertions.구간추가후_검증(조회한_노선);
     }
 }

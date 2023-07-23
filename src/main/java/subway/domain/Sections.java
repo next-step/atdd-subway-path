@@ -39,6 +39,8 @@ public class Sections {
         sections.remove(getLastIndex());
     }
 
+    public int getSize() { return sections.size(); }
+
     public Section getLastSection() {
         return sections.get(getLastIndex());
     }
