@@ -158,12 +158,12 @@ public class Sections {
                 .filter(section -> section.isDifferentAs(newSection))
                 .filter(section -> section.isExpandable(newSection))
                 .anyMatch(section -> this.isLastSectionOfLine(newSection)
-                        || !this.isLastSectionOfLine(newSection) && section.isShorterThan(newSection));
+                        || !(this.isLastSectionOfLine(newSection) || section.isEqualsOrShorterThan(newSection)));
     }
 
     private boolean isLastSectionOfLine(Section section) {
-        return isLastStationOfLine(section.getUpStation())
-                || isLastStationOfLine(section.getDownStation());
+        return Objects.equals(getStartOfLine(), section.getDownStation())
+                || Objects.equals(getEndOfLine(), section.getUpStation());
     }
 
     public Optional<Section> getStationSection(Predicate<Section> condition) {

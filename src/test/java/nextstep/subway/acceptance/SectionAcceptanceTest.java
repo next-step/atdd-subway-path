@@ -124,34 +124,12 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
          * 지하철노선 구간 등록
          * Given 지하철 노선을 생성하고
          * When 생성한 지하철 노선에 추가로 구간을 등록할때
-         * 새로운 노선의 하행역이 기존 노선에 등록되어 있는 역이면
-         * Then 구간 등록에 실패한다
-         */
-        @Test
-        void 신규_구간_하행역_기등록_실패() {
-            //given
-            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
-            long createdLineId = getId(lineCratedResponse);
-            long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
-            long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
-
-            //when
-            ValidatableResponse sectionCreatedResponse = createSection(createdLineId, downStationId, upStationId, 10L);
-
-            //then
-            verifyResponseStatus(sectionCreatedResponse, HttpStatus.BAD_REQUEST);
-        }
-
-        /**
-         * 지하철노선 구간 등록
-         * Given 지하철 노선을 생성하고
-         * When 생성한 지하철 노선에 추가로 구간을 등록할때
          * 새로운 노선이 추가되는 구간의 길이가 기존 역 사이보다 크거나 같으면
          * Then 구간 등록에 실패한다
          */
         @CsvSource(value = {"10", "11", "12"})
         @ParameterizedTest
-        void 신규_구간_길이가_기존과_동일하거나_더_크면_실패(long newSectionDistance) {
+        void 중간에_들어가는_신규_구간_길이가_기존과_동일하거나_더_크면_실패(long newSectionDistance) {
             //given
             ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
             long createdLineId = getId(lineCratedResponse);
@@ -161,7 +139,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
             Long newStationId = getId(stationCreatedResponse);
 
             //when
-            ValidatableResponse sectionCreatedResponse = createSection(createdLineId, downStationId, newStationId, newSectionDistance);
+            ValidatableResponse sectionCreatedResponse = createSection(createdLineId, newStationId, downStationId, newSectionDistance);
 
             //then
             verifyResponseStatus(sectionCreatedResponse, HttpStatus.BAD_REQUEST);

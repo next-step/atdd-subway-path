@@ -75,7 +75,7 @@ public class Section {
         return Objects.equals(this.downStation, station);
     }
 
-    public boolean isShorterThan(Section newSection) {
-        return this.distance < newSection.getDistance();
+    public boolean isEqualsOrShorterThan(Section newSection) {
+        return this.distance <= newSection.getDistance();
     }
 }
