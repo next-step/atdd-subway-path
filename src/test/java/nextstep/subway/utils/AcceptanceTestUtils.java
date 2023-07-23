@@ -9,6 +9,8 @@ import io.restassured.response.ValidatableResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
+import java.util.Map;
+
 
 public final class AcceptanceTestUtils {
 
@@ -24,6 +26,15 @@ public final class AcceptanceTestUtils {
         return RestAssured
                 .given().log().all()
                 .when()
+                .get(url)
+                .then().log().all();
+    }
+
+    public static <V> ValidatableResponse getResource(String url, Map<String, V> params) {
+        return RestAssured
+                .given().log().all()
+                .when()
+                .queryParams(params)
                 .get(url)
                 .then().log().all();
     }
@@ -69,6 +80,7 @@ public final class AcceptanceTestUtils {
     public static String getLocation(ValidatableResponse response) {
         return response.extract().header(HttpHeaders.LOCATION);
     }
+
     public static Long getId(ValidatableResponse response) {
         return response.extract().jsonPath().getLong("id");
     }

@@ -32,7 +32,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         void 기존_노선_상행역에_신규_구간_상행역_등록_성공() {
             //given
             long distance = 10L;
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
             long createdLineId = getId(lineCratedResponse);
             long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
 
@@ -65,7 +65,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         void 기존_노선_상행역에_신규_구간_하행역_등록_성공() {
             //given
             long distance = 10L;
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
             long createdLineId = getId(lineCratedResponse);
             long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
 
@@ -99,7 +99,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         void 기존_노선_하행역에_신규_구간_상행역_등록_성공() {
             //given
             long distance = 10L;
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
             long createdLineId = getId(lineCratedResponse);
             long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
 
@@ -130,7 +130,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         @Test
         void 신규_구간_하행역_기등록_실패() {
             //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
             long createdLineId = getId(lineCratedResponse);
             long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
             long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
@@ -153,7 +153,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         @ParameterizedTest
         void 신규_구간_길이가_기존과_동일하거나_더_크면_실패(long newSectionDistance) {
             //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
             long createdLineId = getId(lineCratedResponse);
             long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
 
@@ -177,7 +177,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         @Test
         void 신규_구간_기등록_실패() {
             //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
             long createdLineId = getId(lineCratedResponse);
             long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
             long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
@@ -199,7 +199,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         @Test
         void 신규_구간_노선_구간_상행_하행_모두_미등록_실패() {
             //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
             ValidatableResponse firstNewStationCreatedResponse = createStation("부천역");
             Long firstNewStationId = getId(firstNewStationCreatedResponse);
 
@@ -230,7 +230,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         void 상행역_구간_제거_성공() {
             //given
             long distance = 10L;
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
             long createdLineId = getId(lineCratedResponse);
             long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
             long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
@@ -264,7 +264,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         void 하행역_구간_제거_성공() {
             //given
             long distance = 10L;
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
             long createdLineId = getId(lineCratedResponse);
             long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
 
@@ -297,7 +297,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         void 중간역_구간_제거_성공() {
             //given
             long distance = 10L;
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
             long createdLineId = getId(lineCratedResponse);
             long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
 
@@ -335,7 +335,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         @Test
         void 지하철노선_구간_제거시_구간이_한개인_경우_상행역_제거_실패() {
             //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
             Long upStationId = getLong(lineCratedResponse, UP_STATION_ID_JSON_PATH);
 
             //when
@@ -354,7 +354,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         @Test
         void 지하철노선_구간_제거시_구간이_한개인_경우_하행역_제거_실패() {
             //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
             Long downStationId = getLong(lineCratedResponse, DOWN_STATION_ID_JSON_PATH);
 
             //when
@@ -373,7 +373,7 @@ class SectionAcceptanceTest extends SectionAcceptanceTestHelper {
         @Test
         void 지하철노선_구간_제거시_구간에_없는_역인_경우_실패() {
             //given
-            ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10L);
+            ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10L);
             Long notInSectionStationId = getId(createStation("성수역"));
 
             //when

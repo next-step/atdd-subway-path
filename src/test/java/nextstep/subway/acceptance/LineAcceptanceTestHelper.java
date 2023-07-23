@@ -15,7 +15,18 @@ class LineAcceptanceTestHelper extends StationAcceptanceTestHelper {
     protected static final String UP_STATION_ID_JSON_PATH = "stations[0].id";
     protected static final String DOWN_STATION_ID_JSON_PATH = "stations[1].id";
 
-    protected ValidatableResponse createLines(String lineName, String color, String upStationName, String downStationName, long distance) {
+    protected ValidatableResponse createLines(String lineName, String color, Long upStationId, Long downStationId, long distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", lineName);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return createResource(LINES_RESOURCE_URL, params);
+    }
+
+    protected ValidatableResponse createLinesWithStations(String lineName, String color, String upStationName, String downStationName, long distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", lineName);
         params.put("color", color);
