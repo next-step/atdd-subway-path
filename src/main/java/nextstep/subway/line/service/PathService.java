@@ -38,6 +38,6 @@ public class PathService {
 
     private Station getStation(long sourceStationId) {
         return stationRepository.findById(sourceStationId)
-                .orElseThrow(() -> new StationNotFoundException("station.not.found"));
+                .orElseThrow(() -> new StationNotFoundException("station.0001"));
     }
 }

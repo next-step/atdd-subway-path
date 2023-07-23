@@ -6,7 +6,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.ShortestPathResponse;
 import nextstep.subway.station.dto.StationResponse;
-import nextstep.subway.station.entity.Station;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;

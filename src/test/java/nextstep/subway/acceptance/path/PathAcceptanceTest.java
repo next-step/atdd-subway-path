@@ -77,7 +77,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우")
         @Test
         void sourceOrTargetStationDoNotExist() {
-            익명역_URL = "/stations/9999999";
+            익명역_URL = 지하철_URL_생성(999999L);
             지하철_최단_경로_조회_실패(익명역_URL, 교대역_URL);
             지하철_최단_경로_조회_실패(교대역_URL, 익명역_URL);
         }

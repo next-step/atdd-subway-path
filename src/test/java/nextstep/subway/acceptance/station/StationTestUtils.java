@@ -40,6 +40,9 @@ public class StationTestUtils {
         return Long.parseLong(url.substring(url.lastIndexOf('/') + 1));
     }
 
+    public static String 지하철_URL_생성(Long id) {
+        return String.format("/stations/%s", id);
+    }
 
     private StationTestUtils() {}
 

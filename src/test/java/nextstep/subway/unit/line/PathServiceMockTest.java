@@ -111,22 +111,25 @@ public class PathServiceMockTest {
     class ShortestPathFindingFails {
 
         PathService pathService;
+        LineRepository lineRepository;
         StationRepository stationRepository;
+        List<Line> lineList;
 
         @BeforeEach
         void setUp() {
             // given
-            LineRepository lineRepository = mock(LineRepository.class);
+            lineRepository = mock(LineRepository.class);
             stationRepository = mock(StationRepository.class);
             pathService = new PathService(lineRepository, stationRepository);
-            List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
-            when(lineRepository.findAll()).thenReturn(lineList);
+            lineList = List.of(이호선, 삼호선, 신분당선);
+
         }
 
         @DisplayName("출발 역과 도착 역이 같은 경우")
         @Test
         void sourceAndTargetStationIsSame() {
             // when
+            when(lineRepository.findAll()).thenReturn(lineList);
             when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
             when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
 
@@ -140,6 +143,7 @@ public class PathServiceMockTest {
         @Test
         void sourceAndTargetStationIsNotConnected() {
             // when
+            when(lineRepository.findAll()).thenReturn(lineList);
             when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
             when(stationRepository.findById(5L)).thenReturn(Optional.of(익명역));
 
@@ -154,10 +158,10 @@ public class PathServiceMockTest {
         void sourceOrTargetStationDoNotExist() {
             // when
             when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
-            when(stationRepository.findById(5L)).thenReturn(null);
+            when(stationRepository.findById(5L)).thenReturn(Optional.empty());
 
             // then
-            Assertions.assertThatThrownBy(() -> pathService.getShortestPath(익명역.getId(), 교대역.getId()))
+            Assertions.assertThatThrownBy(() -> pathService.getShortestPath(교대역.getId(), 익명역.getId()))
                     .isInstanceOf(StationNotFoundException.class);
         }
     }
