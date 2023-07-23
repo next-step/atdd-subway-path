@@ -3,9 +3,8 @@ package nextstep.subway.line.domain.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
-import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionHandlerMapping;
-import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionOperator;
+import nextstep.subway.line.domain.entity.addition.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.deletion.SectionDeletionOperator;
 import nextstep.subway.line.domain.vo.Sections;
 import nextstep.subway.station.entity.Station;
 

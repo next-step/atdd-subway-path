@@ -2,7 +2,10 @@ package nextstep.subway.unit.line.handler;
 
 import nextstep.subway.line.domain.entity.Line;
 import nextstep.subway.line.domain.entity.Section;
-import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.deletion.handler.DeleteSectionAtLastHandler;
+import nextstep.subway.line.domain.entity.deletion.handler.DeleteSectionAtMiddleHandler;
+import nextstep.subway.line.domain.entity.deletion.handler.DeleteSectionAtTopHandler;
+import nextstep.subway.line.domain.entity.addition.SectionAdditionHandlerMapping;
 import nextstep.subway.line.domain.entity.handler.deletion.*;
 import nextstep.subway.station.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,26 +76,5 @@ public class SectionDeletionHandlerTest {
 
         // then
         assertThat(이호선.getStations()).doesNotContain(역삼역);
-    }
-
-    /**
-     * When 존재하지 않는 역을 제거하면
-     * Then DeletionValidationException을 반환한다
-     */
-    @DisplayName("존재하지 않는 역 제거")
-    @Test
-    void deletionFailedByNonExistingStation() {
-        // when
-
-        // then
-    }
-
-    /**
-     * When 구간이 하나만 있을 때 역을 제거하려하면
-     * Then DeletionValidationException을 반환한다
-     */
-    @DisplayName("구간이 하나인 역 제거")
-    @Test
-    void deletionFailedByOnlyOneSectionExists() {
     }
 }

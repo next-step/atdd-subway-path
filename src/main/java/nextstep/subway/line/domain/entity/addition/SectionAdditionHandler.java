@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain.entity.handler.addition;
+package nextstep.subway.line.domain.entity.addition;
 
 import nextstep.subway.line.domain.entity.Section;
 import nextstep.subway.line.domain.vo.Sections;
