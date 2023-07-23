@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionOperator;
 import nextstep.subway.line.domain.vo.Sections;
 import nextstep.subway.station.entity.Station;
 
@@ -63,8 +65,8 @@ public class Line {
         sections.addSection(handlerMapping, section);
     }
 
-    public void removeSection(Station station) {
-        sections.remove(station);
+    public void removeSection(SectionDeletionOperator sectionDeletionOperator, Station station) {
+        sections.remove(sectionDeletionOperator, station);
     }
 
     public boolean hasStation(Station station) {

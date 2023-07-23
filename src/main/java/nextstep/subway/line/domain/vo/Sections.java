@@ -2,10 +2,10 @@ package nextstep.subway.line.domain.vo;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import nextstep.subway.common.exception.DeletionValidationException;
 import nextstep.subway.line.domain.entity.Section;
 import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandler;
 import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionOperator;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.entity.Station;
@@ -77,33 +77,8 @@ public class Sections {
                 .orElseThrow(() -> new SectionNotFoundException("section.not.found"));
     }
 
-    public void remove(Station station) {
-        if (sections.size() == 1) {
-            throw new DeletionValidationException("section.is.singular");
-        }
-        if (!hasStation(station)) {
-            throw new DeletionValidationException(String.format("역이 존재하지 않습니다. 역 이름:%s", station.getId()));
-        }
-
-        if (checkDownStationsContains(station) && checkUpStationsContains(station)) {
-            Section sectionIncludesByDownStation = getSectionByDownStation(station);
-            Section sectionIncludesByUpStation = getSectionByUpStation(station);
-
-            sections.remove(sectionIncludesByDownStation);
-            sections.remove(sectionIncludesByUpStation);
-
-            Section newSection = new Section(sectionIncludesByDownStation.getLine(),
-                    sectionIncludesByDownStation.getUpStation(),
-                    sectionIncludesByUpStation.getDownStation(),
-                    sectionIncludesByDownStation.getDistance() + sectionIncludesByUpStation.getDistance());
-            sections.add(newSection);
-        }
-
-        else if (checkDownStationsContains(station)) {
-            sections.remove(getSectionByDownStation(station));
-        } else if (checkUpStationsContains(station)) {
-            sections.remove(getSectionByUpStation(station));
-        }
+    public void remove(SectionDeletionOperator sectionDeletionOperator, Station station) {
+        sectionDeletionOperator.apply(this, station);
     }
 
     public Station getFirstStation() {
@@ -154,5 +129,13 @@ public class Sections {
 
     public boolean checkUpStationsContains(Station station) {
         return getUpStations().contains(station);
+    }
+
+    public void forceSectionRemove(Section section) {
+        sections.remove(section);
+    }
+
+    public int size() {
+        return sections.size();
     }
 }

@@ -8,4 +8,9 @@ public class DeleteSectionAtTopHandler extends SectionDeletionHandler{
     public boolean checkApplicable(Sections sections, Station station) {
         return sections.getFirstStation().equals(station);
     }
+
+    @Override
+    public void apply(Sections sections, Station station) {
+        sections.forceSectionRemove(sections.getSectionByUpStation(station));
+    }
 }

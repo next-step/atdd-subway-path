@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("구간 삭제 핸들러 관련 기능")
 public class SectionDeletionHandlerTest {
 
     final int SECTION_DEFAULT_DISTANCE = 10;
@@ -61,16 +62,37 @@ public class SectionDeletionHandlerTest {
         assertThat(이호선.getStations()).doesNotContain(선릉역);
     }
 
-    @DisplayName("상행 종착역과 하행종착역이 아닌 중간 구간 제거하는 핸들러 반환")
+    @DisplayName("상행 종착역과 하행종착역이 아닌 중간 구간 제거")
     @Test
     void returnDeleteSectionAtMiddleHandler() {
         // given
         이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
-        new DeleteSectionAtMiddleHandler().apply(이호선.getSections(), 선릉역);
+        new DeleteSectionAtMiddleHandler().apply(이호선.getSections(), 역삼역);
 
         // then
-        assertThat(이호선.getStations()).doesNotContain(선릉역);
+        assertThat(이호선.getStations()).doesNotContain(역삼역);
+    }
+
+    /**
+     * When 존재하지 않는 역을 제거하면
+     * Then DeletionValidationException을 반환한다
+     */
+    @DisplayName("존재하지 않는 역 제거")
+    @Test
+    void deletionFailedByNonExistingStation() {
+        // when
+
+        // then
+    }
+
+    /**
+     * When 구간이 하나만 있을 때 역을 제거하려하면
+     * Then DeletionValidationException을 반환한다
+     */
+    @DisplayName("구간이 하나인 역 제거")
+    @Test
+    void deletionFailedByOnlyOneSectionExists() {
     }
 }

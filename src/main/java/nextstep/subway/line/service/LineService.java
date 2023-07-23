@@ -3,6 +3,8 @@ package nextstep.subway.line.service;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.domain.entity.Section;
 import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionOperator;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private final SectionAdditionHandlerMapping sectionAdditionHandlerMapping;
+    private final SectionDeletionOperator sectionDeletionOperator;
 
     @Transactional
     public LineResponse save(LineRequest request) {
@@ -71,7 +74,7 @@ public class LineService {
 
         Line line = getLine(lineId);
 
-        line.removeSection(deleteReqStation);
+        line.removeSection(sectionDeletionOperator, deleteReqStation);
     }
 
     private Section getSection(SectionRequest request, Line line) {

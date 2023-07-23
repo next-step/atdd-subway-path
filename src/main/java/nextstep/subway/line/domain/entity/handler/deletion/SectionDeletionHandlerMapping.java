@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain.entity.handler.deletion;
 
-import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.common.exception.DeletionValidationException;
 import nextstep.subway.line.domain.vo.Sections;
 import nextstep.subway.station.entity.Station;

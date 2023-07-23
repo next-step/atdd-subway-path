@@ -5,6 +5,8 @@ import nextstep.subway.common.exception.DeletionValidationException;
 import nextstep.subway.line.domain.entity.Line;
 import nextstep.subway.line.domain.entity.Section;
 import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.deletion.SectionDeletionOperator;
 import nextstep.subway.station.entity.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -168,7 +170,7 @@ class LineTest {
         이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
-        이호선.removeSection(강남역);
+        이호선.removeSection(new SectionDeletionOperator(new SectionDeletionHandlerMapping()), 강남역);
 
         // then
         assertThat(이호선.getStations()).doesNotContain(강남역);
@@ -181,7 +183,7 @@ class LineTest {
         이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
-        이호선.removeSection(역삼역);
+        이호선.removeSection(new SectionDeletionOperator(new SectionDeletionHandlerMapping()), 역삼역);
 
         // then
         assertThat(이호선.getStations()).doesNotContain(역삼역);
@@ -191,9 +193,9 @@ class LineTest {
     @Test
     void removeSectionFailedByOnlyOneSectionExists() {
         // when
-        Assertions.assertThatThrownBy(() -> 이호선.removeSection(강남역))
+        Assertions.assertThatThrownBy(() -> 이호선.removeSection(new SectionDeletionOperator(new SectionDeletionHandlerMapping()), 강남역))
                 .isInstanceOf(DeletionValidationException.class);
-        Assertions.assertThatThrownBy(() -> 이호선.removeSection(역삼역))
+        Assertions.assertThatThrownBy(() -> 이호선.removeSection(new SectionDeletionOperator(new SectionDeletionHandlerMapping()), 역삼역))
                 .isInstanceOf(DeletionValidationException.class);
 
         // then
@@ -207,7 +209,7 @@ class LineTest {
         이호선.addSection(new SectionAdditionHandlerMapping(), new Section(이호선, 역삼역, 선릉역, SECTION_DEFAULT_DISTANCE));
 
         // when
-        Assertions.assertThatThrownBy(() -> 이호선.removeSection(익명역))
+        Assertions.assertThatThrownBy(() -> 이호선.removeSection(new SectionDeletionOperator(new SectionDeletionHandlerMapping()), 익명역))
                 .isInstanceOf(DeletionValidationException.class);
     }
 }
