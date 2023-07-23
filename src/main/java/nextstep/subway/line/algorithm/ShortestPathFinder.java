@@ -6,13 +6,11 @@ import nextstep.subway.station.entity.Station;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
-import org.springframework.stereotype.Component;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
 public class ShortestPathFinder {
 
     public List<Station> searchPath(List<Line> lineList, Station source, Station target) {

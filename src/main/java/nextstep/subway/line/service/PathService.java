@@ -23,7 +23,6 @@ public class PathService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final ShortestPathFinder shortestPathFinder;
 
     public ShortestPathResponse getShortestPath(long sourceStationId, long targetStationId) {
 
@@ -32,9 +31,9 @@ public class PathService {
 
         List<Line> lineList = lineRepository.findAll();
 
-
-        List<Station> searchedPath = shortestPathFinder.searchPath(lineList, sourceStation, targetStation);
-        BigInteger weight = shortestPathFinder.getShortestWeight(lineList, sourceStation, targetStation);
+        ShortestPathFinder pathFinder = new ShortestPathFinder();
+        List<Station> searchedPath = pathFinder.searchPath(lineList, sourceStation, targetStation);
+        BigInteger weight = pathFinder.getShortestWeight(lineList, sourceStation, targetStation);
         return new ShortestPathResponse(searchedPath.stream().map(StationResponse::from).collect(Collectors.toList()), weight);
     }
 

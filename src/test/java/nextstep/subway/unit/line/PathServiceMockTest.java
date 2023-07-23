@@ -53,10 +53,11 @@ public class PathServiceMockTest {
         삼호선.addSection(new SectionAdditionHandlerMapping(), new Section(삼호선, 남부터미널역, 양재역, 3));
     }
      /**
-     * Given
+     * Given 이호선, 삼호선, 신분당선이 등록돼있을 때
      * When 교대에서 강남역으로 가는 최단 경로를 조회하면
-     * Then 모든 노선 정보를 최단 경로 찾기 객체에 넣는다
-     * And 최단 경로 찾기 객체의 getPath를 호출한다.
+     * Then 교대역-남부터미널역-양재역-강남역 순으로 경로가 반환된다
+     * And 총 경로 거리가 8이다.
+      *
      */
     @DisplayName("최단 경로 길 찾기")
     @Test
@@ -65,14 +66,11 @@ public class PathServiceMockTest {
         // given
         LineRepository lineRepository = mock(LineRepository.class);
         StationRepository stationRepository = mock(StationRepository.class);
-        ShortestPathFinder shortestPathFinder = mock(ShortestPathFinder.class);
-        PathService pathService = new PathService(lineRepository, stationRepository, shortestPathFinder);
+        PathService pathService = new PathService(lineRepository, stationRepository);
         List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
 
         when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(강남역));
-        when(shortestPathFinder.searchPath(any(), any(), any())).thenReturn(List.of(교대역, 남부터미널역, 양재역, 강남역));
-        when(shortestPathFinder.getShortestWeight(any(), any(), any())).thenReturn(BigInteger.valueOf(8));
         when(lineRepository.findAll()).thenReturn(lineList);
 
         // when
@@ -93,14 +91,11 @@ public class PathServiceMockTest {
         // given
         LineRepository lineRepository = mock(LineRepository.class);
         StationRepository stationRepository = mock(StationRepository.class);
-        ShortestPathFinder shortestPathFinder = mock(ShortestPathFinder.class);
-        PathService pathService = new PathService(lineRepository, stationRepository, shortestPathFinder);
+        PathService pathService = new PathService(lineRepository, stationRepository);
         List<Line> lineList = List.of(이호선, 삼호선, 신분당선);
 
         when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(강남역));
-        when(shortestPathFinder.searchPath(any(), any(), any())).thenReturn(List.of(강남역, 양재역, 남부터미널역, 교대역));
-        when(shortestPathFinder.getShortestWeight(any(), any(), any())).thenReturn(BigInteger.valueOf(8));
         when(lineRepository.findAll()).thenReturn(lineList);
 
         // when
