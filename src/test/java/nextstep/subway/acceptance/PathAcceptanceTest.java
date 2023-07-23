@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
@@ -62,9 +60,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<StationTestResponse> stations = response.jsonPath().getList("stations", StationTestResponse.class);
-        assertThat(stations).hasSize(3);
-        assertThat(stations.stream().map(StationTestResponse::getId).collect(Collectors.toList())).containsExactly(강남역, 교대역, 남부터미널역);
+        List<Long> ids = response.jsonPath().getList("stations.id", Long.class);
+        assertThat(ids).hasSize(3);
+        assertThat(ids).containsExactly(강남역, 교대역, 남부터미널역);
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
@@ -77,18 +75,5 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     private Long ID_추출(ExtractableResponse<Response> lineCreationResponse) {
         return lineCreationResponse.jsonPath().getLong("id");
-    }
-
-    private static class StationTestResponse {
-        private Long id;
-        private String name;
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
     }
 }
