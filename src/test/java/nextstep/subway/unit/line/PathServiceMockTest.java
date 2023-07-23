@@ -50,13 +50,7 @@ public class PathServiceMockTest {
         신분당선 = new Line("신분당선", "red", 3, 강남역, 양재역);
         삼호선.addSection(new SectionAdditionHandlerMapping(), new Section(삼호선, 남부터미널역, 양재역, 3));
     }
-     /**
-     * Given 이호선, 삼호선, 신분당선이 등록돼있을 때
-     * When 교대에서 강남역으로 가는 최단 경로를 조회하면
-     * Then 교대역-남부터미널역-양재역-강남역 순으로 경로가 반환된다
-     * And 총 경로 거리가 8이다.
-      *
-     */
+
     @DisplayName("최단 경로 길 찾기")
     @Test
     void findShortestPath() {
