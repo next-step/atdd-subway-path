@@ -83,9 +83,36 @@ public class LineServiceTest {
         assertThat(신분당선.getStations()).containsExactly(논현역,강남역,광교역);
     }
 
-    @DisplayName("노선에서 구간을 삭제")
+
+    @DisplayName("노선에서 상행 종점 구간을 삭제")
     @Test
-    void removeSection() {
+    void removeFirstSection() {
+        // given
+        sectionService.saveSection(신분당선.getId(),new SectionRequest(강남역.getId(),광교역.getId(),DISTANCE));
+
+        // when
+        sectionService.removeSection(신분당선.getId(),논현역.getId());
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(강남역,광교역);
+    }
+
+    @DisplayName("노선에서 중간 구간을 삭제")
+    @Test
+    void removeMiddleSection() {
+        // given
+        sectionService.saveSection(신분당선.getId(),new SectionRequest(강남역.getId(),광교역.getId(),DISTANCE));
+
+        // when
+        sectionService.removeSection(신분당선.getId(),강남역.getId());
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(논현역,광교역);
+    }
+
+    @DisplayName("노선에서 하행 종점 구간을 삭제")
+    @Test
+    void removeLastSection() {
         // given
         sectionService.saveSection(신분당선.getId(),new SectionRequest(강남역.getId(),광교역.getId(),DISTANCE));
 
@@ -93,7 +120,7 @@ public class LineServiceTest {
         sectionService.removeSection(신분당선.getId(),광교역.getId());
 
         // then
-        assertThat(신분당선.getStations()).doesNotContain(광교역);
+        assertThat(신분당선.getStations()).containsExactly(논현역,강남역);
     }
 
     @DisplayName("노선에서 등록되지 않은 구간을 삭제할 경우 에러를 던짐")

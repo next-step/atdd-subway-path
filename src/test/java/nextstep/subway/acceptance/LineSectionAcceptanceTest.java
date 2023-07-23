@@ -2,7 +2,6 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.response.LineResponse;
 import nextstep.subway.applicaion.dto.response.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,8 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.acceptance.steps.LineSteps.createLine;
-import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선_조회;
+import static nextstep.subway.acceptance.steps.LineSteps.*;
 import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_등록;
 import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_제거_요청;
 import static nextstep.subway.acceptance.steps.StationSteps.createStationAndGetInfo;
@@ -48,7 +46,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<StationResponse> list = 지하철_노선_조회().jsonPath().getList("", LineResponse.class).get(0).getStations();
+        List<StationResponse> list = 지하철_노선_역_정보_조회();
 
         assertThat(list).hasSize(3);
     }
@@ -64,7 +62,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
         assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<StationResponse> list = 지하철_노선_조회().jsonPath().getList("", LineResponse.class).get(0).getStations();
+        List<StationResponse> list = 지하철_노선_역_정보_조회();
 
         assertThat(list).hasSize(3);
     }
@@ -79,8 +77,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> sectionResponse = 지하철_노선_구간_등록(신분당선, 논현역, 신논현역, DEFAULT_DISTANCE-1);
         assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<StationResponse> stations = 지하철_노선_조회().jsonPath().getList("", LineResponse.class).get(0).getStations();
-        List<Long> stationIds = stations.stream().map(StationResponse::getId).toList();
+        List<Long> stationIds = 지하철_노선_역_아이디_조회();
 
         assertThat(stationIds).hasSize(3);
         assertThat(stationIds).containsExactly(논현역, 신논현역, 강남역);
@@ -127,12 +124,52 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 구간을 생성한다.
-     * When 구간을 제거한다.
+     * When 구간을 제거한다. - 노선의 첫 구간을 제거할 때
      * Then 구간이 제거된다.
      * */
-    @DisplayName("구간 제거")
+    @DisplayName("구간 제거 - 노선의 첫 구간을 제거")
     @Test
-    void removeLineSection() {
+    void removeFirstSection() {
+        // given
+        Long 광교역 = createStationAndGetInfo("광교역").getId();
+        지하철_노선_구간_등록(신분당선, 강남역, 광교역, DEFAULT_DISTANCE);
+
+        // when
+        지하철_노선_구간_제거_요청(신분당선, 논현역);
+
+        // then
+        List<Long> stationIds = 지하철_노선_역_아이디_조회();
+        assertThat(stationIds).containsExactly(강남역,광교역);
+    }
+
+    /**
+     * Given 구간을 생성한다.
+     * When 구간을 제거한다. - 노선의 중간 구간을 제거할 때.
+     * Then 구간이 제거된다.
+     * */
+    @DisplayName("구간 제거 - 노선의 중간 구간 제거")
+    @Test
+    void removeMiddleSection() {
+        // given
+        Long 광교역 = createStationAndGetInfo("광교역").getId();
+        지하철_노선_구간_등록(신분당선, 강남역, 광교역, DEFAULT_DISTANCE);
+
+        // when
+        지하철_노선_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        List<Long> stationIds = 지하철_노선_역_아이디_조회();
+        assertThat(stationIds).containsExactly(논현역,광교역);
+    }
+
+    /**
+     * Given 구간을 생성한다.
+     * When 구간을 제거한다. - 노선의 마지막 구간을 제거할 때.
+     * Then 구간이 제거된다.
+     * */
+    @DisplayName("구간 제거 - 마지막 구간 제거")
+    @Test
+    void removeLastSection() {
         // given
         Long 광교역 = createStationAndGetInfo("광교역").getId();
         지하철_노선_구간_등록(신분당선, 강남역, 광교역, DEFAULT_DISTANCE);
@@ -141,17 +178,16 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_제거_요청(신분당선, 광교역);
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("", LineResponse.class).get(0).getStations()).hasSize(2);
+        List<Long> stationIds = 지하철_노선_역_아이디_조회();
+        assertThat(stationIds).containsExactly(논현역,강남역);
     }
 
     /**
      * Given 구간을 생성한다.
-     * When 구간을 제거한다. -해당 노선의 마지막 구간이 아닌 구간을 삭제할 때
+     * When 구간을 제거한다. -해당 노선의 등록되지 않은 역을 삭제할 때
      * Then 에러를 던진다.
      * */
-    @DisplayName("구간 제거. 해당 노선에 등록되어있는 마지막 구간이 아닌 경우 에러")
+    @DisplayName("구간 제거. 해당 노선에 등록되지 않은 구간인 경우 에러")
     @Test
     public void removeLineSectionExceptionWhenNotMachLastSections(){
         // given
@@ -159,7 +195,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선_구간_등록(신분당선, 강남역, 광교역, DEFAULT_DISTANCE);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선, 강남역);
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거_요청(신분당선, 신논현역);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

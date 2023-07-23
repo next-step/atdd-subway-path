@@ -3,9 +3,12 @@ package nextstep.subway.acceptance.steps;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.response.LineResponse;
+import nextstep.subway.applicaion.dto.response.StationResponse;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LineSteps {
@@ -33,6 +36,14 @@ public class LineSteps {
                 .when().get("lines")
                 .then().log().all()
                 .extract();
+    }
+
+    public static List<StationResponse> 지하철_노선_역_정보_조회() {
+        return 지하철_노선_조회().jsonPath().getList("", LineResponse.class).get(0).getStations();
+    }
+
+    public static List<Long> 지하철_노선_역_아이디_조회() {
+        return 지하철_노선_역_정보_조회().stream().map(StationResponse::getId).toList();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color) {
