@@ -5,7 +5,7 @@ import nextstep.subway.line.dto.ShortestPathResponse;
 import nextstep.subway.line.domain.entity.Line;
 import nextstep.subway.line.domain.entity.LineRepository;
 import nextstep.subway.line.domain.entity.Section;
-import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
 import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.line.service.PathService;
 import nextstep.subway.station.dto.StationResponse;

@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain.entity.handler;
+package nextstep.subway.line.domain.entity.handler.addition;
 
 import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.line.domain.entity.Section;

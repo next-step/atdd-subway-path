@@ -2,7 +2,7 @@ package nextstep.subway.line.service;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.domain.entity.Section;
-import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;

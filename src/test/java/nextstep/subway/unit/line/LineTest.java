@@ -4,7 +4,7 @@ import nextstep.subway.common.exception.CreationValidationException;
 import nextstep.subway.common.exception.DeletionValidationException;
 import nextstep.subway.line.domain.entity.Line;
 import nextstep.subway.line.domain.entity.Section;
-import nextstep.subway.line.domain.entity.handler.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.handler.addition.SectionAdditionHandlerMapping;
 import nextstep.subway.station.entity.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
