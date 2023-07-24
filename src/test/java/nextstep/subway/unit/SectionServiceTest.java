@@ -13,6 +13,8 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,23 +99,12 @@ public class SectionServiceTest {
                 );
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 클때 예외 발생")
-    @Test
-    void addSectionThrowExceptionIsINVALID_DISTANCE() {
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11})
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같을때 예외 발생")
+    void addSectionThrowExceptionIsINVALID_DISTANCE(int distance) {
         // given
-        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 11);
-
-        // when then
-        assertThatThrownBy(() -> sectionService.addSection(line.getId(), sectionDto))
-                .isInstanceOf(SubwayException.class)
-                .hasMessageContaining(ErrorCode.INVALID_DISTANCE.getMessage());
-    }
-
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같을때 예외 발생")
-    @Test
-    void addSectionThrowExceptionIsINVALID_DISTANCE2() {
-        // given
-        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 10);
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), distance);
 
         // when then
         assertThatThrownBy(() -> sectionService.addSection(line.getId(), sectionDto))

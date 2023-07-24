@@ -9,6 +9,8 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -80,26 +82,15 @@ class LineTest {
                 );
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 클때 예외 발생")
-    @Test
-    void addSectionThrowExceptionIsINVALID_DISTANCE() {
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11})
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같을때 예외 발생")
+    void addSectionThrowExceptionIsINVALID_DISTANCE(int distance) {
         // given
         Line line = line(당고개역, 이수역);
 
         // when then
-        assertThatThrownBy(() -> line.addSection(section(line, 당고개역, 사당역, 11)))
-                .isInstanceOf(SubwayException.class)
-                .hasMessageContaining(ErrorCode.INVALID_DISTANCE.getMessage());
-    }
-
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같을때 예외 발생")
-    @Test
-    void addSectionThrowExceptionIsINVALID_DISTANCE2() {
-        // given
-        Line line = line(당고개역, 이수역);
-
-        // when then
-        assertThatThrownBy(() -> line.addSection(section(line, 당고개역, 사당역, 10)))
+        assertThatThrownBy(() -> line.addSection(section(line, 당고개역, 사당역, distance)))
                 .isInstanceOf(SubwayException.class)
                 .hasMessageContaining(ErrorCode.INVALID_DISTANCE.getMessage());
     }
