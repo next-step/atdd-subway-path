@@ -143,6 +143,44 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("지하철 노선의 첫번째 구간을 삭제한다.")
+    void removeFirstSection() {
+        // given
+        Section 판교역_광교역_구간 = new Section(판교역, 광교역, 5);
+        sections.addSection(판교역_광교역_구간);
+
+        // when
+        sections.deleteSectionByStationId(강남역.getId());
+
+        // then
+        List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
+
+        assertAll(
+                () -> assertThat(노선에_등록된_역_목록).doesNotContain(강남역),
+                () -> assertThat(sections.getTotalDistance()).isEqualTo(5)
+        );
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 중간 구간을 삭제한다.")
+    void removeMiddleSection() {
+        // given
+        Section 판교역_광교역_구간 = new Section(판교역, 광교역, 5);
+        sections.addSection(판교역_광교역_구간);
+
+        // when
+        sections.deleteSectionByStationId(판교역.getId());
+
+        // then
+        List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
+
+        assertAll(
+                () -> assertThat(노선에_등록된_역_목록).doesNotContain(광교역),
+                () -> assertThat(sections.getTotalDistance()).isEqualTo(28)
+        );
+    }
+
+    @Test
     @DisplayName("지하철의 노선의 마지막 구간을 삭제한다.")
     void removeSection() {
         // given
@@ -159,19 +197,6 @@ class LineTest {
                 () -> assertThat(노선에_등록된_역_목록).doesNotContain(광교역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(23)
         );
-    }
-
-    @Test
-    @DisplayName("지하철 노선의 중간 구간을 삭제한다.")
-    void removeMiddleSection() {
-        // given
-        Section 판교역_광교역_구간 = new Section(판교역, 광교역, 5);
-        sections.addSection(판교역_광교역_구간);
-
-        // when & then
-        assertThatThrownBy(() -> sections.deleteSectionByStationId(판교역.getId()))
-                .isInstanceOf(InvalidLineSectionException.class)
-                .hasMessageContaining(ErrorCode.IS_NOT_LAST_LINE_SECTION.getMessage());
     }
 
     @Test
