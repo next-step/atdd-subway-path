@@ -1,28 +1,21 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.vo.Path;
-import nextstep.subway.repository.LineRepository;
-import nextstep.subway.repository.StationRepository;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
-import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Component
 public class PathFinder {
 
-    private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final List<Section> sections;
 
-    public PathFinder(LineRepository lineRepository, StationRepository stationRepository) {
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+    public PathFinder(List<Section> sections) {
+        this.sections = sections;
     }
 
     public Path getShortestPath(Station sourceStation, Station targetStation) {
@@ -50,13 +43,17 @@ public class PathFinder {
     }
 
     private void addStationVertexes(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
-        stationRepository.findAll().forEach(graph::addVertex);
+        sections.stream()
+                .map(Section::getUpStation)
+                .findFirst()
+                .map(graph::addVertex);
+        sections.stream()
+                .map(Section::getDownStation)
+                .forEach(graph::addVertex);
+
     }
 
     private void addSectionEdges(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
-        lineRepository.findAll().stream()
-                .map(Line::getSections)
-                .flatMap(Collection::stream)
-                .forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
+        sections.forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
     }
 }

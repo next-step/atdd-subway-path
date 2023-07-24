@@ -5,9 +5,9 @@ import nextstep.subway.common.NotFoundStationException;
 import nextstep.subway.controller.resonse.PathResponse;
 import nextstep.subway.controller.resonse.StationResponse;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.vo.Path;
+import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.PathFindService;
 import org.junit.jupiter.api.Assertions;
@@ -17,12 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.thenCode;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -32,8 +32,9 @@ public class PathFindServiceTest {
     @Mock
     private StationRepository stationRepository;
 
+
     @Mock
-    private PathFinder pathFinder;
+    private LineRepository lineRepository;
 
     @InjectMocks
     private PathFindService pathFindService;
@@ -81,20 +82,20 @@ public class PathFindServiceTest {
     class Success {
 
         @Test
-        void 교대역에서_양재역을_가는_최단_경로는_교대_남부터미널_양재_5미터이다() {
+        void 교대역에서_양재역을_가는_최단_경로는_교대_남부터미널_양재_9미터이다() {
             // given
             given(stationRepository.findById(교대역Id)).willReturn(Optional.of(교대역));
             given(교대역.getId()).willReturn(교대역Id);
             given(stationRepository.findById(양재역Id)).willReturn(Optional.of(양재역));
             given(양재역.getId()).willReturn(양재역Id);
             given(남부터미널역.getId()).willReturn(남부터미널역Id);
-            givenPath(5L, 교대역, 남부터미널역, 양재역);
+            givenLines();
 
             // when
             PathResponse shortestPath = pathFindService.getShortestPath(교대역Id, 양재역Id);
 
             // then
-            verifyShortestPathResponse(shortestPath, 5L, 교대역Id, 남부터미널역Id, 양재역Id);
+            verifyShortestPathResponse(shortestPath, 9L, 교대역Id, 남부터미널역Id, 양재역Id);
         }
 
         @Test
@@ -105,7 +106,7 @@ public class PathFindServiceTest {
             given(stationRepository.findById(남부터미널역Id)).willReturn(Optional.of(남부터미널역));
             given(남부터미널역.getId()).willReturn(남부터미널역Id);
             given(교대역.getId()).willReturn(교대역Id);
-            givenPath(12L, 강남역, 교대역, 남부터미널역);
+            givenLines();
 
             // when
             PathResponse shortestPath = pathFindService.getShortestPath(강남역Id, 남부터미널역Id);
@@ -121,7 +122,7 @@ public class PathFindServiceTest {
             given(강남역.getId()).willReturn(강남역Id);
             given(stationRepository.findById(양재역Id)).willReturn(Optional.of(양재역));
             given(양재역.getId()).willReturn(양재역Id);
-            givenPath(10L, 강남역, 양재역);
+            givenLines();
 
             // when
             PathResponse shortestPath = pathFindService.getShortestPath(강남역Id, 양재역Id);
@@ -130,18 +131,18 @@ public class PathFindServiceTest {
             verifyShortestPathResponse(shortestPath, 10L, 강남역Id, 양재역Id);
         }
 
+        private void givenLines() {
+            given(이호선.getSections()).willReturn(Collections.singletonList(Section.of(교대역, 강남역, 5L)));
+            given(삼호선.getSections()).willReturn(List.of(Section.of(교대역, 남부터미널역, 7L), Section.of(남부터미널역, 양재역, 2L)));
+            given(신분당선.getSections()).willReturn(List.of(Section.of(강남역, 양재역, 10L)));
+            given(lineRepository.findAll()).willReturn(List.of(이호선, 신분당선, 삼호선));
+        }
+
         private void verifyShortestPathResponse(PathResponse pathResponse, long distance, Long... stationIds) {
             Assertions.assertEquals(distance, pathResponse.getDistance());
             assertThat(pathResponse.getStationResponses()).hasSize(stationIds.length)
                     .map(StationResponse::getId)
                     .containsExactly(stationIds);
-        }
-
-        private void givenPath(long distance, Station... stations) {
-            Path path = mock(Path.class);
-            given(path.getStations()).willReturn(List.of(stations));
-            given(path.getDistance()).willReturn(distance);
-            given(pathFinder.getShortestPath(any(Station.class), any(Station.class))).willReturn(path);
         }
 
     }
@@ -152,7 +153,6 @@ public class PathFindServiceTest {
         @Test
         void 출발역과_도착역이_같은_경우() {
             // given
-            given(pathFinder.getShortestPath(any(Station.class), any(Station.class))).willThrow(IllegalArgumentException.class);
             given(stationRepository.findById(강남역Id)).willReturn(Optional.of(강남역));
 
             // when & then
@@ -165,7 +165,6 @@ public class PathFindServiceTest {
             Station 다른역 = getStation();
             given(stationRepository.findById(강남역Id)).willReturn(Optional.of(강남역));
             given(stationRepository.findById(6L)).willReturn(Optional.of(다른역));
-            given(pathFinder.getShortestPath(any(Station.class), any(Station.class))).willThrow(IllegalArgumentException.class);
 
             // when & then
             thenCode(() -> pathFindService.getShortestPath(강남역Id, 6L)).isInstanceOf(IllegalArgumentException.class);

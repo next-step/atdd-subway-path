@@ -5,6 +5,7 @@ import nextstep.subway.domain.exception.NotEnoughSectionException;
 import nextstep.subway.domain.vo.Sections;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections.getValue();
+        return Collections.unmodifiableList(sections.getValue());
     }
 
     public static Builder builder() {

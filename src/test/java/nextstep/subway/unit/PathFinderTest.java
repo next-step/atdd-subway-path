@@ -14,6 +14,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.thenCode;
 
@@ -34,7 +38,6 @@ public class PathFinderTest {
     @Autowired
     private LineRepository lineRepository;
 
-    @Autowired
     private PathFinder pathFinder;
 
     /**
@@ -56,6 +59,13 @@ public class PathFinderTest {
         삼호선 = getLine("3호선", "orange", 교대역, 남부터미널역, 2L);
 
         createSection(삼호선, 남부터미널역, 양재역, 3L);
+
+
+        List<Section> sections = List.of(이호선, 신분당선, 삼호선).stream()
+                .map(Line::getSections)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        pathFinder = new PathFinder(sections);
     }
 
     @Nested

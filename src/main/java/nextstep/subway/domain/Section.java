@@ -11,11 +11,11 @@ public class Section {
     private Long id;
 
     @JoinColumn(name = "up_station_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station upStation;
 
     @JoinColumn(name = "down_station_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station downStation;
 
     @Column(nullable = false)

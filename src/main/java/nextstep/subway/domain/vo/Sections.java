@@ -17,7 +17,7 @@ public class Sections {
     private static final int MINIMUM_SIZE = 1;
 
     @JoinColumn(name = "section_id")
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
