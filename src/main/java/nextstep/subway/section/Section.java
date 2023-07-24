@@ -61,6 +61,11 @@ public class Section {
         }
     }
 
+    public void delete(Station station, int distance) {
+        this.downStation = station;
+        this.distance = this.distance + distance;
+    }
+
     public Long getId() {
         return id;
     }
