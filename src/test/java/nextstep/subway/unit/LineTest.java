@@ -150,13 +150,13 @@ class LineTest {
         sections.addSection(판교역_광교역_구간);
 
         // when
-        sections.deleteSectionByStationId(강남역.getId());
+        sections.deleteSectionByStationId(신사역.getId());
 
         // then
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         assertAll(
-                () -> assertThat(노선에_등록된_역_목록).doesNotContain(강남역),
+                () -> assertThat(노선에_등록된_역_목록).doesNotContain(신사역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(5)
         );
     }
@@ -175,7 +175,7 @@ class LineTest {
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         assertAll(
-                () -> assertThat(노선에_등록된_역_목록).doesNotContain(광교역),
+                () -> assertThat(노선에_등록된_역_목록).doesNotContain(판교역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(28)
         );
     }
