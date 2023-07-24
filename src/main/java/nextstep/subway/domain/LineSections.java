@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
@@ -44,17 +44,75 @@ public class LineSections {
             sections.add(newSection);
             return sections;
         }
-
         addMiddleSections(newSection);
 
         return sections;
     }
 
+    public void remove(Station station){
+        checkRemovableSections(station);
+
+        Optional<Section> frontSection = findSectionByDownStation(station);
+        Optional<Section> backSection = findSectionByUpStation(station);
+
+        if(!frontSection.isPresent() && backSection.isPresent()){
+            sections.remove(backSection.get());
+        }
+        if(frontSection.isPresent() && backSection.isPresent()){
+            Section front =frontSection.get();
+            Section back =backSection.get();
+            int distance = front.getDistance() + back.getDistance();
+            Section newSection = Section.builder()
+                                            .line(front.getLine())
+                                            .upStation(front.getUpStation())
+                                            .downStation(back.getDownStation())
+                                            .distance(distance)
+                                                  .build();
+            sections.remove(back);
+            sections.add(newSection);
+            sections.remove(front);
+        }
+        if(frontSection.isPresent() && !backSection.isPresent()){
+            Section ㄴㄴㄴ = frontSection.get();
+            sections.remove(frontSection.get());
+        }
+    }
+
+    private void checkRemovableSections(Station station) {
+        if (sections.size() <= MIN_LIMIT) {
+            throw new BadRequestSectionsException("노선에는 하나 이상의 구간이 존재해야합니다.");
+        }
+        if(!getStations().contains(station)){
+            throw new BadRequestSectionsException("노선에 포함되지 않은 구간은 삭제가 불가능합니다.");
+        }
+    }
+
+
+    public List<Station> getStations() {
+        Section section = getFirstSections();
+        List<Station> stations = new ArrayList<>();
+        stations.add(section.getUpStation());
+
+        for(int i=0; i <= sections.size()-2; i++){
+            Station curDownStation = section.getDownStation();
+            section = findSectionByUpStation(curDownStation)
+                                    .orElseThrow(()->new IllegalArgumentException("노선의 구간 정보가 비정상적인 상태입니다."));
+            stations.add(section.getUpStation());
+        }
+        stations.add(section.getDownStation());
+
+        return stations;
+    }
+
+    public int getTotalDistancs() {
+        return sections.stream().mapToInt(section->section.getDistance()).sum();
+    }
+
     private void addMiddleSections(Section newSection) {
         Section orgSection = sections.stream()
-                                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-                                .findFirst()
-                                .orElseThrow(() -> new BadRequestSectionsException("상행선 정보가 잘못되었습니다."));
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new BadRequestSectionsException("상행선 정보가 잘못되었습니다."));
 
         if(orgSection.getDistance() <= newSection.getDistance()){
             throw new BadRequestSectionsException("구간 사이의 새 구간의 길이는 기존 구간의 길이와 같거나 초과할 수 없습니다.");
@@ -62,11 +120,11 @@ public class LineSections {
 
         int distance = orgSection.getDistance()-newSection.getDistance();
         Section changeSections = Section.builder()
-                                            .line(orgSection.getLine())
-                                            .upStation(newSection.getDownStation())
-                                            .downStation(orgSection.getDownStation())
-                                            .distance(distance)
-                                            .build();
+                .line(orgSection.getLine())
+                .upStation(newSection.getDownStation())
+                .downStation(orgSection.getDownStation())
+                .distance(distance)
+                .build();
 
         sections.remove(orgSection);
         sections.add(newSection);
@@ -83,36 +141,12 @@ public class LineSections {
         return newSection.getDownStation().equals(firstStation);
     }
 
-    public void remove(Station station){
-        if (sections.size() <= MIN_LIMIT) {
-            throw new BadRequestSectionsException("노선에는 하나 이상의 구간이 존재해야합니다.");
-        }
-        if (!getLastSections().hasDownStation(station)) {
-            throw new BadRequestSectionsException("해당 노선의 마지막 하행 종점역이 아닙니다.");
-        }
-
-        sections.remove(sections.size() - 1);
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return sections.stream().filter(section->station.equals(section.getUpStation())).findAny();
     }
 
-
-    public List<Station> getStations() {
-        Section section = getFirstSections();
-        List<Station> stations = new ArrayList<>();
-        stations.add(section.getUpStation());
-
-        for(int i=0; i <= sections.size()-2; i++){
-            Station curDownStation = section.getDownStation();
-            for(Section s : sections){
-                if(curDownStation.equals(s.getUpStation())) {
-                    section = s;
-                    stations.add(s.getUpStation());
-                    break;
-                }
-            }
-        }
-        stations.add(section.getDownStation());
-
-        return stations;
+    private Optional<Section> findSectionByDownStation(Station station) {
+        return sections.stream().filter(section->station.equals(section.getDownStation())).findAny();
     }
 
     private Section getFirstSections() {

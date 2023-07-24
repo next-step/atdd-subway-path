@@ -68,7 +68,14 @@ public class Line {
         this.sections.remove(station);
     }
 
+    public List<Section> getSections() {
+        return this.sections.getSections();
+    }
     public List<Station> getStations() {
         return this.sections.getStations();
+    }
+
+    public int getTotalDistance(){
+        return this.sections.getTotalDistancs();
     }
 }
