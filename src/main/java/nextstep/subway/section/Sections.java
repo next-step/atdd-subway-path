@@ -119,17 +119,20 @@ public class Sections {
         Map<Station, Section> upSectionMap = new HashMap<>();
         for (Section oldSection : sections) {
             upSectionMap.put(oldSection.getUpStation(), oldSection);
-
-            if (isSameUpStations(section, oldSection) && isSameDownStations(section, oldSection)) {
-
-                throw new BusinessException(
-                    String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s",
-                        section.getUpStation().getId(),
-                        section.getDownStation().getId()));
-            }
+            sameThenThrow(section, oldSection);
         }
 
         return upSectionMap;
+    }
+
+    private void sameThenThrow(Section section, Section oldSection) {
+        if (isSameUpStations(section, oldSection) && isSameDownStations(section, oldSection)) {
+
+            throw new BusinessException(
+                String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s",
+                    section.getUpStation().getId(),
+                    section.getDownStation().getId()));
+        }
     }
 
     private boolean isSameDownStations(Section section, Section oldSection) {
