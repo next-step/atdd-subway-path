@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@DisplayName("구간 단위테스트")
 class LineSectionsUnitTest {
 
   @Test
@@ -117,4 +119,38 @@ class LineSectionsUnitTest {
         new Station(2L, "이매역"),
         3L)).isInstanceOf(IllegalArgumentException.class);
   }
+
+  @Test
+  @DisplayName("하행이 동일한 역으로 구간을 추가하면 성공한다")
+  void addEqualsDownStation() {
+    final Line line = new Line(0L, "분당선", "RED", new ArrayList<>());
+
+    line.addSection(new Station(1L, "야탑역"),
+        new Station(2L, "이매역"),
+        3L);
+
+    line.addSection(new Station(5L, "서현역"),
+        new Station(2L, "이매역"),
+        1L);
+
+    assertThat(line.getStations())
+        .extracting(Station::getName)
+        .containsExactly("야탑역", "서현역", "이매역");
+  }
+
+  @Test
+  @DisplayName("하행이 동일한 역이지만, 거리를 기존보다 크게 설정하면 구간 추가시 에러가 발생한다")
+  void addEqualsDownStationOverDistance() {
+    final Line line = new Line(0L, "분당선", "RED", new ArrayList<>());
+
+    line.addSection(new Station(1L, "야탑역"),
+        new Station(2L, "이매역"),
+        3L);
+
+    assertThatThrownBy(() -> line.addSection(new Station(5L, "서현역"),
+        new Station(2L, "이매역"),
+        4L)).isInstanceOf(IllegalArgumentException.class);
+
+  }
+
 }

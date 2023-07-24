@@ -71,6 +71,11 @@ public class Section {
     this.distance = newDistance;
   }
 
+  public void changeDownStation(Station downStation, long newDistance) {
+    this.downStation = downStation;
+    this.distance = newDistance;
+  }
+
   @Override
   public String toString() {
     return "Section{" +
