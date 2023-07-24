@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +13,12 @@ import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.line.PathResponse;
+import nextstep.subway.line.SameStationException;
 import nextstep.subway.line.SectionRequest;
+import nextstep.subway.line.UnreachableDestinationException;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
+import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -204,6 +208,52 @@ class LineServiceTest {
         Assertions.assertAll(
                 () -> assertThat(stationNames).isEqualTo(List.of("강남역", "양재역", "도곡역", "수서역")),
                 () -> assertThat(pathResponse.getDistance()).isEqualTo(7)
+        );
+    }
+
+    @DisplayName("조회시 출발역과 도착역이 같은 겨우 예외가 발생한다")
+    @Test
+    void findShortestPathBetweenStationsFailedBySameStation() {
+        assertThatThrownBy(() -> lineService.findShortestPathBetweenStations(1L, 1L))
+                .isInstanceOf(SameStationException.class);
+    }
+
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 예외가 발생한다")
+    @Test
+    void findShortestPathBetweenStationsFailedByUnreachable() {
+        // given
+        Line shinbundangLine = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
+        lineRepository.save(shinbundangLine);
+
+        Station dogokStation = stationRepository.save(new Station("도곡역"));
+        Station suseoStation = stationRepository.save(new Station("수서역"));
+        Line line3 = new Line("3호선", "#82C341", dogokStation, suseoStation, 2);
+        lineRepository.save(line3);
+
+        Long gangnamStationId = gangnamStation.getId();
+        Long suseoStationId = suseoStation.getId();
+
+        // when,then
+        assertThatThrownBy(() -> lineService.findShortestPathBetweenStations(gangnamStationId, suseoStationId))
+                .isInstanceOf(UnreachableDestinationException.class);
+    }
+
+
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우 경우 예외가 발생한다")
+    @Test
+    void findShortestPathBetweenStationsFailedByStationNotExists() {
+        // given
+        long noExistsId = 1000L;
+        Long gangnamStationId = gangnamStation.getId();
+
+        // when,then
+        Assertions.assertAll(
+                () -> assertThatThrownBy(
+                        () -> lineService.findShortestPathBetweenStations(gangnamStationId, noExistsId))
+                        .isInstanceOf(StationNotFoundException.class),
+                () -> assertThatThrownBy(
+                        () -> lineService.findShortestPathBetweenStations(noExistsId, gangnamStationId))
+                        .isInstanceOf(StationNotFoundException.class)
         );
     }
 }

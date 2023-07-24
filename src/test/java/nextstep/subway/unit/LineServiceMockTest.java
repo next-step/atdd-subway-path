@@ -18,7 +18,9 @@ import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.line.PathResponse;
+import nextstep.subway.line.SameStationException;
 import nextstep.subway.line.SectionRequest;
+import nextstep.subway.line.UnreachableDestinationException;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationNotFoundException;
@@ -285,6 +287,56 @@ class LineServiceMockTest {
                 .map(Station::getName)
                 .collect(Collectors.toList());
         assertThat(stationNameList).isEqualTo(List.of("강남역", "양재역", "도곡역", "수서역"));
+    }
+
+    @DisplayName("조회시 출발역과 도착역이 같은 겨우 예외가 발생한다")
+    @Test
+    void findShortestPathBetweenStationsFailedBySameStation() {
+        assertThatThrownBy(() -> lineService.findShortestPathBetweenStations(1L, 1L))
+                .isInstanceOf(SameStationException.class);
+    }
+
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 예외가 발생한다")
+    @Test
+    void findShortestPathBetweenStationsFailedByUnreachable() {
+        // given
+        Station gangnamStation = new Station("강남역");
+        Station yangjaeStation = new Station("양재역");
+
+        Station dogokStation = new Station("도곡역");
+        Station suseoStation = new Station("수서역");
+        Line line3 = new Line("3호선", "#82C341", dogokStation, suseoStation, 2);
+        Line shinbundangLine = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
+
+        Long gangnamStationId = gangnamStation.getId();
+        Long suseoStationId = suseoStation.getId();
+        given(stationRepository.findById(1L)).willReturn(Optional.of(gangnamStation));
+        given(stationRepository.findById(2L)).willReturn(Optional.of(suseoStation));
+        given(lineRepository.findAll()).willReturn(List.of(shinbundangLine, line3));
+
+        // when,then
+        assertThatThrownBy(() -> lineService.findShortestPathBetweenStations(1L, 2L))
+                .isInstanceOf(UnreachableDestinationException.class);
+    }
+
+
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우 경우 예외가 발생한다")
+    @Test
+    void findShortestPathBetweenStationsFailedByStationNotExists() {
+        // given
+        Station gangnamStation = new Station("강남역");
+        given(stationRepository.findById(1L)).willReturn(Optional.of(gangnamStation));
+        given(stationRepository.findById(2L)).willReturn(Optional.empty());
+
+        // when,then
+        Assertions.assertAll(
+                () -> assertThatThrownBy(
+                        () -> lineService.findShortestPathBetweenStations(1L, 2L))
+                        .isInstanceOf(StationNotFoundException.class),
+                () -> assertThatThrownBy(
+                        () -> lineService.findShortestPathBetweenStations(2L, 1L))
+                        .isInstanceOf(StationNotFoundException.class)
+        );
     }
 }
 

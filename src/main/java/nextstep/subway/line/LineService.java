@@ -81,6 +81,9 @@ public class LineService {
     }
 
     public PathResponse findShortestPathBetweenStations(Long sourceStationId, Long targetStationId) {
+        if (sourceStationId.equals(targetStationId)) {
+            throw new SameStationException();
+        }
         Station sourceStation = stationRepository.findById(sourceStationId)
                 .orElseThrow(StationNotFoundException::new);
         Station targetStation = stationRepository.findById(targetStationId)
@@ -91,6 +94,9 @@ public class LineService {
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, DefaultWeightedEdge> dijkstraShortestPathPath =
                 dijkstraShortestPath.getPath(sourceStation, targetStation);
+        if (dijkstraShortestPathPath == null) {
+            throw new UnreachableDestinationException();
+        }
         List<Station> stations = dijkstraShortestPathPath.getVertexList();
         double distance = dijkstraShortestPathPath.getWeight();
         return new PathResponse(stations, (long) distance);
