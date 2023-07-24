@@ -32,18 +32,30 @@ public class PathServiceMockTest {
     private LineRepository lineRepository;
 
     private PathService pathService;
+    private Station 교대역;
+    private Station 강남역;
+    private Station 양재역;
+    private Station 남부터미널역;
+    private Line 이호선;
+    private Line 신분당선;
+    private Line 삼호선;
 
     @BeforeEach
     void setUp() {
         pathService = new PathService(stationRepository, lineRepository);
+
+        교대역 = new Station(1L, "교대역");
+        강남역 = new Station(2L, "강남역");
+        양재역 = new Station(3L, "양재역");
+        남부터미널역 = new Station(4L, "남부터미널역");
+
+        이호선 = new Line("2호선", "green", new Section(교대역, 강남역, 10));
+        신분당선 = new Line("신분당선", "red", new Section(강남역, 양재역, 10));
+        삼호선 = new Line("3호선", "orange", new Section(교대역, 남부터미널역, 2));
+
+        삼호선.registerSection(new Section(남부터미널역, 양재역, 3));
     }
 
-    /*
-     * # 예외
-     * - 출발역과 도착역이 같은 경우
-     * - 출발역과 도착역이 연결이 되어 있지 않은 경우
-     * - 존재하지 않은 출발역이나 도착역을 조회 할 경우
-     */
     /**
      * 교대역    --- *2호선(10)* ---   강남역
      * |                        |
@@ -55,17 +67,6 @@ public class PathServiceMockTest {
     @Test
     void searchPath() {
         // given: 역 정보와 노선 정보가 주어진다.
-        Station 교대역 = new Station(1L, "교대역");
-        Station 강남역 = new Station(2L, "강남역");
-        Station 양재역 = new Station(3L, "양재역");
-        Station 남부터미널역 = new Station(4L, "남부터미널역");
-
-        Line 이호선 = new Line("2호선", "green", new Section(교대역, 강남역, 10));
-        Line 신분당선 = new Line("신분당선", "red", new Section(강남역, 양재역, 10));
-        Line 삼호선 = new Line("3호선", "orange", new Section(교대역, 남부터미널역, 2));
-
-        삼호선.registerSection(new Section(남부터미널역, 양재역, 3));
-
         when(stationRepository.findById(anyLong()))
                 .thenReturn(Optional.of(교대역))   // 출발역
                 .thenReturn(Optional.of(양재역));  // 도착역
@@ -82,5 +83,18 @@ public class PathServiceMockTest {
         // then: 최단경로는 아래의 결과를 가져야 한다.
         assertThat(stationNames).containsExactly("교대역", "남부터미널역", "양재역");
         assertThat(pathResponse.getDistance()).isEqualTo(5);
+    }
+
+    /*
+     * # 예외
+     * - 출발역과 도착역이 같은 경우
+     * - 출발역과 도착역이 연결이 되어 있지 않은 경우
+     * - 존재하지 않은 출발역이나 도착역을 조회 할 경우
+     */
+    @DisplayName("출발역과 도착역이 같은 경우")
+    @Test
+    void searchPathFailBySameStations() {
+
+
     }
 }
