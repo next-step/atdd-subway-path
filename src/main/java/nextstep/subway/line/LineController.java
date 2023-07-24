@@ -71,4 +71,11 @@ public class LineController {
         return ResponseEntity.noContent()
                 .build();
     }
+
+    @GetMapping("/paths")
+    public ResponseEntity<PathResponse> findShortestPathBetweenStations(String source, String target) {
+        PathResponse pathResponse = lineService.findShortestPathBetweenStations(Long.valueOf(source),
+                Long.valueOf(target));
+        return ResponseEntity.ok(pathResponse);
+    }
 }

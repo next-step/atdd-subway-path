@@ -11,6 +11,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import nextstep.subway.station.Station;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 @Embeddable
 public class Sections {
@@ -160,5 +162,9 @@ public class Sections {
         Station downStation = downSection.getDownStation();
         int distance = upSection.getDistance() + downSection.getDistance();
         sectionCollection.add(new Section(upStation, downStation, distance));
+    }
+
+    public void putWeightedMultiGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
+        sectionCollection.forEach(section -> section.putWeightedMultiGraph(graph));
     }
 }

@@ -16,6 +16,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpStatus;
 
 public class LineAcceptanceUtils {
@@ -115,6 +116,26 @@ public class LineAcceptanceUtils {
                         HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(스테이션_이름_리스트(조회된_신분당선)).contains("판교역")
         );
+    }
+
+    static void 경로_조회_결과_검증(ExtractableResponse<Response> 경로_조회_결과, List<String> 예상_스테이션_이름_리스트, int 예상_거리) {
+        Assertions.assertAll(
+                () -> assertThat(스테이션_이름_리스트(경로_조회_결과)).isEqualTo(예상_스테이션_이름_리스트),
+                () -> assertThat(경로_조회_결과.jsonPath().getInt("distance")).isEqualTo(예상_거리)
+        );
+    }
+
+    static ExtractableResponse<Response> 경로_조회(int 출발역, int 도착역) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("source", 출발역);
+        params.put("target", 도착역);
+        return RestAssured.given().params(params)
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .log().all()
+                .when().get("/paths")
+                .then().log().all()
+                .extract();
     }
 
     static ExtractableResponse<Response> 지하철_노선_조회한다(int 지하철노선_아이디) {

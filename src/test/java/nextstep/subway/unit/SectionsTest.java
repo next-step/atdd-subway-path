@@ -13,6 +13,8 @@ import nextstep.subway.line.Sections;
 import nextstep.subway.line.SingleSectionRemovalException;
 import nextstep.subway.line.StationNotIncludedException;
 import nextstep.subway.station.Station;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -267,5 +269,24 @@ class SectionsTest {
         // when/then
         assertThatThrownBy(() -> sections.getSameDownStationSection(gangnamStation))
                 .isInstanceOf(SectionNotFoundException.class);
+    }
+
+    @DisplayName("노선의 모든 역과 거리를 가중 다중 그래프에 담는다")
+    @Test
+    void putWeightedMultiGraph() {
+        // given
+        Station yangjaeStation = new Station("양재역");
+        sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
+        sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+
+        // when
+        sections.putWeightedMultiGraph(graph);
+
+        // then
+        DefaultWeightedEdge edge = graph.getEdge(gangnamStation, yangjaeStation);
+        assertThat(graph.getEdgeWeight(edge)).isEqualTo(GANGNAM_TO_YANGJAE_DISTANCE);
+        edge = graph.getEdge(yangjaeStation, pangyoStation);
+        assertThat(graph.getEdgeWeight(edge)).isEqualTo(GANGNAM_TO_PANGYO_DISTANCE - GANGNAM_TO_YANGJAE_DISTANCE);
     }
 }

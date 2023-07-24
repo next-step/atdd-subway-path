@@ -1,15 +1,17 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineNotFoundException;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
+import nextstep.subway.line.PathResponse;
 import nextstep.subway.line.SectionRequest;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
@@ -24,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-public class LineServiceTest {
+class LineServiceTest {
 
     @Autowired
     private StationRepository stationRepository;
@@ -146,9 +148,8 @@ public class LineServiceTest {
         lineService.deleteById(shinundangLine.getId());
 
         // then
-        assertThatThrownBy(
-                () -> lineRepository.findById(shinundangLine.getId()).orElseThrow(LineNotFoundException::new))
-                .isInstanceOf(LineNotFoundException.class);
+        Optional<Line> foundLine = lineRepository.findById(shinundangLine.getId());
+        assertThat(foundLine).isEmpty();
     }
 
     @DisplayName("최 하행 스테이션으로 마지막 세션을 삭제한다")
@@ -171,4 +172,38 @@ public class LineServiceTest {
         );
     }
 
+
+    @DisplayName("출발역으로 부터 도착역까지의 경로에 있는 역 목록 및 경로 구간의 거리 조회")
+    @Test
+    void findShortestPathBetweenStations() {
+        // given
+        Line shinbundangLine = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
+        lineRepository.save(shinbundangLine);
+
+        Station dogokStation = stationRepository.save(new Station("도곡역"));
+        Station suseoStation = stationRepository.save(new Station("수서역"));
+        Line line3 = new Line("3호선", "#82C341", yangjaeStation, dogokStation, 2);
+        line3.addSection(dogokStation, suseoStation, 4);
+        lineRepository.save(line3);
+
+        Station seolleungStation = stationRepository.save(new Station("선릉역"));
+        Line line2 = new Line("2호선", "#0052A4", gangnamStation, seolleungStation, 2);
+        lineRepository.save(line2);
+
+        Line bundangLine = new Line("분당선", "#82C341", seolleungStation, dogokStation, 2);
+        bundangLine.addSection(dogokStation, suseoStation, 4);
+
+        // when
+        PathResponse pathResponse = lineService.findShortestPathBetweenStations(gangnamStation.getId(),
+                suseoStation.getId());
+
+        // when
+        List<String> stationNames = pathResponse.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        Assertions.assertAll(
+                () -> assertThat(stationNames).isEqualTo(List.of("강남역", "양재역", "도곡역", "수서역")),
+                () -> assertThat(pathResponse.getDistance()).isEqualTo(7)
+        );
+    }
 }

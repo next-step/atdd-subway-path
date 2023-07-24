@@ -10,12 +10,14 @@ import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineNotFoundException;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
+import nextstep.subway.line.PathResponse;
 import nextstep.subway.line.SectionRequest;
 import nextstep.subway.line.UpdateLineRequest;
 import nextstep.subway.station.Station;
@@ -30,7 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class LineServiceMockTest {
+class LineServiceMockTest {
 
     @Mock
     private LineRepository lineRepository;
@@ -69,8 +71,9 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when
+        SectionRequest sectionRequest = new SectionRequest(1L, 1L, 1);
         assertThatThrownBy(
-                () -> lineService.addSection(1L, new SectionRequest(1L, 1L, 1))
+                () -> lineService.addSection(1L, sectionRequest)
         ).isInstanceOf(LineNotFoundException.class);
     }
 
@@ -82,8 +85,9 @@ public class LineServiceMockTest {
         given(stationRepository.findById(any())).willReturn(Optional.empty());
 
         // when
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 1);
         assertThatThrownBy(
-                () -> lineService.addSection(1L, new SectionRequest(1L, 2L, 1))
+                () -> lineService.addSection(1L, sectionRequest)
         ).isInstanceOf(StationNotFoundException.class);
     }
 
@@ -112,8 +116,9 @@ public class LineServiceMockTest {
         // given
         given(stationRepository.findById(any())).willReturn(Optional.empty());
         // when
+        LineRequest lineRequest = new LineRequest("신분당선", "#123123", 1L, 2L, 3);
         assertThatThrownBy(
-                () -> lineService.saveLine(new LineRequest("신분당선", "#123123", 1L, 2L, 3))
+                () -> lineService.saveLine(lineRequest)
         ).isInstanceOf(StationNotFoundException.class);
     }
 
@@ -190,7 +195,8 @@ public class LineServiceMockTest {
         given(lineRepository.findById(anyLong())).willReturn(Optional.empty());
 
         // when,then
-        assertThatThrownBy(() -> lineService.update(1L, new UpdateLineRequest("분당선", "#23232")))
+        UpdateLineRequest updateLineRequest = new UpdateLineRequest("분당선", "#23232");
+        assertThatThrownBy(() -> lineService.update(1L, updateLineRequest))
                 .isInstanceOf(LineNotFoundException.class);
     }
 
@@ -245,6 +251,40 @@ public class LineServiceMockTest {
         // when,then
         assertThatThrownBy(() -> lineService.deleteSection(1L, 1L)).isInstanceOf(
                 LineNotFoundException.class);
+    }
+
+    @DisplayName("출발역으로 부터 도착역까지의 경로에 있는 역 목록 및 경로 구간의 거리 조회")
+    @Test
+    void findShortestPathBetweenStations() {
+        // given
+        Station gangnamStation = new Station("강남역");
+        Station yangjaeStation = new Station("양재역");
+        Line shinbundangLine = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
+
+        Station dogokStation = new Station("도곡역");
+        Station suseoStation = new Station("수서역");
+        Line line3 = new Line("3호선", "#82C341", yangjaeStation, dogokStation, 2);
+        line3.addSection(dogokStation, suseoStation, 4);
+
+        Station seolleungStation = new Station("선릉역");
+        Line line2 = new Line("2호선", "#0052A4", gangnamStation, seolleungStation, 2);
+
+        Line bundangLine = new Line("분당선", "#82C341", seolleungStation, dogokStation, 2);
+        bundangLine.addSection(dogokStation, suseoStation, 4);
+
+        given(stationRepository.findById(1L)).willReturn(Optional.of(gangnamStation));
+        given(stationRepository.findById(2L)).willReturn(Optional.of(suseoStation));
+        given(lineRepository.findAll()).willReturn(List.of(shinbundangLine, line3, line2, bundangLine));
+
+        // when
+        PathResponse pathResponse = lineService.findShortestPathBetweenStations(1L, 2L);
+
+        // then
+        assertThat(pathResponse.getDistance()).isEqualTo(7);
+        List<String> stationNameList = pathResponse.getStations().stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
+        assertThat(stationNameList).isEqualTo(List.of("강남역", "양재역", "도곡역", "수서역"));
     }
 }
 

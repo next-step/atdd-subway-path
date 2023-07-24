@@ -393,5 +393,4 @@ class LineAcceptanceTest {
         // then
         구간_제거_실패_검증(노선에서_구간_제거_결과);
     }
-
 }
