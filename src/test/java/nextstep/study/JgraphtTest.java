@@ -91,4 +91,30 @@ class JgraphtTest {
         System.out.println(shortestPath);
         assertThat(shortestPath.size()).isEqualTo(3);
     }
+
+    @DisplayName("경로가 이어지지 않을 때")
+    @Test
+    void dijkstra() {
+        Station sourceStation = new Station(1L, "출발역");
+        Station targetStation = new Station(2L, "도착역");
+        Station station1 = new Station(3L, "다른역1");
+        Station station2 = new Station(4L, "다른역2");
+
+        Section section1 = new Section(sourceStation, station1, 10);
+        Section section2 = new Section(station2, targetStation, 15);
+
+        WeightedMultigraph<Station, DefaultWeightedEdge> sectionGraph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        sectionGraph.addVertex(sourceStation);
+        sectionGraph.addVertex(targetStation);
+        sectionGraph.addVertex(station1);
+        sectionGraph.addVertex(station2);
+
+        sectionGraph.setEdgeWeight(sectionGraph.addEdge(section1.getUpStation(), section1.getDownStation()), section1.getDistance());
+        sectionGraph.setEdgeWeight(sectionGraph.addEdge(section2.getUpStation(), section2.getDownStation()), section2.getDistance());
+
+        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(sectionGraph);
+        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
+
+        assertThat(path).isNull();
+    }
 }
