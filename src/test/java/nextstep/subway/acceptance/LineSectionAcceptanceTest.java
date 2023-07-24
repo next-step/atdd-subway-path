@@ -87,14 +87,11 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     void 중간역_삭제_후_재배치까지_정상적인지_검증한다(ExtractableResponse<Response> response,
                                    Long targetUpStationId,
                                    Long targetDownStationId) {
-        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선);
-        List<Long> 구간_아이디_리스트 = 노선_조회_결과.jsonPath().getList("stations.id", Long.class);
-        assertThat(구간_아이디_리스트.size()).isEqualTo(1);
-        assertThat(구간_아이디_리스트).containsExactly(targetUpStationId, targetDownStationId);
-        int 거리 = 노선_조회_결과.jsonPath().getInt("stations.distance");
-        int 기존_구간_합산_거리 = 16;
-        assertThat(거리).isEqualTo(기존_구간_합산_거리);
+        List<Long> 역_아이디_리스트 = 노선_조회_결과.jsonPath().getList("stations.id", Long.class);
+        assertThat(역_아이디_리스트.size()).isEqualTo(2);
+        assertThat(역_아이디_리스트).containsExactly(targetUpStationId, targetDownStationId);
     }
 
     /**
