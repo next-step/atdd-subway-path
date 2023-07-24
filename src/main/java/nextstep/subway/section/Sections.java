@@ -88,13 +88,13 @@ public class Sections {
 
     public Optional<Section> findByUpSection(final Station station) {
         return this.sections
-            .stream().filter(e -> e.getUpStation().getId().equals(station.getId()))
+            .stream().filter(e -> e.isUpStation(station))
             .findFirst();
     }
 
     public Optional<Section> findByDownSection(final Station station) {
         return this.sections
-            .stream().filter(e -> e.getDownStation().getId().equals(station.getId()))
+            .stream().filter(e -> e.isDownStation(station))
             .findFirst();
     }
 

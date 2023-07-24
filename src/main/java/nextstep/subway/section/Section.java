@@ -76,6 +76,18 @@ public class Section {
     this.distance = newDistance;
   }
 
+  public boolean isUpStation(Station station) {
+    return this.upStation.equals(station);
+  }
+
+  public boolean isDownStation(Station station) {
+    return this.downStation.equals(station);
+  }
+
+  public boolean isDividableDistance(long distance) {
+    return this.distance > distance;
+  }
+
   @Override
   public String toString() {
     return "Section{" +

@@ -11,12 +11,12 @@ public class DivideEqDownStationStrategy extends SectionAddStrategy{
         .orElseThrow(IllegalStateException::new);
 
     // 상행역이 같을 수 없다.
-    if (section.getUpStation().equals(matchedSection.getUpStation())) {
+    if (section.isUpStation(matchedSection.getUpStation())) {
       throw new IllegalArgumentException("상행역, 하행역이 동시에 일치하는 구간을 추가할 수 없습니다.");
     }
 
     // 거리가 기존 구간보다 클 수 없다
-    if (section.getDistance() >= matchedSection.getDistance()) {
+    if (!section.isDividableDistance(matchedSection.getDistance())) {
       throw new IllegalArgumentException("기존 구간보다 큰 거리로 나눌 수 없습니다.");
     }
 
