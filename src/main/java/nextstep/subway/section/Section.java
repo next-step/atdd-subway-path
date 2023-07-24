@@ -61,7 +61,7 @@ public class Section {
         }
     }
 
-    public void delete(Station station, int distance) {
+    public void merge(Station station, int distance) {
         this.downStation = station;
         this.distance = this.distance + distance;
     }

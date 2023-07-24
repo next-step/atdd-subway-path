@@ -79,7 +79,7 @@ class SectionTest {
             .withDownStation(new Station(3L, 지하철역))
             .build();
 
-        prevSection.delete(deleteTargetSection.getDownStation(), deleteTargetSection.getDistance());
+        prevSection.merge(deleteTargetSection.getDownStation(), deleteTargetSection.getDistance());
 
         assertThat(prevSection.getDownStation().getId()).isEqualTo(3L);
         assertThat(prevSection.getDistance()).isEqualTo(20);
