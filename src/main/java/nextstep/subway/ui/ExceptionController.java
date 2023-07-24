@@ -3,7 +3,6 @@ package nextstep.subway.ui;
 import nextstep.subway.applicaion.dto.ErrorResponse;
 import nextstep.subway.exception.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -44,5 +43,17 @@ public class ExceptionController {
     @ExceptionHandler(LastSectionException.class)
     public ErrorResponse handleIllegalArgsException(LastSectionException e) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.toString());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidStationException.class)
+    public ErrorResponse handleIllegalArgsException(InvalidStationException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.toString());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundPathException.class)
+    public ErrorResponse handleIllegalArgsException(NotFoundPathException e) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.toString());
     }
 }
