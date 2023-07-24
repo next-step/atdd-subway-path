@@ -43,9 +43,9 @@ public abstract class SectionThenFixture {
             .doesNotContain(Long.valueOf(deleteSectionId).intValue());
     }
 
-    public static AbstractStringAssert<?> 삭제할_노선_구간이_하행종점역이_아닐경우_에러(ExtractableResponse<Response> response) {
+    public static AbstractStringAssert<?> 삭제할_노선_구간이_없는역일경우_에러(ExtractableResponse<Response> response) {
         return assertThat(response.jsonPath().getString("message"))
-            .isEqualTo("하행 종점역이 아니면 삭제할 수 없습니다.");
+            .isEqualTo("노선에 등록되어있지 않은 역을 삭제할 수 없습니다.");
     }
 
     public static AbstractStringAssert<?> 삭제할_노선_구간_1개인경우_에러(ExtractableResponse<Response> response) {

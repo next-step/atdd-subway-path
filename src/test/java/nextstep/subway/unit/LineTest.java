@@ -57,7 +57,7 @@ class LineTest {
         // when
         line.addSection(upStation, downStation, distance);
         line.addSection(downStation, addStation, distance);
-        line.removeSection(Section.of(line, downStation, addStation, distance));
+        line.removeSection(Section.of(line, downStation, addStation, distance).getDownStationId());
 
         // then
         assertThat(line.getStations()).containsExactly(upStation, downStation);

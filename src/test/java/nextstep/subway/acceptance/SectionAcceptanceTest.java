@@ -14,7 +14,7 @@ import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.노선�
 import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.노선구간추가시_모든역이_노선에_이미_존재할때_오류_검사;
 import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.노선구간추가시_모든역이_노선에_존재하지않을때_오류_검사;
 import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.삭제할_노선_구간_1개인경우_에러;
-import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.삭제할_노선_구간이_하행종점역이_아닐경우_에러;
+import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.삭제할_노선_구간이_없는역일경우_에러;
 import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.지하철_노선_조회시_구간_id_순서_검사;
 import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.지하철_노선_조회시_구간포함_확인;
 import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.지하철_노선_조회시_해당구간_불포함_확인;
@@ -134,7 +134,7 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
         노선구간추가시_구간거리가_기존거리보다_같거나_길다면_에러(response);
     }
 
-    @DisplayName("지하철 구간 삭제 (성공)")
+    @DisplayName("지하철 하행 종점 구간 삭제 (성공)")
     @Test
     void deleteRemove() {
 
@@ -153,9 +153,9 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
         지하철_노선_조회시_해당구간_불포함_확인(지하철역_노선_id, 추가_하행역_id);
     }
 
-    @DisplayName("지하철 구간 삭제 시 하행 종점역이 아니면 삭제할 수 없다.")
+    @DisplayName("지하철 라인 구간의 중간역 삭제 (성공)")
     @Test
-    void doesNotDeleteSectionWhenDownEndStation() {
+    void deleteMiddleStation() {
 
         //given
         long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
@@ -165,11 +165,33 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
         지하철_노선_구간_추가_등록(지하철역_노선_id, 추가_하행역_id, 하행역_id, 구간거리);
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(지하철역_노선_id, 상행역_id);
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(지하철역_노선_id, 하행역_id);
+
+        //then
+        API_삭제_응답코드_검사(response);
+        지하철_노선_조회시_해당구간_불포함_확인(지하철역_노선_id, 하행역_id);
+    }
+
+    @DisplayName("노선에 등록되지않은 역을 삭제할 수 없다.")
+    @Test
+    void doesNotDeleteSection() {
+
+        //given
+        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
+        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
+        long 추가_하행역_id = 지하철역_생성_요청(또다른지하철역이름).jsonPath().getLong("id");
+        지하철_노선_구간_추가_등록(지하철역_노선_id, 추가_하행역_id, 하행역_id, 구간거리);
+
+
+        //when
+        long 없는역_id = 상행역_id + 하행역_id + 추가_하행역_id;
+
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(지하철역_노선_id, 없는역_id);
 
         //then
         API_잘못된요청_응답코드_검사(response);
-        삭제할_노선_구간이_하행종점역이_아닐경우_에러(response);
+        삭제할_노선_구간이_없는역일경우_에러(response);
 
     }
 
