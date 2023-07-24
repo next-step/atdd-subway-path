@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.path.domain.ShortestPath;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.SameSourceAndTargetStationException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -24,6 +25,8 @@ public class PathService {
     }
 
     public PathResponse searchPath(Long source, Long target) {
+        validateSourceAndTargetId(source, target);
+
         Station sourceStation = findStation(source);
         Station targetStation = findStation(target);
 
@@ -36,6 +39,12 @@ public class PathService {
                 .collect(Collectors.toList());
 
         return new PathResponse(stationResponses, shortestPath.getDistance());
+    }
+
+    private static void validateSourceAndTargetId(Long source, Long target) {
+        if (source.equals(target)) {
+            throw new SameSourceAndTargetStationException();
+        }
     }
 
     private Station findStation(Long source) {

@@ -1,6 +1,7 @@
 package nextstep.subway.path.domain;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.path.exception.PathNotFoundException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.jgrapht.GraphPath;
@@ -18,7 +19,15 @@ public class ShortestPath {
 
     public ShortestPath(List<Line> lines, Station sourceStation, Station targetStation) {
         graphPath = createdGraphPath(lines, sourceStation, targetStation);
-        shortestPath = graphPath == null ? Collections.emptyList() : graphPath.getVertexList();
+        validateGraphPath();
+
+        shortestPath = graphPath.getVertexList();
+    }
+
+    private void validateGraphPath() {
+        if (graphPath == null) {
+            throw new PathNotFoundException();
+        }
     }
 
     private GraphPath<Station, DefaultWeightedEdge> createdGraphPath(List<Line> lines, Station sourceStation, Station targetStation) {
@@ -48,6 +57,6 @@ public class ShortestPath {
     }
 
     public int getDistance() {
-        return graphPath == null ? 0 : (int) graphPath.getWeight();
+        return (int) graphPath.getWeight();
     }
 }
