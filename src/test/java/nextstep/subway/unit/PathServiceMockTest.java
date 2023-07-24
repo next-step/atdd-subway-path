@@ -95,6 +95,17 @@ public class PathServiceMockTest {
     @Test
     void searchPathFailBySameStations() {
 
+    }
+
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우")
+    @Test
+    void searchPathFailByNotHavePath() {
+
+    }
+
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회할 경우")
+    @Test
+    void searchPathFailByNotFoundStation() {
 
     }
 }
