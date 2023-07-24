@@ -8,6 +8,7 @@ import nextstep.subway.section.repository.Section;
 import nextstep.subway.section.repository.Sections;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,7 +31,7 @@ class Line {
     Line(String name, String color, Section initSection) {
         this.name = name;
         this.color = color;
-        this.sections = new Sections(List.of(initSection));
+        this.sections = new Sections(new ArrayList<>(List.of(initSection)));
     }
 
     public void changeName(String name) {

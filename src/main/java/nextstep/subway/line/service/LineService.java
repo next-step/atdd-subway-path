@@ -55,10 +55,8 @@ class LineService {
 
     @Transactional
     public Line addSection(Long id, CreateSectionRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("Not Exist Line"));
-        Station upStation = stationService.findStationById(request.getUpStationId());
-        Station downStation = stationService.findStationById(request.getDownStationId());
-        line.getSections().addSection(createSection(upStation.getId(), downStation.getId(), request.getDistance()));
+        Line line = findLineById(id);
+        line.getSections().addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
         return line;
     }
 
