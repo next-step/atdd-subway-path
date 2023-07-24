@@ -1,8 +1,7 @@
 package nextstep.subway.unit.fixture;
 
 import nextstep.subway.domain.Station;
-
-import java.lang.reflect.Field;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class StationFixture {
 
@@ -10,19 +9,7 @@ public class StationFixture {
 
     public static Station 지하철역_생성(String name) {
         Station station = new Station(name);
-
-        Class<Station> stationClass = Station.class;
-        Field stationIdField = null;
-        try {
-            stationIdField = stationClass.getDeclaredField("id");
-            stationIdField.setAccessible(true);
-            stationIdField.set(station, id++);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
+        ReflectionTestUtils.setField(station,"id",id++);
         return station;
     }
 }
