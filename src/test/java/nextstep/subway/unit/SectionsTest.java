@@ -37,7 +37,7 @@ class SectionsTest {
         pangyoStation = new Station("판교역");
     }
 
-    @DisplayName("추가할 세션의 하행 스테이션이 노선의 상행 종점일 때 추가할 세션이 상행 좀점 세션으로 등록된다")
+    @DisplayName("추가할 구간의 하행 역이 노선의 상행 종점 역일 때 추가할 구긴이 상행 종점 구간으로 등록된다")
     @Test
     void insertSectionSuccessToTop() {
         // given
@@ -51,7 +51,7 @@ class SectionsTest {
         assertThat(sections.getStations()).containsExactly(sadangStation, gangnamStation, pangyoStation);
     }
 
-    @DisplayName("추가할 세션의 상행 스테이션이 추가될 노선에 포함되고 추가될 위치의 하행스테이션과 똑같이 아니면 그사이에 추가된다")
+    @DisplayName("추가할 구간의 상행 역이 추가될 노선에 포함되고 추가될 위치의 하행 역과 똑같이 아니면 그사이에 추가된다")
     @Test
     void insertSectionSuccessBySameUpStationOfSection() {
         // given
@@ -66,7 +66,7 @@ class SectionsTest {
                 .containsExactly(gangnamStation, yangjaeStation, pangyoStation);
     }
 
-    @DisplayName("추가할 세션의 하행 스테이션이 추가될 노선에 포함되고 추가될 위치의 상행스테이션과 똑같이 아니면 그사이에 추가된다")
+    @DisplayName("추가할 구간의 하행 역이 추가될 노선에 포함되고 추가될 위치의 상행 역과 똑같이 아니면 그사이에 추가된다")
     @Test
     void insertSectionSuccessBySameDownStationOfSection() {
         // given
@@ -81,7 +81,7 @@ class SectionsTest {
         assertThat(stations).containsExactly(gangnamStation, yangjaeStation, pangyoStation);
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 구간을 등록을 할 수 없음")
     @Test
     void insertSectionSuccessBetweenSectionFailedByDistance() {
         // given
@@ -94,7 +94,7 @@ class SectionsTest {
                 .isInstanceOf(InvalidDistanceException.class);
     }
 
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 구간을 추가할 수 없음")
     @Test
     void insertSectionSuccessBetweenSectionFailedByExists() {
         // given
@@ -108,7 +108,7 @@ class SectionsTest {
                 .isInstanceOf(AlreadyConnectedException.class);
     }
 
-    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 구간을 추가할 수 없음")
     @Test
     void insertSectionSuccessBetweenSectionFailedByNotExists() {
         // given
@@ -123,7 +123,7 @@ class SectionsTest {
                 .isInstanceOf(MissingStationException.class);
     }
 
-    @DisplayName("노선에 포함한 스테이션을 가져온다")
+    @DisplayName("노선에 포함한 모든 역을 가져온다")
     @Test
     void getStations() {
         // given
@@ -143,7 +143,7 @@ class SectionsTest {
                 pangyoStation);
     }
 
-    @DisplayName("노선에서 등록된 하행 종점 station을 성공적으로 삭제한다")
+    @DisplayName("노선에서 등록된 하행 종점 역을 성공적으로 삭제한다")
     @Test
     void deleteBottomSectionSuccess() {
         // given
@@ -158,7 +158,7 @@ class SectionsTest {
         assertThat(sections.getStations()).doesNotContain(pangyoStation);
     }
 
-    @DisplayName("노선에서 등록된 상행 종점 station을 성공적으로 삭제한다")
+    @DisplayName("노선에서 등록된 상행 종점 역을 성공적으로 삭제한다")
     @Test
     void deleteTopSectionSuccess() {
         // given
@@ -173,7 +173,7 @@ class SectionsTest {
         assertThat(sections.getStations()).doesNotContain(gangnamStation);
     }
 
-    @DisplayName("노선에서 중간에 등록된 station을 성공적으로 삭제하면 재비치되고 거리는 두 구간의 거리의 합이다.")
+    @DisplayName("노선에서 중간에 등록된 역을 성공적으로 삭제하면 재비치되고 거리는 두 구간의 거리의 합이다.")
     @Test
     void deleteSectionSuccessOnCenter() {
         // given
@@ -194,7 +194,7 @@ class SectionsTest {
         );
     }
 
-    @DisplayName("노선의 section이 하나 뿐이면 station를 삭제 할 때 예외를 던진다")
+    @DisplayName("노선의 구간이 하나 뿐이면 역을 삭제 할 때 예외를 던진다")
     @Test
     void deleteSectionFailedBySingleSection() {
         // given
@@ -205,7 +205,7 @@ class SectionsTest {
                 .isInstanceOf(SingleSectionRemovalException.class);
     }
 
-    @DisplayName("해당 노선에 포함되어 있지 않는 스테이션을 삭제 할 때 예외를 던진다")
+    @DisplayName("해당 노선에 포함되어 있지 않는 역을 삭제 할 때 예외를 던진다")
     @Test
     void deleteSectionFailedByNotIncluded() {
         // given
@@ -219,7 +219,7 @@ class SectionsTest {
                 .isInstanceOf(StationNotIncludedException.class);
     }
 
-    @DisplayName("targetStation과 같은 upStation을 가지고 있는 section을 가져온다")
+    @DisplayName("타깃 역과 같은 상행 역을 가지고 있는 구간을 가져온다")
     @Test
     void getSameUpStationSectionSuccess() {
         // given
@@ -232,7 +232,7 @@ class SectionsTest {
         assertThat(sameUpStationSection.getUpStation()).isEqualTo(gangnamStation);
     }
 
-    @DisplayName("targetStation과 같은 upStation을 가지고 있는 section을 가져올 때 존재하지 않으면 예외를 던진다")
+    @DisplayName("타깃 역과 같은 상행 역을 가지고 있는 구간을 가져올 때 해당 군간이 존재하지 않으면 예외를 던진다")
     @Test
     void getSameUpStationSectionFailedByNotExists() {
         // given
@@ -244,7 +244,7 @@ class SectionsTest {
     }
 
 
-    @DisplayName("targetStation과 같은 DownStation을 가지고 있는 section을 가져온다")
+    @DisplayName("타깃 역과 같은 하행 역을 가지고 있는 구간을 가져온다")
     @Test
     void getSameDownStationSectionSuccess() {
         // given
@@ -257,7 +257,7 @@ class SectionsTest {
         assertThat(sameUpStationSection.getDownStation()).isEqualTo(pangyoStation);
     }
 
-    @DisplayName("targetStation과 같은 DownStation을 가지고 있는 section을 가져올 때 존재하지 않으면 예외를 던진다")
+    @DisplayName("타깃 역과 같은 다운 역을 가지고 있는 구간을 가져올 때 구간이 존재하지 않으면 예외를 던진다")
     @Test
     void getSameDownStationSectionFailedByNotExists() {
         // given
