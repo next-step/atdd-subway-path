@@ -26,7 +26,7 @@ public class Sections {
     @CollectionTable(name = "section", joinColumns = @JoinColumn(name = "line_id"))
     private List<Section> sections = new ArrayList<>();
 
-    private static int INVALID_INDEX = -1;
+    private static final int INVALID_INDEX = -1;
 
     public void addSection(Section section) {
         if (sections.isEmpty()) {
