@@ -16,7 +16,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
-import static nextstep.subway.unit.SubwayTestUtil.toSpecificResponse;
+import static nextstep.subway.utils.SubwayTestUtil.toSpecificResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;

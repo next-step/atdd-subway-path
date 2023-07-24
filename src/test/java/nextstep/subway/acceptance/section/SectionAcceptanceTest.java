@@ -16,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
-import static nextstep.subway.unit.SubwayTestUtil.toSpecificResponse;
+import static nextstep.subway.utils.SubwayTestUtil.toSpecificResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
