@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
@@ -50,6 +51,50 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+    }
+
+    /**
+     * given 지하철 노선에 구간이 하나일 경우
+     * when 구간 삭제 요청을 하면
+     * then 요청이 실패한다
+     */
+    @DisplayName("지하철 노선에 하나의 구간만 있을 경우 삭제 실패")
+    @Test
+    void removeLastLineSectionFail() {
+        //given
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        //then
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("지하철 노선의 구간들 중 중간역을 삭제할 경우 재배치를한다")
+    @Test
+    void removeLineSectionWithRelocation() {
+        //given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        //then
+        중간역_삭제_후_재배치까지_정상적인지_검증한다(response, 강남역, 정자역);
+    }
+
+    void 중간역_삭제_후_재배치까지_정상적인지_검증한다(ExtractableResponse<Response> response,
+                                   Long targetUpStationId,
+                                   Long targetDownStationId) {
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> 노선_조회_결과 = 지하철_노선_조회_요청(신분당선);
+        List<Long> 구간_아이디_리스트 = 노선_조회_결과.jsonPath().getList("stations.id", Long.class);
+        assertThat(구간_아이디_리스트.size()).isEqualTo(1);
+        assertThat(구간_아이디_리스트).containsExactly(targetUpStationId, targetDownStationId);
+        int 거리 = 노선_조회_결과.jsonPath().getInt("stations.distance");
+        int 기존_구간_합산_거리 = 16;
+        assertThat(거리).isEqualTo(기존_구간_합산_거리);
     }
 
     /**
