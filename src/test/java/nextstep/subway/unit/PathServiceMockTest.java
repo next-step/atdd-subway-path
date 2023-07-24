@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.path.application.PathService;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.PathNotFoundException;
 import nextstep.subway.path.exception.SameSourceAndTargetStationException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
@@ -108,12 +109,29 @@ public class PathServiceMockTest {
     @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우")
     @Test
     void searchPathFailByNotHavePath() {
+        // given: 역 정보와 노선 정보가 주어진다.
+        Station 증미역 = new Station(5L, "증미역");
+        Station 여의도역 = new Station(6L, "여의도역");
 
+        Line 구호선 = new Line("9호선", "brown", new Section(증미역, 여의도역, 2));
+
+        when(stationRepository.findById(anyLong()))
+                .thenReturn(Optional.of(교대역))   // 출발역
+                .thenReturn(Optional.of(여의도역));  // 도착역
+
+        when(lineRepository.findAll())
+                .thenReturn(List.of(이호선, 신분당선, 삼호선, 구호선));
+
+        // when, then
+        assertThatThrownBy(() -> pathService.searchPath(1L, 2L))
+                .isInstanceOf(PathNotFoundException.class);
     }
 
     @DisplayName("존재하지 않은 출발역이나 도착역을 조회할 경우")
     @Test
     void searchPathFailByNotFoundStation() {
+        // given
 
+        // when, then
     }
 }
