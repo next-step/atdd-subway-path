@@ -4,6 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.path.application.PathService;
 import nextstep.subway.path.dto.PathResponse;
+import nextstep.subway.path.exception.SameSourceAndTargetStationException;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -94,7 +96,13 @@ public class PathServiceMockTest {
     @DisplayName("출발역과 도착역이 같은 경우")
     @Test
     void searchPathFailBySameStations() {
+        // given
+        Long source = 1L;
+        Long target = 1L;
 
+        // when, then
+        assertThatThrownBy(() -> pathService.searchPath(source, target))
+                .isInstanceOf(SameSourceAndTargetStationException.class);
     }
 
     @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우")

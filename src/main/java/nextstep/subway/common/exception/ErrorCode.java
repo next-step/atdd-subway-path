@@ -7,10 +7,12 @@ public enum ErrorCode {
     DELETE_ONLY_TERMINUS_STATION(400, "구간 삭제 시 하행 종점역을 입력해야 합니다."),
     CAN_NOT_DELETE_ONLY_ONE_SECTION(400, "노선에 하나의 구간만 있을 경우 삭제할 수 없습니다."),
     DUPLICATED_STATION_ID(400, "상행 종점역과 하행 종점역의 Id는 서로 같을 수 없습니다."),
+    SAME_SOURCE_AND_TARGET_STATION(400, "경로검색 시 출발역과 도착역은 같을 수 없습니다."),
 
     STATION_NOT_FOUND(404, "없는 지하철역입니다."),
     LINE_NOT_FOUND(404, "없는 지하철 노선입니다."),
-    SECTION_NOT_FOUND(404, "없는 지하철 구간입니다.");
+    SECTION_NOT_FOUND(404, "없는 지하철 구간입니다."),
+    ;
 
     private final int status;
     private final String message;
