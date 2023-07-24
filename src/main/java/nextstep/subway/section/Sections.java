@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -43,15 +44,43 @@ public class Sections {
     }
 
     public void delete(final Station station) {
-        if (!getLastSection().getDownStation().equals(station)) {
-            throw new BusinessException("하행 종점이 아닌 역을 삭제할 수 없습니다. 역ID: " + station.getId());
-        }
-
         if (sections.size() == 1) {
             throw new BusinessException("상행 종점역과 하행 종점역만 있는 노선의 구간은 삭제할 수 없습니다.");
         }
 
-        sections.remove(getLastSection());
+        Section firstSection = findUpSectionByStation(getUpEndStation())
+            .orElseThrow();
+        Section lastSection = getLastSection();
+        Section section = findUpSectionByStation(station)
+            .orElse(lastSection);
+
+        if (!station.equals(firstSection.getUpStation()) && !station.equals(lastSection.getDownStation())) {
+            Section prevSection = findDownSectionByStation(section.getUpStation());
+            prevSection.delete(section.getDownStation(), section.getDistance());
+            sections.remove(section);
+            return;
+        }
+
+        sections.remove(section);
+    }
+
+    private Optional<Section> findUpSectionByStation(Station station) {
+        Map<Station, Section> upSectionMap = new HashMap<>();
+        for (Section section : sections) {
+            upSectionMap.put(section.getUpStation(), section);
+        }
+
+        return Optional.ofNullable(upSectionMap.get(station));
+    }
+
+    private Section findDownSectionByStation(Station station) {
+        Map<Station, Section> downSectionMap = new HashMap<>();
+        for (Section oldSection : sections) {
+            downSectionMap.put(oldSection.getDownStation(), oldSection);
+        }
+        downSectionMap.put(getUpEndStation(), getLastSection());
+
+        return downSectionMap.get(station);
     }
 
     public Section getLastSection() {
