@@ -32,37 +32,37 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public List<Section> addSection(Section section) {
+    private SectionAddStrategy findAddStrategy(Section section) {
         if (sections.isEmpty()) {
-            new EmptyStrategy(this).add(section);
-            return sections;
+            return new EmptyStrategy(this);
         }
 
         // 상행역끼리 일치시 (구간 자르기)
         if (findByUpSection(section.getUpStation()).isPresent()) {
-            new DivideEqUpStationStrategy(this).add(section);
-            return sections;
+            return new DivideEqUpStationStrategy(this);
         }
 
         // 하행역이 동일한 상태로 상행이 다를 시 (구간 자르기)
         if (findByDownSection(section.getDownStation()).isPresent()) {
-            new DivideEqDownStationStrategy(this).add(section);
-            return sections;
+            return new DivideEqDownStationStrategy(this);
         }
 
         // 추가구간의 상행과 기존 하행역이 일치시
         if (findByDownSection(section.getUpStation()).isPresent()) {
-            new AddLastStrategy(this).add(section);
-            return sections;
+            return new AddLastStrategy(this);
         }
 
         // 추가 구간의 하행과 기존 상행이 일치시 (새로운 상행 추가)
         if (findByUpSection(section.getDownStation()).isPresent()) {
-            new AddFirstStrategy(this).add(section);
-            return sections;
+            return new AddFirstStrategy(this);
         }
 
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("추가할 수 있는 조건이 아닙니다");
+    }
+
+    public List<Section> addSection(Section section) {
+        this.findAddStrategy(section).add(section);
+        return sections;
     }
 
     public List<Station> getStations() {
