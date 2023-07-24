@@ -2,13 +2,12 @@ package nextstep.subway.facade;
 
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Station;
-import nextstep.subway.entity.group.SectionGroup;
 import nextstep.subway.service.LineService;
+import nextstep.subway.service.SectionService;
 import nextstep.subway.service.StationService;
+import nextstep.subway.service.request.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import nextstep.subway.service.SectionService;
-import nextstep.subway.service.request.SectionRequest;
 
 @Service
 @Transactional
@@ -38,9 +37,6 @@ public class SectionFacade {
 
     public void deleteSection(long lineId, long stationId) {
 
-        Line line = lineService.findById(lineId);
-        SectionGroup sectionGroup = line.getSections();
-        sectionGroup.delete(stationId);
-
+        lineService.deleteSectionStation(lineId, stationId);
     }
 }

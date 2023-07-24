@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -119,11 +120,6 @@ public class SectionGroup {
                 () -> new IllegalArgumentException("해당 노선의 상행 종점역이 존재하지 않습니다.")
             );
     }
-    public void delete(long deleteStationId) {
-
-        validateDelete(deleteStationId);
-        sections.remove(getEndDownStation());
-    }
 
     private Section getEndDownStation() {
 
@@ -152,10 +148,24 @@ public class SectionGroup {
             );
     }
 
-    private void validateDelete(long deleteStationId) {
+    public void delete(Line line, long deleteStationId) {
 
         validateSizeCanBeDeleted();
-        validateDeleteStationIsEndStation(deleteStationId);
+        validateExistCanBeDeleted(deleteStationId);
+
+        List<Section> removeSections = findASectionContainingAStation(deleteStationId);
+
+        if (isTerminalSection(removeSections)) {
+            int first = 0;
+            sections.remove(removeSections.get(first));
+            return;
+        }
+
+        sections.add(getSectionAfterDelete(line, removeSections, deleteStationId));
+
+        for (Section section : removeSections) {
+            sections.remove(section);
+        }
     }
 
     private void validateSizeCanBeDeleted() {
@@ -164,10 +174,57 @@ public class SectionGroup {
         }
     }
 
-    private void validateDeleteStationIsEndStation(long deleteStationId) {
-        if (!getEndDownStation().isEqualsDownStation(deleteStationId)) {
-            throw new IllegalArgumentException("하행 종점역이 아니면 삭제할 수 없습니다.");
+    private void validateExistCanBeDeleted(long deleteStationId) {
+
+        boolean noneExistStationInLine = sections.stream()
+            .noneMatch(section
+                -> section.isEqualsUpStation(deleteStationId)
+                || section.isEqualsDownStation(deleteStationId)
+            );
+
+        if (noneExistStationInLine) {
+            throw new IllegalArgumentException("노선에 등록되어있지 않은 역을 삭제할 수 없습니다.");
         }
+    }
+
+    private List<Section> findASectionContainingAStation(long deleteStationId) {
+        return sections.stream()
+            .filter(
+                section -> section.isEqualsUpStation(deleteStationId)
+                    || section.isEqualsDownStation(deleteStationId)
+            )
+            .collect(Collectors.toList());
+    }
+
+    boolean isTerminalSection(List<Section> deleteSections) {
+
+        return deleteSections.size() < 2;
+    }
+
+    private Section getSectionAfterDelete(Line line, List<Section> removeSections, long removeStationId) {
+
+        Station upStation = removeSections.stream()
+            .filter(section -> section.isEqualsDownStation(removeStationId))
+            .findFirst()
+            .map(Section::getUpStation)
+            .orElseThrow(
+                () -> new IllegalArgumentException("삭제할 역의 상행역을 찾을 수 없습니다.")
+            );
+
+        Station downStation = removeSections.stream()
+            .filter(section -> section.isEqualsUpStation(removeStationId))
+            .findFirst()
+            .map(Section::getDownStation)
+            .orElseThrow(
+                () -> new IllegalArgumentException("삭제할 역의 하행역을 찾을 수 없습니다.")
+            );
+
+        return new Section(
+            line,
+            upStation,
+            downStation,
+            removeSections.stream().mapToInt(Section::getDistance).sum()
+        );
     }
 
     public List<Section> getSections() {
