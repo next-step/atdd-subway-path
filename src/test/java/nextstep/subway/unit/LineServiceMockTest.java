@@ -1,5 +1,7 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.applicaion.StationService;
+import nextstep.subway.domain.LineRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -13,7 +15,7 @@ public class LineServiceMockTest {
     private StationService stationService;
 
     @Test
-    void addSection() {
+    void addSectionInPreviousSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
 
