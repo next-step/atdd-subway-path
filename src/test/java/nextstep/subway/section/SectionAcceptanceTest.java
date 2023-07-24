@@ -164,6 +164,7 @@ public class SectionAcceptanceTest {
     // When 상행 요청역에 대해 삭제 요청하면
     // Then 지하철 노선 조회시 상행 종점역을 발견할 수 없다
     @DisplayName("지하철 노선의 상행 종점역에 대한 구간을 제거한다.")
+    @Test
     void deleteSection_deleteUpEnd() {
         // given
         var 신분당선_응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
