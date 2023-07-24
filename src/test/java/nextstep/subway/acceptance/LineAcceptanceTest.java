@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관리 기능")
@@ -24,7 +25,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green");
+        Long 강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green", 강남역, 정자역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -42,8 +45,13 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성_요청("2호선", "green");
-        지하철_노선_생성_요청("3호선", "orange");
+        Long 강남역 = 지하철역_생성_요청("강남역").jsonPath().get("id");
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().get("id");
+        지하철_노선_생성_요청("2호선", "green", 강남역, 정자역);
+
+        Long 그린역 = 지하철역_생성_요청("그린역").jsonPath().get("id");
+        Long 슈퍼그린역 = 지하철역_생성_요청("슈퍼그린역").jsonPath().get("id");
+        지하철_노선_생성_요청("3호선", "orange", 그린역, 슈퍼그린역);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -62,7 +70,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        Long 그린역 = 지하철역_생성_요청("그린역").jsonPath().getLong("id");
+        Long 슈퍼그린역 = 지하철역_생성_요청("슈퍼그린역").jsonPath().getLong("id");
+
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
@@ -81,7 +92,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        Long 그린역 = 지하철역_생성_요청("그린역").jsonPath().getLong("id");
+        Long 슈퍼그린역 = 지하철역_생성_요청("슈퍼그린역").jsonPath().getLong("id");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역);
 
         // when
         Map<String, String> params = new HashMap<>();
@@ -108,7 +121,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green");
+        Long 그린역 = 지하철역_생성_요청("그린역").jsonPath().getLong("id");
+        Long 슈퍼그린역 = 지하철역_생성_요청("슈퍼그린역").jsonPath().getLong("id");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역);
 
         // when
         ExtractableResponse<Response> response = RestAssured
