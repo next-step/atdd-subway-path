@@ -30,7 +30,7 @@ public class SectionService {
         Station downStation = stationRepository.findById(sectionDto.getDownStationId())
                 .orElseThrow(() -> new SubwayException(ErrorCode.BAD_REQUEST));
 
-        // 신귶 구간 등록
+        // 신규 구간 등록
         line.addSection(sectionDto.toEntity(line, upStation, downStation));
     }
 

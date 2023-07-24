@@ -55,11 +55,10 @@ public class SectionServiceTest {
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
-        assertThat(line.getSections().getSections()).hasSize(2)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("당고개역", "사당역"),
-                        Tuple.tuple("사당역", "이수역")
+        assertThat(line.getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly(
+                        "당고개역", "사당역", "이수역"
                 );
     }
 
@@ -73,11 +72,10 @@ public class SectionServiceTest {
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
-        assertThat(line.getSections().getSections()).hasSize(2)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("사당역", "당고개역"),
-                        Tuple.tuple("당고개역", "이수역")
+        assertThat(line.getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly(
+                        "사당역", "당고개역", "이수역"
                 );
     }
 
@@ -91,11 +89,10 @@ public class SectionServiceTest {
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
-        assertThat(line.getSections().getSections()).hasSize(2)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("당고개역", "이수역"),
-                        Tuple.tuple("이수역", "사당역")
+        assertThat(line.getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly(
+                        "당고개역", "이수역", "사당역"
                 );
     }
 

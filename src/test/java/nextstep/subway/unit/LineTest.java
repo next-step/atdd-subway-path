@@ -13,6 +13,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,11 +39,10 @@ class LineTest {
         line.addSection(section(line, 당고개역, 사당역, 3));
 
         // then : 결과 확인
-        assertThat(line.getSections().getSections()).hasSize(2)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("당고개역", "사당역"),
-                        Tuple.tuple("사당역", "이수역")
+        assertThat(line.getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly(
+                        "당고개역", "사당역", "이수역"
                 );
     }
 
@@ -56,11 +56,10 @@ class LineTest {
         line.addSection(section(line, 사당역, 당고개역, 3));
 
         // then : 결과 확인
-        assertThat(line.getSections().getSections()).hasSize(2)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("사당역", "당고개역"),
-                        Tuple.tuple("당고개역", "이수역")
+        assertThat(line.getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly(
+                        "사당역", "당고개역", "이수역"
                 );
     }
 
@@ -74,11 +73,10 @@ class LineTest {
         line.addSection(section(line, 이수역, 사당역, 3));
 
         // then : 결과 확인
-        assertThat(line.getSections().getSections()).hasSize(2)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("당고개역", "이수역"),
-                        Tuple.tuple("이수역", "사당역")
+        assertThat(line.getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly(
+                        "당고개역", "이수역", "사당역"
                 );
     }
 
@@ -131,14 +129,13 @@ class LineTest {
         line.addSection(section(line, 당고개역, 사당역, 3));
 
         // when : 기능 수행
-        List<Section> sections = line.getSections().getSections();
+        Set<Station> stations = line.getStations();
 
         // then : 결과 확인
-        assertThat(sections).hasSize(2)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("당고개역", "사당역"),
-                        Tuple.tuple("사당역", "이수역")
+        assertThat(stations).hasSize(3)
+                .extracting("name")
+                .containsExactly(
+                        "당고개역", "사당역", "이수역"
                 );
     }
 
@@ -153,11 +150,10 @@ class LineTest {
         line.removeSection(사당역);
 
         // then : 결과 확인
-        List<Section> sections = line.getSections().getSections();
-        assertThat(sections).hasSize(1)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("사당역", "이수역")
+        assertThat(line.getStations()).hasSize(2)
+                .extracting("name")
+                .containsExactly(
+                        "사당역", "이수역"
                 );
     }
 

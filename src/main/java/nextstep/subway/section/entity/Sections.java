@@ -92,11 +92,11 @@ public class Sections {
         this.sections.removeIf(section -> section.isDownStation(downStation));
     }
 
-    public boolean isSectionOne() {
+    private boolean isSectionOne() {
         return this.sections.size() == 1;
     }
 
-    public boolean isLastSection(Station downStation) {
+    private boolean isLastSection(Station downStation) {
         return getLastSection()
                 .map(section -> section.isDownStation(downStation))
                 .orElse(false);
