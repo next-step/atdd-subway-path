@@ -10,6 +10,7 @@ import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.exception.StationNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -127,11 +128,15 @@ public class PathServiceMockTest {
                 .isInstanceOf(PathNotFoundException.class);
     }
 
-    @DisplayName("존재하지 않은 출발역이나 도착역을 조회할 경우")
+    @DisplayName("존재하지 않는 출발역이나 도착역을 조회할 경우")
     @Test
     void searchPathFailByNotFoundStation() {
         // given
+        when(stationRepository.findById(anyLong()))
+                .thenReturn(Optional.empty());
 
         // when, then
+        assertThatThrownBy(() -> pathService.searchPath(1L, 2L))
+                .isInstanceOf(StationNotFoundException.class);
     }
 }
