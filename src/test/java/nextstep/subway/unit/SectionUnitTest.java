@@ -1,6 +1,7 @@
-package nextstep.subway.section;
+package nextstep.subway.unit;
 
 import nextstep.subway.line.Line;
+import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
