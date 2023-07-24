@@ -57,6 +57,23 @@ public class Section {
         return downStation;
     }
 
+    public boolean isInMiddle(Section section){
+        return this.getUpStation().equals(section.getUpStation());
+    }
+
+    public void subtractDistance(Section section){
+        if(this.distance <= section.getDistance()) throw new IllegalArgumentException("지하철 노선에 구간을 등록 시에 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다");
+        this.distance = this.distance - section.getDistance();
+    }
+
+    public boolean isContainStation(Station upStation, Station downStation){
+        if(this.upStation.equals(upStation) && this.downStation.equals(downStation)) throw new IllegalArgumentException("지하철 노선에 구간을 등록 시에 상행역과 하행역이 이미 노선에 등록되어 있다면 추가할 수 없습니다");
+        return this.upStation.equals(upStation)
+                || this.upStation.equals(downStation)
+                || this.downStation.equals(upStation)
+                || this.downStation.equals(downStation);
+    }
+
     public int getDistance() {
         return distance;
     }

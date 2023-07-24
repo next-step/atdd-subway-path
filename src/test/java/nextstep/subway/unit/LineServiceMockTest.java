@@ -52,18 +52,19 @@ public class LineServiceMockTest {
     @Test
     void saveLine() {
         //given
-        LineRequest lineRequest = new LineRequest("신분당선", "red", 양재역.getId(), 강남역.getId(), 구간_길이);
-        given(lineRepository.save(any())).willReturn(신분당선);
+        final Line 분당선 = new Line(6L, "분당선", "red");
+        LineRequest lineRequest = new LineRequest("분당선", "red", 양재역.getId(), 강남역.getId(), 구간_길이);
+        given(lineRepository.save(any())).willReturn(분당선);
         given(stationService.findById(lineRequest.getUpStationId())).willReturn(양재역);
         given(stationService.findById(lineRequest.getDownStationId())).willReturn(강남역);
-        given(lineRepository.findById(신분당선.getId())).willReturn(Optional.of(신분당선));
+        given(lineRepository.findById(분당선.getId())).willReturn(Optional.of(분당선));
 
         //when
         lineService.saveLine(lineRequest);
 
         //then
-        Line savedLine = lineService.findByLineId(신분당선.getId());
-        assertThat(savedLine.getName()).isEqualTo("신분당선");
+        Line savedLine = lineService.findByLineId(분당선.getId());
+        assertThat(savedLine.getName()).isEqualTo("분당선");
         assertThat(savedLine.getSections().size()).isEqualTo(1);
         assertThat(savedLine.getSections().get(0).getUpStation()).isEqualTo(양재역);
         assertThat(savedLine.getSections().get(0).getDownStation()).isEqualTo(강남역);
@@ -102,8 +103,6 @@ public class LineServiceMockTest {
     @Test
     void deleteSection() {
         //given
-        Section section = new Section(신분당선, 양재역, 강남역, 10);
-        신분당선.getSections().add(section);
         given(lineRepository.findById(신분당선.getId())).willReturn(Optional.of(신분당선));
         given(stationService.findById(강남역.getId())).willReturn(강남역);
 
@@ -194,7 +193,7 @@ public class LineServiceMockTest {
         // when
         assertThatThrownBy(() -> {
             lineService.addSection(신분당선.getId(), sectionRequest);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessage("지하철 노선에 구간을 등록 시에 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다");
     }
 
     @DisplayName("구간을 등록 시에 상행역과 하행역이 이미 노선에 등록되어 있다면 추가할 수 없다")
@@ -209,7 +208,7 @@ public class LineServiceMockTest {
         // when
         assertThatThrownBy(() -> {
             lineService.addSection(신분당선.getId(), sectionRequest);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessage("지하철 노선에 구간을 등록 시에 상행역과 하행역이 이미 노선에 등록되어 있다면 추가할 수 없습니다");
     }
 
     @DisplayName("구간을 등록 시에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
@@ -227,7 +226,7 @@ public class LineServiceMockTest {
         // when
         assertThatThrownBy(() -> {
             lineService.addSection(신분당선.getId(), sectionRequest);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(IllegalArgumentException.class).hasMessage("지하철 노선에 구간을 등록 시에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다");
     }
 }
 

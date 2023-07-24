@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -59,7 +59,15 @@ public class Line {
     }
 
     public void addSection(Section section){
+        Section adjacentSection = findAdjacentSection(section);
+        if(adjacentSection.isInMiddle(section)) adjacentSection.subtractDistance(section);
         this.getSections().add(section);
+    }
+
+    private Section findAdjacentSection(Section section){
+        List<Section> adjacentSections = this.getSections().stream().filter(o -> o.isContainStation(section.getUpStation(), section.getDownStation())).collect(Collectors.toList());
+        if(adjacentSections.isEmpty()) throw new IllegalArgumentException("지하철 노선에 구간을 등록 시에 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다");
+        return adjacentSections.get(0);
     }
 
     public void removeSection(Section section){
