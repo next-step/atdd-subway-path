@@ -1,11 +1,13 @@
 package nextstep.subway.station.repository;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @EqualsAndHashCode
+@ToString
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

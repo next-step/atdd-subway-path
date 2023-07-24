@@ -1,7 +1,6 @@
 package nextstep.subway.section.repository;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import nextstep.subway.section.policy.AddSectionPolicy;
 import nextstep.subway.section.policy.DeleteSectionPolicy;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Embeddable
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sections {
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
@@ -54,5 +52,12 @@ public class Sections {
         List<Station> totalStation = this.sections.stream().map(Section::getUpStation).collect(Collectors.toList());
         totalStation.add(this.sections.get(this.sections.size() - 1).getDownStation());
         return Collections.unmodifiableList(totalStation);
+    }
+
+    public Sections(List<Section> sections) {
+        if (sections.isEmpty()) {
+            throw new RuntimeException("sections: at least one section is required");
+        }
+        this.sections = sections;
     }
 }
