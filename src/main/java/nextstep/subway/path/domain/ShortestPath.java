@@ -13,10 +13,20 @@ import java.util.Collections;
 import java.util.List;
 
 public class ShortestPath {
-    private final GraphPath<Station, DefaultWeightedEdge> path;
+    private final GraphPath<Station, DefaultWeightedEdge> graphPath;
     private final List<Station> shortestPath;
 
     public ShortestPath(List<Line> lines, Station sourceStation, Station targetStation) {
+        graphPath = createdGraphPath(lines, sourceStation, targetStation);
+        shortestPath = graphPath == null ? Collections.emptyList() : graphPath.getVertexList();
+    }
+
+    private GraphPath<Station, DefaultWeightedEdge> createdGraphPath(List<Line> lines, Station sourceStation, Station targetStation) {
+        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(createWeightedGraph(lines));
+        return dijkstraShortestPath.getPath(sourceStation, targetStation);
+    }
+
+    private WeightedGraph<Station, DefaultWeightedEdge> createWeightedGraph(List<Line> lines) {
         WeightedGraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         for (Line line : lines) {
             List<Section> sections = line.getSections();
@@ -30,10 +40,7 @@ public class ShortestPath {
                 graph.setEdgeWeight(graph.addEdge(upStation, downStation), section.getDistance());
             }
         }
-
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        path = dijkstraShortestPath.getPath(sourceStation, targetStation);
-        shortestPath = path == null ? Collections.emptyList() : path.getVertexList();
+        return graph;
     }
 
     public List<Station> getPath() {
@@ -41,6 +48,6 @@ public class ShortestPath {
     }
 
     public int getDistance() {
-        return path == null ? 0 : (int) path.getWeight();
+        return graphPath == null ? 0 : (int) graphPath.getWeight();
     }
 }
