@@ -132,6 +132,8 @@ public class LineServiceMockTest {
         Line savedLine = lineService.findByLineId(신분당선.getId());
         assertThat(savedLine.getName()).isEqualTo("신분당선");
         assertThat(savedLine.getSections().size()).isEqualTo(2);
+        assertThat(savedLine.getSections().get(0).getUpStation()).isEqualTo(중간역);
+        assertThat(savedLine.getSections().get(0).getDownStation()).isEqualTo(강남역);
         assertThat(savedLine.getSections().get(0).getDistance()).isEqualTo(구간_길이 - distance);
         assertThat(savedLine.getSections().get(1).getUpStation()).isEqualTo(양재역);
         assertThat(savedLine.getSections().get(1).getDownStation()).isEqualTo(중간역);

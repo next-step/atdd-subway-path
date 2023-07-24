@@ -61,7 +61,12 @@ public class Section {
         return this.getUpStation().equals(section.getUpStation());
     }
 
-    public void subtractDistance(Section section){
+    public void changeUpStationAndDistance(Section section){
+        this.upStation = section.getDownStation();
+        subtractDistance(section);
+    }
+
+    private void subtractDistance(Section section){
         if(this.distance <= section.getDistance()) throw new IllegalArgumentException("지하철 노선에 구간을 등록 시에 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다");
         this.distance = this.distance - section.getDistance();
     }

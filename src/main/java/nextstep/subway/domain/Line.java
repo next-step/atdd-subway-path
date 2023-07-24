@@ -60,7 +60,7 @@ public class Line {
 
     public void addSection(Section section){
         Section adjacentSection = findAdjacentSection(section);
-        if(adjacentSection.isInMiddle(section)) adjacentSection.subtractDistance(section);
+        if(adjacentSection.isInMiddle(section)) adjacentSection.changeUpStationAndDistance(section);
         this.getSections().add(section);
     }
 
