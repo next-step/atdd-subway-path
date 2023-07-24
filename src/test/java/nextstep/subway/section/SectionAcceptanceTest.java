@@ -35,26 +35,6 @@ class SectionAcceptanceTest extends ApiTest {
     /**
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
-     * When 새로운 구간(이수역 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
-     * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
-     */
-    @Disabled
-    @DisplayName("새로운 구간을 등록한다.")
-    @Test
-    void addSection() {
-        // given : 선행조건 기술
-        CreateSectionRequest request = 구간등록요청_생성(이수역, 사당역, distance);
-
-        // when : 기능 수행
-        ExtractableResponse<Response> response = 구간등록요청(request);
-
-        // then : 결과 확인
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    /**
-     * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
-     * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
      * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
      * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
      */
