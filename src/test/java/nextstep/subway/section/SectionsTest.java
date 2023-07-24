@@ -165,28 +165,34 @@ public class SectionsTest {
     @DisplayName("deleteSection() : 상행 종점역 구간 제거에 성공한다")
     @Test
     void deleteSection_upEnd() {
-        Section firstSection = aSection().build();
-        Section secondSection = aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
+        Station firstStation = new Station(1L, 강남역);
+        Station secondStation = new Station(2L, 신논현역);
+        Station thirdStation = new Station(3L, 지하철역);
+        Section firstSection = aSection().withStations(firstStation, secondStation).build();
+        Section secondSection = aSection().withStations(secondStation, thirdStation).build();
         Sections sections = new Sections(new ArrayList<>(List.of(firstSection, secondSection)));
 
-        sections.delete(firstSection.getUpStation());
+        sections.delete(firstStation);
 
         assertThat(sections.getSections()).hasSize(1);
-        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(new Station(2L, 신논현역));
+        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(secondStation);
     }
 
     @DisplayName("deleteSection() : 중간 구간 제거에 성공하면 구간을 합친다")
     @Test
     void deleteSection_mid() {
-        Section firstSection = aSection().build();
-        Section secondSection = aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
+        Station firstStation = new Station(1L, 강남역);
+        Station secondStation = new Station(2L, 신논현역);
+        Station thirdStation = new Station(3L, 지하철역);
+        Section firstSection = aSection().withStations(firstStation, secondStation).build();
+        Section secondSection = aSection().withStations(secondStation, thirdStation).build();
         Sections sections = new Sections(new ArrayList<>(List.of(firstSection, secondSection)));
 
         sections.delete(secondSection.getUpStation());
 
         assertThat(sections.getSections()).hasSize(1);
-        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(new Station(1L, 강남역));
-        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(new Station(3L, 지하철역));
+        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(firstStation);
+        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(thirdStation);
         assertThat(sections.getSections().get(0).getDistance()).isEqualTo(20);
     }
 
