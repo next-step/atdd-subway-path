@@ -2,6 +2,7 @@ package nextstep.subway.section;
 
 import nextstep.subway.station.Station;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -15,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 @Embeddable
 public class Sections {
 
-    @OneToMany
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
 
