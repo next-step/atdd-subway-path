@@ -258,4 +258,59 @@ class SectionGroupTest {
         );
     }
 
+    @Test
+    @DisplayName("상행종점역 삭제")
+    void removeEndOfUpPointStation() {
+
+        SectionGroup group = SectionGroupFixture.make();
+
+        //when
+        Section firstSection = group.getSections().get(FIRST);
+        group.delete(line, firstSection.getUpStationId());
+
+        //then
+        assertThat(group.getSections()).hasSize(2);
+        assertThat(group.getSections()).doesNotContain(firstSection);
+    }
+
+    @Test
+    @DisplayName("하행종점역 삭제")
+    void removeEndOfDownPointStation() {
+
+        SectionGroup group = SectionGroupFixture.make();
+
+        //when
+        Section lastSection = group.getSections().get(THIRD);
+        group.delete(line, lastSection.getDownStationId());
+
+        //then
+        assertThat(group.getSections()).hasSize(2);
+        assertThat(group.getSections()).doesNotContain(lastSection);
+    }
+
+    @Test
+    @DisplayName("중간역 삭제")
+    void removeMiddleStation() {
+
+        SectionGroup group = SectionGroupFixture.make();
+        Section first = group.getSections().get(FIRST);
+        Section middle = group.getSections().get(SECOND);
+        Section last = group.getSections().get(THIRD);
+
+        //when
+        group.delete(line, middle.getDownStationId());
+
+        //then
+        Section addedSectionAfterDelete = group.getSections().get(SECOND);
+
+        Assertions.assertAll(
+            () -> assertThat(group.getSections()).hasSize(2),
+            () -> assertThat(addedSectionAfterDelete.getDistance())
+                .isEqualTo(first.getDistance() + last.getDistance()),
+            () -> assertThat(addedSectionAfterDelete.getUpStationId())
+                .isEqualTo(first.getDownStationId()),
+            () -> assertThat(addedSectionAfterDelete.getDownStationId())
+                .isEqualTo(last.getDownStationId())
+        );
+    }
 }
