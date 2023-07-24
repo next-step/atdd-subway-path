@@ -17,38 +17,37 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionAddRequest;
 
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
 
-    @Autowired
-    private StationRepository stationRepository;
+	@Autowired
+	private StationRepository stationRepository;
 
-    @Autowired
-    private LineRepository lineRepository;
+	@Autowired
+	private LineRepository lineRepository;
 
-    @Autowired
-    private LineService lineService;
+	@Autowired
+	private LineService lineService;
 
-    @DisplayName("지하철 노선에 구간을 추가한다.")
-    @Test
-    void addSection() {
-        // given
-        Station savedStation = stationRepository.save(new Station(1L, 신사역));
-        Station savedStation2 = stationRepository.save(new Station(2L, 논현역));
-        Line savedLine = lineRepository.save(new Line(1L, 신분당선_이름, 신분당선_색상));
-        SectionAddRequest sectionAddRequest = new SectionAddRequest(savedStation.getId(),
-            savedStation2.getId(), 10);
+	@DisplayName("지하철 노선에 구간을 추가한다.")
+	@Test
+	void addSection() {
+		// given
+		Station savedStation = stationRepository.save(new Station(1L, 신사역_이름));
+		Station savedStation2 = stationRepository.save(new Station(2L, 논현역_이름));
+		Line savedLine = lineRepository.save(new Line(1L, 신분당선_이름, 신분당선_색상));
+		SectionAddRequest sectionAddRequest = new SectionAddRequest(savedStation.getId(),
+			savedStation2.getId(), 10);
 
-        // when
-        Line actual = lineService.addSection(savedLine.getId(), sectionAddRequest);
+		// when
+		Line actual = lineService.addSection(savedLine.getId(), sectionAddRequest);
 
-        // then
-        Assertions.assertThat(actual.getStations())
-            .usingRecursiveComparison()
-            .isEqualTo(List.of(savedStation, savedStation2));
-    }
+		// then
+		Assertions.assertThat(actual.getStations())
+			.usingRecursiveComparison()
+			.isEqualTo(List.of(savedStation, savedStation2));
+	}
 }
