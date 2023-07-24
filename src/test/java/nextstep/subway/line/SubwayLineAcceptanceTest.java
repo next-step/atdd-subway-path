@@ -225,7 +225,7 @@ class SubwayLineAcceptanceTest extends ApiTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("id", Long.class)).hasSize(1).containsExactlyInAnyOrder(lineId);
         assertThat(response.jsonPath().getList("stations[0].id", Long.class)).hasSize(3)
-                .containsExactlyInAnyOrder(stationId1, stationId2, stationId3);
+                .containsExactly(stationId1, stationId3, stationId2);
     }
 
     private Long 지하철_노선_생성(String subwayLineName, String color, int distance, Long upStationId, Long downStationId) {
