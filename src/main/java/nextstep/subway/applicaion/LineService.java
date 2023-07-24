@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,9 +81,9 @@ public class LineService {
     }
 
     private void updateSectionInformation(Line line,
-                                  Station newUpStation,
-                                  Station newDownStation,
-                                  int newSectionDistance) {
+                                          Station newUpStation,
+                                          Station newDownStation,
+                                          int newSectionDistance) {
         List<Section> alreadyExistSections = line.getSections();
         for (Section section : alreadyExistSections) {
 
@@ -130,17 +131,7 @@ public class LineService {
 
     private void validateAddSectionConditions(Line line, Long newUpStationId, Long newDownStationId) {
         List<Section> sections = line.getSections();
-
-        List<Long> sectionUpStationIds = sections.stream()
-                .map(s -> s.getUpStationId())
-                .collect(Collectors.toList());
-        List<Long> sectionDownStationIds = sections.stream()
-                .map(s -> s.getDownStationId())
-                .collect(Collectors.toList());
-
-        Set<Long> stationIds = Stream.of(sectionUpStationIds, sectionDownStationIds)
-                .flatMap(x -> x.stream())
-                .collect(Collectors.toSet());
+        Set<Long> stationIds = getSectionContainStationsSet(sections);
 
         if (stationIds.contains(newUpStationId) && stationIds.contains(newDownStationId)) {
             throw new IllegalArgumentException();
@@ -181,10 +172,67 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+        validateSectionDeleteRequest(line, station);
+
+        List<Section> sections = line.getSections();
+        List<Section> filteredSections = sections.stream()
+                .filter(
+                        s -> (s.getUpStationId() == stationId) || (s.getDownStationId() == stationId)
+                ).collect(Collectors.toList());
+
+        //중간에 위치한 경우
+        if(filteredSections.size() > 1) {
+            Section first, second;
+
+            if(filteredSections.get(0).getUpStationId() == stationId) {
+                first = filteredSections.get(1);
+                second = filteredSections.get(0);
+            } else {
+                first = filteredSections.get(0);
+                second = filteredSections.get(1);
+            }
+
+            first.updateDownStation(second.getDownStation());
+            first.updateDistance(first.getDistance() + second.getDistance());
+
+            line.deleteSection(second);
+
+            return;
         }
 
-        line.getSections().remove(line.getSections().size() - 1);
+        //상행 종착 구간에 위치한 경우
+        if (filteredSections.get(0).getUpStationId() == stationId) {
+            line.updateFinalUpStationId(filteredSections.get(0).getDownStationId());
+        } else {
+            // 하행 종착 구간에 위치한 경우
+            line.updateFinalDownStationId(filteredSections.get(0).getUpStationId());
+        }
+
+        line.deleteSection(filteredSections.get(0));
+    }
+
+    private void validateSectionDeleteRequest(Line line, Station targetStation) {
+        List<Section> sections = line.getSections();
+        if (sections.size() <= 1) {
+            throw new UnsupportedOperationException();
+        }
+
+        Set<Long> sectionContainStationsSet = getSectionContainStationsSet(sections);
+        if (!sectionContainStationsSet.contains(targetStation.getId())) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    Set<Long> getSectionContainStationsSet(List<Section> sections) {
+        List<Long> sectionUpStationIds = sections.stream()
+                .map(s -> s.getUpStationId())
+                .collect(Collectors.toList());
+        List<Long> sectionDownStationIds = sections.stream()
+                .map(s -> s.getDownStationId())
+                .collect(Collectors.toList());
+
+        return Stream.of(sectionUpStationIds, sectionDownStationIds)
+                .flatMap(x -> x.stream())
+                .collect(Collectors.toSet());
     }
 }

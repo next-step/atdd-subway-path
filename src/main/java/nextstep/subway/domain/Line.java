@@ -47,6 +47,10 @@ public class Line {
         this.color = color;
     }
 
+    public void deleteSection(Section section) {
+        sections.remove(section);
+    }
+
     public Long getFinalUpStationId() {
         return finalUpStationId;
     }
