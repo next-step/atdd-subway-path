@@ -56,7 +56,7 @@ public class SectionServiceMockTest {
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
-        assertThat(line.getSections()).hasSize(2)
+        assertThat(line.getSections().getSections()).hasSize(2)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple("당고개역", "이수역"),
@@ -80,7 +80,7 @@ public class SectionServiceMockTest {
         sectionService.removeSection(line.getId(), 사당역.getId());
 
         // then : 결과 확인
-        assertThat(line.getSections()).hasSize(1)
+        assertThat(line.getSections().getSections()).hasSize(1)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple("당고개역", "이수역")

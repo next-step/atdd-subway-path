@@ -36,7 +36,7 @@ class LineTest {
         line.addSection(section(line, 당고개역, 사당역, 3));
 
         // then : 결과 확인
-        assertThat(line.getSections()).hasSize(2)
+        assertThat(line.getSections().getSections()).hasSize(2)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple("당고개역", "사당역"),
@@ -54,7 +54,7 @@ class LineTest {
         line.addSection(section(line, 사당역, 당고개역, 3));
 
         // then : 결과 확인
-        assertThat(line.getSections()).hasSize(2)
+        assertThat(line.getSections().getSections()).hasSize(2)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple("사당역", "당고개역"),
@@ -72,7 +72,7 @@ class LineTest {
         line.addSection(section(line, 이수역, 사당역, 3));
 
         // then : 결과 확인
-        assertThat(line.getSections()).hasSize(2)
+        assertThat(line.getSections().getSections()).hasSize(2)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(
                         Tuple.tuple("당고개역", "이수역"),
@@ -140,7 +140,7 @@ class LineTest {
         line.addSection(section(line, 당고개역, 사당역, 3));
 
         // when : 기능 수행
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSections().getSections();
 
         // then : 결과 확인
         assertThat(sections).hasSize(2)
@@ -162,7 +162,7 @@ class LineTest {
         line.removeSection(사당역);
 
         // then : 결과 확인
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSections().getSections();
         assertThat(sections).hasSize(1)
                 .extracting("upStation.name", "downStation.name")
                 .containsExactlyInAnyOrder(

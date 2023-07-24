@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.exception.ErrorCode;
 import nextstep.subway.exception.SubwayException;
 import nextstep.subway.section.entity.Section;
+import nextstep.subway.section.entity.Sections;
 import nextstep.subway.station.entity.Station;
 
-import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,11 +18,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -46,8 +43,8 @@ public class Line {
 
     private Integer distance;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     @Builder
     public Line(String name, String color, Station upStation, Station downStation, Integer distance, Section section) {
@@ -56,7 +53,7 @@ public class Line {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.addSectionInit(section);
+        sections = new Sections(section, this);
     }
 
     public static Line of(String name, String color, Station upStationId, Station downStationId, Integer distance) {
@@ -74,132 +71,28 @@ public class Line {
         this.color = color;
     }
 
-    public void addSectionInit(Section section) {
-        this.sections.add(section);
-        section.addSection(this);
-    }
-
     public void addSection(Section section) {
         // 이미 등록된 구간인지 확인
-        if (alreadySection(section)) {
+        if (sections.alreadySection(section)) {
             throw new SubwayException(ErrorCode.ALREADY_SECTION);
         }
 
         // 등록하려는 구간이 기존 구간에 포함되는지 확인
-        if (!cannotAddSection(section)) {
+        if (!sections.cannotAddSection(section)) {
             throw new SubwayException(ErrorCode.CAN_NOT_BE_ADDED_SECTION);
         }
 
         // 역 사이에 새로운 역을 등록할 경우
-        addNewStationBetweenExistingStation(section);
+        sections.addNewStationBetweenExistingStation(section, this);
 
         // 새로운 역을 상행 종점으로 등록할 경우
-        addNewStationAsAnUpStation(section);
+        sections.addNewStationAsAnUpStation(section);
 
         // 새로운 역을 하행 종점으로 등록할 경우
-        addNewStationAsAnDownStation(section);
-    }
-
-    public void isExistsDownStation(Station upStation) {
-        if (!this.downStation.equals(upStation)) {
-            throw new SubwayException(ErrorCode.INVALID_UP_STATION);
-        }
-    }
-
-    public void isExistsStations(Station station) {
-        if (Arrays.asList(upStation, downStation).contains(station)) {
-            throw new SubwayException(ErrorCode.INVALID_DOWN_STATION);
-        }
+        sections.addNewStationAsAnDownStation(section);
     }
 
     public void removeSection(Station downStation) {
-        if (isSectionOne()) {
-            throw new SubwayException(ErrorCode.SECTION_IS_ONE);
-        }
-        if (!isLastSection(downStation)) {
-            throw new SubwayException(ErrorCode.NOT_DOWN_STATION);
-        }
-        this.sections.removeIf(section -> section.isDownStation(downStation));
-    }
-
-    private void addNewStationAsAnDownStation(Section section) {
-        sections.stream()
-                .filter(oldSection -> oldSection.getDownStation().equals(section.getUpStation()))
-                .findFirst()
-                .ifPresent(oldSection -> this.sections.add(section));
-    }
-
-    private void addNewStationAsAnUpStation(Section section) {
-        sections.stream()
-                .filter(oldSection -> oldSection.getUpStation().equals(section.getDownStation()))
-                .findFirst()
-                .ifPresent(oldSection -> this.sections.add(section));
-    }
-
-    private void addNewStationBetweenExistingStation(Section section) {
-        sections.stream()
-                .filter(oldSection -> oldSection.getUpStation() == section.getUpStation())
-                .findFirst()
-                .ifPresent(oldSection -> {
-                    this.sections.add(Section.of(section.getDownStation(), oldSection.getDownStation(), validationDistance(oldSection.getDistance(), section.getDistance()), this));
-                    this.sections.remove(oldSection);
-                });
-    }
-
-    private boolean alreadySection(Section section) {
-        return sections.stream()
-                .anyMatch(oldSection -> oldSection.getUpStation().equals(section.getUpStation()))
-                &&
-                sections.stream()
-                        .anyMatch(oldSection -> oldSection.getDownStation().equals(section.getDownStation()));
-    }
-
-    private boolean cannotAddSection(Section newSection) {
-        return sections.stream()
-                .anyMatch(oldSection -> {
-                    boolean b1 = oldSection.getUpStation().equals(newSection.getUpStation());
-                    boolean b2 = oldSection.getUpStation().equals(newSection.getDownStation());
-                    return b1 || b2;
-                }) ||
-                sections.stream()
-                        .anyMatch(oldSection -> {
-                            boolean b1 = oldSection.getDownStation().equals(newSection.getUpStation());
-                            boolean b2 = oldSection.getDownStation().equals(newSection.getDownStation());
-                            return b1 || b2;
-                        });
-    }
-
-    private boolean isSectionOne() {
-        return this.sections.size() == 1;
-    }
-
-    private boolean isLastSection(Station downStation) {
-        return getLastSection()
-                .map(section -> section.isDownStation(downStation))
-                .orElse(false);
-    }
-
-    private Optional<Section> getLastSection() {
-        if (sections.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(sections.get(sections.size() - 1));
-        }
-    }
-
-    private int validationDistance(int oldDistance, int newDistance) {
-        int distance = oldDistance - newDistance;
-        if (distance <= 0) {
-            throw new SubwayException(ErrorCode.INVALID_DISTANCE);
-        }
-        return distance;
-    }
-
-    public void validationStations(Station upStation, Station downStation) {
-        // 신규 구간의 상행역이 기존 구간의 하행역과 같은지 확인 아닐시 예외 처리
-        isExistsDownStation(upStation);
-
-        // 신규 구간의 하행역이 기존 구간의 역이 있는지 검사 있으면 예외 처리
-        isExistsStations(downStation);
+        sections.removeSection(downStation);
     }
 }

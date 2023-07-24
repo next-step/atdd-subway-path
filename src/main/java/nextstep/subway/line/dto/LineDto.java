@@ -104,18 +104,18 @@ public class LineDto {
     }
 
     private static Section getFirstSection(Line line) {
-        List<Station> downStations = line.getSections().stream()
+        List<Station> downStations = line.getSections().getSections().stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
 
-        return line.getSections().stream()
+        return line.getSections().getSections().stream()
                 .filter(it -> !downStations.contains(it.getUpStation()))
                 .findFirst()
                 .orElseThrow(() -> new SubwayException(ErrorCode.INVALID_UP_STATION));
     }
 
     private static Section getNextSection(Section section, Line line) {
-        return line.getSections().stream()
+        return line.getSections().getSections().stream()
                 .filter(it -> it.getUpStation().equals(section.getDownStation()))
                 .findFirst()
                 .orElse(null);
