@@ -34,7 +34,6 @@ public class LineResponse {
                 .distance(dto.getDistance())
                 .stations(dto.getStationDtos().stream()
                             .map(StationResponse::from)
-                            .sorted(Comparator.comparing(StationResponse::getId))
                             .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
     }
