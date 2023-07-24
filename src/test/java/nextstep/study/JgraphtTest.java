@@ -85,8 +85,8 @@ class JgraphtTest {
         sectionGraph.setEdgeWeight(sectionGraph.addEdge(section4.getUpStation(), section4.getDownStation()), section4.getDistance());
 
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(sectionGraph);
-        List<Station> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation)
-                .getVertexList();
+        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
+        List<Station> shortestPath = path.getVertexList();
 
         System.out.println(shortestPath);
         assertThat(shortestPath.size()).isEqualTo(3);

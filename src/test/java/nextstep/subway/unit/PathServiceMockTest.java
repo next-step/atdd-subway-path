@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.anyLong;
@@ -43,6 +44,13 @@ public class PathServiceMockTest {
      * - 출발역과 도착역이 연결이 되어 있지 않은 경우
      * - 존재하지 않은 출발역이나 도착역을 조회 할 경우
      */
+    /**
+     * 교대역    --- *2호선(10)* ---   강남역
+     * |                        |
+     * *3호선(2)*                   *신분당선(10)*
+     * |                        |
+     * 남부터미널역  --- *3호선(3)* ---   양재
+     */
     @DisplayName("출발역에서 도착역까지의 최단경로를 탐색")
     @Test
     void searchPath() {
@@ -67,12 +75,12 @@ public class PathServiceMockTest {
 
         // when: 출발역 id와 도착역 id를 받으면 최단경로를 반환한다.
         PathResponse pathResponse = pathService.searchPath(1L, 2L);
-        StationResponse response1 = StationResponse.from(교대역);
-        StationResponse response2 = StationResponse.from(남부터미널역);
-        StationResponse response3 = StationResponse.from(양재역);
+        List<String> stationNames = pathResponse.getStations().stream()
+                .map(StationResponse::getName)
+                .collect(Collectors.toList());
 
         // then: 최단경로는 아래의 결과를 가져야 한다.
-        assertThat(pathResponse.getStations()).containsExactly(response1, response2, response3);
+        assertThat(stationNames).containsExactly("교대역", "남부터미널역", "양재역");
         assertThat(pathResponse.getDistance()).isEqualTo(5);
     }
 }
