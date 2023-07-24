@@ -76,7 +76,7 @@ public class LineService {
         validateAddSectionConditions(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         updateSectionInformation(line, upStation, downStation, sectionRequest.getDistance());
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private void updateSectionInformation(Line line,
