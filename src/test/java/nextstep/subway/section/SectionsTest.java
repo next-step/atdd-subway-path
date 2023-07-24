@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import static common.Constants.강남역;
 import static common.Constants.새로운지하철역;
 import static common.Constants.신논현역;
 import static common.Constants.지하철역;
@@ -146,9 +147,9 @@ public class SectionsTest {
             () -> assertThat(stations.get(2).getId()).isEqualTo(3L));
     }
 
-    @DisplayName("구간 제거시 비즈니스 검증에 문제가 없다면 삭제된다")
+    @DisplayName("deleteSection() : 하행 종점역 구간 제거에 성공한다")
     @Test
-    void deleteSection() {
+    void deleteSection_downEnd() {
         // given
         Section firstSection = aSection().build();
         Section secondSection = aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
@@ -161,19 +162,32 @@ public class SectionsTest {
         assertThat(sections.getSections()).hasSize(1);
     }
 
-    @DisplayName("구간 제거시 하행 종점역이 아니라면 실패한다")
+    @DisplayName("deleteSection() : 상행 종점역 구간 제거에 성공한다")
     @Test
-    void deleteSection_fail_notDownEndStation() {
-        // given
+    void deleteSection_upEnd() {
         Section firstSection = aSection().build();
         Section secondSection = aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
         Sections sections = new Sections(new ArrayList<>(List.of(firstSection, secondSection)));
 
-        // when
-        assertThatThrownBy(() -> sections.delete(secondSection.getUpStation()));
+        sections.delete(firstSection.getUpStation());
 
-        // then
-        assertThat(sections.getSections()).hasSize(2);
+        assertThat(sections.getSections()).hasSize(1);
+        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(new Station(2L, 신논현역));
+    }
+
+    @DisplayName("deleteSection() : 중간 구간 제거에 성공하면 구간을 합친다")
+    @Test
+    void deleteSection_mid() {
+        Section firstSection = aSection().build();
+        Section secondSection = aSection().withStations(new Station(2L, 신논현역), new Station(3L, 지하철역)).build();
+        Sections sections = new Sections(new ArrayList<>(List.of(firstSection, secondSection)));
+
+        sections.delete(secondSection.getUpStation());
+
+        assertThat(sections.getSections()).hasSize(1);
+        assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(new Station(1L, 강남역));
+        assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(new Station(3L, 지하철역));
+        assertThat(sections.getSections().get(0).getDistance()).isEqualTo(20);
     }
 
     @DisplayName("구간 제거시 상행 종점역과 하행 종점역 뿐이라면 실패한다")
