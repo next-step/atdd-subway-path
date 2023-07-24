@@ -10,7 +10,7 @@ public class AddFirstStrategy extends SectionAddStrategy{
     final Section matchedSection = sections.findByUpSection(section.getDownStation()).orElseThrow(IllegalStateException::new);
     // 첫 구간이어야 한다.
     if (sections.hasNextSection(matchedSection)) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("첫 구간에만 추가할 수 있습니다");
     }
 
     sections.addOnlyList(section);

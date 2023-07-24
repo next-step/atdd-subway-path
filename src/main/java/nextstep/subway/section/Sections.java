@@ -67,10 +67,11 @@ public class Sections {
 
     public List<Station> getStations() {
         final List<Station> stations = new ArrayList<>();
-        Section cursor = getFirstSection();
-        if (cursor == null) {
+        if (sections.isEmpty()) {
             return stations;
         }
+
+        Section cursor = getFirstSection();
 
         stations.add(cursor.getUpStation());
         stations.add(cursor.getDownStation());

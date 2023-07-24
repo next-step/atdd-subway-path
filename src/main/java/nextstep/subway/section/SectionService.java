@@ -40,7 +40,4 @@ public class SectionService {
               .orElseThrow(() -> new StationNotFoundException(stationId));
     }
 
-    private static boolean hasMinimumSection(Line line) {
-        return line.countOfStations() == MINIMUM_STATION_COUNT;
-    }
 }
