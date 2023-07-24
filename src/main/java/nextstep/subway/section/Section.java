@@ -27,14 +27,6 @@ public class Section {
   private Long distance;
 
 
-  public void setUpStation(final Station upStation) {
-    this.upStation = upStation;
-  }
-
-  public void setDownStation(Station downStation) {
-    this.downStation = downStation;
-  }
-
   public Station getDownStation() {
     return downStation;
   }

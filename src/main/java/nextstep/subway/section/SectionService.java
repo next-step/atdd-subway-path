@@ -3,7 +3,6 @@ package nextstep.subway.section;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
-import nextstep.subway.line.Line;
 import nextstep.subway.line.LineNotFoundException;
 import nextstep.subway.line.LineRepository;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,6 @@ public class SectionService {
     private final StationRepository stationRepository;
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
-
-    private static final long MINIMUM_STATION_COUNT = 2L;
 
     public SectionService(StationRepository stationRepository, LineRepository lineRepository, SectionRepository sectionRepository) {
       this.stationRepository = stationRepository;
