@@ -110,10 +110,9 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
         final String errorMessage = "지하철 노선에 구간을 등록 시에 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다";
         final Integer 구간_길이 = 10;
 
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 구간_길이));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 구간_길이));
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.jsonPath().getString("message")).isEqualTo(errorMessage);
     }
@@ -129,10 +128,9 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
         final String errorMessage = "지하철 노선에 구간을 등록 시에 상행역과 하행역이 이미 노선에 등록되어 있다면 추가할 수 없습니다";
         final Integer 구간_길이 = 6;
 
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 구간_길이));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 구간_길이));
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.jsonPath().getString("message")).isEqualTo(errorMessage);
     }
@@ -152,10 +150,9 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
         final Integer 구간_길이 = 6;
 
         //when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(새로운_상행역, 새로운_하행역, 구간_길이));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(새로운_상행역, 새로운_하행역, 구간_길이));
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.jsonPath().getString("message")).isEqualTo(errorMessage);
     }
