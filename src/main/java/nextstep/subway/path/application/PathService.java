@@ -41,7 +41,7 @@ public class PathService {
         return new PathResponse(stationResponses, shortestPath.getDistance());
     }
 
-    private static void validateSourceAndTargetId(Long source, Long target) {
+    private void validateSourceAndTargetId(Long source, Long target) {
         if (source.equals(target)) {
             throw new SameSourceAndTargetStationException();
         }
