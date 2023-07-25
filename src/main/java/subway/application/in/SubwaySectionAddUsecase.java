@@ -1,5 +1,6 @@
 package subway.application.in;
 
+import lombok.Builder;
 import subway.domain.Kilometer;
 import subway.domain.Station;
 import subway.domain.SubwayLine;
@@ -13,6 +14,7 @@ public interface SubwaySectionAddUsecase {
         private SubwayLine.Id subwayLineId;
         private SubwaySection subwaySection;
 
+        @Builder
         public Command(SubwayLine.Id subwayLineId, SubwaySection subwaySection) {
             this.subwayLineId = subwayLineId;
             this.subwaySection = subwaySection;
@@ -42,6 +44,7 @@ public interface SubwaySectionAddUsecase {
             public SubwaySection() {
             }
 
+            @Builder
             public SubwaySection(Station.Id upStationId, Station.Id downStationId, Kilometer distance) {
                 this.upStationId = upStationId;
                 this.downStationId = downStationId;
