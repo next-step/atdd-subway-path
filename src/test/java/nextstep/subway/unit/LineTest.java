@@ -5,14 +5,12 @@ import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.section.entity.Section;
 import nextstep.subway.station.entity.Station;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -144,16 +142,15 @@ class LineTest {
         Line line = line(당고개역, 이수역);
         Section section = section(line, 당고개역, 사당역, 3);
         line.addSection(section);
-        Station 사당역 = section.getDownStation();
 
         // when : 기능 수행
-        line.removeSection(사당역);
+        line.removeSection(이수역);
 
         // then : 결과 확인
         assertThat(line.getStations()).hasSize(2)
                 .extracting("name")
                 .containsExactly(
-                        "사당역", "이수역"
+                        "당고개역", "사당역"
                 );
     }
 

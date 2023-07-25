@@ -86,13 +86,21 @@ public class Line {
         }
 
         // 역 사이에 새로운 역을 등록할 경우
-        sections.addNewStationBetweenExistingStation(section, this);
+        if (sections.isUptoUp(section)) {
+            sections.addNewStationBetweenExistingStation(section, this);
+            return;
+        }
 
         // 새로운 역을 상행 종점으로 등록할 경우
-        sections.addNewStationAsAnUpStation(section);
+        if (sections.isUpToDown(section)) {
+            sections.addNewStationAsAnUpStation(section);
+            return;
+        }
 
         // 새로운 역을 하행 종점으로 등록할 경우
-        sections.addNewStationAsAnDownStation(section);
+        if (sections.isDownToUp(section)) {
+            sections.addNewStationAsAnDownStation(section);
+        }
     }
 
     public void removeSection(Station downStation) {

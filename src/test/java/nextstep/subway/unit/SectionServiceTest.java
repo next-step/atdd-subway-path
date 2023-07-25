@@ -9,7 +9,6 @@ import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.repository.StationRepository;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -146,13 +145,13 @@ public class SectionServiceTest {
         sectionService.addSection(line.getId(), sectionDto);
 
         // when : 기능 수행
-        sectionService.removeSection(line.getId(), 사당역.getId());
+        sectionService.removeSection(line.getId(), 이수역.getId());
 
         // then : 결과 확인
-        assertThat(line.getSections().getSections()).hasSize(1)
-                .extracting("upStation.name", "downStation.name")
-                .containsExactlyInAnyOrder(
-                        Tuple.tuple("사당역", "이수역")
+        assertThat(line.getStations()).hasSize(2)
+                .extracting("name")
+                .containsExactly(
+                        "당고개역", "사당역"
                 );
     }
 

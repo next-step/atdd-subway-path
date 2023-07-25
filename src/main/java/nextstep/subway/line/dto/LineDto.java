@@ -7,6 +7,7 @@ import nextstep.subway.section.entity.Section;
 import nextstep.subway.station.dto.StationDto;
 import nextstep.subway.station.entity.Station;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,7 @@ public class LineDto {
                 .distance(subwayLine.getDistance())
                 .stationDtos(subwayLine.getStations().stream()
                         .map(StationDto::from)
-                        .collect(Collectors.toSet()))
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
     }
 

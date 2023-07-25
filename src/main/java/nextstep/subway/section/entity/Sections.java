@@ -43,12 +43,28 @@ public class Sections {
 
     public void addNewStationBetweenExistingStation(Section section, Line line) {
         sections.stream()
-                .filter(oldSection -> oldSection.getUpStation() == section.getUpStation())
+                .filter(oldSection -> oldSection.getUpStation().equals(section.getUpStation()))
                 .findFirst()
                 .ifPresent(oldSection -> {
-                    this.sections.add(Section.of(section.getDownStation(), oldSection.getDownStation(), validationDistance(oldSection.getDistance(), section.getDistance()), line));
+                    this.sections.add(Section.of(oldSection.getUpStation(), section.getDownStation(), validationDistance(oldSection.getDistance(), section.getDistance()), line));
+                    this.sections.add(Section.of(section.getDownStation(), oldSection.getDownStation(), section.getDistance(), line));
                     this.sections.remove(oldSection);
                 });
+    }
+
+    public boolean isUptoUp(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
+    }
+
+    public boolean isUpToDown(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getUpStation().equals(newSection.getDownStation()));
+    }
+
+    public boolean isDownToUp(Section newSection) {
+        return sections.stream()
+                .anyMatch(section -> section.getDownStation().equals(newSection.getUpStation()));
     }
 
     public boolean alreadySection(Section section) {
