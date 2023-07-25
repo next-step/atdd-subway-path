@@ -85,12 +85,6 @@ public class PathAcceptanceTest {
         노선_구간을_등록한다(아이디(분당선), 도곡역_아이디, 수서역_아이디, 도곡역에서_수서역까지의_거리_분당선);
     }
 
-
-    /**
-     * Given 여러 지하철 노선을 생성하고
-     * When 출발역과 도착역의 경로를 조회하면
-     * Then 출발역으로부터 도착역까지의 경로에 있는 역 목록과 조회한 경로 구간의 거리를 응답한다
-     */
     @DisplayName("역과 역 최단 경로 조회")
     @Test
     void findShortestPathBetweenStations() {
