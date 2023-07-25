@@ -49,7 +49,6 @@ class JgraphtTest {
         graph.setEdgeWeight(graph.addEdge("v1", "v3"), 100);
 
         List<GraphPath> paths = new KShortestPaths(graph, 100).getPaths(source, target);
-        System.out.println(paths);
 
         assertThat(paths).hasSize(2);
         paths.stream()
@@ -88,7 +87,6 @@ class JgraphtTest {
         GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
         List<Station> shortestPath = path.getVertexList();
 
-        System.out.println(shortestPath);
         assertThat(shortestPath.size()).isEqualTo(3);
     }
 
