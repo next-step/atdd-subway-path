@@ -11,10 +11,10 @@ import java.util.List;
 public class SectionAdditionHandlerMapping {
 
     private final List<SectionAdditionHandler> handlerList = List.of(
-            new AddSectionAtLastHandler(new AnyStationPreExistCheckHandler(null)),
-            new AddSectionAtFirstHandler(new AnyStationPreExistCheckHandler(null)),
-            new AddSectionAtMiddleRightHandler(new AnyStationPreExistCheckHandler(null)),
-            new AddSectionAtMiddleLeftHandler(new AnyStationPreExistCheckHandler(null))
+            new AddSectionAtLastHandler(),
+            new AddSectionAtFirstHandler(),
+            new AddSectionAtMiddleRightHandler(),
+            new AddSectionAtMiddleLeftHandler()
     );
 
     public SectionAdditionHandler getHandler(Sections sections, Section section) {

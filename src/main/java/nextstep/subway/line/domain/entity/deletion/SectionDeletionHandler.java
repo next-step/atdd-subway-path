@@ -1,4 +1,4 @@
-package nextstep.subway.line.domain.entity.deletion.handler;
+package nextstep.subway.line.domain.entity.deletion;
 
 import nextstep.subway.line.domain.vo.Sections;
 import nextstep.subway.station.entity.Station;

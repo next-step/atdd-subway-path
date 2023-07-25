@@ -5,10 +5,6 @@ import nextstep.subway.line.domain.entity.Section;
 import nextstep.subway.line.domain.vo.Sections;
 
 public class AddSectionAtFirstHandler extends SectionAdditionHandler{
-    public AddSectionAtFirstHandler(SectionAdditionHandler nextHandler) {
-        super(nextHandler);
-    }
-
     @Override
     public boolean checkApplicable(Sections sections, Section section) {
         return sections.getFirstStation().equals(section.getDownStation());
@@ -17,9 +13,6 @@ public class AddSectionAtFirstHandler extends SectionAdditionHandler{
     @Override
     public void validate(Sections sections, Section section) {
         validateNewSectionUpStationIsNewcomer(sections, section);
-        if (nextHandler != null) {
-            nextHandler.validate(sections, section);
-        }
     }
 
     @Override

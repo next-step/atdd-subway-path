@@ -3,7 +3,6 @@ package nextstep.subway.unit.line.handler;
 import nextstep.subway.line.domain.entity.Line;
 import nextstep.subway.line.domain.entity.Section;
 import nextstep.subway.line.domain.entity.addition.*;
-import nextstep.subway.line.domain.entity.handler.addition.*;
 import nextstep.subway.station.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

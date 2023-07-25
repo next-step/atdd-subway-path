@@ -125,29 +125,28 @@ public class PathServiceMockTest {
 
         }
 
-        @DisplayName("출발 역과 도착 역이 같은 경우")
+        @DisplayName("출발 역과 도착 역이 같은 경우, 최단 경로 길 찾기에 실패한다.")
         @Test
         void sourceAndTargetStationIsSame() {
-            // when
+            // given
             when(lineRepository.findAll()).thenReturn(lineList);
             when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
             when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
 
-            // then
+            // when
             Assertions.assertThatThrownBy(() -> pathService.getShortestPath(교대역.getId(), 교대역.getId()))
                     .isInstanceOf(ValidationException.class);
         }
 
-
         @DisplayName("출발 역과 도착 역이 연결되있지 않은 경우")
         @Test
         void sourceAndTargetStationIsNotConnected() {
-            // when
+            // given
             when(lineRepository.findAll()).thenReturn(lineList);
             when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
             when(stationRepository.findById(5L)).thenReturn(Optional.of(익명역));
 
-            // then
+            // when
             Assertions.assertThatThrownBy(() -> pathService.getShortestPath(교대역.getId(), 익명역.getId()))
                     .isInstanceOf(ValidationException.class);
         }
@@ -156,11 +155,11 @@ public class PathServiceMockTest {
         @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우")
         @Test
         void sourceOrTargetStationDoNotExist() {
-            // when
+            // given
             when(stationRepository.findById(1L)).thenReturn(Optional.of(교대역));
             when(stationRepository.findById(5L)).thenReturn(Optional.empty());
 
-            // then
+            // when
             Assertions.assertThatThrownBy(() -> pathService.getShortestPath(교대역.getId(), 익명역.getId()))
                     .isInstanceOf(StationNotFoundException.class);
         }

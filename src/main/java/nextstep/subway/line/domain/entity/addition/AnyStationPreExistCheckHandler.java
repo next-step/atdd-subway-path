@@ -5,10 +5,6 @@ import nextstep.subway.line.domain.entity.Section;
 import nextstep.subway.line.domain.vo.Sections;
 
 public class AnyStationPreExistCheckHandler extends SectionAdditionHandler {
-    public AnyStationPreExistCheckHandler(SectionAdditionHandler nextHandler) {
-        super(nextHandler);
-    }
-
     @Override
     public boolean checkApplicable(Sections sections, Section section) {
         return true;
@@ -18,9 +14,6 @@ public class AnyStationPreExistCheckHandler extends SectionAdditionHandler {
     @Override
     public void validate(Sections sections, Section section) {
         validateOnlyOneStationIsEnrolledInLine(sections, section);
-        if (nextHandler != null) {
-            nextHandler.validate(sections, section);
-        }
     }
 
     @Override

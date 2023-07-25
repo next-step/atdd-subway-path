@@ -1,7 +1,6 @@
 package nextstep.subway.unit.line;
 
-import nextstep.subway.line.domain.entity.deletion.handler.SectionDeletionHandlerMapping;
-import nextstep.subway.line.domain.entity.deletion.SectionDeletionOperator;
+import nextstep.subway.line.domain.entity.deletion.SectionDeletionHandlerMapping;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.domain.entity.Line;
 import nextstep.subway.line.domain.entity.LineRepository;
@@ -38,9 +37,9 @@ public class LineServiceMockTest {
         Station 강남역 = new Station(1L, "강남역");
         Station 역삼역 = new Station(2L, "역삼역");
         SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 역삼역.getId(), 10);
-        SectionDeletionOperator sectionDeletionOperator = new SectionDeletionOperator(new SectionDeletionHandlerMapping());
+        SectionDeletionHandlerMapping handlerMapping = new SectionDeletionHandlerMapping();
         Line line = mock(Line.class);
-        LineService lineService = new LineService(lineRepository, stationRepository, sectionAdditionHandlerMapping, sectionDeletionOperator);
+        LineService lineService = new LineService(lineRepository, stationRepository, sectionAdditionHandlerMapping, handlerMapping);
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(역삼역.getId())).thenReturn(Optional.of(역삼역));
         when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
@@ -59,8 +58,8 @@ public class LineServiceMockTest {
         Station 선릉역 = new Station(3L, "선릉역");
         Line 이호선 = mock(Line.class);
 
-        SectionDeletionOperator sectionDeletionOperator = new SectionDeletionOperator(new SectionDeletionHandlerMapping());
-        LineService lineService = new LineService(lineRepository, stationRepository, sectionAdditionHandlerMapping, sectionDeletionOperator);
+        SectionDeletionHandlerMapping handlerMapping = new SectionDeletionHandlerMapping();
+        LineService lineService = new LineService(lineRepository, stationRepository, sectionAdditionHandlerMapping, handlerMapping);
         when(이호선.getId()).thenReturn(1L);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
@@ -69,6 +68,6 @@ public class LineServiceMockTest {
         lineService.deleteSection(이호선.getId(), 선릉역.getId());
 
         // then
-        verify(이호선).removeSection(sectionDeletionOperator, 선릉역);
+        verify(이호선).removeSection(handlerMapping, 선릉역);
     }
 }

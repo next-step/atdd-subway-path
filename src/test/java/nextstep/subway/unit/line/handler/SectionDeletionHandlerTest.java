@@ -2,11 +2,10 @@ package nextstep.subway.unit.line.handler;
 
 import nextstep.subway.line.domain.entity.Line;
 import nextstep.subway.line.domain.entity.Section;
-import nextstep.subway.line.domain.entity.deletion.handler.DeleteSectionAtLastHandler;
-import nextstep.subway.line.domain.entity.deletion.handler.DeleteSectionAtMiddleHandler;
-import nextstep.subway.line.domain.entity.deletion.handler.DeleteSectionAtTopHandler;
+import nextstep.subway.line.domain.entity.deletion.DeleteSectionAtLastHandler;
+import nextstep.subway.line.domain.entity.deletion.DeleteSectionAtMiddleHandler;
+import nextstep.subway.line.domain.entity.deletion.DeleteSectionAtTopHandler;
 import nextstep.subway.line.domain.entity.addition.SectionAdditionHandlerMapping;
-import nextstep.subway.line.domain.entity.handler.deletion.*;
 import nextstep.subway.station.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

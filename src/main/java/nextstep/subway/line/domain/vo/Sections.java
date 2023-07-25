@@ -2,10 +2,13 @@ package nextstep.subway.line.domain.vo;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import nextstep.subway.common.exception.CreationValidationException;
+import nextstep.subway.common.exception.DeletionValidationException;
 import nextstep.subway.line.domain.entity.Section;
 import nextstep.subway.line.domain.entity.addition.SectionAdditionHandler;
 import nextstep.subway.line.domain.entity.addition.SectionAdditionHandlerMapping;
-import nextstep.subway.line.domain.entity.deletion.SectionDeletionOperator;
+import nextstep.subway.line.domain.entity.deletion.SectionDeletionHandler;
+import nextstep.subway.line.domain.entity.deletion.SectionDeletionHandlerMapping;
 import nextstep.subway.line.exception.SectionNotFoundException;
 import nextstep.subway.line.exception.StationNotFoundException;
 import nextstep.subway.station.entity.Station;
@@ -57,9 +60,26 @@ public class Sections {
     }
 
     public void addSection(SectionAdditionHandlerMapping handlerMapping, Section section) {
+        if (checkUpStationsContains(section.getUpStation()) && checkDownStationsContains(section.getDownStation())) {
+            throw new CreationValidationException("section.0003");
+        }
+
         SectionAdditionHandler handler = handlerMapping.getHandler(this, section);
         handler.validate(this, section);
         handler.apply(this, section);
+    }
+
+    public void remove(SectionDeletionHandlerMapping sectionDeletionHandlerMapping, Station station) {
+        if (sections.size() == 1) {
+            throw new DeletionValidationException("section.is.singular");
+        }
+
+        if (!hasStation(station)) {
+            throw new DeletionValidationException(String.format("역이 존재하지 않습니다. 역 이름:%s", station.getId()));
+        }
+
+        SectionDeletionHandler handler = sectionDeletionHandlerMapping.getHandler(this, station);
+        handler.apply(this, station);
     }
 
 
@@ -75,10 +95,6 @@ public class Sections {
                 .filter(s -> s.getDownStation().equals(downStation))
                 .findAny()
                 .orElseThrow(() -> new SectionNotFoundException("section.not.found"));
-    }
-
-    public void remove(SectionDeletionOperator sectionDeletionOperator, Station station) {
-        sectionDeletionOperator.apply(this, station);
     }
 
     public Station getFirstStation() {
@@ -133,9 +149,5 @@ public class Sections {
 
     public void forceSectionRemove(Section section) {
         sections.remove(section);
-    }
-
-    public int size() {
-        return sections.size();
     }
 }
