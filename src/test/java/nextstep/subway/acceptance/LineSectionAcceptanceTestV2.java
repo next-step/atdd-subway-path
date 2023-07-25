@@ -44,14 +44,14 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
     @Test
     void addLineSectionWhenRegisterBetweenSections(){
         //given
-        final Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        var 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
         final Integer 구간_길이 = 6;
 
         //when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 구간_길이));
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        var response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactlyInAnyOrder(강남역, 중간역, 양재역);
     }
@@ -65,14 +65,14 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
     @Test
     void addLineSectionWhenRegisterUpStation(){
         //given
-        final Long 상행역 = 지하철역_생성_요청("상행역").jsonPath().getLong("id");
+        var 상행역 = 지하철역_생성_요청("상행역").jsonPath().getLong("id");
         final Integer 구간_길이 = 6;
 
         //when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(상행역, 강남역, 구간_길이));
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        var response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactlyInAnyOrder(상행역, 강남역, 양재역);
     }
@@ -86,14 +86,14 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
     @Test
     void addLineSectionWhenRegisterDownStation(){
         //given
-        final Long 하행역 = 지하철역_생성_요청("하행역").jsonPath().getLong("id");
+        var 하행역 = 지하철역_생성_요청("하행역").jsonPath().getLong("id");
         final Integer 구간_길이 = 6;
 
         //when
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 하행역, 구간_길이));
 
         //then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        var response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactlyInAnyOrder(강남역, 양재역, 하행역);
     }
@@ -106,11 +106,11 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
     @Test
     void cannotAddLineSectionIfSectionDistanceIsLargerThanLineDistance(){
         //When
-        final Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        var 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
         final String errorMessage = "지하철 노선에 구간을 등록 시에 기존 역 사이 길이보다 크거나 같으면 등록할 수 없습니다";
         final Integer 구간_길이 = 10;
 
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 구간_길이));
+        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 중간역, 구간_길이));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -128,7 +128,7 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
         final String errorMessage = "지하철 노선에 구간을 등록 시에 상행역과 하행역이 이미 노선에 등록되어 있다면 추가할 수 없습니다";
         final Integer 구간_길이 = 6;
 
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 구간_길이));
+        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역, 구간_길이));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -150,7 +150,7 @@ public class LineSectionAcceptanceTestV2 extends AcceptanceTest{
         final Integer 구간_길이 = 6;
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(새로운_상행역, 새로운_하행역, 구간_길이));
+        var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(새로운_상행역, 새로운_하행역, 구간_길이));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
