@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.constants.Endpoint;
+import nextstep.subway.fixture.StationFixture;
 import nextstep.subway.station.dto.request.SaveStationRequestDto;
 import nextstep.subway.support.AcceptanceTest;
 import nextstep.subway.support.DatabaseCleanup;
