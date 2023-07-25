@@ -24,29 +24,31 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
-    private Station 강남역;
-    private Station 논현역;
-    private Station 광교역;
-    private Line 신분당선;
-
     @BeforeEach
     void setUp() {
-        this.강남역 = Station.builder()
+
+
+    }
+
+    @Test
+    void addSection() {
+        // given
+        Station 강남역 = Station.builder()
             .id(1L)
             .name("강남역")
             .build();
 
-        this.논현역 = Station.builder()
+        Station 논현역 = Station.builder()
             .id(2L)
             .name("논현역")
             .build();
 
-        this.광교역 = Station.builder()
+        Station 광교역 = Station.builder()
             .id(3L)
             .name("광교역")
             .build();
 
-        this.신분당선 = Line.builder()
+        Line 신분당선 = Line.builder()
             .name("신분당선")
             .color("bg-red-600")
             .distance(30L)
@@ -54,11 +56,6 @@ public class LineServiceMockTest {
             .downStation(논현역)
             .build();
 
-    }
-
-    @Test
-    void addSection() {
-        // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         when(lineRepository.findById(any())).thenReturn(Optional.of(신분당선));
         when(stationService.findStationById(2L)).thenReturn(논현역); // 기존 구간의 상행종점역
