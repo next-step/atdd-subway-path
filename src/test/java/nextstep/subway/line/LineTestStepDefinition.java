@@ -38,8 +38,9 @@ public class LineTestStepDefinition {
 
     public static LineResponse 지하철_노선_조회_요청(Long id) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("id", id)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().get("/lines/" + id)
+            .when().get("/lines/{id}")
             .then().log().all()
             .extract();
 
@@ -50,8 +51,9 @@ public class LineTestStepDefinition {
 
     public static BaseExceptionResponse 없는_지하철_노선_조회_요청(Long id) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("id", id)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().get("/lines/" + id)
+            .when().get("/lines/{id}")
             .then().log().all()
             .extract();
 
@@ -76,9 +78,10 @@ public class LineTestStepDefinition {
         LineUpdateRequest request = new LineUpdateRequest(name, color);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("id", id)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(request)
-            .when().put("/lines/" + id)
+            .when().put("/lines/{id}")
             .then().log().all()
             .extract();
 
@@ -87,8 +90,9 @@ public class LineTestStepDefinition {
 
     public static void 지하철_노선_삭제_요청(Long id) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("id", id)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().delete("/lines/" + id)
+            .when().delete("/lines/{id}")
             .then().log().all()
             .extract();
 

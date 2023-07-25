@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -32,33 +33,37 @@ public class Sections {
     }
 
     public void add(Section section) {
-        Station upEndStation = getUpEndStation();
-        // 역 기준으로 하행 구간을 역으로 찾을 수 있다
-        Map<Station, Section> upSectionMap = getStationToUpSectionMap(section);
         validateIntersection(section);
 
-        updateSectionIfInsert(section, upEndStation, upSectionMap);
+        Station upEndStation = getUpEndStation();
+        updateSectionIfInsert(section, upEndStation);
 
         sections.add(section);
     }
 
     public void delete(final Station station) {
-        if (!getLastSection().getDownStation().equals(station)) {
-            throw new BusinessException("하행 종점이 아닌 역을 삭제할 수 없습니다. 역ID: " + station.getId());
-        }
-
         if (sections.size() == 1) {
             throw new BusinessException("상행 종점역과 하행 종점역만 있는 노선의 구간은 삭제할 수 없습니다.");
         }
 
-        sections.remove(getLastSection());
+        Section firstSection = findUpSectionByStation(getUpEndStation())
+            .orElseThrow();
+        Section lastSection = getLastSection();
+        Section section = findUpSectionByStation(station)
+            .orElse(lastSection);
+
+        if (isInMiddle(station, firstSection, lastSection)) {
+            Section prevSection = findDownSectionByStation(section.getUpStation());
+            prevSection.merge(section.getDownStation(), section.getDistance());
+            sections.remove(section);
+            return;
+        }
+
+        sections.remove(section);
     }
 
     public Section getLastSection() {
-        Map<Station, Section> upSectionMap = new HashMap<>();
-        for (Section oldSection : sections) {
-            upSectionMap.put(oldSection.getUpStation(), oldSection);
-        }
+        Map<Station, Section> upSectionMap = getUpSectionMap();
 
         Station currentUpStation = getUpEndStation();
         Section lastSection = upSectionMap.get(currentUpStation);
@@ -71,11 +76,7 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        // 역 기준으로 하행 구간을 역으로 찾을 수 있다
-        Map<Station, Section> upSectionMap = new HashMap<>();
-        for (Section oldSection : sections) {
-            upSectionMap.put(oldSection.getUpStation(), oldSection);
-        }
+        Map<Station, Section> upSectionMap = getUpSectionMap();
 
         return getOrderedStations(upSectionMap);
     }
@@ -84,8 +85,36 @@ public class Sections {
         return this.sections;
     }
 
-    private void updateSectionIfInsert(final Section section, final Station upEndStation,
-        final Map<Station, Section> upSectionMap) {
+    private boolean isInMiddle(Station station, Section firstSection, Section lastSection) {
+        return !station.equals(firstSection.getUpStation()) && !station.equals(
+            lastSection.getDownStation());
+    }
+
+    private Optional<Section> findUpSectionByStation(Station station) {
+        Map<Station, Section> upSectionMap = getUpSectionMap();
+
+        return Optional.ofNullable(upSectionMap.get(station));
+    }
+
+    private Section findDownSectionByStation(Station station) {
+        Map<Station, Section> downSectionMap = new HashMap<>();
+        for (Section oldSection : sections) {
+            downSectionMap.put(oldSection.getDownStation(), oldSection);
+        }
+
+        return downSectionMap.get(station);
+    }
+
+    private Map<Station, Section> getUpSectionMap() {
+        Map<Station, Section> upSectionMap = new HashMap<>();
+        for (Section oldSection : sections) {
+            upSectionMap.put(oldSection.getUpStation(), oldSection);
+        }
+        return upSectionMap;
+    }
+
+    private void updateSectionIfInsert(final Section section, final Station upEndStation) {
+        Map<Station, Section> upSectionMap = getStationToUpSectionMap(section);
 
         Station currentUpStation = upEndStation;
         while (upSectionMap.containsKey(currentUpStation)) {
@@ -119,17 +148,20 @@ public class Sections {
         Map<Station, Section> upSectionMap = new HashMap<>();
         for (Section oldSection : sections) {
             upSectionMap.put(oldSection.getUpStation(), oldSection);
-
-            if (isSameUpStations(section, oldSection) && isSameDownStations(section, oldSection)) {
-
-                throw new BusinessException(
-                    String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s",
-                        section.getUpStation().getId(),
-                        section.getDownStation().getId()));
-            }
+            sameThenThrow(section, oldSection);
         }
 
         return upSectionMap;
+    }
+
+    private void sameThenThrow(Section section, Section oldSection) {
+        if (isSameUpStations(section, oldSection) && isSameDownStations(section, oldSection)) {
+
+            throw new BusinessException(
+                String.format("이미 등록되어 있는 구간입니다. 상행역ID: %s, 하행역ID: %s",
+                    section.getUpStation().getId(),
+                    section.getDownStation().getId()));
+        }
     }
 
     private boolean isSameDownStations(Section section, Section oldSection) {

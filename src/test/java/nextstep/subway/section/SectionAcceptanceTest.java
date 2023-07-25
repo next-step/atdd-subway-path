@@ -141,9 +141,9 @@ public class SectionAcceptanceTest {
     }
 
     // Given 지하철 노선에 구간을 추가하고
-    // When 추가한 구간을 제거 요청하면
+    // When 하행 종점역이 존재하는 구간을 제거 요청하면
     // Then 지하철 노선 조회시 추가한 구간이 제거된 것을 확인할 수 있다.
-    @DisplayName("지하철 노선에 구간을 제거한다.")
+    @DisplayName("지하철 노선의 하행 종점역에 대한 구간을 제거한다.")
     @Test
     void deleteSection() {
         // given
@@ -160,26 +160,44 @@ public class SectionAcceptanceTest {
         assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역);
     }
 
-    // Given 지하철 노선에 구간을 추가하고
-    // When 하행 종점역이 아닌 역을 제거 요청하면
-    // Then 지하철 노선 조회시 추가한 구역이 제거되지 않은 것을 확인할 수 있다.
-    @DisplayName("지하철 노선에 구간 제거시 하행 종점역이 아닌 역을 제거 요청하면 실패한다.")
+    // Given 지하철 노선에 구간을 생성하고
+    // When 상행 요청역에 대해 삭제 요청하면
+    // Then 지하철 노선 조회시 상행 종점역을 발견할 수 없다
+    @DisplayName("지하철 노선의 상행 종점역에 대한 구간을 제거한다.")
     @Test
-    void deleteSection_fail_sectionDoesNotMatchWithDownEndStationOfLine() {
+    void deleteSection_deleteUpEnd() {
         // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
-        var stationResponse = 지하철_역_생성_요청(또다른지하철역);
-        지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
-            stationResponse.getId(), 10);
+        var 지하철역_응답 = 지하철_역_생성_요청(지하철역);
+        var 새로운지하철역_응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 신분당선_응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역_응답.getId(), 새로운지하철역_응답.getId(), 10);
+        var 또다른지하철역_응답 = 지하철_역_생성_요청(또다른지하철역);
+        지하철_구간_생성_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId(), 또다른지하철역_응답.getId(), 10);
 
         // when
-        var statusCode = 지하철_구간_제거_요청_상태_코드_반환(lineCreateResponse.getId(),
-            getUpEndStationId(lineCreateResponse));
+        지하철_구간_제거_요청(신분당선_응답.getId(), 지하철역_응답.getId());
 
         // then
-        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
-        assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역, 또다른지하철역);
+        var 노선_조회 = 지하철_노선_조회_요청(신분당선_응답.getId());
+        assertThat(getStationNames(노선_조회)).containsExactly(새로운지하철역, 또다른지하철역);
+    }
+
+    // Given 지하철 노선에 구간을 생성하고
+    // When 중간 역에 대한 삭제 요청하면
+    // Then 지하철 노선 조회시 삭제한 구간이 제거되고, 양 옆의 구간이 연결되어 있는 것을 확인할 수 있다.
+    @DisplayName("지하철 구간의 중간 역에 대해 제거한다")
+    @Test
+    void deleteSection_deleteMiddle() {
+        var 지하철역_응답 = 지하철_역_생성_요청(지하철역);
+        var 새로운지하철역_응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 신분당선_응답 = 지하철_노선_생성_요청(신분당선, 빨강색600,
+            지하철역_응답.getId(), 새로운지하철역_응답.getId(), 10);
+        var 또다른지하철역_응답 = 지하철_역_생성_요청(또다른지하철역);
+        지하철_구간_생성_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId(), 또다른지하철역_응답.getId(), 10);
+
+        지하철_구간_제거_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId());
+
+        var 노선_조회_응답 = 지하철_노선_조회_요청(신분당선_응답.getId());
+        assertThat(getStationNames(노선_조회_응답)).containsExactly(지하철역, 또다른지하철역);
     }
 
     // Given 지하철 노선을 생성하고

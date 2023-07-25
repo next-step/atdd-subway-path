@@ -69,4 +69,19 @@ class SectionTest {
             .isInstanceOf(BusinessException.class)
             .hasMessageContaining("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 작아야 합니다.");
     }
+
+    @DisplayName("merge() : 파라미터로 받은 역이 포함된 구간을 삭제하면 해당 역의 후행역을 삭제된 역의 구간의 후행역으로 변경한다")
+    @Test
+    void merge() {
+        Section prevSection = aSection().build();
+        Section deleteTargetSection = aSection()
+            .withUpStation(new Station(2L, 신논현역))
+            .withDownStation(new Station(3L, 지하철역))
+            .build();
+
+        prevSection.merge(deleteTargetSection.getDownStation(), deleteTargetSection.getDistance());
+
+        assertThat(prevSection.getDownStation().getId()).isEqualTo(3L);
+        assertThat(prevSection.getDistance()).isEqualTo(20);
+    }
 }

@@ -17,9 +17,10 @@ public class SectionTestStepDefinition {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("lineId", lineId)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(sectionRequest)
-            .when().post("/lines/" + lineId + "/sections")
+            .when().post("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
 
@@ -32,9 +33,10 @@ public class SectionTestStepDefinition {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("lineId", lineId)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(sectionRequest)
-            .when().post("/lines/" + lineId + "/sections")
+            .when().post("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
 
@@ -47,9 +49,10 @@ public class SectionTestStepDefinition {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("lineId", lineId)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(sectionRequest)
-            .when().post("/lines/" + lineId + "/sections")
+            .when().post("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
 
@@ -58,9 +61,10 @@ public class SectionTestStepDefinition {
 
     public static void 지하철_구간_제거_요청(Long lineId, Long stationId) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("lineId", lineId)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .params("stationId", stationId)
-            .when().delete("/lines/" + lineId + "/sections")
+            .when().delete("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
 
@@ -69,9 +73,10 @@ public class SectionTestStepDefinition {
 
     public static int 지하철_구간_제거_요청_상태_코드_반환(Long lineId, Long stationId) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("lineId", lineId)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .params("stationId", stationId)
-            .when().delete("/lines/" + lineId + "/sections")
+            .when().delete("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
 

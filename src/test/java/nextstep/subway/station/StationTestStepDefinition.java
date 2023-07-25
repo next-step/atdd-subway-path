@@ -50,8 +50,9 @@ public class StationTestStepDefinition {
 
     public static void 지하철_역_삭제_요청(Long id) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .pathParam("id", id)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().delete("/stations/" + id)
+            .when().delete("/stations/{id}")
             .then().log().all()
             .extract();
 
