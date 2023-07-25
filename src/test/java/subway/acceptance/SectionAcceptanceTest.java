@@ -238,6 +238,96 @@ public class SectionAcceptanceTest {
         assertThat(구간조회리스트.get(1).getDistance()).isEqualTo(30L);
     }
 
+    /**
+     * Given: 5개의 지하철역이 등록되어 있다.
+     * And: 1개의 노선과 1개의 구간이 등록되어 있다.
+     * When: 기존 역 사이 길이보다 긴 구간을 추가한다.
+     * Then: 실패(400 Bad Request) 응답을 받는다.
+     * And: '구간을 등록할 수 없습니다.' 오류 메시지를 검증한다.
+     */
+    @Test
+    @DisplayName("기존 역 사이의 길이보다 큰 새로운 역을 등록한다.")
+    void createSectionLongerDistance() {
+        // Given (Fixture)
+        // When
+        SectionRequest sectionRequest = SectionRequest.builder()
+            .upStationId(2L)
+            .downStationId(3L)
+            .distance(40L)
+            .build();
+        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+
+        // Then
+        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        ErrorResponse 오류응답 = 구간추가HTTP응답.as(ErrorResponse.class);
+        assertThat(오류응답.getMessage()).isEqualTo("구간을 등록할 수 없습니다.");
+    }
+
+    /**
+     * Given: 5개의 지하철역이 등록되어 있다.
+     * And: 1개의 노선과 1개의 구간이 등록되어 있다.
+     * When: 기존 역 사이 길이와 같은 구간을 추가한다.
+     * Then: 실패(400 Bad Request) 응답을 받는다.
+     * And: '구간을 등록할 수 없습니다.' 오류 메시지를 검증한다.
+     */
+    @Test
+    @DisplayName("기존 역 사이의 길이와 같은 새로운 역을 등록한다.")
+    void createSectionSameDistance() {
+        // Given (Fixture)
+        // When
+        SectionRequest sectionRequest = SectionRequest.builder()
+            .upStationId(2L)
+            .downStationId(3L)
+            .distance(30L)
+            .build();
+        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+
+        // Then
+        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        ErrorResponse 오류응답 = 구간추가HTTP응답.as(ErrorResponse.class);
+        assertThat(오류응답.getMessage()).isEqualTo("구간을 등록할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("상하행종점역 둘 다 이미 등록된 역을 등록한다.")
+    void createSectionAlreadyRegistry() {
+// Given (Fixture)
+        // When
+        SectionRequest sectionRequest = SectionRequest.builder()
+            .upStationId(2L)
+            .downStationId(4L)
+            .distance(30L)
+            .build();
+        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+
+        // Then
+        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        ErrorResponse 오류응답 = 구간추가HTTP응답.as(ErrorResponse.class);
+        assertThat(오류응답.getMessage()).isEqualTo("구간을 등록할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("상하행종점역 둘 중 하나도 포함되어 있지 않은 역을 등록한다.")
+    void createSectionNoMatchAnyStation() {
+// Given (Fixture)
+        // When
+        SectionRequest sectionRequest = SectionRequest.builder()
+            .upStationId(10L)
+            .downStationId(11L)
+            .distance(30L)
+            .build();
+        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+
+        // Then
+        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        ErrorResponse 오류응답 = 구간추가HTTP응답.as(ErrorResponse.class);
+        assertThat(오류응답.getMessage()).isEqualTo("구간을 등록할 수 없습니다.");
+    }
+
 
     /**
      * Given: 3개의 지하철역이 등록되어 있다.
