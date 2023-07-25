@@ -9,6 +9,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SectionDuplicationStationException;
+import nextstep.subway.exception.SectionLastRemoveException;
 import nextstep.subway.exception.SectionLongDistanceException;
 import nextstep.subway.exception.SectionNotIncludedException;
 
@@ -53,5 +54,12 @@ public class SectionsTest {
 		// then
 		Assertions.assertThrows(SectionNotIncludedException.class,
 			() -> sections.addSection(new Section(신분당선, 강남역, 양재역, 5)));
+	}
+
+	@Test
+	void 구간을_삭제할_때_마지막_구간이면_에러를_반환한다() {
+		// then
+		Assertions.assertThrows(SectionLastRemoveException.class,
+			() -> sections.removeSection(논현역.getId()));
 	}
 }

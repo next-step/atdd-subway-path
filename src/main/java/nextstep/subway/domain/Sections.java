@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,10 +13,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.SectionDuplicationStationException;
+import nextstep.subway.exception.SectionLastRemoveException;
 import nextstep.subway.exception.SectionLongDistanceException;
 import nextstep.subway.exception.SectionNotIncludedException;
-import nextstep.subway.exception.SectionRemoveLastStationException;
-import nextstep.subway.exception.SectionRemoveSizeException;
 
 @Embeddable
 public class Sections {
@@ -54,9 +54,7 @@ public class Sections {
 	}
 
 	private void addSectionWhenOriginUpStationEqualsNewUpStation(Section section) {
-		sections.stream()
-			.filter(s -> s.isSameUpStation(section.getUpStation().getId()))
-			.findAny()
+		findUpSectionByStationId(section.getUpStation().getId())
 			.ifPresent(s -> {
 				sections.add(new Section(section.getLine(), section.getDownStation(), s.getDownStation(),
 					calculateDistance(s.getDistance(), section.getDistance())));
@@ -65,9 +63,7 @@ public class Sections {
 	}
 
 	private void addSectionWhenOriginDawnStationEqualsNewDownStation(Section section) {
-		sections.stream()
-			.filter(s -> s.isSameDownStation(section.getDownStation().getId()))
-			.findAny()
+		findDownSectionByStationId(section.getDownStation().getId())
 			.ifPresent(s -> {
 				sections.add(new Section(section.getLine(), s.getUpStation(), section.getUpStation(),
 					calculateDistance(s.getDistance(), section.getDistance())));
@@ -83,26 +79,51 @@ public class Sections {
 		return originalDistance - newDistance;
 	}
 
-	private Section getLastSection() {
-		return sections.get(sections.size() - 1);
-	}
-
 	public void removeSection(Long stationId) {
 		validateSectionSize();
-		validateLastSection(stationId);
-		sections.remove(getLastSection());
+		Optional<Section> upSection = findUpSectionByStationId(stationId);
+		Optional<Section> downSection = findDownSectionByStationId(stationId);
+		removeSectionWhenSectionNotEmpty(upSection, downSection);
+		addSectionWhenUpSectionAndDownSectionNotEmpty(upSection, downSection);
 	}
 
 	private void validateSectionSize() {
 		if (sections.size() < 2) {
-			throw new SectionRemoveSizeException();
+			throw new SectionLastRemoveException();
 		}
 	}
 
-	private void validateLastSection(Long stationId) {
-		if (!getLastSection().isSameDownStation(stationId)) {
-			throw new SectionRemoveLastStationException();
+	private void removeSectionWhenSectionNotEmpty(Optional<Section> upSection, Optional<Section> downSection) {
+		upSection.ifPresent(s -> sections.remove(s));
+		downSection.ifPresent(s -> sections.remove(s));
+	}
+
+	private void addSectionWhenUpSectionAndDownSectionNotEmpty(Optional<Section> upSectionOptional,
+		Optional<Section> downStationOptional) {
+		if (upSectionOptional.isEmpty() || downStationOptional.isEmpty()) {
+			return;
 		}
+
+		Section upSection = upSectionOptional.get();
+		Section downSection = downStationOptional.get();
+		sections.add(new Section(
+			upSection.getLine(),
+			downSection.getUpStation(),
+			upSection.getDownStation(),
+			upSection.getDistance() + downSection.getDistance()
+		));
+	}
+
+	private Optional<Section> findUpSectionByStationId(Long stationId) {
+		return sections.stream()
+			.filter(s -> s.isSameUpStation(stationId))
+			.findAny();
+	}
+
+	private Optional<Section> findDownSectionByStationId(Long stationId) {
+		return sections.stream()
+			.filter(s -> s.isSameDownStation(stationId))
+			.findAny();
 	}
 
 	public List<Station> getStations() {

@@ -111,12 +111,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	}
 
 	/**
-	 * Given 지하철 노선에 구간을 포함하여 생성하고
-	 * When 마지막 구간이 아닌 구간을 삭제하면
-	 * Then 요청이 실패된다
+	 * Given 자하철 노선에 구간을 포함하여 생성하고
+	 * When 지하철 노선에 중간 구간 삭제하면
+	 * Then 지하철 노선 조회 시 삭제한 구간을 찾을 수 없다
 	 */
 	@Test
-	void 지하철_노선에_구간을_삭제할_떄_마지막_구간이_아닌_경우_실패한다() {
+	void 지하철_노선에_중간_구간을_삭제한다() {
 		// given
 		지하철_노선의_구간_추가_요청(신분당선.getId(), 논현역.getId(), 신논현역.getId(), 10);
 
@@ -124,21 +124,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 		var response = 지하철_노선의_구간_삭제_요청(신분당선.getId(), 논현역.getId());
 
 		// then
-		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
-	}
-
-	/**
-	 * Given 지하철 노선을 생성하고
-	 * When 구간이 1개 일 때 구간을 삭제하면
-	 * Then 요청이 실패된다
-	 */
-	@Test
-	void 지하철_노선에_구간을_삭제할_때_구간이_1개인_경우_실패한다() {
-		// when
-		var response = 지하철_노선의_구간_삭제_요청(신분당선.getId(), 논현역.getId());
-
-		// then
-		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
+		응답_상태코드_검증(response, HttpStatus.NO_CONTENT);
+		지하철_노선의_역들을_조회하여_변경된_구간을_검증(신분당선.getId(), 신사역, 신논현역);
 	}
 
 	private void 응답_상태코드_검증(ExtractableResponse<Response> response, HttpStatus httpStatus) {
@@ -150,6 +137,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 			.getList("stations", StationResponse.class);
 
 		assertThat(actual).usingRecursiveComparison()
-			.isNotEqualTo(expectStationResponses);
+			.isEqualTo(List.of(expectStationResponses));
 	}
 }
