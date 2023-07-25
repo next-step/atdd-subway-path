@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.line.controller.dto.LineResponse;
 import nextstep.subway.station.controller.dto.StationResponse;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.utils.DBCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

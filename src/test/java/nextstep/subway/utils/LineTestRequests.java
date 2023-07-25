@@ -22,6 +22,9 @@ public class LineTestRequests {
                 .then().log().all()
                 .extract();
     }
+    public static LineResponse 지하철_노선도_등록_응답값반환(String name, String color, Long upStationId, Long downStationId, Integer distance) {
+        return 지하철_노선도_등록(name, color, upStationId, downStationId, distance).jsonPath().getObject("", LineResponse.class);
+    };
 
     public static ExtractableResponse<Response> 지하철_노선_수정(Long id, String name, String color) {
         String pathVariable = "/" + id;
