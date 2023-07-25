@@ -81,14 +81,10 @@ public class LineServiceMockTest {
                 .build();
 
         // when
-        LineResponseDto responseDto = lineService.saveLineSection(이호선.getId(), saveLineSectionRequestDto);
+        lineService.saveLineSection(이호선.getId(), saveLineSectionRequestDto);
 
         // then
-        List<Long> 등록된_지하철역_아이디_목록 = responseDto.getStations()
-                .stream()
-                .map(StationResponseDto::getId)
-                .collect(Collectors.toList());
-
+        List<Long> 등록된_지하철역_아이디_목록 = 노선에_등록된_역_아이디_목록을_가져온다(이호선);
         assertThat(등록된_지하철역_아이디_목록).containsExactly(신도림역_아이디, 까치산역_아이디, 신촌역_아이디);
     }
 
@@ -104,14 +100,10 @@ public class LineServiceMockTest {
                 이호선에_신도림이_하행역인_구간을_생성한다(까치산역_아이디, 5);
 
         // when
-        LineResponseDto responseDto = lineService.saveLineSection(이호선.getId(), saveLineSectionRequestDto);
+        lineService.saveLineSection(이호선.getId(), saveLineSectionRequestDto);
 
         // then
-        List<Long> 등록된_지하철역_아이디_목록 = responseDto.getStations()
-                .stream()
-                .map(StationResponseDto::getId)
-                .collect(Collectors.toList());
-
+        List<Long> 등록된_지하철역_아이디_목록 = 노선에_등록된_역_아이디_목록을_가져온다(이호선);
         assertThat(등록된_지하철역_아이디_목록).containsExactly(까치산역_아이디, 신도림역_아이디, 신촌역_아이디);
     }
 
@@ -126,14 +118,10 @@ public class LineServiceMockTest {
         SaveLineSectionRequestDto saveLineSectionRequestDto = 이호선에_잠실역이_하행_종점역인_구간을_생성한다(신촌역_아이디);
 
         // when
-        LineResponseDto responseDto = lineService.saveLineSection(이호선.getId(), saveLineSectionRequestDto);
+        lineService.saveLineSection(이호선.getId(), saveLineSectionRequestDto);
 
         // then
-        List<Long> 등록된_지하철역_아이디_목록 = responseDto.getStations()
-                .stream()
-                .map(StationResponseDto::getId)
-                .collect(Collectors.toList());
-
+        List<Long> 등록된_지하철역_아이디_목록 = 노선에_등록된_역_아이디_목록을_가져온다(이호선);
         assertThat(등록된_지하철역_아이디_목록).containsExactly(까치산역_아이디, 신촌역_아이디, 잠실역_아이디);
     }
 
@@ -222,12 +210,7 @@ public class LineServiceMockTest {
         lineService.deleteLineSectionByStationId(이호선.getId(), 노선의_상행_종점역_아이디);
 
         // then
-        List<Long> 노선에_등록된_역_아이디_목록 = 이호선.getSections()
-                .getAllStations()
-                .stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
-
+        List<Long> 노선에_등록된_역_아이디_목록 = 노선에_등록된_역_아이디_목록을_가져온다(이호선);
         assertThat(노선에_등록된_역_아이디_목록).doesNotContain(노선의_상행_종점역_아이디);
     }
 
@@ -246,12 +229,7 @@ public class LineServiceMockTest {
         lineService.deleteLineSectionByStationId(이호선.getId(), 노선의_중간역_아이디);
 
         // then
-        List<Long> 노선에_등록된_역_아이디_목록 = 이호선.getSections()
-                .getAllStations()
-                .stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
-
+        List<Long> 노선에_등록된_역_아이디_목록 = 노선에_등록된_역_아이디_목록을_가져온다(이호선);
         assertThat(노선에_등록된_역_아이디_목록).doesNotContain(노선의_중간역_아이디);
     }
 
@@ -270,12 +248,7 @@ public class LineServiceMockTest {
         lineService.deleteLineSectionByStationId(이호선.getId(), 노선의_하행_종점역_아이디);
 
         // then
-        List<Long> 노선에_등록된_역_아이디_목록 = 이호선.getSections()
-                .getAllStations()
-                .stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
-
+        List<Long> 노선에_등록된_역_아이디_목록 = 노선에_등록된_역_아이디_목록을_가져온다(이호선);
         assertThat(노선에_등록된_역_아이디_목록).doesNotContain(노선의_하행_종점역_아이디);
     }
 
@@ -303,6 +276,14 @@ public class LineServiceMockTest {
         assertThatThrownBy(() -> lineService.deleteLineSectionByStationId(이호선.getId(), 노선의_하행_종점역_아이디))
                 .isInstanceOf(InvalidLineSectionException.class)
                 .hasMessageContaining(ErrorCode.STAND_ALONE_LINE_SECTION.getMessage());
+    }
+
+    private List<Long> 노선에_등록된_역_아이디_목록을_가져온다(Line line) {
+        return line.getSections()
+                .getAllStations()
+                .stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
     }
 
     private SaveLineSectionRequestDto 이호선에_잠실역이_하행_종점역인_구간을_생성한다(Long upStationId) {
