@@ -13,7 +13,8 @@ import javax.persistence.OneToMany;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
-import nextstep.subway.entity.group.factory.SectionAddActionFactory;
+import nextstep.subway.entity.group.factory.SectionActionFactory;
+import nextstep.subway.entity.group.factory.remove.SectionDeleteAction;
 
 @Embeddable
 public class SectionGroup {
@@ -43,7 +44,7 @@ public class SectionGroup {
         }
         validateAdd(upStation.getId(), downStation.getId());
 
-        SectionAddActionFactory.make(newSection, findAddSection(newSection)).action();
+        SectionActionFactory.makeAdd(newSection, findAddSection(newSection)).action();
 
         sections.add(newSection);
 
@@ -154,17 +155,11 @@ public class SectionGroup {
 
         List<Section> removeSections = findASectionContainingAStation(deleteStationId);
 
-        if (isTerminalSection(removeSections)) {
-            int first = 0;
-            sections.remove(removeSections.get(first));
-            return;
-        }
+        SectionDeleteAction deleteAction = SectionActionFactory.makeDelete(removeSections, line,
+            deleteStationId);
 
-        sections.add(getSectionAfterDelete(line, removeSections, deleteStationId));
+        deleteAction.action(sections);
 
-        for (Section section : removeSections) {
-            sections.remove(section);
-        }
     }
 
     private void validateSizeCanBeDeleted() {
@@ -187,37 +182,6 @@ public class SectionGroup {
         return sections.stream()
             .filter(section -> section.isContains(deleteStationId))
             .collect(Collectors.toList());
-    }
-
-    boolean isTerminalSection(List<Section> deleteSections) {
-
-        return deleteSections.size() < 2;
-    }
-
-    private Section getSectionAfterDelete(Line line, List<Section> removeSections, long removeStationId) {
-
-        Station upStation = removeSections.stream()
-            .filter(section -> section.isEqualsDownStation(removeStationId))
-            .findFirst()
-            .map(Section::getUpStation)
-            .orElseThrow(
-                () -> new IllegalArgumentException("삭제할 역의 상행역을 찾을 수 없습니다.")
-            );
-
-        Station downStation = removeSections.stream()
-            .filter(section -> section.isEqualsUpStation(removeStationId))
-            .findFirst()
-            .map(Section::getDownStation)
-            .orElseThrow(
-                () -> new IllegalArgumentException("삭제할 역의 하행역을 찾을 수 없습니다.")
-            );
-
-        return new Section(
-            line,
-            upStation,
-            downStation,
-            removeSections.stream().mapToInt(Section::getDistance).sum()
-        );
     }
 
     public List<Section> getSections() {
