@@ -13,7 +13,6 @@ public class SubwayNameFactory {
     /* 노선 이름 */
     public static final String 신분당선 = "신분당선";
     public static final String 우이신설선 = "우이신설선";
-    public static final String 공항철도선 = "공항철도선";
     public static final String 수인분당선 = "수인분당선";
 
 }
