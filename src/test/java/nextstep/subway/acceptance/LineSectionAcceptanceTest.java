@@ -99,7 +99,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(신분당선.getStations()
                 .stream()
                 .map(StationResponse::getId))
-                .containsExactly(강남역, 양재역, 정자역);
+                .containsExactly(강남역, 정자역, 양재역);
     }
 
     /**

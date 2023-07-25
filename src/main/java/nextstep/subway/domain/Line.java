@@ -64,20 +64,9 @@ public class Line {
         sections.add(section);
     }
 
-    public Optional<Section> findSectionByUpStationId(Long upStationId) {
+    public void addSectionAtIndex(Section section, int index) {
         List<Section> sections = getThisSections();
-
-        return sections.stream()
-                .filter(section -> section.getUpStation().getId().equals(upStationId))
-                .findFirst();
-    }
-
-    public Optional<Section> findSectionByDownStationId(Long downStationId) {
-        List<Section> sections = getThisSections();
-
-        return sections.stream()
-                .filter(section -> section.getUpStation().getId().equals(downStationId))
-                .findFirst();
+        sections.add(index, section);
     }
 
     public boolean checkDuplicatedSectionByStationId(Long upStationId, Long downStationId) {

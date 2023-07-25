@@ -14,10 +14,8 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,10 +76,14 @@ public class LineService {
         for (Section savedSection : line.getSections()) {
             if (savedSection.getUpStation().getId() == sectionRequest.getUpStationId()) {
                 beforeAddSection(line, savedSection, sectionRequest);
-
+                // index switching
+                /**
+                 * 피드백 요청 코드 : 83 Line
+                 * - A-B역이 있을 때 A을 기준으로 구간이 추가될 경우 A-C 역으로 저장
+                 */
+                line.addSectionAtIndex(new Section(line, upStation, downStation, sectionRequest.getDistance()),0);
                 int calculatedDistance = savedSection.getDistance() - sectionRequest.getDistance();
-                line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
-                savedSection.updateSection(savedSection.getUpStation(), savedSection.getDownStation(), calculatedDistance);
+                savedSection.updateSection(downStation, savedSection.getDownStation(), calculatedDistance);
                 return;
             }
         }
@@ -158,18 +160,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * TODO
-     * - 단위 테스트로 검증
-     */
-    private List<StationResponse> createOrderedStationResponses(Line line) {
-        List<Station> stations = new ArrayList<>();
-        Optional<Section> section = Optional.ofNullable(line.getSections().get(0));
-
-        while (section != null) {
-            stations.add(section.get().getUpStation());
-            section = line.findSectionByDownStationId(section.get().getDownStation().getId());
+    public List<StationResponse> createOrderedStationResponses(Line line) {
+        if (line.getSections().isEmpty()) {
+            return Collections.emptyList();
         }
+
+        List<Station> stations = line.getSections().stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        stations.add(0, line.getSections().get(0).getUpStation());
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
