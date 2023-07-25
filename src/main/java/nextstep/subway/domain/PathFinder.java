@@ -6,9 +6,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class PathFinder {
 
@@ -44,13 +42,9 @@ public class PathFinder {
 
     private void addStationVertexes(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
         sections.stream()
-                .map(Section::getUpStation)
-                .findFirst()
-                .map(graph::addVertex);
-        sections.stream()
-                .map(Section::getDownStation)
+                .map(section -> Set.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(Collection::stream)
                 .forEach(graph::addVertex);
-
     }
 
     private void addSectionEdges(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
