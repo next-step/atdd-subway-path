@@ -116,14 +116,14 @@ public class Sections {
                 .anyMatch(section -> section.getDownStation().equals(station));
     }
 
-    public Section getSameUpStationSection(Station station) {
+    private Section getSameUpStationSection(Station station) {
         return sectionCollection.stream()
                 .filter(section -> section.isSameUpStation(station))
                 .findFirst()
                 .orElseThrow(SectionNotFoundException::new);
     }
 
-    public Section getSameDownStationSection(Station station) {
+    private Section getSameDownStationSection(Station station) {
         return sectionCollection.stream()
                 .filter(section -> section.isSameDownStation(station))
                 .findFirst()

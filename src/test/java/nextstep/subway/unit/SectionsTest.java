@@ -2,7 +2,10 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import nextstep.subway.line.AlreadyConnectedException;
 import nextstep.subway.line.InvalidDistanceException;
@@ -177,7 +180,8 @@ class SectionsTest {
 
     @DisplayName("노선에서 중간에 등록된 역을 성공적으로 삭제하면 재비치되고 거리는 두 구간의 거리의 합이다.")
     @Test
-    void deleteSectionSuccessOnCenter() {
+    void deleteSectionSuccessOnCenter()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // given
         Station yangjaeStation = new Station("양재역");
         sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
@@ -187,7 +191,7 @@ class SectionsTest {
         sections.deleteSection(yangjaeStation);
 
         // then
-        Section sameUpStationSection = sections.getSameUpStationSection(gangnamStation);
+        Section sameUpStationSection = (Section) getSameUpStationSection().invoke(sections, gangnamStation);
         Assertions.assertAll(
                 () -> assertThat(sections.getStations())
                         .containsExactly(gangnamStation, pangyoStation),
@@ -223,12 +227,13 @@ class SectionsTest {
 
     @DisplayName("타깃 역과 같은 상행 역을 가지고 있는 구간을 가져온다")
     @Test
-    void getSameUpStationSectionSuccess() {
+    void getSameUpStationSectionSuccess()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // given
         sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
 
         // when
-        Section sameUpStationSection = sections.getSameUpStationSection(gangnamStation);
+        Section sameUpStationSection = (Section) getSameUpStationSection().invoke(sections, gangnamStation);
 
         // then
         assertThat(sameUpStationSection.getUpStation()).isEqualTo(gangnamStation);
@@ -240,20 +245,24 @@ class SectionsTest {
         // given
         sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
 
-        // when/then
-        assertThatThrownBy(() -> sections.getSameUpStationSection(pangyoStation))
-                .isInstanceOf(SectionNotFoundException.class);
+        // when
+        InvocationTargetException exception = assertThrows(InvocationTargetException.class,
+                () -> getSameUpStationSection().invoke(sections, pangyoStation));
+
+        // then
+        assertThat(exception.getTargetException()).isInstanceOf(SectionNotFoundException.class);
     }
 
 
     @DisplayName("타깃 역과 같은 하행 역을 가지고 있는 구간을 가져온다")
     @Test
-    void getSameDownStationSectionSuccess() {
+    void getSameDownStationSectionSuccess()
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // given
         sections.addSection(new Section(gangnamStation, pangyoStation, GANGNAM_TO_PANGYO_DISTANCE));
 
         // when
-        Section sameUpStationSection = sections.getSameDownStationSection(pangyoStation);
+        Section sameUpStationSection = (Section) getSameDownStationSection().invoke(sections, pangyoStation);
 
         // then
         assertThat(sameUpStationSection.getDownStation()).isEqualTo(pangyoStation);
@@ -266,9 +275,12 @@ class SectionsTest {
         Station yangjaeStation = new Station("양재역");
         sections.addSection(new Section(gangnamStation, yangjaeStation, GANGNAM_TO_YANGJAE_DISTANCE));
 
-        // when/then
-        assertThatThrownBy(() -> sections.getSameDownStationSection(gangnamStation))
-                .isInstanceOf(SectionNotFoundException.class);
+        // when
+        InvocationTargetException exception = assertThrows(InvocationTargetException.class,
+                () -> getSameDownStationSection().invoke(sections, gangnamStation));
+
+        // then
+        assertThat(exception.getTargetException()).isInstanceOf(SectionNotFoundException.class);
     }
 
     @DisplayName("노선의 모든 역과 거리를 가중 다중 그래프에 담는다")
@@ -288,5 +300,17 @@ class SectionsTest {
         assertThat(graph.getEdgeWeight(edge)).isEqualTo(GANGNAM_TO_YANGJAE_DISTANCE);
         edge = graph.getEdge(yangjaeStation, pangyoStation);
         assertThat(graph.getEdgeWeight(edge)).isEqualTo(GANGNAM_TO_PANGYO_DISTANCE - GANGNAM_TO_YANGJAE_DISTANCE);
+    }
+
+    private Method getSameDownStationSection() throws NoSuchMethodException {
+        Method method = Sections.class.getDeclaredMethod("getSameDownStationSection", Station.class);
+        method.setAccessible(true);
+        return method;
+    }
+
+    private Method getSameUpStationSection() throws NoSuchMethodException {
+        Method method = Sections.class.getDeclaredMethod("getSameUpStationSection", Station.class);
+        method.setAccessible(true);
+        return method;
     }
 }
