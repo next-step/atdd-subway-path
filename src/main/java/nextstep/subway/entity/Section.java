@@ -84,6 +84,10 @@ public class Section {
         return this.upStation.getId().equals(stationId);
     }
 
+    public boolean isContains(long stationId) {
+        return isEqualsUpStation(stationId) || isEqualsDownStation(stationId);
+    }
+
     public void validationAddDistance(int distance) {
         if (this.distance <= distance){
             throw new IllegalArgumentException("추가할려는 구간이 기존 구간 길이와 같거나 더 깁니다.");

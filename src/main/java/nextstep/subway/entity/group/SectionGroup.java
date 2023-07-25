@@ -89,8 +89,7 @@ public class SectionGroup {
 
         return sections.stream()
             .anyMatch(
-                section ->
-                    section.isEqualsDownStation(stationId) || section.isEqualsUpStation(stationId)
+                section -> section.isContains(stationId)
             );
     }
 
@@ -177,10 +176,7 @@ public class SectionGroup {
     private void validateExistCanBeDeleted(long deleteStationId) {
 
         boolean noneExistStationInLine = sections.stream()
-            .noneMatch(section
-                -> section.isEqualsUpStation(deleteStationId)
-                || section.isEqualsDownStation(deleteStationId)
-            );
+            .noneMatch(section -> section.isContains(deleteStationId));
 
         if (noneExistStationInLine) {
             throw new IllegalArgumentException("노선에 등록되어있지 않은 역을 삭제할 수 없습니다.");
@@ -189,10 +185,7 @@ public class SectionGroup {
 
     private List<Section> findASectionContainingAStation(long deleteStationId) {
         return sections.stream()
-            .filter(
-                section -> section.isEqualsUpStation(deleteStationId)
-                    || section.isEqualsDownStation(deleteStationId)
-            )
+            .filter(section -> section.isContains(deleteStationId))
             .collect(Collectors.toList());
     }
 
