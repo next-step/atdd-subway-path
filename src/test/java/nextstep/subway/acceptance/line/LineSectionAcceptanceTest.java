@@ -92,18 +92,12 @@ public class LineSectionAcceptanceTest {
         ExtractableResponse<Response> saveLineSectionResponse = saveLineSection(강남역_신사역_구간);
 
         // then
-        assertAll(
-                () -> assertThat(saveLineSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> {
-                    LineResponseDto 추가한_지하철_구간 = saveLineSectionResponse.as(LineResponseDto.class);
+        LineResponseDto 지하철_노선 = saveLineSectionResponse.as(LineResponseDto.class);
+        List<Long> 등록된_지하철역_아이디_목록 = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(지하철_노선);
 
-                    assertThat(
-                            추가한_지하철_구간.getStations()
-                                    .stream()
-                                    .map(StationResponseDto::getId)
-                                    .collect(Collectors.toList())
-                    ).containsExactly(강남역_아이디, 신사역_아이디, 판교역_아이디);
-                }
+        assertAll(
+                () -> assertThatStatusCode(saveLineSectionResponse, HttpStatus.CREATED),
+                () -> assertThat(등록된_지하철역_아이디_목록).containsExactly(강남역_아이디, 신사역_아이디, 판교역_아이디)
         );
     }
 
@@ -126,18 +120,12 @@ public class LineSectionAcceptanceTest {
         ExtractableResponse<Response> saveLineSectionResponse = saveLineSection(신사역_강남역_구간);
 
         // then
-        assertAll(
-                () -> assertThat(saveLineSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> {
-                    LineResponseDto 추가한_지하철_구간 = saveLineSectionResponse.as(LineResponseDto.class);
+        LineResponseDto 지하철_노선 = saveLineSectionResponse.as(LineResponseDto.class);
+        List<Long> 등록된_지하철역_아이디_목록 = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(지하철_노선);
 
-                    assertThat(
-                            추가한_지하철_구간.getStations()
-                                    .stream()
-                                    .map(StationResponseDto::getId)
-                                    .collect(Collectors.toList())
-                    ).containsExactly(신사역_아이디, 강남역_아이디, 판교역_아이디);
-                }
+        assertAll(
+                () -> assertThatStatusCode(saveLineSectionResponse, HttpStatus.CREATED),
+                () -> assertThat(등록된_지하철역_아이디_목록).containsExactly(신사역_아이디, 강남역_아이디, 판교역_아이디)
         );
     }
 
@@ -160,18 +148,12 @@ public class LineSectionAcceptanceTest {
         ExtractableResponse<Response> saveLineSectionResponse = saveLineSection(판교역_광교역_구간);
 
         // then
-        assertAll(
-                () -> assertThat(saveLineSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> {
-                    LineResponseDto 추가한_지하철_구간 = saveLineSectionResponse.as(LineResponseDto.class);
+        LineResponseDto 지하철_노선 = saveLineSectionResponse.as(LineResponseDto.class);
+        List<Long> 등록된_지하철역_아이디_목록 = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(지하철_노선);
 
-                    assertThat(
-                            추가한_지하철_구간.getStations()
-                                .stream()
-                                .map(StationResponseDto::getId)
-                                .collect(Collectors.toList())
-                    ).containsExactly(신사역_아이디, 판교역_아이디, 광교역_아이디);
-                }
+        assertAll(
+                () -> assertThatStatusCode(saveLineSectionResponse, HttpStatus.CREATED),
+                () -> assertThat(등록된_지하철역_아이디_목록).containsExactly(신사역_아이디, 판교역_아이디, 광교역_아이디)
         );
 
     }
@@ -199,20 +181,12 @@ public class LineSectionAcceptanceTest {
                 deleteLineSectionByStationId(신분당선의_상행_종점역_아이디);
 
         // then
-        assertAll(
-                () -> assertThat(deleteLineSectionByStationIdResponse.statusCode())
-                        .isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> {
-                    List<Long> stationIds = RestAssuredClient.get(
-                                    String.format("%s/%d", LINE_BASE_URL, 신분당선.getId()))
-                            .jsonPath()
-                            .getList("stations", StationResponseDto.class)
-                            .stream()
-                            .map(StationResponseDto::getId)
-                            .collect(Collectors.toList());
+        ExtractableResponse<Response> 삭제_후_신분당선 = getLineByLineId(신분당선.getId());
+        List<Long> stationIds = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(삭제_후_신분당선);
 
-                    assertThat(stationIds).doesNotContain(신분당선의_상행_종점역_아이디);
-                }
+        assertAll(
+                () -> assertThatStatusCode(deleteLineSectionByStationIdResponse, HttpStatus.NO_CONTENT),
+                () -> assertThat(stationIds).doesNotContain(신분당선의_상행_종점역_아이디)
         );
     }
 
@@ -234,20 +208,12 @@ public class LineSectionAcceptanceTest {
         ExtractableResponse<Response> deleteLineSectionByStationIdResponse = deleteLineSectionByStationId(판교역_아이디);
 
         // then
-        assertAll(
-                () -> assertThat(deleteLineSectionByStationIdResponse.statusCode())
-                        .isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> {
-                    List<Long> stationIds = RestAssuredClient.get(
-                                    String.format("%s/%d", LINE_BASE_URL, 신분당선.getId()))
-                            .jsonPath()
-                            .getList("stations", StationResponseDto.class)
-                            .stream()
-                            .map(StationResponseDto::getId)
-                            .collect(Collectors.toList());
+        ExtractableResponse<Response> 삭제_후_신분당선 = getLineByLineId(신분당선.getId());
+        List<Long> stationIds = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(삭제_후_신분당선);
 
-                    assertThat(stationIds).doesNotContain(판교역_아이디);
-                }
+        assertAll(
+                () -> assertThatStatusCode(deleteLineSectionByStationIdResponse, HttpStatus.NO_CONTENT),
+                () -> assertThat(stationIds).doesNotContain(판교역_아이디)
         );
     }
 
@@ -272,20 +238,12 @@ public class LineSectionAcceptanceTest {
                 deleteLineSectionByStationId(광교역이_하행_종점역인_구간.getDownStationId());
 
         // then
-        assertAll(
-                () -> assertThat(deleteLineSectionByStationIdResponse.statusCode())
-                        .isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> {
-                    List<Long> stationIds = RestAssuredClient.get(
-                                    String.format("%s/%d", LINE_BASE_URL, 신분당선.getId()))
-                            .jsonPath()
-                            .getList("stations", StationResponseDto.class)
-                            .stream()
-                            .map(StationResponseDto::getId)
-                            .collect(Collectors.toList());
+        ExtractableResponse<Response> 삭제_후_신분당선 = getLineByLineId(신분당선.getId());
+        List<Long> stationIds = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(삭제_후_신분당선);
 
-                    assertThat(stationIds).doesNotContain(광교역이_하행_종점역인_구간.getDownStationId());
-                }
+        assertAll(
+                () -> assertThatStatusCode(deleteLineSectionByStationIdResponse, HttpStatus.NO_CONTENT),
+                () -> assertThat(stationIds).doesNotContain(광교역이_하행_종점역인_구간.getDownStationId())
         );
     }
 
@@ -311,13 +269,8 @@ public class LineSectionAcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(deleteLineSectionByStationIdResponse.statusCode())
-                        .isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(
-                        deleteLineSectionByStationIdResponse
-                                .jsonPath()
-                                .getList(ERROR_MESSAGES_KEY, String.class))
-                        .containsAnyOf(ErrorCode.UNREGISTERED_STATION.getMessage())
+                () -> assertThatStatusCode(deleteLineSectionByStationIdResponse, HttpStatus.BAD_REQUEST),
+                () -> assertThatErrorMessage(deleteLineSectionByStationIdResponse, ErrorCode.UNREGISTERED_STATION)
         );
     }
 
@@ -336,13 +289,8 @@ public class LineSectionAcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(deleteLineSectionByStationIdResponse.statusCode())
-                        .isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(
-                        deleteLineSectionByStationIdResponse
-                                .jsonPath()
-                                .getList(ERROR_MESSAGES_KEY, String.class))
-                        .containsAnyOf(ErrorCode.STAND_ALONE_LINE_SECTION.getMessage())
+                () -> assertThatStatusCode(deleteLineSectionByStationIdResponse, HttpStatus.BAD_REQUEST),
+                () -> assertThatErrorMessage(deleteLineSectionByStationIdResponse, ErrorCode.STAND_ALONE_LINE_SECTION)
         );
     }
 
@@ -373,6 +321,19 @@ public class LineSectionAcceptanceTest {
     private LineResponseDto saveLine(SaveLineRequestDto line) {
         return RestAssuredClient.post(LINE_BASE_URL, line)
                 .as(LineResponseDto.class);
+    }
+
+    /**
+     * <pre>
+     * 지하철 노선 id로
+     * 지하철 노선을 조회하는 API를 호출하는 함수
+     * </pre>
+     *
+     * @param lineId
+     * @return ExtractableResponse
+     */
+    private ExtractableResponse<Response> getLineByLineId(Long lineId) {
+        return RestAssuredClient.get(String.format("%s/%d", LINE_BASE_URL, lineId));
     }
 
     /**
@@ -408,6 +369,46 @@ public class LineSectionAcceptanceTest {
         );
     }
 
+    /**
+     * <pre>
+     * 응답코드에 대한 검증
+     * </pre>
+     *
+     * @param response
+     * @param status
+     */
+    private void assertThatStatusCode(ExtractableResponse<Response> response, HttpStatus status) {
+        assertThat(response.statusCode()).isEqualTo(status.value());
+    }
+
+    /**
+     * <pre>
+     * 에러메시지에 대한 검증
+     * </pre>
+     *
+     * @param response
+     * @param errorCode
+     */
+    private void assertThatErrorMessage(ExtractableResponse<Response> response, ErrorCode errorCode) {
+        assertThat(response.jsonPath().getList(ERROR_MESSAGES_KEY, String.class))
+                .containsAnyOf(errorCode.getMessage());
+    }
+
+    private List<Long> 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(LineResponseDto lineResponseDto) {
+        return lineResponseDto.getStations()
+                .stream()
+                .map(StationResponseDto::getId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(ExtractableResponse<Response> response) {
+        return response
+                .jsonPath()
+                .getList("stations", StationResponseDto.class)
+                .stream()
+                .map(StationResponseDto::getId)
+                .collect(Collectors.toList());
+    }
 
     private SaveLineSectionRequestDto 광교역이_하행_종점역인_구간을_생성한다(Long upStationId) {
         return SaveLineSectionRequestDto.builder()
