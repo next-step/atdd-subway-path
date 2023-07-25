@@ -31,6 +31,7 @@ import static nextstep.subway.fixture.acceptance.when.LineApiFixture.지하철�
 import static nextstep.subway.fixture.acceptance.when.LineApiFixture.지하철역_노선_삭제;
 import static nextstep.subway.fixture.acceptance.when.LineApiFixture.지하철역_노선_수정;
 import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_생성_요청;
+import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_생성_요청_후_id_추출;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
@@ -47,8 +48,8 @@ class LineAcceptanceTest extends AcceptanceTestConfig {
     void createLine() {
 
         //given
-        long 지하철역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 새로운지하철역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 지하철역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 새로운지하철역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
 
         //when
         ExtractableResponse<Response> 노선등록응답값 = 지하철역_노선_등록_요청(신분당선, red, 지하철역_id, 새로운지하철역_id, distance);
@@ -71,9 +72,9 @@ class LineAcceptanceTest extends AcceptanceTestConfig {
     void getStationLines() {
 
         //given
-        long 지하철역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 새로운지하철역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
-        long 또다른지하철역_id = 지하철역_생성_요청(또다른지하철역이름).jsonPath().getLong("id");
+        long 지하철역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 새로운지하철역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
+        long 또다른지하철역_id = 지하철역_생성_요청_후_id_추출(또다른지하철역이름);
 
         지하철역_노선_등록_요청(신분당선, red, 지하철역_id, 새로운지하철역_id, distance);
         지하철역_노선_등록_요청(분당선, green, 지하철역_id, 또다른지하철역_id, distance);
@@ -94,8 +95,8 @@ class LineAcceptanceTest extends AcceptanceTestConfig {
     void getStationLine() {
 
         //given
-        long 지하철역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 새로운지하철역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 지하철역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 새로운지하철역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
 
         long 신규등록_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 지하철역_id, 새로운지하철역_id, distance);
 

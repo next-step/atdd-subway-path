@@ -54,10 +54,11 @@ class LineTest {
         Station addStation = StationFixture.of(3);
         int distance = 10;
 
+        Section first = line.addSection(upStation, downStation, distance);
+        Section second = line.addSection(downStation, addStation, distance);
+
         // when
-        line.addSection(upStation, downStation, distance);
-        line.addSection(downStation, addStation, distance);
-        line.removeSection(Section.of(line, downStation, addStation, distance).getDownStationId());
+        line.removeSection(second.getDownStationId());
 
         // then
         assertThat(line.getStations()).containsExactly(upStation, downStation);

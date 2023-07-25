@@ -21,7 +21,7 @@ import static nextstep.subway.fixture.acceptance.then.SectionThenFixture.지하�
 import static nextstep.subway.fixture.acceptance.when.LineApiFixture.지하철역_노선_등록_요청_후_id_추출;
 import static nextstep.subway.fixture.acceptance.when.SectionApiFixture.지하철_노선_구간_삭제;
 import static nextstep.subway.fixture.acceptance.when.SectionApiFixture.지하철_노선_구간_추가_등록;
-import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_생성_요청;
+import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_생성_요청_후_id_추출;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -36,9 +36,9 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     void createSection() {
 
         //given
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
-        long 추가_하행역_id = 지하철역_생성_요청(또다른지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
+        long 추가_하행역_id = 지하철역_생성_요청_후_id_추출(또다른지하철역이름);
         long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
 
         //when
@@ -56,9 +56,9 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     @Test
     void addMiddleSection() {
 
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
-        long 추가역_id = 지하철역_생성_요청(또다른지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
+        long 추가역_id = 지하철역_생성_요청_후_id_추출(또다른지하철역이름);
 
         long 노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
 
@@ -77,8 +77,8 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     void getExceptionAtAddSectionAlreadyStationAll() {
 
         //given
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
         long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
 
         //when
@@ -96,12 +96,12 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     void getExceptionAtAddSectionNoneStationAll() {
 
         //given
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
         long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
 
-        long 별도역1_id = 지하철역_생성_요청("별도역1").jsonPath().getLong("id");
-        long 별도역2_id = 지하철역_생성_요청("별도역2").jsonPath().getLong("id");
+        long 별도역1_id = 지하철역_생성_요청_후_id_추출("별도역1");
+        long 별도역2_id = 지하철역_생성_요청_후_id_추출("별도역2");
 
         //when
         ExtractableResponse<Response> response = 지하철_노선_구간_추가_등록(
@@ -118,12 +118,12 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     void createSection_existEndStation() {
 
         //given
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
         long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
 
+        long 별도역1_id = 지하철역_생성_요청_후_id_추출("별도역1");
 
-        long 별도역1_id = 지하철역_생성_요청("별도역1").jsonPath().getLong("id");
         //when
         ExtractableResponse<Response> response = 지하철_노선_구간_추가_등록(
             지하철역_노선_id, 하행역_id, 별도역1_id, distance + 1
@@ -139,10 +139,10 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     void deleteRemove() {
 
         //given
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
         long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
-        long 추가_하행역_id = 지하철역_생성_요청(또다른지하철역이름).jsonPath().getLong("id");
+        long 추가_하행역_id = 지하철역_생성_요청_후_id_추출(또다른지하철역이름);
         지하철_노선_구간_추가_등록(지하철역_노선_id, 추가_하행역_id, 하행역_id, 구간거리);
 
         //when
@@ -158,10 +158,10 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     void deleteMiddleStation() {
 
         //given
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
         long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
-        long 추가_하행역_id = 지하철역_생성_요청(또다른지하철역이름).jsonPath().getLong("id");
+        long 추가_하행역_id = 지하철역_생성_요청_후_id_추출(또다른지하철역이름);
         지하철_노선_구간_추가_등록(지하철역_노선_id, 추가_하행역_id, 하행역_id, 구간거리);
 
         //when
@@ -177,15 +177,14 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     void doesNotDeleteSection() {
 
         //given
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
         long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
-        long 추가_하행역_id = 지하철역_생성_요청(또다른지하철역이름).jsonPath().getLong("id");
+        long 추가_하행역_id = 지하철역_생성_요청_후_id_추출(또다른지하철역이름);
         지하철_노선_구간_추가_등록(지하철역_노선_id, 추가_하행역_id, 하행역_id, 구간거리);
 
-
         //when
-        long 없는역_id = 상행역_id + 하행역_id + 추가_하행역_id;
+        long 없는역_id = -1;
 
         ExtractableResponse<Response> response = 지하철_노선_구간_삭제(지하철역_노선_id, 없는역_id);
 
@@ -200,8 +199,8 @@ class SectionAcceptanceTest extends AcceptanceTestConfig {
     void doesNotDeleteSectionWhenSectionOnlyOne() {
 
         //given
-        long 상행역_id = 지하철역_생성_요청(지하철역이름).jsonPath().getLong("id");
-        long 하행역_id = 지하철역_생성_요청(새로운지하철역이름).jsonPath().getLong("id");
+        long 상행역_id = 지하철역_생성_요청_후_id_추출(지하철역이름);
+        long 하행역_id = 지하철역_생성_요청_후_id_추출(새로운지하철역이름);
         long 지하철역_노선_id = 지하철역_노선_등록_요청_후_id_추출(신분당선, red, 상행역_id, 하행역_id, distance);
 
         //when
