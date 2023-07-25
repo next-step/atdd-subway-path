@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -35,7 +36,9 @@ public class PathServiceMockTest {
     @Mock
     private LineRepository lineRepository;
 
+    @InjectMocks
     private PathService pathService;
+
     private Station 교대역;
     private Station 강남역;
     private Station 양재역;
@@ -46,8 +49,6 @@ public class PathServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        pathService = new PathService(stationRepository, lineRepository);
-
         교대역 = new Station(1L, "교대역");
         강남역 = new Station(2L, "강남역");
         양재역 = new Station(3L, "양재역");
