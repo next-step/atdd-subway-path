@@ -1,19 +1,19 @@
-package nextstep.subway.entity.group.factory;
+package nextstep.subway.entity.group.factory.add;
 
 import nextstep.subway.entity.Section;
 
-public class AddDownBoundSection implements SectionAddAction {
+public class AddUpBoundSection implements SectionAddAction {
 
     private final Section newSection;
     private final Section originSection;
 
-    private AddDownBoundSection(Section newSection, Section originSection) {
+    private AddUpBoundSection(Section newSection, Section originSection) {
         this.newSection = newSection;
         this.originSection = originSection;
     }
 
-    public static SectionAddAction of(Section newSection, Section originSection) {
-        return new AddDownBoundSection(newSection, originSection);
+    public static AddUpBoundSection of(Section newSection, Section originSection) {
+        return new AddUpBoundSection(newSection, originSection);
     }
 
     @Override
@@ -24,9 +24,8 @@ public class AddDownBoundSection implements SectionAddAction {
     @Override
     public void addAction() {
 
-        originSection.changeDownStation(newSection.getUpStation());
+        originSection.changeUpStation(newSection.getDownStation());
         originSection.minusDistance(newSection.getDistance());
-
 
     }
 

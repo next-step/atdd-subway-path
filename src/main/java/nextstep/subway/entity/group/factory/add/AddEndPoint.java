@@ -1,4 +1,4 @@
-package nextstep.subway.entity.group.factory;
+package nextstep.subway.entity.group.factory.add;
 
 public class AddEndPoint implements SectionAddAction {
 
