@@ -211,14 +211,14 @@ class LineServiceTest {
         );
     }
 
-    @DisplayName("조회시 출발역과 도착역이 같은 겨우 예외가 발생한다")
+    @DisplayName("경로 조회시 출발역과 도착역이 같은 겨우 예외가 발생한다")
     @Test
     void findShortestPathBetweenStationsFailedBySameStation() {
         assertThatThrownBy(() -> lineService.findShortestPathBetweenStations(1L, 1L))
                 .isInstanceOf(SameStationException.class);
     }
 
-    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 예외가 발생한다")
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경로 조회 시 예외가 발생한다")
     @Test
     void findShortestPathBetweenStationsFailedByUnreachable() {
         // given
@@ -239,7 +239,7 @@ class LineServiceTest {
     }
 
 
-    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우 경우 예외가 발생한다")
+    @DisplayName("존재하지 않은 출발역이나 도착역을 포함한 경로 조회 시 예외가 발생한다")
     @Test
     void findShortestPathBetweenStationsFailedByStationNotExists() {
         // given
