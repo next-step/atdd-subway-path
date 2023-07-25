@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import static nextstep.subway.utils.LineTestRequests.지하철_노선도_등록;
 import static nextstep.subway.utils.LineTestRequests.지하철_노선도_등록_응답값반환;
 import static nextstep.subway.utils.SectionTestRequests.지하철_구간_등록;
 import static nextstep.subway.utils.StationTestRequests.지하철_역_등록_Id_획득;
