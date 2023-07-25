@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Getter
@@ -27,33 +26,26 @@ public class Sections {
     @CollectionTable(name = "section", joinColumns = @JoinColumn(name = "line_id"))
     private List<Section> sections = new ArrayList<>();
 
-    private Integer totalDistance = 0;
+    private static final int INVALID_INDEX = -1;
 
     public void addSection(Section section) {
-        // 아무 구간도 등록되어 있지 않은 상태에서 등록할 경우
         if (sections.isEmpty()) {
             addLastSection(section);
             return;
         }
 
-        List<Station> stations = this.getAllStations();
-
-        // 기준역을 찾는다.
         Station targetStation = findAddableTargetStation(section);
 
-        // 새로운 역을 상행 종점으로 등록하는 경우
-        if (stations.indexOf(targetStation) == 0 && section.getDownStation().equals(targetStation)) {
-            addFirstLineSection(section);
+        if (isAddableFirstSection(section)) {
+            addFirstSection(section);
             return;
         }
 
-        // 새로운 역을 하행 종점으로 등록하는 경우
-        if (stations.indexOf(targetStation) == stations.size() - 1 && section.getUpStation().equals(targetStation)) {
+        if (isAddableLastSection(section)) {
             addLastSection(section);
             return;
         }
 
-        // 역 사이에 새로운 역을 등록하는 경우
         addSectionBetweenStations(targetStation, section);
     }
 
@@ -70,20 +62,17 @@ public class Sections {
             throw new InvalidLineSectionException(ErrorCode.STAND_ALONE_LINE_SECTION);
         }
 
-        if (!getLastStation().getId().equals(stationId)) {
-            throw new InvalidLineSectionException(ErrorCode.IS_NOT_LAST_LINE_SECTION);
+        if (isUpStation(stationId)) {
+            deleteUpStation(stationId);
+            return;
         }
 
-        this.sections = sections.stream()
-                .filter(section -> {
-                    boolean isDeleteTarget = section.getDownStation().getId().equals(stationId);
-                    if (isDeleteTarget) {
-                        this.totalDistance -= section.getDistance();
-                    }
+        if (isDownStation(stationId)) {
+            deleteDownStation(stationId);
+            return;
+        }
 
-                    return !isDeleteTarget;
-                })
-                .collect(Collectors.toList());
+        deleteMiddleStation(stationId);
     }
 
     public List<Station> getAllStations() {
@@ -102,6 +91,18 @@ public class Sections {
         return stations;
     }
 
+    public int getTotalDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
+    }
+
+    private boolean isAddableFirstSection(Section section) {
+        List<Station> stations = this.getAllStations();
+        Station targetStation = findAddableTargetStation(section);
+        return stations.indexOf(targetStation) == 0 && section.getDownStation().equals(targetStation);
+    }
+
     /**
      * <pre>
      * 상행 종점역 앞으로 노선을 추가한다.
@@ -109,59 +110,8 @@ public class Sections {
      *
      * @param section
      */
-    private void addFirstLineSection(Section section) {
+    private void addFirstSection(Section section) {
         this.sections.add(0, section);
-        this.totalDistance += section.getDistance();
-    }
-
-    /**
-     * <pre>
-     * 역 사이에 새로운 노선을 등록한다.
-     * </pre>
-     *
-     * @param targetStation
-     * @param section
-     */
-    private void addSectionBetweenStations(Station targetStation, Section section) {
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-        Section targetSection = null;
-
-        // 역 사이에 상행역 기준으로 새로운 노선을 등록한다.
-        if (targetStation.equals(section.getUpStation())) {
-            targetSection = sections.stream()
-                    .filter(s -> s.getUpStation().equals(upStation))
-                    .findFirst().get();
-
-            this.validateAddSectionBetweenStations(targetSection, section);
-
-            int index = sections.indexOf(targetSection);
-            Section dividedSection = Section.builder()
-                    .upStation(section.getDownStation())
-                    .downStation(targetSection.getDownStation())
-                    .build();
-
-            sections.set(index, section);
-            sections.add(index + 1, dividedSection);
-
-            return;
-        }
-
-        // 역 사이에 하행역 기준으로 새로운 노선을 등록한다.
-        targetSection = sections.stream()
-                .filter(s -> s.getUpStation().equals(downStation))
-                .findFirst().get();
-
-        this.validateAddSectionBetweenStations(targetSection, section);
-
-        int index = sections.indexOf(targetSection);
-        Section dividedSection = Section.builder()
-                .upStation(targetSection.getUpStation())
-                .downStation(section.getUpStation())
-                .build();
-
-        sections.set(index, dividedSection);
-        sections.add(index + 1, section);
     }
 
     /**
@@ -186,6 +136,64 @@ public class Sections {
 
     /**
      * <pre>
+     * 역 사이에 새로운 노선을 등록한다.
+     * </pre>
+     *
+     * @param targetStation
+     * @param section
+     */
+    private void addSectionBetweenStations(Station targetStation, Section section) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        Section targetSection;
+
+        // 역 사이에 상행역 기준으로 새로운 노선을 등록한다.
+        if (targetStation.equals(section.getUpStation())) {
+            targetSection = sections.stream()
+                    .filter(s -> s.getUpStation().equals(upStation))
+                    .findFirst().get();
+
+            this.validateAddSectionBetweenStations(targetSection, section);
+
+            int index = sections.indexOf(targetSection);
+            Section dividedSection = Section.builder()
+                    .upStation(section.getDownStation())
+                    .downStation(targetSection.getDownStation())
+                    .distance(targetSection.getDistance() - section.getDistance())
+                    .build();
+
+            sections.set(index, section);
+            sections.add(index + 1, dividedSection);
+
+            return;
+        }
+
+        // 역 사이에 하행역 기준으로 새로운 노선을 등록한다.
+        targetSection = sections.stream()
+                .filter(s -> s.getUpStation().equals(downStation))
+                .findFirst().get();
+
+        this.validateAddSectionBetweenStations(targetSection, section);
+
+        int index = sections.indexOf(targetSection);
+        Section dividedSection = Section.builder()
+                .upStation(targetSection.getUpStation())
+                .downStation(section.getUpStation())
+                .distance(targetSection.getDistance() - section.getDistance())
+                .build();
+
+        sections.set(index, dividedSection);
+        sections.add(index + 1, section);
+    }
+
+    private boolean isAddableLastSection(Section section) {
+        List<Station> stations = this.getAllStations();
+        Station targetStation = findAddableTargetStation(section);
+        return stations.indexOf(targetStation) == stations.size() - 1 && section.getUpStation().equals(targetStation);
+    }
+
+    /**
+     * <pre>
      * 하행 종점역 뒤로 노선을 추가한다.
      * </pre>
      *
@@ -193,7 +201,6 @@ public class Sections {
      */
     private void addLastSection(Section section) {
         this.sections.add(section);
-        this.totalDistance += section.getDistance();
     }
 
     /**
@@ -208,20 +215,85 @@ public class Sections {
     private Station findAddableTargetStation(Section section) {
         List<Station> stations = this.getAllStations();
         int index = stations.indexOf(section.getUpStation());
-        if (index == -1) {
+        if (index == INVALID_INDEX) {
             index = stations.indexOf(section.getDownStation());
         }
 
         // 추가하려는 노선의 상행역, 하행역 전부 지하철 역에 등록되어 있지 않을 경우 예외가 발생한다.
-        if (index == -1) {
+        if (index == INVALID_INDEX) {
             throw new InvalidLineSectionException(ErrorCode.UNREGISTERED_STATION);
         }
 
         return stations.get(index);
     }
 
-    private Station getLastStation() {
+    private boolean isUpStation(Long stationId) {
+        return sections
+                .get(0)
+                .getUpStation()
+                .getId()
+                .equals(stationId);
+    }
+
+    /**
+     * <pre>
+     * 상행 종점역을 삭제한다.
+     * </pre>
+     *
+     * @param stationId
+     */
+    private void deleteUpStation(Long stationId) {
+        this.sections = sections.stream()
+                .filter(section -> !section.getUpStation().getId().equals(stationId))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * <pre>
+     * 중간역을 삭제한다.
+     * </pre>
+     *
+     * @param stationId
+     */
+    private void deleteMiddleStation(Long stationId) {
+        List<Section> targetSections = sections.stream()
+                .filter(section ->
+                        section.getUpStation().getId().equals(stationId) ||
+                        section.getDownStation().getId().equals(stationId))
+                .collect(Collectors.toList());
+        int index = sections.indexOf(targetSections.get(0));
+
+        Section mergedSection = Section.builder()
+                .upStation(targetSections.get(0).getUpStation())
+                .downStation(targetSections.get(1).getDownStation())
+                .distance(targetSections.stream()
+                        .mapToInt(Section::getDistance)
+                        .sum())
+                .build();
+
+        this.sections.set(index, mergedSection);
+        this.sections.remove(index + 1);
+    }
+
+    private boolean isDownStation(Long stationId) {
         int lastIndex = sections.size() - 1;
-        return sections.get(lastIndex).getDownStation();
+        return sections
+                .get(lastIndex)
+                .getDownStation()
+                .getId()
+                .equals(stationId);
+    }
+
+    /**
+     * <pre>
+     * 하행 종점역을 삭제한다.
+     * </pre>
+     *
+     * @param stationId
+     */
+    private void deleteDownStation(Long stationId) {
+        this.sections = sections.stream()
+                .filter(section -> !section.getDownStation().getId().equals(stationId))
+                .collect(Collectors.toList());
     }
 }

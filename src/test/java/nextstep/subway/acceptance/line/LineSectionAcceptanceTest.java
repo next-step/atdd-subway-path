@@ -76,20 +76,20 @@ public class LineSectionAcceptanceTest {
     /**
      * <pre>
      * Given 신사역 - 판교역 구간을 가지고 있는 신분당선에
-     * When 판교역 - 광교역 구간을 추가하면
-     * Then 신분당선은 신사역 - 판교역 - 광교역 노선을 가진다.
+     * When 강남역 - 신사역 구간을 추가하면
+     * Then 지하철 노선은 강남역 - 신사역 - 판교역 노선을 가진다.
      * </pre>
      */
-    @DisplayName("지하철 노선의 하행 종점역에 구간을 추가한다.")
+    @DisplayName("지하철 노선의 상행 종점역이 하행역인 구간을 추가한다.")
     @Test
-    void addLastLineSection() {
+    void addFirstLineSection() {
         // when
-        SaveLineSectionRequestDto 판교역_광교역_구간 = SaveLineSectionRequestDto.builder()
-                .upStationId(판교역_아이디)
-                .downStationId(광교역_아이디)
-                .distance(8)
+        SaveLineSectionRequestDto 강남역_신사역_구간 = SaveLineSectionRequestDto.builder()
+                .upStationId(강남역_아이디)
+                .downStationId(신사역_아이디)
+                .distance(3)
                 .build();
-        ExtractableResponse<Response> saveLineSectionResponse = saveLineSection(판교역_광교역_구간);
+        ExtractableResponse<Response> saveLineSectionResponse = saveLineSection(강남역_신사역_구간);
 
         // then
         assertAll(
@@ -99,13 +99,12 @@ public class LineSectionAcceptanceTest {
 
                     assertThat(
                             추가한_지하철_구간.getStations()
-                                .stream()
-                                .map(StationResponseDto::getId)
-                                .collect(Collectors.toList())
-                    ).containsExactly(신사역_아이디, 판교역_아이디, 광교역_아이디);
+                                    .stream()
+                                    .map(StationResponseDto::getId)
+                                    .collect(Collectors.toList())
+                    ).containsExactly(강남역_아이디, 신사역_아이디, 판교역_아이디);
                 }
         );
-
     }
 
     /**
@@ -145,20 +144,20 @@ public class LineSectionAcceptanceTest {
     /**
      * <pre>
      * Given 신사역 - 판교역 구간을 가지고 있는 신분당선에
-     * When 강남역 - 신사역 구간을 추가하면
-     * Then 지하철 노선은 강남역 - 신사역 - 판교역 노선을 가진다.
+     * When 판교역 - 광교역 구간을 추가하면
+     * Then 신분당선은 신사역 - 판교역 - 광교역 노선을 가진다.
      * </pre>
      */
-    @DisplayName("지하철 노선의 상행 종점역이 하행역인 구간을 추가한다.")
+    @DisplayName("지하철 노선의 하행 종점역에 구간을 추가한다.")
     @Test
-    void addFirstLineSection() {
+    void addLastLineSection() {
         // when
-        SaveLineSectionRequestDto 강남역_신사역_구간 = SaveLineSectionRequestDto.builder()
-                .upStationId(강남역_아이디)
-                .downStationId(신사역_아이디)
-                .distance(3)
+        SaveLineSectionRequestDto 판교역_광교역_구간 = SaveLineSectionRequestDto.builder()
+                .upStationId(판교역_아이디)
+                .downStationId(광교역_아이디)
+                .distance(8)
                 .build();
-        ExtractableResponse<Response> saveLineSectionResponse = saveLineSection(강남역_신사역_구간);
+        ExtractableResponse<Response> saveLineSectionResponse = saveLineSection(판교역_광교역_구간);
 
         // then
         assertAll(
@@ -168,10 +167,86 @@ public class LineSectionAcceptanceTest {
 
                     assertThat(
                             추가한_지하철_구간.getStations()
-                                    .stream()
-                                    .map(StationResponseDto::getId)
-                                    .collect(Collectors.toList())
-                    ).containsExactly(강남역_아이디, 신사역_아이디, 판교역_아이디);
+                                .stream()
+                                .map(StationResponseDto::getId)
+                                .collect(Collectors.toList())
+                    ).containsExactly(신사역_아이디, 판교역_아이디, 광교역_아이디);
+                }
+        );
+
+    }
+
+    /**
+     * <pre>
+     * Given 지하철 노선의 구간을 추가하고
+     * When 첫번째 구간을 삭제하면
+     * Then 지하철 노선 상세 조회 시 첫번째 구간이 존재하지 않는다.
+     * </pre>
+     */
+    @DisplayName("지하철 노선의 첫번째 구간을 삭제한다.")
+    @Test
+    void deleteFirstLineSection() {
+        // given
+        SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
+                지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
+        );
+        LineResponseDto 광교역이_하행_종점역으로_추가된_신분당선 = saveLineSection(광교역이_하행_종점역인_구간)
+                .as(LineResponseDto.class);
+
+        // when
+        Long 신분당선의_상행_종점역_아이디 = 지하철_노선의_상행_종점역_아이디를_찾는다(광교역이_하행_종점역으로_추가된_신분당선);
+        ExtractableResponse<Response> deleteLineSectionByStationIdResponse =
+                deleteLineSectionByStationId(신분당선의_상행_종점역_아이디);
+
+        // then
+        assertAll(
+                () -> assertThat(deleteLineSectionByStationIdResponse.statusCode())
+                        .isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> {
+                    List<Long> stationIds = RestAssuredClient.get(
+                                    String.format("%s/%d", LINE_BASE_URL, 신분당선.getId()))
+                            .jsonPath()
+                            .getList("stations", StationResponseDto.class)
+                            .stream()
+                            .map(StationResponseDto::getId)
+                            .collect(Collectors.toList());
+
+                    assertThat(stationIds).doesNotContain(신분당선의_상행_종점역_아이디);
+                }
+        );
+    }
+
+    /**
+     * <pre>
+     * Given 지하철 노선의 구간을 추가하고
+     * When 중간 구간을 삭제하면
+     * Then 지하철 노선 상세 조회 시 중간 구간이 존재하지 않는다.
+     * </pre>
+     */
+    @DisplayName("지하철 노선의 중간 구간을 삭제한다.")
+    @Test
+    void deleteMiddleLineSection() {
+        // given
+        SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(판교역_아이디);
+        saveLineSection(광교역이_하행_종점역인_구간);
+
+        // when
+        ExtractableResponse<Response> deleteLineSectionByStationIdResponse = deleteLineSectionByStationId(판교역_아이디);
+
+        // then
+        assertAll(
+                () -> assertThat(deleteLineSectionByStationIdResponse.statusCode())
+                        .isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> {
+                    List<Long> stationIds = RestAssuredClient.get(
+                                    String.format("%s/%d", LINE_BASE_URL, 신분당선.getId()))
+                            .jsonPath()
+                            .getList("stations", StationResponseDto.class)
+                            .stream()
+                            .map(StationResponseDto::getId)
+                            .collect(Collectors.toList());
+
+                    assertThat(stationIds).doesNotContain(판교역_아이디);
                 }
         );
     }
@@ -202,7 +277,7 @@ public class LineSectionAcceptanceTest {
                         .isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> {
                     List<Long> stationIds = RestAssuredClient.get(
-                            String.format("%s/%d", LINE_BASE_URL, 신분당선.getId()))
+                                    String.format("%s/%d", LINE_BASE_URL, 신분당선.getId()))
                             .jsonPath()
                             .getList("stations", StationResponseDto.class)
                             .stream()
@@ -211,38 +286,6 @@ public class LineSectionAcceptanceTest {
 
                     assertThat(stationIds).doesNotContain(광교역이_하행_종점역인_구간.getDownStationId());
                 }
-        );
-    }
-
-    /**
-     * <pre>
-     * Given 지하철 노선의 구간을 추가하고
-     * When 중간 구간을 삭제하면
-     * Then 구간 삭제에 실패한다.
-     * </pre>
-     */
-    @DisplayName("지하철 노선의 중간 구간을 삭제한다.")
-    @Test
-    void deleteMiddleLineSection() {
-        // given
-        SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
-                지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
-        );
-        saveLineSection(광교역이_하행_종점역인_구간);
-
-        // when
-        ExtractableResponse<Response> deleteLineSectionByStationIdResponse =
-                deleteLineSectionByStationId(광교역이_하행_종점역인_구간.getUpStationId());
-
-        // then
-        assertAll(
-                () -> assertThat(deleteLineSectionByStationIdResponse.statusCode())
-                        .isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(
-                        deleteLineSectionByStationIdResponse
-                                .jsonPath()
-                                .getList(ERROR_MESSAGES_KEY, String.class))
-                        .containsAnyOf(ErrorCode.IS_NOT_LAST_LINE_SECTION.getMessage())
         );
     }
 
@@ -372,6 +415,13 @@ public class LineSectionAcceptanceTest {
                 .downStationId(this.광교역_아이디)
                 .distance(8)
                 .build();
+    }
+
+    private Long 지하철_노선의_상행_종점역_아이디를_찾는다(LineResponseDto lineResponseDto) {
+        List<StationResponseDto> stations = lineResponseDto.getStations();
+        return stations
+                .get(0)
+                .getId();
     }
 
     private Long 지하철_노선의_하행_종점역_아이디를_찾는다(LineResponseDto lineResponseDto) {
