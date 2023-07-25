@@ -11,11 +11,11 @@ public class Section {
     private Long id;
 
     @JoinColumn(name = "up_station_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station upStation;
 
     @JoinColumn(name = "down_station_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station downStation;
 
     @Column(nullable = false)
@@ -67,10 +67,6 @@ public class Section {
                 || isDownStation(section.getDownStation());
     }
 
-    public boolean contains(Station station) {
-        return isUpStation(station) || isDownStation(station);
-    }
-
     public boolean isUpStation(Station station) {
         return Objects.equals(this.upStation, station);
     }
@@ -79,7 +75,7 @@ public class Section {
         return Objects.equals(this.downStation, station);
     }
 
-    public boolean isShorterThan(Section newSection) {
-        return this.distance < newSection.getDistance();
+    public boolean isEqualsOrShorterThan(Section newSection) {
+        return this.distance <= newSection.getDistance();
     }
 }

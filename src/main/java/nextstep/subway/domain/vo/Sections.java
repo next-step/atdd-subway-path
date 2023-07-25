@@ -17,10 +17,14 @@ public class Sections {
     private static final int MINIMUM_SIZE = 1;
 
     @JoinColumn(name = "section_id")
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
+    }
+
+    public List<Section> getValue() {
+        return sections;
     }
 
     public void add(Section newSection) {
@@ -153,7 +157,13 @@ public class Sections {
         return this.sections.stream()
                 .filter(section -> section.isDifferentAs(newSection))
                 .filter(section -> section.isExpandable(newSection))
-                .anyMatch(newSection::isShorterThan);
+                .anyMatch(section -> this.isLastSectionOfLine(newSection)
+                        || !(this.isLastSectionOfLine(newSection) || section.isEqualsOrShorterThan(newSection)));
+    }
+
+    private boolean isLastSectionOfLine(Section section) {
+        return Objects.equals(getStartOfLine(), section.getDownStation())
+                || Objects.equals(getEndOfLine(), section.getUpStation());
     }
 
     public Optional<Section> getStationSection(Predicate<Section> condition) {

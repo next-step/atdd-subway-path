@@ -110,7 +110,7 @@ class LineTest {
         @Test
         void 신규_구간_기등록_실패() {
             // given
-            Section section = Section.of(eonjuStation, eonjuStation, 10L);
+            Section section = Section.of(gangnameStation, eonjuStation, 10L);
 
             // when & then
             thenCode(() -> secondaryLine.add(section)).isInstanceOf(CanNotAddSectionException.class);

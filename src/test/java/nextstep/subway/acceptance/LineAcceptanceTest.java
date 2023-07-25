@@ -26,7 +26,7 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
     void 지하철노선을_생성한다() {
         //when
         int distance = 10;
-        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+        ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
 
         //then
         verifyResponseStatus(lineCratedResponse, HttpStatus.CREATED);
@@ -46,8 +46,8 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
     @Test
     void 지하철노선_목록을_조회한다() {
         //given
-        createLines("신분당선", "bg-red-600", "강남역", "언주역", 10);
-        createLines("수인분당선", "bg-green-600", "수원역", "분당역", 10);
+        createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10);
+        createLinesWithStations("수인분당선", "bg-green-600", "수원역", "분당역", 10);
 
         //when
         ValidatableResponse foundLineResponse = getResource(LINES_RESOURCE_URL);
@@ -69,7 +69,7 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
     void 지하철노선을_조회한다() {
         //given
         int distance = 10;
-        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+        ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
 
         //when
         ValidatableResponse foundLineResponse = getResource(getLocation(lineCratedResponse));
@@ -90,7 +90,7 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
     void 지하철_노선을_수정한다() {
         //given
         int distance = 10;
-        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", distance);
+        ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", distance);
 
         //when
         ValidatableResponse modifiedLineResponse = modifyLine("바뀐 분당선", "bg-green-600", getLocation(lineCratedResponse));
@@ -113,7 +113,7 @@ class LineAcceptanceTest extends LineAcceptanceTestHelper {
     @Test
     void 지하철_노선을_제거한다() {
         //given
-        ValidatableResponse lineCratedResponse = createLines("신분당선", "bg-red-600", "강남역", "언주역", 10);
+        ValidatableResponse lineCratedResponse = createLinesWithStations("신분당선", "bg-red-600", "강남역", "언주역", 10);
 
         //when
         ValidatableResponse deletedLineResponse = deleteResource(getLocation(lineCratedResponse));
