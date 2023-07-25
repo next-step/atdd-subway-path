@@ -57,4 +57,12 @@ public class Station {
     public boolean hasEqualId(Long upStationId) {
         return id.equals(upStationId);
     }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

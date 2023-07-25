@@ -47,6 +47,24 @@ public class LineStep {
                 .extract();
     }
 
+
+    public static ExtractableResponse<Response> 지하철_노선을_생성한다(String lineName, String color, Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = Map.of(
+                "name", lineName,
+                "color", color,
+                "upStationId", upStationId,
+                "downStationId", downStationId,
+                "distance", distance
+        );
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
     private static long extractId(ExtractableResponse<Response> responseOfCreateStation) {
         return responseOfCreateStation.jsonPath().getLong("id");
     }
