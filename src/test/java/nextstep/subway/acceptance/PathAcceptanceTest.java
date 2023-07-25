@@ -8,6 +8,7 @@ import nextstep.subway.line.controller.dto.LineResponse;
 import nextstep.subway.utils.DBCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -49,6 +50,15 @@ class PathAcceptanceTest {
     지하철_구간_등록(bundang.getId(), 정자역, 수내역,5);
   }
 
+  /**
+   * When  경로 검색을 했을 때에
+   * Then  관련된 최단 거리 및 경로를 리턴한다.
+   */
+  @DisplayName("최단 경로 반환 기능")
+  @Test
+  void searchPath() {
+
+  }
 
 
 }
