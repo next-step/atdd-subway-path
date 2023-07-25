@@ -308,8 +308,6 @@ class LineServiceMockTest {
         Line line3 = new Line("3호선", "#82C341", dogokStation, suseoStation, 2);
         Line shinbundangLine = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 1);
 
-        Long gangnamStationId = gangnamStation.getId();
-        Long suseoStationId = suseoStation.getId();
         given(stationRepository.findById(1L)).willReturn(Optional.of(gangnamStation));
         given(stationRepository.findById(2L)).willReturn(Optional.of(suseoStation));
         given(lineRepository.findAll()).willReturn(List.of(shinbundangLine, line3));
