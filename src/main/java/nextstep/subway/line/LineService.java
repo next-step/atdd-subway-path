@@ -5,10 +5,6 @@ import java.util.stream.Collectors;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +14,12 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final PathFinder pathFinder;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, PathFinder pathFinder) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.pathFinder = pathFinder;
     }
 
     @Transactional
@@ -88,17 +86,7 @@ public class LineService {
                 .orElseThrow(StationNotFoundException::new);
         Station targetStation = stationRepository.findById(targetStationId)
                 .orElseThrow(StationNotFoundException::new);
-        List<Line> all = lineRepository.findAll();
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        all.forEach(line -> line.putWeightedMultiGraph(graph));
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        GraphPath<Station, DefaultWeightedEdge> dijkstraShortestPathPath =
-                dijkstraShortestPath.getPath(sourceStation, targetStation);
-        if (dijkstraShortestPathPath == null) {
-            throw new UnreachableDestinationException();
-        }
-        List<Station> stations = dijkstraShortestPathPath.getVertexList();
-        double distance = dijkstraShortestPathPath.getWeight();
-        return new PathResponse(stations, (long) distance);
+        List<Line> allLine = lineRepository.findAll();
+        return pathFinder.findShortestDistance(sourceStation, targetStation, allLine);
     }
 }

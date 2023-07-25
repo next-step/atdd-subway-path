@@ -6,8 +6,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.station.Station;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 
 @Embeddable
 public class Section {
@@ -50,13 +48,6 @@ public class Section {
 
     public boolean isSameUpStation(Station upStation) {
         return this.upStation.equals(upStation);
-    }
-
-
-    public void putWeightedMultiGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
-        graph.addVertex(upStation);
-        graph.addVertex(downStation);
-        graph.setEdgeWeight(graph.addEdge(upStation, downStation), distance);
     }
 
     @Override

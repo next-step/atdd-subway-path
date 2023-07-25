@@ -177,6 +177,15 @@ class LineServiceTest {
     }
 
 
+    /**
+     * 강남역    --- *2호선* --- 선릉역
+     * |                        |
+     * *신분당선*               *분당선*
+     * |                        |
+     * 양재역    --- *3호선* --- 도곡역  --- *3호선* ---수서역
+     *                          |                  |
+     *                              --- *분당선* ---
+     */
     @DisplayName("출발역으로 부터 도착역까지의 경로에 있는 역 목록 및 경로 구간의 거리 조회")
     @Test
     void findShortestPathBetweenStations() {

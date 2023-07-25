@@ -17,6 +17,7 @@ import nextstep.subway.line.LineRepository;
 import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
+import nextstep.subway.line.PathFinderImpl;
 import nextstep.subway.line.PathResponse;
 import nextstep.subway.line.SameStationException;
 import nextstep.subway.line.SectionRequest;
@@ -47,7 +48,7 @@ class LineServiceMockTest {
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository, stationRepository);
+        lineService = new LineService(lineRepository, stationRepository, new PathFinderImpl());
     }
 
     @DisplayName("노선에 section을 추가하기 성공한다")
@@ -255,6 +256,15 @@ class LineServiceMockTest {
                 LineNotFoundException.class);
     }
 
+    /**
+     * 강남역    --- *2호선* --- 선릉역
+     * |                        |
+     * *신분당선*               *분당선*
+     * |                        |
+     * 양재역    --- *3호선* --- 도곡역  --- *3호선* ---수서역
+     *                          |                  |
+     *                              --- *분당선* ---
+     */
     @DisplayName("출발역으로 부터 도착역까지의 경로에 있는 역 목록 및 경로 구간의 거리 조회")
     @Test
     void findShortestPathBetweenStations() {

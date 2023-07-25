@@ -8,8 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.station.Station;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 
 @Entity
 public class Line {
@@ -61,7 +59,7 @@ public class Line {
         sections.addSection(new Section(upStation, downStation, distance));
     }
 
-    public void putWeightedMultiGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
-        sections.putWeightedMultiGraph(graph);
+    public List<PathInfo> getPathInfo() {
+        return sections.getPathInfo();
     }
 }

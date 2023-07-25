@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -109,20 +107,5 @@ class LineTest {
                 () -> assertThat(line.getName()).isEqualTo("강남선"),
                 () -> assertThat(line.getColor()).isEqualTo("#D31146")
         );
-    }
-
-    @DisplayName("노선의 모든 역과 거리를 가중 다중 그래프에 닫는다")
-    @Test
-    void putWeightedMultiGraph() {
-        // given
-        Line line = new Line("신분당선", "#D31145", gangnamStation, yangjaeStation, 10);
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-
-        // when
-        line.putWeightedMultiGraph(graph);
-
-        // then
-        DefaultWeightedEdge edge = graph.getEdge(gangnamStation, yangjaeStation);
-        assertThat(graph.getEdgeWeight(edge)).isEqualTo(10);
     }
 }
