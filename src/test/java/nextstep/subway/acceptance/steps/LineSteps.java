@@ -13,8 +13,7 @@ import java.util.Map;
 
 public class LineSteps {
 
-
-    public static ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public static ExtractableResponse<Response> 지하철_노선_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String,Object> param =new HashMap<>();
         param.put("name",name);
         param.put("color",color);
