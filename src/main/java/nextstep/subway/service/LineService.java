@@ -50,4 +50,10 @@ public class LineService {
     public void delete(long id) {
         repository.deleteById(id);
     }
+
+    public void deleteSectionStation(long lineId, long stationId) {
+
+        final Line line = findById(lineId);
+        line.removeSection(stationId);
+    }
 }

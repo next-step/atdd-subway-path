@@ -55,7 +55,8 @@ class SectionGroupTest {
         SectionGroup group = SectionGroupFixture.make();
 
         //when
-        Section section = group.add(line, StationFixture.of(1), StationFixture.of(2), interDistance);
+        Section section = group.add(line, StationFixture.of(1), StationFixture.of(2),
+            interDistance);
 
         //then
         SectionGroup newGroup = SectionGroupFixture.make(group.getSections(), section);
@@ -81,7 +82,8 @@ class SectionGroupTest {
         SectionGroup group = SectionGroupFixture.make();
 
         //when
-        Section section = group.add(line, StationFixture.of(3), StationFixture.of(4), interDistance);
+        Section section = group.add(line, StationFixture.of(3), StationFixture.of(4),
+            interDistance);
 
         //then
         SectionGroup newGroup = SectionGroupFixture.make(group.getSections(), section);
@@ -107,7 +109,8 @@ class SectionGroupTest {
         SectionGroup group = SectionGroupFixture.make();
 
         //when
-        Section section = group.add(line, StationFixture.of(2), StationFixture.of(3), interDistance);
+        Section section = group.add(line, StationFixture.of(2), StationFixture.of(3),
+            interDistance);
 
         //then
         SectionGroup newGroup = SectionGroupFixture.make(group.getSections(), section);
@@ -133,7 +136,8 @@ class SectionGroupTest {
         SectionGroup group = SectionGroupFixture.make();
 
         //when
-        Section section = group.add(line, StationFixture.of(6), StationFixture.of(7), interDistance);
+        Section section = group.add(line, StationFixture.of(6), StationFixture.of(7),
+            interDistance);
 
         //then
         SectionGroup newGroup = SectionGroupFixture.make(group.getSections(), section);
@@ -142,7 +146,8 @@ class SectionGroupTest {
         Assertions.assertAll(
             () -> assertThat(newGroup.isEndUpSection(section)).isFalse(),
             () -> assertThat(newGroup.isEndDownSection(section)).isTrue(),
-            () -> assertThat(newGroup.isEndDownSection(newGroup.getSections().get(THIRD))).isFalse(),
+            () -> assertThat(
+                newGroup.isEndDownSection(newGroup.getSections().get(THIRD))).isFalse(),
             () -> assertThat(group.getSections().get(THIRD).getDownStationId())
                 .isEqualTo(section.getUpStationId()),
             () -> assertThat(group.getSections().get(THIRD).getDistance())
@@ -258,4 +263,85 @@ class SectionGroupTest {
         );
     }
 
+    @Test
+    @DisplayName("상행종점역 삭제")
+    void removeEndOfUpPointStation() {
+
+        SectionGroup group = SectionGroupFixture.make();
+
+        //when
+        Section firstSection = group.getSections().get(FIRST);
+        group.delete(line, firstSection.getUpStationId());
+
+        //then
+        assertThat(group.getSections()).hasSize(2);
+        assertThat(group.getSections()).doesNotContain(firstSection);
+    }
+
+    @Test
+    @DisplayName("하행종점역 삭제")
+    void removeEndOfDownPointStation() {
+
+        SectionGroup group = SectionGroupFixture.make();
+
+        //when
+        Section lastSection = group.getSections().get(THIRD);
+        group.delete(line, lastSection.getDownStationId());
+
+        //then
+        assertThat(group.getSections()).hasSize(2);
+        assertThat(group.getSections()).doesNotContain(lastSection);
+    }
+
+    @Test
+    @DisplayName("중간역 삭제")
+    void removeMiddleStation() {
+
+        SectionGroup group = SectionGroupFixture.make();
+        Section first = group.getSections().get(FIRST);
+        Section middle = group.getSections().get(SECOND);
+        Section last = group.getSections().get(THIRD);
+
+        //when
+        group.delete(line, middle.getDownStationId());
+
+        //then
+        Section addedSectionAfterDelete = group.getSections().get(SECOND);
+
+        Assertions.assertAll(
+            () -> assertThat(group.getSections()).hasSize(2),
+            () -> assertThat(addedSectionAfterDelete.getDistance())
+                .isEqualTo(first.getDistance() + last.getDistance()),
+            () -> assertThat(addedSectionAfterDelete.getUpStationId())
+                .isEqualTo(first.getDownStationId()),
+            () -> assertThat(addedSectionAfterDelete.getDownStationId())
+                .isEqualTo(last.getDownStationId())
+        );
+    }
+
+    @Test
+    @DisplayName("구간이 1개인 경우 삭제할 수 없다")
+    void dontRemoveEndOfDownPointStation_atOneSize() {
+
+        SectionGroup group = SectionGroupFixture.makeOneSize();
+
+        //then
+        assertThatThrownBy(
+            () -> group.delete(line, group.getSections().get(FIRST).getDownStationId()))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageMatching("구간이 1개인 경우 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("노선에 존재하지 않는 역은 삭제할 수 없다.")
+    void stationsThatDoNotExistCannotBeDeleted() {
+
+        SectionGroup group = SectionGroupFixture.make();
+
+        //then
+        assertThatThrownBy(
+            () -> group.delete(line, -1))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageMatching("노선에 등록되어있지 않은 역을 삭제할 수 없습니다.");
+    }
 }

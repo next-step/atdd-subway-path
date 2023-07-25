@@ -69,7 +69,7 @@ public class Line {
         return sections.getStationsInOrder();
     }
 
-    public void removeSection(final Section section) {
-        sections.delete(section.getDownStationId());
+    public void removeSection(final long stationId) {
+        sections.delete(this, stationId);
     }
 }

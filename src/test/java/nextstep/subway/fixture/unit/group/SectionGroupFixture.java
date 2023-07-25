@@ -31,4 +31,13 @@ public class SectionGroupFixture {
 
         return SectionGroup.of(list);
     }
+
+    public static SectionGroup makeOneSize() {
+
+        ArrayList<Section> sections = new ArrayList<>();
+
+        sections.add(new Section(line, StationFixture.of(1), StationFixture.of(3), distance));
+
+        return SectionGroup.of(sections);
+    }
 }
