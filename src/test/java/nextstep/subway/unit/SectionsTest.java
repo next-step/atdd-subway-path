@@ -1,5 +1,7 @@
 package nextstep.subway.unit;
 
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,13 +28,49 @@ public class SectionsTest {
 	@BeforeEach
 	void setUp() {
 		신분당선 = new Line(1L, "신분당선", "red");
-		신사역 = new Station(2L, "신사역");
-		논현역 = new Station(3L, "논현역");
-		신논현역 = new Station(4L, "신논현역");
-		강남역 = new Station(5L, "강남역");
-		양재역 = new Station(6L, "양재역");
+		신사역 = new Station(1L, "신사역");
+		논현역 = new Station(2L, "논현역");
+		신논현역 = new Station(3L, "신논현역");
+		강남역 = new Station(4L, "강남역");
+		양재역 = new Station(5L, "양재역");
 		sections = new Sections();
 		sections.addSection(new Section(신분당선, 신사역, 논현역, 10));
+	}
+
+	@Test
+	void 지하철_노선에_새로운_역을_기존_역_사이로_구간을_추가한다() {
+		// given
+		Section section = new Section(신분당선, 신사역, 신논현역, 5);
+
+		// when
+		sections.addSection(section);
+
+		// then
+		assertThat(sections.getStations()).containsExactly(신사역, 신논현역, 논현역);
+	}
+
+	@Test
+	void 지하철_노선에_새로운_역을_상행_종점으로_구간을_추가한다() {
+		// given
+		Section section = new Section(신분당선, 신논현역, 신사역, 5);
+
+		// when
+		sections.addSection(section);
+
+		// then
+		assertThat(sections.getStations()).containsExactly(신논현역, 신사역, 논현역);
+	}
+
+	@Test
+	void 지하철_노선에_새로운_역을_하행_종점으로_구간을_추가한다() {
+		// given
+		Section section = new Section(신분당선, 논현역, 신논현역, 5);
+
+		// when
+		sections.addSection(section);
+
+		// then
+		assertThat(sections.getStations()).containsExactly(신사역, 논현역, 신논현역);
 	}
 
 	@Test
@@ -57,9 +95,55 @@ public class SectionsTest {
 	}
 
 	@Test
+	void 지하철_노선에_중간_구간을_삭제한다() {
+		// given
+		sections.addSection(new Section(신분당선, 논현역, 신논현역, 10));
+
+		// when
+		sections.removeSection(논현역.getId());
+
+		// then
+		assertThat(sections.getStations()).containsExactly(신사역, 신논현역);
+	}
+
+	@Test
+	void 지하철_노선에_상행_종점역인_구간을_삭제한다() {
+		// given
+		sections.addSection(new Section(신분당선, 논현역, 신논현역, 10));
+
+		// when
+		sections.removeSection(신사역.getId());
+
+		// then
+		assertThat(sections.getStations()).containsExactly(논현역, 신논현역);
+	}
+
+	@Test
+	void 지하철_노선에_하행_종점역인_구간을_삭제한다() {
+		// given
+		sections.addSection(new Section(신분당선, 논현역, 신논현역, 10));
+
+		// when
+		sections.removeSection(신논현역.getId());
+
+		// then
+		assertThat(sections.getStations()).containsExactly(신사역, 논현역);
+	}
+
+	@Test
 	void 구간을_삭제할_때_마지막_구간이면_에러를_반환한다() {
 		// then
 		Assertions.assertThrows(SectionLastRemoveException.class,
 			() -> sections.removeSection(논현역.getId()));
+	}
+
+	@Test
+	void 구간을_삭제할_때_노선에_등록_되어있지_않은_역이면_에러를_반환한다() {
+		// given
+		sections.addSection(new Section(신분당선, 논현역, 신논현역, 10));
+
+		// then
+		Assertions.assertThrows(SectionNotIncludedException.class,
+			() -> sections.removeSection(강남역.getId()));
 	}
 }
