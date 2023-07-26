@@ -11,7 +11,9 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,8 +75,7 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private LineResponse createLineResponse(Line line) {
@@ -91,15 +92,40 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        stations.add(0, line.getSections().get(0).getUpStation());
+        List<Station> stations = sortStations(line.getSections());
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
+    }
+
+    private List<Station> sortStations(List<Section> sections){
+        if(sections.isEmpty()) return Collections.emptyList();
+
+        LinkedList<Station> linkedList = new LinkedList<>();
+        for(Section section : sections){
+            int pos = getPositionInLinkedList(linkedList, section.getUpStation().getName());
+            if(pos == 0 || pos == linkedList.size() + 1){
+                linkedList.add(0, section.getUpStation());
+                linkedList.add(1, section.getDownStation());
+                continue;
+            }
+            if(pos == linkedList.size()){
+                linkedList.push(section.getUpStation());
+                continue;
+            }
+            linkedList.add(pos, section.getDownStation());
+        }
+        return new ArrayList<>(linkedList);
+    }
+
+    private int getPositionInLinkedList(LinkedList<Station> stations, String upStationName){
+        int pos = 0;
+        for(Station station : stations){
+            if(station.getName().equals(upStationName)) return pos;
+            pos++;
+        }
+        return pos;
     }
 
     @Transactional
