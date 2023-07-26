@@ -19,9 +19,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -104,41 +102,29 @@ public class Line {
     }
 
     public void removeSection(Station downStation) {
-        sections.removeSection(downStation);
+        sections.removeSection(downStation, this);
     }
 
     public Set<Station> getStations() {
         Set<Station> stations = new LinkedHashSet<>();
 
         // 첫번째 구간 찾기
-        Section firstSection = getFirstSection();
+        Section firstSection = sections.getFirstSection();
         stations.add(firstSection.getUpStation());
 
         // 첫번째 구간 외 나머지 구간 찾기
         Section nextSection = firstSection;
         while (nextSection != null) {
             stations.add(nextSection.getDownStation());
-            nextSection = getNextSection(nextSection);
+            nextSection = sections.getNextSection(nextSection);
         }
 
         return stations;
     }
 
-    private Section getFirstSection() {
-        List<Station> downStations = this.sections.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-
-        return this.sections.getSections().stream()
-                .filter(it -> !downStations.contains(it.getUpStation()))
-                .findFirst()
-                .orElseThrow(() -> new SubwayException(ErrorCode.INVALID_UP_STATION));
-    }
-
-    private Section getNextSection(Section section) {
-        return this.sections.getSections().stream()
-                .filter(it -> it.getUpStation().equals(section.getDownStation()))
-                .findFirst()
-                .orElse(null);
+    public void modifyDistance() {
+        this.distance = sections.getSections().stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 }

@@ -48,11 +48,7 @@ class SectionsTest {
         sections.addNewStationBetweenExistingStation(section, line);
 
         // then : 결과 확인
-        assertThat(line.getStations()).hasSize(3)
-                .extracting("name")
-                .containsExactly(
-                        "당고개역", "사당역", "이수역"
-                );
+        역_목록_검증(line, line.getStations().size(), "당고개역", "사당역", "이수역");
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우 확인")
@@ -82,11 +78,7 @@ class SectionsTest {
         sections.addNewStationAsAnUpStation(section);
 
         // then : 결과 확인
-        assertThat(line.getStations()).hasSize(3)
-                .extracting("name")
-                .containsExactly(
-                        "사당역", "당고개역", "이수역"
-                );
+        역_목록_검증(line, line.getStations().size(), "사당역", "당고개역", "이수역");
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우 확인")
@@ -116,11 +108,74 @@ class SectionsTest {
         sections.addNewStationAsAnDownStation(section);
 
         // then : 결과 확인
-        assertThat(line.getStations()).hasSize(3)
+        역_목록_검증(line, line.getStations().size(), "당고개역", "이수역", "사당역");
+    }
+
+    @DisplayName("구간 제거 - 첫번째 역을 제거 했을 경우")
+    @Test
+    void removeSection1() {
+        // given : 선행조건 기술
+        Line line = line(당고개역, 이수역);
+        Section section = section(line, 이수역, 사당역, 10);
+        Sections sections = line.getSections();
+        sections.addNewStationAsAnDownStation(section);
+
+        // when : 기능 수행
+        sections.removeSection(당고개역, line);
+
+        // then : 결과 확인
+        역_목록_검증(line, line.getStations().size(), "이수역", "사당역");
+        구간의_거리의_합_확인(line, sections);
+    }
+
+    @DisplayName("구간 제거 - 중간 역을 제거 했을 경우")
+    @Test
+    void removeSection2() {
+        // given : 선행조건 기술
+        Line line = line(당고개역, 이수역);
+        Section section = section(line, 이수역, 사당역, 10);
+        Sections sections = line.getSections();
+        sections.addNewStationAsAnDownStation(section);
+
+        // when : 기능 수행
+        sections.removeSection(이수역, line);
+
+        // then : 결과 확인
+        역_목록_검증(line, line.getStations().size(), "당고개역", "사당역");
+        구간의_거리의_합_확인(line, line.getSections());
+    }
+
+    @DisplayName("구간 제거 - 마지막 역을 제거 했을 경우")
+    @Test
+    void removeSection3() {
+        // given : 선행조건 기술
+        Line line = line(당고개역, 이수역);
+        Section section = section(line, 이수역, 사당역, 10);
+        Sections sections = line.getSections();
+        sections.addNewStationAsAnDownStation(section);
+
+        // when : 기능 수행
+        sections.removeSection(사당역, line);
+
+        // then : 결과 확인
+        역_목록_검증(line, line.getStations().size(), "당고개역", "이수역");
+        구간의_거리의_합_확인(line, sections);
+    }
+
+    private void 역_목록_검증(Line line, int size, String... names) {
+        assertThat(line.getStations()).hasSize(size)
                 .extracting("name")
                 .containsExactly(
-                        "당고개역", "이수역", "사당역"
+                        names
                 );
+    }
+
+    private void 구간의_거리의_합_확인(Line line, Sections sections) {
+        int sumDistance = sections.getSections().stream()
+                .mapToInt(Section::getDistance)
+                .sum();
+
+        assertThat(line.getDistance()).isEqualTo(sumDistance);
     }
 
     private Station createStation(String stationName) {
