@@ -10,8 +10,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -55,6 +57,23 @@ public class Sections {
         if (isDownToUp(section)) {
             addNewStationAsAnDownStation(section);
         }
+    }
+
+    public Set<Station> getStations() {
+        Set<Station> stations = new LinkedHashSet<>();
+
+        // 첫번째 구간 찾기
+        Section firstSection = getFirstSection();
+        stations.add(firstSection.getUpStation());
+
+        // 첫번째 구간 외 나머지 구간 찾기
+        Section nextSection = firstSection;
+        while (nextSection != null) {
+            stations.add(nextSection.getDownStation());
+            nextSection = getNextSection(nextSection);
+        }
+
+        return stations;
     }
 
     public void addNewStationAsAnDownStation(Section section) {

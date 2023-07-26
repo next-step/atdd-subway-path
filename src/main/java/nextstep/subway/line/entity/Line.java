@@ -16,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -79,20 +78,7 @@ public class Line {
     }
 
     public Set<Station> getStations() {
-        Set<Station> stations = new LinkedHashSet<>();
-
-        // 첫번째 구간 찾기
-        Section firstSection = sections.getFirstSection();
-        stations.add(firstSection.getUpStation());
-
-        // 첫번째 구간 외 나머지 구간 찾기
-        Section nextSection = firstSection;
-        while (nextSection != null) {
-            stations.add(nextSection.getDownStation());
-            nextSection = sections.getNextSection(nextSection);
-        }
-
-        return stations;
+        return sections.getStations();
     }
 
     public void modifyDistance() {
