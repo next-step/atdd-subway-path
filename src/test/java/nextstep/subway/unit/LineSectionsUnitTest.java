@@ -153,4 +153,99 @@ class LineSectionsUnitTest {
 
   }
 
+  @Test
+  @DisplayName("2개의 구간이 있을 때, 첫 구간의 상행역을 삭제할 수 있다")
+  void deleteFirstStation() {
+    // given
+    final Line line = new Line(0L, "분당선", "RED", new ArrayList<>());
+
+    final Station 야탑역 = new Station(1L, "야탑역");
+    final Station 이매역 = new Station(2L, "이매역");
+    final Station 서현역 = new Station(3L, "서현역");
+
+    line.addSection(야탑역,
+        이매역,
+        3L);
+    line.addSection(이매역,
+        서현역,
+        3L);
+
+    // when
+    line.deleteSection(야탑역);
+
+    // then
+    assertThat(line.getStations())
+        .extracting(Station::getName)
+        .containsExactly("이매역", "서현역");
+  }
+
+  @Test
+  @DisplayName("2개의 구간이 있을 때, 중간역을 삭제할 수 있다")
+  void deleteBetweenStation() {
+    // given
+    final Line line = new Line(0L, "분당선", "RED", new ArrayList<>());
+
+    final Station 야탑역 = new Station(1L, "야탑역");
+    final Station 이매역 = new Station(2L, "이매역");
+    final Station 서현역 = new Station(3L, "서현역");
+
+    line.addSection(야탑역,
+        이매역,
+        3L);
+    line.addSection(이매역,
+        서현역,
+        3L);
+
+    // when
+    line.deleteSection(이매역);
+
+    // then
+    assertThat(line.getStations())
+        .extracting(Station::getName)
+        .containsExactly("야탑역", "서현역");
+  }
+
+  @Test
+  @DisplayName("2개의 구간이 있을 때, 마지막 역을 삭제할 수 있다")
+  void deleteLastStation() {
+    // given
+    final Line line = new Line(0L, "분당선", "RED", new ArrayList<>());
+
+    final Station 야탑역 = new Station(1L, "야탑역");
+    final Station 이매역 = new Station(2L, "이매역");
+    final Station 서현역 = new Station(3L, "서현역");
+
+    line.addSection(야탑역,
+        이매역,
+        3L);
+    line.addSection(이매역,
+        서현역,
+        3L);
+
+    // when
+    line.deleteSection(서현역);
+
+    // then
+    assertThat(line.getStations())
+        .extracting(Station::getName)
+        .containsExactly("야탑역", "이매역");
+  }
+
+  @Test
+  @DisplayName("1개의 구간이 있을 때, 역을 삭제하면 에러가 발생한다")
+  void deleteStationFail() {
+    // given
+    final Line line = new Line(0L, "분당선", "RED", new ArrayList<>());
+
+    final Station 야탑역 = new Station(1L, "야탑역");
+    final Station 이매역 = new Station(2L, "이매역");
+
+    line.addSection(야탑역,
+        이매역,
+        3L);
+    // when
+    assertThatThrownBy(() -> line.deleteSection(야탑역))
+        .isInstanceOf(IllegalStateException.class);
+  }
+
 }

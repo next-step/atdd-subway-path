@@ -7,7 +7,7 @@ public class DivideEqUpStationStrategy extends SectionAddStrategy{
 
   @Override
   public void add(final Section section) {
-    final Section matchedSection = sections.findByUpSection(section.getUpStation())
+    final Section matchedSection = sections.findByUpStation(section.getUpStation())
         .orElseThrow(IllegalAccessError::new);
 
     // 하행역이 같을 수 없다.

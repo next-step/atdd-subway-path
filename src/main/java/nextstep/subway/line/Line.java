@@ -82,4 +82,8 @@ public class Line {
             .findFirst()
             .orElseThrow();
     }
+
+    public void deleteSection(final Station station) {
+        sections.deleteSection(station);
+    }
 }

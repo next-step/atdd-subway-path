@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 관련 기능")
 @DependentTest
@@ -76,5 +77,47 @@ public class SectionAcceptanceTest {
             .hasSize(3)
             .extracting(StationResponse::getName)
             .containsExactly("야탑역", "중간역", "이매역");
+    }
+
+    /**
+     * GIVEN 지하철 노선이 등록되어있고, 2개의 구간이 등록되어있는 상태에서
+     * WHEN 하나의 역을 삭제하는 요청을 보내면
+     * THEN 해당 구간이 제거되고 그 구간이 중간구간이라면 합쳐진다.
+     */
+    @Test
+    @DisplayName("2개 이상 구간이 있을 때, 구간을 삭제할 수 있다")
+    void deleteSection() {
+        // given
+        final long distance = 5L;
+        final StationResponse 중간역 = StationTestHelper.createStation("중간역");
+        LineTestHelper.createSection(분당선.getId(), 야탑역.getId(), 중간역.getId(), distance);
+        final LineResponse lineResponse = LineTestHelper.selectLine(분당선.getId());
+
+        // when
+        LineTestHelper.deleteSection(분당선.getId(), 중간역.getId());
+
+        // then
+        final LineResponse afterResponse = LineTestHelper.selectLine(분당선.getId());
+
+        assertThat(afterResponse.getStations())
+            .extracting(StationResponse::getName)
+            .containsExactly("야탑역", "이매역");
+    }
+
+    /**
+     * GIVEN 지하철 노선이 등록되어있고, 1개의 구간이 등록되어있는 상태에서
+     * WHEN 하나의 역을 삭제하는 요청을 보내면
+     * THEN 에러가 발생한다
+     */
+    @Test
+    @DisplayName("최소단위 구간만 있을 때, 구간을 삭제할 수 없다")
+    void deleteSectionOnThrowError() {
+        // when
+        final var responseExtractableResponse = LineTestHelper.deleteSection(분당선.getId(), 야탑역.getId());
+
+        // then
+        assertThat(responseExtractableResponse)
+            .extracting(ExtractableResponse::statusCode)
+            .isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
