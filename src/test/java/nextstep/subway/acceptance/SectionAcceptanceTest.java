@@ -1,24 +1,26 @@
 package nextstep.subway.acceptance;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static nextstep.subway.acceptance.LineAcceptanceTest.노선_만들기;
-import static nextstep.subway.acceptance.LineAcceptanceTest.아이디_노선_조회;
-import static nextstep.subway.acceptance.StationAcceptanceTest.역_만들기;
-
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.acceptance.LineAcceptanceTest.노선_만들기;
+import static nextstep.subway.acceptance.LineAcceptanceTest.아이디_노선_조회;
+import static nextstep.subway.acceptance.StationAcceptanceTest.역_만들기;
 
 @DisplayName("지하철 구간 관련 기능")
 @Sql("/teardown.sql")
@@ -59,23 +61,23 @@ public class SectionAcceptanceTest {
         params.put("distance", distance);
 
         ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post(String.format("/lines/%s/sections", lineId))
-                        .then().log().all()
-                        .extract();
+            RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(String.format("/lines/%s/sections", lineId))
+                .then().log().all()
+                .extract();
         return response;
     }
 
     private static ExtractableResponse<Response> 구간_제거(String lineId, String stationId) {
 
         ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().delete("/lines/{lindId}/sections?stationId={stationId}", lineId, stationId)
-                        .then().log().all()
-                        .extract();
+            RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{lindId}/sections?stationId={stationId}", lineId, stationId)
+                .then().log().all()
+                .extract();
         return response;
     }
 
@@ -159,23 +161,6 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 1개의 지하철 노선을 생성하고
-     * When 지하철 구간을 등록할때 등록 구간의 상행역이 하행 종점역이 아닐때를 등록한다
-     * Then 구간 등록에 실패한다.
-     */
-    @DisplayName("1개의 구간을 등록하고 하행 종점역이 아닌 노선을 등록한다. ")
-    @Test
-    void addSectionToLineThrowAlreadyRegisteredError() {
-        // GIVEN
-        첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
-        첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
-        // WHEN
-        ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 세번째지하철역_아이디, 네번째지하철역_아이디, "10");
-        // THEN
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-    }
-
-    /**
      * Given 1개의 지하철 노선을 생성하고 1개의 구간을 추가했을 때,
      * When 하행 노선을 제거한다.
      * Then 지하철 하행역이 전 구간의 하행역으로 변화한다.
@@ -203,7 +188,7 @@ public class SectionAcceptanceTest {
      * When 지하철 구간을 제거할때 제거 구간이 하행 종점역이 아닐 때를 등록한다
      * Then 구간 등록에 실패한다.
      */
-    @DisplayName("구간을 제거할때 제거 구간이 하행 종점역이 아닐때 에러를 표기한다.")
+    @DisplayName("오류 케이스: 구간을 제거할때 제거 구간이 하행 종점역이 아닐때 등록에 실패한다.")
     @Test
     void deleteSectionFromLineAgainstRule() {
         // GIVEN
@@ -223,7 +208,7 @@ public class SectionAcceptanceTest {
      * Then 구간 등록에 실패한다.
      * +
      */
-    @DisplayName("구간을 제거 할때, 제거 구간이 하나만 있을때 에러를 표기한다")
+    @DisplayName("오류 케이스: 구간을 제거 할때, 제거 구간이 하나만 있을때 제거에 실패한다.")
     @Test
     void deleteSectionFromLineThrowOnlyElementError() {
         // GIVEN
@@ -241,7 +226,7 @@ public class SectionAcceptanceTest {
      * When 지하철 구간을 제거할때
      * Then 구간 제거에 실패한다.
      */
-    @DisplayName("노선에 대한 구간을 제거 할때, 구간이 존재 하지 않을 경우")
+    @DisplayName("노선에 대한 구간을 제거 할때, 구간이 존재 하지 않을 경우 실패한다.")
     @Test
     void deleteSectionFromNotExistingLineThrowNoSuchElementError() {
         // GIVEN
@@ -251,6 +236,100 @@ public class SectionAcceptanceTest {
 
         // THEN
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    }
+
+    @DisplayName("구간 추가 인수 테스트")
+    @Nested
+    class FailingSectionAddTest {
+        /**
+         * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
+         * When 지하철 구간을 첫번째 하행역 기준으로 생성한다.
+         * Then 구간 등록에 성공한다.
+         */
+        @DisplayName("1개의 구간을 등록하고 역 사이에 새로운 역을 등록한다. ")
+        @Test
+        void addSectionToLineInBetweenSectionsFromUpStation() {
+            // GIVEN
+            첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
+            첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
+            // WHEN
+            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디, "10");
+            ExtractableResponse<Response> addResponse = 구간_추가(첫째노선_아이디, 두번째지하철역_아이디, 세번째지하철역_아이디, "2");
+            // THEN
+            assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+            List<String> stations = addResponse.jsonPath().getList("stations.name");
+            assertThat(stations).containsExactly(두번째지하철역이름, 세번째지하철역_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디);
+        }
+        /**
+         * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
+         * When 지하철 구간을 두번째 상행역 기준으로 생성한다.
+         * Then 구간 등록에 성공한다.
+         */
+        @DisplayName("1개의 구간을 등록하고 역 사이에 새로운 역을 등록한다. ")
+        @Test
+        void addSectionToLineInBetweenSectionsFromDownStation() {
+            // GIVEN
+            첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
+            첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
+            // WHEN
+            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디, "6");
+            ExtractableResponse<Response> addResponse = 구간_추가(첫째노선_아이디, 네번째지하철역_아이디, 두번째지하철역_아이디, "2");
+            // THEN
+            assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+            List<String> stations = addResponse.jsonPath().getList("stations.name");
+            assertThat(stations).containsExactly(두번째지하철역이름, 세번째지하철역_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디);
+        }
+        /**
+         * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
+         * When 지하철 구간을 첫번째 하행역에 생성한다.(해당 구간 사이 길이가 기존 역 사이 길이보다 크거나 같으면)
+         * Then 구간 등록에 실패한다
+         */
+        @DisplayName("오류 케이스: 1개의 구간을 사이에 등록하고 기존 역 사이 길이보다 크거나 같으면 등록에 실패한다.")
+        @Test
+        void addSectionToLineThrowDistanceSameError() {
+            // GIVEN
+            첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
+            첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
+            // WHEN
+            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 두번째지하철역_아이디, 세번째지하철역_아이디, "10");
+            // THEN
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        }
+
+        /**
+         * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
+         * When 지하철 구간을 첫번째 하행역에 생성한다. (두개의 역들이 이미 노선에 등록되어 있으면)
+         * Then 구간 등록에 실패한다.
+         */
+        @DisplayName("오류 케이스: 1개의 구간을 사이에 등록하고 기존 역 사이 길이보다 크거나 같으면 등록에 실패한다.")
+        @Test
+        void addSectionToLineThrowAlreadyRegisteredError() {
+            // GIVEN
+            첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
+            첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
+            // WHEN
+            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 세번째지하철역_아이디, 네번째지하철역_아이디, "5");
+            // THEN
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        }
+        /**
+         * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
+         * When 지하철 구간을 존재하지 않는 역에 생성하면,
+         * Then 구간 등록에 실패한다.
+         */
+        @DisplayName("오류 케이스: 1개의 구간을 사이에 등록하고 기존에 존재하는 역이 없으면 등록에 실패한다.")
+        @Test
+        void addSectionToLineThrowNotRegisteredError() {
+            // GIVEN
+            첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
+            첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
+            // WHEN
+            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 세번째지하철역_아이디, 네번째지하철역_아이디, "5");
+            // THEN
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        }
     }
 
 }
