@@ -3,9 +3,11 @@ package nextstep.subway.unit.group;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
+import nextstep.subway.entity.Station;
 import nextstep.subway.entity.group.SectionGroup;
 import nextstep.subway.fixture.unit.entity.StationFixture;
 import nextstep.subway.fixture.unit.group.SectionGroupFixture;
@@ -343,5 +345,69 @@ class SectionGroupTest {
             () -> group.delete(line, -1))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageMatching("노선에 등록되어있지 않은 역을 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("출발역에서 목적지까지 최적 경로 찾기")
+    void getPaths() {
+
+        //given
+        Station 부평역 = StationFixture.of(1);
+        Station 구로역 = StationFixture.of(2);
+        Station 신도림역 = StationFixture.of(3);
+        Station 영등포구청역 = StationFixture.of(4);
+        Station 특급역 = StationFixture.of(5);
+
+        List<Section> sections = List.of(
+            new Section(line, 부평역, 구로역, 5),
+            new Section(line, 구로역, 신도림역, 5),
+            new Section(line, 신도림역, 영등포구청역, 10),
+            new Section(line, 구로역, 특급역, 5),
+            new Section(line, 특급역, 영등포구청역, 5)
+        );
+
+        // 부평 - 5 - 구로 - 5 - 신도림 *** 10 *** 영등포구청
+        //            | --- 5 --- 특급역 --- 5 --- |
+
+        //given
+        SectionGroup sectionGroup = SectionGroup.of(sections);
+
+        //when
+        List<Station> path = sectionGroup.getPath(부평역, 영등포구청역);
+
+        //then
+        assertThat(path).containsExactly(부평역, 구로역, 특급역, 영등포구청역);
+    }
+
+    @Test
+    @DisplayName("출발역에서 목적지까지 최적 경로 가중치 추출")
+    void getPathsWeight() {
+
+        //given
+        Station 부평역 = StationFixture.of(1);
+        Station 구로역 = StationFixture.of(2);
+        Station 신도림역 = StationFixture.of(3);
+        Station 영등포구청역 = StationFixture.of(4);
+        Station 특급역 = StationFixture.of(5);
+
+        List<Section> sections = List.of(
+            new Section(line, 부평역, 구로역, 5),
+            new Section(line, 구로역, 신도림역, 5),
+            new Section(line, 신도림역, 영등포구청역, 10),
+            new Section(line, 구로역, 특급역, 5),
+            new Section(line, 특급역, 영등포구청역, 5)
+        );
+
+        // 부평 - 5 - 구로 - 5 - 신도림 *** 10 *** 영등포구청
+        //            | --- 5 --- 특급역 --- 5 --- |
+
+        //given
+        SectionGroup sectionGroup = SectionGroup.of(sections);
+
+        //when
+        int distance = sectionGroup.getPathDistance(부평역, 영등포구청역);
+
+        //then
+        assertThat(distance).isEqualTo(15);
     }
 }
