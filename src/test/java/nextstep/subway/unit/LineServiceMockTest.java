@@ -1,26 +1,53 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.line.service.LineService;
+import nextstep.subway.section.dto.CreateSectionRequest;
+import nextstep.subway.station.service.StationFindable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
+
+import static nextstep.subway.unit.fixture.LineFixture.신분당선;
+import static nextstep.subway.unit.fixture.LineFixture.신분당선_ID;
+import static nextstep.subway.unit.fixture.StationFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
-    private StationService stationService;
+    private StationFindable stationFindable;
+
+    private LineService lineService;
+
+    @BeforeEach
+    void init() {
+        lineService = new LineService(lineRepository, stationFindable);
+    }
 
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        CreateSectionRequest request = new CreateSectionRequest(
+                신논현역_ID,
+                논현역_ID,
+                5L
+        );
+        given(lineRepository.findById(신분당선_ID)).willReturn(Optional.of(신분당선()));
+        given(stationFindable.findStationById(신논현역_ID)).willReturn(신논현역());
+        given(stationFindable.findStationById(논현역_ID)).willReturn(논현역());
 
         // when
-        // lineService.addSection 호출
+        lineService.addSection(신분당선_ID, request);
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
+        assertThat(lineService.findLineById(신분당선_ID).getSections().size()).isEqualTo(2);
     }
 }
