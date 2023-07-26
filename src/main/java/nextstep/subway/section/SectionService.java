@@ -6,35 +6,38 @@ import nextstep.subway.station.StationRepository;
 import nextstep.subway.line.LineNotFoundException;
 import nextstep.subway.line.LineRepository;
 import org.springframework.stereotype.Service;
-
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class SectionService {
-    private final StationRepository stationRepository;
-    private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
+  private final StationRepository stationRepository;
+  private final LineRepository lineRepository;
+  private final SectionRepository sectionRepository;
 
-    public SectionService(StationRepository stationRepository, LineRepository lineRepository, SectionRepository sectionRepository) {
-      this.stationRepository = stationRepository;
-      this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
-    }
+  public SectionService(StationRepository stationRepository, LineRepository lineRepository, SectionRepository sectionRepository) {
+    this.stationRepository = stationRepository;
+    this.lineRepository = lineRepository;
+    this.sectionRepository = sectionRepository;
+  }
 
-    public void createSection(final long lineId, final SectionRequest request) {
-      final var line = lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException(lineId));
+  public void createSection(final long lineId, final SectionRequest request) {
+    final var line = lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException(lineId));
 
-      final var upStation = getStationById(request.getUpStationId());
-      final var downStation = getStationById(request.getDownStationId());
+    final var upStation = getStationById(request.getUpStationId());
+    final var downStation = getStationById(request.getDownStationId());
 
-      sectionRepository.saveAll(line.addSection(upStation, downStation, request.getDistance()));
-    }
+    sectionRepository.saveAll(line.addSection(upStation, downStation, request.getDistance()));
+  }
 
-    private Station getStationById(final Long stationId) {
-      return stationRepository.findById(stationId)
-              .orElseThrow(() -> new StationNotFoundException(stationId));
-    }
+  private Station getStationById(final Long stationId) {
+    return stationRepository.findById(stationId)
+        .orElseThrow(() -> new StationNotFoundException(stationId));
+  }
 
+  public void deleteSection(final Long lineId, final Long stationId) {
+    final var line = lineRepository.findById(lineId).orElseThrow(() -> new LineNotFoundException(lineId));
+    final Station station = getStationById(stationId);
+    line.deleteSection(station);
+  }
 }
