@@ -15,6 +15,9 @@ import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
 import nextstep.subway.entity.group.factory.SectionActionFactory;
 import nextstep.subway.entity.group.factory.remove.SectionDeleteAction;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 
 @Embeddable
 public class SectionGroup {
@@ -228,4 +231,38 @@ public class SectionGroup {
         return endDownSection.isEqualsUpStation(section.getUpStationId()) &&
             endDownSection.isEqualsDownStation(section.getDownStationId());
     }
+
+    public List<Station> getPath(Station source, Station target) {
+
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(getGraph());
+
+        return dijkstraShortestPath.getPath(source, target).getVertexList();
+
+    }
+
+    public int getPathDistance(Station source, Station target) {
+
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(getGraph());
+        return (int) dijkstraShortestPath.getPath(source, target).getWeight();
+    }
+
+    private WeightedMultigraph<Station, DefaultWeightedEdge> getGraph() {
+
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+
+        for (Section section : getSections()) {
+
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+
+            graph.addVertex(upStation);
+            graph.addVertex(downStation);
+
+            graph.setEdgeWeight(graph.addEdge(upStation, downStation), section.getDistance());
+
+        }
+
+        return graph;
+    }
+
 }
