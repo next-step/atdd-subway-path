@@ -1,15 +1,15 @@
 package nextstep.subway.acceptance;
 
+import static nextstep.subway.fixture.acceptance.then.PathThenFixture.최적경로_가중치_확인;
+import static nextstep.subway.fixture.acceptance.then.PathThenFixture.최적경로_도출순서_확인;
 import static nextstep.subway.fixture.acceptance.when.LineApiFixture.지하철역_노선_등록_요청_후_id_추출;
 import static nextstep.subway.fixture.acceptance.when.PathApiFixture.경로조회_요청;
 import static nextstep.subway.fixture.acceptance.when.SectionApiFixture.지하철_노선_구간_추가_등록;
 import static nextstep.subway.fixture.acceptance.when.StationApiFixture.지하철역_생성_요청_후_id_추출;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -43,10 +43,10 @@ public class PathAcceptanceTest extends AcceptanceTestConfig{
 
         //then
         assertAll(
-            () -> assertThat(경로조회_결과.jsonPath().getList("stations.id"))
-                .containsExactly(Arrays.asList(부평역, 구로역, 특급역, 영등포구청역)),
-            () -> assertThat(경로조회_결과.jsonPath().getInt("distance")).isEqualTo(15)
+            최적경로_도출순서_확인(경로조회_결과, 부평역, 구로역, 특급역, 영등포구청역),
+            최적경로_가중치_확인(경로조회_결과, 15)
         );
 
     }
+
 }

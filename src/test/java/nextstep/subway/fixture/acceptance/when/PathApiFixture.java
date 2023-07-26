@@ -17,7 +17,7 @@ public abstract class PathApiFixture {
 
         return RestAssured
             .given().log().all()
-            .body(params)
+            .queryParams(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/paths")
             .then().log().all()
