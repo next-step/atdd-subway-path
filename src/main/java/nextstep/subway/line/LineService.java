@@ -14,10 +14,12 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final PathFinder pathFinder;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, PathFinder pathFinder) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.pathFinder = pathFinder;
     }
 
     @Transactional
@@ -74,5 +76,17 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(LineNotFoundException::new);
         line.deleteSection(downStreamTerminusStation);
+    }
+
+    public PathResponse findShortestPathBetweenStations(Long sourceStationId, Long targetStationId) {
+        if (sourceStationId.equals(targetStationId)) {
+            throw new SameStationException();
+        }
+        Station sourceStation = stationRepository.findById(sourceStationId)
+                .orElseThrow(StationNotFoundException::new);
+        Station targetStation = stationRepository.findById(targetStationId)
+                .orElseThrow(StationNotFoundException::new);
+        List<Line> allLine = lineRepository.findAll();
+        return pathFinder.findShortestDistance(sourceStation, targetStation, allLine);
     }
 }

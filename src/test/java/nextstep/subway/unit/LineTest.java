@@ -108,5 +108,4 @@ class LineTest {
                 () -> assertThat(line.getColor()).isEqualTo("#D31146")
         );
     }
-
 }

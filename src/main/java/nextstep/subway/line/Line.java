@@ -58,4 +58,8 @@ public class Line {
     public void addSection(Station upStation, Station downStation, int distance) {
         sections.addSection(new Section(upStation, downStation, distance));
     }
+
+    public List<PathInfo> getPathInfo() {
+        return sections.getPathInfo();
+    }
 }
