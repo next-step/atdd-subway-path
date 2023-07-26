@@ -1,30 +1,37 @@
-//package nextstep.subway.unit;
-//
-//import org.junit.jupiter.api.Test;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.transaction.annotation.Transactional;
-//
-//@SpringBootTest
-//@Transactional
-//public class LineServiceTest {
-//    @Autowired
-//    private StationRepository stationRepository;
-//    @Autowired
-//    private LineRepository lineRepository;
-//
-//    @Autowired
-//    private LineService lineService;
-//
-//    @Test
-//    void addSection() {
-//        // given
-//        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-//
-//        // when
-//        // lineService.addSection 호출
-//
-//        // then
-//        // line.getSections 메서드를 통해 검증
-//    }
-//}
+package nextstep.subway.unit;
+
+import nextstep.subway.line.repository.Line;
+import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.line.service.LineService;
+import nextstep.subway.section.dto.CreateSectionRequest;
+import nextstep.subway.station.service.StationFindable;
+import nextstep.subway.unit.fake.FakeLineRepository;
+import nextstep.subway.unit.fake.FakeStationFindable;
+import org.junit.jupiter.api.Test;
+
+import static nextstep.subway.unit.fixture.LineFixture.신분당선_ID;
+import static nextstep.subway.unit.fixture.StationFixture.논현역_ID;
+import static nextstep.subway.unit.fixture.StationFixture.신논현역_ID;
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class LineServiceTest {
+    private final LineRepository lineRepository = new FakeLineRepository();
+    private final StationFindable stationFindable = new FakeStationFindable();
+    private final LineService lineService = new LineService(lineRepository, stationFindable);
+
+    @Test
+    void addSection() {
+        // given
+        CreateSectionRequest request = new CreateSectionRequest(
+                신논현역_ID,
+                논현역_ID,
+                5L
+        );
+
+        // when
+        Line result = lineService.addSection(신분당선_ID, request);
+
+        // then
+        assertThat(result.getSections().size()).isEqualTo(2);
+    }
+}

@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 @Transactional(readOnly = true)
 public
-class StationService {
+class StationService implements StationFindable, StationSavable, StationDeletable {
     private final StationRepository stationRepository;
 
     StationService(StationRepository stationRepository) {
