@@ -48,6 +48,8 @@ public class SectionFacade {
 
     public PathResponse getPath(long source, long target) {
 
+        validateDontEquals(source, target);
+
         final Station start = stationService.findById(source);
         final Station finish = stationService.findById(target);
 
@@ -60,5 +62,11 @@ public class SectionFacade {
                 .collect(Collectors.toList()),
             sectionGroup.getPathDistance(start, finish)
         );
+    }
+
+    private void validateDontEquals(long source, long target) {
+        if (source == target) {
+            throw new IllegalArgumentException(("출발지와 목적지가 같은 역일 수 없습니다."));
+        }
     }
 }
