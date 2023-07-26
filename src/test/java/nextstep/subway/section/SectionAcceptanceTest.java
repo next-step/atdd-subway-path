@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import static nextstep.subway.line.SubwayLineSteps.*;
 import static nextstep.subway.line.SubwayLineSteps.지하철노선등록요청;
 import static nextstep.subway.line.SubwayLineSteps.지하철노선등록요청_생성;
 import static nextstep.subway.section.SectionSteps.*;
@@ -195,7 +196,7 @@ class SectionAcceptanceTest extends ApiTest {
      * When 노선의 목록(당고개역 - 이수역 - 사당역)에서 이수역을 제거한다.
      * Then 구간을 제거하고 정상적인 요청이면 HttpStatus.OK를 반환한다.
      * Then 구간을 제거하고 목록을 조회하면 (당고개역 - 사당역)이다.
-     * Then 구간을 제거하고 목록을 조회하면 길이는 10cm이다.
+     * Then 구간을 제거하고 목록을 조회하면 길이는 20cm이다.
      * </pre>
      */
     @DisplayName("구간을 제거한다.")
@@ -209,28 +210,9 @@ class SectionAcceptanceTest extends ApiTest {
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    /**
-     * <pre>
-     * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성하고 구간을 두개 등록한다.
-     * Given 기존 구간 노선은 (1.당고개역 - 상행 종점, 이수역- 하행 종점,2. 이수역 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
-     * When 기존 구간(2. 이수역 - 상행 종점, 사당역 - 하행 종점)에서 이수역을 제거한다.
-     * Then 하행종점역이 아니기 때문에 예외를 반환한다.
-     * </pre>
-     */
-    @DisplayName("구간을 제거할때 제거하려는 구간의 역이 하행 종점이 아니면 예외가 발생한다.")
-    @Test
-    void removeSectionThrowsExceptionIsNOT_DOWN_STATION() {
-        // given : 선행조건 기술
-        이수역부터_사당역까지의_신규노선_생성(당고개역부터_이수역까지의_기존_노선_ID);
-
-        // when : 기능 수행
-        ExtractableResponse<Response> response = 지하철_노선_구간_제거(당고개역부터_이수역까지의_기존_노선_ID, 이수역);
-
-        // then : 결과 확인
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().jsonPath().getString("message")).isEqualTo(ErrorCode.NOT_DOWN_STATION.getMessage());
+        ExtractableResponse<Response> 노선목록조회응답 = 지하철노선목록조회요청();
+        노선_목록은_당고개_사당역이다(노선목록조회응답);
+        노선의_길이를_검증한다(노선목록조회응답, 20);
     }
 
     /**
@@ -299,5 +281,15 @@ class SectionAcceptanceTest extends ApiTest {
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 노선_목록은_당고개_사당역이다(ExtractableResponse<Response> response) {
+        assertThat(response.jsonPath().getList("stations[0].name", String.class)).hasSize(2)
+                .containsExactly("당고개역", "사당역");
+        assertThat(response.jsonPath().getList("distance")).containsExactly(20);
+    }
+
+    private void 노선의_길이를_검증한다(ExtractableResponse<Response> response, int distance) {
+        assertThat(response.jsonPath().getList("distance")).containsExactly(distance);
     }
 }
