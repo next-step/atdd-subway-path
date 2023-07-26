@@ -27,8 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SubwayLineAcceptanceTest extends ApiTest {
 
     /**
+     * <pre>
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노션을 찾을 수 있다.
+     * </pre>
      */
     @DisplayName("지하철 노선을 생성한다.")
     @Test
@@ -51,9 +53,11 @@ class SubwayLineAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     * </pre>
      */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
@@ -81,9 +85,11 @@ class SubwayLineAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 1개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 1개의 노선을 조회할 수 있다.
+     * </pre>
      */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
@@ -109,9 +115,11 @@ class SubwayLineAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 조회하면
      * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     * </pre>
      */
     @DisplayName("지하철 노선을 조회한다.")
     @Test
@@ -134,9 +142,11 @@ class SubwayLineAcceptanceTest extends ApiTest {
     }
 
     /**
-     *Given 지하철 노선을 생성하고
+     * <pre>
+     * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
+     * </pre>
      */
     @DisplayName("지하철 노선을 수정한다.")
     @Test
@@ -162,9 +172,11 @@ class SubwayLineAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 삭제하면
      * Then 해당 지하철 노선 정보는 삭제된다
+     * </pre>
      */
     @DisplayName("지하철 노선을 삭제한다.")
     @Test

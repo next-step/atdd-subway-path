@@ -9,7 +9,6 @@ import nextstep.subway.line.dto.CreateLineRequest;
 import nextstep.subway.section.dto.CreateSectionRequest;
 import nextstep.subway.station.StationSteps;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -33,10 +32,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
      * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
      * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
+     * </pre>
      */
     @DisplayName("새로운 구간을 등록한다. - 새로운 구간의 상행역과 기존 구간의 상행역이 같은 경우")
     @Test
@@ -52,10 +53,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 동작역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
      * When 새로운 구간(사당역 - 상행 종점, 당고개역 - 하행 종점)을 등록한다.
      * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
+     * </pre>
      */
     @DisplayName("새로운 구간을 등록한다. - 새로운역을 상행 종점으로 등록할 경우")
     @Test
@@ -71,10 +74,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 동작역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
      * When 새로운 구간(이수역 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
      * Then 정상적으로 등록이 되었으면 HttpStatus.OK를 반환한다.
+     * </pre>
      */
     @DisplayName("새로운 구간을 등록한다. - 새로운역을 하행 종점으로 등록할 경우")
     @Test
@@ -90,10 +95,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
      * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록할때 길이를 기존 노선보다 크게 등록한다.
      * Then 신규 역 사이 길이가 기존 역 사이 길이보다 크면  HttpStatus.BAD_REQUEST 예외를 던진다.
+     * </pre>
      */
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 클때 예외 발생")
     @Test
@@ -111,10 +118,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
      * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록할때 길이를 기존 노선보다 크게 등록한다.
      * Then 신규 역 사이 길이가 기존 역 사이 길이와 같으면 HttpStatus.BAD_REQUEST 예외를 던진다.
+     * </pre>
      */
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같을때 예외 발생")
     @Test
@@ -131,10 +140,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점, 당고개 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
      * When 새로운 구간(당고개 - 상행 종점, 사당역 - 하행 종점)을 등록한다.
      * Then 신규 등록하려는 상행역과 하행역이 이미 노선에 등록되어있는 경우 예외를 던진다.
+     * </pre>
      */
     @DisplayName("새로운 구간을 등록할 시 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
@@ -152,10 +163,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성한다.
      * Given 기존 구간 노선은 (당고개역 - 상행 종점, 이수역- 하행 종점, 당고개 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
      * When 새로운 구간(동작역 - 상행 종점, 이촌역 - 하행 종점)을 등록한다.
      * Then 신규 등록하려는 구간이 상행역과 하행역 둘중 하나도 포함되어 있지 않으면 추가할 수 없다.
+     * </pre>
      */
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
@@ -175,10 +188,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성하고 구간을 두개 등록한다.
      * Given 기존 구간 노선은 (1.당고개역 - 상행 종점, 이수역- 하행 종점, 2. 이수역 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
      * When 기존 구간(2. 이수역 - 상행 종점, 사당역 - 하행 종점)에서 사당역만 제거한다.
      * Then 구간을 제거하고 정상적인 요청이면 HttpStatus.OK를 반환한다.
+     * </pre>
      */
     @DisplayName("구간을 제거한다.")
     @Test
@@ -194,10 +209,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성하고 구간을 두개 등록한다.
-     * Given 기존 구간 노선은 (1.당고개역 - 상행 종점, 이수역- 하행 종점, 2. 이수역 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
+     * Given 기존 구간 노선은 (1.당고개역 - 상행 종점, 이수역- 하행 종점,2. 이수역 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
      * When 기존 구간(2. 이수역 - 상행 종점, 사당역 - 하행 종점)에서 이수역을 제거한다.
      * Then 하행종점역이 아니기 때문에 예외를 반환한다.
+     * </pre>
      */
     @DisplayName("구간을 제거할때 제거하려는 구간의 역이 하행 종점이 아니면 예외가 발생한다.")
     @Test
@@ -214,10 +231,12 @@ class SectionAcceptanceTest extends ApiTest {
     }
 
     /**
+     * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성하고 구간을 두개 등록한다.
      * Given 기존 구간 노선은 (1.당고개역 - 상행 종점, 이수역- 하행 종점)으로 구성한다.
      * When 기존 구간(1.당고개역 - 상행 종점, 이수역- 하행 종점)에서 이수역을 제거한다.
      * Then 구간이 하나만 있기 때문에 예외를 반환한다.
+     * </pre>
      */
     @DisplayName("구간을 제거할때 제거하려는 노선이 하나만 있으면 예외를 반환한다.")
     @Test
