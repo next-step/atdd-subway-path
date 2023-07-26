@@ -28,6 +28,35 @@ public class Sections {
         section.addSection(line);
     }
 
+    public void addSection(Section section, Line line){
+        // 이미 등록된 구간인지 확인
+        if (alreadySection(section)) {
+            throw new SubwayException(ErrorCode.ALREADY_SECTION);
+        }
+
+        // 등록하려는 구간이 기존 구간에 포함되는지 확인
+        if (!cannotAddSection(section)) {
+            throw new SubwayException(ErrorCode.CAN_NOT_BE_ADDED_SECTION);
+        }
+
+        // 역 사이에 새로운 역을 등록할 경우
+        if (isUptoUp(section)) {
+            addNewStationBetweenExistingStation(section, line);
+            return;
+        }
+
+        // 새로운 역을 상행 종점으로 등록할 경우
+        if (isUpToDown(section)) {
+            addNewStationAsAnUpStation(section);
+            return;
+        }
+
+        // 새로운 역을 하행 종점으로 등록할 경우
+        if (isDownToUp(section)) {
+            addNewStationAsAnDownStation(section);
+        }
+    }
+
     public void addNewStationAsAnDownStation(Section section) {
         sections.stream()
                 .filter(oldSection -> oldSection.getDownStation().equals(section.getUpStation()))

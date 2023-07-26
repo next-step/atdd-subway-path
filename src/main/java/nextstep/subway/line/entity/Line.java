@@ -4,8 +4,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.exception.ErrorCode;
-import nextstep.subway.exception.SubwayException;
 import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.entity.Sections;
 import nextstep.subway.station.entity.Station;
@@ -73,32 +71,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        // 이미 등록된 구간인지 확인
-        if (sections.alreadySection(section)) {
-            throw new SubwayException(ErrorCode.ALREADY_SECTION);
-        }
-
-        // 등록하려는 구간이 기존 구간에 포함되는지 확인
-        if (!sections.cannotAddSection(section)) {
-            throw new SubwayException(ErrorCode.CAN_NOT_BE_ADDED_SECTION);
-        }
-
-        // 역 사이에 새로운 역을 등록할 경우
-        if (sections.isUptoUp(section)) {
-            sections.addNewStationBetweenExistingStation(section, this);
-            return;
-        }
-
-        // 새로운 역을 상행 종점으로 등록할 경우
-        if (sections.isUpToDown(section)) {
-            sections.addNewStationAsAnUpStation(section);
-            return;
-        }
-
-        // 새로운 역을 하행 종점으로 등록할 경우
-        if (sections.isDownToUp(section)) {
-            sections.addNewStationAsAnDownStation(section);
-        }
+        sections.addSection(section, this);
     }
 
     public void removeSection(Station downStation) {
