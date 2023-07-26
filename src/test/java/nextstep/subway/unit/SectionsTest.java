@@ -8,6 +8,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
@@ -48,7 +51,7 @@ class SectionsTest {
         sections.addNewStationBetweenExistingStation(section, line);
 
         // then : 결과 확인
-        역_목록_검증(line, line.getStations().size(), "당고개역", "사당역", "이수역");
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "사당역", "이수역"));
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우 확인")
@@ -78,7 +81,7 @@ class SectionsTest {
         sections.addNewStationAsAnUpStation(section);
 
         // then : 결과 확인
-        역_목록_검증(line, line.getStations().size(), "사당역", "당고개역", "이수역");
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("사당역", "당고개역", "이수역"));
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우 확인")
@@ -108,7 +111,7 @@ class SectionsTest {
         sections.addNewStationAsAnDownStation(section);
 
         // then : 결과 확인
-        역_목록_검증(line, line.getStations().size(), "당고개역", "이수역", "사당역");
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "이수역", "사당역"));
     }
 
     @DisplayName("구간 제거 - 첫번째 역을 제거 했을 경우")
@@ -124,7 +127,7 @@ class SectionsTest {
         sections.removeSection(당고개역, line);
 
         // then : 결과 확인
-        역_목록_검증(line, line.getStations().size(), "이수역", "사당역");
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("이수역", "사당역"));
         구간의_거리의_합_확인(line, sections);
     }
 
@@ -141,7 +144,7 @@ class SectionsTest {
         sections.removeSection(이수역, line);
 
         // then : 결과 확인
-        역_목록_검증(line, line.getStations().size(), "당고개역", "사당역");
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "사당역"));
         구간의_거리의_합_확인(line, line.getSections());
     }
 
@@ -158,15 +161,15 @@ class SectionsTest {
         sections.removeSection(사당역, line);
 
         // then : 결과 확인
-        역_목록_검증(line, line.getStations().size(), "당고개역", "이수역");
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "이수역"));
         구간의_거리의_합_확인(line, sections);
     }
 
-    private void 역_목록_검증(Line line, int size, String... names) {
+    private void 역_목록_검증(Line line, int size, List<String> names) {
         assertThat(line.getStations()).hasSize(size)
                 .extracting("name")
                 .containsExactly(
-                        names
+                        names.toArray()
                 );
     }
 
