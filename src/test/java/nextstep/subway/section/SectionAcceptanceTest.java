@@ -190,9 +190,12 @@ class SectionAcceptanceTest extends ApiTest {
     /**
      * <pre>
      * Given 3개(당고개역, 이수역, 사당역)의 지하철 역을 생성하고 구간을 두개 등록한다.
-     * Given 기존 구간 노선은 (1.당고개역 - 상행 종점, 이수역- 하행 종점, 2. 이수역 - 상행 종점, 사당역 - 하행 종점)으로 구성한다.
-     * When 기존 구간(2. 이수역 - 상행 종점, 사당역 - 하행 종점)에서 사당역만 제거한다.
+     * Given 기존 구간 노선은 1.당고개역 - 상행 종점, 이수역- 하행 종점 길이 10cm
+     * Given 2. 이수역 - 상행 종점, 사당역 - 하행 종점 길이 10cm 으로 구성한다.
+     * When 노선의 목록(당고개역 - 이수역 - 사당역)에서 이수역을 제거한다.
      * Then 구간을 제거하고 정상적인 요청이면 HttpStatus.OK를 반환한다.
+     * Then 구간을 제거하고 목록을 조회하면 (당고개역 - 사당역)이다.
+     * Then 구간을 제거하고 목록을 조회하면 길이는 10cm이다.
      * </pre>
      */
     @DisplayName("구간을 제거한다.")
@@ -202,7 +205,7 @@ class SectionAcceptanceTest extends ApiTest {
         이수역부터_사당역까지의_신규노선_생성(당고개역부터_이수역까지의_기존_노선_ID);
 
         // when : 기능 수행
-        ExtractableResponse<Response> response = 지하철_노선_구간_제거(당고개역부터_이수역까지의_기존_노선_ID, 사당역);
+        ExtractableResponse<Response> response = 지하철_노선_구간_제거(당고개역부터_이수역까지의_기존_노선_ID, 이수역);
 
         // then : 결과 확인
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
