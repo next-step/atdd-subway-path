@@ -70,6 +70,7 @@ public class SectionServiceTest {
         // given
         sectionDto = sectionDto(사당역.getId(), 당고개역.getId(), 3);
 
+<<<<<<< HEAD
         // when
         sectionService.addSection(line.getId(), sectionDto);
 
@@ -77,6 +78,31 @@ public class SectionServiceTest {
         assertThat(line.getStations()).hasSize(3)
                 .extracting("name")
                 .containsExactly(
+                        "사당역", "당고개역", "이수역"
+                );
+    }
+
+    @DisplayName("구간을 추가한다. - 새로운역을 하행 종점으로 등록할 경우")
+    @Test
+    void addSection3() {
+        // given
+        sectionDto = sectionDto(이수역.getId(), 사당역.getId(), 3);
+
+=======
+>>>>>>> 46c7249c (충돌해결)
+        // when
+        sectionService.addSection(line.getId(), sectionDto);
+
+        // then
+        assertThat(line.getStations()).hasSize(3)
+                .extracting("name")
+                .containsExactly(
+<<<<<<< HEAD
+                        "당고개역", "이수역", "사당역"
+                );
+    }
+
+=======
                         "사당역", "당고개역", "이수역"
                 );
     }
@@ -98,6 +124,7 @@ public class SectionServiceTest {
                 );
     }
 
+>>>>>>> 46c7249c (충돌해결)
     @ParameterizedTest
     @ValueSource(ints = {10, 11})
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같을때 예외 발생")
@@ -140,11 +167,16 @@ public class SectionServiceTest {
                 .hasMessageContaining(ErrorCode.CAN_NOT_BE_ADDED_SECTION.getMessage());
     }
 
+<<<<<<< HEAD
     @DisplayName("구간 제거 - 첫번째 역을 제거 했을 경우")
+=======
+    @DisplayName("구간을 제거한다.")
+>>>>>>> 46c7249c (충돌해결)
     @Test
     void removeSection() {
         // given : 선행조건 기술
         sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
+<<<<<<< HEAD
         sectionService.addSection(line.getId(), sectionDto);
 
         // when : 기능 수행
@@ -159,12 +191,15 @@ public class SectionServiceTest {
     void removeSection2() {
         // given : 선행조건 기술
         sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
+=======
+>>>>>>> 46c7249c (충돌해결)
         sectionService.addSection(line.getId(), sectionDto);
 
         // when : 기능 수행
-        sectionService.removeSection(line.getId(), 사당역.getId());
+        sectionService.removeSection(line.getId(), 이수역.getId());
 
         // then : 결과 확인
+<<<<<<< HEAD
         역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "이수역"));
     }
 
@@ -187,6 +222,12 @@ public class SectionServiceTest {
                 .extracting("name")
                 .containsExactly(
                         names.toArray()
+=======
+        assertThat(line.getStations()).hasSize(2)
+                .extracting("name")
+                .containsExactly(
+                        "당고개역", "사당역"
+>>>>>>> 46c7249c (충돌해결)
                 );
     }
 
