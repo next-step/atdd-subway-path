@@ -159,42 +159,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        line.validateSectionDeleteRequest(station);
-
-        List<Section> sections = line.getSections();
-        List<Section> filteredSections = sections.stream()
-                .filter(
-                        s -> s.checkBelongingStationId(stationId)
-                ).collect(Collectors.toList());
-
-        //중간에 위치한 경우
-        if(filteredSections.size() > 1) {
-            Section first, second;
-
-            if(filteredSections.get(0).getUpStationId() == stationId) {
-                first = filteredSections.get(1);
-                second = filteredSections.get(0);
-            } else {
-                first = filteredSections.get(0);
-                second = filteredSections.get(1);
-            }
-
-            first.updateDownStation(second.getDownStation());
-            first.updateDistance(first.getDistance() + second.getDistance());
-
-            line.deleteSection(second);
-
-            return;
-        }
-
-        //상행 종착 구간에 위치한 경우
-        if (filteredSections.get(0).getUpStationId() == stationId) {
-            line.updateFinalUpStationId(filteredSections.get(0).getDownStationId());
-        } else {
-            // 하행 종착 구간에 위치한 경우
-            line.updateFinalDownStationId(filteredSections.get(0).getUpStationId());
-        }
-
-        line.deleteSection(filteredSections.get(0));
+        line.deleteSection(station);
     }
 }

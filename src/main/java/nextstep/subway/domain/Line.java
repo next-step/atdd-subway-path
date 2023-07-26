@@ -50,8 +50,54 @@ public class Line {
         this.color = color;
     }
 
-    public void deleteSection(Section section) {
-        sections.remove(section);
+    public void deleteSection(Station station) {
+        validateSectionDeleteRequest(station);
+
+        List<Section> filteredSections = sections.stream()
+                .filter(
+                        s -> s.checkBelongingStationId(station.getId())
+                ).collect(Collectors.toList());
+
+        //중간에 위치한 경우
+        if (deleteMiddlePositionSection(station, filteredSections)) {
+            return;
+        }
+
+        //상행 종착 구간에 위치한 경우
+        deleteLastPositionSection(station, filteredSections);
+    }
+
+    private void deleteLastPositionSection(Station station, List<Section> filteredSections) {
+        if (filteredSections.get(0).getUpStationId() == station.getId()) {
+            updateFinalUpStationId(filteredSections.get(0).getDownStationId());
+        } else {
+            // 하행 종착 구간에 위치한 경우
+            updateFinalDownStationId(filteredSections.get(0).getUpStationId());
+        }
+
+        sections.remove(filteredSections.get(0));
+    }
+
+    private boolean deleteMiddlePositionSection(Station station, List<Section> filteredSections) {
+        if(filteredSections.size() > 1) {
+            Section first, second;
+
+            if(filteredSections.get(0).getUpStationId() == station.getId()) {
+                first = filteredSections.get(1);
+                second = filteredSections.get(0);
+            } else {
+                first = filteredSections.get(0);
+                second = filteredSections.get(1);
+            }
+
+            first.updateDownStation(second.getDownStation());
+            first.updateDistance(first.getDistance() + second.getDistance());
+
+            sections.remove(second);
+
+            return true;
+        }
+        return false;
     }
 
     public Long getFinalUpStationId() {
