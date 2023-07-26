@@ -1,17 +1,19 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.BadRequestPathException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.Objects;
 
-public class Path {
+public class PathFinder {
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
 
-    public Path(List<Section> sections) {
+    public PathFinder(List<Section> sections) {
         init(sections);
     }
 
@@ -29,6 +31,10 @@ public class Path {
 
     public GraphPath<Station, DefaultWeightedEdge> getShortestPath(Station source, Station target) {
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-        return dijkstraShortestPath.getPath(source, target);
+        GraphPath<Station, DefaultWeightedEdge> shortPaths = dijkstraShortestPath.getPath(source, target);
+        if (Objects.isNull(shortPaths)) {
+            throw new BadRequestPathException("출발역과 도착역 사이의 경로가 존재하지 않습니다.");
+        }
+        return shortPaths;
     }
 }

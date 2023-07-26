@@ -4,10 +4,9 @@ import nextstep.subway.applicaion.dto.request.LineCreateRequest;
 import nextstep.subway.applicaion.dto.request.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.response.LineResponse;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
+import nextstep.subway.repository.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

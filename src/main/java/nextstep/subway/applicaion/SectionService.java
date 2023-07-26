@@ -2,10 +2,10 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.request.SectionRequest;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.repository.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
