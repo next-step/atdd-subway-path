@@ -6,6 +6,7 @@ import nextstep.subway.station.Station;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "line_section")
 public class LineSection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

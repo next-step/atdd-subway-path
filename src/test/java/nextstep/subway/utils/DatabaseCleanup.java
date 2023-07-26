@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class DatabaseCleanup implements InitializingBean {
     public void afterPropertiesSet() {
         tableNames = entityManager.getMetamodel().getEntities().stream()
                 .filter(entity -> entity.getJavaType().getAnnotation(Entity.class) != null)
-                .map(entity -> entity.getName())
+                .map(entityType -> getTableName(entityType))
                 .collect(Collectors.toList());
     }
 
@@ -36,5 +37,12 @@ public class DatabaseCleanup implements InitializingBean {
             entityManager.createNativeQuery("ALTER TABLE " + tableName + " ALTER COLUMN ID RESTART WITH 1").executeUpdate();
         }
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
+    }
+
+    private static String getTableName(javax.persistence.metamodel.EntityType<?> entityType) {
+        Table annotation = entityType.getJavaType().getAnnotation(Table.class);
+        if (annotation != null)
+            return annotation.name();
+        return entityType.getName();
     }
 }
