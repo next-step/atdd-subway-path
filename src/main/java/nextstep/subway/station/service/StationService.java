@@ -22,7 +22,7 @@ public class StationService {
     @Transactional
     public StationResponse saveStation(StationRequest request) {
         if (stationRepository.findByName(request.getName()).isPresent()) {
-            throw new IllegalArgumentException(String.format("이미 존재하는 역 이름입니다. 역 이름:%s", request.getName()));
+            throw new IllegalArgumentException("station.name.already.exists");
         }
 
         Station station = stationRepository.save(new Station(request.getName()));

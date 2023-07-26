@@ -2,7 +2,7 @@ package nextstep.subway.line.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.line.entity.Line;
+import nextstep.subway.line.domain.entity.Line;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.util.List;

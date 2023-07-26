@@ -9,15 +9,23 @@ import org.springframework.http.MediaType;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 public class StationTestUtils {
 
+    // 2호선
     public static final Map<String, String> 강남역_정보 = Map.of("name", "강남역");
     public static final Map<String, String> 역삼역_정보 = Map.of("name", "역삼역");
     public static final Map<String, String> 삼성역_정보 = Map.of("name", "삼성역");
-    public static final Map<String, String> 판교역_정보 = Map.of("name", "판교역");
 
+    // 신분당선
+    public static final Map<String, String> 판교역_정보 = Map.of("name", "판교역");
+    public static final Map<String, String> 양재역_정보 = Map.of("name", "양재역");
+
+    // 3호선
+    public static final Map<String, String> 교대역_정보 = Map.of("name", "교대역");
+    public static final Map<String, String> 남부터미널역_정보 = Map.of("name", "남부터미널역");
+
+
+    // 기타
     public static final Map<String, String> 익명역_정보 = Map.of("name","익명역");
 
     public static Map<String, String> 역_저장_정보(Map<String, String> 역_정보, Long id) {
@@ -32,6 +40,9 @@ public class StationTestUtils {
         return Long.parseLong(url.substring(url.lastIndexOf('/') + 1));
     }
 
+    public static String 지하철_URL_생성(Long id) {
+        return String.format("/stations/%s", id);
+    }
 
     private StationTestUtils() {}
 
@@ -42,9 +53,8 @@ public class StationTestUtils {
                 .when()
                 .delete(stationUrl)
                 .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     public static String 지하철역_생성(Map<String, String> 지하철_정보) {
@@ -56,10 +66,8 @@ public class StationTestUtils {
                 .when()
                 .post("/stations")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
         return response.header("Location");
     }
 
@@ -69,10 +77,8 @@ public class StationTestUtils {
                 .when()
                 .get("/stations")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
         return response;
     }
 }

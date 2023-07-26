@@ -1,12 +1,16 @@
 package nextstep.subway.line.service;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.entity.Section;
+import nextstep.subway.line.domain.entity.Section;
+import nextstep.subway.line.domain.entity.addition.SectionAdditionHandlerMapping;
+import nextstep.subway.line.domain.entity.deletion.SectionDeletionHandlerMapping;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.dto.*;
-import nextstep.subway.line.entity.Line;
-import nextstep.subway.line.entity.LineRepository;
+import nextstep.subway.line.domain.entity.Line;
+import nextstep.subway.line.domain.entity.LineRepository;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.entity.StationRepository;
 
@@ -20,6 +24,8 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionAdditionHandlerMapping sectionAdditionHandlerMapping;
+    private final SectionDeletionHandlerMapping sectionDeletionHandlerMapping;
 
     @Transactional
     public LineResponse save(LineRequest request) {
@@ -35,16 +41,14 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("노선이 존재하지 않습니다. id:%s", id)));
+        Line line = getLine(id);
 
         return LineResponse.from(line);
     }
 
     @Transactional
     public void updateLine(Long id, ModifyLineRequest request) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("노선이 존재하지 않습니다. id:%s", id)));
+        Line line = getLine(id);
 
         line.update(request.getName(), request.getColor());
     }
@@ -60,7 +64,7 @@ public class LineService {
 
         Section newSection = getSection(request, line);
 
-        line.addSection(newSection);
+        line.addSection(sectionAdditionHandlerMapping, newSection);
     }
 
     @Transactional
@@ -69,7 +73,7 @@ public class LineService {
 
         Line line = getLine(lineId);
 
-        line.removeSection(deleteReqStation);
+        line.removeSection(sectionDeletionHandlerMapping, deleteReqStation);
     }
 
     private Section getSection(SectionRequest request, Line line) {
@@ -81,12 +85,12 @@ public class LineService {
 
     private Line getLine(long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 호선입니다. 호선id:%s", lineId)));
+                .orElseThrow(() -> new LineNotFoundException("line.not.found"));
     }
 
-    private Station getStation(Long lineDto) {
-        Station upStation = stationRepository.findById(lineDto)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("역이 존재하지 않습니다. id:%s", lineDto)));
+    private Station  getStation(Long stationId) {
+        Station upStation = stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationNotFoundException("station.not.found"));
         return upStation;
     }
 
