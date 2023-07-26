@@ -5,7 +5,8 @@ public enum ErrorCode {
     INVALID_PARAM(403, "invalid parameter"),
     CAN_NOT_REMOVE_STATION(4031, "only one station left"),
     INVALID_INTER_STATION_DISTANCE(4032, "the section distance in inter station should is invalid"),
-    ALREADY_IN_LINE(4033, "station already in line")
+    ALREADY_IN_LINE(4033, "station already in line"),
+    STATIONS_ARE_NOT_CONNECTED(4034, "source and target stations are not connected")
     ;
 
     private final Integer code;
