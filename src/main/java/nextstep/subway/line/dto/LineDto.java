@@ -7,9 +7,9 @@ import nextstep.subway.section.entity.Section;
 import nextstep.subway.station.dto.StationDto;
 import nextstep.subway.station.entity.Station;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Getter
 public class LineDto {
@@ -33,17 +33,7 @@ public class LineDto {
         this.stationDtos = stationDtos;
     }
 
-    public static LineDto of(String name, String color, Long upStationId, Long downStationId, Integer distance) {
-        return LineDto.builder()
-                .name(name)
-                .color(color)
-                .upStationId(upStationId)
-                .downStationId(downStationId)
-                .distance(distance)
-                .build();
-    }
-
-    public static LineDto of(Line subwayLine) {
+    public static LineDto from(Line subwayLine) {
         return LineDto.builder()
                 .id(subwayLine.getId())
                 .name(subwayLine.getName())
@@ -51,10 +41,9 @@ public class LineDto {
                 .upStationId(subwayLine.getUpStation().getId())
                 .downStationId(subwayLine.getDownStation().getId())
                 .distance(subwayLine.getDistance())
-                .stationDtos(Stream.of(
-                                StationDto.from(subwayLine.getUpStation()),
-                                StationDto.from(subwayLine.getDownStation())
-                            ).collect(Collectors.toSet()))
+                .stationDtos(subwayLine.getStations().stream()
+                        .map(StationDto::from)
+                        .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
     }
 

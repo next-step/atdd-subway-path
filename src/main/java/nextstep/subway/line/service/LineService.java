@@ -37,21 +37,20 @@ public class LineService {
                 .build();
         Line savedLine = lineRepository.save(dto.toEntity(upStation, downStation, section));
 
-        return LineDto.of(savedLine);
+        return LineDto.from(savedLine);
     }
 
     @Transactional(readOnly = true)
     public List<LineDto> getLines() {
         return lineRepository.findAll().stream()
-                .map(LineDto::of)
-                .collect(Collectors.toList());
+                .map(LineDto::from).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineDto getLine(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
-        return LineDto.of(line);
+        return LineDto.from(line);
     }
 
     public void modifyLine(Long id, ModifyLineRequest request) {

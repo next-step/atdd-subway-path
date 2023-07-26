@@ -30,9 +30,7 @@ public class SectionService {
         Station downStation = stationRepository.findById(sectionDto.getDownStationId())
                 .orElseThrow(() -> new SubwayException(ErrorCode.BAD_REQUEST));
 
-        validationStation(line, upStation, downStation);
-
-        // 신귶 구간 등록
+        // 신규 구간 등록
         line.addSection(sectionDto.toEntity(line, upStation, downStation));
     }
 
@@ -44,13 +42,5 @@ public class SectionService {
                 .orElseThrow(() -> new SubwayException(ErrorCode.BAD_REQUEST));
 
         line.removeSection(station);
-    }
-
-    private void validationStation(Line subwayLine, Station upStation, Station downStation) {
-        // 신규 구간의 상행역이 기존 구간의 하행역과 같은지 확인 아닐시 예외 처리
-        subwayLine.isExistsDownStation(upStation);
-
-        // 신규 구간의 하행역이 기존 구간의 역이 있는지 검사 있으면 예외 처리
-        subwayLine.isExistsStations(downStation);
     }
 }
