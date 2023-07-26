@@ -3,6 +3,9 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Line {
@@ -74,5 +77,41 @@ public class Line {
 
     public void updateFinalDownStationId(Long finalDownStationId) {
         this.finalDownStationId = finalDownStationId;
+    }
+
+    public void validateAddSectionConditions(Long newUpStationId, Long newDownStationId) {
+        Set<Long> stationIds = getSectionContainStationsSet();
+
+        if (stationIds.contains(newUpStationId) && stationIds.contains(newDownStationId)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (!stationIds.contains(newUpStationId) && !stationIds.contains(newDownStationId)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public void validateSectionDeleteRequest(Station targetStation) {
+        if (sections.size() <= 1) {
+            throw new UnsupportedOperationException();
+        }
+
+        Set<Long> sectionContainStationsSet = getSectionContainStationsSet();
+        if (!sectionContainStationsSet.contains(targetStation.getId())) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private Set<Long> getSectionContainStationsSet() {
+        List<Long> sectionUpStationIds = sections.stream()
+                .map(s -> s.getUpStationId())
+                .collect(Collectors.toList());
+        List<Long> sectionDownStationIds = sections.stream()
+                .map(s -> s.getDownStationId())
+                .collect(Collectors.toList());
+
+        return Stream.of(sectionUpStationIds, sectionDownStationIds)
+                .flatMap(x -> x.stream())
+                .collect(Collectors.toSet());
     }
 }

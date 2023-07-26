@@ -74,7 +74,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        validateAddSectionConditions(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        line.validateAddSectionConditions(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         updateSectionInformation(line, upStation, downStation, sectionRequest.getDistance());
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
@@ -129,19 +129,6 @@ public class LineService {
         }
     }
 
-    private void validateAddSectionConditions(Line line, Long newUpStationId, Long newDownStationId) {
-        List<Section> sections = line.getSections();
-        Set<Long> stationIds = getSectionContainStationsSet(sections);
-
-        if (stationIds.contains(newUpStationId) && stationIds.contains(newDownStationId)) {
-            throw new IllegalArgumentException();
-        }
-
-        if (!stationIds.contains(newUpStationId) && !stationIds.contains(newDownStationId)) {
-            throw new IllegalArgumentException();
-        }
-    }
-
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
                 line.getId(),
@@ -172,7 +159,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        validateSectionDeleteRequest(line, station);
+        line.validateSectionDeleteRequest(station);
 
         List<Section> sections = line.getSections();
         List<Section> filteredSections = sections.stream()
@@ -209,30 +196,5 @@ public class LineService {
         }
 
         line.deleteSection(filteredSections.get(0));
-    }
-
-    private void validateSectionDeleteRequest(Line line, Station targetStation) {
-        List<Section> sections = line.getSections();
-        if (sections.size() <= 1) {
-            throw new UnsupportedOperationException();
-        }
-
-        Set<Long> sectionContainStationsSet = getSectionContainStationsSet(sections);
-        if (!sectionContainStationsSet.contains(targetStation.getId())) {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    Set<Long> getSectionContainStationsSet(List<Section> sections) {
-        List<Long> sectionUpStationIds = sections.stream()
-                .map(s -> s.getUpStationId())
-                .collect(Collectors.toList());
-        List<Long> sectionDownStationIds = sections.stream()
-                .map(s -> s.getDownStationId())
-                .collect(Collectors.toList());
-
-        return Stream.of(sectionUpStationIds, sectionDownStationIds)
-                .flatMap(x -> x.stream())
-                .collect(Collectors.toSet());
     }
 }
