@@ -164,7 +164,7 @@ public class LineService {
         List<Section> sections = line.getSections();
         List<Section> filteredSections = sections.stream()
                 .filter(
-                        s -> (s.getUpStationId() == stationId) || (s.getDownStationId() == stationId)
+                        s -> s.checkBelongingStationId(stationId)
                 ).collect(Collectors.toList());
 
         //중간에 위치한 경우
