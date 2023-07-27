@@ -24,12 +24,6 @@ public class LineServiceMockTest {
     @Mock
     private StationService stationService;
 
-    @BeforeEach
-    void setUp() {
-
-
-    }
-
     @Test
     void addSection() {
         // given
