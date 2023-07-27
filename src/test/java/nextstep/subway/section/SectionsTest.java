@@ -48,6 +48,7 @@ public class SectionsTest {
     }
 
     @DisplayName("add() : 역 사이에 새로운 역을 등록에 성공한다")
+    @Test
     void add_insertBetweenStations() {
         Section oldSection = aSection().withDownStation(new Station(3L, 지하철역)).build();
         Sections sections = new Sections(new ArrayList<>(List.of(oldSection)));
