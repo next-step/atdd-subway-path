@@ -1,5 +1,6 @@
 package subway.domain;
 
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -44,5 +45,33 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation == station;
+    }
+
+    public boolean isIncludeStations(Set<Long> stationIdSet) {
+        return stationIdSet.contains(this.upStation.getId())
+            && stationIdSet.contains(this.downStation.getId());
+    }
+
+    public boolean isExcludeStations(Set<Long> stationIdSet) {
+        return (!stationIdSet.contains(this.upStation.getId())
+            && !stationIdSet.contains(this.downStation.getId()));
+    }
+
+    public boolean hasLoggerDistance(Section section) {
+        return (this.distance >= section.distance);
+    }
+
+    public boolean isInsertedBetween(Section section) {
+        return section.upStation.equals(this.upStation) ||
+            section.downStation.equals(this.downStation);
+    }
+
+    public boolean isAppendedToEnds(Section section) {
+        return section.upStation.equals(this.downStation)
+            || section.downStation.equals(this.upStation);
     }
 }

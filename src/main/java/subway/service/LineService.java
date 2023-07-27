@@ -1,6 +1,7 @@
 package subway.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.domain.Line;
@@ -10,6 +11,7 @@ import subway.domain.Station;
 import subway.dto.LineRequest;
 import subway.dto.SectionRequest;
 import subway.exception.impl.AlreadyExistDownStation;
+import subway.exception.impl.CannotCreateSectionException;
 import subway.exception.impl.LineNotFoundException;
 import subway.exception.impl.NoMatchStationException;
 import subway.exception.impl.NonLastStationDeleteNotAllowedException;
@@ -58,21 +60,10 @@ public class LineService {
     @Transactional
     public Line addSection(Long id, SectionRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
-        Sections sections = line.getSections();
-        if (sections.noMatchDownStation(request.getUpStationId())) {
-            throw new NoMatchStationException();
-        }
-
-        if (sections.isStationExist(request.getDownStationId())) {
-            throw new AlreadyExistDownStation();
-        }
-
         Station upStation = stationService.findStationById(request.getUpStationId());
         Station downStation = stationService.findStationById(request.getDownStationId());
 
-        Section section = request.toSection(line, upStation, downStation);
-        line.addSection(section);
-
+        line.addSection(request.toSection(line, upStation, downStation));
         return line;
     }
 
