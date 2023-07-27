@@ -5,17 +5,17 @@ import nextstep.subway.station.controller.dto.StationResponse;
 
 public class PathResponse {
   private List<StationResponse> stations;
-  private Long distance;
+  private Double distance;
 
   public List<StationResponse> getStations() {
     return stations;
   }
 
-  public Long getDistance() {
+  public Double getDistance() {
     return distance;
   }
 
-  public PathResponse(List<StationResponse> stations, Long distance) {
+  public PathResponse(List<StationResponse> stations, Double distance) {
     this.stations = stations;
     this.distance = distance;
   }

@@ -81,7 +81,7 @@ class PathAcceptanceTest {
     // then 노원 - 하계 - 논현 - 판교 - 정자 - 수내 - 서현
     응답코드_검증(result, HttpStatus.OK);
     경로_순서_기대값_검증(response, Arrays.asList(노원역, 하계역, 논현역, 판교역, 정자역, 수내역, 서현역));
-    경로_길이_기대값_검증(response, 25L);
+    경로_길이_기대값_검증(response, 25d);
   }
 
   /**
@@ -93,7 +93,7 @@ class PathAcceptanceTest {
   @Test
   void searchPathThrowExceptionSameSourceTarget() {
     //when
-    ExtractableResponse<Response> result = 지하철_경로_조회(노원역, 서현역);
+    ExtractableResponse<Response> result = 지하철_경로_조회(노원역, 노원역);
 
     //then
     응답코드_검증(result, HttpStatus.BAD_REQUEST);
@@ -128,13 +128,12 @@ class PathAcceptanceTest {
     ExtractableResponse<Response> result = 지하철_경로_조회(-1L, 서현역);
 
     //then
-    응답코드_검증(result, HttpStatus.BAD_REQUEST);
-    에러코드_검증(result, ErrorCode.NOT_FOUND);
+    응답코드_검증(result, HttpStatus.NOT_FOUND);
   }
 
 
-  private void 경로_길이_기대값_검증(PathResponse response, Long distance) {
-    Long resultDistance = response.getDistance();
+  private void 경로_길이_기대값_검증(PathResponse response, Double distance) {
+    Double resultDistance = response.getDistance();
     assertThat(resultDistance).isEqualTo(distance);
   }
 

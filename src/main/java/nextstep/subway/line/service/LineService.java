@@ -1,6 +1,5 @@
 package nextstep.subway.line.service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.line.controller.dto.LineRequest;

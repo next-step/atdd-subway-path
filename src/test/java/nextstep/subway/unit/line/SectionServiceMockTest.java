@@ -13,6 +13,7 @@ import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.infra.StationRepository;
 import nextstep.subway.station.service.StationService;
 import nextstep.subway.unit.fake.LineMemoryRepository;
+import nextstep.subway.unit.fake.SectionMemoryRepositoryStub;
 import nextstep.subway.unit.fake.StationMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class SectionServiceMockTest {
     private final StationRepository stationRepository = new StationMemoryRepository();
     private final StationService stationService = new StationService(stationRepository);
     private final LineService lineService = new LineService(stationService, lineRepository);
-    private final SectionService sectionService = new SectionService(lineService, stationService);
+    private final SectionService sectionService = new SectionService(lineService, stationService, new SectionMemoryRepositoryStub());
 
     @BeforeEach
     void init() {
