@@ -8,11 +8,11 @@ import subway.common.annotation.UnitTest;
 import java.math.BigDecimal;
 
 /**
- * 지하철 노선에 대한 도메인 단위 테스트
+ * 지하철 노선 생성에 대한 도메인 단위 테스트
  */
 @UnitTest
-@DisplayName("지하철 노선에 대한 도메인 단위 테스트")
-public class SubwayLineTest {
+@DisplayName("지하철 노선 생성에 대한 도메인 단위 테스트")
+public class SubwayLineRegisterDomainTest {
 
     /**
      * given : 시작과 끝의 지하철 역이 두개 주어지고, 둘 사이의 거리와 이름이 주어지고<br>
@@ -48,18 +48,6 @@ public class SubwayLineTest {
         Assertions.assertThat(subwayLine.getSectionSize()).isEqualTo(1);
         Assertions.assertThat(subwayLine.existsUpStation(subwaySection.getUpStationId())).isTrue();
 
-    }
-
-    @Test
-    void addSection() {
-    }
-
-    @Test
-    void getStations() {
-    }
-
-    @Test
-    void removeSection() {
     }
 
 }

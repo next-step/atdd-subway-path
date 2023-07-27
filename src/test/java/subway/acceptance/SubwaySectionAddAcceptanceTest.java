@@ -38,9 +38,9 @@ public class SubwaySectionAddAcceptanceTest extends SubwayLineAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선을 생성하고<br>
-     * When 지하철 노선에 섹션을 추가할 때<br>
-     * Then 지하철 노션 상세 조회에서 추가된 노선을 확인할 수 있다.<br>
+     * @given 지하철 노선이 생성 되어있다면
+     * @when 지하철 노선에 섹션을 추가할 때
+     * @then 지하철 노션 상세 조회에서 추가된 노선을 확인할 수 있다.
      */
     @Test
     @DisplayName("추가 시에 노션 상세 조회에서 추가된 노선을 확인할 수 있다.")
@@ -56,9 +56,9 @@ public class SubwaySectionAddAcceptanceTest extends SubwayLineAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선을 생성하고<br>
-     * When 추가할 구간의 상행역이 노선의 하행 종점역이 아니라면<br>
-     * Then 에러가 메세지를 뱉는다.<br>
+     * @given 지하철 노선이 생성 되어있다면
+     * @when 추가할 구간의 상행역이 노선의 하행 종점역이 아닐 때
+     * @then 불가하다는 에러 메세지를 뱉는다.
      */
     @Test
     @DisplayName("추가할 구간의 상행역이 노선의 하행 종점역이 아니라면 에러가 발생한다")
@@ -75,9 +75,9 @@ public class SubwaySectionAddAcceptanceTest extends SubwayLineAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선을 생성하고<br>
-     * When 추가할 구간의 하행역이 이미 노선에 존재한다면<br>
-     * Then 에러가 메세지를 뱉는다.<br>
+     * @given 지하철 노선이 생성 되어있다면
+     * @when 추가할 구간의 하행역이 이미 노선에 존재할 때
+     * @then 불가하다는 에러 메세지를 뱉는다.
      */
     @Test
     @DisplayName("추가할 구간의 하행역이 이미 노선에 존재한다면 에러가 발생한다")

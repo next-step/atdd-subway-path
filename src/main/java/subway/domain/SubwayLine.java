@@ -76,10 +76,9 @@ public class SubwayLine {
         this.color = color;
     }
 
-    public void updateSection(SubwaySection subwaySection, SectionUpdateManager manager) {
-        SectionUpdater updater = manager.getUpdater(this);
+    public void addSection(SubwaySection subwaySection, SectionUpdateManager manager) {
+        SectionAdder updater = manager.getUpdater(this);
         updater.apply(this, subwaySection);
-
         validate();
     }
 
@@ -89,7 +88,7 @@ public class SubwayLine {
         validate();
     }
 
-    void addSection(SubwaySection subwaySection) {
+    void registerSection(SubwaySection subwaySection) {
         sections.add(subwaySection);
     }
 

@@ -1,6 +1,6 @@
 package subway.domain;
 
-interface SectionUpdater {
+interface SectionAdder {
 
     void apply(SubwayLine subwayLine, SubwaySection subwaySection);
 }

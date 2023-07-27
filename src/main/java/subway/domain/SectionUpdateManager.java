@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SectionUpdateManager {
-    private final SectionAddUpdater sectionAddOperator;
+    private final SectionTailAdder sectionAddOperator;
 
     @Autowired
-    public SectionUpdateManager(SectionAddUpdater sectionAddOperator) {
+    public SectionUpdateManager(SectionTailAdder sectionAddOperator) {
         this.sectionAddOperator = sectionAddOperator;
     }
 
-    SectionUpdater getUpdater(SubwayLine subwayLine) {
+    SectionAdder getUpdater(SubwayLine subwayLine) {
         return sectionAddOperator;
     }
 }

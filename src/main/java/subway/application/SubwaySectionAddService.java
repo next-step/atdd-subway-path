@@ -14,10 +14,11 @@ import subway.domain.SubwaySection;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Transactional
 @Service
-public class SubwaySectionAddService implements SubwaySectionAddUsecase {
+class SubwaySectionAddService implements SubwaySectionAddUsecase {
 
     private final StationMapLoadByInPort stationMapLoadByInPort;
     private final SubwayLineLoadPort subwayLineLoadPort;
@@ -25,7 +26,7 @@ public class SubwaySectionAddService implements SubwaySectionAddUsecase {
     private final SubwaySectionAddPort subwaySectionAddPort;
 
     @Autowired
-    public SubwaySectionAddService(StationMapLoadByInPort stationMapLoadByInPort, SubwayLineLoadPort subwayLineLoadPort, SectionUpdateManager sectionUpdateManager, SubwaySectionAddPort subwaySectionAddPort) {
+    SubwaySectionAddService(StationMapLoadByInPort stationMapLoadByInPort, SubwayLineLoadPort subwayLineLoadPort, SectionUpdateManager sectionUpdateManager, SubwaySectionAddPort subwaySectionAddPort) {
         this.stationMapLoadByInPort = stationMapLoadByInPort;
         this.subwayLineLoadPort = subwayLineLoadPort;
         this.sectionUpdateManager = sectionUpdateManager;
@@ -35,13 +36,19 @@ public class SubwaySectionAddService implements SubwaySectionAddUsecase {
     @Override
     public void addSubwaySection(Command command) {
         Map<Station.Id, Station> idToStationMap = stationMapLoadByInPort.findAllByIn(List.of(command.getUpStationId(), command.getDownStationId()));
-        Station upStation = idToStationMap.get(command.getUpStationId());
-        Station downStation = idToStationMap.get(command.getDownStationId());
+        Station upStation = getStationBy(command.getUpStationId(), idToStationMap);
+        Station downStation = getStationBy(command.getDownStationId(), idToStationMap);
 
         SubwaySection subwaySection = SubwaySection.register(upStation, downStation, command.getDistance());
         SubwayLine subwayLine = subwayLineLoadPort.findOne(command.getSubwayLineId());
-        subwayLine.updateSection(subwaySection, sectionUpdateManager);
+        subwayLine.addSection(subwaySection, sectionUpdateManager);
         subwaySectionAddPort.addSubwaySection(subwayLine);
     }
 
+    private static Station getStationBy(Station.Id id, Map<Station.Id, Station> idToStationMap) {
+        return Optional
+                .ofNullable(idToStationMap.get(id))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format("%d는 존재하지 않는 역입니다.", id.getValue())));
+    }
 }

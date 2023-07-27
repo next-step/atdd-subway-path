@@ -30,19 +30,13 @@ public class StationMapLoadByInPersistenceAdapter implements StationMapLoadByInP
         List<Long> ids = createIdValues(stationIds);
         List<StationJpa> stationJpas = stationRepository.findAllByIdIn(ids);
 
-        Map<Long, StationJpa> stationJpaMap = createLongToStationJpaMap(stationJpas);
-
-        return createIdToStationMap(stationIds, stationJpaMap);
+        return createIdToStationMap(stationJpas);
     }
 
-    private Map<Station.Id, Station> createIdToStationMap(List<Station.Id> stationIds, Map<Long, StationJpa> stationJpaMap) {
-        return stationIds.stream()
-                .map(stationId -> stationMapper.from(stationJpaMap.get(stationId.getValue())))
+    private Map<Station.Id, Station> createIdToStationMap(List<StationJpa> stationJpas) {
+        return stationJpas.stream()
+                .map(stationMapper::from)
                 .collect(Collectors.toMap(Station::getId, Function.identity()));
-    }
-
-    private static Map<Long, StationJpa> createLongToStationJpaMap(List<StationJpa> stationJpas) {
-        return stationJpas.stream().collect(Collectors.toMap(StationJpa::getId, Function.identity()));
     }
 
     private static List<Long> createIdValues(List<Station.Id> stationIds) {

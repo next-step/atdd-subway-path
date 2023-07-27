@@ -8,8 +8,8 @@ public class SectionCloseManager {
     private final SectionTailCloser sectionTailCloser;
 
     @Autowired
-    public SectionCloseManager() {
-        this.sectionTailCloser = new SectionTailCloser();
+    public SectionCloseManager(SectionTailCloser sectionTailCloser) {
+        this.sectionTailCloser = sectionTailCloser;
     }
 
     SectionCloser getOperator(SubwayLine subwayLine) {
