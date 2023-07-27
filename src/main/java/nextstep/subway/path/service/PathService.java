@@ -1,10 +1,13 @@
 package nextstep.subway.path.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.common.exception.ErrorCode;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.service.LineService;
 import nextstep.subway.path.controller.dto.PathResponse;
 import nextstep.subway.path.domain.PathGraph;
 import nextstep.subway.section.domain.Section;
@@ -22,12 +25,13 @@ import org.springframework.stereotype.Service;
 public class PathService {
 
     private final StationService stationService;
-    private final SectionService sectionService;
+    private final LineService lineService;
 
     public PathService(StationService stationService,
-            SectionService sectionService) {
+        LineService lineService
+            ) {
+        this.lineService = lineService;
         this.stationService = stationService;
-        this.sectionService = sectionService;
     }
 
     public PathResponse searchPath(Long source, Long target) {
@@ -44,8 +48,10 @@ public class PathService {
 
     private PathGraph getGraph() {
         List<Station> stationList = stationService.getAllStations();
-        List<Section> sectionList = sectionService.getAllSections();
-        return new PathGraph(stationList, sectionList);
+        List<Line> lines = lineService.getAllLines();
+        List<Section> sections = new ArrayList<>();
+        lines.forEach(line -> sections.addAll(line.getSectionList()));
+        return new PathGraph(stationList, sections);
     }
 
     private List<StationResponse> getStationResponse(List<Station> stations) {

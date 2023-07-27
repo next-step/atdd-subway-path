@@ -17,14 +17,12 @@ public class SectionService {
 
     private final LineService lineService;
     private final StationService stationService;
-    private final SectionRepository sectionRepository;
 
     public SectionService(LineService lineService,
-            StationService stationService, SectionRepository sectionRepository
+            StationService stationService
         ) {
         this.lineService = lineService;
         this.stationService = stationService;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -42,9 +40,5 @@ public class SectionService {
         Line line = lineService.getLine(lineId);
         Station targetStation = stationService.getStation(stationId);
         line.deleteStation(targetStation);
-    }
-
-    public List<Section> getAllSections() {
-        return sectionRepository.findAll();
     }
 }
