@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class LineExceptionAdvice {
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler({NoSuchElementException.class, IllegalStateException.class})
-    ResponseEntity<ExceptionResponse> handleLineNotFound(Exception exception) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(ExceptionResponse.from(exception));
-    }
 
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler({NoSuchElementException.class, IllegalStateException.class,
+      IllegalArgumentException.class})
+  ResponseEntity<ExceptionResponse> handleLineNotFound(Exception exception) {
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(ExceptionResponse.from(exception));
+  }
 
 }
