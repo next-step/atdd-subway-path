@@ -1,5 +1,6 @@
 package subway.domain;
 
+import java.util.Objects;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,14 +52,14 @@ public class Section {
         return this.upStation == station;
     }
 
-    public boolean isIncludeStations(Set<Long> stationIdSet) {
-        return stationIdSet.contains(this.upStation.getId())
-            && stationIdSet.contains(this.downStation.getId());
+    public boolean isIncludeStations(Set<Station> stationSet) {
+        return stationSet.contains(this.upStation)
+            && stationSet.contains(this.downStation);
     }
 
-    public boolean isExcludeStations(Set<Long> stationIdSet) {
-        return (!stationIdSet.contains(this.upStation.getId())
-            && !stationIdSet.contains(this.downStation.getId()));
+    public boolean isExcludeStations(Set<Station> stationSet) {
+        return (!stationSet.contains(this.upStation)
+            && !stationSet.contains(this.downStation));
     }
 
     public boolean hasLoggerDistance(Section section) {

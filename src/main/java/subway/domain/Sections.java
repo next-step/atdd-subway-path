@@ -2,6 +2,7 @@ package subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -42,12 +43,10 @@ public class Sections {
     }
 
     public Section getConnectedSection(Section newSection) {
-        Set<Long> stationIdSet = getStations().stream()
-            .map(Station::getId)
-            .collect(Collectors.toSet());
+        Set<Station> stationSet = new HashSet<>(getStations());
 
-        if (newSection.isIncludeStations(stationIdSet) ||
-            newSection.isExcludeStations(stationIdSet)) {
+        if (newSection.isIncludeStations(stationSet) ||
+            newSection.isExcludeStations(stationSet)) {
             throw new CannotCreateSectionException();
         }
 
