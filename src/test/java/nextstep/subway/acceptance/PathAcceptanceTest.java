@@ -1,7 +1,7 @@
 package nextstep.subway.acceptance;
 
 import static nextstep.subway.fixture.acceptance.then.ApiStatusFixture.API_잘못된요청_응답코드_검사;
-import static nextstep.subway.fixture.acceptance.then.PathThenFixture.최적경로_가중치_확인;
+import static nextstep.subway.fixture.acceptance.then.PathThenFixture.최적경로_이동거리_확인;
 import static nextstep.subway.fixture.acceptance.then.PathThenFixture.최적경로_도출순서_확인;
 import static nextstep.subway.fixture.acceptance.then.PathThenFixture.출발지또는_목적지가_이어져있지않을때_에러메세지_검사;
 import static nextstep.subway.fixture.acceptance.then.PathThenFixture.출발지또는_목적지가_존재하지않을때_에러메세지_검사;
@@ -53,7 +53,7 @@ public class PathAcceptanceTest extends AcceptanceTestConfig{
         //then
         assertAll(
             최적경로_도출순서_확인(경로조회_결과, 부평역, 구로역, 특급역, 영등포구청역),
-            최적경로_가중치_확인(경로조회_결과, 15)
+            최적경로_이동거리_확인(경로조회_결과, 15)
         );
 
     }

@@ -21,7 +21,7 @@ public abstract class PathThenFixture {
             );
     }
 
-    public static Executable 최적경로_가중치_확인(ExtractableResponse<Response> 경로조회_결과, int distance) {
+    public static Executable 최적경로_이동거리_확인(ExtractableResponse<Response> 경로조회_결과, int distance) {
         return () -> assertThat(경로조회_결과.jsonPath().getInt("distance")).isEqualTo(distance);
     }
 
