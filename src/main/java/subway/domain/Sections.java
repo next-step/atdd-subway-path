@@ -64,7 +64,6 @@ public class Sections {
     public Section getDividedSection(Section connectedSection, Section newSection) {
         Line line = newSection.getLine();
 
-        // 앞에 추가되는 경우
         if (newSection.isInsertedBetween(connectedSection)) {
             return Section.builder()
                 .line(line)
