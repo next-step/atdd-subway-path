@@ -32,14 +32,15 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선 사이에 존재하는 구간을 추가한다.")
     @Test
     void createSection_pass_insert() {
+        // TODO: 역의 id를 받기 위해 역을 생성하고 주입하는 과정이 반복적인데, 이 반복되는 부분을 어떻게 추출할 수 있을까?
         // given
-        var 지하철역응답 = 지하철_역_생성_요청(판교역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(광교역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(양재역);
+        var 판교역응답 = 지하철_역_생성_요청(판교역);
+        var 광교역응답 = 지하철_역_생성_요청(광교역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역응답.getId(), 광교역응답.getId(), 10);
+        var 양재역응답 = 지하철_역_생성_요청(양재역);
 
-        // when
-        지하철_구간_생성_요청(신분당선응답.getId(), 지하철역응답.getId(), 또다른지하철역응답.getId(), 5);
+        // when답
+        지하철_구간_생성_요청(신분당선응답.getId(), 판교역응답.getId(), 양재역응답.getId(), 5);
 
         // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
@@ -53,13 +54,13 @@ public class SectionAcceptanceTest {
     @Test
     void createSection_pass_addHead() {
         // given
-        var 지하철역응답 = 지하철_역_생성_요청(판교역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(광교역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(양재역);
+        var 판교역응답 = 지하철_역_생성_요청(판교역);
+        var 광교역응답 = 지하철_역_생성_요청(광교역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역응답.getId(), 광교역응답.getId(), 10);
+        var 양재역응답 = 지하철_역_생성_요청(양재역);
 
         // when
-        지하철_구간_생성_요청(신분당선응답.getId(), 또다른지하철역응답.getId(), 지하철역응답.getId(), 5);
+        지하철_구간_생성_요청(신분당선응답.getId(), 양재역응답.getId(), 판교역응답.getId(), 5);
 
         // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
@@ -73,13 +74,13 @@ public class SectionAcceptanceTest {
     @Test
     void createSection_pass_addTail() {
         // given
-        var 지하철역응답 = 지하철_역_생성_요청(판교역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(광교역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(양재역);
+        var 판교역응답 = 지하철_역_생성_요청(판교역);
+        var 광교역응답 = 지하철_역_생성_요청(광교역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역응답.getId(), 광교역응답.getId(), 10);
+        var 양재역응답 = 지하철_역_생성_요청(양재역);
 
         // when
-        지하철_구간_생성_요청(신분당선응답.getId(), 새로운지하철역응답.getId(), 또다른지하철역응답.getId(), 5);
+        지하철_구간_생성_요청(신분당선응답.getId(), 광교역응답.getId(), 양재역응답.getId(), 5);
 
         // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
@@ -94,8 +95,8 @@ public class SectionAcceptanceTest {
     void createSection_fail_sectionDistanceIsSame() {
         // given
         var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(판교역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 판교역응답 = 지하철_역_생성_요청(판교역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 판교역응답.getId(), 10);
         var 신논현역응답 = 지하철_역_생성_요청(신논현역);
 
         // when
@@ -114,11 +115,11 @@ public class SectionAcceptanceTest {
     void createSection_fail_sectionAlreadyExist() {
         // given
         var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(판교역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 판교역응답 = 지하철_역_생성_요청(판교역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 판교역응답.getId(), 10);
 
         // when
-        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 강남역응답.getId(), 판교역응답.getId(), 10);
 
         // then
         assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -131,8 +132,8 @@ public class SectionAcceptanceTest {
     @Test
     void createSection_fail_sectionNoIntersection() {
         var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(판교역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 판교역응답 = 지하철_역_생성_요청(판교역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 판교역응답.getId(), 10);
 
         var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 신논현역, 양재역, 10);
 
