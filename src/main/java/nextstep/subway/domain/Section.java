@@ -76,4 +76,8 @@ public class Section {
     public void updateDistance(int distance){
         this.distance = distance;
     }
+
+    public boolean checkBelongingStationId(Long stationId) {
+        return (getUpStationId() == stationId) || (getDownStationId() == stationId);
+    }
 }

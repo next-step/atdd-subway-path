@@ -15,6 +15,7 @@ public class LineSteps {
         params.put("color", color);
         params.put("upStationId", upStationId.toString());
         params.put("downStationId", downStationId.toString());
+        params.put("distance", "10");
 
         return RestAssured
                 .given().log().all()

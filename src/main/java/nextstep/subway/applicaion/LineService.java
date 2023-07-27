@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,16 +74,16 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        validateAddSectionConditions(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        line.validateAddSectionConditions(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
         updateSectionInformation(line, upStation, downStation, sectionRequest.getDistance());
 
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private void updateSectionInformation(Line line,
-                                  Station newUpStation,
-                                  Station newDownStation,
-                                  int newSectionDistance) {
+                                          Station newUpStation,
+                                          Station newDownStation,
+                                          int newSectionDistance) {
         List<Section> alreadyExistSections = line.getSections();
         for (Section section : alreadyExistSections) {
 
@@ -128,29 +129,6 @@ public class LineService {
         }
     }
 
-    private void validateAddSectionConditions(Line line, Long newUpStationId, Long newDownStationId) {
-        List<Section> sections = line.getSections();
-
-        List<Long> sectionUpStationIds = sections.stream()
-                .map(s -> s.getUpStationId())
-                .collect(Collectors.toList());
-        List<Long> sectionDownStationIds = sections.stream()
-                .map(s -> s.getDownStationId())
-                .collect(Collectors.toList());
-
-        Set<Long> stationIds = Stream.of(sectionUpStationIds, sectionDownStationIds)
-                .flatMap(x -> x.stream())
-                .collect(Collectors.toSet());
-
-        if (stationIds.contains(newUpStationId) && stationIds.contains(newDownStationId)) {
-            throw new IllegalArgumentException();
-        }
-
-        if (!stationIds.contains(newUpStationId) && !stationIds.contains(newDownStationId)) {
-            throw new IllegalArgumentException();
-        }
-    }
-
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
                 line.getId(),
@@ -181,10 +159,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
-        }
-
-        line.getSections().remove(line.getSections().size() - 1);
+        line.deleteSection(station);
     }
 }
