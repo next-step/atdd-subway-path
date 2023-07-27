@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.path.controller.dto.PathResponse;
+import nextstep.subway.path.domain.PathGraph;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.controller.dto.StationResponse;
@@ -37,29 +38,18 @@ public class PathService {
         Station sourceStation = stationService.getStation(source);
         Station targetStation = stationService.getStation(target);
 
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraPath = getGraph();
-        GraphPath<Station, DefaultWeightedEdge> sourceTargetPath = dijkstraPath.getPath(sourceStation, targetStation);
+        PathGraph graph = getGraph();
 
-        if (sourceTargetPath == null) {
-            throw new CustomException(ErrorCode.STATIONS_ARE_NOT_CONNECTED);
-        }
+        List<Station> shortestPath = graph.getShortestPath(sourceStation, targetStation);
+        Double shortestDistance = graph.getDistance(sourceStation, targetStation);
 
-        List<Station> shortestPath = sourceTargetPath.getVertexList();
-        Double distance = sourceTargetPath.getWeight();
-
-        return new PathResponse(getStationResponse(shortestPath), distance);
+        return new PathResponse(getStationResponse(shortestPath), shortestDistance);
     }
 
-    private DijkstraShortestPath<Station, DefaultWeightedEdge> getGraph() {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+    private PathGraph getGraph() {
         List<Station> stationList = stationService.getAllStations();
         List<Section> sectionList = sectionService.getAllSections();
-        stationList.forEach(graph::addVertex);
-        sectionList.forEach(section -> {
-            DefaultWeightedEdge edge = graph.addEdge(section.getUpwardStation(), section.getDownwardStation());
-            graph.setEdgeWeight(edge, section.getDistance());
-        });
-        return new DijkstraShortestPath<>(graph);
+        return new PathGraph(stationList, sectionList);
     }
 
     private List<StationResponse> getStationResponse(List<Station> stations) {
