@@ -249,17 +249,15 @@ public class SectionGroup {
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
-        for (Section section : getSections()) {
-
+        getSections().forEach(section -> {
             Station upStation = section.getUpStation();
             Station downStation = section.getDownStation();
 
             graph.addVertex(upStation);
             graph.addVertex(downStation);
-
             graph.setEdgeWeight(graph.addEdge(upStation, downStation), section.getDistance());
+        });
 
-        }
         GraphPath<Station, Station> path = new DijkstraShortestPath(graph).getPath(source, target);
 
         if (Objects.isNull(path)) {
