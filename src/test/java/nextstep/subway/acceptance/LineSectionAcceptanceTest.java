@@ -17,9 +17,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
 class LineSectionAcceptanceTest extends AcceptanceTest {
+    Long 교대역_ID;
     Long 강남역_ID;
     Long 역삼역_ID;
     Long 선릉역_ID;
+    Long 삼성역_ID;
     Long 분당선_ID;
 
     /**
@@ -28,21 +30,23 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        강남역_ID = 역_생성_ID_추출(지하철역_생성_요청(강남역));
-        역삼역_ID = 역_생성_ID_추출(지하철역_생성_요청(역삼역));
-        선릉역_ID = 역_생성_ID_추출(지하철역_생성_요청(선릉역));
-        분당선_ID = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선, 빨간색, 강남역_ID, 역삼역_ID, DISTANCE_10));
+        교대역_ID = 역_생성_ID_추출(지하철역_생성_요청(교대역_이름));
+        강남역_ID = 역_생성_ID_추출(지하철역_생성_요청(강남역_이름));
+        역삼역_ID = 역_생성_ID_추출(지하철역_생성_요청(역삼역_이름));
+        선릉역_ID = 역_생성_ID_추출(지하철역_생성_요청(선릉역_이름));
+        삼성역_ID = 역_생성_ID_추출(지하철역_생성_요청(삼성역_이름));
+        분당선_ID = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선_이름, 신분당선_색, 강남역_ID, 역삼역_ID, 거리_10));
     }
 
     /**
-     * When 지하철 노선에 새로운 구간 추가를 요청 하면
-     * Then 노선에 새로운 구간이 추가된다
+     * When 지하철 노선에 새로운 하행 종점 구간 추가를 요청 하면
+     * Then 노선에 하행 종점 구간이 추가 된다
      */
-    @DisplayName("지하철 노선에 구간을 등록")
+    @DisplayName("지하철 노선에 하행 종점 구간을 등록")
     @Test
-    void addLineSection() {
+    void addLineLastSection() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, DISTANCE_10);
+        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, 거리_10);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(분당선_ID);
@@ -75,7 +79,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, DISTANCE_10);
+        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, 거리_10);
 
         // when
         지하철_노선에_지하철_구간_제거_요청(분당선_ID, 선릉역_ID);
