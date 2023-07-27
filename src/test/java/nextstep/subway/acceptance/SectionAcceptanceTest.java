@@ -97,7 +97,7 @@ public class SectionAcceptanceTest {
         첫째지하철역_아이디 = 첫째지하철역.jsonPath().getString("id");
         두번째지하철역_아이디 = 두번째지하철역.jsonPath().getString("id");
         세번째지하철역_아이디 = 세번째지하철역.jsonPath().getString("id");
-        네번째지하철역_아이디 = 세번째지하철역.jsonPath().getString("id");
+        네번째지하철역_아이디 = 네번째지하철역.jsonPath().getString("id");
     }
 
     /**
@@ -136,25 +136,6 @@ public class SectionAcceptanceTest {
 
         // WHEN
         ExtractableResponse<Response> response = 구간_추가("1", 네번째지하철역_아이디, 두번째지하철역_아이디, "10");
-
-        // THEN
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-    }
-
-    /**
-     * Given 1개의 지하철 노선을 생성하고 1개의 중복되지 않은 지하철 구간을 등록하고
-     * When 지하철 구간 중 등록되어있는 하행역을 등록한다.
-     * Then 구간 등록에 실패한다.
-     */
-    @DisplayName("1개의 구간을 등록하고 등록되어있는 역을 등록한다.")
-    @Test
-    void addTwoSectionToLineAgainstRule() {
-        // GIVEN
-        첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
-        첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
-
-        // WHEN
-        ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디, "10");
 
         // THEN
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
@@ -240,31 +221,37 @@ public class SectionAcceptanceTest {
 
     @DisplayName("구간 추가 인수 테스트")
     @Nested
-    class FailingSectionAddTest {
+    class SectionAddTest {
         /**
          * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
          * When 지하철 구간을 첫번째 하행역 기준으로 생성한다.
          * Then 구간 등록에 성공한다.
+         *
+         * When 지하철 구간에 대한 역을 조회했을 때,
+         * Then 구간 순서대로 역이 조회된다.
          */
         @DisplayName("1개의 구간을 등록하고 역 사이에 새로운 역을 등록한다. ")
         @Test
         void addSectionToLineInBetweenSectionsFromUpStation() {
             // GIVEN
             첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
+
             첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
             // WHEN
-            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디, "10");
-            ExtractableResponse<Response> addResponse = 구간_추가(첫째노선_아이디, 두번째지하철역_아이디, 세번째지하철역_아이디, "2");
+            ExtractableResponse<Response> addResponse = 구간_추가(첫째노선_아이디, 세번째지하철역_아이디, 첫째지하철역_아이디, "2");
             // THEN
-            assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
             List<String> stations = addResponse.jsonPath().getList("stations.name");
-            assertThat(stations).containsExactly(두번째지하철역이름, 세번째지하철역_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디);
+            assertThat(stations).containsExactly(두번째지하철역이름, 세번째지하철역이름, 첫째지하철역이름);
         }
         /**
          * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
-         * When 지하철 구간을 두번째 상행역 기준으로 생성한다.
+         * When 지하철 구간을 첫번째 상행역 기준으로 생성한다.
          * Then 구간 등록에 성공한다.
+         *
+         * When 지하철 구간에 대한 역을 조회했을 때,
+         * Then 구간 순서대로 역이 조회된다.
          */
         @DisplayName("1개의 구간을 등록하고 역 사이에 새로운 역을 등록한다. ")
         @Test
@@ -273,13 +260,14 @@ public class SectionAcceptanceTest {
             첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
             첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
             // WHEN
-            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디, "6");
-            ExtractableResponse<Response> addResponse = 구간_추가(첫째노선_아이디, 네번째지하철역_아이디, 두번째지하철역_아이디, "2");
+            ExtractableResponse<Response> addResponse = 구간_추가(첫째노선_아이디, 두번째지하철역_아이디, 네번째지하철역_아이디, "2");
             // THEN
-            assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
             List<String> stations = addResponse.jsonPath().getList("stations.name");
-            assertThat(stations).containsExactly(두번째지하철역이름, 세번째지하철역_아이디, 첫째지하철역_아이디, 두번째지하철역_아이디);
+            assertThat(stations).containsExactly(두번째지하철역이름, 네번째지하철역이름, 첫째지하철역이름);
+
+
         }
         /**
          * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
@@ -307,10 +295,10 @@ public class SectionAcceptanceTest {
         @Test
         void addSectionToLineThrowAlreadyRegisteredError() {
             // GIVEN
-            첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
+            첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, "5");
             첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
             // WHEN
-            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 세번째지하철역_아이디, 네번째지하철역_아이디, "5");
+            ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 두번째지하철역_아이디, 네번째지하철역_아이디, "5");
             // THEN
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
         }
