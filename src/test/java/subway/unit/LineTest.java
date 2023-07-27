@@ -57,7 +57,7 @@ class LineTest {
 
         // Then
         Sections 신분당선_구간_리스트 = 신분당선.getSections();
-        List<Station> 신분당선_지하철역_리스트 = 신분당선.getSections().getAllStations();
+        List<Station> 신분당선_지하철역_리스트 = 신분당선.getSections().getStations();
 
         assertThat(신분당선_구간_리스트.getLastSection().getDownStation().getName()).isEqualTo("광교역");
         assertThat(신분당선_지하철역_리스트.size()).isEqualTo(3L);
@@ -67,7 +67,7 @@ class LineTest {
     @Test
     void getStations() {
         // When
-        List<Station> 신분당선_지하철역_리스트 = 신분당선.getSections().getAllStations();
+        List<Station> 신분당선_지하철역_리스트 = 신분당선.getSections().getStations();
 
         // Then
         assertThat(신분당선_지하철역_리스트.size()).isEqualTo(2);
@@ -86,6 +86,6 @@ class LineTest {
 
         // Then
         assertThat(신분당선.getSections().getLastSection().getDownStation().getName()).isEqualTo("논현역");
-        assertThat(신분당선.getSections().getAllStations().size()).isEqualTo(2);
+        assertThat(신분당선.getSections().getStations().size()).isEqualTo(2);
     }
 }

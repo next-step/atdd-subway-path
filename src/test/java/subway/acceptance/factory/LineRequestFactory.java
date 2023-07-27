@@ -17,6 +17,14 @@ public class LineRequestFactory {
             .downStationId(4L)
             .distance(30L)
             .build());
+
+        put(우이신설선, LineRequest.builder()
+            .name(우이신설선)
+            .color("bg-yellow-600")
+            .upStationId(1L)
+            .downStationId(2L)
+            .distance(20L)
+            .build());
     }};
 
     public static LineRequest create(String name) {

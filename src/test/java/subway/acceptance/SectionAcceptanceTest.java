@@ -24,11 +24,10 @@ import subway.acceptance.factory.LineRequestFactory;
 import subway.acceptance.utils.RestAssuredClient;
 import subway.dto.LineResponse;
 import subway.dto.SectionRequest;
-import subway.dto.SectionResponse;
 import subway.dto.StationRequest;
-import subway.dto.StationResponse;
 import subway.exception.dto.ErrorResponse;
 import subway.exception.error.SubwayErrorCode;
+import subway.utils.LineAssertions;
 
 
 @DisplayName("구간 관련 기능")
@@ -47,21 +46,21 @@ public class SectionAcceptanceTest {
     void setUp() {
         RestAssured.port = port;
 
-        saveStations();
-        saveLine();
+        지하철역_5개_저장요청();
+        노선_1개_저장요청();
     }
 
     /**
-     * Given: 2개의 지하철역이 등록되어 있다.
-     * And: 1개의 노선이 등록되어 있다.
-     * When: 구간을 생성한다.
+     * Given: 5개의 지하철역이 등록되어 있다.
+     * And: 1개의 노선과 1개의 구간이 등록되어 있다.
+     * When: 구간을 추가한다.
      * Then: 성공(200 OK) 응답을 받는다.
-     * And: 노선 정보를 응답 받는다.
-     * And: 새롭게 추가된 마지막 지하철역(하행종점) 아이디를 비교한다.
+     * And: 노선의 총 구간 길이를 검증한다.
+     * And: 구간의 지하철역들을 검증한다.
      */
     @Test
     @DisplayName("새로운 구간을 등록한다.")
-    void createSection() {
+    void 구간등록요청() {
         // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
@@ -69,96 +68,20 @@ public class SectionAcceptanceTest {
             .downStationId(5L)
             .distance(20L)
             .build();
-        ExtractableResponse<Response> response = RestAssuredClient.requestPost(
-            generateSectionPathWithLineId(등록한노선.getId()),
-            sectionRequest).extract();
+        ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        LineResponse lineResponse = response.as(LineResponse.class);
-        assertThat(lineResponse.getDistance()).isEqualTo(30L);
-
-        List<StationResponse> lineStations = lineResponse.getStations();
-        int stationCount = lineStations.size();
-        assertThat(stationCount).isEqualTo(3);
-        assertThat(lineStations.get(stationCount - 1).getId()).isEqualTo(3L);
+        LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 50L, List.of(2L, 4L, 5L));
     }
 
-    /**
-     * Given: 2개의 지하철역이 등록되어 있다.
-     * And: 1개의 노선이 등록되어 있다.
-     * When: 상행역이 노선의 하행 종점역이 아닌 구간을 등록한다.
-     * Then: 실패(400 Bad Request) 응답을 받는다.
-     * And: '구간의 상행역과 노선의 하행 종점역이 일치하지 않습니다.' 메시지를 응답받는다.
-     */
-    @Test
-    @DisplayName("상행역이 노선의 하행 종점역이 아닌 구간을 등록한다.")
-    void createSectionWithNoMatchesUpStation() {
-        // Given (Fixture)
-        // When
-        SectionRequest sectionRequest = SectionRequest.builder()
-            // 노선은 상행(1) 하행(2) 으로 종점이 등록되어있는 상태이며,
-            // 새로운 구간은 상행(3) 으로 등록하고자 함
-            .upStationId(3L)
-            .downStationId(4L)
-            .distance(20L)
-            .build();
-
-        // Then
-        ExtractableResponse<Response> response = RestAssuredClient.requestPost(
-            generateSectionPathWithLineId(등록한노선.getId()),
-            sectionRequest).extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        ErrorResponse error = response.as(ErrorResponse.class);
-        assertThat(error.getMessage())
-            .isEqualTo(SubwayErrorCode.NO_MATCH_UP_STATION.getMessage());
-
-    }
 
     /**
-     * Given: 2개의 지하철역이 등록되어 있다.
-     * And: 1개의 노선이 등록되어 있다.
-     * When: 하행역이 노선에 등록되어있는 구간을 등록한다.
-     * Then: 실패(400 Bad Request) 응답을 받는다.
-     * And: '구간의 하행역이 노선에 이미 등록되어있습니다.' 메시지를 응답받는다.
-     */
-    @Test
-    @DisplayName("하행역이 노선에 등록되어 있는 구간을 등록한다.")
-    void createSectionWithAlreadyExistDownStation() {
-        // Given (Fixture)
-        // When
-        SectionRequest sectionRequest = SectionRequest.builder()
-            // 노선은 상행(1) 하행(2) 으로 종점이 등록되어있는 상태이며,
-            // 새로운 구간의 하행(1) 으로 등록하고자 함
-            .upStationId(2L)
-            .downStationId(1L)
-            .distance(20L)
-            .build();
-
-        // Then
-        ExtractableResponse<Response> response = RestAssuredClient.requestPost(
-            generateSectionPathWithLineId(등록한노선.getId()),
-            sectionRequest).extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        ErrorResponse error = response.as(ErrorResponse.class);
-        assertThat(error.getMessage())
-            .isEqualTo(SubwayErrorCode.ALREADY_EXIST_DOWN_STATION.getMessage());
-
-    }
-
-    /**
-     * Given: 2개의 지하철역이 등록되어 있다.
+     * Given: 5개의 지하철역이 등록되어 있다.
      * And: 1개의 노선과 1개의 구간이 등록되어 있다.
      * When: 구간을 추가한다.
      * Then: 성공(200 OK) 응답을 받는다.
      * And: 노선의 총 구간 길이를 검증한다.
-     * Then: 노선의 구간을 조회한다.
-     * And: 구간 간의 길이를 검증한다.
-     * And: 노선의 지하철역 개수를 검증한다.
-     * And: 노선 구간의 하행종점역을 검증한다.
+     * And: 구간의 지하철역들을 검증한다.
      */
     @Test
     @DisplayName("새로운 역을 상행종점역과 하행종점역 사이에 등록한다.")
@@ -172,27 +95,10 @@ public class SectionAcceptanceTest {
             .downStationId(3L)
             .distance(7L)
             .build();
-        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+        ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        LineResponse 구간추가응답 = 구간추가HTTP응답.as(LineResponse.class);
-        assertThat(구간추가응답.getDistance()).isEqualTo(10L);
-
-        // And
-        ExtractableResponse<Response> 구간조회HTTP응답 = getSections(구간추가응답.getId());
-
-        // Then
-        assertThat(구간조회HTTP응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<SectionResponse> 구간조회리스트 = 구간조회HTTP응답.body().jsonPath().getList("", SectionResponse.class);
-        assertThat(구간조회리스트.get(0).getUpStationId()).isEqualTo(2L);
-        assertThat(구간조회리스트.get(0).getDownStationId()).isEqualTo(3L);
-        assertThat(구간조회리스트.get(1).getDownStationId()).isEqualTo(5L);
-
-        assertThat(구간조회리스트.get(0).getDistance()).isEqualTo(7L);
-        assertThat(구간조회리스트.get(1).getDistance()).isEqualTo(23L);
+        LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 30L, List.of(2L, 3L, 4L));
     }
 
     /**
@@ -201,14 +107,10 @@ public class SectionAcceptanceTest {
      * When: 구간을 추가한다.
      * Then: 성공(200 OK) 응답을 받는다.
      * And: 노선의 총 구간 길이를 검증한다.
-     * Then: 노선의 구간을 조회한다.
-     * And: 성공(200 OK) 응답을 받는다.
      * And: 구간의 지하철역들을 검증한다.
-     * And: 구간 간의 길이를 검증한다.
-     * And: 노선 구간의 하행종점역을 검증한다.
      */
     @Test
-    @DisplayName("새로운 역을 상행종점역과 하행종점역 사이에 등록한다.")
+    @DisplayName("새로운 역을 상행종점역으로 등록한다.")
     void createFirstSection() {
         // Given (Fixture)
         // When
@@ -217,25 +119,10 @@ public class SectionAcceptanceTest {
             .downStationId(2L)
             .distance(7L)
             .build();
-        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+        ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineResponse 구간추가응답 = 구간추가HTTP응답.as(LineResponse.class);
-        assertThat(구간추가응답.getDistance()).isEqualTo(10L);
-
-        // And
-        ExtractableResponse<Response> 구간조회HTTP응답 = getSections(구간추가응답.getId());
-
-        // Then
-        assertThat(구간조회HTTP응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<SectionResponse> 구간조회리스트 = 구간조회HTTP응답.body().jsonPath().getList("", SectionResponse.class);
-        assertThat(구간조회리스트.get(0).getUpStationId()).isEqualTo(1L);
-        assertThat(구간조회리스트.get(0).getDownStationId()).isEqualTo(2L);
-        assertThat(구간조회리스트.get(1).getDownStationId()).isEqualTo(4L);
-
-        assertThat(구간조회리스트.get(0).getDistance()).isEqualTo(7L);
-        assertThat(구간조회리스트.get(1).getDistance()).isEqualTo(30L);
+        LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 37L, List.of(1L, 2L, 4L));
     }
 
     /**
@@ -247,7 +134,7 @@ public class SectionAcceptanceTest {
      */
     @Test
     @DisplayName("기존 역 사이의 길이보다 큰 새로운 역을 등록한다.")
-    void createSectionLongerDistance() {
+    void 구간등록요청LongerDistance() {
         // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
@@ -255,14 +142,12 @@ public class SectionAcceptanceTest {
             .downStationId(3L)
             .distance(40L)
             .build();
-        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+        ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        ErrorResponse 오류응답 = 구간추가HTTP응답.as(ErrorResponse.class);
-        assertThat(오류응답.getMessage()).isEqualTo("구간을 등록할 수 없습니다.");
+        LineAssertions.구간등록_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
     }
+
 
     /**
      * Given: 5개의 지하철역이 등록되어 있다.
@@ -273,7 +158,7 @@ public class SectionAcceptanceTest {
      */
     @Test
     @DisplayName("기존 역 사이의 길이와 같은 새로운 역을 등록한다.")
-    void createSectionSameDistance() {
+    void 구간등록요청SameDistance() {
         // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
@@ -281,51 +166,99 @@ public class SectionAcceptanceTest {
             .downStationId(3L)
             .distance(30L)
             .build();
-        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+        ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        ErrorResponse 오류응답 = 구간추가HTTP응답.as(ErrorResponse.class);
-        assertThat(오류응답.getMessage()).isEqualTo("구간을 등록할 수 없습니다.");
+        LineAssertions.구간등록_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
     }
 
+
+    /**
+     * Given: 5개의 지하철역이 등록되어 있다.
+     * And: 1개의 노선과 1개의 구간이 등록되어 있다.
+     * When: 기존 구간과 같은 구간을 등록한다.
+     * Then: 실패(400 Bad Request) 응답을 받는다.
+     * And: '구간을 등록할 수 없습니다.' 오류 메시지를 검증한다.
+     */
     @Test
     @DisplayName("상하행종점역 둘 다 이미 등록된 역을 등록한다.")
-    void createSectionAlreadyRegistry() {
-// Given (Fixture)
+    void 구간등록요청AlreadyRegistry() {
+        // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
             .upStationId(2L)
             .downStationId(4L)
             .distance(30L)
             .build();
-        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+        ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        ErrorResponse 오류응답 = 구간추가HTTP응답.as(ErrorResponse.class);
-        assertThat(오류응답.getMessage()).isEqualTo("구간을 등록할 수 없습니다.");
+        LineAssertions.구간등록_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
     }
 
+
+    /**
+     * Scenario: 상하행종점역 둘 중 하나도 포함되어 있지 않은 역을 등록한다.
+     * Given: 5개의 지하철역이 등록되어 있다.
+     * And: 1개의 노선과 2개의 구간이 등록되어 있다.
+     * When: 상하행종점역이 기존 구간 어디에도 포함되어 있지 않은 구간을 등록한다.
+     * Then: 실패(400 Bad Request) 응답을 받는다.
+     * And: '구간을 등록할 수 없습니다.' 오류 메시지를 검증한다.
+     */
     @Test
     @DisplayName("상하행종점역 둘 중 하나도 포함되어 있지 않은 역을 등록한다.")
-    void createSectionNoMatchAnyStation() {
-// Given (Fixture)
+    void 구간등록요청NoMatchAnyStation() {
+        // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
             .upStationId(10L)
             .downStationId(11L)
             .distance(30L)
             .build();
-        ExtractableResponse<Response> 구간추가HTTP응답 = createSection(sectionRequest);
+        ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        assertThat(구간추가HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        LineAssertions.구간등록_실패_검증(구간등록HTTP응답, SubwayErrorCode.STATION_NOT_FOUND);
+    }
 
-        ErrorResponse 오류응답 = 구간추가HTTP응답.as(ErrorResponse.class);
-        assertThat(오류응답.getMessage()).isEqualTo("구간을 등록할 수 없습니다.");
+
+    /**
+     * Given: 5개의 지하철역을 등록한다.
+     * And: 1개의 노선을 등록한다.
+     * And: 3개의 구간을 등록한다.
+     * When: 노선을 조회한다.
+     * Then: 성공(200 OK) 응답을 받는다.
+     * And: 지하철역 아이디 리스트의 순서를 검증한다.
+     */
+    @Test
+    @DisplayName("구간을 조회한다.")
+    public void getSections() {
+        // Given
+        SectionRequest 기존역사이에추가되는구간 = SectionRequest.builder()
+            .upStationId(2L)
+            .downStationId(3L)
+            .distance(7L)
+            .build();
+        SectionRequest 새로운상행종점구간 = SectionRequest.builder()
+            .upStationId(1L)
+            .downStationId(2L)
+            .distance(10L)
+            .build();
+        SectionRequest 새로운하행종점구간 = SectionRequest.builder()
+            .upStationId(4L)
+            .downStationId(5L)
+            .distance(10L)
+            .build();
+        
+        assertThat(구간등록요청(기존역사이에추가되는구간).statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(구간등록요청(새로운상행종점구간).statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(구간등록요청(새로운하행종점구간).statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // When
+        ExtractableResponse<Response> 구간조회HTTP응답 = 구간조회요청();
+
+        // Then
+        LineAssertions.구간등록_성공_검증(구간조회HTTP응답, HttpStatus.OK, 50L, List.of(1L, 2L, 3L, 4L, 5L));
     }
 
 
@@ -347,7 +280,7 @@ public class SectionAcceptanceTest {
             .downStationId(3L)
             .distance(20L)
             .build();
-        createSection(secondSectionRequest);
+        구간등록요청(secondSectionRequest);
 
         // When
         ExtractableResponse<Response> response = RestAssuredClient.requestDelete(
@@ -376,7 +309,7 @@ public class SectionAcceptanceTest {
             .downStationId(3L)
             .distance(20L)
             .build();
-        createSection(secondSectionRequest);
+        구간등록요청(secondSectionRequest);
 
         // Then
         ExtractableResponse<Response> response = RestAssuredClient.requestDelete(
@@ -407,14 +340,14 @@ public class SectionAcceptanceTest {
             .downStationId(3L)
             .distance(20L)
             .build();
-        createSection(secondSectionRequest);
+        구간등록요청(secondSectionRequest);
 
         SectionRequest thirdSectionRequest = SectionRequest.builder()
             .upStationId(3L)
             .downStationId(4L)
             .distance(20L)
             .build();
-        createSection(thirdSectionRequest);
+        구간등록요청(thirdSectionRequest);
 
         // Then
 
@@ -454,15 +387,6 @@ public class SectionAcceptanceTest {
     }
 
 
-    private String generateSectionPathWithLineId(long id) {
-        return new StringBuilder()
-            .append(linePath)
-            .append("/")
-            .append(id)
-            .append("/sections")
-            .toString();
-    }
-
     private String generatePathWithLineIdAndStationId(long lineId, long stationId) {
         return new StringBuilder()
             .append(linePath)
@@ -474,7 +398,7 @@ public class SectionAcceptanceTest {
             .toString();
     }
 
-    private void saveStations() {
+    private void 지하철역_5개_저장요청() {
         String stationPath = "/stations";
         RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(강남역).build());
         RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(광교역).build());
@@ -483,20 +407,20 @@ public class SectionAcceptanceTest {
         RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(신논현역).build());
     }
 
-    private void saveLine() {
-        this.등록한노선 = RestAssuredClient.requestPost("/lines",
+    private void 노선_1개_저장요청() {
+        this.등록한노선 = RestAssuredClient.requestPost(linePath,
             LineRequestFactory.create(신분당선)).extract().as(LineResponse.class);
     }
 
-    private ExtractableResponse<Response> createSection(SectionRequest sectionRequest) {
-        return RestAssuredClient.requestPost(
-                generateSectionPathWithLineId(등록한노선.getId()), sectionRequest)
+    private ExtractableResponse<Response> 구간등록요청(SectionRequest sectionRequest) {
+        return RestAssuredClient.requestPost(linePath + "/" + 등록한노선.getId() + "/sections",
+                sectionRequest)
             .extract();
     }
 
-    private ExtractableResponse<Response> getSections(Long lineId) {
-        return RestAssuredClient.requestGet(
-                generateSectionPathWithLineId(lineId))
+    private ExtractableResponse<Response> 구간조회요청() {
+        return RestAssuredClient.requestGet(linePath + "/" + 등록한노선.getId())
             .extract();
     }
+
 }
