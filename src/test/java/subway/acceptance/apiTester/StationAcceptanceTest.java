@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.http.MediaType;
-import subway.acceptance.utils.AcceptanceTest;
+import subway.acceptance.utils.AbstractAcceptanceTest;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
  * 지하철 관련 api 스펙을 함수로 정의한다.
  */
 @DisplayName("지하철역 관련 기능")
-public abstract class StationAcceptanceTest extends AcceptanceTest {
+public abstract class StationAcceptanceTest extends AbstractAcceptanceTest {
 
     /**
      * 지하철 역 생성 요청을 합니다

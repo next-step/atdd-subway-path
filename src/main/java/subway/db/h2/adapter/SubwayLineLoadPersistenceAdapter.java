@@ -1,7 +1,7 @@
 package subway.db.h2.adapter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import subway.core.common.PersistenceAdapter;
+import subway.db.common.PersistenceAdapter;
 import subway.db.h2.mapper.SubwayLineMapper;
 import subway.db.h2.repository.SubwayLineJpaRepository;
 import subway.db.h2.entity.SubwayLineJpa;

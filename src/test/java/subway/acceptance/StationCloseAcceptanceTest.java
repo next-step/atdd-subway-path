@@ -3,7 +3,7 @@ package subway.acceptance;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import subway.acceptance.apiTester.StationAcceptanceTest;
-import subway.common.annotation.AcceptanceTest;
+import subway.acceptance.utils.AcceptanceTest;
 
 /**
  * 지하철역 제거 인수 테스트를 합니다.

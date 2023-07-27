@@ -1,6 +1,6 @@
 package subway.db.h2.adapter;
 
-import subway.core.common.PersistenceAdapter;
+import subway.db.common.PersistenceAdapter;
 import subway.db.h2.repository.SubwayLineJpaRepository;
 import subway.db.h2.entity.SubwayLineJpa;
 import subway.application.out.SubwayLineUpdatePort;

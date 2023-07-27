@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.springframework.http.MediaType;
 import subway.application.query.response.StationResponse;
 import subway.application.query.response.SubwayLineResponse;
-import subway.common.annotation.ApiTester;
+import subway.acceptance.utils.ApiTester;
 import subway.acceptance.utils.TestParam;
 
 @ApiTester

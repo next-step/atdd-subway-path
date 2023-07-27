@@ -1,18 +1,20 @@
-package subway.core.common;
+package subway.acceptance.utils;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.*;
 
 /**
- * 외부와의 통신을 위한 어댑터를 나타내는 어노테이션
+ * api 테스트를 위한 클래스임을 명시하는 어노테이션
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Profile("test")
 @Component
-public @interface PersistenceAdapter {
+public @interface ApiTester {
 
   @AliasFor(annotation = Component.class)
   String value() default "";

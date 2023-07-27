@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import subway.acceptance.apiTester.SubwayLineAcceptanceTest;
 import subway.acceptance.apiTester.SubwaySectionAddApiTester;
+import subway.acceptance.utils.AcceptanceTest;
 import subway.application.query.response.StationResponse;
 import subway.application.query.response.SubwayLineResponse;
-import subway.common.annotation.AcceptanceTest;
 
 import java.util.List;
 

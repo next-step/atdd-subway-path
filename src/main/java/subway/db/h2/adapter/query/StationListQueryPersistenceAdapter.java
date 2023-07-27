@@ -2,7 +2,7 @@ package subway.db.h2.adapter.query;
 
 import subway.db.h2.mapper.StationResponseMapper;
 import subway.db.h2.entity.StationJpa;
-import subway.core.common.PersistenceAdapter;
+import subway.db.common.PersistenceAdapter;
 import subway.db.h2.repository.StationRepository;
 import subway.application.query.out.StationListQueryPort;
 import subway.application.query.response.StationResponse;
