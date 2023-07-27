@@ -36,7 +36,4 @@ public class SubwayExceptionHandler {
         log.warn("error " + ex.getMessage() + "[BAD_REQUEST]");
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
-
-
-
 }

@@ -3,12 +3,11 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.response.PathResponse;
 import nextstep.subway.applicaion.dto.response.StationResponse;
 import nextstep.subway.domain.Line;
-import nextstep.subway.repository.LineRepository;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.BadRequestPathException;
-import org.jgrapht.GraphPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
+import nextstep.subway.repository.LineRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -36,13 +35,13 @@ public class PathService {
 
         Station startStation = stationService.getStations(source);
         Station endStation = stationService.getStations(target);
-        GraphPath<Station, DefaultWeightedEdge> shortPaths = getShortPaths(startStation, endStation);
+        Path shortPaths = getShortPaths(startStation, endStation);
 
-        List<StationResponse> stationResponses = shortPaths.getVertexList().stream().map(StationResponse::new).toList();
-        return new PathResponse(stationResponses, (int) shortPaths.getWeight());
+        List<StationResponse> stationResponses = shortPaths.getStations().stream().map(StationResponse::new).toList();
+        return new PathResponse(stationResponses, shortPaths.getDistance());
     }
 
-    private GraphPath<Station, DefaultWeightedEdge> getShortPaths(Station source, Station target) {
+    private Path getShortPaths(Station source, Station target) {
         return new PathFinder(lineRepository.findAll().stream()
                 .map(Line::getSections)
                 .flatMap(Collection::stream)

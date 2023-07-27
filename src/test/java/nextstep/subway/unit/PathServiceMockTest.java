@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_등록;
 import static nextstep.subway.unit.fixture.LineFixture.지하철_노선_생성;
+import static nextstep.subway.unit.fixture.SectionFixture.지하철_구간_생성;
 import static nextstep.subway.unit.fixture.StationFixture.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,6 +40,7 @@ public class PathServiceMockTest {
     private PathService pathService;
 
     private static final int DEFAULT_DISTANCE = 10;
+    private static final int SHORT_DISTANCE = 5;
 
     private Line 신분당선, 이호선, 삼호선;
     private Station 교대역, 강남역, 양재역, 남부터미널역;
@@ -54,6 +57,8 @@ public class PathServiceMockTest {
         신분당선 = 지하철_노선_생성("신분당선", "bg-red-600", 강남역, 양재역, DEFAULT_DISTANCE);
         이호선 = 지하철_노선_생성("2호선", "bg-red-600", 강남역, 교대역, DEFAULT_DISTANCE);
         삼호선 = 지하철_노선_생성("3호선", "bg-red-600", 교대역, 남부터미널역, DEFAULT_DISTANCE);
+
+        삼호선.addSections(지하철_구간_생성(삼호선, 남부터미널역, 양재역, SHORT_DISTANCE));
 
         sections = new ArrayList<>();
         sections.addAll(신분당선.getSections());

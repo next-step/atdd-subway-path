@@ -11,10 +11,10 @@ import java.util.Objects;
 
 public class PathFinder {
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-
+    private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
     public PathFinder(List<Section> sections) {
-        init(sections);
+        this.dijkstraShortestPath = init(sections);
     }
 
     private DijkstraShortestPath<Station, DefaultWeightedEdge> init(List<Section> sections) {
@@ -29,12 +29,11 @@ public class PathFinder {
         return new DijkstraShortestPath<>(graph);
     }
 
-    public GraphPath<Station, DefaultWeightedEdge> getShortestPath(Station source, Station target) {
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
+    public Path getShortestPath(Station source, Station target) {
         GraphPath<Station, DefaultWeightedEdge> shortPaths = dijkstraShortestPath.getPath(source, target);
         if (Objects.isNull(shortPaths)) {
             throw new BadRequestPathException("출발역과 도착역 사이의 경로가 존재하지 않습니다.");
         }
-        return shortPaths;
+        return new Path(shortPaths.getVertexList(), (int) shortPaths.getWeight());
     }
 }

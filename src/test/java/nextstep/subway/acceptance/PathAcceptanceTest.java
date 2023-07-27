@@ -6,14 +6,15 @@ import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.response.LineResponse;
 import nextstep.subway.applicaion.dto.response.PathResponse;
 import nextstep.subway.applicaion.dto.response.StationResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선_생성;
+import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_등록;
 import static nextstep.subway.acceptance.steps.StationSteps.지하철역_생성_응답;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 조회 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -21,17 +22,19 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private static final String BASE_URL = "/paths";
 
     private static final int DEFAULT_DISTANCE = 10;
+    private static final int SHORT_DISTANCE = 5;
 
     private LineResponse 신분당선, 이호선, 삼호선;
     private StationResponse 교대역, 강남역, 양재역, 남부터미널역;
 
 
-    /**
-     * 교대역    --- *2호선* ---   강남역
-     * |                        |
-     * *3호선*                   *신분당선*
-     * |                        |
-     * 남부터미널역  --- *3호선* ---   양재
+    /**                     10
+     *         교대역    --- *2호선* ---   강남역
+     *          |                        |
+     *   10   *3호선*                   *신분당선*  10
+     *          |                        |
+     *        남부터미널역  --- *3호선* ---   양재
+     *                        5
      */
 
     @BeforeEach
@@ -50,6 +53,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
         삼호선 = 지하철_노선_생성("3호선", "bg-orange-600", 교대역.getId(), 남부터미널역.getId(), DEFAULT_DISTANCE)
                 .jsonPath()
                 .getObject("", LineResponse.class);
+
+        지하철_노선_구간_등록(삼호선.getId(),남부터미널역.getId(),양재역.getId(),SHORT_DISTANCE);
 
 
     }
@@ -71,11 +76,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         PathResponse path = response.jsonPath().getObject("", PathResponse.class);
 
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         int stationCount = path.getStations().size();
-        Assertions.assertThat(stationCount).isEqualTo(3);
-        Assertions.assertThat(path.getDistance()).isEqualTo(DEFAULT_DISTANCE * (stationCount - 1));
+        assertThat(stationCount).isEqualTo(3);
+        assertThat(path.getDistance()).isEqualTo(DEFAULT_DISTANCE+SHORT_DISTANCE);
     }
 
     /**
@@ -92,7 +97,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -117,7 +122,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 
@@ -135,7 +140,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }
