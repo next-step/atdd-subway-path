@@ -43,7 +43,7 @@ public class LineServiceTest {
         lineService.addSection(lineResponse.getId(), SectionRequest.builder().distance(10L).upStationId(2L).downStationId(3L).build());
         // then
         Line line = lineRepository.findById(lineResponse.getId()).orElseThrow(()-> new IllegalArgumentException("테스트에 노선 찾기 실패"));
-        assertThat(line.getSections().getStations().stream().map(station -> station.getName()).collect(
+        assertThat(line.getStations().stream().map(station -> station.getName()).collect(
             Collectors.toList())).containsExactly("첫번째역","두번째역","세번째역");
         // 여기 줄줄이 delimiter law 어겼음
     }
