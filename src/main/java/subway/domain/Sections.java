@@ -27,19 +27,23 @@ public class Sections {
     }
 
     public void add(Section section) {
-        Section connectedSection = getConnectedSection(section);
-        Section dividedSection = getDividedSection(connectedSection, section);
+        processIfInsertedBetween(section);
+        sections.add(section);
+    }
 
-        if (section.isInsertedBetween(connectedSection)) {
-            if (section.hasLoggerDistance(connectedSection)) {
+    private void processIfInsertedBetween(Section newSection) {
+        Section connectedSection = getConnectedSection(newSection);
+
+        if (newSection.isInsertedBetween(connectedSection)) {
+            if (newSection.hasLoggerDistance(connectedSection)) {
                 throw new CannotCreateSectionException();
             }
+
+            Section dividedSection = getDividedSection(connectedSection, newSection);
 
             sections.add(dividedSection);
             sections.remove(connectedSection);
         }
-
-        sections.add(section);
     }
 
     public Section getConnectedSection(Section newSection) {
@@ -64,20 +68,11 @@ public class Sections {
     public Section getDividedSection(Section connectedSection, Section newSection) {
         Line line = newSection.getLine();
 
-        if (newSection.isInsertedBetween(connectedSection)) {
-            return Section.builder()
-                .line(line)
-                .upStation(newSection.getDownStation())
-                .downStation(connectedSection.getDownStation())
-                .distance(connectedSection.getDistance() - newSection.getDistance())
-                .build();
-        }
-
         return Section.builder()
             .line(line)
-            .upStation(connectedSection.getUpStation())
-            .downStation(newSection.getUpStation())
-            .distance(newSection.getDistance())
+            .upStation(newSection.getDownStation())
+            .downStation(connectedSection.getDownStation())
+            .distance(connectedSection.getDistance() - newSection.getDistance())
             .build();
     }
 
