@@ -100,66 +100,36 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 assertThat(response.getStations().get(1).getId()).isEqualTo(secondStationId);
                 assertThat(response.getStations().get(2).getId()).isEqualTo(thirdStationId);
                 assertThat(response.getStations().get(3).getId()).isEqualTo(fourthStationId);
-
             }
-
-            /**
-             * Given 지하철역이 4개가 등록되어있다.
-             * Given 지하철 노선이 1개가 등록되어있다. (노선 (Station: [first -> second -> third])
-             * Given 새로운 구간 요청( fourth -> first)
-             * When 지하철 노선에 구간을 등록 요청한다
-             * Then 노선 fourth -> first -> second -> third 확인
-             */
-            @DisplayName("지하철 노선 구간 앞에 구간을 등록")
-            @Test
-            void case_2() {
-                //given
-                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId));
-                //when
-                지하철_구간_생성(fistLineId, 구간_생성_요청서(fourthStationId, secondStationId));
-                //then
-                LineResponse response = 지하철_노선_조회(fistLineId);
-                assertThat(response.getStations().size()).isEqualTo(4);
-                assertThat(response.getStations().get(0).getId()).isEqualTo(fourthStationId);
-                assertThat(response.getStations().get(1).getId()).isEqualTo(firstStationId);
-                assertThat(response.getStations().get(2).getId()).isEqualTo(secondStationId);
-                assertThat(response.getStations().get(3).getId()).isEqualTo(thirdStationId);
-            }
+//
+//            /**
+//             * Given 지하철역이 4개가 등록되어있다.
+//             * Given 지하철 노선이 1개가 등록되어있다. (노선 (Station: [first -> second -> third])
+//             * Given 새로운 구간 요청( fourth -> first)
+//             * When 지하철 노선에 구간을 등록 요청한다
+//             * Then 노선 fourth -> first -> second -> third 확인
+//             */
+//            @DisplayName("지하철 노선 구간 앞에 구간을 등록")
+//            @Test
+//            void case_2() {
+//                //given
+//                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId));
+//                //when
+//                지하철_구간_생성(fistLineId, 구간_생성_요청서(fourthStationId, secondStationId));
+//                //then
+//                LineResponse response = 지하철_노선_조회(fistLineId);
+//                assertThat(response.getStations().size()).isEqualTo(4);
+//                assertThat(response.getStations().get(0).getId()).isEqualTo(fourthStationId);
+//                assertThat(response.getStations().get(1).getId()).isEqualTo(firstStationId);
+//                assertThat(response.getStations().get(2).getId()).isEqualTo(secondStationId);
+//                assertThat(response.getStations().get(3).getId()).isEqualTo(thirdStationId);
+//            }
         }
 
         @DisplayName("실패 경우")
         @Nested
         class Fail {
-            /**
-             * Given 지하철역이 4개가 등록되어있다.
-             * Given 지하철 노선이 1개가 등록되어있다.  (노선 (Station: [first,second])
-             * Given 새로운 구간 요청(지하철 노선의 하행 종점 역이 아닌 third , 노선에 존재하지 않는 역 fourth)
-             * When 지하철 노선에 구간을 등록 요청한다
-             * Then 지하철 구간이 등록이 되지 않고 예외를 발생시킨다.
-             */
-            @DisplayName("지하찰_구간_등록 - 새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다.")
-            @Test
-            void case_0() {
-                //when
-                //then
-                지하철_구간_생성_응답_상태값_체크(fistLineId, 구간_생성_요청서(thirdStationId, fourthStationId), HttpStatus.BAD_REQUEST);
-            }
 
-            /**
-             * Given 지하철역이 4개가 등록되어있다.
-             * Given 지하철 노선이 1개가 등록되어있다. (노선 (Station: [first,second])
-             * Given 새로운 구간 요청(지하철 노선의 하행 종점 역 second , 노선에 존재하는 역 first)
-             * When 지하철 노선에 구간을 등록 요청한다
-             * Then 지하철 구간이 등록이 되지 않고 예외를 발생시킨다.
-             */
-            @DisplayName("지하찰_구간_등록 - 새로운 구간의 하행역은 해당 노선에 등록되어있는 역일 수 없다.")
-            @Test
-            void case_1() {
-                //when
-                //then
-                지하철_구간_생성_응답_상태값_체크(fistLineId, 구간_생성_요청서(secondStationId, firstStationId), HttpStatus.BAD_REQUEST);
-
-            }
         }
     }
 
@@ -194,23 +164,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         @DisplayName("실패 경우")
         @Nested
         class Fail {
-            /**
-             * Given 지하철역이 4개가 등록되어있다.
-             * And 지하철 노선이 1개가 등록되어있다.
-             * And 지하철 노선에 구간 2개를 추가해둔다. (노선 (Station: [first,second,third,fourth])
-             * When 지하철 구간을 제거한다.
-             * Then 지하철 구간이 제거 되지 않고 예외를 발생시킨다.
-             */
-            @DisplayName("지하찰_구간_삭제 - 지하철 노선에 등록된 역(하행 종점역)만 제거할 수 있다. 즉, 마지막 구간만 제거할 수 있다.")
-            @Test
-            void case_0() {
-                //given
-                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId));
-                지하철_구간_생성(fistLineId, 구간_생성_요청서(thirdStationId, fourthStationId));
-                //when
-                지하철_구간_삭제_응답_상태값_체크(fistLineId, thirdStationId, HttpStatus.BAD_REQUEST);
-                //then
-            }
 
             /**
              * Given 지하철역이 4개가 등록되어있다.

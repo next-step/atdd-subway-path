@@ -8,8 +8,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 단위테스트")
 public class LineTest {
@@ -21,30 +25,44 @@ public class LineTest {
 
     @BeforeEach
     void setUp() {
-        노원역 = new Station("노원역");
-        창동역 = new Station("창동역");
-        총신대입구역 = new Station("총신대입구역");
-        사당역 = new Station("사당역");
+        노원역 = getStation(1L, "노원역");
+        창동역 = getStation(2L, "창동역");
+        총신대입구역 = getStation(3L, "총신대입구역");
+        사당역 = getStation(4L, "사당역");
         line = Line.of("4호선", "light-blue", 노원역, 창동역, 3);
     }
 
     @DisplayName("구간 추가")
     @Test
     void addSection() {
+        //given
         //when
-        line.addSection(LineSection.of(line, 창동역, 사당역, 3));
+        line.addSection(LineSection.of(line, 창동역, 사당역, 10));
         //then
-        Assertions.assertEquals(사당역, line.getSections().getEndStation());
+        List<Station> stations = line.getStations();
+        assertThat(stations.size()).isEqualTo(3);
+        assertThat(stations).containsExactly(노원역, 창동역, 사당역);
     }
 
-    @DisplayName("구간 추가 - 예외 발생")
+    /**
+     * 노원역 -> 창동역 -> 사당역
+     * 창동역 -> 총신대입구역 추가
+     */
+    @DisplayName("구간 추가 - 중간에 추가(구간 상행역과 추가할 상행역이 같은 경우)")
     @Test
-    void addSection_exception() {
+    void addSectionInMiddle() {
+        //given
+        line.addSection(LineSection.of(line, 창동역, 사당역, 10));
         //when
+        line.addSection(LineSection.of(line, 창동역, 총신대입구역, 3));
         //then
-        Assertions.assertThrows(BadRequestException.class,
-                () -> line.addSection(LineSection.of(line, 총신대입구역, 사당역, 3)));
+        List<Station> stations = line.getStations();
+        assertAll(
+                () -> assertThat(stations.size()).isEqualTo(4),
+                () -> assertThat(stations).containsExactly(노원역, 창동역, 총신대입구역, 사당역),
+                () -> assertThat(line.getSections().getLastSection().getDistance()).isEqualTo(7));
     }
+
     @DisplayName("구간 조회")
     @Test
     void getStations() {
@@ -65,14 +83,11 @@ public class LineTest {
         //then
         assertThat(line.getStations()).containsExactly(노원역, 창동역);
     }
-    @DisplayName("구간 제거 - 예외")
-    @Test
-    void removeSection_exception() {
-        //given
-        line.addSection(LineSection.of(line, 창동역, 사당역, 3));
-        //when
-        //then
-        Assertions.assertThrows(BadRequestException.class,
-                () -> line.removeSection(창동역));
+
+
+    private Station getStation(Long id, String name) {
+        Station station = new Station(name);
+        ReflectionTestUtils.setField(station, "id", id);
+        return station;
     }
 }

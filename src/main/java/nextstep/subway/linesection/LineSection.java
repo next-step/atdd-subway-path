@@ -36,4 +36,7 @@ public class LineSection {
         return downStation;
     }
 
+    public Integer getDistance() {
+        return distance;
+    }
 }

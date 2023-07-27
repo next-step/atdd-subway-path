@@ -32,24 +32,24 @@ public class LineSections {
         this.sections.add(section);
     }
 
-    public void remove(Station toDeleteStation) {
-        validateRemovableSection(toDeleteStation);
-        this.sections.remove(getLastLineSection());
+    public void remove(LineSection section) {
+        validateRemovableSection();
+        this.sections.remove(section);
     }
 
-    private void validateRemovableSection(Station toDeleteStation) {
-        if (!getEndStation().equals(toDeleteStation))
-            throw new BadRequestException("the section cannot be removed, because request station is not last station in the line.");
+    public void remove(Station deleteStation) {
+        validateRemovableSection();
+        this.sections.remove(getLastSection());
+    }
+
+    private void validateRemovableSection() {
         if (this.sections.size() <= MINIMUM_SIZE) {
             throw new BadRequestException("the section cannot be removed because of minimum size.");
         }
     }
 
     private void validateAddableSection(LineSection section) {
-        if (!getEndStation().equals(section.getUpStation()))
-            throw new BadRequestException(String.format("line's endStation must be equal to lineSectionRequest's upStation."));
-
-        if (getStations().contains(section.getDownStation()))
+        if (sections.contains(section))
             throw new BadRequestException(String.format("line's already has the station. stationId > %d", section.getDownStation().getId()));
     }
 
@@ -61,18 +61,37 @@ public class LineSections {
                 .collect(Collectors.toList());
     }
 
-    public LineSection getLastLineSection() {
+    public LineSection getLastSection() {
         checkSectionsEmpty();
         return this.sections.get(this.sections.size() - 1);
     }
 
-    public Station getEndStation() {
-        return getLastLineSection().getDownStation();
-    }
-
-
     private void checkSectionsEmpty() {
         if (CollectionUtils.isEmpty(sections))
             throw new BadRequestException("the line doesnt have any section.");
+    }
+
+    public boolean isMiddle(LineSection lineSection) {
+         if(getSections().isEmpty())
+             return false;
+         if(getFirstStation().equals(lineSection.getDownStation()))
+             return false;
+        if (getLastStation().equals(lineSection.getUpStation()))
+            return false;
+        return true;
+    }
+
+    private Station getFirstStation() {
+        checkSectionsEmpty();
+        return getSections().get(0).getUpStation();
+    }
+
+    private Station getLastStation() {
+        checkSectionsEmpty();
+        return getLastSection().getDownStation();
+    }
+
+    public List<LineSection> getSections() {
+        return sections;
     }
 }
