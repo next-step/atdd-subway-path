@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,10 +13,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.SectionDuplicationStationException;
+import nextstep.subway.exception.SectionLastRemoveException;
 import nextstep.subway.exception.SectionLongDistanceException;
 import nextstep.subway.exception.SectionNotIncludedException;
-import nextstep.subway.exception.SectionRemoveLastStationException;
-import nextstep.subway.exception.SectionRemoveSizeException;
 
 @Embeddable
 public class Sections {
@@ -83,26 +83,70 @@ public class Sections {
 		return originalDistance - newDistance;
 	}
 
-	private Section getLastSection() {
-		return sections.get(sections.size() - 1);
+	public void removeSection(Long stationId) {
+		validateRemoveSection(stationId);
+		Section upSection = findUpSectionByStationId(stationId);
+		Section downSection = findDownSectionByStationId(stationId);
+		removeSectionWhenSectionNotEmpty(upSection, downSection);
+		addSectionWhenUpSectionAndDownSectionNotEmpty(upSection, downSection);
 	}
 
-	public void removeSection(Long stationId) {
-		validateSectionSize();
-		validateLastSection(stationId);
-		sections.remove(getLastSection());
+	private void validateRemoveSection(Long stationId) {
+		if (sections.size() < 2) {
+			throw new SectionLastRemoveException();
+		}
+
+		boolean notExistStationId = getStations().stream()
+			.map(Station::getId)
+			.noneMatch(id -> id.equals(stationId));
+
+		if (notExistStationId) {
+			throw new SectionNotIncludedException();
+		}
+
 	}
 
 	private void validateSectionSize() {
 		if (sections.size() < 2) {
-			throw new SectionRemoveSizeException();
+			throw new SectionLastRemoveException();
 		}
 	}
 
-	private void validateLastSection(Long stationId) {
-		if (!getLastSection().isSameDownStation(stationId)) {
-			throw new SectionRemoveLastStationException();
+	private void removeSectionWhenSectionNotEmpty(Section upSection, Section downSection) {
+		if (Objects.nonNull(upSection)) {
+			sections.remove(upSection);
 		}
+
+		if (Objects.nonNull(downSection)) {
+			sections.remove(downSection);
+		}
+	}
+
+	private void addSectionWhenUpSectionAndDownSectionNotEmpty(Section upSection, Section downSection) {
+		if (upSection == null || downSection == null) {
+			return;
+		}
+
+		sections.add(new Section(
+			upSection.getLine(),
+			downSection.getUpStation(),
+			upSection.getDownStation(),
+			upSection.getDistance() + downSection.getDistance()
+		));
+	}
+
+	private Section findUpSectionByStationId(Long stationId) {
+		return sections.stream()
+			.filter(s -> s.isSameUpStation(stationId))
+			.findAny()
+			.orElse(null);
+	}
+
+	private Section findDownSectionByStationId(Long stationId) {
+		return sections.stream()
+			.filter(s -> s.isSameDownStation(stationId))
+			.findAny()
+			.orElse(null);
 	}
 
 	public List<Station> getStations() {
