@@ -1,12 +1,12 @@
 package nextstep.subway.section;
 
 import static common.Constants.강남역;
-import static common.Constants.또다른지하철역;
+import static common.Constants.양재역;
 import static common.Constants.빨강색600;
-import static common.Constants.새로운지하철역;
+import static common.Constants.광교역;
 import static common.Constants.신논현역;
 import static common.Constants.신분당선;
-import static common.Constants.지하철역;
+import static common.Constants.판교역;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_생성_요청;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_조회_요청;
 import static nextstep.subway.section.SectionTestStepDefinition.*;
@@ -21,7 +21,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import nextstep.subway.line.LineResponse;
-import nextstep.subway.station.Station;
 
 @DisplayName("지하철 구간 관련 기능 인수 테스트")
 @AcceptanceTest
@@ -34,17 +33,17 @@ public class SectionAcceptanceTest {
     @Test
     void createSection_pass_insert() {
         // given
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 지하철역응답 = 지하철_역_생성_요청(판교역);
+        var 새로운지하철역응답 = 지하철_역_생성_요청(광교역);
         var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
+        var 또다른지하철역응답 = 지하철_역_생성_요청(양재역);
 
         // when
         지하철_구간_생성_요청(신분당선응답.getId(), 지하철역응답.getId(), 또다른지하철역응답.getId(), 5);
 
         // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
-        assertThat(getStationNames(노선조회응답)).containsExactly(지하철역, 또다른지하철역, 새로운지하철역);
+        assertThat(getStationNames(노선조회응답)).containsExactly(판교역, 양재역, 광교역);
     }
 
     // Given 지하철 노선을 생성하고
@@ -54,17 +53,17 @@ public class SectionAcceptanceTest {
     @Test
     void createSection_pass_addHead() {
         // given
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 지하철역응답 = 지하철_역_생성_요청(판교역);
+        var 새로운지하철역응답 = 지하철_역_생성_요청(광교역);
         var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
+        var 또다른지하철역응답 = 지하철_역_생성_요청(양재역);
 
         // when
         지하철_구간_생성_요청(신분당선응답.getId(), 또다른지하철역응답.getId(), 지하철역응답.getId(), 5);
 
         // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
-        assertThat(getStationNames(노선조회응답)).containsExactly(또다른지하철역, 지하철역, 새로운지하철역);
+        assertThat(getStationNames(노선조회응답)).containsExactly(양재역, 판교역, 광교역);
     }
 
     // Given 지하철 노선을 생성하고
@@ -74,17 +73,17 @@ public class SectionAcceptanceTest {
     @Test
     void createSection_pass_addTail() {
         // given
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 지하철역응답 = 지하철_역_생성_요청(판교역);
+        var 새로운지하철역응답 = 지하철_역_생성_요청(광교역);
         var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
+        var 또다른지하철역응답 = 지하철_역_생성_요청(양재역);
 
         // when
         지하철_구간_생성_요청(신분당선응답.getId(), 새로운지하철역응답.getId(), 또다른지하철역응답.getId(), 5);
 
         // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
-        assertThat(getStationNames(노선조회응답)).containsExactly(지하철역, 새로운지하철역, 또다른지하철역);
+        assertThat(getStationNames(노선조회응답)).containsExactly(판교역, 광교역, 양재역);
     }
 
     // Given 지하철 노선을 생성하고
@@ -95,7 +94,7 @@ public class SectionAcceptanceTest {
     void createSection_fail_sectionDistanceIsSame() {
         // given
         var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 지하철역응답 = 지하철_역_생성_요청(판교역);
         var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
         var 신논현역응답 = 지하철_역_생성_요청(신논현역);
 
@@ -115,7 +114,7 @@ public class SectionAcceptanceTest {
     void createSection_fail_sectionAlreadyExist() {
         // given
         var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 지하철역응답 = 지하철_역_생성_요청(판교역);
         var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
 
         // when
@@ -132,10 +131,10 @@ public class SectionAcceptanceTest {
     @Test
     void createSection_fail_sectionNoIntersection() {
         var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
+        var 지하철역응답 = 지하철_역_생성_요청(판교역);
         var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
 
-        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 신논현역, 또다른지하철역, 10);
+        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 신논현역, 양재역, 10);
 
         assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -147,17 +146,20 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection() {
         // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
-        var stationResponse = 지하철_역_생성_요청(또다른지하철역);
-        지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
-            stationResponse.getId(), 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역, 광교역, 10);
+        var stationResponse = 지하철_역_생성_요청(양재역);
+        지하철_구간_생성_요청(
+            lineCreateResponse.getId(),
+            getDownEndStationId(lineCreateResponse),
+            stationResponse.getId(),
+            10);
 
         // when
         지하철_구간_제거_요청(lineCreateResponse.getId(), stationResponse.getId());
 
         // then
         var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
-        assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역);
+        assertThat(getStationNames(lineResponse)).containsExactly(판교역, 광교역);
     }
 
     // Given 지하철 노선에 구간을 생성하고
@@ -167,10 +169,10 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection_deleteUpEnd() {
         // given
-        var 지하철역_응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역_응답 = 지하철_역_생성_요청(새로운지하철역);
+        var 지하철역_응답 = 지하철_역_생성_요청(판교역);
+        var 새로운지하철역_응답 = 지하철_역_생성_요청(광교역);
         var 신분당선_응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역_응답.getId(), 새로운지하철역_응답.getId(), 10);
-        var 또다른지하철역_응답 = 지하철_역_생성_요청(또다른지하철역);
+        var 또다른지하철역_응답 = 지하철_역_생성_요청(양재역);
         지하철_구간_생성_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId(), 또다른지하철역_응답.getId(), 10);
 
         // when
@@ -178,7 +180,7 @@ public class SectionAcceptanceTest {
 
         // then
         var 노선_조회 = 지하철_노선_조회_요청(신분당선_응답.getId());
-        assertThat(getStationNames(노선_조회)).containsExactly(새로운지하철역, 또다른지하철역);
+        assertThat(getStationNames(노선_조회)).containsExactly(광교역, 양재역);
     }
 
     // Given 지하철 노선에 구간을 생성하고
@@ -187,17 +189,20 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 구간의 중간 역에 대해 제거한다")
     @Test
     void deleteSection_deleteMiddle() {
-        var 지하철역_응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역_응답 = 지하철_역_생성_요청(새로운지하철역);
-        var 신분당선_응답 = 지하철_노선_생성_요청(신분당선, 빨강색600,
-            지하철역_응답.getId(), 새로운지하철역_응답.getId(), 10);
-        var 또다른지하철역_응답 = 지하철_역_생성_요청(또다른지하철역);
+        var 지하철역_응답 = 지하철_역_생성_요청(판교역);
+        var 새로운지하철역_응답 = 지하철_역_생성_요청(광교역);
+        var 신분당선_응답 = 지하철_노선_생성_요청(신분당선,
+            빨강색600,
+            지하철역_응답.getId(),
+            새로운지하철역_응답.getId(),
+            10);
+        var 또다른지하철역_응답 = 지하철_역_생성_요청(양재역);
         지하철_구간_생성_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId(), 또다른지하철역_응답.getId(), 10);
 
         지하철_구간_제거_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId());
 
         var 노선_조회_응답 = 지하철_노선_조회_요청(신분당선_응답.getId());
-        assertThat(getStationNames(노선_조회_응답)).containsExactly(지하철역, 또다른지하철역);
+        assertThat(getStationNames(노선_조회_응답)).containsExactly(판교역, 양재역);
     }
 
     // Given 지하철 노선을 생성하고
@@ -207,7 +212,7 @@ public class SectionAcceptanceTest {
     @Test
     void deleteSection_fail_sectionOnlyExistsUpAndDownEndStationInLine() {
         // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
+        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역, 광교역, 10);
 
         // when
         var statusCode = 지하철_구간_제거_요청_상태_코드_반환(lineCreateResponse.getId(),
@@ -216,7 +221,7 @@ public class SectionAcceptanceTest {
         // then
         var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
         assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역);
+        assertThat(getStationNames(lineResponse)).containsExactly(판교역, 광교역);
     }
 
     private Stream<String> getStationNames(LineResponse response) {
