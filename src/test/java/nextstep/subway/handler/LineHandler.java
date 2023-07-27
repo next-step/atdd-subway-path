@@ -3,6 +3,8 @@ package nextstep.subway.handler;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -27,11 +29,23 @@ public class LineHandler {
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(Map<String, String> params) {
         return RestAssured
                 .given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .body(params)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post("/lines")
-                .then().log().all().extract();
+                    .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_생성_요청(LineRequest request) {
+        return RestAssured
+                    .given().log().all()
+                    .body(request)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                    .post("/lines")
+                .then().log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
@@ -46,6 +60,7 @@ public class LineHandler {
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
         return RestAssured
                 .given().log().all()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                     .get("/lines/{id}", id)
                 .then().log().all()
@@ -60,11 +75,11 @@ public class LineHandler {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_정보_수정_요청(ExtractableResponse<Response> createResponse
-            , Map<String, String> params) {
+    public static ExtractableResponse<Response> 지하철_노선_정보_수정_요청(ExtractableResponse<Response> createResponse,
+                                                                LineUpdateRequest request) {
         return RestAssured
-                    .given().log().all()
-                .body(params)
+                .given().log().all()
+                    .body(request)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                     .put(createResponse.header("location"))

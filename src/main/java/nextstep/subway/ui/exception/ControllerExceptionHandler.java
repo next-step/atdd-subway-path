@@ -18,7 +18,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity MethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.info("[ControllerExceptionHandler] An MethodArgumentNotValidException occurred");
         e.printStackTrace();
 
@@ -27,5 +27,15 @@ public class ControllerExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(result.getFieldError().getDefaultMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handlerIllegalArgumentException(IllegalArgumentException e) {
+        log.info("[ControllerExceptionHandler] An MethodArgumentNotValidException occurred");
+        e.printStackTrace();
+
+        return ResponseEntity
+                .badRequest()
+                .body(e.getMessage());
     }
 }

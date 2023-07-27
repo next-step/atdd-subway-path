@@ -29,26 +29,30 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
+    @DisplayName("지하철 노선에 새로운 역 추가.")
     @Test
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Station upStation = new Station("강남역");
         Station downStation = new Station("양재역");
+        Station newStation = new Station("판교역");
         stationRepository.save(upStation);
         stationRepository.save(downStation);
+        stationRepository.save(newStation);
 
-        Line line = new Line("2호선", "green");
+        Line line = new Line("신분당선", "green");
         lineRepository.save(line);
+        line.addSection(new Section(line, upStation, downStation, 7));
 
         // when
         // lineService.addSection 호출
-        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), 7);
+        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), newStation.getId(), 3);
         lineService.addSection(line.getId(), sectionRequest);
 
         // then
         // line.getSections 메서드를 통해 검증
-        Assertions.assertThat(line.getSections()).hasSize(1);
+        Assertions.assertThat(line.getSections()).hasSize(2);
     }
 
     @DisplayName("지하철 역 저장 순서 확인")

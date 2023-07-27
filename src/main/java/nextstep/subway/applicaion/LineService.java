@@ -1,10 +1,7 @@
 package nextstep.subway.applicaion;
 
 import lombok.extern.slf4j.Slf4j;
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.SectionRequest;
-import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.applicaion.exception.domain.LineException;
 import nextstep.subway.applicaion.exception.domain.SectionException;
 import nextstep.subway.domain.Line;
@@ -51,7 +48,7 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineUpdateRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(LineException::new);
         line.setName(lineRequest.getName());
         line.setColor(lineRequest.getColor());
