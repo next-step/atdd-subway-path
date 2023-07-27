@@ -31,10 +31,6 @@ public class PathService {
     }
 
     public PathResponse searchPath(Long source, Long target) {
-        if (Objects.equals(source, target)) {
-            throw new CustomException(ErrorCode.INVALID_PARAM);
-        }
-
         Station sourceStation = stationService.getStation(source);
         Station targetStation = stationService.getStation(target);
 

@@ -1,6 +1,7 @@
 package nextstep.subway.path.domain;
 
 import java.util.List;
+import java.util.Objects;
 import nextstep.subway.common.exception.CustomException;
 import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.section.domain.Section;
@@ -24,6 +25,7 @@ public class PathGraph {
   }
 
   public List<Station> getShortestPath(Station source, Station target) {
+    checkEqualStation(source, target);
     GraphPath<Station, DefaultWeightedEdge> sourceTargetPath = dijkstraShortestPath.getPath(source, target);
     if (sourceTargetPath == null) {
       throw new CustomException(ErrorCode.STATIONS_ARE_NOT_CONNECTED);
@@ -32,10 +34,17 @@ public class PathGraph {
   }
 
   public Double getDistance(Station source, Station target) {
+    checkEqualStation(source, target);
     GraphPath<Station, DefaultWeightedEdge> sourceTargetPath = dijkstraShortestPath.getPath(source, target);
     if (sourceTargetPath == null) {
       throw new CustomException(ErrorCode.STATIONS_ARE_NOT_CONNECTED);
     }
     return sourceTargetPath.getWeight();
+  }
+
+  private void checkEqualStation(Station source, Station target) {
+    if (Objects.equals(source, target)) {
+      throw new CustomException(ErrorCode.INVALID_PARAM);
+    }
   }
 }
