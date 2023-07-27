@@ -200,7 +200,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 	@Test
 	void 구간을_삭제할_때_마지막_구간이면_요청이_실패된다() {
 		// when
-		var response = 지하철_노선의_구간_삭제_요청(신분당선.getId(), 신논현역.getId());
+		var response = 지하철_노선의_구간_삭제_요청(신분당선.getId(), 논현역.getId());
 
 		// then
 		응답_상태코드_검증(response, HttpStatus.BAD_REQUEST);
