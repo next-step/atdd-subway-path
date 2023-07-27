@@ -27,7 +27,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // when
         Long 강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green", 강남역, 정자역);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청("2호선", "green", 강남역, 정자역, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -47,11 +47,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         Long 강남역 = 지하철역_생성_요청("강남역").jsonPath().get("id");
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().get("id");
-        지하철_노선_생성_요청("2호선", "green", 강남역, 정자역);
+        지하철_노선_생성_요청("2호선", "green", 강남역, 정자역, 10);
 
         Long 그린역 = 지하철역_생성_요청("그린역").jsonPath().get("id");
         Long 슈퍼그린역 = 지하철역_생성_요청("슈퍼그린역").jsonPath().get("id");
-        지하철_노선_생성_요청("3호선", "orange", 그린역, 슈퍼그린역);
+        지하철_노선_생성_요청("3호선", "orange", 그린역, 슈퍼그린역, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
@@ -73,7 +73,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         Long 그린역 = 지하철역_생성_요청("그린역").jsonPath().getLong("id");
         Long 슈퍼그린역 = 지하철역_생성_요청("슈퍼그린역").jsonPath().getLong("id");
 
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역, 10);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
@@ -94,7 +94,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         Long 그린역 = 지하철역_생성_요청("그린역").jsonPath().getLong("id");
         Long 슈퍼그린역 = 지하철역_생성_요청("슈퍼그린역").jsonPath().getLong("id");
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역, 10);
 
         // when
         Map<String, String> params = new HashMap<>();
@@ -123,7 +123,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         Long 그린역 = 지하철역_생성_요청("그린역").jsonPath().getLong("id");
         Long 슈퍼그린역 = 지하철역_생성_요청("슈퍼그린역").jsonPath().getLong("id");
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("2호선", "green", 그린역, 슈퍼그린역, 10);
 
         // when
         ExtractableResponse<Response> response = RestAssured
