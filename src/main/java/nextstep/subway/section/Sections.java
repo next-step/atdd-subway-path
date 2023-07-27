@@ -28,11 +28,11 @@ public class Sections {
         this.sections = new ArrayList<>(sections);
     }
 
-    public void updateLine(Line line) {
+    public void updateLine(final Line line) {
         this.sections.get(0).updateLine(line);
     }
 
-    public void add(Section section) {
+    public void add(final Section section) {
         validateIntersection(section);
 
         Station upEndStation = getUpEndStation();
@@ -85,18 +85,21 @@ public class Sections {
         return this.sections;
     }
 
-    private boolean isInMiddle(Station station, Section firstSection, Section lastSection) {
+    private boolean isInMiddle(
+        final Station station,
+        final Section firstSection,
+        final Section lastSection) {
         return !station.equals(firstSection.getUpStation()) && !station.equals(
             lastSection.getDownStation());
     }
 
-    private Optional<Section> findUpSectionByStation(Station station) {
+    private Optional<Section> findUpSectionByStation(final Station station) {
         Map<Station, Section> upSectionMap = getUpSectionMap();
 
         return Optional.ofNullable(upSectionMap.get(station));
     }
 
-    private Section findDownSectionByStation(Station station) {
+    private Section findDownSectionByStation(final Station station) {
         Map<Station, Section> downSectionMap = new HashMap<>();
         for (Section oldSection : sections) {
             downSectionMap.put(oldSection.getDownStation(), oldSection);
@@ -133,7 +136,9 @@ public class Sections {
     private void validateIntersection(final Section section) {
         List<Station> stations = new ArrayList<>(List.of(sections.get(0).getUpStation()));
         stations.addAll(
-            sections.stream().map(Section::getDownStation).collect(Collectors.toList()));
+            sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList()));
 
         if (!stations.contains(section.getUpStation())
             && !stations.contains(section.getDownStation())) {
@@ -154,7 +159,7 @@ public class Sections {
         return upSectionMap;
     }
 
-    private void sameThenThrow(Section section, Section oldSection) {
+    private void sameThenThrow(final Section section, final Section oldSection) {
         if (isSameUpStations(section, oldSection) && isSameDownStations(section, oldSection)) {
 
             throw new BusinessException(
@@ -164,11 +169,11 @@ public class Sections {
         }
     }
 
-    private boolean isSameDownStations(Section section, Section oldSection) {
+    private boolean isSameDownStations(final Section section, final Section oldSection) {
         return oldSection.getDownStation().equals(section.getDownStation());
     }
 
-    private boolean isSameUpStations(Section section, Section oldSection) {
+    private boolean isSameUpStations(final Section section, final Section oldSection) {
         return oldSection.getUpStation().equals(section.getUpStation());
     }
 
