@@ -15,17 +15,14 @@ import subway.dto.StationRequest;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Station {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(length = 20, nullable = false)
     private String name;
 
-    public static Station from(StationRequest request) {
-        return Station.builder()
-            .name(request.getName())
-            .build();
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -43,4 +40,11 @@ public class Station {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+    public static Station from(StationRequest request) {
+        return Station.builder()
+            .name(request.getName())
+            .build();
+    }
+
 }
