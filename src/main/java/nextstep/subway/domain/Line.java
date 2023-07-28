@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

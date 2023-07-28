@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +11,7 @@ import javax.persistence.Id;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,6 @@
 package nextstep.subway.util;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
@@ -9,7 +10,7 @@ import nextstep.subway.domain.Station;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResponseMapper {
     public static LineResponse from(Line line) {
         return new LineResponse(
