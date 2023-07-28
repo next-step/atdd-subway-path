@@ -18,6 +18,7 @@ public class SectionTest {
     Line line = new Line("신분당선", "red");
     Section 논현_양재_구간 = new Section(line, 논현역, 양재역, 10);
     Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);
+    Section 신사_논현_구간 = new Section(line, 신사역, 논현역, 10);
 
     @Test
     void add() {
@@ -29,6 +30,30 @@ public class SectionTest {
 
         // then
         assertThat(sections.getSections()).contains(양재_양재시민의숲_구간);
+    }
+
+    @Test
+    void addFirst() {
+        // given
+        Sections sections = new Sections(Stream.of(논현_양재_구간).collect(Collectors.toList()));
+
+        // when
+        sections.addFirst(line, 신사역, 논현역, 10);
+
+        // then
+        assertThat(sections.getSections().get(0)).isEqualTo(신사_논현_구간);
+    }
+
+    @Test
+    void addLast() {
+        // given
+        Sections sections = new Sections(Stream.of(논현_양재_구간).collect(Collectors.toList()));
+
+        // when
+        sections.addLast(line, 양재역, 양재시민의숲역, 10);
+
+        // then
+        assertThat(sections.getSections().get(1)).isEqualTo(양재_양재시민의숲_구간);
     }
 
     @Test

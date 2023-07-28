@@ -61,6 +61,32 @@ class LineTest {
     }
 
     @Test
+    void addSectionAtFirst() {
+        // given
+        Section 신사_논현_구간 = new Section(line, 신사역, 논현역, 10);
+
+        // when
+        line.addSection(신사역, 논현역, 10);
+
+        // then
+        assertThat(line.getSections()).contains(신사_논현_구간);
+        assertThat(line.getStations()).containsExactly(신사역, 논현역, 양재역);
+    }
+
+    @Test
+    void addSectionAtLast() {
+        // given
+        Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);
+
+        // when
+        line.addSection(양재역, 양재시민의숲역, 10);
+
+        // then
+        assertThat(line.getSections()).contains(양재_양재시민의숲_구간);
+        assertThat(line.getStations()).containsExactly(논현역, 양재역, 양재시민의숲역);
+    }
+
+    @Test
     void removeSection() {
         // given
         Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);

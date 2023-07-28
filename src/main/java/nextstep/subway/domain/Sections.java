@@ -7,6 +7,7 @@ import nextstep.subway.exception.SectionAddException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OrderColumn(name = "position")
     private List<Section> sections = new ArrayList<>();
 
     public Sections(List<Section> sections) {
@@ -30,6 +32,10 @@ public class Sections {
             throw new SectionAddException(ErrorType.SECTION_DISTANCE_TOO_LONG);
         }
         sections.add(new Section(line, upStation, downStation, distance));
+    }
+
+    public void addFirst(Line line, Station upStation, Station downStation, int distance) {
+        sections.add(0, new Section(line, upStation, downStation, distance));
     }
 
     public List<Section> getSections() {
@@ -57,7 +63,7 @@ public class Sections {
         sections.remove(lastSection);
     }
 
-    public boolean isEmpty() {
-        return this.sections.isEmpty();
+    public void addLast(Line line, Station upStation, Station downStation, int distance) {
+        sections.add(new Section(line, upStation, downStation, distance));
     }
 }

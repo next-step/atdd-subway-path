@@ -7,8 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,5 +74,39 @@ public class LineAddSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철 노선에 새로운 역을 상행 종점으로 추가 요청하면
+     * Then 노선에 새로운 구간이 추가 된다.
+     */
+    @DisplayName("지하철 노선에 새로운 역을 하행 종점으로 구간 추가")
+    @Test
+    void addLineSectionLineUpStation() {
+        // when
+        Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 신사역, 논현역, 10);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(신사역, 논현역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에 새로운 역을 하행 종점으로 추가 요청하면
+     * Then 노선에 새로운 구간이 추가 된다.
+     */
+    @DisplayName("지하철 노선에 새로운 역을 하행 종점으로 구간 추가")
+    @Test
+    void addLineSectionLineDownStation() {
+        // when
+        Long 양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 양재역, 양재시민의숲역, 10);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 양재역, 양재시민의숲역);
     }
 }

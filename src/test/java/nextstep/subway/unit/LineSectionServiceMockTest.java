@@ -105,7 +105,6 @@ public class LineSectionServiceMockTest {
     @Test
     void addSection_WithNewLineUpStation() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         when(stationService.findById(stationIds.get(신사역))).thenReturn(신사역);
         when(stationService.findById(stationIds.get(논현역))).thenReturn(논현역);
         when(lineService.findById(1L)).thenReturn(신분당선);
@@ -118,5 +117,22 @@ public class LineSectionServiceMockTest {
         // then
         // lineService.findLineById 메서드를 통해 검증
         assertThat(lineService.findById(1L).getSections().get(0)).isEqualTo(신사_논현_구간);
+    }
+
+    @Test
+    void addSection_WithNewLineDownStation() {
+        // given
+        when(stationService.findById(stationIds.get(양재역))).thenReturn(양재역);
+        when(stationService.findById(stationIds.get(양재시민의숲역))).thenReturn(양재시민의숲역);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, 10);
+
+        // when
+        // lineService.addSection 호출
+        lineSectionService.addSection(1L, new SectionRequest(stationIds.get(양재역), stationIds.get(양재시민의숲역), 10));
+
+        // then
+        // lineService.findLineById 메서드를 통해 검증
+        assertThat(lineService.findById(1L).getSections().get(1)).isEqualTo(양재_양재시민의숲_구간);
     }
 }
