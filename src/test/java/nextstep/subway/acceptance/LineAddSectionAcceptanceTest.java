@@ -109,4 +109,21 @@ public class LineAddSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 양재역, 양재시민의숲역);
     }
+
+    /**
+     * When 지하철 노선에 역 사이에 새로운 구간을 추가 요청하면
+     * Then 노선에 새로운 구간이 추가 된다.
+     */
+    @DisplayName("지하철 노선에 새로운 역을 하행 종점으로 구간 추가")
+    @Test
+    void addLineSectionAtMiddle() {
+        // when
+        Long 강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 논현역, 강남역, 4);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 강남역, 양재역);
+    }
 }

@@ -28,6 +28,7 @@ public class Line {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         List<Station> stations = sections.getStations();
+
         if (!stations.isEmpty() && !stations.contains(upStation) && !stations.contains(downStation)) {
             throw new SectionAddException(ErrorType.STATIONS_NOT_EXIST_IN_LINE);
         }
@@ -35,12 +36,14 @@ public class Line {
             throw new SectionAddException(ErrorType.STATIONS_EXIST_IN_LINE);
         }
 
-        if (!stations.isEmpty() && stations.get(0).equals(downStation)) {
+        if (stations.isEmpty()) {
+            sections.addLast(this, upStation, downStation, distance);
+        } else if (stations.get(0).equals(downStation)) {
             sections.addFirst(this, upStation, downStation, distance);
-        } else if (!stations.isEmpty() && stations.get(stations.size() - 1).equals(upStation)) {
+        } else if (stations.get(stations.size() - 1).equals(upStation)) {
             sections.addLast(this, upStation, downStation, distance);
         } else {
-            sections.add(this, upStation, downStation, distance);
+            sections.addMiddle(this, upStation, downStation, distance);
         }
     }
 

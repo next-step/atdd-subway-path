@@ -111,11 +111,9 @@ public class LineSectionServiceMockTest {
         Section 신사_논현_구간 = new Section(신분당선, 신사역, 논현역, 10);
 
         // when
-        // lineService.addSection 호출
         lineSectionService.addSection(1L, new SectionRequest(stationIds.get(신사역), stationIds.get(논현역), 10));
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
         assertThat(lineService.findById(1L).getSections().get(0)).isEqualTo(신사_논현_구간);
     }
 
@@ -128,11 +126,41 @@ public class LineSectionServiceMockTest {
         Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, 10);
 
         // when
-        // lineService.addSection 호출
         lineSectionService.addSection(1L, new SectionRequest(stationIds.get(양재역), stationIds.get(양재시민의숲역), 10));
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
         assertThat(lineService.findById(1L).getSections().get(1)).isEqualTo(양재_양재시민의숲_구간);
+    }
+
+    @Test
+    void addSection_WithMiddleUpStation() {
+        // given
+        when(stationService.findById(stationIds.get(논현역))).thenReturn(논현역);
+        when(stationService.findById(stationIds.get(강남역))).thenReturn(강남역);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+        Section 논현_강남_구간 = new Section(신분당선, 논현역, 강남역, 4);
+        Section 강남_양재_구간 = new Section(신분당선, 강남역, 양재역, 6);
+
+        // when
+        lineSectionService.addSection(1L, new SectionRequest(stationIds.get(논현역), stationIds.get(강남역), 4));
+
+        // then
+        assertThat(lineService.findById(1L).getSections()).containsExactly(논현_강남_구간, 강남_양재_구간);
+    }
+
+    @Test
+    void addSection_WithMiddleDownStation() {
+        // given
+        when(stationService.findById(stationIds.get(강남역))).thenReturn(강남역);
+        when(stationService.findById(stationIds.get(양재역))).thenReturn(양재역);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+        Section 논현_강남_구간 = new Section(신분당선, 논현역, 강남역, 6);
+        Section 강남_양재_구간 = new Section(신분당선, 강남역, 양재역, 4);
+
+        // when
+        lineSectionService.addSection(1L, new SectionRequest(stationIds.get(강남역), stationIds.get(양재역), 4));
+
+        // then
+        assertThat(lineService.findById(1L).getSections()).containsExactly(논현_강남_구간, 강남_양재_구간);
     }
 }

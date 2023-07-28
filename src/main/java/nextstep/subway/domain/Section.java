@@ -63,7 +63,17 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean hasStation(Station upStation, Station downStation) {
-        return this.upStation.equals(upStation) || this.downStation.equals(downStation);
+    public boolean equalUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public void updateDownStationAndDistance(Station downStation, int distance) {
+        this.upStation = downStation;
+        this.distance -= distance;
+    }
+
+    public void updateUpStationAndDistance(Station upStation, int distance) {
+        this.downStation = upStation;
+        this.distance -= distance;
     }
 }

@@ -24,18 +24,31 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void add(Line line, Station upStation, Station downStation, int distance) {
+    public void addMiddle(Line line, Station upStation, Station downStation, int distance) {
         Optional<Section> existSection = sections.stream()
-                .filter(section -> section.hasStation(upStation, downStation))
+                .filter(section -> section.equalUpStation(upStation) || section.equalDownStation(downStation))
                 .findAny();
         if (existSection.isPresent() && existSection.get().getDistance() <= distance) {
             throw new SectionAddException(ErrorType.SECTION_DISTANCE_TOO_LONG);
         }
-        sections.add(new Section(line, upStation, downStation, distance));
+
+        int index = sections.indexOf(existSection.get());
+        if (existSection.get().equalUpStation(upStation)) {
+            sections.get(index).updateDownStationAndDistance(downStation, distance);
+            sections.add(index, new Section(line, upStation, downStation, distance));
+        }
+        if (existSection.get().equalDownStation(downStation)) {
+            sections.get(index).updateUpStationAndDistance(upStation, distance);
+            sections.add(index + 1, new Section(line, upStation, downStation, distance));
+        }
     }
 
     public void addFirst(Line line, Station upStation, Station downStation, int distance) {
         sections.add(0, new Section(line, upStation, downStation, distance));
+    }
+
+    public void addLast(Line line, Station upStation, Station downStation, int distance) {
+        sections.add(new Section(line, upStation, downStation, distance));
     }
 
     public List<Section> getSections() {
@@ -61,9 +74,5 @@ public class Sections {
             throw new IllegalArgumentException();
         }
         sections.remove(lastSection);
-    }
-
-    public void addLast(Line line, Station upStation, Station downStation, int distance) {
-        sections.add(new Section(line, upStation, downStation, distance));
     }
 }
