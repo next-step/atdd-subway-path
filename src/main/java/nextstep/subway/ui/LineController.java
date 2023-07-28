@@ -1,5 +1,6 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.applicaion.LineSectionService;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
@@ -15,15 +16,17 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+    private final LineSectionService lineSectionService;
     private LineService lineService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, LineSectionService lineSectionService) {
         this.lineService = lineService;
+        this.lineSectionService = lineSectionService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = ResponseMapper.from(lineService.saveLine(lineRequest));
+        LineResponse line = ResponseMapper.from(lineSectionService.saveLineWithSection(lineRequest));
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -55,13 +58,13 @@ public class LineController {
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(lineId, sectionRequest);
+        lineSectionService.addSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{lineId}/sections")
     public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        lineService.deleteSection(lineId, stationId);
+        lineSectionService.deleteSection(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 }

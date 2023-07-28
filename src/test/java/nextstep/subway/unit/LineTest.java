@@ -46,5 +46,17 @@ class LineTest {
 
     @Test
     void removeSection() {
+        // given
+        Line line = new Line(1L, "신분당선", "red", new ArrayList<>());
+        Section 판교_정자_구간 = new Section(1L, line, 판교역, 정자역, 10);
+        Section 정자_미금_구간 = new Section(2L, line, 정자역, 미금역, 10);
+        line.getSections().add(판교_정자_구간);
+        line.getSections().add(정자_미금_구간);
+
+        // when
+        line.removeSection(미금역);
+
+        // then
+        assertThat(line.getSections()).doesNotContain(정자_미금_구간);
     }
 }

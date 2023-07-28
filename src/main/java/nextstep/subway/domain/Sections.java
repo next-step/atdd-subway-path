@@ -39,4 +39,12 @@ public class Sections {
 
         return stations;
     }
+
+    public void removeLast(Station station) {
+        Section lastSection = sections.get(sections.size() - 1);
+        if (!lastSection.equalDownStation(station)) {
+            throw new IllegalArgumentException();
+        }
+        sections.remove(lastSection);
+    }
 }

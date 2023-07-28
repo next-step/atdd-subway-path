@@ -1,6 +1,6 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.applicaion.LineService;
+import nextstep.subway.applicaion.LineSectionService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.*;
 import org.junit.jupiter.api.Test;
@@ -8,11 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -23,7 +19,7 @@ public class LineServiceTest {
     private LineRepository lineRepository;
 
     @Autowired
-    private LineService lineService;
+    private LineSectionService lineSectionService;
 
     @Test
     void addSection() {
@@ -40,7 +36,7 @@ public class LineServiceTest {
         
         // when
         // lineService.addSection 호출
-        lineService.addSection(1L, new SectionRequest(2L, 3L, 10));
+        lineSectionService.addSection(1L, new SectionRequest(2L, 3L, 10));
 
         // then
         // lineService.findLineById 메서드를 통해 검증
