@@ -7,8 +7,9 @@ import java.util.function.BiConsumer;
 
 public enum SectionAddType {
     FIRST(Sections::addFirst),
-    MIDDLE(Sections::addMiddle),
-    LAST(Sections::addLast);
+    LAST(Sections::addLast),
+    MIDDLE_UP_STATION(Sections::addMiddleUpStation),
+    MIDDLE_DOWN_STATION(Sections::addMiddleDownStation);
 
     private final BiConsumer<Sections, Section> add;
 
@@ -16,7 +17,8 @@ public enum SectionAddType {
         this.add = add;
     }
 
-    public static SectionAddType find(Stations stations, Station upStation, Station downStation) {
+    public static SectionAddType find(Sections sections, Station upStation, Station downStation) {
+        Stations stations = new Stations(sections.getStations());
         if (!stations.empty() && stations.doesNotContainAll(upStation, downStation)) {
             throw new SectionAddException(ErrorType.STATIONS_NOT_EXIST_IN_LINE);
         }
@@ -30,7 +32,10 @@ public enum SectionAddType {
         if (stations.equalFirstStation(downStation)) {
             return SectionAddType.FIRST;
         }
-        return SectionAddType.MIDDLE;
+        if (sections.containsAtUpStation(upStation)) {
+            return SectionAddType.MIDDLE_UP_STATION;
+        }
+        return SectionAddType.MIDDLE_DOWN_STATION;
     }
 
     public void apply(Sections sections, Section section) {

@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import lombok.NoArgsConstructor;
-import nextstep.subway.exception.ErrorType;
-import nextstep.subway.exception.SectionAddException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -10,7 +8,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -32,23 +29,29 @@ public class Sections {
         sections.add(section);
     }
 
-    public void addMiddle(Section newSection) {
-        Optional<Section> existSection = sections.stream()
-                .filter(section -> section.equalUpStation(newSection.getUpStation()) || section.equalDownStation(newSection.getDownStation()))
-                .findAny();
-        if (existSection.isPresent() && existSection.get().getDistance() <= newSection.getDistance()) {
-            throw new SectionAddException(ErrorType.SECTION_DISTANCE_TOO_LONG);
-        }
+    public void addMiddleUpStation(Section section) {
+        Section existSection = sections.stream()
+                .filter(e -> e.equalUpStation(section.getUpStation()))
+                .findAny()
+                .orElse(null);
+        int index = sections.indexOf(existSection);
+        sections.get(index).updateDownStation(section);
+        sections.add(index, section);
+    }
 
-        int index = sections.indexOf(existSection.get());
-        if (existSection.get().equalUpStation(newSection.getUpStation())) {
-            sections.get(index).updateDownStationAndDistance(newSection.getDownStation(), newSection.getDistance());
-            sections.add(index, new Section(newSection.getLine(), newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
-        }
-        if (existSection.get().equalDownStation(newSection.getDownStation())) {
-            sections.get(index).updateUpStationAndDistance(newSection.getUpStation(), newSection.getDistance());
-            sections.add(index + 1, new Section(newSection.getLine(), newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
-        }
+    public void addMiddleDownStation(Section section) {
+        Section existSection = sections.stream()
+                .filter(e -> e.equalDownStation(section.getDownStation()))
+                .findAny()
+                .orElse(null);
+        int index = sections.indexOf(existSection);
+        sections.get(index).updateUpStation(section);
+        sections.add(index + 1, section);
+    }
+
+    public boolean containsAtUpStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.equalUpStation(station));
     }
 
     public List<Section> getSections() {

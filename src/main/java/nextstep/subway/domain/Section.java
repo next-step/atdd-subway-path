@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.ErrorType;
+import nextstep.subway.exception.SectionAddException;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -67,13 +69,20 @@ public class Section {
         return this.upStation.equals(station);
     }
 
-    public void updateDownStationAndDistance(Station downStation, int distance) {
-        this.upStation = downStation;
-        this.distance -= distance;
+    public void updateDownStation(Section section) {
+        updateDistance(section);
+        this.upStation = section.downStation;
     }
 
-    public void updateUpStationAndDistance(Station upStation, int distance) {
-        this.downStation = upStation;
-        this.distance -= distance;
+    public void updateUpStation(Section section) {
+        updateDistance(section);
+        this.downStation = section.upStation;
+    }
+
+    private void updateDistance(Section section) {
+        if (this.distance <= section.distance) {
+            throw new SectionAddException(ErrorType.SECTION_DISTANCE_TOO_LONG);
+        }
+        this.distance -= section.distance;
     }
 }
