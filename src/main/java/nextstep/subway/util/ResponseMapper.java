@@ -1,5 +1,6 @@
 package nextstep.subway.util;
 
+import lombok.NoArgsConstructor;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
@@ -8,10 +9,8 @@ import nextstep.subway.domain.Station;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor
 public class ResponseMapper {
-    public ResponseMapper() {
-    }
-
     public static LineResponse from(Line line) {
         return new LineResponse(
                 line.getId(),
