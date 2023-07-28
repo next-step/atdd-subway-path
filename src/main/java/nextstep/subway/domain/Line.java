@@ -26,14 +26,8 @@ public class Line {
 
     public void addSection(Station upStation, Station downStation, int distance) {
         Stations stations = new Stations(sections.getStations());
-        SectionAddType addType = stations.findAddType(upStation, downStation);
-        if (addType == SectionAddType.FIRST) {
-            sections.addFirst(this, upStation, downStation, distance);
-        } else if (addType == SectionAddType.LAST) {
-            sections.addLast(this, upStation, downStation, distance);
-        } else {
-            sections.addMiddle(this, upStation, downStation, distance);
-        }
+        SectionAddType addType = SectionAddType.find(stations, upStation, downStation);
+        addType.apply(sections, new Section(this, upStation, downStation, distance));
     }
 
     public void setName(String name) {

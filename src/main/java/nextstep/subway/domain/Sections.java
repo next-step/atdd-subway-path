@@ -24,30 +24,30 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void addFirst(Line line, Station upStation, Station downStation, int distance) {
-        sections.add(0, new Section(line, upStation, downStation, distance));
+    public void addFirst(Section section) {
+        sections.add(0, section);
     }
 
-    public void addLast(Line line, Station upStation, Station downStation, int distance) {
-        sections.add(new Section(line, upStation, downStation, distance));
+    public void addLast(Section section) {
+        sections.add(section);
     }
 
-    public void addMiddle(Line line, Station upStation, Station downStation, int distance) {
+    public void addMiddle(Section newSection) {
         Optional<Section> existSection = sections.stream()
-                .filter(section -> section.equalUpStation(upStation) || section.equalDownStation(downStation))
+                .filter(section -> section.equalUpStation(newSection.getUpStation()) || section.equalDownStation(newSection.getDownStation()))
                 .findAny();
-        if (existSection.isPresent() && existSection.get().getDistance() <= distance) {
+        if (existSection.isPresent() && existSection.get().getDistance() <= newSection.getDistance()) {
             throw new SectionAddException(ErrorType.SECTION_DISTANCE_TOO_LONG);
         }
 
         int index = sections.indexOf(existSection.get());
-        if (existSection.get().equalUpStation(upStation)) {
-            sections.get(index).updateDownStationAndDistance(downStation, distance);
-            sections.add(index, new Section(line, upStation, downStation, distance));
+        if (existSection.get().equalUpStation(newSection.getUpStation())) {
+            sections.get(index).updateDownStationAndDistance(newSection.getDownStation(), newSection.getDistance());
+            sections.add(index, new Section(newSection.getLine(), newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
         }
-        if (existSection.get().equalDownStation(downStation)) {
-            sections.get(index).updateUpStationAndDistance(upStation, distance);
-            sections.add(index + 1, new Section(line, upStation, downStation, distance));
+        if (existSection.get().equalDownStation(newSection.getDownStation())) {
+            sections.get(index).updateUpStationAndDistance(newSection.getUpStation(), newSection.getDistance());
+            sections.add(index + 1, new Section(newSection.getLine(), newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance()));
         }
     }
 

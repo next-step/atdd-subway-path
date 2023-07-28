@@ -28,9 +28,10 @@ public class SectionTest {
     void addFirst() {
         // given
         Sections sections = new Sections(Stream.of(논현_양재_구간).collect(Collectors.toList()));
+        Section section = new Section(line, 신사역, 논현역, 10);
 
         // when
-        sections.addFirst(line, 신사역, 논현역, 10);
+        sections.addFirst(section);
 
         // then
         assertThat(sections.getSections().get(0)).isEqualTo(신사_논현_구간);
@@ -40,9 +41,10 @@ public class SectionTest {
     void addLast() {
         // given
         Sections sections = new Sections(Stream.of(논현_양재_구간).collect(Collectors.toList()));
+        Section section = new Section(line, 양재역, 양재시민의숲역, 10);
 
         // when
-        sections.addLast(line, 양재역, 양재시민의숲역, 10);
+        sections.addLast(section);
 
         // then
         assertThat(sections.getSections().get(1)).isEqualTo(양재_양재시민의숲_구간);
@@ -55,9 +57,10 @@ public class SectionTest {
         Section 논현_강남_구간 = new Section(line, 논현역, 강남역, 4);
         Section 강남_양재_구간 = new Section(line, 강남역, 양재역, 6);
         Sections sections = new Sections(Stream.of(논현_양재_구간).collect(Collectors.toList()));
+        Section section = new Section(line, upStation, downStation, distance);
 
         // when
-        sections.addMiddle(line, upStation, downStation, distance);
+        sections.addMiddle(section);
 
         // then
         assertThat(sections.getSections()).containsExactly(논현_강남_구간, 강남_양재_구간);
@@ -83,10 +86,11 @@ public class SectionTest {
     @Test
     void addSectionException_distanceToLong() {
         Sections sections = new Sections(Stream.of(논현_양재_구간).collect(Collectors.toList()));
+        Section section = new Section(line, 논현역, 양재역, 10);
 
         // then
         assertThatThrownBy(() -> {
-            sections.addMiddle(line, 논현역, 양재역, 10);
+            sections.addMiddle(section);
         }).isInstanceOf(SectionAddException.class)
                 .hasMessage(ErrorType.SECTION_DISTANCE_TOO_LONG.getMessage());
     }

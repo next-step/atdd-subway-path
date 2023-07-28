@@ -54,7 +54,7 @@ class LineTest {
         assertThatThrownBy(() -> {
             line.addSection(논현역, 양재역, 10);
         }).isInstanceOf(SectionAddException.class)
-                .hasMessage(ErrorType.STATIONS_NOT_EXIST_IN_LINE.getMessage());
+                .hasMessage(ErrorType.STATIONS_EXIST_IN_LINE.getMessage());
     }
 
     @Test
