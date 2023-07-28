@@ -174,7 +174,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("상행종점과 하행종점을 삭제한다")
     @Test
-    void deleteSection1() {
+    void deleteSectionEndStation() {
         //given
         SectionStep.지하철구간_생성(이호선,강남역,역삼역,10L);
         SectionStep.지하철구간_생성(이호선,역삼역,선릉역,20L);
@@ -198,7 +198,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("중간역을 삭제한다")
     @Test
-    void deleteSection2() {
+    void deleteSectionMiddleSection() {
         //given
         SectionStep.지하철구간_생성(이호선,강남역,역삼역,10L);
         SectionStep.지하철구간_생성(이호선,역삼역,선릉역,20L);
