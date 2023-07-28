@@ -178,7 +178,7 @@ class SectionsTest {
                 .mapToInt(Section::getDistance)
                 .sum();
 
-        assertThat(line.getDistance()).isEqualTo(sumDistance);
+        assertThat(line.getSections().getDistance()).isEqualTo(sumDistance);
     }
 
     private Station createStation(String stationName) {

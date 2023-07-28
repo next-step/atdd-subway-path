@@ -39,8 +39,6 @@ public class Line {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private Integer distance;
-
     @Embedded
     private Sections sections;
 
@@ -50,8 +48,7 @@ public class Line {
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
-        sections = new Sections(section, this);
+        sections = new Sections(section, this, distance);
     }
 
     public static Line of(String name, String color, Station upStationId, Station downStationId, Integer distance) {
@@ -79,11 +76,5 @@ public class Line {
 
     public Set<Station> getStations() {
         return sections.getStations();
-    }
-
-    public void modifyDistance() {
-        this.distance = sections.getSections().stream()
-                .mapToInt(Section::getDistance)
-                .sum();
     }
 }
