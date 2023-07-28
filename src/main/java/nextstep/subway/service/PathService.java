@@ -23,14 +23,14 @@ public class PathService {
     }
 
     public PathResponse getPath(Long sourceId,Long targetId){
-        PathFinder pathFinder = new PathFinder();
-
-        List<Line> lineList = lineRepository.findAll();
-
 
         Station sourceStation = stationService.findStation(sourceId);
         Station targetStation = stationService.findStation(targetId);
 
+        List<Line> lineList = lineRepository.findAll();
+
+
+        PathFinder pathFinder = new PathFinder();
         pathFinder.init(lineList);
 
         List<Station> path = pathFinder.getPath(sourceStation, targetStation);

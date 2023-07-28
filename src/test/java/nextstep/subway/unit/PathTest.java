@@ -137,7 +137,7 @@ class PathTest {
     @Test
     void getPath_not_connected() {
         // when, then
-        assertThatThrownBy(() ->  pathFinder.getDistance(교대역, 동작역))
+        assertThatThrownBy(() ->  pathFinder.getPath(교대역, 동작역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("출발역과 도착역이 연결되어 있지 않음.");
     }

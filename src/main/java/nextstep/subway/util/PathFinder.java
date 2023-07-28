@@ -5,11 +5,9 @@ import nextstep.subway.domain.Station;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 
 import java.util.List;
-import java.util.Objects;
 
 
 public class PathFinder {
@@ -20,10 +18,18 @@ public class PathFinder {
     }
 
     public List<Station> getPath(Station source, Station target) {
+
         validateGraph(source, target, dijkstraShortestPath);
 
+        try{
+            return dijkstraShortestPath.getPath(source, target).getVertexList();
+        }
+        catch (Exception e){
+            throw new IllegalArgumentException("출발역과 도착역이 연결되어 있지 않음.");
+        }
 
-        return dijkstraShortestPath.getPath(source, target).getVertexList();
+
+
     }
 
     public int getDistance(Station source, Station target) {
@@ -56,15 +62,10 @@ public class PathFinder {
     }
 
     private void validateGraph(Station source, Station target, DijkstraShortestPath dijkstraShortestPath) {
+
         if(source.getId()==target.getId()){
             throw new IllegalArgumentException("경로조회는 출발역과 도착역이 동일할 수 없음.");
         }
 
-        try{
-            Objects.isNull(dijkstraShortestPath.getPath(source, target).getVertexList());
-        }
-        catch (Exception e){
-            throw new IllegalArgumentException("출발역과 도착역이 연결되어 있지 않음.");
-        }
     }
 }
