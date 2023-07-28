@@ -4,8 +4,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -25,5 +25,18 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Station> stations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+        stations.add(0, sections.get(0).getUpStation());
+
+        return stations;
     }
 }
