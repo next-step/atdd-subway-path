@@ -75,6 +75,7 @@ public class PathServiceMockTest {
 
         PathResponse paths = pathService.getPaths(교대역.getId(), 양재역.getId());
 
+        assertThat(paths.getStations().stream().mapToLong(it->it.getId())).containsExactly(교대역.getId(),남부터미널역.getId(),양재역.getId());
         assertThat(paths.getStations().size()).isEqualTo(3);
     }
 

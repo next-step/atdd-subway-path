@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.response.LineResponse;
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선_생성;
+import static nextstep.subway.acceptance.steps.PathSteps.최단_경로_조회;
 import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_등록;
 import static nextstep.subway.acceptance.steps.StationSteps.지하철역_생성_응답;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,10 +69,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         Long source = 교대역.getId();
         Long target = 양재역.getId();
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get(BASE_URL + "?source=" + source + "&target=" + target)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 최단_경로_조회(BASE_URL + "?source=" + source + "&target=" + target);
 
         PathResponse path = response.jsonPath().getObject("", PathResponse.class);
 
@@ -80,6 +77,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         int stationCount = path.getStations().size();
         assertThat(stationCount).isEqualTo(3);
+        assertThat(path.getStations().stream().mapToLong(it->it.getId())).containsExactly(교대역.getId(),남부터미널역.getId(),양재역.getId());
         assertThat(path.getDistance()).isEqualTo(DEFAULT_DISTANCE+SHORT_DISTANCE);
     }
 
@@ -92,10 +90,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void getPathsExceptionWhenSameSourceAndTarget() {
         Long stationId = 교대역.getId();
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get(BASE_URL + "?source=" + stationId + "&target=" + stationId)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 최단_경로_조회(BASE_URL + "?source=" + stationId + "&target=" + stationId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -117,10 +112,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         //when
         Long source = 교대역.getId();
         Long target = 신도림역_아이디;
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get(BASE_URL + "?source=" + source + "&target=" + target)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 최단_경로_조회(BASE_URL + "?source=" + source + "&target=" + target);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -135,10 +127,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void getPathsExceptionWhenNotExistedStation() {
         Long stationId = 교대역.getId();
 
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get(BASE_URL + "?source=" + stationId + "&target=" + Integer.MIN_VALUE)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 최단_경로_조회(BASE_URL + "?source=" + stationId + "&target=" + Integer.MIN_VALUE);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

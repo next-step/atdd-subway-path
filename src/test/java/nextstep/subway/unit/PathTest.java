@@ -57,6 +57,7 @@ public class PathTest {
 
         int stationCount = shortestPath.getStations().size();
         assertThat(stationCount).isEqualTo(3);
+        assertThat(shortestPath.getStations().stream().mapToLong(it->it.getId())).containsExactly(교대역.getId(),남부터미널역.getId(),양재역.getId());
         assertThat(shortestPath.getDistance()).isEqualTo(DEFAULT_DISTANCE + SHORT_DISTANCE);
     }
 
