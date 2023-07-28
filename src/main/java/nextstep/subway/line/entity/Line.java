@@ -74,7 +74,7 @@ public class Line {
     }
 
     public void removeSection(Station downStation) {
-        sections.removeSection(downStation, this);
+        sections.removeSection(downStation);
     }
 
     public Set<Station> getStations() {

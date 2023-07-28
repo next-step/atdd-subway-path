@@ -124,7 +124,7 @@ class SectionsTest {
         sections.addNewStationAsAnDownStation(section);
 
         // when : 기능 수행
-        sections.removeSection(당고개역, line);
+        sections.removeSection(당고개역);
 
         // then : 결과 확인
         역_목록_검증(line, line.getStations().size(), Arrays.asList("이수역", "사당역"));
@@ -141,7 +141,7 @@ class SectionsTest {
         sections.addNewStationAsAnDownStation(section);
 
         // when : 기능 수행
-        sections.removeSection(이수역, line);
+        sections.removeSection(이수역);
 
         // then : 결과 확인
         역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "사당역"));
@@ -158,7 +158,7 @@ class SectionsTest {
         sections.addNewStationAsAnDownStation(section);
 
         // when : 기능 수행
-        sections.removeSection(사당역, line);
+        sections.removeSection(사당역);
 
         // then : 결과 확인
         역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "이수역"));
