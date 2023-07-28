@@ -73,6 +73,76 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * When 지하철 노선에서 기존 구간 사이에 새로운 구간을 추가하면
+     * Then 구간은 2개로 나뉘고, 총 길이는 원래 구간의 길이와 동일하다.
+     */
+    @Test
+    @DisplayName("지하철 노선 구간 추가 - 역 사이에 새로운 역 추가 (상행역 기준)")
+    void addLineSectionBetween_상행역_기준() {
+
+        // when
+        Long 강남_양재_중간역 = 지하철역_생성_요청("강남_양재_중간역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 강남_양재_중간역, 3L));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+            .containsExactly(강남역, 강남_양재_중간역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에서 기존 구간 사이에 새로운 구간을 추가하면
+     * Then 구간은 2개로 나뉘고, 역 목록 사이에 새로운 역이 추가된다.
+     */
+    @Test
+    @DisplayName("지하철 노선 구간 추가 - 역 사이에 새로운 역 추가(하행역 기준)")
+    void addLineSectionBetween_하행역_기준() {
+        // when
+        Long 강남_양재_중간역 = 지하철역_생성_요청("강남_양재_중간역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남_양재_중간역, 양재역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+            .containsExactly(강남역, 강남_양재_중간역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에서 상행 종점역을 새로 추가하면
+     * Then Then 구간은 2개로 나뉘고, 역 목록 사이에 새로운 역이 추가된다.
+     */
+    @Test
+    @DisplayName("지하철 노선 구간 추가 - 신규 상행 종점역 추가")
+    void addLineSection_신규_상행_종점역() {
+
+        // when
+        Long 신논현역 = 지하철역_생성_요청("신논현역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신논현역, 강남역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+            .containsExactly(신논현역, 강남역, 양재역);
+    }
+
+    /**
+     * When 지하철 노선에서 상행 종점역을 새로 추가하면
+     * Then Then 구간은 2개로 나뉘고, 역 목록 사이에 새로운 역이 추가된다.
+     */
+    @Test
+    @DisplayName("지하철 노선 구간 추가 - 신규 하행 종점역 추가")
+    void addLineSection_신규_하행_종점역() {
+        // when
+        Long 양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 양재시민의숲역));
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
+        assertThat(response.jsonPath().getList("stations.id", Long.class))
+            .containsExactly(강남역, 양재역, 양재시민의숲역);
+    }
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();
@@ -85,10 +155,14 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
+        return this.createSectionCreateParams(upStationId, downStationId, 6L);
+    }
+
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, Long distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", distance + "");
         return params;
     }
 }

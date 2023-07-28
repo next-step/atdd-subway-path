@@ -1,16 +1,18 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
-import org.springframework.util.CollectionUtils;
+import lombok.Getter;
 
 @Entity
 public class Line {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @Getter
     private String color;
 
     @Embedded
@@ -40,10 +42,6 @@ public class Line {
         this.name = name;
     }
 
-    public String getColor() {
-        return color;
-    }
-
     public void setColor(String color) {
         this.color = color;
     }
@@ -52,12 +50,12 @@ public class Line {
         return sections.getSections();
     }
 
-    public void addSection(Section section) {
-        this.sections.addSection(section);
+    public Section addSection(Section section) {
+        return this.sections.addSection(section);
     }
 
     public List<Station> getStations() {
-        return this.sections.getStations();
+        return this.sections.getStationsOfAllSection();
     }
 
     public void removeSection(Station station) {

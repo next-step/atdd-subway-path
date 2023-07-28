@@ -1,8 +1,12 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +26,6 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -33,31 +33,59 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public boolean isStartStation() {
-        return upStation.equals(downStation);
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
+    public boolean isStartSection() {
+        return this.upStation.equals(this.downStation);
     }
 
     public Section convertToStartSection() {
         return new Section(this.getLine(), this.getUpStation(), this.getUpStation(), 0);
+    }
+
+    public boolean isSuperSetOf(Section subSetSection) {
+        if (this.isSectionEquals(subSetSection)) {
+            return false;
+        }
+
+        if (
+            this.upStation.equals(subSetSection.upStation) ||
+            this.downStation.equals(subSetSection.downStation)
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isSectionEquals(Section newSection) {
+        // 정방향
+        if (newSection.getUpStation().equals(this.upStation) &&
+            newSection.getDownStation().equals(this.downStation)) {
+            return true;
+        }
+
+        // 역방향
+        if (newSection.getDownStation().equals(this.upStation) &&
+            newSection.getUpStation().equals(this.downStation)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isUpStationEquals(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isDownStationEquals(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public void interposeSectionAtDownStation(Section newSection) {
+        this.downStation = newSection.upStation;
+        this.distance -= newSection.distance;
+    }
+
+    public void interposeSectionAtUpStation(Section newSection) {
+        this.upStation = newSection.downStation;
+        this.distance -= newSection.distance;
     }
 }

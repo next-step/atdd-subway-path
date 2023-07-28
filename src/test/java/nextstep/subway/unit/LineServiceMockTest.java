@@ -53,7 +53,7 @@ public class LineServiceMockTest {
         when(lineRepository.findById(lineId)).thenReturn(Optional.ofNullable(line));
 
         // when
-        sut.addSection(lineId, request);
+        sut.addNewSection(lineId, request);
 
         // then
         verify(line).addSection(any());

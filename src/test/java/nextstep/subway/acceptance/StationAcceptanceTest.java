@@ -31,11 +31,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = LineSteps.지하철역_노선_목록_조회_요청();
+
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -82,11 +79,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = LineSteps.지하철역_노선_목록_조회_요청();
         assertThat(stationNames).doesNotContain("강남역");
     }
 }
