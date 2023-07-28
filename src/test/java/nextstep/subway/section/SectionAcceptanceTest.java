@@ -1,14 +1,22 @@
 package nextstep.subway.section;
 
+import static common.Constants.강남역;
+import static common.Constants.교대역;
+import static common.Constants.남부터미널역;
+import static common.Constants.삼호선;
 import static common.Constants.양재역;
 import static common.Constants.빨강색600;
 import static common.Constants.광교역;
 import static common.Constants.신논현역;
 import static common.Constants.신분당선;
+import static common.Constants.이호선;
+import static common.Constants.주황색600;
+import static common.Constants.파랑색600;
 import static common.Constants.판교역;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_생성_요청;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_조회_요청;
 import static nextstep.subway.section.SectionTestStepDefinition.*;
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.station.StationTestStepDefinition.지하철_역_생성_요청;
 
@@ -179,33 +187,27 @@ public class SectionAcceptanceTest {
     }
 
     // Given 지하철 노선과 구간을 추가하고
-    // When 상행종점역부터 하행종점역으로 경로 조회 요청하면
-    // Then 출발역부터 도착역까지의 역 목록과 조회한 경로 구간의 거리를 확인할 수 있다
-    @DisplayName("상행종점역부터 하행종점역 경로 조회 요청시 역 목록과 경로 구간의 거리를 확인할 수 있다.")
-    @Test
-    void route_upEnd2downEnd() {
-        var 신분당선_생성 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
-        지하철_구간_생성_요청(신분당선_생성.getId(), 광교역정보, 양재역정보, 10);
+    // When 경로 조회 요청하면
+    // Then 가장 가까운 경로의 역 목록과 조회한 경로 구간의 거리를 확인할 수 있다
+    @DisplayName("지하철 경로 탐색")
+    void route() {
+        // given
+        var 남부터미널역정보 = 지하철_역_생성_요청(남부터미널역).getId();
+        var 강남역정보 = 지하철_역_생성_요청(강남역).getId();
+        var 교대역정보 = 지하철_역_생성_요청(교대역).getId();
 
-        var 경로_조회 = 지하철_경로_조회(판교역정보, 양재역정보);
+        지하철_노선_생성_요청(신분당선, 빨강색600, 강남역정보, 양재역정보, 2);
+        지하철_노선_생성_요청(이호선, 파랑색600, 교대역정보, 강남역정보, 3);
+        var 삼호선정보 = 지하철_노선_생성_요청(삼호선, 주황색600, 교대역정보, 남부터미널역정보, 10).getId();
 
-        assertThat(역이름_목록(경로_조회)).containsExactly(판교역, 광교역, 양재역);
-        assertThat(경로_조회.getDistance()).isEqualTo(20);
-    }
+        지하철_구간_생성_요청(삼호선정보, 남부터미널역정보, 양재역정보, 10);
 
-    // Given 지하철 노선과 구간을 추가하고
-    // When 상행종점역부터 중간역으로 경로 조회 요청하면
-    // Then 출발역부터 중간역까지의 역 목록과 조회한 경로 구간의 거리를 확인할 수 있다
-    @DisplayName("상행종점역부터 중간역 경로 조회 요청시 역 목록과 경로 구간의 거리를 확인할 수 있다.")
-    @Test
-    void route_upEnd2Middle() {
-        var 신분당선_생성 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
-        지하철_구간_생성_요청(신분당선_생성.getId(), 광교역정보, 양재역정보, 10);
+        // when
+        var 양재역_교대역_경로_조회 = 지하철_경로_조회(양재역정보, 교대역정보);
 
-        var 경로_조회 = 지하철_경로_조회(판교역정보, 광교역정보);
-
-        assertThat(역이름_목록(경로_조회)).containsExactly(판교역, 광교역);
-        assertThat(경로_조회.getDistance()).isEqualTo(10);
+        // then
+        assertThat(역이름_목록(양재역_교대역_경로_조회)).containsExactly(양재역, 강남역, 교대역);
+        assertThat(양재역_교대역_경로_조회.getDistance()).isEqualTo(5);
     }
 
     private Stream<String> 역이름_목록(PathResponse response) {
