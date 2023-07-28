@@ -61,4 +61,19 @@ public class LineAddSectionAcceptanceTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * When 지하철 노선에 신규 생성하는 구간의 길이가 기존 길이보다 크거나 같으면
+     * Then 노선에 새로운 구간이 추가되지 않는다.
+     */
+    @DisplayName("지하철 노선에 기존 구간보다 긴 구간 등록 불가")
+    @Test
+    void addLineSectionLongDistance() {
+        // when
+        Long 강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, 논현역, 강남역, 10);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

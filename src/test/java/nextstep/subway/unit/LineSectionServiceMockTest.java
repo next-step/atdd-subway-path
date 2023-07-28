@@ -86,4 +86,19 @@ public class LineSectionServiceMockTest {
         }).isInstanceOf(SectionAddException.class)
                 .hasMessage(ErrorType.STATIONS_EXIST_IN_LINE.getMessage());
     }
+
+    @Test
+    void addSectionException_tooLongDistance() {
+        // given
+        when(stationService.findById(stationIds.get(논현역))).thenReturn(논현역);
+        when(stationService.findById(stationIds.get(강남역))).thenReturn(강남역);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+
+        // when - then
+        assertThatThrownBy(() -> {
+            SectionRequest request = new SectionRequest(stationIds.get(논현역), stationIds.get(강남역), 10);
+            lineSectionService.addSection(1L, request);
+        }).isInstanceOf(SectionAddException.class)
+                .hasMessage(ErrorType.SECTION_DISTANCE_TOO_LONG.getMessage());
+    }
 }

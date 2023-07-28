@@ -54,6 +54,15 @@ class LineTest {
     }
 
     @Test
+    void addSectionException_distanceToLong() {
+        // then
+        assertThatThrownBy(() -> {
+            line.addSection(논현역, 양재역, 10);
+        }).isInstanceOf(SectionAddException.class)
+                .hasMessage(ErrorType.SECTION_DISTANCE_TOO_LONG.getMessage());
+    }
+
+    @Test
     void getStations() {
         // given
         Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);

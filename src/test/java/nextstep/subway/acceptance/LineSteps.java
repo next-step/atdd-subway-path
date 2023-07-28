@@ -39,8 +39,8 @@ public class LineSteps {
         return ApiRequest.get("/lines/" + id);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Long upStationId, Long downStationId) {
-        Map<String, String> params = ParameterFactory.toSectionCreateParams(upStationId, downStationId);
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = ParameterFactory.toSectionCreateParams(upStationId, downStationId, distance);
         return ApiRequest.post("/lines/" + lineId + "/sections", params);
     }
 

@@ -28,11 +28,11 @@ public class ParameterFactory {
         return lineCreateParams;
     }
 
-    public static Map<String, String> toSectionCreateParams(Long upStationId, Long downStationId) {
+    public static Map<String, String> toSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", distance + "");
         return params;
     }
 
