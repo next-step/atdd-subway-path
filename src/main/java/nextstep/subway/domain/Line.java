@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.ErrorType;
+import nextstep.subway.exception.SectionAddException;
 
 import javax.persistence.*;
 import java.util.List;
@@ -25,6 +27,12 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
+        if (!sections.getSections().isEmpty() && !sections.getStations().contains(upStation) && !sections.getStations().contains(downStation)) {
+            throw new SectionAddException(ErrorType.STATIONS_NOT_EXIST_IN_LINE);
+        }
+        if (sections.getStations().contains(upStation) && sections.getStations().contains(downStation)) {
+            throw new SectionAddException(ErrorType.STATIONS_EXIST_IN_LINE);
+        }
         sections.add(this, upStation, downStation, distance);
     }
 
