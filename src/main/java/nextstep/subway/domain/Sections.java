@@ -24,6 +24,14 @@ public class Sections {
         this.sections = sections;
     }
 
+    public void addFirst(Line line, Station upStation, Station downStation, int distance) {
+        sections.add(0, new Section(line, upStation, downStation, distance));
+    }
+
+    public void addLast(Line line, Station upStation, Station downStation, int distance) {
+        sections.add(new Section(line, upStation, downStation, distance));
+    }
+
     public void addMiddle(Line line, Station upStation, Station downStation, int distance) {
         Optional<Section> existSection = sections.stream()
                 .filter(section -> section.equalUpStation(upStation) || section.equalDownStation(downStation))
@@ -41,14 +49,6 @@ public class Sections {
             sections.get(index).updateUpStationAndDistance(upStation, distance);
             sections.add(index + 1, new Section(line, upStation, downStation, distance));
         }
-    }
-
-    public void addFirst(Line line, Station upStation, Station downStation, int distance) {
-        sections.add(0, new Section(line, upStation, downStation, distance));
-    }
-
-    public void addLast(Line line, Station upStation, Station downStation, int distance) {
-        sections.add(new Section(line, upStation, downStation, distance));
     }
 
     public List<Section> getSections() {
