@@ -35,7 +35,10 @@ public enum SectionAddType {
         if (sections.containsAtUpStation(upStation)) {
             return SectionAddType.MIDDLE_UP_STATION;
         }
-        return SectionAddType.MIDDLE_DOWN_STATION;
+        if (sections.containsAtDownStation(downStation)) {
+            return SectionAddType.MIDDLE_DOWN_STATION;
+        }
+        throw new IllegalArgumentException();
     }
 
     public void apply(Sections sections, Section section) {

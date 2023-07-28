@@ -54,6 +54,11 @@ public class Sections {
                 .anyMatch(section -> section.equalUpStation(station));
     }
 
+    public boolean containsAtDownStation(Station downStation) {
+        return sections.stream()
+                .anyMatch(section -> section.equalDownStation(downStation));
+    }
+
     public List<Section> getSections() {
         return sections;
     }
