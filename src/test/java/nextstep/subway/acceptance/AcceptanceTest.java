@@ -13,15 +13,15 @@ import nextstep.subway.utils.DatabaseCleanup;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
 
-    @LocalServerPort
-    private int port;
+	@LocalServerPort
+	private int port;
 
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+	@Autowired
+	private DatabaseCleanup databaseCleanup;
 
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-        databaseCleanup.execute();
-    }
+	@BeforeEach
+	public void setUp() {
+		RestAssured.port = port;
+		databaseCleanup.execute();
+	}
 }

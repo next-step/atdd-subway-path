@@ -1,8 +1,19 @@
 package nextstep.subway.acceptance;
 
-import static nextstep.subway.utils.LineFixture.*;
-import static nextstep.subway.utils.StationFixture.*;
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.utils.LineFixture.신분당선_색상;
+import static nextstep.subway.utils.LineFixture.신분당선_이름;
+import static nextstep.subway.utils.LineFixture.지하철_노선_리스폰_변환;
+import static nextstep.subway.utils.LineFixture.지하철_노선_생성_요청;
+import static nextstep.subway.utils.LineFixture.지하철_노선_조회_요청;
+import static nextstep.subway.utils.LineFixture.지하철_노선의_구간_삭제_요청;
+import static nextstep.subway.utils.LineFixture.지하철_노선의_구간_추가_요청;
+import static nextstep.subway.utils.StationFixture.강남역_이름;
+import static nextstep.subway.utils.StationFixture.논현역_이름;
+import static nextstep.subway.utils.StationFixture.신논현역_이름;
+import static nextstep.subway.utils.StationFixture.신사역_이름;
+import static nextstep.subway.utils.StationFixture.양재역_이름;
+import static nextstep.subway.utils.StationFixture.지하철역_생성;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 

@@ -1,7 +1,9 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.utils.LineFixture.*;
-import static nextstep.subway.utils.StationFixture.*;
+import static nextstep.subway.utils.LineFixture.신분당선_색상;
+import static nextstep.subway.utils.LineFixture.신분당선_이름;
+import static nextstep.subway.utils.StationFixture.논현역_이름;
+import static nextstep.subway.utils.StationFixture.신사역_이름;
 
 import java.util.List;
 
