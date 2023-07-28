@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -16,10 +15,6 @@ import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
 import nextstep.subway.entity.group.factory.SectionActionFactory;
 import nextstep.subway.entity.group.factory.remove.SectionDeleteAction;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 
 @Embeddable
 public class SectionGroup {
@@ -232,39 +227,6 @@ public class SectionGroup {
 
         return endDownSection.isEqualsUpStation(section.getUpStationId()) &&
             endDownSection.isEqualsDownStation(section.getDownStationId());
-    }
-
-    public List<Station> getPath(Station source, Station target) {
-
-        return getGraph(source, target).getVertexList();
-
-    }
-
-    public int getPathDistance(Station source, Station target) {
-
-        return (int) getGraph(source, target).getWeight();
-    }
-
-    private GraphPath<Station, Station> getGraph(Station source, Station target) {
-
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-
-        getSections().forEach(section -> {
-            Station upStation = section.getUpStation();
-            Station downStation = section.getDownStation();
-
-            graph.addVertex(upStation);
-            graph.addVertex(downStation);
-            graph.setEdgeWeight(graph.addEdge(upStation, downStation), section.getDistance());
-        });
-
-        GraphPath<Station, Station> path = new DijkstraShortestPath(graph).getPath(source, target);
-
-        if (Objects.isNull(path)) {
-            throw new IllegalArgumentException("출발지와 목적지의 각 구간이 이어져있지 않습니다.");
-        }
-
-        return path;
     }
 
 }

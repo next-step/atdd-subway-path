@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
-import nextstep.subway.entity.group.SectionGroup;
+import nextstep.subway.entity.group.Path;
 import nextstep.subway.service.SectionService;
 import nextstep.subway.service.StationService;
 import nextstep.subway.service.response.PathResponse;
@@ -26,25 +26,17 @@ public class PathFacade {
 
     public PathResponse getPath(long source, long target) {
 
-        validateDontEquals(source, target);
-
         final Station start = stationService.findById(source);
         final Station finish = stationService.findById(target);
 
         final List<Section> sectionList = sectionService.findAll();
-        final SectionGroup sectionGroup = SectionGroup.of(sectionList);
+        final Path path = new Path(sectionList, start, finish);
 
         return new PathResponse(
-            sectionGroup.getPath(start, finish).stream()
+            path.getPath().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList()),
-            sectionGroup.getPathDistance(start, finish)
+            path.getPathDistance()
         );
-    }
-
-    private void validateDontEquals(long source, long target) {
-        if (source == target) {
-            throw new IllegalArgumentException(("출발지와 목적지가 같은 역일 수 없습니다."));
-        }
     }
 }
