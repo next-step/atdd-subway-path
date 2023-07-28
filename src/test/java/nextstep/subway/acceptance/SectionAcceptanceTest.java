@@ -264,10 +264,9 @@ public class SectionAcceptanceTest {
             // THEN
             assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-            List<String> stations = addResponse.jsonPath().getList("stations.name");
+            ExtractableResponse<Response> response = 아이디_노선_조회(첫째노선_아이디);
+            List<String> stations = response.jsonPath().getList("stations.name");
             assertThat(stations).containsExactly(두번째지하철역이름, 네번째지하철역이름, 첫째지하철역이름);
-
-
         }
         /**
          * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
