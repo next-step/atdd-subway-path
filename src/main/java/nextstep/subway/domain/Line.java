@@ -8,7 +8,6 @@ import nextstep.subway.exception.SectionAddException;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -28,18 +27,12 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        if (!sections.getSections().isEmpty() && !sections.getStations().contains(upStation) && !sections.getStations().contains(downStation)) {
+        List<Station> stations = sections.getStations();
+        if (!sections.isEmpty() && !stations.contains(upStation) && !stations.contains(downStation)) {
             throw new SectionAddException(ErrorType.STATIONS_NOT_EXIST_IN_LINE);
         }
-        if (sections.getStations().contains(upStation) && sections.getStations().contains(downStation)) {
+        if (stations.contains(upStation) && stations.contains(downStation)) {
             throw new SectionAddException(ErrorType.STATIONS_EXIST_IN_LINE);
-        }
-
-        Optional<Section> existSection = sections.getSections().stream()
-                .filter(section -> section.hasStation(upStation, downStation))
-                .findAny();
-        if (existSection.isPresent() && existSection.get().getDistance() <= distance) {
-            throw new SectionAddException(ErrorType.SECTION_DISTANCE_TOO_LONG);
         }
         sections.add(this, upStation, downStation, distance);
     }

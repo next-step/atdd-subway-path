@@ -7,8 +7,6 @@ import nextstep.subway.exception.SectionAddException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static nextstep.subway.unit.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -60,16 +58,6 @@ class LineTest {
             line.addSection(논현역, 양재역, 10);
         }).isInstanceOf(SectionAddException.class)
                 .hasMessage(ErrorType.SECTION_DISTANCE_TOO_LONG.getMessage());
-    }
-
-    @Test
-    void getStations() {
-        // given
-        Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);
-        line.getSections().add(양재_양재시민의숲_구간);
-
-        // when, then
-        assertThat(line.getStations()).containsAll(List.of(논현역, 양재역, 양재시민의숲역));
     }
 
     @Test

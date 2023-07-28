@@ -101,4 +101,22 @@ public class LineSectionServiceMockTest {
         }).isInstanceOf(SectionAddException.class)
                 .hasMessage(ErrorType.SECTION_DISTANCE_TOO_LONG.getMessage());
     }
+
+    @Test
+    void addSection_WithNewLineUpStation() {
+        // given
+        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        when(stationService.findById(stationIds.get(신사역))).thenReturn(신사역);
+        when(stationService.findById(stationIds.get(논현역))).thenReturn(논현역);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+        Section 신사_논현_구간 = new Section(신분당선, 신사역, 논현역, 10);
+
+        // when
+        // lineService.addSection 호출
+        lineSectionService.addSection(1L, new SectionRequest(stationIds.get(신사역), stationIds.get(논현역), 10));
+
+        // then
+        // lineService.findLineById 메서드를 통해 검증
+        assertThat(lineService.findById(1L).getSections().get(0)).isEqualTo(신사_논현_구간);
+    }
 }

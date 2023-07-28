@@ -1,12 +1,15 @@
 package nextstep.subway.domain;
 
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.ErrorType;
+import nextstep.subway.exception.SectionAddException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -20,6 +23,12 @@ public class Sections {
     }
 
     public void add(Line line, Station upStation, Station downStation, int distance) {
+        Optional<Section> existSection = sections.stream()
+                .filter(section -> section.hasStation(upStation, downStation))
+                .findAny();
+        if (existSection.isPresent() && existSection.get().getDistance() <= distance) {
+            throw new SectionAddException(ErrorType.SECTION_DISTANCE_TOO_LONG);
+        }
         sections.add(new Section(line, upStation, downStation, distance));
     }
 
@@ -46,5 +55,9 @@ public class Sections {
             throw new IllegalArgumentException();
         }
         sections.remove(lastSection);
+    }
+
+    public boolean isEmpty() {
+        return this.sections.isEmpty();
     }
 }
