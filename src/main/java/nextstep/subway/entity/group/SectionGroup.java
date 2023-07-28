@@ -228,4 +228,5 @@ public class SectionGroup {
         return endDownSection.isEqualsUpStation(section.getUpStationId()) &&
             endDownSection.isEqualsDownStation(section.getDownStationId());
     }
+
 }
