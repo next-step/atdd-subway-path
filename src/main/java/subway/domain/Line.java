@@ -50,6 +50,10 @@ public class Line {
         );
     }
 
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
     public Line update(LineRequest request) {
         this.name = request.getName().isBlank() ? this.name : request.getName();
         this.color = request.getColor().isBlank() ? this.color : request.getColor();
@@ -58,11 +62,11 @@ public class Line {
 
     public void addSection(Section section) {
         this.sections.add(section);
-        this.distance += section.getDistance();
+        this.distance = this.sections.getTotalDistance();
     }
 
     public void removeSection() {
-        this.distance -= sections.getLastSection().getDistance();
         this.sections.remove();
+        this.distance = this.sections.getTotalDistance();
     }
 }

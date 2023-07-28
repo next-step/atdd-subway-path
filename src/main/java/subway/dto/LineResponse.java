@@ -31,7 +31,7 @@ public class LineResponse {
             .name(line.getName())
             .color(line.getColor())
             .distance(line.getDistance())
-            .stations(line.getSections().getAllStations().stream()
+            .stations(line.getStations().stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList())
             )
