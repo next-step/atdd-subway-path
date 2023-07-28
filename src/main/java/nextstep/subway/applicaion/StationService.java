@@ -41,12 +41,10 @@ public class StationService {
         return stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new);
     }
 
-
     private StationResponse createStationResponse(Station station) {
         return new StationResponse(
                 station.getId(),
                 station.getName()
         );
     }
-
 }
