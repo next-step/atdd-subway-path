@@ -6,6 +6,7 @@ import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.BadRequestPathException;
+import nextstep.subway.unit.fixture.PathFixture;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static nextstep.subway.unit.fixture.LineFixture.지하철_노선_생성;
+import static nextstep.subway.unit.fixture.PathFixture.*;
 import static nextstep.subway.unit.fixture.SectionFixture.지하철_구간_생성;
 import static nextstep.subway.unit.fixture.StationFixture.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,7 +55,7 @@ public class PathTest {
     @DisplayName("최단 경로 조회")
     @Test
     void findShortestPath() {
-        Path shortestPath = new PathFinder(sections).getShortestPath(교대역, 양재역);
+        Path shortestPath = 지하철_최단_경로_조회(sections,교대역, 양재역);
 
         int stationCount = shortestPath.getStations().size();
         assertThat(stationCount).isEqualTo(3);
@@ -70,7 +72,7 @@ public class PathTest {
         Line 신림선 = 지하철_노선_생성("신림선", "bg-red-600", 대방역, 신림역, DEFAULT_DISTANCE);
         sections.addAll(신림선.getSections());
 
-        assertThrows(BadRequestPathException.class,()->new PathFinder(sections).getShortestPath(대방역, 양재역));
+        assertThrows(BadRequestPathException.class,()->지하철_최단_경로_조회(sections,대방역, 양재역));
     }
 
 }
