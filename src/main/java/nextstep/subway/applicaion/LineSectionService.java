@@ -22,20 +22,20 @@ public class LineSectionService {
     @Transactional
     public Line saveLineWithSection(LineRequest request) {
         Line line = lineService.save(request);
-        createSection(request.getUpStationId(), request.getDownStationId(), line, request.getDistance());
+        createSection(line, request.getUpStationId(), request.getDownStationId(), request.getDistance());
         return line;
     }
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineService.findById(lineId);
-        createSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), line, sectionRequest.getDistance());
+        createSection(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
     }
 
-    private void createSection(Long upStationId, Long downStationId, Line line, int request2) {
+    private void createSection(Line line, Long upStationId, Long downStationId, int distance) {
         Station upStation = stationService.findById(upStationId);
         Station downStation = stationService.findById(downStationId);
-        line.addSection(upStation, downStation, request2);
+        line.addSection(upStation, downStation, distance);
     }
 
     @Transactional

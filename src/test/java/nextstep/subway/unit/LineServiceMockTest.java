@@ -13,8 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -31,12 +29,12 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        Station 판교역 = new Station(1L, "판교역");
-        Station 정자역 = new Station(2L, "정자역");
-        Station 미금역 = new Station(3L, "미금역");
+        Station 판교역 = new Station("판교역");
+        Station 정자역 = new Station("정자역");
+        Station 미금역 = new Station("미금역");
 
-        Line 신분당선 = new Line(1L, "신분당선", "red", new ArrayList<>());
-        Section 판교_정자_구간 = new Section(1L, 신분당선, 판교역, 정자역, 10);
+        Line 신분당선 = new Line("신분당선", "red");
+        Section 판교_정자_구간 = new Section(신분당선, 판교역, 정자역, 10);
         신분당선.getSections().add(판교_정자_구간);
 
         Section 정자_미금_구간 = new Section(신분당선, 정자역, 미금역, 10);

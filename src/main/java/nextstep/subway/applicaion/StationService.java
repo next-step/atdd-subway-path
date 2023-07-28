@@ -20,8 +20,7 @@ public class StationService {
 
     @Transactional
     public Station saveStation(StationRequest stationRequest) {
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return station;
+        return stationRepository.save(new Station(stationRequest.getName()));
     }
 
     public List<Station> findAllStations() {

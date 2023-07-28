@@ -5,21 +5,20 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
-    Station 판교역 = new Station(1L, "판교역");
-    Station 정자역 = new Station(2L, "정자역");
-    Station 미금역 = new Station(3L, "미금역");
+    Station 판교역 = new Station("판교역");
+    Station 정자역 = new Station("정자역");
+    Station 미금역 = new Station("미금역");
 
     @Test
     void addSection() {
         // given
-        Line line = new Line(1L, "신분당선", "red", new ArrayList<>());
-        Section 판교_정자_구간 = new Section(1L, line, 판교역, 정자역, 10);
+        Line line = new Line("신분당선", "red");
+        Section 판교_정자_구간 = new Section(line, 판교역, 정자역, 10);
         line.getSections().add(판교_정자_구간);
 
         Section 정자_미금_구간 = new Section(line, 정자역, 미금역, 10);
@@ -34,9 +33,9 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        Line line = new Line(1L, "신분당선", "red", new ArrayList<>());
-        Section 판교_정자_구간 = new Section(1L, line, 판교역, 정자역, 10);
-        Section 정자_미금_구간 = new Section(2L, line, 정자역, 미금역, 10);
+        Line line = new Line("신분당선", "red");
+        Section 판교_정자_구간 = new Section(line, 판교역, 정자역, 10);
+        Section 정자_미금_구간 = new Section(line, 정자역, 미금역, 10);
         line.getSections().add(판교_정자_구간);
         line.getSections().add(정자_미금_구간);
 
@@ -47,9 +46,9 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        Line line = new Line(1L, "신분당선", "red", new ArrayList<>());
-        Section 판교_정자_구간 = new Section(1L, line, 판교역, 정자역, 10);
-        Section 정자_미금_구간 = new Section(2L, line, 정자역, 미금역, 10);
+        Line line = new Line("신분당선", "red");
+        Section 판교_정자_구간 = new Section(line, 판교역, 정자역, 10);
+        Section 정자_미금_구간 = new Section(line, 정자역, 미금역, 10);
         line.getSections().add(판교_정자_구간);
         line.getSections().add(정자_미금_구간);
 
