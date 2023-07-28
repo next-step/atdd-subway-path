@@ -69,4 +69,7 @@ public class Line {
 		return color;
 	}
 
+	public List<Section> getSections() {
+		return sections.getSections();
+	}
 }

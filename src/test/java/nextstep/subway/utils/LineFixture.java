@@ -24,6 +24,8 @@ public class LineFixture {
 	public static final String 신분당선_색상 = "red";
 	public static final String 경강선_이름 = "경강선";
 	public static final String 경강선_색상 = "blue";
+	public static final String 수인분당선_이름 = "수인분당선";
+	public static final String 수인분당선_색상 = "yellow";
 
 	public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color,
 		Long upStationId, Long downStationId, Integer distance) {

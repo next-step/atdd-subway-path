@@ -10,6 +10,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.StationNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,8 +30,13 @@ public class StationService {
 
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
-                .map(this::createStationResponse)
-                .collect(Collectors.toList());
+            .map(this::createStationResponse)
+            .collect(Collectors.toList());
+    }
+
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(StationNotFoundException::new);
     }
 
     @Transactional
@@ -40,8 +46,8 @@ public class StationService {
 
     private StationResponse createStationResponse(Station station) {
         return new StationResponse(
-                station.getId(),
-                station.getName()
+            station.getId(),
+            station.getName()
         );
     }
 }
