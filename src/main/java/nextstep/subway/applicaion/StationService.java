@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +45,9 @@ public class StationService {
     }
 
     public Station findById(Long id) {
+        if (Objects.isNull(id)) {
+            throw new IllegalArgumentException();
+        }
         return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 }

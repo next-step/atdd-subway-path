@@ -11,9 +11,8 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -27,7 +26,11 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.sections = sections;
+        this.sections = new Sections(sections);
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.add(this, upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -55,6 +58,6 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 }

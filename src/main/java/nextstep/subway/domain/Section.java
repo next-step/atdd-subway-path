@@ -28,10 +28,20 @@ public class Section {
     }
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        validate(line, upStation, downStation, distance);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validate(Line line, Station upStation, Station downStation, int distance) {
+        if (line == null || upStation == null || downStation == null) {
+            throw new IllegalArgumentException();
+        }
+        if (distance == 0) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public Section(Long id, Line line, Station upStation, Station downStation, int distance) {

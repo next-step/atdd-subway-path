@@ -29,12 +29,14 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
-            Station upStation = stationService.findById(request.getUpStationId());
-            Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
-        }
+        createSection(request.getUpStationId(), request.getDownStationId(), line, request.getDistance());
         return createLineResponse(line);
+    }
+
+    private void createSection(Long request, Long request1, Line line, int request2) {
+        Station upStation = stationService.findById(request);
+        Station downStation = stationService.findById(request1);
+        line.addSection(upStation, downStation, request2);
     }
 
     public List<LineResponse> showLines() {
@@ -66,11 +68,8 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
-
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        createSection(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), line, sectionRequest.getDistance());
     }
 
     private LineResponse createLineResponse(Line line) {
