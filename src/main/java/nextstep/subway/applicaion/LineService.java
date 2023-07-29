@@ -33,13 +33,8 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
-
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
-        }
+        line.updateName(lineRequest.getName());
+        line.updateColor(lineRequest.getColor());
     }
 
     @Transactional

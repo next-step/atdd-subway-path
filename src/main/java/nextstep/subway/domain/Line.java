@@ -25,16 +25,20 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        SectionAddType addType = SectionAddType.find(sections, upStation, downStation);
+        SectionAddType addType = sections.findAddType(upStation, downStation);
         addType.apply(sections, new Section(this, upStation, downStation, distance));
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void updateName(String name) {
+        if (name != null) {
+            this.name = name;
+        }
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void updateColor(String color) {
+        if (color != null) {
+            this.color = color;
+        }
     }
 
     public List<Section> getSections() {

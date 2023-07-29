@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.exception.ErrorType;
 import nextstep.subway.exception.SectionAddException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -28,6 +29,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("구간 추가 기능")
     void addSection() {
         // given
         Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);
@@ -40,6 +42,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("추가하려는 구간의 모든 역이 노선에 존재하지 않는 경우")
     void addSectionException_withoutStations() {
         // then
         assertThatThrownBy(() -> {
@@ -49,6 +52,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("추가하려는 구간의 모든 역이 노선에 존재하는 경우")
     void addSectionException_hasAllStations() {
         // then
         assertThatThrownBy(() -> {
@@ -58,6 +62,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("기존 구간 사이에 추가하려는 구간의 거리가 기존 구간의 거리 보다 긴 경우")
     void addSectionException_distanceToLong() {
         // then
         assertThatThrownBy(() -> {
@@ -67,6 +72,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("새로운 구간을 상행 종점으로 추가하는 경우")
     void addSectionAtFirst() {
         // given
         Section 신사_논현_구간 = new Section(line, 신사역, 논현역, 10);
@@ -80,6 +86,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("새로운 구간을 하행 종점으로 추가하는 경우")
     void addSectionAtLast() {
         // given
         Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);
@@ -93,6 +100,7 @@ class LineTest {
     }
 
     @ParameterizedTest
+    @DisplayName("기준 구간 사이에 구간을 추가하는 경우")
     @MethodSource("provideSections")
     void addSectionAtMiddle(Station upStation, Station downStation, int distance) {
         // given
@@ -115,6 +123,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("구간 삭제 기능")
     void removeSection() {
         // given
         Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);

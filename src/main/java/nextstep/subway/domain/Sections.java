@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.ErrorType;
+import nextstep.subway.exception.SectionAddException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -49,12 +51,12 @@ public class Sections {
         sections.add(index + 1, section);
     }
 
-    public boolean containsAtUpStation(Station station) {
+    private boolean containsAtUpStation(Station station) {
         return sections.stream()
                 .anyMatch(section -> section.equalUpStation(station));
     }
 
-    public boolean containsAtDownStation(Station downStation) {
+    private boolean containsAtDownStation(Station downStation) {
         return sections.stream()
                 .anyMatch(section -> section.equalDownStation(downStation));
     }
@@ -82,5 +84,29 @@ public class Sections {
             throw new IllegalArgumentException();
         }
         sections.remove(lastSection);
+    }
+
+    public SectionAddType findAddType(Station upStation, Station downStation) {
+        Stations stations = new Stations(getStations());
+        if (!stations.empty() && stations.doesNotContainAll(upStation, downStation)) {
+            throw new SectionAddException(ErrorType.STATIONS_NOT_EXIST_IN_LINE);
+        }
+        if (stations.containsAll(upStation, downStation)) {
+            throw new SectionAddException(ErrorType.STATIONS_EXIST_IN_LINE);
+        }
+
+        if (stations.empty() || stations.equalLastStation(upStation)) {
+            return SectionAddType.LAST;
+        }
+        if (stations.equalFirstStation(downStation)) {
+            return SectionAddType.FIRST;
+        }
+        if (containsAtUpStation(upStation)) {
+            return SectionAddType.MIDDLE_UP_STATION;
+        }
+        if (containsAtDownStation(downStation)) {
+            return SectionAddType.MIDDLE_DOWN_STATION;
+        }
+        throw new IllegalArgumentException();
     }
 }
