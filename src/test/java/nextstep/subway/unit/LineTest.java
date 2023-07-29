@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.utils.LineFixture.*;
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.utils.LineFixture.신분당선_이름;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 

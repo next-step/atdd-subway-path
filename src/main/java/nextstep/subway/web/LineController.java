@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -25,54 +24,54 @@ import nextstep.subway.dto.SectionAddRequest;
 @RestController
 public class LineController {
 
-    private final LineService lineService;
+	private final LineService lineService;
 
-    public LineController(LineService lineService) {
-        this.lineService = lineService;
-    }
+	public LineController(LineService lineService) {
+		this.lineService = lineService;
+	}
 
-    @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
-        Line line = lineService.save(lineCreateRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-            .body(LineResponse.from(line));
-    }
+	@PostMapping
+	public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
+		LineResponse lineResponse = lineService.save(lineCreateRequest);
+		return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
+			.body(lineResponse);
+	}
 
-    @GetMapping
-    public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(LineResponse.from(lineService.findAll()));
-    }
+	@GetMapping
+	public ResponseEntity<List<LineResponse>> showLines() {
+		return ResponseEntity.ok().body(LineResponse.from(lineService.findAll()));
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        return ResponseEntity.ok()
-            .body(LineResponse.from(lineService.findById(id)));
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
+		return ResponseEntity.ok()
+			.body(lineService.findById(id));
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable Long id,
-        @RequestBody LineUpdateRequest lineUpdateRequest) {
-        lineService.update(id, lineUpdateRequest);
-        return ResponseEntity.ok().build();
-    }
+	@PutMapping("/{id}")
+	public ResponseEntity<Void> updateLine(@PathVariable Long id,
+		@RequestBody LineUpdateRequest lineUpdateRequest) {
+		lineService.update(id, lineUpdateRequest);
+		return ResponseEntity.ok().build();
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+		lineService.delete(id);
+		return ResponseEntity.noContent().build();
+	}
 
-    @PostMapping("/{id}/sections")
-    public ResponseEntity<LineResponse> createSection(@PathVariable Long id,
-        @RequestBody SectionAddRequest sectionAddRequest) {
-        Line line = lineService.addSection(id, sectionAddRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId()))
-            .body(LineResponse.from(line));
-    }
+	@PostMapping("/{id}/sections")
+	public ResponseEntity<LineResponse> createSection(@PathVariable Long id,
+		@RequestBody SectionAddRequest sectionAddRequest) {
+		LineResponse lineResponse = lineService.addSection(id, sectionAddRequest);
+		return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId()))
+			.body(lineResponse);
+	}
 
-    @DeleteMapping("/{id}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-        lineService.deleteSection(id, stationId);
-        return ResponseEntity.noContent().build();
-    }
+	@DeleteMapping("/{id}/sections")
+	public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
+		lineService.deleteSection(id, stationId);
+		return ResponseEntity.noContent().build();
+	}
 }

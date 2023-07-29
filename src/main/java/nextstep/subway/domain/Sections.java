@@ -27,6 +27,10 @@ public class Sections {
 		this.sections = new ArrayList<>();
 	}
 
+	public Sections(List<Section> sections) {
+		this.sections = sections;
+	}
+
 	public void addSection(Section section) {
 		if (sections.isEmpty()) {
 			this.sections.add(section);
@@ -106,12 +110,6 @@ public class Sections {
 
 	}
 
-	private void validateSectionSize() {
-		if (sections.size() < 2) {
-			throw new SectionLastRemoveException();
-		}
-	}
-
 	private void removeSectionWhenSectionNotEmpty(Section upSection, Section downSection) {
 		if (Objects.nonNull(upSection)) {
 			sections.remove(upSection);
@@ -181,5 +179,15 @@ public class Sections {
 				.noneMatch(section -> section.isSameDownStation(s.getId())))
 			.findAny()
 			.orElseThrow();
+	}
+
+	public List<Section> getSections() {
+		return sections;
+	}
+
+	public int getTotalDistance() {
+		return (int)sections.stream()
+			.mapToLong(Section::getDistance)
+			.sum();
 	}
 }

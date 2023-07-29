@@ -1,6 +1,6 @@
 package nextstep.subway.unit;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -133,8 +133,7 @@ public class SectionsTest {
 	@Test
 	void 구간을_삭제할_때_마지막_구간이면_에러를_반환한다() {
 		// then
-		Assertions.assertThrows(SectionLastRemoveException.class,
-			() -> sections.removeSection(논현역.getId()));
+		Assertions.assertThrows(SectionLastRemoveException.class, () -> sections.removeSection(논현역.getId()));
 	}
 
 	@Test
@@ -143,7 +142,6 @@ public class SectionsTest {
 		sections.addSection(new Section(신분당선, 논현역, 신논현역, 10));
 
 		// then
-		Assertions.assertThrows(SectionNotIncludedException.class,
-			() -> sections.removeSection(강남역.getId()));
+		Assertions.assertThrows(SectionNotIncludedException.class, () -> sections.removeSection(강남역.getId()));
 	}
 }

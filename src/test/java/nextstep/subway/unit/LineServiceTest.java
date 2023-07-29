@@ -1,7 +1,9 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.utils.LineFixture.*;
-import static nextstep.subway.utils.StationFixture.*;
+import static nextstep.subway.utils.LineFixture.신분당선_색상;
+import static nextstep.subway.utils.LineFixture.신분당선_이름;
+import static nextstep.subway.utils.StationFixture.논현역_이름;
+import static nextstep.subway.utils.StationFixture.신사역_이름;
 
 import java.util.List;
 
@@ -17,6 +19,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionAddRequest;
 
 @SpringBootTest
@@ -43,7 +46,7 @@ public class LineServiceTest {
 			savedStation2.getId(), 10);
 
 		// when
-		Line actual = lineService.addSection(savedLine.getId(), sectionAddRequest);
+		LineResponse actual = lineService.addSection(savedLine.getId(), sectionAddRequest);
 
 		// then
 		Assertions.assertThat(actual.getStations())

@@ -8,33 +8,32 @@ import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineCreateRequest;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionAddRequest;
 import nextstep.subway.exception.LineDuplicationNameException;
 import nextstep.subway.exception.LineNotFoundException;
-import nextstep.subway.exception.StationNotFoundException;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
 
 	private final LineRepository lineRepository;
-	private final StationRepository stationRepository;
+	private final StationService stationService;
 
-	public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+	public LineService(LineRepository lineRepository, StationService stationService) {
 		this.lineRepository = lineRepository;
-		this.stationRepository = stationRepository;
+		this.stationService = stationService;
 	}
 
 	@Transactional
-	public Line save(LineCreateRequest lineCreateRequest) {
+	public LineResponse save(LineCreateRequest lineCreateRequest) {
 		validateDuplicationLineName(lineCreateRequest.getName());
 		Line line = lineRepository.save(lineCreateRequest.toLine());
 		addSection(line, lineCreateRequest.getUpStationId(), lineCreateRequest.getDownStationId(),
 			lineCreateRequest.getDistance());
-		return line;
+		return LineResponse.from(line);
 	}
 
 	private void validateDuplicationLineName(String name) {
@@ -44,23 +43,18 @@ public class LineService {
 	}
 
 	private void addSection(Line line, Long upStationId, Long DownStationId, Integer distance) {
-		Station upStation = getStation(upStationId);
-		Station downStation = getStation(DownStationId);
+		Station upStation = stationService.findById(upStationId);
+		Station downStation = stationService.findById(DownStationId);
 		line.addSection(upStation, downStation, distance);
-	}
-
-	private Station getStation(Long stationId) {
-		return stationRepository.findById(stationId)
-			.orElseThrow(StationNotFoundException::new);
 	}
 
 	public List<Line> findAll() {
 		return lineRepository.findAll();
 	}
 
-	public Line findById(Long id) {
-		return lineRepository.findById(id)
-			.orElseThrow(LineNotFoundException::new);
+	public LineResponse findById(Long id) {
+		return LineResponse.from(lineRepository.findById(id)
+			.orElseThrow(LineNotFoundException::new));
 	}
 
 	@Transactional
@@ -76,12 +70,12 @@ public class LineService {
 	}
 
 	@Transactional
-	public Line addSection(Long id, SectionAddRequest sectionAddRequest) {
+	public LineResponse addSection(Long id, SectionAddRequest sectionAddRequest) {
 		Line line = lineRepository.findById(id)
 			.orElseThrow(LineNotFoundException::new);
 		addSection(line, sectionAddRequest.getUpStationId(), sectionAddRequest.getDownStationId(),
 			sectionAddRequest.getDistance());
-		return line;
+		return LineResponse.from(line);
 	}
 
 	@Transactional

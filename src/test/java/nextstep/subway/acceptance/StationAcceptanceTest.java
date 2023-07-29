@@ -1,7 +1,11 @@
 package nextstep.subway.acceptance;
 
-import static nextstep.subway.utils.StationFixture.*;
-import static org.assertj.core.api.Assertions.*;
+import static nextstep.subway.utils.StationFixture.강남역_이름;
+import static nextstep.subway.utils.StationFixture.양재역_이름;
+import static nextstep.subway.utils.StationFixture.지하철역_삭제_요청;
+import static nextstep.subway.utils.StationFixture.지하철역_생성_요청;
+import static nextstep.subway.utils.StationFixture.지하철역_조회_요청;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
