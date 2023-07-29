@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -83,6 +84,10 @@ public class Sections {
 
     public List<Section> getSections() {
         return this.sections;
+    }
+
+    public Stream<Section> stream() {
+        return this.sections.stream();
     }
 
     private boolean isInMiddle(
