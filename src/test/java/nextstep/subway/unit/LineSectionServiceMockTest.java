@@ -218,4 +218,39 @@ public class LineSectionServiceMockTest {
         // then
         assertThat(lineService.findById(1L).getSections()).doesNotContain(양재_양재시민의숲_구간);
     }
+
+    @Test
+    @DisplayName("중간역 구간 삭제")
+    void removeMiddleSection() {
+        // given
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, 10);
+        신분당선.getSections().add(양재_양재시민의숲_구간);
+        Section 논현_양재시민의숲_구간 = new Section(신분당선, 논현역, 양재시민의숲역, 20);
+
+        when(stationService.findById(stationIds.get(양재역))).thenReturn(양재역);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+
+        // when
+        lineSectionService.deleteSection(1L, stationIds.get(양재역));
+
+        // then
+        assertThat(lineService.findById(1L).getSections()).containsExactly(논현_양재시민의숲_구간);
+    }
+
+    @Test
+    @DisplayName("상행종점역 구간 삭제")
+    void removeFirstSection() {
+        // given
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, 10);
+        신분당선.getSections().add(양재_양재시민의숲_구간);
+
+        when(stationService.findById(stationIds.get(논현역))).thenReturn(논현역);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+
+        // when
+        lineSectionService.deleteSection(1L, stationIds.get(논현역));
+
+        // then
+        assertThat(lineService.findById(1L).getSections()).containsExactly(양재_양재시민의숲_구간);
+    }
 }

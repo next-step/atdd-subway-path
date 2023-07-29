@@ -154,4 +154,33 @@ class LineTest {
                 Arguments.of(양재역)
         );
     }
+
+    @Test
+    @DisplayName("중간역 구간 삭제")
+    void removeMiddleSection() {
+        // given
+        Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);
+        line.getSections().add(양재_양재시민의숲_구간);
+        Section 논현_양재시민의숲_구간 = new Section(line, 논현역, 양재시민의숲역, 20);
+
+        // when
+        line.removeSection(양재역);
+
+        // then
+        assertThat(line.getSections()).containsExactly(논현_양재시민의숲_구간);
+    }
+
+    @Test
+    @DisplayName("상행종점역 구간 삭제")
+    void removeFirstSection() {
+        // given
+        Section 양재_양재시민의숲_구간 = new Section(line, 양재역, 양재시민의숲역, 10);
+        line.getSections().add(양재_양재시민의숲_구간);
+
+        // when
+        line.removeSection(논현역);
+
+        // then
+        assertThat(line.getSections()).containsExactly(양재_양재시민의숲_구간);
+    }
 }

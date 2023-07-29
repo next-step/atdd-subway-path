@@ -55,6 +55,8 @@ public class Line {
         if (sections.remainOneSection()) {
             throw new SectionDeleteException(ErrorType.CANNOT_REMOVE_LAST_SECTION);
         }
-        sections.removeLast(station);
+        Stations stations = new Stations(sections.getStations());
+        SectionDeleteType deleteType = SectionDeleteType.find(stations, station);
+        deleteType.apply(sections, station);
     }
 }

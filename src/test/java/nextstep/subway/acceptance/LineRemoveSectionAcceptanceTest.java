@@ -52,7 +52,7 @@ class LineRemoveSectionAcceptanceTest extends AcceptanceTest {
      * When 종점역을 삭제하면
      * Then 구간이 삭제되고, 종점이 직전역으로 바뀐다.
      */
-    @DisplayName("노선의 하행 종점역 삭제")
+    @DisplayName("노선의 하행 종점역 구간 삭제")
     @Test
     void removeLastDownStation() {
         // given
@@ -66,5 +66,25 @@ class LineRemoveSectionAcceptanceTest extends AcceptanceTest {
         List<Long> stations = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
         assertThat(stations).doesNotContain(양재시민의숲역);
         assertThat(stations.get(stations.size() - 1)).isEqualTo(양재역);
+    }
+
+    /**
+     * Given 새로운 구간을 등록한 후
+     * When 중간역을 삭제하면
+     * Then 구간이 변경되며, 거리는 두 구간의 합이 된다.
+     */
+    @DisplayName("노선의 중간역 구간 삭제")
+    @Test
+    void removeMiddleStation() {
+        // given
+        Long 양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 양재역, 양재시민의숲역, 10);
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+
+        // then
+        List<Long> stations = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
+        assertThat(stations).containsExactly(논현역, 양재시민의숲역);
     }
 }

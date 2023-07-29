@@ -113,4 +113,22 @@ public class Sections {
     public boolean remainOneSection() {
         return sections.size() == 1;
     }
+
+    public void removeMiddle(Station station) {
+        Section target = sections.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst()
+                .orElseThrow();
+
+        int index = sections.indexOf(target);
+        target.removeStation(sections.get(index + 1));
+        sections.remove(index + 1);
+    }
+
+    public void removeFirst(Station station) {
+        if (!sections.get(0).equalUpStation(station)) {
+            throw new IllegalArgumentException();
+        }
+        sections.remove(0);
+    }
 }
