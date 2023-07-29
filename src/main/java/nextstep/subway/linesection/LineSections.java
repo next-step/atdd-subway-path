@@ -72,16 +72,6 @@ public class LineSections {
             throw new BadRequestException("the line doesnt have any section.");
     }
 
-    public boolean isMiddle(LineSection lineSection) {
-        if (getSections().isEmpty())
-            return false;
-        if (getFirstStation().equals(lineSection.getDownStation()))
-            return false;
-        if (getLastStation().equals(lineSection.getUpStation()))
-            return false;
-        return true;
-    }
-
     public Station getFirstStation() {
         return getFirstSection().getUpStation();
     }
@@ -98,4 +88,13 @@ public class LineSections {
         checkSectionsEmpty();
         return getSections().get(0);
     }
+
+    public boolean isFirst(LineSection lineSection) {
+        return getFirstStation().equals(lineSection.getDownStation());
+    }
+
+    public boolean isEnd(LineSection lineSection) {
+        return getLastStation().equals(lineSection.getUpStation());
+    }
+
 }

@@ -56,37 +56,40 @@ public class Line {
     }
 
     public void addSection(LineSection lineSection) {
-        if (sections.getFirstStation().equals(lineSection.getDownStation())) {
+        if (sections.isFirst(lineSection)) {
             sections.getSections().set(0, lineSection);
             return;
         }
-        if (sections.isMiddle(lineSection)) {
-            Map<Boolean, List<LineSection>> partition = sections.getSections().stream()
-                    .filter(e -> e.getUpStation().equals(lineSection.getUpStation()) || e.getDownStation().equals(lineSection.getDownStation()))
-                    .collect(Collectors.partitioningBy(e -> e.getUpStation().equals(lineSection.getUpStation())));
+        if(sections.isEnd(lineSection)) {
+            sections.add(lineSection);
+            return;
+        }
 
-            partition.get(true)
-                    .stream()
-                    .findFirst()
-                    .ifPresent(e -> {
-                        if (e.getDistance() <= lineSection.getDistance())
-                            throw new BadRequestException("request section distance must be smaller than exist section disctance.");
-                        sections.add(LineSection.of(this, e.getUpStation(), lineSection.getDownStation(), lineSection.getDistance()));
-                        sections.add(LineSection.of(this, lineSection.getDownStation(), e.getDownStation(), e.getDistance() - lineSection.getDistance()));
-                        sections.remove(e);
-                    });
+        Map<Boolean, List<LineSection>> partition = sections.getSections().stream()
+                .filter(e -> e.getUpStation().equals(lineSection.getUpStation()) || e.getDownStation().equals(lineSection.getDownStation()))
+                .collect(Collectors.partitioningBy(e -> e.getUpStation().equals(lineSection.getUpStation())));
 
-            partition.get(false)
-                    .stream()
-                    .findFirst()
-                    .ifPresent(e -> {
-                        if (e.getDistance() <= lineSection.getDistance())
-                            throw new BadRequestException("request section distance must be smaller than exist section disctance.");
-                        sections.add(LineSection.of(this, e.getUpStation(), lineSection.getUpStation(), e.getDistance() - lineSection.getDistance()));
-                        sections.add(LineSection.of(this, lineSection.getUpStation(), e.getDownStation(), lineSection.getDistance()));
-                        sections.remove(e);
-                    });
-        } else sections.add(lineSection);
+        partition.get(true)
+                .stream()
+                .findFirst()
+                .ifPresent(e -> {
+                    if (e.getDistance() <= lineSection.getDistance())
+                        throw new BadRequestException("request section distance must be smaller than exist section disctance.");
+                    sections.add(LineSection.of(this, e.getUpStation(), lineSection.getDownStation(), lineSection.getDistance()));
+                    sections.add(LineSection.of(this, lineSection.getDownStation(), e.getDownStation(), e.getDistance() - lineSection.getDistance()));
+                    sections.remove(e);
+                });
+
+        partition.get(false)
+                .stream()
+                .findFirst()
+                .ifPresent(e -> {
+                    if (e.getDistance() <= lineSection.getDistance())
+                        throw new BadRequestException("request section distance must be smaller than exist section disctance.");
+                    sections.add(LineSection.of(this, e.getUpStation(), lineSection.getUpStation(), e.getDistance() - lineSection.getDistance()));
+                    sections.add(LineSection.of(this, lineSection.getUpStation(), e.getDownStation(), lineSection.getDistance()));
+                    sections.remove(e);
+                });
     }
 
 
