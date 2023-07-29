@@ -146,4 +146,13 @@ public class SectionsTest {
                 .hasMessage(ErrorType.STATIONS_EXIST_IN_LINE.getMessage());
     }
 
+    @Test
+    @DisplayName("하행종점역 구간 삭제")
+    void removeLast() {
+        Sections sections = new Sections(Stream.of(논현_양재_구간, 양재_양재시민의숲_구간).collect(Collectors.toList()));
+
+        sections.removeLast(양재시민의숲역);
+
+        assertThat(sections.getSections()).doesNotContain(양재_양재시민의숲_구간);
+    }
 }

@@ -201,4 +201,21 @@ public class LineSectionServiceMockTest {
                 Arguments.of(양재역)
         );
     }
+
+    @Test
+    @DisplayName("하행종점역 구간 삭제")
+    void removeLastSection() {
+        // given
+        Section 양재_양재시민의숲_구간 = new Section(신분당선, 양재역, 양재시민의숲역, 10);
+        신분당선.getSections().add(양재_양재시민의숲_구간);
+
+        when(stationService.findById(stationIds.get(양재시민의숲역))).thenReturn(양재시민의숲역);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+
+        // when
+        lineSectionService.deleteSection(1L, stationIds.get(양재시민의숲역));
+
+        // then
+        assertThat(lineService.findById(1L).getSections()).doesNotContain(양재_양재시민의숲_구간);
+    }
 }

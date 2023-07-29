@@ -7,8 +7,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import java.util.List;
+
+import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,5 +45,26 @@ class LineRemoveSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 새로운 구간을 등록한 후
+     * When 종점역을 삭제하면
+     * Then 구간이 삭제되고, 종점이 직전역으로 바뀐다.
+     */
+    @DisplayName("노선의 하행 종점역 삭제")
+    @Test
+    void removeLastDownStation() {
+        // given
+        Long 양재시민의숲역 = 지하철역_생성_요청("양재시민의숲역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, 양재역, 양재시민의숲역, 10);
+
+        // when
+        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재시민의숲역);
+
+        // then
+        List<Long> stations = 지하철_노선_조회_요청(신분당선).jsonPath().getList("stations.id", Long.class);
+        assertThat(stations).doesNotContain(양재시민의숲역);
+        assertThat(stations.get(stations.size() - 1)).isEqualTo(양재역);
     }
 }
