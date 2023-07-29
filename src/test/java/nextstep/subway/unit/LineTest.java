@@ -131,6 +131,10 @@ public class LineTest {
                 //then
                 assertThrows(BadRequestException.class, run);
             }
+
+            /**
+             * A-B, B-C 구간이 등록된 상황에서 B-C 구간을 등록할 수 없음
+             */
             @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
             @Test
             void exception_case2() {
@@ -138,6 +142,19 @@ public class LineTest {
                 line.addSection(LineSection.of(line, 창동역, 사당역, 10));
                 //when
                 Executable run = () -> line.addSection(LineSection.of(line, 창동역, 사당역, 10));
+                //then
+                assertThrows(BadRequestException.class, run);
+            }
+            /**
+             * A-B, B-C 구간이 등록된 상황에서 A-C 구간도 등록할 수 없음
+             */
+            @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+            @Test
+            void exception_case3() {
+                //given
+                line.addSection(LineSection.of(line, 창동역, 사당역, 10));
+                //when
+                Executable run = () -> line.addSection(LineSection.of(line, 노원역, 사당역, 10));
                 //then
                 assertThrows(BadRequestException.class, run);
             }
