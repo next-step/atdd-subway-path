@@ -3,6 +3,7 @@ package nextstep.subway.section;
 import static common.Constants.강남역;
 import static common.Constants.광교역;
 import static common.Constants.신논현역;
+import static common.Constants.양재역;
 import static common.Constants.판교역;
 import static nextstep.subway.section.SectionBuilder.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -219,5 +220,18 @@ public class SectionsTest {
 
         // then
         assertThat(sections.getSections()).hasSize(1);
+    }
+
+    @DisplayName("totalDistance() : 구간의 총 길이를 반환한다")
+    @Test
+    void totalDistance() {
+        Section firstSection = aSection().build();
+        Section secondSection = aSection()
+            .withStations(new Station(2L, 신논현역), new Station(3L, 양재역))
+            .build();
+
+        Sections sections = new Sections(new ArrayList<>(List.of(firstSection, secondSection)));
+
+        assertThat(sections.totalDistance()).isEqualTo(20);
     }
 }
