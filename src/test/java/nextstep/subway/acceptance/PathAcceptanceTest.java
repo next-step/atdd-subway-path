@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 경로 조회 기능")
 public class PathAcceptanceTest extends AcceptanceTest {
 
-    private static final String BASE_URL = "/paths";
 
     private static final int DEFAULT_DISTANCE = 10;
     private static final int SHORT_DISTANCE = 5;
@@ -28,13 +27,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private StationResponse 교대역, 강남역, 양재역, 남부터미널역;
 
 
-    /**                     10
-     *         교대역    --- *2호선* ---   강남역
-     *          |                        |
-     *   10   *3호선*                   *신분당선*  10
-     *          |                        |
-     *        남부터미널역  --- *3호선* ---   양재
-     *                        5
+    /**
+     * 10
+     * 교대역    --- *2호선* ---   강남역
+     * |                        |
+     * 10   *3호선*                   *신분당선*  10
+     * |                        |
+     * 남부터미널역  --- *3호선* ---   양재
+     * 5
      */
 
     @BeforeEach
@@ -54,7 +54,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .jsonPath()
                 .getObject("", LineResponse.class);
 
-        지하철_노선_구간_등록(삼호선.getId(),남부터미널역.getId(),양재역.getId(),SHORT_DISTANCE);
+        지하철_노선_구간_등록(삼호선.getId(), 남부터미널역.getId(), 양재역.getId(), SHORT_DISTANCE);
 
 
     }
@@ -69,7 +69,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         Long source = 교대역.getId();
         Long target = 양재역.getId();
 
-        ExtractableResponse<Response> response = 최단_경로_조회(BASE_URL + "?source=" + source + "&target=" + target);
+        ExtractableResponse<Response> response = 최단_경로_조회(source, target);
 
         PathResponse path = response.jsonPath().getObject("", PathResponse.class);
 
@@ -77,8 +77,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         int stationCount = path.getStations().size();
         assertThat(stationCount).isEqualTo(3);
-        assertThat(path.getStations().stream().mapToLong(it->it.getId())).containsExactly(교대역.getId(),남부터미널역.getId(),양재역.getId());
-        assertThat(path.getDistance()).isEqualTo(DEFAULT_DISTANCE+SHORT_DISTANCE);
+        assertThat(path.getStations().stream().mapToLong(it -> it.getId())).containsExactly(교대역.getId(), 남부터미널역.getId(), 양재역.getId());
+        assertThat(path.getDistance()).isEqualTo(DEFAULT_DISTANCE + SHORT_DISTANCE);
     }
 
     /**
@@ -90,7 +90,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void getPathsExceptionWhenSameSourceAndTarget() {
         Long stationId = 교대역.getId();
 
-        ExtractableResponse<Response> response = 최단_경로_조회(BASE_URL + "?source=" + stationId + "&target=" + stationId);
+        ExtractableResponse<Response> response = 최단_경로_조회(stationId, stationId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -112,7 +112,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         //when
         Long source = 교대역.getId();
         Long target = 신도림역_아이디;
-        ExtractableResponse<Response> response = 최단_경로_조회(BASE_URL + "?source=" + source + "&target=" + target);
+        ExtractableResponse<Response> response = 최단_경로_조회(source, target);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -127,7 +127,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void getPathsExceptionWhenNotExistedStation() {
         Long stationId = 교대역.getId();
 
-        ExtractableResponse<Response> response = 최단_경로_조회(BASE_URL + "?source=" + stationId + "&target=" + Integer.MIN_VALUE);
+        ExtractableResponse<Response> response = 최단_경로_조회(stationId, Long.MIN_VALUE);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
