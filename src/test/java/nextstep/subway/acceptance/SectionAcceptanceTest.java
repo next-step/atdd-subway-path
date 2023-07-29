@@ -165,22 +165,27 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 1개의 지하철 노선을 생성하고
-     * When 지하철 구간을 제거할때 제거 구간이 하행 종점역이 아닐 때를 등록한다
-     * Then 구간 등록에 실패한다.
+     * Given 1개의 지하철 노선을 생성하고 1개의 구간을 추가했을 때,
+     * When 중간구간을 제거한다.
+     * Then 지하철 최상단 구간의 하행역이 마지막 구간의 하행역으로 변화한다.
+     * Then 지하철 역이 3개에서 2개로 변화된다.
      */
-    @DisplayName("오류 케이스: 구간을 제거할때 제거 구간이 하행 종점역이 아닐때 등록에 실패한다.")
+    @DisplayName("두 구간에서 중간 구간을 제거하면 삭제에 성공하고 구간의 역 리스트가 변경된다.")
     @Test
-    void deleteSectionFromLineAgainstRule() {
+    void deleteMiddleSectionFromLine() {
         // GIVEN
         첫번째노선 = 노선_만들기(신분당선, BG_RED_600, 두번째지하철역_아이디, 첫째지하철역_아이디, 거리);
         첫째노선_아이디 = 첫번째노선.jsonPath().getString("id");
-        구간_추가(첫째노선_아이디, 첫째지하철역_아이디, 세번째지하철역_아이디, "10");
+
         // WHEN
-        ExtractableResponse<Response> response = 구간_제거(첫째노선_아이디, 첫째지하철역_아이디);
+        구간_추가(첫째노선_아이디, 첫째지하철역_아이디, 네번째지하철역_아이디, "10");
+        ExtractableResponse<Response> deleteResponse =구간_제거(첫째노선_아이디, 첫째지하철역_아이디);
 
         // THEN
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> response = 아이디_노선_조회(첫째노선_아이디);
+        assertThat(response.jsonPath().getList("stations.name")).containsExactly(두번째지하철역이름, 네번째지하철역이름);
+
     }
 
     /**

@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
-    @Getter
+
     @Embedded
     private final Sections sections = new Sections();
     @Id
@@ -58,6 +58,10 @@ public class Line {
 
     public void deleteSection(Station station) {
         sections.deleteSection(station);
+    }
+
+    public Section getLastSection( ) {
+        return sections.getLastSection();
     }
 
 }

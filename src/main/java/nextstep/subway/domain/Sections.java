@@ -32,28 +32,35 @@ public class Sections {
 
     Optional<Section> upMatch = sections.stream()
         .filter(registeredSection -> registeredSection.containSameUpStation(section))
-        .findAny();
+        .findFirst();
     Optional<Section> downMatch = sections.stream()
         .filter(registeredSection -> registeredSection.containSameDownStation(section))
         .findFirst();
 
     if (upMatch.isPresent()) {
-      Section registeredSection = upMatch.get();
-      compareDistance(section, registeredSection);
-      sections.add(
-          Section.of(line, registeredSection.getDistance() - section.getDistance(),
-              section.getDownStation(), registeredSection.getDownStation()));
-      sections.remove(registeredSection);
+      addUpSection(section, line, upMatch.get());
     }
     if (downMatch.isPresent()) {
-      Section registeredSection = downMatch.get();
-      compareDistance(section, registeredSection);
-      sections.add(
-          Section.of(line, registeredSection.getDistance() - section.getDistance(),
-              registeredSection.getUpStation(), section.getUpStation()));
-      sections.remove(registeredSection);
+      addDownSection(section, line, downMatch.get());
     }
+
     sections.add(section);
+  }
+
+  private void addDownSection(Section section, Line line, Section downMatch) {
+    compareDistance(section, downMatch);
+    sections.add(
+        Section.of(line, downMatch.getDistance() - section.getDistance(),
+            downMatch.getUpStation(), section.getUpStation()));
+    sections.remove(downMatch);
+  }
+
+  private void addUpSection(Section section, Line line, Section upMatch) {
+    compareDistance(section, upMatch);
+    sections.add(
+        Section.of(line, upMatch.getDistance() - section.getDistance(),
+            section.getDownStation(), upMatch.getDownStation()));
+    sections.remove(upMatch);
   }
 
   private void alreadyRegisteredValidate(Section registeredSection) {
@@ -62,34 +69,63 @@ public class Sections {
   }
 
   private void notRegisteredValidate(Section registeredSection) {
-    if (!getStations().contains(registeredSection.getUpStation()) && !getStations().contains(
-        registeredSection.getDownStation())) {
+    if (!getStations().contains(registeredSection.getUpStation()) &&
+        !getStations().contains(registeredSection.getDownStation())) {
       throw new IllegalArgumentException("등록된 Station이 해당 노선에 존재하지 않습니다.");
     }
   }
 
-  public void deleteSection(Station downStation) {
-    if (sections.stream().count() <= 1) {
+  public void deleteSection(Station targetStation) {
+    sectionMinimumSizeValidate();
+    notRegisteredStationValidate(targetStation);
+
+    if (getLastSection().containSameDownStation(targetStation)) {
+      sections.remove(getLastSection());
+      return;
+    }
+
+    Section upSection = getUpStationSameSection(targetStation);
+    Section downSection = getDownStationSameSection(targetStation);
+
+    sections.remove(upSection);
+    sections.remove(downSection);
+
+    sections.add(
+        Section.of(upSection.getLine(), upSection.getDistance() + downSection.getDistance(),
+            downSection.getUpStation(), upSection.getDownStation()));
+  }
+
+  private Section getDownStationSameSection(Station targetStation) {
+    return sections.stream()
+        .filter(section -> section.containSameDownStation(targetStation)).findFirst()
+        .orElseThrow(() -> new IllegalStateException("Section의 삭제에 실패 했습니다."));
+  }
+
+  private Section getUpStationSameSection(Station targetStation) {
+    return sections.stream()
+        .filter(section -> section.containSameUpStation(targetStation)).findFirst()
+        .orElseThrow(() -> new IllegalStateException("Section의 삭제에 실패 했습니다."));
+  }
+
+  private void notRegisteredStationValidate(Station targetStation) {
+    getStations().stream().filter(station -> station.equals(targetStation)).findAny().orElseThrow(
+        () -> new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다."));
+  }
+
+  private void sectionMinimumSizeValidate() {
+    if (sections.size() <= 1) {
       throw new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다.");
     }
-    Section lastSection = getLastSection();
-    if (!lastSection.getDownStation().equals(downStation)) {
-      throw new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다.");
-    }
-    getStations().stream().filter(station -> station.equals(downStation)).findAny()
-        .ifPresent(x -> new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다."));
-    sections.remove(sections.size() - 1);
   }
 
   public List<Station> getStations() {
     if (sections.isEmpty()) {
       return Collections.emptyList();
     }
+
     List<Station> stationList = new ArrayList<>();
-    List<Station> getDownStations = new ArrayList<>();
-    Section topSection = sections.stream().filter(section ->
-            !(getDownStations().contains(section.getUpStation()))).findFirst()
-        .orElseThrow(() -> new IllegalStateException("최상단의 상행역이 존재하지 않습니다. 확인이 필요합니다."));
+
+    Section topSection = getTopSection();
 
     stationList.add(topSection.getUpStation());
     stationList.add(topSection.getDownStation());
@@ -100,6 +136,13 @@ public class Sections {
     }
 
     return stationList;
+  }
+
+  private Section getTopSection() {
+    Section topSection = sections.stream().filter(section ->
+            !(getDownStations().contains(section.getUpStation()))).findFirst()
+        .orElseThrow(() -> new IllegalStateException("최상단의 상행역이 존재하지 않습니다. 확인이 필요합니다."));
+    return topSection;
   }
 
   public boolean hasNextSection(Section startingSection) {
