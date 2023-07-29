@@ -9,6 +9,8 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.SecetionExceptionCode;
+import nextstep.subway.exception.SubwayException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,7 +100,7 @@ public class LineService {
         Station station = stationService.findById(stationId);
 
         if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new IllegalArgumentException();
+            throw new SubwayException(SecetionExceptionCode.CANNOT_DELETE_SECTION, "현재 구간삭제는 마지막 구간만 가능합니다.");
         }
 
         line.getSections().remove(line.getSections().size() - 1);

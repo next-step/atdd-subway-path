@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.SecetionExceptionCode;
+import nextstep.subway.exception.StationExceptionCode;
+import nextstep.subway.exception.SubwayException;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ResponseStatusException;
@@ -69,8 +72,8 @@ public class Sections {
     }
 
     List<Station> stationsOfAllSection = this.getStationsOfAllSection();
-    throwIfBothStationAreNotIncluded(stationsOfAllSection, newSection);
     throwIfBothStationAreAlreadyIncluded(newSection);
+    throwIfBothStationAreNotIncluded(stationsOfAllSection, newSection);
 
     sections.stream()
         .filter(section -> section.isSuperSetOf(newSection))
@@ -128,20 +131,20 @@ public class Sections {
         .filter(section -> section.isSectionEquals(newSection))
         .findFirst()
         .ifPresent(section -> {
-          throw new IllegalStateException();
+          throw new SubwayException(SecetionExceptionCode.SECTION_ALREADY_EXIST);
         });
   }
 
   // 새로운 구간의 상,하행역 모두 노선에 있는 역이면 exception
   private void throwIfBothStationAreNotIncluded(List<Station> stations, Section newSection) {
     if (stations.contains(newSection.getUpStation()) && stations.contains(newSection.getDownStation())) {
-      throw new IllegalStateException();
+      throw new SubwayException(StationExceptionCode.STATION_ALREADY_EXIST);
     }
   }
 
   public void removeSectionDownStationOf(Station station) {
     if (CollectionUtils.isEmpty(sections)) {
-      throw new IllegalStateException();
+      throw new SubwayException(SecetionExceptionCode.CANNOT_DELETE_SECTION, "삭제 할 구간이 없습니다.");
     }
 
     // 하행 종점역만 제거 할 수 있음
@@ -151,5 +154,4 @@ public class Sections {
       sections.remove(lastIdx);
     }
   }
-
 }

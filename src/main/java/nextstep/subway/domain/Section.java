@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.SecetionExceptionCode;
+import nextstep.subway.exception.SubwayException;
 
 @Entity
 @NoArgsConstructor
@@ -82,10 +84,16 @@ public class Section {
     public void interposeSectionAtDownStation(Section newSection) {
         this.downStation = newSection.upStation;
         this.distance -= newSection.distance;
+        if (distance <= 0) {
+            throw new SubwayException(SecetionExceptionCode.EXCEED_MAXIMUM_DISTANCE);
+        }
     }
 
     public void interposeSectionAtUpStation(Section newSection) {
         this.upStation = newSection.downStation;
         this.distance -= newSection.distance;
+        if (distance <= 0) {
+            throw new SubwayException(SecetionExceptionCode.EXCEED_MAXIMUM_DISTANCE);
+        }
     }
 }

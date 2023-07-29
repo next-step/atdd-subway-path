@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import nextstep.config.BaseUnitTest;
 import nextstep.subway.applicaion.LineService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -19,7 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class LineServiceMockTest {
+public class LineServiceMockTest extends BaseUnitTest {
 
     @Mock
     private LineRepository lineRepository;

@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import java.util.List;
+import nextstep.config.BaseUnitTest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("구간 단위테스트")
-class LineTest {
+class LineTest extends BaseUnitTest {
 
     private Station 봉천역;
     private Station 서울대입구역;
