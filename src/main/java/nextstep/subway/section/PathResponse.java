@@ -1,6 +1,8 @@
 package nextstep.subway.section;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import nextstep.subway.station.Station;
 import nextstep.subway.station.StationResponse;
 
 public class PathResponse {
@@ -9,8 +11,10 @@ public class PathResponse {
 
     public PathResponse() {}
 
-    public PathResponse(List<StationResponse> stations, int distance) {
-        this.stations = stations;
+    public PathResponse(List<Station> stations, int distance) {
+        this.stations = stations.stream()
+            .map(StationResponse::new)
+            .collect(Collectors.toList());
         this.distance = distance;
     }
 

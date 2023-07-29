@@ -9,7 +9,9 @@ public class SectionResponse {
     public SectionResponse() {}
 
     public SectionResponse(final Section section) {
-        this(section.getId(), section.getLine().getId(), section.getUpStation().getId(),
+        this(section.getId(),
+            section.getLine().getId(),
+            section.getUpStation().getId(),
             section.getDownStation().getId());
     }
 
