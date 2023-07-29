@@ -32,7 +32,7 @@ public class LineTest {
         line = Line.of("4호선", "light-blue", 노원역, 창동역, 3);
     }
 
-    @DisplayName("구간 추가")
+    @DisplayName("구간 추가 - 새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void addSection() {
         //given
