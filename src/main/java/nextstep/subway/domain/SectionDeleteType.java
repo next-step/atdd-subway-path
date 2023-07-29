@@ -1,14 +1,13 @@
 package nextstep.subway.domain;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 public enum SectionDeleteType {
     FIRST(Stations::equalFirstStation, Sections::removeFirst),
     LAST(Stations::equalLastStation, Sections::removeLast),
-    MIDDLE(null, Sections::removeMiddle);
+    MIDDLE((stations, station) -> false, Sections::removeMiddle);
 
     private final BiPredicate<Stations, Station> condition;
     private final BiConsumer<Sections, Station> remove;
@@ -20,7 +19,7 @@ public enum SectionDeleteType {
 
     public static SectionDeleteType find(Stations stations, Station station) {
         return Arrays.stream(SectionDeleteType.values())
-                .filter(type -> Objects.nonNull(type.condition) && type.condition.test(stations, station))
+                .filter(type -> type.condition.test(stations, station))
                 .findFirst()
                 .orElse(MIDDLE);
     }
