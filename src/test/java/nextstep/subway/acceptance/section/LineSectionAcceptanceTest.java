@@ -119,6 +119,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 //then
                 LineResponse response = 지하철_노선_조회(fistLineId);
                 assertThat(response.getStations().size()).isEqualTo(4);
+                assertThat(response.getStations().get(0).getId()).isEqualTo(fourthStationId);
+                assertThat(response.getStations().get(1).getId()).isEqualTo(firstStationId);
+                assertThat(response.getStations().get(2).getId()).isEqualTo(secondStationId);
+                assertThat(response.getStations().get(3).getId()).isEqualTo(thirdStationId);
             }
         }
 
