@@ -59,7 +59,7 @@ public class Section {
         this.line = line;
     }
 
-    public boolean isDownStation(Station station) {
-        return downStation.equals(station);
+    public boolean isExistsStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
     }
 }

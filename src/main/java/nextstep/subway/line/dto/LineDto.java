@@ -40,7 +40,7 @@ public class LineDto {
                 .color(subwayLine.getColor())
                 .upStationId(subwayLine.getUpStation().getId())
                 .downStationId(subwayLine.getDownStation().getId())
-                .distance(subwayLine.getDistance())
+                .distance(subwayLine.getSections().getDistance())
                 .stationDtos(subwayLine.getStations().stream()
                         .map(StationDto::from)
                         .collect(Collectors.toCollection(LinkedHashSet::new)))

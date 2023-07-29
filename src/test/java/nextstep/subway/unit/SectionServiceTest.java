@@ -18,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -137,9 +140,37 @@ public class SectionServiceTest {
                 .hasMessageContaining(ErrorCode.CAN_NOT_BE_ADDED_SECTION.getMessage());
     }
 
-    @DisplayName("구간을 제거한다.")
+    @DisplayName("구간 제거 - 첫번째 역을 제거 했을 경우")
     @Test
     void removeSection() {
+        // given : 선행조건 기술
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
+        sectionService.addSection(line.getId(), sectionDto);
+
+        // when : 기능 수행
+        sectionService.removeSection(line.getId(), 당고개역.getId());
+
+        // then : 결과 확인
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("사당역", "이수역"));
+    }
+
+    @DisplayName("구간 제거 - 중간 역을 제거 했을 경우")
+    @Test
+    void removeSection2() {
+        // given : 선행조건 기술
+        sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
+        sectionService.addSection(line.getId(), sectionDto);
+
+        // when : 기능 수행
+        sectionService.removeSection(line.getId(), 사당역.getId());
+
+        // then : 결과 확인
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "이수역"));
+    }
+
+    @DisplayName("구간 제거 - 마지막 역을 제거 했을 경우")
+    @Test
+    void removeSection3() {
         // given : 선행조건 기술
         sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
         sectionService.addSection(line.getId(), sectionDto);
@@ -148,10 +179,14 @@ public class SectionServiceTest {
         sectionService.removeSection(line.getId(), 이수역.getId());
 
         // then : 결과 확인
-        assertThat(line.getStations()).hasSize(2)
+        역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "사당역"));
+    }
+
+    private void 역_목록_검증(Line line, int size, List<String> names) {
+        assertThat(line.getStations()).hasSize(size)
                 .extracting("name")
                 .containsExactly(
-                        "당고개역", "사당역"
+                        names.toArray()
                 );
     }
 
