@@ -1,7 +1,5 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.exception.ErrorCode;
-import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.section.dto.SectionDto;
@@ -9,11 +7,10 @@ import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.repository.StationRepository;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -45,11 +41,13 @@ public class SectionServiceTest {
         이수역 = stationRepository.save(이수역());
         사당역 = stationRepository.save(사당역());
         line = lineRepository.save(line(당고개역, 이수역));
+        sectionDto = sectionDto(이수역.getId(), 사당역.getId());
     }
 
-    @DisplayName("구간을 추가한다. - 역 사이에 새로운 역을 등록할 경우")
+    @DisplayName("구간을 추가한다.")
     @Test
     void addSection() {
+<<<<<<< HEAD
         // given
         sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
 
@@ -90,10 +88,13 @@ public class SectionServiceTest {
 
 =======
 >>>>>>> 46c7249c (충돌해결)
+=======
+>>>>>>> f8cf2197 (Revert "충돌해결")
         // when
         sectionService.addSection(line.getId(), sectionDto);
 
         // then
+<<<<<<< HEAD
         assertThat(line.getStations()).hasSize(3)
                 .extracting("name")
                 .containsExactly(
@@ -170,11 +171,22 @@ public class SectionServiceTest {
 <<<<<<< HEAD
     @DisplayName("구간 제거 - 첫번째 역을 제거 했을 경우")
 =======
+=======
+        assertThat(line.getSections()).hasSize(2)
+                .extracting("upStation.name", "downStation.name")
+                .containsExactlyInAnyOrder(
+                        Tuple.tuple("당고개역", "이수역"),
+                        Tuple.tuple("이수역", "사당역")
+                );
+    }
+
+>>>>>>> f8cf2197 (Revert "충돌해결")
     @DisplayName("구간을 제거한다.")
 >>>>>>> 46c7249c (충돌해결)
     @Test
     void removeSection() {
         // given : 선행조건 기술
+<<<<<<< HEAD
         sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
 <<<<<<< HEAD
         sectionService.addSection(line.getId(), sectionDto);
@@ -193,12 +205,15 @@ public class SectionServiceTest {
         sectionDto = sectionDto(당고개역.getId(), 사당역.getId(), 3);
 =======
 >>>>>>> 46c7249c (충돌해결)
+=======
+>>>>>>> f8cf2197 (Revert "충돌해결")
         sectionService.addSection(line.getId(), sectionDto);
 
         // when : 기능 수행
-        sectionService.removeSection(line.getId(), 이수역.getId());
+        sectionService.removeSection(line.getId(), 사당역.getId());
 
         // then : 결과 확인
+<<<<<<< HEAD
 <<<<<<< HEAD
         역_목록_검증(line, line.getStations().size(), Arrays.asList("당고개역", "이수역"));
     }
@@ -228,6 +243,12 @@ public class SectionServiceTest {
                 .containsExactly(
                         "당고개역", "사당역"
 >>>>>>> 46c7249c (충돌해결)
+=======
+        assertThat(line.getSections()).hasSize(1)
+                .extracting("upStation.name", "downStation.name")
+                .containsExactlyInAnyOrder(
+                        Tuple.tuple("당고개역", "이수역")
+>>>>>>> f8cf2197 (Revert "충돌해결")
                 );
     }
 
@@ -254,14 +275,6 @@ public class SectionServiceTest {
         return new Station("사당역");
     }
 
-    private Station 동작역() {
-        return new Station("동작역");
-    }
-
-    private Station 이촌역() {
-        return new Station("이촌역");
-    }
-
     private Section section(Station upStation, Station downStation) {
         return Section.builder()
                 .upStation(upStation)
@@ -270,11 +283,11 @@ public class SectionServiceTest {
                 .build();
     }
 
-    private SectionDto sectionDto(Long upStationId, Long downStationId, int distance) {
+    private SectionDto sectionDto(Long upStationId, Long downStationId) {
         return SectionDto.builder()
                 .upStationId(upStationId)
                 .downStationId(downStationId)
-                .distance(distance)
+                .distance(10)
                 .build();
     }
 }
