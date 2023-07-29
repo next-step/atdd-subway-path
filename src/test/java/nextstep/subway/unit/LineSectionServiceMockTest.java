@@ -39,6 +39,7 @@ public class LineSectionServiceMockTest {
     }
 
     @Test
+    @DisplayName("지하철역 추가 기능")
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
@@ -58,6 +59,7 @@ public class LineSectionServiceMockTest {
     }
 
     @Test
+    @DisplayName("추가하려는 구간의 모든 역이 노선에 존재하지 않는 경우")
     void addSectionException_withoutStations() {
         // given
         when(stationService.findById(stationIds.get(신사역))).thenReturn(신사역);
@@ -73,6 +75,7 @@ public class LineSectionServiceMockTest {
     }
 
     @Test
+    @DisplayName("추가하려는 구간의 모든 역이 노선에 존재하는 경우")
     void addSectionException_hasAllStations() {
         // given
         when(stationService.findById(stationIds.get(논현역))).thenReturn(논현역);
@@ -103,6 +106,7 @@ public class LineSectionServiceMockTest {
     }
 
     @Test
+    @DisplayName("신규 상행 종점역으로 추가하는 경우")
     void addSection_WithNewLineUpStation() {
         // given
         when(stationService.findById(stationIds.get(신사역))).thenReturn(신사역);
@@ -118,6 +122,7 @@ public class LineSectionServiceMockTest {
     }
 
     @Test
+    @DisplayName("신규 하행 종점역으로 추가하는 경우")
     void addSection_WithNewLineDownStation() {
         // given
         when(stationService.findById(stationIds.get(양재역))).thenReturn(양재역);
@@ -133,6 +138,7 @@ public class LineSectionServiceMockTest {
     }
 
     @Test
+    @DisplayName("기존 구간 사이에 상행역을 기준으로 추가하는 경우")
     void addSection_WithMiddleUpStation() {
         // given
         when(stationService.findById(stationIds.get(논현역))).thenReturn(논현역);
@@ -149,6 +155,7 @@ public class LineSectionServiceMockTest {
     }
 
     @Test
+    @DisplayName("기존 구간 사이에 하행역을 기준으로 추가하는 경우")
     void addSection_WithMiddleDownStation() {
         // given
         when(stationService.findById(stationIds.get(강남역))).thenReturn(강남역);
