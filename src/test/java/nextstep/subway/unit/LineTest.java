@@ -62,6 +62,7 @@ public class LineTest {
                 () -> assertThat(stations).containsExactly(노원역, 창동역, 총신대입구역, 사당역),
                 () -> assertThat(line.getSections().getLastSection().getDistance()).isEqualTo(7));
     }
+
     /**
      * 노원역 -> 창동역 -> 사당역
      * 총신대입구역 -> 사당역 추가
@@ -79,6 +80,25 @@ public class LineTest {
                 () -> assertThat(stations.size()).isEqualTo(4),
                 () -> assertThat(stations).containsExactly(노원역, 창동역, 총신대입구역, 사당역),
                 () -> assertThat(line.getSections().getLastSection().getDistance()).isEqualTo(3));
+    }
+
+    /**
+     * 노원역 -> 창동역 -> 총신대입구역
+     * 사당역 -> 노원역 추가
+     */
+    @DisplayName("구간 추가 - 새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void addSectionInMiddle_case2() {
+        //given
+        line.addSection(LineSection.of(line, 창동역, 총신대입구역, 10));
+        //when
+        line.addSection(LineSection.of(line, 사당역, 노원역, 3));
+        //then
+        List<Station> stations = line.getStations();
+        assertAll(
+                () -> assertThat(stations.size()).isEqualTo(4),
+                () -> assertThat(stations).containsExactly(사당역, 노원역, 창동역, 총신대입구역),
+                () -> assertThat(line.getSections().getFirstSection().getDistance()).isEqualTo(3));
     }
 
     @DisplayName("구간 조회")

@@ -1,5 +1,6 @@
 package nextstep.subway.linesection;
 
+import nextstep.subway.line.LineRequest;
 import org.springframework.util.CollectionUtils;
 import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.line.Line;
@@ -72,26 +73,29 @@ public class LineSections {
     }
 
     public boolean isMiddle(LineSection lineSection) {
-         if(getSections().isEmpty())
-             return false;
-         if(getFirstStation().equals(lineSection.getDownStation()))
-             return false;
+        if (getSections().isEmpty())
+            return false;
+        if (getFirstStation().equals(lineSection.getDownStation()))
+            return false;
         if (getLastStation().equals(lineSection.getUpStation()))
             return false;
         return true;
     }
 
-    private Station getFirstStation() {
-        checkSectionsEmpty();
-        return getSections().get(0).getUpStation();
+    public Station getFirstStation() {
+        return getFirstSection().getUpStation();
     }
 
     private Station getLastStation() {
-        checkSectionsEmpty();
         return getLastSection().getDownStation();
     }
 
     public List<LineSection> getSections() {
         return sections;
+    }
+
+    public LineSection getFirstSection() {
+        checkSectionsEmpty();
+        return getSections().get(0);
     }
 }

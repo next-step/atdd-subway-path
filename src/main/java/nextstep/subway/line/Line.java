@@ -56,6 +56,10 @@ public class Line {
     }
 
     public void addSection(LineSection lineSection) {
+        if (sections.getFirstStation().equals(lineSection.getDownStation())) {
+            sections.getSections().set(0, lineSection);
+            return;
+        }
         if (sections.isMiddle(lineSection)) {
             Map<Boolean, List<LineSection>> partition = sections.getSections().stream()
                     .filter(e -> e.getUpStation().equals(lineSection.getUpStation()) || e.getDownStation().equals(lineSection.getDownStation()))
@@ -82,7 +86,6 @@ public class Line {
                         sections.add(LineSection.of(this, lineSection.getUpStation(), e.getDownStation(), lineSection.getDistance()));
                         sections.remove(e);
                     });
-
         } else sections.add(lineSection);
     }
 
