@@ -60,6 +60,12 @@ public class Section {
     public boolean containSameDownStation(Section otherSection){
         return (downStation.equals(otherSection.getDownStation()));
     }
+    public boolean containSameUpStation(Station station){
+        return (upStation.equals(station));
+    }
+    public boolean containSameDownStation(Station Station){
+        return (downStation.equals(Station));
+    }
     private List<Station> getStations(){
         return Arrays.asList(upStation, downStation);
     }
