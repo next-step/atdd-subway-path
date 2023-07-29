@@ -83,8 +83,8 @@ public class SectionTestStepDefinition {
 
     public static PathResponse 지하철_경로_조회(Long sourceId, Long targetId) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .pathParam("source", sourceId)
-            .pathParam("target", targetId)
+            .param("source", sourceId)
+            .param("target", targetId)
             .when().get("paths")
             .then().log().all()
             .extract();
