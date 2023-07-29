@@ -90,9 +90,9 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
             @Test
             void case_1() {
                 //given
-                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, fourthStationId));
+                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, fourthStationId, 10));
                 //when
-                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId));
+                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId, 4));
                 //then
                 LineResponse response = 지하철_노선_조회(fistLineId);
                 assertThat(response.getStations().size()).isEqualTo(4);
@@ -101,29 +101,25 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 assertThat(response.getStations().get(2).getId()).isEqualTo(thirdStationId);
                 assertThat(response.getStations().get(3).getId()).isEqualTo(fourthStationId);
             }
-//
-//            /**
-//             * Given 지하철역이 4개가 등록되어있다.
-//             * Given 지하철 노선이 1개가 등록되어있다. (노선 (Station: [first -> second -> third])
-//             * Given 새로운 구간 요청( fourth -> first)
-//             * When 지하철 노선에 구간을 등록 요청한다
-//             * Then 노선 fourth -> first -> second -> third 확인
-//             */
-//            @DisplayName("지하철 노선 구간 앞에 구간을 등록")
-//            @Test
-//            void case_2() {
-//                //given
-//                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId));
-//                //when
-//                지하철_구간_생성(fistLineId, 구간_생성_요청서(fourthStationId, secondStationId));
-//                //then
-//                LineResponse response = 지하철_노선_조회(fistLineId);
-//                assertThat(response.getStations().size()).isEqualTo(4);
-//                assertThat(response.getStations().get(0).getId()).isEqualTo(fourthStationId);
-//                assertThat(response.getStations().get(1).getId()).isEqualTo(firstStationId);
-//                assertThat(response.getStations().get(2).getId()).isEqualTo(secondStationId);
-//                assertThat(response.getStations().get(3).getId()).isEqualTo(thirdStationId);
-//            }
+
+            /**
+             * Given 지하철역이 4개가 등록되어있다.
+             * Given 지하철 노선이 1개가 등록되어있다. (노선 (Station: [first -> second -> third])
+             * Given 새로운 구간 요청( fourth -> first)
+             * When 지하철 노선에 구간을 등록 요청한다
+             * Then 노선 fourth -> first -> second -> third 확인
+             */
+            @DisplayName("지하철 노선 구간 앞에 구간을 등록")
+            @Test
+            void case_2() {
+                //given
+                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId));
+                //when
+                지하철_구간_생성(fistLineId, 구간_생성_요청서(fourthStationId, firstStationId));
+                //then
+                LineResponse response = 지하철_노선_조회(fistLineId);
+                assertThat(response.getStations().size()).isEqualTo(4);
+            }
         }
 
         @DisplayName("실패 경우")
@@ -221,6 +217,11 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private LineSectionRequest 구간_생성_요청서(Long startStationId, Long endStationId) {
         LineSectionRequest request = new LineSectionRequest(startStationId, endStationId, RandomUtils.nextInt(1, 10));
+        return request;
+    }
+
+    private LineSectionRequest 구간_생성_요청서(Long startStationId, Long endStationId, Integer distance) {
+        LineSectionRequest request = new LineSectionRequest(startStationId, endStationId, distance);
         return request;
     }
 

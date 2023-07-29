@@ -158,6 +158,15 @@ public class LineTest {
                 //then
                 assertThrows(BadRequestException.class, run);
             }
+
+            @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+            @Test
+            void exception_case4() {
+                //when
+                Executable run = () -> line.addSection(LineSection.of(line, 총신대입구역, 사당역, 10));
+                //then
+                assertThrows(BadRequestException.class, run);
+            }
         }
     }
 

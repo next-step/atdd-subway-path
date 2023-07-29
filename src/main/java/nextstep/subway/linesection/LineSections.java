@@ -1,6 +1,5 @@
 package nextstep.subway.linesection;
 
-import nextstep.subway.line.LineRequest;
 import org.springframework.util.CollectionUtils;
 import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.line.Line;
@@ -9,11 +8,9 @@ import nextstep.subway.station.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class LineSections {
@@ -28,14 +25,45 @@ public class LineSections {
         return lineSections;
     }
 
-    public void add(LineSection section) {
-        validateAddableSection(section);
-        this.sections.add(section);
+    public void add(LineSection addSection) {
+        validateAddableSection(addSection);
+        if (isAddableInFirst(addSection)) {
+            this.sections.add(0, addSection);
+            return;
+        }
+        if (isAddableInEnd(addSection)) {
+            this.sections.add(addSection);
+            return;
+        }
+        List<Station> stations = getStations();
+        int idx = getIndex(addSection);
+
+        if (stations.contains(addSection.getUpStation())) {
+            LineSection section = sections.get(idx);
+            checkDistance(section, addSection);
+            sections.add(idx, LineSection.of(addSection.getLine(), section.getUpStation(), addSection.getDownStation(), addSection.getDistance()));
+            sections.add(idx + 1, LineSection.of(addSection.getLine(), addSection.getDownStation(), section.getDownStation(), section.getDistance() - addSection.getDistance()));
+            sections.remove(section);
+        }
+        if (stations.contains(addSection.getDownStation())) {
+            LineSection section = sections.get(idx);
+            checkDistance(section, addSection);
+            sections.add(idx, LineSection.of(addSection.getLine(), section.getUpStation(), addSection.getUpStation(), section.getDistance() - addSection.getDistance()));
+            sections.add(idx + 1, LineSection.of(addSection.getLine(), addSection.getUpStation(), section.getDownStation(), addSection.getDistance()));
+            sections.remove(section);
+        }
     }
 
-    public void remove(LineSection section) {
-        validateRemovableSection();
-        this.sections.remove(section);
+    private int getIndex(LineSection section) {
+        return IntStream.range(0, sections.size())
+                .filter(idx -> sections.get(idx).getUpStation().equals(section.getUpStation()) || sections.get(idx).getDownStation().equals(section.getDownStation()))
+                .findFirst()
+                .getAsInt();
+    }
+
+    private void checkDistance(LineSection section, LineSection addSection) {
+        if (section.getDistance() <= addSection.getDistance())
+            throw new BadRequestException("request addSection distance must be smaller than exist lineSection disctance.");
     }
 
     public void remove(Station deleteStation) {
@@ -50,8 +78,9 @@ public class LineSections {
     }
 
     private void validateAddableSection(LineSection section) {
-        if (sections.contains(section))
-            throw new BadRequestException(String.format("line's already has the station. stationId > %d", section.getDownStation().getId()));
+        if (countStationBySection(section) != 1) {
+            throw new BadRequestException(String.format("lineSection must have one station to save"));
+        }
     }
 
     public List<Station> getStations() {
@@ -89,12 +118,19 @@ public class LineSections {
         return getSections().get(0);
     }
 
-    public boolean isFirst(LineSection lineSection) {
+    public boolean isAddableInFirst(LineSection lineSection) {
         return getFirstStation().equals(lineSection.getDownStation());
     }
 
-    public boolean isEnd(LineSection lineSection) {
-        return getLastStation().equals(lineSection.getUpStation());
+    public boolean isAddableInEnd(LineSection lineSection) {
+        Station lastStation = getLastStation();
+        return lastStation.equals(lineSection.getUpStation());
     }
 
+    private int countStationBySection(LineSection section) {
+        return getStations()
+                .stream()
+                .filter(e -> e.equals(section.getUpStation()) || e.equals(section.getDownStation()))
+                .collect(Collectors.toList()).size();
+    }
 }
