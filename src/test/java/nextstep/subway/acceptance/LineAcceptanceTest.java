@@ -41,7 +41,6 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_노선_생성됨(신분당선);
-
         ExtractableResponse<Response> 조회된_지하철_노선_목록 = 지하철_노선_목록_조회_요청();
         지하철_노선_조회됨(조회된_지하철_노선_목록, "신분당선");
     }
