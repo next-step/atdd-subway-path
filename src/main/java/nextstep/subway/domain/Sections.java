@@ -109,4 +109,8 @@ public class Sections {
         }
         throw new IllegalArgumentException();
     }
+
+    public boolean remainOneSection() {
+        return sections.size() == 1;
+    }
 }

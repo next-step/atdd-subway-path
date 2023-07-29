@@ -5,6 +5,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.ErrorType;
 import nextstep.subway.exception.SectionAddException;
+import nextstep.subway.exception.SectionDeleteException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -134,5 +135,23 @@ class LineTest {
 
         // then
         assertThat(line.getSections()).doesNotContain(양재_양재시민의숲_구간);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideStations")
+    @DisplayName("구간이 하나일 때 역을 제거하는 경우")
+    void removeSection_leftOnlyOneSection(Station station) {
+        // when
+        assertThatThrownBy(() -> {
+            line.removeSection(station);
+        }).isInstanceOf(SectionDeleteException.class)
+                .hasMessage(ErrorType.CANNOT_REMOVE_LAST_SECTION.getMessage());
+    }
+
+    public static Stream<Arguments> provideStations() {
+        return Stream.of(
+                Arguments.of(논현역),
+                Arguments.of(양재역)
+        );
     }
 }

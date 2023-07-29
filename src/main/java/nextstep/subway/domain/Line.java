@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.ErrorType;
+import nextstep.subway.exception.SectionDeleteException;
 
 import javax.persistence.*;
 import java.util.List;
@@ -50,6 +52,9 @@ public class Line {
     }
 
     public void removeSection(Station station) {
+        if (sections.remainOneSection()) {
+            throw new SectionDeleteException(ErrorType.CANNOT_REMOVE_LAST_SECTION);
+        }
         sections.removeLast(station);
     }
 }

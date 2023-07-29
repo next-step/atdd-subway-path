@@ -6,14 +6,22 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.ErrorType;
 import nextstep.subway.exception.SectionAddException;
+import nextstep.subway.exception.SectionDeleteException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.stream.Stream;
 
 import static nextstep.subway.utils.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,6 +99,7 @@ public class LineSectionServiceMockTest {
     }
 
     @Test
+    @DisplayName("추가하려는 구간의 모든 역이 노선에 존재하지 않는 경우")
     void addSectionException_tooLongDistance() {
         // given
         when(stationService.findById(stationIds.get(논현역))).thenReturn(논현역);
@@ -169,5 +178,27 @@ public class LineSectionServiceMockTest {
 
         // then
         assertThat(lineService.findById(1L).getSections()).containsExactly(논현_강남_구간, 강남_양재_구간);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideStations")
+    @DisplayName("구간이 하나일 때 역을 제거하는 경우")
+    void removeSection_leftOnlyOneSection(Station station) {
+        // given
+        when(stationService.findById(stationIds.get(station))).thenReturn(station);
+        when(lineService.findById(1L)).thenReturn(신분당선);
+
+        // when
+        assertThatThrownBy(() -> {
+            lineSectionService.deleteSection(1L, stationIds.get(station));
+        }).isInstanceOf(SectionDeleteException.class)
+                .hasMessage(ErrorType.CANNOT_REMOVE_LAST_SECTION.getMessage());
+    }
+
+    public static Stream<Arguments> provideStations() {
+        return Stream.of(
+                Arguments.of(논현역),
+                Arguments.of(양재역)
+        );
     }
 }
