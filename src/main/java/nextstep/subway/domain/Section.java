@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,5 +49,21 @@ public class Section {
 
     public static Section of(Line line, Long distance, Station upStation, Station downStation) {
         return Section.builder().distance(distance).line(line).upStation(upStation).downStation(downStation).build();
+    }
+
+    public boolean containsSameStations(Section otherSection){
+        return (upStation.equals(otherSection.getUpStation()) && downStation.equals(otherSection.getDownStation()));
+    }
+    public boolean containSameUpStation(Section otherSection){
+        return (upStation.equals(otherSection.getUpStation()));
+    }
+    public boolean containSameDownStation(Section otherSection){
+        return (downStation.equals(otherSection.getDownStation()));
+    }
+    private List<Station> getStations(){
+        return Arrays.asList(upStation, downStation);
+    }
+    public boolean containSameStation(Section otherSection){
+        return (getStations().contains(otherSection.getUpStation()) || getStations().contains(otherSection.getDownStation()));
     }
 }

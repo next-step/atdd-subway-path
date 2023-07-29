@@ -15,15 +15,18 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 public class Line {
+    @Getter
     @Embedded
     private final Sections sections = new Sections();
     @Id
+    @Getter
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Getter
     @Column(length = 25, nullable = false)
     private String name;
+    @Getter
     @Column(length = 25, nullable = false)
     private String color;
 
@@ -50,7 +53,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        sections.addSection(section);
+        sections.addSection(section, this);
     }
 
     public void deleteSection(Station station) {
