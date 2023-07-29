@@ -190,6 +190,7 @@ public class SectionAcceptanceTest {
     // When 경로 조회 요청하면
     // Then 가장 가까운 경로의 역 목록과 조회한 경로 구간의 거리를 확인할 수 있다
     @DisplayName("지하철 경로 탐색")
+    @Test
     void route() {
         // given
         var 남부터미널역정보 = 지하철_역_생성_요청(남부터미널역).getId();
