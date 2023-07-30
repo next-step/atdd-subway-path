@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.steps.LineSteps.createLine;
+import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선_생성;
 import static nextstep.subway.acceptance.steps.LineSteps.지하철_노선_조회;
-import static nextstep.subway.acceptance.steps.StationSteps.createStationAndGetInfo;
+import static nextstep.subway.acceptance.steps.StationSteps.지하철역_생성_응답;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
@@ -31,10 +31,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private StationResponse 신사역, 광교역, 소요산역, 광명역;
     @BeforeEach
     void set(){
-        신사역 = createStationAndGetInfo("신사역");
-        광교역 = createStationAndGetInfo("광교역");
-        소요산역 = createStationAndGetInfo("소요산역");
-        광명역 = createStationAndGetInfo("광명역");
+        신사역 = 지하철역_생성_응답("신사역");
+        광교역 = 지하철역_생성_응답("광교역");
+        소요산역 = 지하철역_생성_응답("소요산역");
+        광명역 = 지하철역_생성_응답("광명역");
     }
 
     /**
@@ -47,7 +47,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         //given
         //when
         ExtractableResponse<Response> response =
-                createLine("신분당선", COLOR_RED, 신사역.getId(), 광교역.getId(), DISTANCE);
+                지하철_노선_생성("신분당선", COLOR_RED, 신사역.getId(), 광교역.getId(), DISTANCE);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -69,8 +69,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLines() {
         //given
-        createLine("신분당선", COLOR_RED, 신사역.getId(), 광교역.getId(), DISTANCE);
-        createLine("1호선", COLOR_BLUE,  소요산역.getId(), 광명역.getId(), DISTANCE);
+        지하철_노선_생성("신분당선", COLOR_RED, 신사역.getId(), 광교역.getId(), DISTANCE);
+        지하철_노선_생성("1호선", COLOR_BLUE,  소요산역.getId(), 광명역.getId(), DISTANCE);
 
         //when
         ExtractableResponse<Response> response = 지하철_노선_조회();
@@ -92,7 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showLineInfo() {
         //given
-        createLine("신분당선",COLOR_RED, 신사역.getId(), 광교역.getId() , DISTANCE);
+        지하철_노선_생성("신분당선",COLOR_RED, 신사역.getId(), 광교역.getId() , DISTANCE);
 
         //when
         ExtractableResponse<Response> response = 지하철_노선_조회();
@@ -112,7 +112,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineInfo() {
         //given
-        Long 신분당선 = createLine("신분당선", COLOR_RED, 신사역.getId(), 광교역.getId(),DISTANCE)
+        Long 신분당선 = 지하철_노선_생성("신분당선", COLOR_RED, 신사역.getId(), 광교역.getId(),DISTANCE)
                 .jsonPath().getObject("", LineResponse.class).getId();
 
         //when
@@ -147,7 +147,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void deleteLine() {
 
         //given
-        Long 신분당선 = createLine("신분당선", COLOR_RED
+        Long 신분당선 = 지하철_노선_생성("신분당선", COLOR_RED
                 , 신사역.getId()
                 , 광교역.getId()
                 ,10)

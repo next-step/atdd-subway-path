@@ -13,7 +13,7 @@ import java.util.List;
 import static nextstep.subway.acceptance.steps.LineSteps.*;
 import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_등록;
 import static nextstep.subway.acceptance.steps.SectionSteps.지하철_노선_구간_제거_요청;
-import static nextstep.subway.acceptance.steps.StationSteps.createStationAndGetInfo;
+import static nextstep.subway.acceptance.steps.StationSteps.지하철역_생성_응답;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
@@ -23,13 +23,13 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setting(){
-        신사역 = createStationAndGetInfo("신사역").getId();
-        논현역 = createStationAndGetInfo("논현역").getId();
-        신논현역 = createStationAndGetInfo("신논현역").getId();
-        강남역 = createStationAndGetInfo("강남역").getId();
-        광교역 = createStationAndGetInfo("광교역").getId();
+        신사역 = 지하철역_생성_응답("신사역").getId();
+        논현역 = 지하철역_생성_응답("논현역").getId();
+        신논현역 = 지하철역_생성_응답("신논현역").getId();
+        강남역 = 지하철역_생성_응답("강남역").getId();
+        광교역 = 지하철역_생성_응답("광교역").getId();
 
-        신분당선 = createLine("신분당선", "bg-red-600", 논현역, 강남역, DEFAULT_DISTANCE)
+        신분당선 = 지하철_노선_생성("신분당선", "bg-red-600", 논현역, 강남역, DEFAULT_DISTANCE)
                                                                                             .jsonPath()
                                                                                             .getObject("id",Long.class);
 
@@ -131,7 +131,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeFirstSection() {
         // given
-        Long 광교역 = createStationAndGetInfo("광교역").getId();
+        Long 광교역 = 지하철역_생성_응답("광교역").getId();
         지하철_노선_구간_등록(신분당선, 강남역, 광교역, DEFAULT_DISTANCE);
 
         // when
@@ -151,7 +151,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeMiddleSection() {
         // given
-        Long 광교역 = createStationAndGetInfo("광교역").getId();
+        Long 광교역 = 지하철역_생성_응답("광교역").getId();
         지하철_노선_구간_등록(신분당선, 강남역, 광교역, DEFAULT_DISTANCE);
 
         // when
@@ -171,7 +171,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLastSection() {
         // given
-        Long 광교역 = createStationAndGetInfo("광교역").getId();
+        Long 광교역 = 지하철역_생성_응답("광교역").getId();
         지하철_노선_구간_등록(신분당선, 강남역, 광교역, DEFAULT_DISTANCE);
 
         // when
@@ -191,7 +191,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     public void removeLineSectionExceptionWhenNotMachLastSections(){
         // given
-        Long 광교역 = createStationAndGetInfo("광교역").getId();
+        Long 광교역 = 지하철역_생성_응답("광교역").getId();
         지하철_노선_구간_등록(신분당선, 강남역, 광교역, DEFAULT_DISTANCE);
 
         // when

@@ -3,7 +3,7 @@ package nextstep.subway.applicaion;
 import nextstep.subway.applicaion.dto.request.StationRequest;
 import nextstep.subway.applicaion.dto.response.StationResponse;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

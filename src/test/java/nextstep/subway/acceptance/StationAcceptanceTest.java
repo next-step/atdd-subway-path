@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.acceptance.steps.StationSteps.createStation;
+import static nextstep.subway.acceptance.steps.StationSteps.지하철역_생성;
 import static nextstep.subway.acceptance.steps.StationSteps.getStations;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationTest() {
         // when
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -45,8 +45,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStationList() {
         //Given
-        createStation("강남역");
-        createStation("역삼역");
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
 
         //When
         ExtractableResponse<Response> response = getStations();
@@ -70,7 +70,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     public void deleteStation() {
         //Given
-        createStation("강남역");
+        지하철역_생성("강남역");
 
         Long stationId = RestAssured.given().log().all()
                 .when().get("stations")

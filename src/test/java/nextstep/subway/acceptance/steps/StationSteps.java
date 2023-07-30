@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StationSteps {
-    public static ExtractableResponse<Response> createStation(String name) {
+    public static ExtractableResponse<Response> 지하철역_생성(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -22,8 +22,8 @@ public class StationSteps {
                 .extract();
     }
 
-    public static StationResponse createStationAndGetInfo(String name) {
-        return createStation(name).jsonPath().getObject("", StationResponse.class);
+    public static StationResponse 지하철역_생성_응답(String name) {
+        return 지하철역_생성(name).jsonPath().getObject("", StationResponse.class);
     }
 
     public static ExtractableResponse<Response> getStations() {

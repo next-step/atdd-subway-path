@@ -4,8 +4,9 @@ import nextstep.subway.applicaion.SectionService;
 import nextstep.subway.applicaion.StationService;
 import nextstep.subway.applicaion.dto.request.SectionRequest;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.repository.LineRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.unit.fixture.LineFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,10 +59,13 @@ public class LineServiceMockTest {
 
         // when
         sectionService.saveSection(신분당선.getId(), new SectionRequest(신사역.getId(), 논현역.getId(), DISTANCE));
+        LineFixture.setSectionsId(신분당선);
 
         // then
         assertThat(신분당선.getStations()).containsExactly(신사역,논현역,강남역);
     }
+
+
 
     @DisplayName("기존 구간 중간에 신규 구간을 등록")
     @Test
@@ -73,6 +77,7 @@ public class LineServiceMockTest {
 
         // when
         sectionService.saveSection(신분당선.getId(), new SectionRequest(논현역.getId(), 신논현역.getId(), DISTANCE));
+        LineFixture.setSectionsId(신분당선);
 
         // then
         assertThat(신분당선.getStations()).containsExactly(논현역,신논현역,강남역);
@@ -88,6 +93,7 @@ public class LineServiceMockTest {
 
         // when
         sectionService.saveSection(신분당선.getId(), new SectionRequest(강남역.getId(), 광교역.getId(), DISTANCE));
+        LineFixture.setSectionsId(신분당선);
 
         // then
         assertThat(신분당선.getStations()).containsExactly(논현역,강남역,광교역);
@@ -102,6 +108,7 @@ public class LineServiceMockTest {
         given(stationService.getStations(강남역.getId())).willReturn(강남역);
         given(stationService.getStations(광교역.getId())).willReturn(광교역);
         sectionService.saveSection(신분당선.getId(), new SectionRequest(강남역.getId(), 광교역.getId(), DISTANCE));
+        LineFixture.setSectionsId(신분당선);
 
         sectionService.removeSection(신분당선.getId(),논현역.getId());
 
@@ -116,7 +123,8 @@ public class LineServiceMockTest {
         given(stationService.getStations(강남역.getId())).willReturn(강남역);
         given(stationService.getStations(광교역.getId())).willReturn(광교역);
         sectionService.saveSection(신분당선.getId(), new SectionRequest(강남역.getId(), 광교역.getId(), DISTANCE));
-
+        LineFixture.setSectionsId(신분당선);
+        
         sectionService.removeSection(신분당선.getId(),강남역.getId());
 
         assertThat(신분당선.getStations()).containsExactly(논현역,광교역);
