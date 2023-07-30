@@ -2,6 +2,7 @@ package nextstep.subway.path.dto;
 
 import nextstep.subway.station.dto.StationResponse;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,7 @@ public class PathResponse {
         return new PathResponse(
                 pathDto.getStationDtos().stream()
                         .map(StationResponse::from)
-                        .collect(Collectors.toUnmodifiableSet()),
+                        .collect(Collectors.toCollection(LinkedHashSet::new)),
                 pathDto.getDistance());
     }
 
