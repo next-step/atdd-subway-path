@@ -81,6 +81,7 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        isAnyMatch(section);
         this.sections.add(section);
         if(isUpStation(section.getUpStation())) {
             updatePrevDownSection(section);
@@ -92,9 +93,6 @@ public class Line {
         }
     }
 
-    public void checkStation(Section section) {
-
-    }
     public void removeSection(Station station) {
         Section removedSection = this.sections
                 .stream()
@@ -110,6 +108,7 @@ public class Line {
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst()
                 .get();
+        isEqualException(downSection.getDownStation(), newSection.getDownStation());
         downSection.updateSection(newSection, true);
 
     }
@@ -120,7 +119,23 @@ public class Line {
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst()
                 .get();
+        isEqualException(upSection.getUpStation(), newSection.getUpStation());
         upSection.updateSection(newSection, false);
+    }
+
+    private void isEqualException(Station station, Station newStation) {
+        if(station.equals(newStation)) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있다면 추가할 수 없다.");
+        }
+    }
+
+
+    private void isAnyMatch(Section section) {
+        boolean isMatch = sections.stream().anyMatch(section1 -> isUpStation(section.getDownStation()));
+        isMatch = sections.stream().anyMatch(section1 -> isDownStation(section.getUpStation()));
+        if(!isMatch) {
+            throw new IllegalArgumentException("상행선과 하행선 둘 중 하나도 포함되어 있지 않은 구간을 추가할 수 없다.");
+        }
     }
 
 }
