@@ -3,6 +3,7 @@ package nextstep.subway.path.dto;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PathResponse {
 
@@ -15,7 +16,11 @@ public class PathResponse {
     }
 
     public static PathResponse from(PathDto pathDto) {
-        return new PathResponse(pathDto.getStations(), pathDto.getDistance());
+        return new PathResponse(
+                pathDto.getStationDtos().stream()
+                        .map(StationResponse::from)
+                        .collect(Collectors.toUnmodifiableSet()),
+                pathDto.getDistance());
     }
 
     public Set<StationResponse> getStations() {

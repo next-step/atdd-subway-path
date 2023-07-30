@@ -27,4 +27,8 @@ public class SectionWeightedEdge extends DefaultWeightedEdge {
     public double getWeight() {
         return section.getDistance();
     }
+
+    public Section toSection() {
+        return section;
+    }
 }

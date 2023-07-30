@@ -27,6 +27,11 @@ public class Sections {
 
     public Sections() {}
 
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+        modifyDistance();
+    }
+
     public Sections(Section section, Line line, Integer distance) {
         this.sections.add(section);
         section.addSection(line);

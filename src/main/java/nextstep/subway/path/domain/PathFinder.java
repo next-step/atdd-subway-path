@@ -1,12 +1,15 @@
 package nextstep.subway.path.domain;
 
 import nextstep.subway.line.entity.Line;
+import nextstep.subway.section.entity.Section;
+import nextstep.subway.section.entity.Sections;
 import nextstep.subway.station.entity.Station;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PathFinder {
 
@@ -34,6 +37,13 @@ public class PathFinder {
         GraphPath<Station, SectionWeightedEdge> path = shortestPath.getPath(source, target);
 
         return path;
+    }
+
+    public Sections getSections(GraphPath<Station, SectionWeightedEdge> graphPath) {
+        List<Section> sections = graphPath.getEdgeList().stream()
+                .map(SectionWeightedEdge::toSection)
+                .collect(Collectors.toList());
+        return new Sections(sections);
     }
 
     private void addVertex(Station vertex) {
