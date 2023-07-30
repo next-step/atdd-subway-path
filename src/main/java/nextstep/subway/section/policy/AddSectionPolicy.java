@@ -5,17 +5,18 @@ import nextstep.subway.section.repository.Sections;
 import nextstep.subway.station.repository.Station;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class AddSectionPolicy {
     public static void validate(Sections sections, Section section) {
-        if (!Objects.equals(sections.getDownEndStation(), section.getUpStation())) {
-            System.out.println(sections.getDownEndStation());
-            System.out.println(section.getUpStation());
-            throw new RuntimeException("section's upStation is not line's downEndStation");
-        }
+        Optional<Section> sectionEqualUpStation = sections.getSectionByUpStation(section.getUpStation());
+        Optional<Section> sectionEqualDownStation = sections.getSectionByDownStation(section.getDownStation());
 
-        if (sections.getAllStation().contains(section.getDownStation())) {
-            throw new RuntimeException("section's downStation is already included in line");
+        if (
+                (sectionEqualUpStation.isPresent() && (sectionEqualUpStation.get().getDistance() <= section.getDistance()))
+                ||(sectionEqualDownStation.isPresent() && (sectionEqualDownStation.get().getDistance() <= section.getDistance()))
+        ) {
+            throw new RuntimeException("Section's distance too long");
         }
     }
 }

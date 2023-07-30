@@ -1,4 +1,4 @@
-package nextstep.subway.unit.fixture;
+package nextstep.fixture;
 
 import nextstep.subway.station.repository.Station;
 

@@ -12,9 +12,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static nextstep.subway.unit.fixture.LineFixture.신분당선;
-import static nextstep.subway.unit.fixture.LineFixture.신분당선_ID;
-import static nextstep.subway.unit.fixture.StationFixture.*;
+import static nextstep.fixture.LineFixture.신분당선;
+import static nextstep.fixture.LineFixture.신분당선_ID;
+import static nextstep.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 

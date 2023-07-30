@@ -5,7 +5,7 @@ import nextstep.subway.station.service.StationFindable;
 
 import java.util.List;
 
-import static nextstep.subway.unit.fixture.StationFixture.*;
+import static nextstep.fixture.StationFixture.*;
 
 public class FakeStationFindable implements StationFindable {
     @Override

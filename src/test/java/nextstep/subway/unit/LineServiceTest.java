@@ -9,9 +9,9 @@ import nextstep.subway.unit.fake.FakeLineRepository;
 import nextstep.subway.unit.fake.FakeStationFindable;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.unit.fixture.LineFixture.신분당선_ID;
-import static nextstep.subway.unit.fixture.StationFixture.논현역_ID;
-import static nextstep.subway.unit.fixture.StationFixture.신논현역_ID;
+import static nextstep.fixture.LineFixture.신분당선_ID;
+import static nextstep.fixture.StationFixture.논현역_ID;
+import static nextstep.fixture.StationFixture.신논현역_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineServiceTest {

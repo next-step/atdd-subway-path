@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static nextstep.subway.unit.fixture.SectionFixture.강남역_TO_신논현역;
-import static nextstep.subway.unit.fixture.SectionFixture.신논현역_TO_논현역;
-import static nextstep.subway.unit.fixture.StationFixture.*;
+import static nextstep.fixture.SectionFixture.강남역_TO_신논현역;
+import static nextstep.fixture.SectionFixture.신논현역_TO_논현역;
+import static nextstep.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {

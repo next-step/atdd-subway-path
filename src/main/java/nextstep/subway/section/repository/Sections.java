@@ -10,9 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -38,6 +36,14 @@ public class Sections {
 
     public Section getLastSection() {
         return this.sections.get(this.sections.size() - 1);
+    }
+
+    public Optional<Section> getSectionByUpStation(Station upStation) {
+        return this.sections.stream().filter(section -> Objects.equals(section.getUpStation(), upStation)).findFirst();
+    }
+
+    public Optional<Section> getSectionByDownStation(Station downStation) {
+        return this.sections.stream().filter(section -> Objects.equals(section.getDownStation(), downStation)).findFirst();
     }
 
     public Station getDownEndStation() {

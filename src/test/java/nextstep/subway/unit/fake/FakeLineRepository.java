@@ -5,8 +5,8 @@ import nextstep.subway.line.repository.LineRepository;
 
 import java.util.*;
 
-import static nextstep.subway.unit.fixture.LineFixture.신분당선;
-import static nextstep.subway.unit.fixture.LineFixture.신분당선_ID;
+import static nextstep.fixture.LineFixture.신분당선;
+import static nextstep.fixture.LineFixture.신분당선_ID;
 
 public class FakeLineRepository implements LineRepository {
 
