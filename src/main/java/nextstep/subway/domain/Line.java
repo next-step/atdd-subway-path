@@ -92,10 +92,11 @@ public class  Line {
 
     public Line addSectionAtMiddle(Section newSection) {
         for (Section savedSection : this.sections) {
-            if (savedSection.getUpStation().getId().equals(newSection.getUpStation().getId())) {
+            if (savedSection.getUpStation().checkEqualStationByName(newSection.getUpStation())) {
                 checkValidDistance(savedSection, newSection);
                 this.sections.add(0, newSection);
-                savedSection.updateDistance(newSection.getDistance());
+                int calculatedDistance = savedSection.getDistance() - newSection.getDistance();
+                savedSection.updateSection(newSection.getDownStation(), savedSection.getDownStation(), calculatedDistance);
                 break;
             }
         }
