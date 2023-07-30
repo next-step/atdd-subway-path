@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import nextstep.subway.exception.ExceptionCode;
-import nextstep.subway.exception.SecetionExceptionCode;
+import nextstep.subway.exception.LineExceptionCode;
+import nextstep.subway.exception.SectionExceptionCode;
 import nextstep.subway.exception.StationExceptionCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +19,9 @@ public class ExceptionCodeTest {
 
     // given
     List<ExceptionCode> exceptionCodes = Stream.of (
-        SecetionExceptionCode.values(),
-        StationExceptionCode.values()
+        SectionExceptionCode.values(),
+        StationExceptionCode.values(),
+        LineExceptionCode.values()
     ).flatMap(Stream::of)
      .collect(Collectors.toList());
 

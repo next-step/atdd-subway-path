@@ -3,18 +3,18 @@ package nextstep.subway.applicaion;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineStationsDto;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.SecetionExceptionCode;
+import nextstep.subway.exception.SectionExceptionCode;
 import nextstep.subway.exception.SubwayException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.util.CollectionUtils;
@@ -84,14 +84,16 @@ public class LineService {
         );
     }
 
-    private List<StationResponse> createStationResponses(Line line) {
+    private LineStationsDto createStationResponses(Line line) {
         if (CollectionUtils.isEmpty(line.getSections())) {
-            return Collections.emptyList();
+            return LineStationsDto.ofEmpty();
         }
 
-        return line.getStations().stream()
-                .map(stationService::createStationResponse)
-                .collect(Collectors.toList());
+        List<StationResponse> stations = line.getStations().stream()
+            .map(stationService::createStationResponse)
+            .collect(Collectors.toList());
+
+        return new LineStationsDto(stations, line.getTotalDistance());
     }
 
     @Transactional
@@ -100,7 +102,7 @@ public class LineService {
         Station station = stationService.findById(stationId);
 
         if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
-            throw new SubwayException(SecetionExceptionCode.CANNOT_DELETE_SECTION, "현재 구간삭제는 마지막 구간만 가능합니다.");
+            throw new SubwayException(SectionExceptionCode.CANNOT_DELETE_SECTION, "현재 구간삭제는 마지막 구간만 가능합니다.");
         }
 
         line.getSections().remove(line.getSections().size() - 1);

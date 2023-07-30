@@ -3,13 +3,16 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.exception.SecetionExceptionCode;
+import nextstep.subway.exception.LineExceptionCode;
+import nextstep.subway.exception.SectionExceptionCode;
+import nextstep.subway.exception.StationExceptionCode;
 import nextstep.subway.exception.SubwayException;
 
 @Entity
 @NoArgsConstructor
 @Getter
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,6 +32,8 @@ public class Section {
     private int distance;
 
     public Section(Line line, Station upStation, Station downStation, int distance) {
+        throwIfNullIncluded(line, upStation, downStation);
+        throwIfContainsInvalidDistance(upStation, downStation, distance);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -85,7 +90,7 @@ public class Section {
         this.downStation = newSection.upStation;
         this.distance -= newSection.distance;
         if (distance <= 0) {
-            throw new SubwayException(SecetionExceptionCode.EXCEED_MAXIMUM_DISTANCE);
+            throw new SubwayException(SectionExceptionCode.EXCEED_MAXIMUM_DISTANCE);
         }
     }
 
@@ -93,7 +98,28 @@ public class Section {
         this.upStation = newSection.downStation;
         this.distance -= newSection.distance;
         if (distance <= 0) {
-            throw new SubwayException(SecetionExceptionCode.EXCEED_MAXIMUM_DISTANCE);
+            throw new SubwayException(SectionExceptionCode.EXCEED_MAXIMUM_DISTANCE);
+        }
+    }
+
+    private void throwIfNullIncluded(Line line, Station upStation, Station downStation) {
+        if (line == null) {
+           throw new SubwayException(LineExceptionCode.LINE_NOT_FOUND);
+        }
+
+        if (upStation == null || downStation == null) {
+           throw new SubwayException(StationExceptionCode.STATION_NOT_FOUND, "구간의 상행역 또는 하행역이 존재하지 않습니다.");
+        }
+    }
+
+    private void throwIfContainsInvalidDistance(Station upStation, Station downStation, int distance) {
+        // 시작역은 예외처리
+        if (upStation.equals(downStation) && distance == 0) {
+            return;
+        }
+
+        if (distance <= 0) {
+            throw new SubwayException(SectionExceptionCode.ONLY_POSITIVE_DISTANCE_ALLOWED);
         }
     }
 }

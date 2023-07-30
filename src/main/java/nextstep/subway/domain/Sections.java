@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import nextstep.subway.exception.SecetionExceptionCode;
+import nextstep.subway.exception.SectionExceptionCode;
 import nextstep.subway.exception.StationExceptionCode;
 import nextstep.subway.exception.SubwayException;
 import org.springframework.http.HttpStatus;
@@ -131,7 +131,7 @@ public class Sections {
         .filter(section -> section.isSectionEquals(newSection))
         .findFirst()
         .ifPresent(section -> {
-          throw new SubwayException(SecetionExceptionCode.SECTION_ALREADY_EXIST);
+          throw new SubwayException(SectionExceptionCode.SECTION_ALREADY_EXIST);
         });
   }
 
@@ -144,7 +144,7 @@ public class Sections {
 
   public void removeSectionDownStationOf(Station station) {
     if (CollectionUtils.isEmpty(sections)) {
-      throw new SubwayException(SecetionExceptionCode.CANNOT_DELETE_SECTION, "삭제 할 구간이 없습니다.");
+      throw new SubwayException(SectionExceptionCode.CANNOT_DELETE_SECTION, "삭제 할 구간이 없습니다.");
     }
 
     // 하행 종점역만 제거 할 수 있음
@@ -153,5 +153,12 @@ public class Sections {
     if (lastSection.getDownStation().equals(station)) {
       sections.remove(lastIdx);
     }
+  }
+
+  public int getTotalDistance() {
+    return sections.stream()
+        .map(Section::getDistance)
+        .mapToInt(Integer::intValue)
+        .sum();
   }
 }

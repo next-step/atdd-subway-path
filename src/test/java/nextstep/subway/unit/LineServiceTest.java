@@ -8,7 +8,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.exception.SecetionExceptionCode;
+import nextstep.subway.exception.SectionExceptionCode;
 import nextstep.subway.exception.StationExceptionCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,7 +97,7 @@ public class LineServiceTest extends BaseUnitTest {
         // when && then
         assertThatThrowsSubwayException (
             () -> lineService.addNewSection(노선.getId(), request),
-            SecetionExceptionCode.SECTION_ALREADY_EXIST
+            SectionExceptionCode.SECTION_ALREADY_EXIST
         );
     }
 
@@ -114,7 +114,7 @@ public class LineServiceTest extends BaseUnitTest {
         // when && then
         assertThatThrowsSubwayException (
             () -> lineService.addNewSection(노선.getId(), request),
-            SecetionExceptionCode.SECTION_ALREADY_EXIST
+            SectionExceptionCode.SECTION_ALREADY_EXIST
         );
     }
 
@@ -132,7 +132,7 @@ public class LineServiceTest extends BaseUnitTest {
         // when && then
         assertThatThrowsSubwayException (
             () -> lineService.addNewSection(노선.getId(), request),
-            SecetionExceptionCode.EXCEED_MAXIMUM_DISTANCE
+            SectionExceptionCode.EXCEED_MAXIMUM_DISTANCE
         );
     }
 }

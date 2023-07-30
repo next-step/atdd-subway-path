@@ -89,6 +89,9 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.jsonPath().getList("stations.id", Long.class))
             .containsExactly(강남역, 강남_양재_중간역, 양재역);
+
+        assertThat(response.jsonPath().getInt("totalDistance"))
+            .isEqualTo(10);
     }
 
     /**
@@ -110,7 +113,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철 노선에서 상행 종점역을 새로 추가하면
-     * Then Then 구간은 2개로 나뉘고, 역 목록 사이에 새로운 역이 추가된다.
+     * Then 구간은 2개로 나뉘고, 역 목록 사이에 새로운 역이 추가된다.
      */
     @Test
     @DisplayName("지하철 노선 구간 추가 - 신규 상행 종점역 추가")
@@ -128,7 +131,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철 노선에서 상행 종점역을 새로 추가하면
-     * Then Then 구간은 2개로 나뉘고, 역 목록 사이에 새로운 역이 추가된다.
+     * Then 구간은 2개로 나뉘고, 역 목록 사이에 새로운 역이 추가된다.
      */
     @Test
     @DisplayName("지하철 노선 구간 추가 - 신규 하행 종점역 추가")
