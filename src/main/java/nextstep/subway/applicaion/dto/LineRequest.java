@@ -1,6 +1,10 @@
 package nextstep.subway.applicaion.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class LineRequest {
+
     private String name;
     private String color;
     private Long upStationId;
@@ -25,5 +29,10 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    @JsonIgnore
+    public boolean hasSection() {
+        return this.upStationId != null && this.downStationId != null && this.distance != 0;
     }
 }
