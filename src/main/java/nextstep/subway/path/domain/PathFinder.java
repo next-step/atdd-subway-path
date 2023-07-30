@@ -1,5 +1,7 @@
 package nextstep.subway.path.domain;
 
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.entity.Sections;
@@ -33,14 +35,28 @@ public class PathFinder {
     }
 
     public Sections findPath(Station source, Station target) {
+        validationStations(source, target);
         DijkstraShortestPath<Station, SectionWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph);
-        GraphPath<Station, SectionWeightedEdge> path = shortestPath.getPath(source, target);
 
+        GraphPath<Station, SectionWeightedEdge> path = shortestPath.getPath(source, target);
+        validationPath(path);
         List<Section> sections = path.getEdgeList().stream()
                 .map(SectionWeightedEdge::toSection)
                 .collect(Collectors.toList());
 
         return new Sections(sections);
+    }
+
+    private void validationStations(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new SubwayException(ErrorCode.EQUALS_STATIONS);
+        }
+    }
+
+    private void validationPath(GraphPath<Station, SectionWeightedEdge> path) {
+        if (path == null) {
+            throw new SubwayException(ErrorCode.NOT_FOUND_PATH);
+        }
     }
 
     private void addVertex(Station vertex) {

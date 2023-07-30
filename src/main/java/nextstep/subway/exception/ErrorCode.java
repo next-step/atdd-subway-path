@@ -8,6 +8,8 @@ public enum ErrorCode {
 
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     NOT_FOUND_STATION(HttpStatus.BAD_REQUEST, "요청한 역을 찾을 수 없습니다."),
+    EQUALS_STATIONS(HttpStatus.BAD_REQUEST, "출발역과 도착역이 같습니다."),
+    NOT_FOUND_PATH(HttpStatus.BAD_REQUEST, "경로를 조회할 수 없습니다."),
     INVALID_UP_STATION(HttpStatus.BAD_REQUEST, "새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다."),
     INVALID_DOWN_STATION(HttpStatus.BAD_REQUEST, "새로운 구간의 하행역은 해당 노선에 등록되어있는 역일 수 없다."),
     SECTION_IS_ONE(HttpStatus.BAD_REQUEST, "노선에 등록된 구간이 하나일 경우 구간을 삭제할 수 없습니다."),
