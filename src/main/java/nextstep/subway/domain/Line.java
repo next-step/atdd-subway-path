@@ -60,7 +60,7 @@ public class Line {
         sections.deleteSection(station);
     }
 
-    public Section getLastSection( ) {
+    public Section getLastSection() {
         return sections.getLastSection();
     }
 

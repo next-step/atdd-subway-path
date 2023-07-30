@@ -16,26 +16,31 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Getter
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "line_id")
+    @Getter
     private Line line;
     @Column
+    @Getter
     private Long distance;
 
     @OneToOne
     @JoinColumn(name = "up_station_id")
+    @Getter
     private Station upStation;
 
     @OneToOne
     @JoinColumn(name = "down_station_id")
+    @Getter
     private Station downStation;
 
     @Builder

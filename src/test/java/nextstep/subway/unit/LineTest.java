@@ -148,8 +148,9 @@ class LineTest {
       //When
       첫번째노선.deleteSection(두번째역);
       //Then
-      assertThat(첫번째노선.getStations().stream().map(station -> station.getName())).containsExactly(
-          첫번째역.getName(), 세번째역.getName());
+      assertThat(첫번째노선.getStations()
+          .stream().map(station -> station.getName()))
+          .containsExactly(첫번째역.getName(), 세번째역.getName());
     }
 
     @DisplayName("오류 케이스: 구간이 한개인 노선의 하행역에 구간을 삭제합니다. (노선에 구간이 하나 일 떄")
