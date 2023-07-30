@@ -63,7 +63,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         Long 도착역 = 양재역;
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(출발역, 도착역);
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(출발역, 도착역);
 
         //then
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -73,7 +73,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
 
-    ExtractableResponse<Response> 지하철_노선_조회_요청(Long source, Long target) {
+    ExtractableResponse<Response> 지하철_경로_조회_요청(Long source, Long target) {
         Map<String, String> params = new HashMap<>();
         params.put("source", source.toString());
         params.put("target", target.toString());
@@ -99,7 +99,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         Long 도착역 = 양재역;
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(없는역, 도착역);
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(없는역, 도착역);
 
         //then
         Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
@@ -118,7 +118,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         Long 도착역 = 양재역;
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(이어지지않은역, 도착역);
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(이어지지않은역, 도착역);
 
         //then
         Assertions.assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
