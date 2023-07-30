@@ -27,12 +27,7 @@ import static nextstep.subway.acceptance.StationAcceptanceTest.역_만들기;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SectionAcceptanceTest {
     public static final String 신분당선 = "신분당선";
-    public static final String 분당선 = "분당선";
-    public static final String 경인선 = "경인선";
-
-    public static final String BG_YELLOW_600 = "BG_YELLOW_600";
     public static final String BG_RED_600 = "bg-red-600";
-    public static final String BG_GREEN_600 = "BG_GREEN_600";
 
     public static final String 거리 = "10";
     public static final String 첫째지하철역이름 = "첫째지하철역";
@@ -44,7 +39,6 @@ public class SectionAcceptanceTest {
     private static String 세번째지하철역_아이디;
     private static String 네번째지하철역_아이디;
     private static String 첫째노선_아이디;
-    private static String 둘째노선_아이디;
     @LocalServerPort
     int port;
     private ExtractableResponse<Response> 첫째지하철역;
@@ -52,7 +46,6 @@ public class SectionAcceptanceTest {
     private ExtractableResponse<Response> 세번째지하철역;
     private ExtractableResponse<Response> 네번째지하철역;
     private ExtractableResponse<Response> 첫번째노선;
-    private ExtractableResponse<Response> 두번째노선;
 
     private static ExtractableResponse<Response> 구간_추가(String lineId, String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
@@ -85,7 +78,6 @@ public class SectionAcceptanceTest {
     public void setUpPort() {
         RestAssured.port = port;
         네개의_역_생성();
-
     }
 
     public void 네개의_역_생성() {
@@ -120,8 +112,11 @@ public class SectionAcceptanceTest {
 
         // THEN
         ExtractableResponse<Response> getLineResponse = 아이디_노선_조회(첫째노선_아이디);
-        List<String> stations = getLineResponse.jsonPath().getList("stations.name");
-        assertThat(stations).containsExactly(두번째지하철역이름, 첫째지하철역이름, 세번째지하철역이름);
+        노선_역_순서_조회(getLineResponse, 두번째지하철역이름, 첫째지하철역이름, 세번째지하철역이름);
+    }
+
+    private static void 노선_역_순서_조회(ExtractableResponse<Response> getLineResponse, String... values) {
+        assertThat(getLineResponse.jsonPath().getList("stations.name")).containsExactly(values);
     }
 
     /**
@@ -160,7 +155,7 @@ public class SectionAcceptanceTest {
 
         // THEN
         ExtractableResponse<Response> response = 아이디_노선_조회(첫째노선_아이디);
-        assertThat(response.jsonPath().getList("stations.name")).contains(첫째지하철역이름, 두번째지하철역이름);
+        노선_역_순서_조회(response, 두번째지하철역이름, 첫째지하철역이름);
 
     }
 
@@ -184,7 +179,7 @@ public class SectionAcceptanceTest {
         // THEN
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         ExtractableResponse<Response> response = 아이디_노선_조회(첫째노선_아이디);
-        assertThat(response.jsonPath().getList("stations.name")).containsExactly(두번째지하철역이름, 네번째지하철역이름);
+        노선_역_순서_조회(response, 두번째지하철역이름, 네번째지하철역이름);
 
     }
 
@@ -246,9 +241,7 @@ public class SectionAcceptanceTest {
             ExtractableResponse<Response> addResponse = 구간_추가(첫째노선_아이디, 세번째지하철역_아이디, 첫째지하철역_아이디, "2");
             // THEN
             assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-            List<String> stations = addResponse.jsonPath().getList("stations.name");
-            assertThat(stations).containsExactly(두번째지하철역이름, 세번째지하철역이름, 첫째지하철역이름);
+            노선_역_순서_조회(addResponse, 두번째지하철역이름, 세번째지하철역이름, 첫째지하철역이름);
         }
         /**
          * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
@@ -270,8 +263,8 @@ public class SectionAcceptanceTest {
             assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
             ExtractableResponse<Response> response = 아이디_노선_조회(첫째노선_아이디);
-            List<String> stations = response.jsonPath().getList("stations.name");
-            assertThat(stations).containsExactly(두번째지하철역이름, 네번째지하철역이름, 첫째지하철역이름);
+            노선_역_순서_조회(response, 두번째지하철역이름, 네번째지하철역이름, 첫째지하철역이름);
+
         }
         /**
          * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
