@@ -74,6 +74,13 @@ public class  Line {
 
     public Section getLastSection() { return sections.get(getSectionsLastIndex()); }
 
+    public void beforeAddSection(Section newSection) {
+        if (!checkDuplicatedStation(newSection.getUpStation()) &&
+                !checkDuplicatedStation(newSection.getDownStation())) {
+            throw new SectionException("Requested stations is not saved");
+        }
+    }
+
     public void addSection(Section section) {
         this.sections.add(section);
     }
@@ -120,10 +127,9 @@ public class  Line {
         return false;
     }
 
-    public void beforeAddSection(Section newSection) {
-        if (!checkDuplicatedStation(newSection.getUpStation()) &&
-                !checkDuplicatedStation(newSection.getDownStation())) {
-            throw new SectionException("Requested stations is not saved");
+    public void beforeDeleteSection() {
+        if (this.getSectionsLastIndex() < 1) {
+            throw new SectionException("Can`t remove section by section count");
         }
     }
 

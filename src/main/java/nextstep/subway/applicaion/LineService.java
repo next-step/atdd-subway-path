@@ -91,6 +91,7 @@ public class LineService {
     public LineResponse deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(LineException::new);
         Station deletedStation = stationService.findById(stationId);
+        line.beforeDeleteSection();
         deleteSectionByType(line, deletedStation);
 
         return createLineResponse(line);
