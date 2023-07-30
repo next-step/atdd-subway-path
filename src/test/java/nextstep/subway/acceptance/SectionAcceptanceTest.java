@@ -47,7 +47,7 @@ public class SectionAcceptanceTest {
     private ExtractableResponse<Response> 네번째지하철역;
     private ExtractableResponse<Response> 첫번째노선;
 
-    private static ExtractableResponse<Response> 구간_추가(String lineId, String upStationId, String downStationId, String distance) {
+    public static ExtractableResponse<Response> 구간_추가(String lineId, String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
@@ -72,6 +72,10 @@ public class SectionAcceptanceTest {
                 .then().log().all()
                 .extract();
         return response;
+    }
+
+    private static void 노선_역_순서_조회(ExtractableResponse<Response> getLineResponse, String... values) {
+        assertThat(getLineResponse.jsonPath().getList("stations.name")).containsExactly(values);
     }
 
     @BeforeEach
@@ -113,10 +117,6 @@ public class SectionAcceptanceTest {
         // THEN
         ExtractableResponse<Response> getLineResponse = 아이디_노선_조회(첫째노선_아이디);
         노선_역_순서_조회(getLineResponse, 두번째지하철역이름, 첫째지하철역이름, 세번째지하철역이름);
-    }
-
-    private static void 노선_역_순서_조회(ExtractableResponse<Response> getLineResponse, String... values) {
-        assertThat(getLineResponse.jsonPath().getList("stations.name")).containsExactly(values);
     }
 
     /**
