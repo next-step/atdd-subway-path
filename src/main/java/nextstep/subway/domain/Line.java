@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Line {
+public class  Line {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,47 +54,44 @@ public class Line {
     }
 
     public Station getStartStation() {
-        List<Section> sections = getThisSections();
-        return sections.get(sections.size()-1).getUpStation();
+        return getStartSection().getUpStation();
     }
 
     public Station getLastStation() {
-        List<Section> sections = getThisSections();
-        return sections.get(sections.size()-1).getDownStation();
+        return getLastSection().getDownStation();
     }
 
     public List<Section> getSections() {
         return sections;
     }
 
-    private List<Section> getThisSections() { return this.sections; }
-
     public Section getStartSection() {
-        return getThisSections().get(0);
+        return this.sections.get(0);
     }
 
+    public Section getLastSection() { return sections.get(sections.size()-1); }
+
     public void addSection(Section section) {
-        List<Section> sections = getThisSections();
-        sections.add(section);
+        this.sections.add(section);
     }
 
     public Line addSectionAtStart(Section newSection) {
         Section startSection = getStartSection();
         startSection.updateSection(newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance());
-        getThisSections().add(newSection);
+        this.sections.add(newSection);
         return this;
     }
 
     public Line addSectionAtEnd(Section newSection) {
-        getThisSections().add(newSection);
+        this.sections.add(newSection);
         return this;
     }
 
     public Line addSectionAtMiddle(Section newSection) {
-        for (Section savedSection : getThisSections()) {
+        for (Section savedSection : this.sections) {
             if (savedSection.getUpStation().getId().equals(newSection.getUpStation().getId())) {
                 checkValidDistance(savedSection, newSection);
-                getThisSections().add(0, newSection);
+                this.sections.add(0, newSection);
                 savedSection.updateDistance(newSection.getDistance());
                 break;
             }
@@ -109,7 +106,7 @@ public class Line {
     }
 
     public boolean checkDuplicatedStation(Station newStation) {
-        for (Section savedSection : getThisSections()) {
+        for (Section savedSection : this.sections) {
             if (savedSection.getUpStation().checkEqualStation(newStation)) {
                 return true;
             } else if(savedSection.getDownStation().checkEqualStation(newStation)) {
@@ -127,7 +124,7 @@ public class Line {
     }
 
     public void deleteSectionByUpStation(Station upStation) {
-        List<Section> sections = getThisSections();
+        List<Section> sections = this.sections;
 
         for (Section savedSection : sections) {
             Station savedUpStation = savedSection.getUpStation();
