@@ -35,6 +35,7 @@ public class SectionAcceptanceTest {
         CREATE_LINE_URL = createdResponse.header("Location");
     }
 
+    // TODO: 구간 추가에 대한 상세 사항은 Policy 의 단위 테스트에서 검증한다.
     /**
      * When 지하철 구간을 추가하면
      * Then 지하철 노선 조회시, 추가된 구간을 확인할 수 있다
@@ -54,26 +55,48 @@ public class SectionAcceptanceTest {
      * When 구간을 등록하면
      * Then 에러가 발생한다
      */
-    @DisplayName("하행역이 이미 지하철 노선에 등록된 지하철 구간을 추가하면 에러가 발생한다.")
-    @Test
-    void createSection_already_register() {
-        CreateSectionRequest request = 하행역이_지하철_노선에_등록된_구간에_대한_요청이_존재한다();
-
-        구간을_등록하면_에러가_발생한다(request);
-    }
+//    @DisplayName("하행역이 이미 지하철 노선에 등록된 지하철 구간을 추가하면 에러가 발생한다.")
+//    @Test
+//    void createSection_already_register() {
+//        CreateSectionRequest request = 하행역이_지하철_노선에_등록된_구간에_대한_요청이_존재한다();
+//
+//        구간을_등록하면_에러가_발생한다(request);
+//    }
 
     /**
      * Given 상행역이 노선의 하행 종점역이 아닌 구간으로
      * When 구간을 등록하면
      * Then 에러가 발생한다
      */
-    @DisplayName("상행역이 노선의 하행 종점역이 아닌 지하철 구간을 추가하면 에러가 발생한다.")
-    @Test
-    void createSection_not_include() {
-        CreateSectionRequest request = 상행역이_노선의_하행_종점역이_아닌_구간에_대한_요청이_존재한다();
+//    @DisplayName("상행역이 노선의 하행 종점역이 아닌 지하철 구간을 추가하면 에러가 발생한다.")
+//    @Test
+//    void createSection_not_include() {
+//        CreateSectionRequest request = 상행역이_노선의_하행_종점역이_아닌_구간에_대한_요청이_존재한다();
+//
+//        구간을_등록하면_에러가_발생한다(request);
+//    }
 
-        구간을_등록하면_에러가_발생한다(request);
-    }
+    // TODO: 구현 필요
+    /**
+     * Given 기존 역 사이 길이보다 크거나 같은 길이의 구간으로
+     * When 구간을 등록하면
+     * Then 에러가 발생한다
+     */
+
+    // TODO: 구현 필요
+    /**
+     * Given 상행역과 하행역이 모두 기존 노선에 등록되어 있는 구간으로
+     * When 구간을 등록하면
+     * Then 에러가 발생한다
+     */
+
+    // TODO: 구현 필요
+    /**
+     * Given 상행역과 하행역이 모두 기존 노선에 등록되어 있지 않은 구간으로
+     * When 구간을 등록하면
+     * Then 에러가 발생한다
+     */
+
 
     /**
      * Given 새로운 지하철 구간을 추가하고
