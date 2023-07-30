@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import org.springframework.orm.hibernate5.HibernateTemplate;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +52,7 @@ public class Line {
     public List<Section> getSections() {
         List<Section> sortSections = new ArrayList<>();
         Optional<Section> upSection = sections.stream()
-                .filter(section -> isUpStation(section.getUpStation()))
+                .filter(section -> !isDownStation(section.getUpStation()))
                 .findFirst();
         while(upSection.isPresent()) {
             sortSections.add(upSection.get());
@@ -63,6 +61,9 @@ public class Line {
         return sortSections;
     }
 
+    public void addSections(Section section) {
+        this.sections.add(section);
+    }
     // 다음 역을 찾는 메소드
     private Optional<Section> findNextSection(Station downStation) {
         return sections.stream()
@@ -80,32 +81,46 @@ public class Line {
     }
 
     public void addSection(Section section) {
+        this.sections.add(section);
         if(isUpStation(section.getUpStation())) {
-            addMiddleUpSection(section);
+            updatePrevDownSection(section);
             return;
         }
         if(isDownStation(section.getDownStation())) {
-            addMiddleDownSection(section);
+            updatePrevUpSection(section);
             return;
         }
-        this.sections.add(section);
     }
 
-    // 추가되는 구간의 상행선 역이 기존 구간의 상행선으로 등록되어있으면 구간 사이에 들어간다.
-    private void addMiddleUpSection(Section newSection) {
-        Section prevSection = sections.stream()
+    public void checkStation(Section section) {
+
+    }
+    public void removeSection(Station station) {
+        Section removedSection = this.sections
+                .stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElse(sections.get(0));
+        this.sections.remove(removedSection);
+    }
+
+    // 추가되는 구간의 상행선 역이 기존 구간의 상행선으로 등록되어있으면 구간 사이에 들어간다. 기존 구간은 하행선 역으로 변경
+    private void updatePrevDownSection(Section newSection) {
+        Section downSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst()
                 .get();
-        prevSection.updateSection(newSection, true);
+        downSection.updateSection(newSection, true);
+
     }
 
-    // 추가되는 구간이 하행선 역이 기존 구간의 하행선으로 등록되어있으면 구간 사이에 들어간다.
-    private void addMiddleDownSection(Section newSection) {
-        Section prevSection = sections.stream()
+    // 추가되는 구간이 하행선 역이 기존 구간의 하행선으로 등록되어있으면 구간 사이에 들어간다. 기존 구간은 상행선 역으로 변경
+    private void updatePrevUpSection(Section newSection) {
+        Section upSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst()
                 .get();
-        prevSection.updateSection(newSection, false);
+        upSection.updateSection(newSection, false);
     }
+
 }
