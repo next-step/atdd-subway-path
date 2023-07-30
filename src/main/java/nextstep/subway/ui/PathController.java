@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.applicaion.PathService;
+import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +21,8 @@ public class PathController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StationResponse>> getPath(@RequestParam("source") Long sourceId,
-                                                         @RequestParam("targetId") Long targetId) {
+    public ResponseEntity<PathResponse> getPath(@RequestParam("source") Long sourceId,
+                                                @RequestParam("target") Long targetId) {
         return ResponseEntity.ok().body(pathService.getPath(sourceId, targetId));
     }
 }
