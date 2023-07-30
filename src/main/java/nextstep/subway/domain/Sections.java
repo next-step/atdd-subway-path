@@ -145,18 +145,18 @@ public class Sections {
     return topSection;
   }
 
-  public boolean hasNextSection(Section startingSection) {
+  private boolean hasNextSection(Section startingSection) {
     return sections.stream().anyMatch(iteratingSection ->
         startingSection.getDownStation().equals(iteratingSection.getUpStation()));
   }
 
-  public Section getNextSection(Section startingSection) {
+  private Section getNextSection(Section startingSection) {
     return sections.stream().filter(iteratingSection ->
             startingSection.getDownStation().equals(iteratingSection.getUpStation())).findFirst()
         .orElseThrow(() -> new IllegalStateException("역끼리의 연결을 확인해주세요!"));
   }
 
-  public Section getLastSection() {
+  private Section getLastSection() {
     if (sections.size() <= 1) {
       throw new IllegalStateException("마지막 section이 존재하지 않습니다.");
     }
