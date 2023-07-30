@@ -59,7 +59,7 @@ public class SectionAcceptanceTest {
      * And: 구간의 지하철역들을 검증한다.
      */
     @Test
-    @DisplayName("새로운 구간을 등록한다.")
+    @DisplayName("[구간등록 성공] 새로운 구간을 등록한다.")
     void 구간등록요청() {
         // Given (Fixture)
         // When
@@ -84,7 +84,7 @@ public class SectionAcceptanceTest {
      * And: 구간의 지하철역들을 검증한다.
      */
     @Test
-    @DisplayName("새로운 역을 상행종점역과 하행종점역 사이에 등록한다.")
+    @DisplayName("[구간등록 성공] 새로운 역을 상행종점역과 하행종점역 사이에 등록한다.")
     void createIntermediateSection() {
         // Given (Fixture)
         // When
@@ -110,7 +110,7 @@ public class SectionAcceptanceTest {
      * And: 구간의 지하철역들을 검증한다.
      */
     @Test
-    @DisplayName("새로운 역을 상행종점역으로 등록한다.")
+    @DisplayName("[구간등록 성공] 새로운 역을 상행종점역으로 등록한다.")
     void createFirstSection() {
         // Given (Fixture)
         // When
@@ -133,8 +133,8 @@ public class SectionAcceptanceTest {
      * And: '구간을 등록할 수 없습니다.' 오류 메시지를 검증한다.
      */
     @Test
-    @DisplayName("기존 역 사이의 길이보다 큰 새로운 역을 등록한다.")
-    void 구간등록요청LongerDistance() {
+    @DisplayName("[구간등록 실패] 기존 역 사이의 길이보다 큰 새로운 역을 등록한다.")
+    void createSectionLongerDistance() {
         // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
@@ -157,8 +157,8 @@ public class SectionAcceptanceTest {
      * And: '구간을 등록할 수 없습니다.' 오류 메시지를 검증한다.
      */
     @Test
-    @DisplayName("기존 역 사이의 길이와 같은 새로운 역을 등록한다.")
-    void 구간등록요청SameDistance() {
+    @DisplayName("[구간등록 실패] 기존 역 사이의 길이와 같은 새로운 역을 등록한다.")
+    void createSectionSameDistance() {
         // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
@@ -181,8 +181,8 @@ public class SectionAcceptanceTest {
      * And: '구간을 등록할 수 없습니다.' 오류 메시지를 검증한다.
      */
     @Test
-    @DisplayName("상하행종점역 둘 다 이미 등록된 역을 등록한다.")
-    void 구간등록요청AlreadyRegistry() {
+    @DisplayName("[구간등록 실패] 상하행종점역 둘 다 이미 등록된 역을 등록한다.")
+    void createSectionAlreadyRegistry() {
         // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
@@ -206,8 +206,8 @@ public class SectionAcceptanceTest {
      * And: '구간을 등록할 수 없습니다.' 오류 메시지를 검증한다.
      */
     @Test
-    @DisplayName("상하행종점역 둘 중 하나도 포함되어 있지 않은 역을 등록한다.")
-    void 구간등록요청NoMatchAnyStation() {
+    @DisplayName("[구간등록 실패] 상하행종점역 둘 중 하나도 포함되어 있지 않은 역을 등록한다.")
+    void createSectionNoMatchAnyStation() {
         // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
@@ -231,7 +231,7 @@ public class SectionAcceptanceTest {
      * And: 지하철역 아이디 리스트의 순서를 검증한다.
      */
     @Test
-    @DisplayName("구간을 조회한다.")
+    @DisplayName("[구간조회 성공] 구간을 조회한다.")
     public void getSections() {
         // Given
         SectionRequest 기존역사이에추가되는구간 = SectionRequest.builder()
