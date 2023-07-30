@@ -84,8 +84,8 @@ public class SectionAcceptanceTest {
      * And: 구간의 지하철역들을 검증한다.
      */
     @Test
-    @DisplayName("[구간등록 성공] 새로운 역을 상행종점역과 하행종점역 사이에 등록한다.")
-    void createIntermediateSection() {
+    @DisplayName("[구간등록 성공] 새로운 역을 상행역 기준으로 기존 구간 사이에 등록한다.")
+    void createIntermediateSectionWithSameUpStation() {
         // Given (Fixture)
         // When
         SectionRequest sectionRequest = SectionRequest.builder()
@@ -100,6 +100,34 @@ public class SectionAcceptanceTest {
         // Then
         LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 30L, List.of(2L, 3L, 4L));
     }
+
+
+    /**
+     * Given: 5개의 지하철역이 등록되어 있다.
+     * And: 1개의 노선과 1개의 구간이 등록되어 있다.
+     * When: 구간을 추가한다.
+     * Then: 성공(200 OK) 응답을 받는다.
+     * And: 노선의 총 구간 길이를 검증한다.
+     * And: 구간의 지하철역들을 검증한다.
+     */
+    @Test
+    @DisplayName("[구간등록 성공] 새로운 역을 하행역 기준으로 기존 구간 사이에 등록한다.")
+    void createIntermediateSectionWithSameDownStation() {
+        // Given (Fixture)
+        // When
+        SectionRequest sectionRequest = SectionRequest.builder()
+            // 노선은 상행(2) 하행(4) 으로 종점이 등록되어있는 상태이며,
+            // 새로운 구간 지하철역을 (3-4) 으로 등록하고자 함
+            .upStationId(3L)
+            .downStationId(4L)
+            .distance(20L)
+            .build();
+        ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
+
+        // Then
+        LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 30L, List.of(2L, 3L, 4L));
+    }
+
 
     /**
      * Given: 5개의 지하철역이 등록되어 있다.

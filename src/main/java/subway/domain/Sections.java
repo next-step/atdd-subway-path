@@ -67,13 +67,21 @@ public class Sections {
 
     public Section getDividedSection(Section connectedSection, Section newSection) {
         Line line = newSection.getLine();
+        Long distance = connectedSection.getDistance() - newSection.getDistance();
 
-        return Section.builder()
-            .line(line)
-            .upStation(newSection.getDownStation())
-            .downStation(connectedSection.getDownStation())
-            .distance(connectedSection.getDistance() - newSection.getDistance())
-            .build();
+        return newSection.isSameUpStation(connectedSection) ?
+            Section.builder()
+                .line(line)
+                .upStation(newSection.getDownStation())
+                .downStation(connectedSection.getDownStation())
+                .distance(distance)
+                .build()
+            : Section.builder()
+                .line(line)
+                .upStation(connectedSection.getUpStation())
+                .downStation(newSection.getUpStation())
+                .distance(distance)
+                .build();
     }
 
     public List<Station> getStations() {
