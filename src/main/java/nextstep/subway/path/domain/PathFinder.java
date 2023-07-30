@@ -32,17 +32,14 @@ public class PathFinder {
                 .forEach(x -> graph.addEdge(x.getSource(), x.getTarget(), x));
     }
 
-    public GraphPath<Station, SectionWeightedEdge> findPath(Station source, Station target) {
+    public Sections findPath(Station source, Station target) {
         DijkstraShortestPath<Station, SectionWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<Station, SectionWeightedEdge> path = shortestPath.getPath(source, target);
 
-        return path;
-    }
-
-    public Sections getSections(GraphPath<Station, SectionWeightedEdge> graphPath) {
-        List<Section> sections = graphPath.getEdgeList().stream()
+        List<Section> sections = path.getEdgeList().stream()
                 .map(SectionWeightedEdge::toSection)
                 .collect(Collectors.toList());
+
         return new Sections(sections);
     }
 

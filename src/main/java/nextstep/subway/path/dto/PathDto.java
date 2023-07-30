@@ -1,8 +1,11 @@
 package nextstep.subway.path.dto;
 
+import nextstep.subway.section.entity.Sections;
 import nextstep.subway.station.dto.StationDto;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PathDto {
 
@@ -14,8 +17,10 @@ public class PathDto {
         this.distance = distance;
     }
 
-    public static PathDto from(Set<StationDto> stationDtos, int distance) {
-        return new PathDto(stationDtos, distance);
+    public static PathDto from(Sections sections) {
+        return new PathDto(sections.getStations().stream()
+                .map(StationDto::from)
+                .collect(Collectors.toCollection(LinkedHashSet::new)), sections.getDistance());
     }
 
     public Set<StationDto> getStationDtos() {

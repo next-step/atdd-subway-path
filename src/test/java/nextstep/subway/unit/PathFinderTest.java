@@ -4,6 +4,7 @@ import nextstep.subway.line.entity.Line;
 import nextstep.subway.path.domain.PathFinder;
 import nextstep.subway.path.domain.SectionWeightedEdge;
 import nextstep.subway.section.entity.Section;
+import nextstep.subway.section.entity.Sections;
 import nextstep.subway.station.entity.Station;
 import org.jgrapht.GraphPath;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ class PathFinderTest {
         assertThat(pathFinder.getGraph().containsVertex(잠실역)).isTrue();
     }
 
-    @DisplayName("PathFinder의 graph에서 경로를 조회할시 정상적으로 조회되는지 확인")
+    @DisplayName("PathFinder의 경로를 조회할시 정상적으로 역과 거리가 조회되는지 확인")
     @Test
     void findPath() {
         Line line = createLine(강남역, 역삼역, 2);
@@ -52,11 +53,11 @@ class PathFinderTest {
         PathFinder pathFinder = new PathFinder(lines);
 
         // when : 기능 수행
-        GraphPath<Station, SectionWeightedEdge> path = pathFinder.findPath(강남역, 잠실역);
+        Sections sections = pathFinder.findPath(강남역, 잠실역);
 
         // then : 결과 확인
-        assertThat(path.getVertexList()).containsExactly(강남역, 역삼역, 잠실역);
-        assertThat(path.getWeight()).isEqualTo(5);
+        assertThat(sections.getStations()).containsExactly(강남역, 역삼역, 잠실역);
+        assertThat(sections.getDistance()).isEqualTo(5);
     }
 
     private Line createLine(Station upStation, Station downStation, int distance) {
