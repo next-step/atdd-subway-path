@@ -13,6 +13,7 @@ import java.util.Map;
 import static nextstep.subway.acceptance.LineSteps.*;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 관리 기능")
 class SectionAcceptanceTest extends AcceptanceTest {
@@ -74,6 +75,54 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * when 기존 구간 상행성 기준으로 길이가 큰 신규 구간을 추가한다.
+     * then error 확인
+     */
+    @DisplayName("예외케이스 1. 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다.")
+    @Test
+    void exceptionCase1() {
+        //when
+        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        Map<String, String> addMiddleParam = createSectionCreateParams(강남역, 중간역, 10);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, addMiddleParam);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * when 기존 구간에 상행선과 하행선 둘 중 하나도 포함되어 있지 않은 구간을 추가한다.
+     * then error 확인
+     */
+    @DisplayName("예외케이스 2. 상행선과 하행역이 이미 노선에 등록되어있다면 추가할 수 없다.")
+    @Test
+    void exceptionCase2() {
+        //when
+        Map<String, String> addMiddleParam = createSectionCreateParams(강남역, 양재역, 3);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, addMiddleParam);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * when 기존 구간에 상행선과 하행선 둘 중 하나도 포함되어 있지 않은 구간을 추가한다.
+     * then error 확인
+     */
+    @DisplayName("예외케이스 3. 상행선과 하행선 둘 중 하나도 포함되어 있지 않은 구간을 추가할 수 없다.")
+    @Test
+    void exceptionCase3() {
+        //when
+        Long 새로운역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
+        Long 새로운역1 = 지하철역_생성_요청("새로운역1").jsonPath().getLong("id");
+        Map<String, String> addMiddleParam = createSectionCreateParams(새로운역, 새로운역1, 3);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, addMiddleParam);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고
      * When 지하철 노선의 마지막 구간 제거를 요청 하면
      * Then 노선에 구간이 제거된다
@@ -110,6 +159,14 @@ class SectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
         params.put("distance", 6 + "");
+        return params;
+    }
+
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        params.put("distance", distance + "");
         return params;
     }
 }
