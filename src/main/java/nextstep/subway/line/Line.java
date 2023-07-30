@@ -1,12 +1,15 @@
 package nextstep.subway.line;
 
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.linesection.LineSection;
 import nextstep.subway.linesection.LineSections;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -22,6 +25,7 @@ public class Line {
 
     protected Line() {
     }
+
     public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
         Line line = new Line();
         line.name = name;
@@ -29,6 +33,7 @@ public class Line {
         line.sections = LineSections.of(line, upStation, downStation, distance);
         return line;
     }
+
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
@@ -50,12 +55,13 @@ public class Line {
         return sections;
     }
 
-    public void addSection(LineSection section) {
-        this.sections.add(section);
+    public void addSection(LineSection lineSection) {
+        this.sections.add(lineSection);
     }
 
-    public void removeSection(Station toDeleteStation) {
-        this.sections.remove(toDeleteStation);
+
+    public void removeSection(Station deleteStation) {
+        this.sections.remove(deleteStation);
     }
 
 

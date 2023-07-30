@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.station.Station;
 import org.springframework.stereotype.Component;
 import nextstep.subway.station.StationResponse;
 
@@ -9,7 +10,8 @@ import java.util.stream.Collectors;
 @Component
 public class LineConverter {
     public LineResponse convert(Line line) {
-        List<StationResponse> stationResponses = line.getSections().getStations()
+        List<Station> stations = line.getSections().getStations();
+        List<StationResponse> stationResponses = stations
                 .stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());

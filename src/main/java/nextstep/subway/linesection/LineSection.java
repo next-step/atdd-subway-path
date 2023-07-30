@@ -6,6 +6,7 @@ import nextstep.subway.station.Station;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "line_section")
 public class LineSection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +36,11 @@ public class LineSection {
         return downStation;
     }
 
+    public Integer getDistance() {
+        return distance;
+    }
+
+    public Line getLine() {
+        return line;
+    }
 }
