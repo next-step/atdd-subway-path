@@ -1,11 +1,9 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.applicaion.exception.domain.LineException;
 import nextstep.subway.domain.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @SpringBootTest
 @Transactional
@@ -72,11 +68,6 @@ public class LineServiceTest {
         stationRepository.save(newStation);
         lineService.addSection(line.getId(), new SectionRequest(1L, 3L, 5));
         lineRepository.save(line);
-
-        for (Section section : line.getSections()) {
-            System.out.println("section id : " + section.getId());
-            System.out.println("upStation : " + section.getUpStation().getName() + " downStation : " + section.getDownStation().getName());
-        }
 
         LineResponse response = lineService.findById(line.getId());
 

@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.applicaion.exception.domain.SectionException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ public class Line {
     private String name;
     private String color;
 
+    @OrderColumn
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -41,16 +44,23 @@ public class Line {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void updateNameAndColor(String name, String color) {
+        this.name = name;
         this.color = color;
+    }
+
+    public Station getStartStation() {
+        List<Section> sections = getThisSections();
+        return sections.get(sections.size()-1).getUpStation();
+    }
+
+    public Station getLastStation() {
+        List<Section> sections = getThisSections();
+        return sections.get(sections.size()-1).getDownStation();
     }
 
     public List<Section> getSections() {
@@ -59,22 +69,61 @@ public class Line {
 
     private List<Section> getThisSections() { return this.sections; }
 
+    public Section getStartSection() {
+        return getThisSections().get(0);
+    }
+
     public void addSection(Section section) {
         List<Section> sections = getThisSections();
         sections.add(section);
     }
 
-    public void addSectionAtIndex(Section section, int index) {
-        List<Section> sections = getThisSections();
-        sections.add(index, section);
+    public Line addSectionAtStart(Section newSection) {
+        Section startSection = getStartSection();
+        startSection.updateSection(newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance());
+        getThisSections().add(newSection);
+        return this;
     }
 
-    public boolean checkDuplicatedSectionByStationId(Long upStationId, Long downStationId) {
-        List<Section> sections = getThisSections();
+    public Line addSectionAtEnd(Section newSection) {
+        getThisSections().add(newSection);
+        return this;
+    }
 
-        return sections.stream()
-                .anyMatch(section -> section.getUpStation().getId().equals(upStationId)
-                        && section.getDownStation().getId().equals(downStationId));
+    public Line addSectionAtMiddle(Section newSection) {
+        for (Section savedSection : getThisSections()) {
+            if (savedSection.getUpStation().getId().equals(newSection.getUpStation().getId())) {
+                checkValidDistance(savedSection, newSection);
+                getThisSections().add(0, newSection);
+                savedSection.updateDistance(newSection.getDistance());
+                break;
+            }
+        }
+        return this;
+    }
+
+    private void checkValidDistance(Section savedSection, Section newSection) {
+        if (newSection.getDistance() >= savedSection.getDistance()) {
+            throw new SectionException("Requested distance is equal or larger than the saved distance.");
+        }
+    }
+
+    public boolean checkDuplicatedStation(Station newStation) {
+        for (Section savedSection : getThisSections()) {
+            if (savedSection.getUpStation().checkEqualStation(newStation)) {
+                return true;
+            } else if(savedSection.getDownStation().checkEqualStation(newStation)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void beforeAddSection(Section newSection) {
+        if (!checkDuplicatedStation(newSection.getUpStation()) &&
+                !checkDuplicatedStation(newSection.getDownStation())) {
+            throw new SectionException("Requested stations is not saved");
+        }
     }
 
     public void deleteSectionByUpStation(Station upStation) {
