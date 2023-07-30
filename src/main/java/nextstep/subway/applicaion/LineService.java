@@ -11,8 +11,10 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,8 +92,6 @@ public class LineService {
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
 
-        stations.add(0, line.getSections().get(0).getUpStation());
-
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
                 .collect(Collectors.toList());
@@ -108,4 +108,5 @@ public class LineService {
 
         line.getSections().remove(line.getSections().size() - 1);
     }
+
 }

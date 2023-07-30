@@ -55,7 +55,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
 
     /**
-     * When 기존 구간 중간에 신규 구간을 추가한다.
+     * When 기존 구간 상행선 기존으로 중간에 신규 구간을 추가한다.
      * Then 생성된 구간을 확인할 수 있다.
      */
     @DisplayName("기존 구간 사이에 새로운 구간 추가")

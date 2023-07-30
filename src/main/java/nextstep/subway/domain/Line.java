@@ -52,24 +52,23 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
-    }
-
-    public List<Section> sortSections() {
-        Section upSection = sections.stream()
+        List<Section> sortSections = new ArrayList<>();
+        Optional<Section> upSection = sections.stream()
                 .filter(section -> isUpStation(section.getUpStation()))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("상행역이 없습니다."));
-        List<Section> sort = new ArrayList<>();
-        sort.add(upSection);
-        Optional<Section> nextSection = findNextSection(upSection.getDownStation());
-        if(nextSection.isPresent()) {
-            sort.add(nextSection.get());
-            findNextSection(nextSection.get().getDownStation());
+                .findFirst();
+        while(upSection.isPresent()) {
+            sortSections.add(upSection.get());
+            upSection = findNextSection(upSection.get().getDownStation());
         }
-        return sort;
+        return sortSections;
     }
 
+    // 다음 역을 찾는 메소드
+    private Optional<Section> findNextSection(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(downStation))
+                .findFirst();
+    }
     // 상행역으로 등록되어 있는지 찾는 메소드
     private boolean isUpStation(Station station) {
         return sections.stream().map(Section::getUpStation).collect(Collectors.toList()).contains(station);
@@ -80,12 +79,6 @@ public class Line {
         return sections.stream().map(Section::getDownStation).collect(Collectors.toList()).contains(station);
     }
 
-    // 다음 역을 찾는 메소드
-    private Optional<Section> findNextSection(Station downStation) {
-        return sections.stream()
-                .filter(section -> section.getUpStation().equals(downStation))
-                .findFirst();
-    }
     public void addSection(Section section) {
         if(isUpStation(section.getUpStation())) {
             addMiddleUpSection(section);
