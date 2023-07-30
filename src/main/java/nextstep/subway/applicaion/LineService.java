@@ -76,10 +76,10 @@ public class LineService {
         Station startStation = line.getStartStation();
         Station endStation = line.getLastStation();
 
-        if (newSection.getDownStation().checkEqualStation(startStation)) {
+        if (newSection.getDownStation().checkEqualStationByName(startStation)) {
             log.info("[LineService] Add Section at start point");
             return line.addSectionAtStart(newSection);
-        } else if (newSection.getUpStation().checkEqualStation(endStation)) {
+        } else if (newSection.getUpStation().checkEqualStationByName(endStation)) {
             log.info("[LineService] Add section at end point");
             return line.addSectionAtEnd(newSection);
         }
@@ -88,14 +88,31 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(Long lineId, Long stationId) {
+    public LineResponse deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(LineException::new);
-        Station station = stationService.findById(stationId);
+        Station deletedStation = stationService.findById(stationId);
+        deleteSectionByType(line, deletedStation);
 
-        if (!line.getSections().get(line.getSections().size()-1).getDownStation().equals(station)) {
-            throw new SectionException("Check requested stationId or lineId.");
+        return createLineResponse(line);
+    }
+
+    private Line deleteSectionByType(Line line, Station deletedStation) {
+        Station startStation = line.getStartStation();
+        Station lastStation = line.getLastStation();
+
+        if (startStation.checkEqualStationByName(deletedStation)) {
+            log.info("[LineService] Delete section at start point");
+            line.deleteSectionAtStart();
+            return line;
+        } else if (lastStation.checkEqualStationByName(deletedStation)) {
+            log.info("[LineService] Delete section at last point");
+            line.deleteSectionAtLast();
+            return line;
         }
-        line.getSections().remove(line.getSections().size()-1);
+        log.info("[LineService] Delete section at middle point");
+        line.deleteSectionAtMiddle(deletedStation);
+
+        return line;
     }
 
     private LineResponse createLineResponse(Line line) {

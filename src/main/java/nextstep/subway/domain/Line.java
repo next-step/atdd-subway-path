@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.applicaion.exception.domain.SectionException;
 
 import javax.persistence.*;
+import javax.servlet.ServletContainerInitializer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,11 +66,13 @@ public class  Line {
         return sections;
     }
 
+    public int getSectionsLastIndex() { return sections.size()-1; }
+
     public Section getStartSection() {
         return this.sections.get(0);
     }
 
-    public Section getLastSection() { return sections.get(sections.size()-1); }
+    public Section getLastSection() { return sections.get(getSectionsLastIndex()); }
 
     public void addSection(Section section) {
         this.sections.add(section);
@@ -107,9 +110,9 @@ public class  Line {
 
     public boolean checkDuplicatedStation(Station newStation) {
         for (Section savedSection : this.sections) {
-            if (savedSection.getUpStation().checkEqualStation(newStation)) {
+            if (savedSection.getUpStation().checkEqualStationByName(newStation)) {
                 return true;
-            } else if(savedSection.getDownStation().checkEqualStation(newStation)) {
+            } else if(savedSection.getDownStation().checkEqualStationByName(newStation)) {
                 return true;
             }
         }
@@ -123,15 +126,38 @@ public class  Line {
         }
     }
 
-    public void deleteSectionByUpStation(Station upStation) {
-        List<Section> sections = this.sections;
+    public void deleteSectionAtStart() {
+        this.sections.remove(0);
+    }
 
-        for (Section savedSection : sections) {
-            Station savedUpStation = savedSection.getUpStation();
-            if (savedUpStation.getName().equals(upStation.getName())) {
-                sections.remove(savedSection);
-                return;
+    public void deleteSectionAtMiddle(Station deletedStation) {
+        Section preSection = this.findPreSectionByStation(deletedStation);
+        Section nextSection = this.findNextSectionByStation(deletedStation);
+        int calculatedDistance = preSection.getDistance() + nextSection.getDistance();
+
+        preSection.updateSection(preSection.getUpStation(), nextSection.getDownStation(), calculatedDistance);
+        this.sections.remove(nextSection);
+    }
+
+    public void deleteSectionAtLast() {
+        this.sections.remove(getSectionsLastIndex());
+    }
+
+    private Section findPreSectionByStation(Station station) {
+        for (Section savedSection : this.sections) {
+            if (savedSection.getDownStation().checkEqualStationByName(station)) {
+                return savedSection;
             }
         }
+        throw new SectionException("Section is not existed by requested station");
+    }
+
+    private Section findNextSectionByStation(Station station) {
+        for (Section savedSection : this.sections) {
+            if (savedSection.getUpStation().checkEqualStationByName(station)) {
+                return savedSection;
+            }
+        }
+        throw new SectionException("Section is not existed by requested station");
     }
 }

@@ -52,12 +52,16 @@ class LineTest {
         assertThat(downStation).isEqualTo(양재역);
     }
 
+    /**
+     * TODO
+     * - 구간이 한개이기에 예외 검증
+     */
     @DisplayName("지하철 구간 삭제")
     @Test
     void removeSection() {
 
         // when
-        line.deleteSectionByUpStation(강남역);
+        line.deleteSectionAtLast();
 
         // then
         Assertions.assertThat(line.getSections()).hasSize(0);

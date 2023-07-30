@@ -27,7 +27,7 @@ public class Station {
         return name;
     }
 
-    public boolean checkEqualStation(Station station) {
+    public boolean checkEqualStationByName(Station station) {
         if (station == null) {
             return false;
         }
