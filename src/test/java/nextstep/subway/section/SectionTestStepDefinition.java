@@ -82,15 +82,24 @@ public class SectionTestStepDefinition {
     }
 
     public static PathResponse 지하철_경로_조회(Long sourceId, Long targetId) {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(sourceId, targetId);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        return response.as(PathResponse.class);
+    }
+
+    public static int 지하철_경로_조회_상태코드_반환(Long sourceId, Long targetId) {
+
+        return 지하철_경로_조회_요청(sourceId, targetId).statusCode();
+    }
+
+    private static ExtractableResponse<Response> 지하철_경로_조회_요청(Long sourceId, Long targetId) {
+        return RestAssured.given().log().all()
             .param("source", sourceId)
             .param("target", targetId)
             .when().get("paths")
             .then().log().all()
             .extract();
-
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        return response.as(PathResponse.class);
     }
 }

@@ -16,7 +16,6 @@ import static common.Constants.판교역;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_생성_요청;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_조회_요청;
 import static nextstep.subway.section.SectionTestStepDefinition.*;
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.station.StationTestStepDefinition.지하철_역_생성_요청;
 
@@ -209,6 +208,48 @@ public class SectionAcceptanceTest {
         // then
         assertThat(역이름_목록(양재역_교대역_경로_조회)).containsExactly(양재역, 강남역, 교대역);
         assertThat(양재역_교대역_경로_조회.getDistance()).isEqualTo(5);
+    }
+
+    // Given 지하철 노선과 구간을 추가하고
+    // When 출발지와 도착지가 같은 경로 조회 요청하면
+    // Then 경로 조회가 불가능하다는 응답을 받는다
+    @DisplayName("경로조회시 출발지와 도착지가 같으면 실패한다")
+    @Test
+    void route_fail_sameSourceAndTarget() {
+        지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 양재역정보, 2);
+
+        var 상태코드 = 지하철_경로_조회_상태코드_반환(판교역정보, 판교역정보);
+
+        assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    // Given 지하철 노선과 구간을 추가하고
+    // When 출발지와 도착지가 연결되지 않은 경로 조회 요청하면
+    // Then 경로 조회가 불가능하다는 응답을 받는다
+    @DisplayName("경로조회시 출발지와 도착지가 연결되지 않았으면 실패한다")
+    @Test
+    void route_fail_sourceAndTargetUnconnected() {
+        지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 양재역정보, 2);
+
+        var 상태코드 = 지하철_경로_조회_상태코드_반환(판교역정보, 광교역정보);
+
+        assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    // Given 지하철 노선과 구간을 추가하고
+    // When 존재하지 않는 출발역 / 도착역에 경로 조회 요청하면
+    // Then 경로 조회가 불가능하다는 응답을 받는다
+    @DisplayName("경로조회시 존재하지 않는 역에 대해 요청하면 실패한다")
+    @Test
+    void route_fail_unknownStation() {
+        var 뉴욕역정보 = Long.MAX_VALUE;
+        var 포틀랜드역정보 = Long.MIN_VALUE;
+
+        var 뉴욕역까지_경로조회_상태코드 = 지하철_경로_조회_상태코드_반환(판교역정보, 뉴욕역정보);
+        var 포틀랜드역부터_경로조회_상태코드 = 지하철_경로_조회_상태코드_반환(포틀랜드역정보, 판교역정보);
+
+        assertThat(뉴욕역까지_경로조회_상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(포틀랜드역부터_경로조회_상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Stream<String> 역이름_목록(PathResponse response) {
