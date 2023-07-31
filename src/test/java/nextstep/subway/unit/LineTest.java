@@ -121,6 +121,7 @@ public class LineTest {
                 //then
                 assertThrows(BadRequestException.class, run);
             }
+
             @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이와 같으면 등록을 할 수 없음")
             @Test
             void exception_case1() {
@@ -145,6 +146,7 @@ public class LineTest {
                 //then
                 assertThrows(BadRequestException.class, run);
             }
+
             /**
              * A-B, B-C 구간이 등록된 상황에서 A-C 구간도 등록할 수 없음
              */
@@ -170,6 +172,45 @@ public class LineTest {
         }
     }
 
+    @DisplayName("구간 제거 테스트")
+    @Nested
+    class RemoveSectionTest {
+        @DisplayName("정상 동작")
+        @Nested
+        class Success {
+            @DisplayName("구간의 끝역 제거")
+            @Test
+            void case_0() {
+                //given
+                line.addSection(LineSection.of(line, 창동역, 사당역, 3));
+                //when
+                line.removeSection(사당역);
+                //then
+                assertThat(line.getStations()).containsExactly(노원역, 창동역);
+            }
+            @DisplayName("구간의 중간역 제거")
+            @Test
+            void case_1() {
+                //given
+                line.addSection(LineSection.of(line, 창동역, 사당역, 3));
+                //when
+                line.removeSection(창동역);
+                //then
+                assertThat(line.getStations()).containsExactly(노원역, 사당역);
+            }
+            @DisplayName("구간의 첫번째역 제거")
+            @Test
+            void case_2() {
+                //given
+                line.addSection(LineSection.of(line, 창동역, 사당역, 3));
+                //when
+                line.removeSection(노원역);
+                //then
+                assertThat(line.getStations()).containsExactly(창동역,사당역);
+            }
+        }
+    }
+
     @DisplayName("구간 조회")
     @Test
     void getStations() {
@@ -179,18 +220,6 @@ public class LineTest {
         //then
         assertThat(line.getStations()).containsExactly(노원역, 창동역, 사당역);
     }
-
-    @DisplayName("구간 제거")
-    @Test
-    void removeSection() {
-        //given
-        line.addSection(LineSection.of(line, 창동역, 사당역, 3));
-        //when
-        line.removeSection(사당역);
-        //then
-        assertThat(line.getStations()).containsExactly(노원역, 창동역);
-    }
-
 
     private Station getStation(Long id, String name) {
         Station station = new Station(name);
