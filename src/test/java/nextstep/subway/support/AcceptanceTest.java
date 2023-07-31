@@ -25,7 +25,7 @@ public @interface AcceptanceTest {
     /**
      * <pre>
      * 설정할 웹 환경 유형
-     * {@link SpringBootTest.WebEnvironment#RANDOM_PORT
+     * {@link SpringBootTest.WebEnvironment#RANDOM_PORT}
      * </pre>
      *
      * @return the type of web environment

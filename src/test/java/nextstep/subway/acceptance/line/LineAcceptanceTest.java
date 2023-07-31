@@ -3,14 +3,15 @@ package nextstep.subway.acceptance.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.acceptance.constants.Endpoint;
+import nextstep.subway.acceptance.step.LineAcceptanceStep;
+import nextstep.subway.acceptance.step.StationAcceptanceStep;
 import nextstep.subway.fixture.StationFixture;
 import nextstep.subway.line.dto.request.SaveLineRequestDto;
 import nextstep.subway.line.dto.request.UpdateLineRequestDto;
-import nextstep.subway.station.dto.request.SaveStationRequestDto;
+import nextstep.subway.station.dto.response.StationResponseDto;
 import nextstep.subway.support.AcceptanceTest;
+import nextstep.subway.support.AssertUtils;
 import nextstep.subway.support.DatabaseCleanup;
-import nextstep.subway.support.RestAssuredClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,8 +32,6 @@ public class LineAcceptanceTest {
 
     @LocalServerPort
     private int port;
-
-    private static final String LINE_BASE_URL = Endpoint.LINE_BASE_URL.getUrl();
 
     private static final String LINE_ID_KEY = "id";
 
@@ -56,10 +55,18 @@ public class LineAcceptanceTest {
         }
         databaseCleanUp.execute();
 
-        this.신사역_아이디 = saveStation(StationFixture.신사역);
-        this.광교역_아이디 = saveStation(StationFixture.광교역);
-        this.청량리역_아이디 = saveStation(StationFixture.청량리역);
-        this.춘천역_아이디 = saveStation(StationFixture.춘천역);
+        this.신사역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.신사역)
+                .as(StationResponseDto.class)
+                .getId();
+        this.광교역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.광교역)
+                .as(StationResponseDto.class)
+                .getId();
+        this.청량리역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.청량리역)
+                .as(StationResponseDto.class)
+                .getId();
+        this.춘천역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.춘천역)
+                .as(StationResponseDto.class)
+                .getId();
     }
 
     /**
@@ -73,16 +80,16 @@ public class LineAcceptanceTest {
     void createLine() {
         // when
         SaveLineRequestDto 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
-        saveLine(신분당선);
+        LineAcceptanceStep.지하철_노선_생성을_요청한다(신분당선);
 
         // then
-        List<String> lineNames = findLinesAll()
+        List<String> 지하철_노선_이름_목록 = LineAcceptanceStep.지하철_노선_목록_조회를_요청한다()
                 .jsonPath()
                 .getList(LINE_NAME_KEY, String.class);
 
         assertAll(
-                () -> assertThat(lineNames.size()).isEqualTo(1),
-                () -> assertThat(lineNames).containsAnyOf(신분당선.getName())
+                () -> assertThat(지하철_노선_이름_목록.size()).isEqualTo(1),
+                () -> assertThat(지하철_노선_이름_목록).containsAnyOf(신분당선.getName())
         );
     }
 
@@ -99,18 +106,15 @@ public class LineAcceptanceTest {
         // given
         SaveLineRequestDto 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
         SaveLineRequestDto 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
-        Stream.of(신분당선, 경춘선)
-                .forEach(this::saveLine);
+        Stream.of(신분당선, 경춘선).forEach(LineAcceptanceStep::지하철_노선_생성을_요청한다);
 
         // when
-        ExtractableResponse<Response> findLinesAllResponse = findLinesAll();
-        List<String> lineNames = findLinesAllResponse
+        List<String> 지하철_노선_이름_목록 = LineAcceptanceStep.지하철_노선_목록_조회를_요청한다()
                 .jsonPath()
                 .getList(LINE_NAME_KEY, String.class);
 
         // then
-        assertThat(lineNames)
-                .containsOnly(신분당선.getName(), 경춘선.getName());
+        assertThat(지하철_노선_이름_목록).containsOnly(신분당선.getName(), 경춘선.getName());
     }
 
     /**
@@ -125,17 +129,17 @@ public class LineAcceptanceTest {
     void readLine() {
         // given
         SaveLineRequestDto 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
-        Long savedLineId = saveLine(경춘선)
+        Long 저장된_노선_아이디 = LineAcceptanceStep.지하철_노선_생성을_요청한다(경춘선)
                 .jsonPath()
                 .getLong(LINE_ID_KEY);
 
         // when
-        String foundStationName = findLineById(savedLineId)
+        String 조회한_노선의_이름 = LineAcceptanceStep.지하철_노선_상세_조회를_요청한다(저장된_노선_아이디)
                 .jsonPath()
                 .getString(LINE_NAME_KEY);
 
         // then
-        assertThat(foundStationName).isEqualTo(경춘선.getName());
+        assertThat(조회한_노선의_이름).isEqualTo(경춘선.getName());
     }
 
     /**
@@ -150,24 +154,22 @@ public class LineAcceptanceTest {
     void updateLine() {
         // given
         SaveLineRequestDto 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
-        Long savedLineId = saveLine(신분당선)
+        Long 저장된_노선의_아이디 = LineAcceptanceStep.지하철_노선_생성을_요청한다(신분당선)
                 .jsonPath()
                 .getLong(LINE_ID_KEY);
 
         // when
-        String path = String.format("%s/%d", LINE_BASE_URL, savedLineId);
-        ExtractableResponse<Response> updateStationResponse = RestAssuredClient.put(path, 수정한_신분당선);
+        ExtractableResponse<Response> 지하철_노선_수정_응답 =
+                LineAcceptanceStep.지하철_노선_수정을_요청한다(수정한_신분당선, 저장된_노선의_아이디);
 
         // then
-        assertAll(
-                () -> assertThat(updateStationResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> {
-                    String updatedLine = findLineById(savedLineId)
-                            .jsonPath()
-                            .getString(LINE_NAME_KEY);
+        String 수정된_노선의_이름 = LineAcceptanceStep.지하철_노선_상세_조회를_요청한다(저장된_노선의_아이디)
+                .jsonPath()
+                .getString(LINE_NAME_KEY);
 
-                    assertThat(updatedLine).isEqualTo(수정한_신분당선.getName());
-                }
+        assertAll(
+                () -> AssertUtils.assertThatStatusCode(지하철_노선_수정_응답, HttpStatus.OK),
+                () -> assertThat(수정된_노선의_이름).isEqualTo(수정한_신분당선.getName())
         );
     }
 
@@ -183,86 +185,23 @@ public class LineAcceptanceTest {
     void deleteLine() {
         // given
         SaveLineRequestDto 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
-        Long savedLineId = saveLine(경춘선)
+        Long 저장된_노선의_아이디 = LineAcceptanceStep.지하철_노선_생성을_요청한다(경춘선)
                 .jsonPath()
                 .getLong(LINE_ID_KEY);
 
         // when
-        String path = String.format("%s/%d", LINE_BASE_URL, savedLineId);
-        ExtractableResponse<Response> deleteStationByIdResponse = RestAssuredClient.delete(path);
+        ExtractableResponse<Response> 지하철_노선_삭제_응답 =
+                LineAcceptanceStep.지하철_노선_삭제를_요청한다(저장된_노선의_아이디);
 
         // then
-        assertAll(
-                () -> assertThat(deleteStationByIdResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> {
-                    List<String> LineNames = RestAssuredClient.get(LINE_BASE_URL)
-                            .jsonPath()
-                            .getList(LINE_NAME_KEY, String.class);
-
-                    assertThat(LineNames).doesNotContain(경춘선.getName());
-                }
-        );
-    }
-
-    /**
-     * <pre>
-     * 지하철역을 생성하는 API를 호출하고
-     * 저장된 지하철역의 id를 반환하는 함수
-     * </pre>
-     *
-     * @param station
-     * @return saved station id
-     */
-    private Long saveStation(SaveStationRequestDto station) {
-        return RestAssuredClient.post(Endpoint.STATION_BASE_URL.getUrl(), station)
+        List<String> 지하철_노선_이름_목록 = LineAcceptanceStep.지하철_노선_목록_조회를_요청한다()
                 .jsonPath()
-                .getLong("id");
-    }
+                .getList(LINE_NAME_KEY, String.class);
 
-    /**
-     * <pre>
-     * 지하철 노선을 생성하는 API를 호출하는 함수
-     * </pre>
-     *
-     * @param line
-     * @return ExtractableResponse
-     */
-    private ExtractableResponse<Response> saveLine(SaveLineRequestDto line) {
-        ExtractableResponse<Response> saveLineResponse =
-                RestAssuredClient.post(LINE_BASE_URL, line);
-        assertThat(saveLineResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        return saveLineResponse;
-    }
-
-    /**
-     * <pre>
-     * 모든 지하철 노선들을 조회하는 API를 호출하는 함수
-     * </pre>
-     *
-     * @return ExtractableResponse
-     */
-    private ExtractableResponse<Response> findLinesAll() {
-        ExtractableResponse<Response> findStationsAllResponse = RestAssuredClient.get(LINE_BASE_URL);
-        assertThat(findStationsAllResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        return findStationsAllResponse;
-    }
-
-    /**
-     * <pre>
-     * 지하철 노선을 id로 조회하는 API를 호출하는 함수
-     * </pre>
-     *
-     * @param id
-     * @return ExtractableResponse
-     */
-    private ExtractableResponse<Response> findLineById(Long id) {
-        String path = String.format("%s/%d", LINE_BASE_URL, id);
-        ExtractableResponse<Response> findStationByIdResponse = RestAssuredClient.get(path);
-        assertThat(findStationByIdResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        return findStationByIdResponse;
+        assertAll(
+                () -> AssertUtils.assertThatStatusCode(지하철_노선_삭제_응답, HttpStatus.NO_CONTENT),
+                () -> assertThat(지하철_노선_이름_목록).doesNotContain(경춘선.getName())
+        );
     }
 
     private SaveLineRequestDto 신분당선을_생성한다(Long upStationId, Long downStationId) {
