@@ -1,8 +1,11 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.SectionDeleteType;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.Stations;
+import nextstep.subway.domain.delete.DeleteFirst;
+import nextstep.subway.domain.delete.DeleteLast;
+import nextstep.subway.domain.delete.DeleteMiddle;
+import nextstep.subway.domain.delete.SectionDeleteType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,15 +24,15 @@ public class SectionDeleteTypeTest {
     @ParameterizedTest
     @DisplayName("구간 삭제 방식 선택")
     @MethodSource("provideSections")
-    void findAddType(Station station, SectionDeleteType type) {
-        assertThat(SectionDeleteType.find(stations, station)).isEqualTo(type);
+    void findAddType(Station station, Class strategy) {
+        assertThat(SectionDeleteType.find(stations, station)).isInstanceOf(strategy);
     }
 
     public static Stream<Arguments> provideSections() {
         return Stream.of(
-                Arguments.of(신사역, SectionDeleteType.FIRST),
-                Arguments.of(양재역, SectionDeleteType.MIDDLE),
-                Arguments.of(양재시민의숲역, SectionDeleteType.LAST)
+                Arguments.of(신사역, DeleteFirst.class),
+                Arguments.of(양재역, DeleteMiddle.class),
+                Arguments.of(양재시민의숲역, DeleteLast.class)
         );
     }
 }

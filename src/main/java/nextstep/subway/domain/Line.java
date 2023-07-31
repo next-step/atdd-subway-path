@@ -31,6 +31,13 @@ public class Line {
         addType.apply(sections, new Section(this, upStation, downStation, distance));
     }
 
+    public void removeSection(Station station) {
+        if (sections.remainOneSection()) {
+            throw new SectionDeleteException(ErrorType.CANNOT_REMOVE_LAST_SECTION);
+        }
+        sections.remove(station);
+    }
+
     public void updateName(String name) {
         if (name != null) {
             this.name = name;
@@ -49,14 +56,5 @@ public class Line {
 
     public List<Station> getStations() {
         return sections.getStations();
-    }
-
-    public void removeSection(Station station) {
-        if (sections.remainOneSection()) {
-            throw new SectionDeleteException(ErrorType.CANNOT_REMOVE_LAST_SECTION);
-        }
-        Stations stations = new Stations(sections.getStations());
-        SectionDeleteType deleteType = SectionDeleteType.find(stations, station);
-        deleteType.apply(sections, station);
     }
 }

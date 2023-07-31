@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.delete.SectionDeleteStrategy;
+import nextstep.subway.domain.delete.SectionDeleteType;
 import nextstep.subway.exception.ErrorType;
 import nextstep.subway.exception.SectionAddException;
 
@@ -78,14 +80,6 @@ public class Sections {
         return stations;
     }
 
-    public void removeLast(Station station) {
-        Section lastSection = sections.get(sections.size() - 1);
-        if (!lastSection.equalDownStation(station)) {
-            throw new IllegalArgumentException();
-        }
-        sections.remove(lastSection);
-    }
-
     public SectionAddType findAddType(Station upStation, Station downStation) {
         Stations stations = new Stations(getStations());
         if (!stations.empty() && stations.doesNotContainAll(upStation, downStation)) {
@@ -114,21 +108,27 @@ public class Sections {
         return sections.size() == 1;
     }
 
-    public void removeMiddle(Station station) {
-        Section target = sections.stream()
-                .filter(section -> section.equalDownStation(station))
-                .findFirst()
-                .orElseThrow();
-
-        int index = sections.indexOf(target);
-        target.removeStation(sections.get(index + 1));
-        sections.remove(index + 1);
+    public void remove(Station station) {
+        Stations stations = new Stations(getStations());
+        SectionDeleteStrategy strategy = SectionDeleteType.find(stations, station);
+        strategy.delete(this, station);
     }
 
-    public void removeFirst(Station station) {
-        if (!sections.get(0).equalUpStation(station)) {
-            throw new IllegalArgumentException();
-        }
-        sections.remove(0);
+    public void remove(Section lastSection) {
+        sections.remove(lastSection);
+    }
+
+    public Section findFirst() {
+        return sections.get(0);
+    }
+
+    public Section findLast() {
+        return sections.get(sections.size() - 1);
+    }
+
+    public List<Section> findIncluded(Station station) {
+        return sections.stream()
+                .filter(section -> section.has(station))
+                .collect(Collectors.toList());
     }
 }

@@ -90,4 +90,8 @@ public class Section {
         this.downStation = section.downStation;
         this.distance += section.distance;
     }
+
+    public boolean has(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
 }
