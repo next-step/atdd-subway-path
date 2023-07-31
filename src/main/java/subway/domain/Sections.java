@@ -47,7 +47,7 @@ public class Sections {
         }
     }
 
-    public Section getConnectedSection(Section newSection) {
+    private Section getConnectedSection(Section newSection) {
         Set<Station> stationSet = new HashSet<>(getStations());
 
         if (newSection.isIncludeStations(stationSet) ||
@@ -67,7 +67,7 @@ public class Sections {
         return optionalSection.get();
     }
 
-    public Section getDividedSection(Section connectedSection, Section newSection) {
+    private Section getDividedSection(Section connectedSection, Section newSection) {
         Line line = newSection.getLine();
         Long distance = connectedSection.getDistance() - newSection.getDistance();
 
