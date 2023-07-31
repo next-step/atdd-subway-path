@@ -65,8 +65,8 @@ public class Line {
         this.distance = this.sections.getTotalDistance();
     }
 
-    public void removeSection() {
-        this.sections.remove();
+    public void removeSection(Station station) {
+        this.sections.remove(station);
         this.distance = this.sections.getTotalDistance();
     }
 }
