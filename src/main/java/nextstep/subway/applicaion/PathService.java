@@ -25,7 +25,7 @@ public class PathService {
 
     public PathResponse getPath(Long sourceId, Long targetId) {
         List<Line> lines = lineRepository.findAll();
-        List<Long> shortestPath = getShortestPath(lines, sourceId, targetId);
+        List<Long> shortestPath = new Path(lines).getShortestPath(sourceId, targetId);
 
         List<StationResponse> stationResponses = shortestPath.stream()
                 .map(stationId -> {
@@ -35,27 +35,5 @@ public class PathService {
                 }).collect(Collectors.toList());
 
         return new PathResponse(stationResponses);
-    }
-
-    List<Long> getShortestPath(List<Line> lines, Long source, Long target) {
-        List<Section> allSections = new ArrayList<>();
-
-        lines.forEach(
-                line -> {
-                    allSections.addAll(line.getSections());
-                }
-        );
-
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        for (Section s : allSections) {
-            graph.addVertex(s.getUpStationId());
-            graph.addVertex(s.getDownStationId());
-            graph.setEdgeWeight(graph.addEdge(s.getUpStationId(), s.getDownStationId()), s.getDistance());
-        }
-
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        List<Long> vertexList = dijkstraShortestPath.getPath(source, target).getVertexList();
-
-        return vertexList;
     }
 }
