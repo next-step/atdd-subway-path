@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,10 +73,9 @@ public class LineServiceMockTest {
         ));
 
         // when then
-        Assertions.assertThrows(
-                SectionExistException.class,
-                () -> lineService.addSection(1L, new SectionAddRequest(1L, 2L, 3)),
-                "구간 상행역, 하행역이 이미 노선에 등록되어 있습니다.");
+        assertThatThrownBy(() -> lineService.addSection(1L, new SectionAddRequest(1L, 2L, 3)))
+                .isExactlyInstanceOf(SectionExistException.class)
+                .hasMessage("구간 상행역, 하행역이 이미 노선에 등록되어 있습니다.");
     }
 
     @DisplayName("지하철 노선 추가 시 노선에 구간에 역이 둘다 존재하지 않을경우 에러를 던진다.")
@@ -90,10 +90,9 @@ public class LineServiceMockTest {
         ));
 
         // when then
-        Assertions.assertThrows(
-                SectionNotExistException.class,
-                () ->  lineService.addSection(1L, new SectionAddRequest(2L, 1L, 3)),
-                "구간 상행역, 하행역이 노선에 하나도 포함되어있지 않습니다.");
+        assertThatThrownBy(() -> lineService.addSection(1L, new SectionAddRequest(2L, 1L, 3)))
+                .isExactlyInstanceOf(SectionNotExistException.class)
+                .hasMessage("구간 상행역, 하행역이 노선에 하나도 포함되어있지 않습니다.");
     }
 
     @DisplayName("지하철 노선에 구간시 기존구간에 길이를 초과하면 에러를 던진다.")
@@ -111,10 +110,9 @@ public class LineServiceMockTest {
         lineService.addSection(1L, new SectionAddRequest(2L, 3L, 3));
 
         // when then
-        Assertions.assertThrows(
-                SectionDistanceOverException.class,
-                () ->  lineService.addSection(1L, new SectionAddRequest(2L, 4L, 5)),
-                "구간길이를 초과했습니다.");
+        assertThatThrownBy(() -> lineService.addSection(1L, new SectionAddRequest(2L, 4L, 5)))
+                .isExactlyInstanceOf(SectionDistanceOverException.class)
+                .hasMessage("구간길이를 초과했습니다.");
     }
 
     @DisplayName("지하철 노선에 구간을 삭제하면 노선 역이름 조회시 삭제한 역은 제외되야 한다.")
@@ -153,10 +151,9 @@ public class LineServiceMockTest {
         ));
 
         // when then
-        Assertions.assertThrows(
-                SectionDeleteMinSizeException.class,
-                () ->  lineService.deleteSection(1L, 2L),
-                "구간이 1개인 경우 삭제할 수 없습니다.");
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 2L))
+                .isExactlyInstanceOf(SectionDeleteMinSizeException.class)
+                .hasMessage("구간이 1개인 경우 삭제할 수 없습니다.");
     }
 
     @DisplayName("지하철 노선 구간 삭제시 하행종점역이 아닐경우 삭제가 실패되어야 한다.")
@@ -173,10 +170,9 @@ public class LineServiceMockTest {
         lineService.addSection(1L, new SectionAddRequest(2L, 3L, 3));
 
         // when then
-        Assertions.assertThrows(
-                SectionDeleteException.class,
-                () ->  lineService.deleteSection(1L, 2L),
-                "구간은 종점역만 삭제가능합니다.");
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 2L))
+                .isExactlyInstanceOf(SectionDeleteException.class)
+                .hasMessage("구간은 종점역만 삭제가능합니다.");
     }
 
 }

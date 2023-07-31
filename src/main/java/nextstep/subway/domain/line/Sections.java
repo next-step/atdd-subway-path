@@ -58,6 +58,16 @@ public class Sections {
         return stations;
     }
 
+    public List<Section> getSections(Station station) {
+        List<Section> sections = new ArrayList<>();
+        while (hasNext(station)) {
+            Section section = next(station);
+            sections.add(section);
+            station = section.getDownStation();
+        }
+        return sections;
+    }
+
     public Section findSectionByUpStation(Station station) {
         return values.stream()
                 .filter(section -> section.isUp(station))

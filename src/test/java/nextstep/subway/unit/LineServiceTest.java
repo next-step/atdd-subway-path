@@ -8,7 +8,8 @@ import nextstep.subway.exception.*;
 import nextstep.subway.service.line.LineService;
 import nextstep.subway.service.line.request.SectionAddRequest;
 import nextstep.subway.service.line.response.LineResponse;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
@@ -75,10 +77,9 @@ public class LineServiceTest {
         Line line = saveLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10);
 
         // when then
-        Assertions.assertThrows(
-                SectionExistException.class,
-                () -> lineService.addSection(line.getId(), new SectionAddRequest(GANGNAM_STATION.getId(), SEOLLEUNG_STATION.getId(), 3)),
-                "구간 상행역, 하행역이 이미 노선에 등록되어 있습니다.");
+        assertThatThrownBy(() -> lineService.addSection(line.getId(), new SectionAddRequest(GANGNAM_STATION.getId(), SEOLLEUNG_STATION.getId(), 3)))
+                .isExactlyInstanceOf(SectionExistException.class)
+                .hasMessage("구간 상행역, 하행역이 이미 노선에 등록되어 있습니다.");
     }
 
     @DisplayName("지하철 노선 추가 시 노선에 구간에 역이 둘다 존재하지 않을경우 에러를 던진다.")
@@ -93,10 +94,9 @@ public class LineServiceTest {
         Line line = saveLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10);
 
         // when then
-        Assertions.assertThrows(
-                SectionNotExistException.class,
-                () ->  lineService.addSection(line.getId(), new SectionAddRequest(NOWON_STATION.getId(), DEARIM_STATION.getId(), 3)),
-                "구간 상행역, 하행역이 노선에 하나도 포함되어있지 않습니다.");
+        assertThatThrownBy(() -> lineService.addSection(line.getId(), new SectionAddRequest(NOWON_STATION.getId(), DEARIM_STATION.getId(), 3)))
+                .isExactlyInstanceOf(SectionNotExistException.class)
+                .hasMessage("구간 상행역, 하행역이 노선에 하나도 포함되어있지 않습니다.");
     }
 
     @DisplayName("지하철 노선에 구간시 기존구간에 길이를 초과하면 에러를 던진다.")
@@ -115,10 +115,9 @@ public class LineServiceTest {
         lineService.addSection(line.getId(), new SectionAddRequest(DEARIM_STATION.getId(), GANGNAM_STATION.getId(), 3));
 
         // when then
-        Assertions.assertThrows(
-                SectionDistanceOverException.class,
-                () ->  lineService.addSection(line.getId(), new SectionAddRequest(NOWON_STATION.getId(), SEOLLEUNG_STATION.getId(), 14)),
-                "구간길이를 초과했습니다.");
+        assertThatThrownBy(() -> lineService.addSection(line.getId(), new SectionAddRequest(NOWON_STATION.getId(), SEOLLEUNG_STATION.getId(), 14)))
+                .isExactlyInstanceOf(SectionDistanceOverException.class)
+                .hasMessage("구간길이를 초과했습니다.");
     }
 
     @DisplayName("지하철 노선에 등록된 역을 조회하면 지금까지 등록된 모든 역에 정보가 조회되야 한다.")
@@ -188,12 +187,10 @@ public class LineServiceTest {
 
         Line line = saveLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10);
 
-
         // when then
-        Assertions.assertThrows(
-                SectionDeleteMinSizeException.class,
-                () ->  lineService.deleteSection(line.getId(), SEOLLEUNG_STATION.getId()),
-                "구간이 1개인 경우 삭제할 수 없습니다.");
+        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), SEOLLEUNG_STATION.getId()))
+                .isExactlyInstanceOf(SectionDeleteMinSizeException.class)
+                .hasMessage("구간이 1개인 경우 삭제할 수 없습니다.");
     }
 
     @DisplayName("지하철 노선 구간 삭제시 하행종점역이 아닐경우 삭제가 실패되어야 한다.")
@@ -209,10 +206,9 @@ public class LineServiceTest {
         line.addSection(SEOLLEUNG_STATION, SUWON_STATION, 3);
 
         // when then
-        Assertions.assertThrows(
-                SectionDeleteException.class,
-                () ->  lineService.deleteSection(line.getId(), SEOLLEUNG_STATION.getId()),
-                "구간은 종점역만 삭제가능합니다.");
+        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), SEOLLEUNG_STATION.getId()))
+                .isExactlyInstanceOf(SectionDeleteException.class)
+                .hasMessage("구간은 종점역만 삭제가능합니다.");
     }
 
     private Station saveStation(String stationName) {

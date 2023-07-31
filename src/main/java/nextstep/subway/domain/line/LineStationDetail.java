@@ -52,4 +52,9 @@ public class LineStationDetail {
     public List<Station> getStations() {
         return sections.getStations(startStation);
     }
+
+    public List<Section> getSections() {
+        return sections.getSections(startStation);
+    }
+
 }
