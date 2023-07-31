@@ -1,6 +1,7 @@
 package nextstep.subway.domain.line;
 
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.exception.SectionDistanceOverException;
 
 import javax.persistence.*;
 
@@ -41,8 +42,8 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public boolean isExistedDownStation(Section section) {
-        return upStation.equals(section.getDownStation()) || downStation.equals(section.getDownStation());
+    public boolean isExistedStation(Station station) {
+        return isUp(station) || isDown(station);
     }
 
     public Station getUpStation() {
@@ -52,4 +53,28 @@ public class Section {
     public Station getDownStation() {
         return downStation;
     }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void modifyDistance(Section section) {
+        if (isOverDistance(section)) {
+            throw new SectionDistanceOverException();
+        }
+        this.distance -= section.getDistance();
+    }
+
+    private boolean isOverDistance(Section section) {
+        return distance <= section.getDistance();
+    }
+
+    public void modifyUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void modifyDownStation(Station station) {
+        this.downStation = station;
+    }
+
 }

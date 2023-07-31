@@ -31,10 +31,12 @@ public class LineStationDetail {
     }
 
     public void addSection(Section section) {
-        if (!section.isUp(endStation)) {
-            throw new SectionAddException();
+        if (section.isUp(endStation)) {
+            endStation = section.getDownStation();
         }
-        endStation = section.getDownStation();
+        if (section.isDown(startStation)) {
+            startStation = section.getUpStation();
+        }
         sections.add(section);
     }
 

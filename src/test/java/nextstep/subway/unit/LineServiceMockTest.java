@@ -4,14 +4,9 @@ import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
-import nextstep.subway.exception.SectionAddException;
-import nextstep.subway.exception.SectionDeleteException;
-import nextstep.subway.exception.SectionDeleteMinSizeException;
-import nextstep.subway.exception.SectionExistException;
+import nextstep.subway.exception.*;
 import nextstep.subway.service.line.LineService;
 import nextstep.subway.service.line.request.SectionAddRequest;
-import nextstep.subway.service.line.response.LineResponse;
-import nextstep.subway.service.station.response.StationResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,22 +15,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-
-import java.util.List;
 import java.util.Optional;
 
-import static nextstep.subway.unit.utils.LineMother.makeLine;
-import static nextstep.subway.unit.utils.StationMother.makeStation;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
 
-    private static final Station GANGNAM_STATION = makeStation("강남역");
-    private static final Station SEOLLEUNG_STATION = makeStation("선릉역");
-    private static final Station SUWON_STATION = makeStation("수원역");
+    private static final Station GANGNAM_STATION = new Station("강남역");
+    private static final Station SEOLLEUNG_STATION = new Station("선릉역");
+    private static final Station SUWON_STATION = new Station("수원역");
+    private static final Station NOWON_STATION = new Station("노원역");
 
     private static final String SHINBUNDANG_LINE_NAME = "신분당선";
     private static final String SHINBUNDANG_LINE_COLOR = "bg-red-600";
@@ -56,7 +47,7 @@ public class LineServiceMockTest {
         when(stationRepository.findById(3L)).thenReturn(Optional.of(SUWON_STATION));
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(
-                makeLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
+                new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
         ));
 
         // when
@@ -69,66 +60,61 @@ public class LineServiceMockTest {
                 .containsExactlyInAnyOrder("강남역", "선릉역", "수원역");
     }
 
-    @DisplayName("지하철 노선 추가 시 구간상행역이 노선 종점역이 아니게 등록할 경우 실패되어야 한다.")
+    @DisplayName("지하철 노선 추가 시 노선에 구간에 역이 둘다 존재할 경우 에러를 던진다.")
     @Test
-    void upStation_not_available_addSection_fail() {
-        // given
-        when(stationRepository.findById(1L)).thenReturn(Optional.of(GANGNAM_STATION));
-        when(stationRepository.findById(3L)).thenReturn(Optional.of(SUWON_STATION));
-
-        when(lineRepository.findById(1L)).thenReturn(Optional.of(
-                makeLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
-        ));
-
-        // when then
-        Assertions.assertThrows(
-                SectionAddException.class,
-                () -> lineService.addSection(1L, new SectionAddRequest(1L, 3L, 3)),
-                "구간정보에 상행역이 현재 노선에 하행 종점역이 아닙니다.");
-    }
-
-    @DisplayName("지하철 노선 추가 시 구간 하행역이 이미 노선에 등록되어 있을 경우 실패되어야 한다.")
-    @Test
-    void exist_station_addSection_fail() {
+    void section_station_all_exist_add_fail() {
         // given
         when(stationRepository.findById(1L)).thenReturn(Optional.of(GANGNAM_STATION));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(SEOLLEUNG_STATION));
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(
-                makeLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
+                new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
         ));
 
         // when then
         Assertions.assertThrows(
                 SectionExistException.class,
-                () ->  lineService.addSection(1L, new SectionAddRequest(2L, 1L, 3)),
-                "구간 하행역이 이미 노선에 등록되어 있습니다.");
+                () -> lineService.addSection(1L, new SectionAddRequest(1L, 2L, 3)),
+                "구간 상행역, 하행역이 이미 노선에 등록되어 있습니다.");
     }
 
-    @DisplayName("지하철 노선에 등록된 역을 조회하면 지금까지 등록된 모든 역에 정보가 조회되야 한다.")
+    @DisplayName("지하철 노선 추가 시 노선에 구간에 역이 둘다 존재하지 않을경우 에러를 던진다.")
     @Test
-    void getStations() {
+    void section_station_all_not_exist_add_fail() {
+        // given
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(SUWON_STATION));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(NOWON_STATION));
+
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(
+                new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
+        ));
+
+        // when then
+        Assertions.assertThrows(
+                SectionNotExistException.class,
+                () ->  lineService.addSection(1L, new SectionAddRequest(2L, 1L, 3)),
+                "구간 상행역, 하행역이 노선에 하나도 포함되어있지 않습니다.");
+    }
+
+    @DisplayName("지하철 노선에 구간시 기존구간에 길이를 초과하면 에러를 던진다.")
+    @Test
+    void section_distance_over_add_fail() {
         // given
         when(stationRepository.findById(2L)).thenReturn(Optional.of(SEOLLEUNG_STATION));
         when(stationRepository.findById(3L)).thenReturn(Optional.of(SUWON_STATION));
+        when(stationRepository.findById(4L)).thenReturn(Optional.of(NOWON_STATION));
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(
-                makeLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
+                new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
         ));
 
         lineService.addSection(1L, new SectionAddRequest(2L, 3L, 3));
 
-        // when
-        LineResponse lineResponse = lineService.findLine(1L);
-
-        // then
-        assertThat(lineResponse.getStations()).hasSize(3)
-                .extracting("name")
-                .containsExactlyInAnyOrder(
-                        GANGNAM_STATION.getName(),
-                        SEOLLEUNG_STATION.getName(),
-                        SUWON_STATION.getName()
-                );
+        // when then
+        Assertions.assertThrows(
+                SectionDistanceOverException.class,
+                () ->  lineService.addSection(1L, new SectionAddRequest(2L, 4L, 5)),
+                "구간길이를 초과했습니다.");
     }
 
     @DisplayName("지하철 노선에 구간을 삭제하면 노선 역이름 조회시 삭제한 역은 제외되야 한다.")
@@ -139,7 +125,7 @@ public class LineServiceMockTest {
         when(stationRepository.findById(3L)).thenReturn(Optional.of(SUWON_STATION));
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(
-                makeLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
+                new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
         ));
 
         lineService.addSection(1L, new SectionAddRequest(2L, 3L, 3));
@@ -163,7 +149,7 @@ public class LineServiceMockTest {
         when(stationRepository.findById(2L)).thenReturn(Optional.of(SEOLLEUNG_STATION));
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(
-                makeLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
+                new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
         ));
 
         // when then
@@ -181,7 +167,7 @@ public class LineServiceMockTest {
         when(stationRepository.findById(3L)).thenReturn(Optional.of(SUWON_STATION));
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(
-                makeLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
+                new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
         ));
 
         lineService.addSection(1L, new SectionAddRequest(2L, 3L, 3));
