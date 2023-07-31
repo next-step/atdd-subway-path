@@ -27,8 +27,7 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        SectionAddType addType = sections.findAddType(upStation, downStation);
-        addType.apply(sections, new Section(this, upStation, downStation, distance));
+        sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public void removeSection(Station station) {

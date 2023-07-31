@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.add.SectionAddStrategy;
+import nextstep.subway.domain.add.SectionAddType;
 import nextstep.subway.domain.delete.SectionDeleteStrategy;
 import nextstep.subway.domain.delete.SectionDeleteType;
 import nextstep.subway.exception.ErrorType;
@@ -25,40 +27,24 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void addFirst(Section section) {
-        sections.add(0, section);
-    }
-
-    public void addLast(Section section) {
-        sections.add(section);
-    }
-
-    public void addMiddleUpStation(Section section) {
-        Section existSection = sections.stream()
-                .filter(e -> e.equalUpStation(section.getUpStation()))
-                .findAny()
-                .orElse(null);
-        int index = sections.indexOf(existSection);
-        sections.get(index).updateDownStation(section);
+    public void add(int index, Section section) {
         sections.add(index, section);
     }
 
-    public void addMiddleDownStation(Section section) {
-        Section existSection = sections.stream()
-                .filter(e -> e.equalDownStation(section.getDownStation()))
-                .findAny()
-                .orElse(null);
-        int index = sections.indexOf(existSection);
-        sections.get(index).updateUpStation(section);
-        sections.add(index + 1, section);
+    public void add(Section section) {
+        sections.add(section);
     }
 
-    private boolean containsAtUpStation(Station station) {
+    public int indexOf(Section section) {
+        return sections.indexOf(section);
+    }
+
+    public boolean containsAtUpStation(Station station) {
         return sections.stream()
                 .anyMatch(section -> section.equalUpStation(station));
     }
 
-    private boolean containsAtDownStation(Station downStation) {
+    public boolean containsAtDownStation(Station downStation) {
         return sections.stream()
                 .anyMatch(section -> section.equalDownStation(downStation));
     }
@@ -80,28 +66,16 @@ public class Sections {
         return stations;
     }
 
-    public SectionAddType findAddType(Station upStation, Station downStation) {
+    public void addSection(Section section) {
         Stations stations = new Stations(getStations());
-        if (!stations.empty() && stations.doesNotContainAll(upStation, downStation)) {
+        if (!stations.empty() && stations.doesNotContainAll(section.getUpStation(), section.getDownStation())) {
             throw new SectionAddException(ErrorType.STATIONS_NOT_EXIST_IN_LINE);
         }
-        if (stations.containsAll(upStation, downStation)) {
+        if (stations.containsAll(section.getUpStation(), section.getDownStation())) {
             throw new SectionAddException(ErrorType.STATIONS_EXIST_IN_LINE);
         }
-
-        if (stations.empty() || stations.equalLastStation(upStation)) {
-            return SectionAddType.LAST;
-        }
-        if (stations.equalFirstStation(downStation)) {
-            return SectionAddType.FIRST;
-        }
-        if (containsAtUpStation(upStation)) {
-            return SectionAddType.MIDDLE_UP_STATION;
-        }
-        if (containsAtDownStation(downStation)) {
-            return SectionAddType.MIDDLE_DOWN_STATION;
-        }
-        throw new IllegalArgumentException();
+        SectionAddStrategy strategy = SectionAddType.find(this, section);
+        strategy.add(this, section);
     }
 
     public boolean remainOneSection() {
@@ -130,5 +104,9 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.has(station))
                 .collect(Collectors.toList());
+    }
+
+    public boolean empty() {
+        return sections.isEmpty();
     }
 }
