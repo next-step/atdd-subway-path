@@ -5,6 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 
+import java.util.Map;
+
 /**
  * <pre>
  * RestAssured를 통한 HTTP Request를 도와주는 Wrapper 클래스입니다.
@@ -55,6 +57,31 @@ public class RestAssuredClient {
                     .log().all()
                 .when()
                     .get(path)
+                .then()
+                    .log().all()
+                    .extract();
+    }
+
+    /**
+     * <pre>
+     * path에
+     * GET 방식으로
+     * RestAssured를 통해
+     * query parameter와 함께
+     * HTTP 요청을 보낼 때 사용합니다.
+     * </pre>
+     *
+     * @param basePath
+     * @param queryParamMap
+     * @return ExtractableResponse
+     */
+    public static ExtractableResponse<Response> get(String basePath, Map<String, ?> queryParamMap) {
+        return RestAssured
+                .given()
+                    .log().all()
+                    .queryParams(queryParamMap)
+                .when()
+                    .get(basePath)
                 .then()
                     .log().all()
                     .extract();

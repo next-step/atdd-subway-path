@@ -3,16 +3,15 @@ package nextstep.subway.acceptance.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.acceptance.constants.Endpoint;
 import nextstep.subway.acceptance.step.LineAcceptanceStep;
 import nextstep.subway.acceptance.step.LineSectionAcceptanceStep;
 import nextstep.subway.acceptance.step.StationAcceptanceStep;
 import nextstep.subway.fixture.StationFixture;
 import nextstep.subway.global.error.code.ErrorCode;
-import nextstep.subway.line.dto.request.SaveLineRequestDto;
-import nextstep.subway.line.dto.request.SaveLineSectionRequestDto;
-import nextstep.subway.line.dto.response.LineResponseDto;
-import nextstep.subway.station.dto.response.StationResponseDto;
+import nextstep.subway.line.dto.request.SaveLineRequest;
+import nextstep.subway.line.dto.request.SaveLineSectionRequest;
+import nextstep.subway.line.dto.response.LineResponse;
+import nextstep.subway.station.dto.response.StationResponse;
 import nextstep.subway.support.AcceptanceTest;
 import nextstep.subway.support.AssertUtils;
 import nextstep.subway.support.DatabaseCleanup;
@@ -37,6 +36,8 @@ public class LineSectionAcceptanceTest {
     @LocalServerPort
     private int port;
 
+    private static final String STATION_ID_KEY = "id";
+
     private Long 신사역_아이디;
 
     private Long 강남역_아이디;
@@ -45,7 +46,7 @@ public class LineSectionAcceptanceTest {
 
     private Long 광교역_아이디;
 
-    private LineResponseDto 신분당선;
+    private LineResponse 신분당선;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -57,27 +58,19 @@ public class LineSectionAcceptanceTest {
         }
         databaseCleanup.execute();
 
-        this.신사역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.신사역)
-                .as(StationResponseDto.class)
-                .getId();
-        this.강남역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.강남역)
-                .as(StationResponseDto.class)
-                .getId();
-        this.판교역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.판교역)
-                .as(StationResponseDto.class)
-                .getId();
-        this.광교역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.광교역)
-                .as(StationResponseDto.class)
-                .getId();
+        this.신사역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.신사역).jsonPath().getLong(STATION_ID_KEY);
+        this.강남역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.강남역).jsonPath().getLong(STATION_ID_KEY);
+        this.판교역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.판교역).jsonPath().getLong(STATION_ID_KEY);
+        this.광교역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.광교역).jsonPath().getLong(STATION_ID_KEY);
 
-        SaveLineRequestDto 저장할_신분당선 = SaveLineRequestDto.builder()
+        SaveLineRequest 저장할_신분당선 = SaveLineRequest.builder()
                 .name("신분당선")
                 .color("#f5222d")
                 .distance(7)
                 .upStationId(this.신사역_아이디)
                 .downStationId(this.판교역_아이디)
                 .build();
-        this.신분당선 = LineAcceptanceStep.지하철_노선_생성을_요청한다(저장할_신분당선).as(LineResponseDto.class);
+        this.신분당선 = LineAcceptanceStep.지하철_노선_생성을_요청한다(저장할_신분당선).as(LineResponse.class);
     }
 
     /**
@@ -91,7 +84,7 @@ public class LineSectionAcceptanceTest {
     @Test
     void addFirstLineSection() {
         // when
-        SaveLineSectionRequestDto 강남역_신사역_구간 = SaveLineSectionRequestDto.builder()
+        SaveLineSectionRequest 강남역_신사역_구간 = SaveLineSectionRequest.builder()
                 .upStationId(강남역_아이디)
                 .downStationId(신사역_아이디)
                 .distance(3)
@@ -100,7 +93,7 @@ public class LineSectionAcceptanceTest {
                 LineSectionAcceptanceStep.지하철_구간_생성을_요청한다(강남역_신사역_구간, 신분당선.getId());
 
         // then
-        LineResponseDto 지하철_노선 = 지하쳘_구간_생성_응답.as(LineResponseDto.class);
+        LineResponse 지하철_노선 = 지하쳘_구간_생성_응답.as(LineResponse.class);
         List<Long> 등록된_지하철역_아이디_목록 = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(지하철_노선);
 
         assertAll(
@@ -120,7 +113,7 @@ public class LineSectionAcceptanceTest {
     @Test
     void addMiddleLineSection() {
         // when
-        SaveLineSectionRequestDto 신사역_강남역_구간 = SaveLineSectionRequestDto.builder()
+        SaveLineSectionRequest 신사역_강남역_구간 = SaveLineSectionRequest.builder()
                 .upStationId(신사역_아이디)
                 .downStationId(강남역_아이디)
                 .distance(3)
@@ -129,7 +122,7 @@ public class LineSectionAcceptanceTest {
                 LineSectionAcceptanceStep.지하철_구간_생성을_요청한다(신사역_강남역_구간, 신분당선.getId());
 
         // then
-        LineResponseDto 지하철_노선 = 지하쳘_노선_생성_응답.as(LineResponseDto.class);
+        LineResponse 지하철_노선 = 지하쳘_노선_생성_응답.as(LineResponse.class);
         List<Long> 등록된_지하철역_아이디_목록 = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(지하철_노선);
 
         assertAll(
@@ -149,7 +142,7 @@ public class LineSectionAcceptanceTest {
     @Test
     void addLastLineSection() {
         // when
-        SaveLineSectionRequestDto 판교역_광교역_구간 = SaveLineSectionRequestDto.builder()
+        SaveLineSectionRequest 판교역_광교역_구간 = SaveLineSectionRequest.builder()
                 .upStationId(판교역_아이디)
                 .downStationId(광교역_아이디)
                 .distance(8)
@@ -158,7 +151,7 @@ public class LineSectionAcceptanceTest {
                 LineSectionAcceptanceStep.지하철_구간_생성을_요청한다(판교역_광교역_구간, 신분당선.getId());
 
         // then
-        LineResponseDto 지하철_노선 = 지하쳘_노선_생성_응답.as(LineResponseDto.class);
+        LineResponse 지하철_노선 = 지하쳘_노선_생성_응답.as(LineResponse.class);
         List<Long> 등록된_지하철역_아이디_목록 = 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(지하철_노선);
 
         assertAll(
@@ -179,12 +172,12 @@ public class LineSectionAcceptanceTest {
     @Test
     void deleteFirstLineSection() {
         // given
-        SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
+        SaveLineSectionRequest 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
                 지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
         );
-        LineResponseDto 광교역이_하행_종점역으로_추가된_신분당선 =
+        LineResponse 광교역이_하행_종점역으로_추가된_신분당선 =
                 LineSectionAcceptanceStep.지하철_구간_생성을_요청한다(광교역이_하행_종점역인_구간, 신분당선.getId())
-                .as(LineResponseDto.class);
+                .as(LineResponse.class);
 
         // when
         Long 신분당선의_상행_종점역_아이디 = 지하철_노선의_상행_종점역_아이디를_찾는다(광교역이_하행_종점역으로_추가된_신분당선);
@@ -212,7 +205,7 @@ public class LineSectionAcceptanceTest {
     @Test
     void deleteMiddleLineSection() {
         // given
-        SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(판교역_아이디);
+        SaveLineSectionRequest 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(판교역_아이디);
         LineSectionAcceptanceStep.지하철_구간_생성을_요청한다(광교역이_하행_종점역인_구간, 신분당선.getId());
 
         // when
@@ -240,7 +233,7 @@ public class LineSectionAcceptanceTest {
     @Test
     void deleteLastLineSection() {
         // given
-        SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
+        SaveLineSectionRequest 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
                 지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
         );
         LineSectionAcceptanceStep.지하철_구간_생성을_요청한다(광교역이_하행_종점역인_구간, 신분당선.getId());
@@ -270,7 +263,7 @@ public class LineSectionAcceptanceTest {
     @Test
     void deleteNotExistLineSection() {
         // given
-        SaveLineSectionRequestDto 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
+        SaveLineSectionRequest 광교역이_하행_종점역인_구간 = 광교역이_하행_종점역인_구간을_생성한다(
                 지하철_노선의_하행_종점역_아이디를_찾는다(신분당선)
         );
         LineSectionAcceptanceStep.지하철_구간_생성을_요청한다(광교역이_하행_종점역인_구간, 신분당선.getId());
@@ -306,39 +299,39 @@ public class LineSectionAcceptanceTest {
         );
     }
 
-    private List<Long> 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(LineResponseDto lineResponseDto) {
+    private List<Long> 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(LineResponse lineResponseDto) {
         return lineResponseDto.getStations()
                 .stream()
-                .map(StationResponseDto::getId)
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
     }
 
     private List<Long> 지하철노선에_등록된_지하철역_아이디_목록을_가져온다(ExtractableResponse<Response> response) {
         return response
                 .jsonPath()
-                .getList("stations", StationResponseDto.class)
+                .getList("stations", StationResponse.class)
                 .stream()
-                .map(StationResponseDto::getId)
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
     }
 
-    private SaveLineSectionRequestDto 광교역이_하행_종점역인_구간을_생성한다(Long upStationId) {
-        return SaveLineSectionRequestDto.builder()
+    private SaveLineSectionRequest 광교역이_하행_종점역인_구간을_생성한다(Long upStationId) {
+        return SaveLineSectionRequest.builder()
                 .upStationId(upStationId)
                 .downStationId(this.광교역_아이디)
                 .distance(8)
                 .build();
     }
 
-    private Long 지하철_노선의_상행_종점역_아이디를_찾는다(LineResponseDto lineResponseDto) {
-        List<StationResponseDto> stations = lineResponseDto.getStations();
+    private Long 지하철_노선의_상행_종점역_아이디를_찾는다(LineResponse lineResponseDto) {
+        List<StationResponse> stations = lineResponseDto.getStations();
         return stations
                 .get(0)
                 .getId();
     }
 
-    private Long 지하철_노선의_하행_종점역_아이디를_찾는다(LineResponseDto lineResponseDto) {
-        List<StationResponseDto> stations = lineResponseDto.getStations();
+    private Long 지하철_노선의_하행_종점역_아이디를_찾는다(LineResponse lineResponseDto) {
+        List<StationResponse> stations = lineResponseDto.getStations();
         int lastIndex = stations.size() - 1;
         return stations
                 .get(lastIndex)

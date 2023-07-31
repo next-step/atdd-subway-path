@@ -3,7 +3,7 @@ package nextstep.subway.acceptance.step;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.constants.Endpoint;
-import nextstep.subway.line.dto.request.SaveLineSectionRequestDto;
+import nextstep.subway.line.dto.request.SaveLineSectionRequest;
 import nextstep.subway.support.RestAssuredClient;
 
 public class LineSectionAcceptanceStep {
@@ -20,7 +20,7 @@ public class LineSectionAcceptanceStep {
      * @param
      * @return ExtractableResponse
      */
-    public static ExtractableResponse<Response> 지하철_구간_생성을_요청한다(SaveLineSectionRequestDto lineSection, Long lineId) {
+    public static ExtractableResponse<Response> 지하철_구간_생성을_요청한다(SaveLineSectionRequest lineSection, Long lineId) {
         String path = String.format("%s/%d/sections", LINE_BASE_URL, lineId);
         return RestAssuredClient.post(path, lineSection);
     }

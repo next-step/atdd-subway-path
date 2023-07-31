@@ -6,9 +6,8 @@ import io.restassured.response.Response;
 import nextstep.subway.acceptance.step.LineAcceptanceStep;
 import nextstep.subway.acceptance.step.StationAcceptanceStep;
 import nextstep.subway.fixture.StationFixture;
-import nextstep.subway.line.dto.request.SaveLineRequestDto;
-import nextstep.subway.line.dto.request.UpdateLineRequestDto;
-import nextstep.subway.station.dto.response.StationResponseDto;
+import nextstep.subway.line.dto.request.SaveLineRequest;
+import nextstep.subway.line.dto.request.UpdateLineRequest;
 import nextstep.subway.support.AcceptanceTest;
 import nextstep.subway.support.AssertUtils;
 import nextstep.subway.support.DatabaseCleanup;
@@ -33,6 +32,8 @@ public class LineAcceptanceTest {
     @LocalServerPort
     private int port;
 
+    private static final String STATION_ID_KEY = "id";
+
     private static final String LINE_ID_KEY = "id";
 
     private static final String LINE_NAME_KEY = "name";
@@ -55,18 +56,10 @@ public class LineAcceptanceTest {
         }
         databaseCleanUp.execute();
 
-        this.신사역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.신사역)
-                .as(StationResponseDto.class)
-                .getId();
-        this.광교역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.광교역)
-                .as(StationResponseDto.class)
-                .getId();
-        this.청량리역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.청량리역)
-                .as(StationResponseDto.class)
-                .getId();
-        this.춘천역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.춘천역)
-                .as(StationResponseDto.class)
-                .getId();
+        this.신사역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.신사역).jsonPath().getLong(STATION_ID_KEY);
+        this.광교역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.광교역).jsonPath().getLong(STATION_ID_KEY);
+        this.청량리역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.청량리역).jsonPath().getLong(STATION_ID_KEY);
+        this.춘천역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(StationFixture.춘천역).jsonPath().getLong(STATION_ID_KEY);
     }
 
     /**
@@ -79,7 +72,7 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        SaveLineRequestDto 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
+        SaveLineRequest 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
         LineAcceptanceStep.지하철_노선_생성을_요청한다(신분당선);
 
         // then
@@ -104,8 +97,8 @@ public class LineAcceptanceTest {
     @Test
     void readLines() {
         // given
-        SaveLineRequestDto 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
-        SaveLineRequestDto 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
+        SaveLineRequest 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
+        SaveLineRequest 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
         Stream.of(신분당선, 경춘선).forEach(LineAcceptanceStep::지하철_노선_생성을_요청한다);
 
         // when
@@ -128,7 +121,7 @@ public class LineAcceptanceTest {
     @Test
     void readLine() {
         // given
-        SaveLineRequestDto 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
+        SaveLineRequest 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
         Long 저장된_노선_아이디 = LineAcceptanceStep.지하철_노선_생성을_요청한다(경춘선)
                 .jsonPath()
                 .getLong(LINE_ID_KEY);
@@ -153,7 +146,7 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        SaveLineRequestDto 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
+        SaveLineRequest 신분당선 = 신분당선을_생성한다(신사역_아이디, 광교역_아이디);
         Long 저장된_노선의_아이디 = LineAcceptanceStep.지하철_노선_생성을_요청한다(신분당선)
                 .jsonPath()
                 .getLong(LINE_ID_KEY);
@@ -184,7 +177,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        SaveLineRequestDto 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
+        SaveLineRequest 경춘선 = 경춘선을_생성한다(청량리역_아이디, 춘천역_아이디);
         Long 저장된_노선의_아이디 = LineAcceptanceStep.지하철_노선_생성을_요청한다(경춘선)
                 .jsonPath()
                 .getLong(LINE_ID_KEY);
@@ -204,8 +197,8 @@ public class LineAcceptanceTest {
         );
     }
 
-    private SaveLineRequestDto 신분당선을_생성한다(Long upStationId, Long downStationId) {
-        return SaveLineRequestDto.builder()
+    private SaveLineRequest 신분당선을_생성한다(Long upStationId, Long downStationId) {
+        return SaveLineRequest.builder()
                 .name("신분당선")
                 .color("#f5222d")
                 .distance(15)
@@ -214,8 +207,8 @@ public class LineAcceptanceTest {
                 .build();
     }
 
-    private SaveLineRequestDto 경춘선을_생성한다(Long upStationId, Long downStationId) {
-        return SaveLineRequestDto.builder()
+    private SaveLineRequest 경춘선을_생성한다(Long upStationId, Long downStationId) {
+        return SaveLineRequest.builder()
                 .name("경춘선")
                 .color("#13c2c2")
                 .distance(25)
@@ -224,7 +217,7 @@ public class LineAcceptanceTest {
                 .build();
     }
 
-    private final UpdateLineRequestDto 수정한_신분당선 = UpdateLineRequestDto.builder()
+    private final UpdateLineRequest 수정한_신분당선 = UpdateLineRequest.builder()
                     .name("수정한 신분당선")
                     .color("#cf1322")
                     .build();

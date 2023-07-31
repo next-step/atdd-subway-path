@@ -3,8 +3,8 @@ package nextstep.subway.acceptance.step;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.constants.Endpoint;
-import nextstep.subway.line.dto.request.SaveLineRequestDto;
-import nextstep.subway.line.dto.request.UpdateLineRequestDto;
+import nextstep.subway.line.dto.request.SaveLineRequest;
+import nextstep.subway.line.dto.request.UpdateLineRequest;
 import nextstep.subway.support.RestAssuredClient;
 
 public class LineAcceptanceStep {
@@ -19,7 +19,7 @@ public class LineAcceptanceStep {
      * @param line
      * @return ExtractableResponse
      */
-    public static ExtractableResponse<Response> 지하철_노선_생성을_요청한다(SaveLineRequestDto line) {
+    public static ExtractableResponse<Response> 지하철_노선_생성을_요청한다(SaveLineRequest line) {
         return RestAssuredClient.post(LINE_BASE_URL, line);
     }
 
@@ -57,7 +57,7 @@ public class LineAcceptanceStep {
      * @param id
      * @return ExtractableResponse
      */
-    public static ExtractableResponse<Response> 지하철_노선_수정을_요청한다(UpdateLineRequestDto line, Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_수정을_요청한다(UpdateLineRequest line, Long id) {
         String path = String.format("%s/%d", LINE_BASE_URL, id);
         return RestAssuredClient.put(path, line);
     }

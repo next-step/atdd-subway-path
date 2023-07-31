@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class SaveLineSectionRequestDto {
+public class SaveLineSectionRequest {
 
     @NotNull
     private Long upStationId;

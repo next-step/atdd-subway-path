@@ -3,7 +3,9 @@ package nextstep.subway.acceptance.constants;
 public enum Endpoint {
 
     STATION_BASE_URL("/stations"),
-    LINE_BASE_URL("/lines");
+    LINE_BASE_URL("/lines"),
+
+    PATH_BASE_URL("/paths");
 
     private final String url;
 

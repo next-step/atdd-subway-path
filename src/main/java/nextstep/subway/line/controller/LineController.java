@@ -1,10 +1,10 @@
 package nextstep.subway.line.controller;
 
 import lombok.RequiredArgsConstructor;
-import nextstep.subway.line.dto.request.SaveLineRequestDto;
-import nextstep.subway.line.dto.request.SaveLineSectionRequestDto;
-import nextstep.subway.line.dto.request.UpdateLineRequestDto;
-import nextstep.subway.line.dto.response.LineResponseDto;
+import nextstep.subway.line.dto.request.SaveLineRequest;
+import nextstep.subway.line.dto.request.SaveLineSectionRequest;
+import nextstep.subway.line.dto.request.UpdateLineRequest;
+import nextstep.subway.line.dto.response.LineResponse;
 import nextstep.subway.line.service.LineService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +20,8 @@ public class LineController {
     private final LineService lineService;
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponseDto> createLine(@RequestBody @Valid SaveLineRequestDto lineRequest) {
-        LineResponseDto line = lineService.saveLine(lineRequest);
+    public ResponseEntity<LineResponse> createLine(@RequestBody @Valid SaveLineRequest lineRequest) {
+        LineResponse line = lineService.saveLine(lineRequest);
 
         return ResponseEntity
                 .created(URI.create(String.format("/lines/%d", line.getId())))
@@ -29,19 +29,19 @@ public class LineController {
     }
 
     @GetMapping("/lines")
-    public ResponseEntity<List<LineResponseDto>> showLines() {
+    public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok(lineService.findAllLines());
     }
 
     @GetMapping("/lines/{id}")
-    public ResponseEntity<LineResponseDto> showLine(@PathVariable Long id) {
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
         return ResponseEntity.ok(lineService.findLineById(id));
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(
             @PathVariable Long id,
-            @RequestBody @Valid UpdateLineRequestDto lineRequest) {
+            @RequestBody @Valid UpdateLineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity
                 .ok()
@@ -57,10 +57,10 @@ public class LineController {
     }
 
     @PostMapping("/lines/{lineId}/sections")
-    public ResponseEntity<LineResponseDto> saveLineSection(
+    public ResponseEntity<LineResponse> saveLineSection(
             @PathVariable Long lineId,
-            @RequestBody @Valid SaveLineSectionRequestDto lineSectionRequest) {
-        LineResponseDto line = lineService.saveLineSection(lineId, lineSectionRequest);
+            @RequestBody @Valid SaveLineSectionRequest lineSectionRequest) {
+        LineResponse line = lineService.saveLineSection(lineId, lineSectionRequest);
 
         return ResponseEntity
                 .created(URI.create(String.format("/lines/%d", line.getId())))

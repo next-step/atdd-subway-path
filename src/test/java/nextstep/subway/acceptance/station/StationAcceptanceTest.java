@@ -5,7 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.step.StationAcceptanceStep;
 import nextstep.subway.fixture.StationFixture;
-import nextstep.subway.station.dto.request.SaveStationRequestDto;
+import nextstep.subway.station.dto.request.SaveStationRequest;
 import nextstep.subway.support.AcceptanceTest;
 import nextstep.subway.support.AssertUtils;
 import nextstep.subway.support.DatabaseCleanup;
@@ -53,7 +53,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        SaveStationRequestDto 강남역 = StationFixture.강남역;
+        SaveStationRequest 강남역 = StationFixture.강남역;
         StationAcceptanceStep.지하철역_생성을_요청한다(강남역);
 
         // then
@@ -76,8 +76,8 @@ public class StationAcceptanceTest {
     @Test
     void readStations() {
         //given
-        SaveStationRequestDto 강남역 = StationFixture.강남역;
-        SaveStationRequestDto 광교역 = StationFixture.광교역;
+        SaveStationRequest 강남역 = StationFixture.강남역;
+        SaveStationRequest 광교역 = StationFixture.광교역;
 
         Stream.of(강남역, 광교역).forEach(StationAcceptanceStep::지하철역_생성을_요청한다);
 
@@ -99,7 +99,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        SaveStationRequestDto 강남역 = StationFixture.강남역;
+        SaveStationRequest 강남역 = StationFixture.강남역;
         Long 저장된_지하철역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(강남역)
                 .jsonPath()
                 .getLong(STATION_ID_KEY);
