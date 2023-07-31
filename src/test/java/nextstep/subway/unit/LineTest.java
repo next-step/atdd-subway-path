@@ -209,6 +209,34 @@ public class LineTest {
                 assertThat(line.getStations()).containsExactly(창동역,사당역);
             }
         }
+        @Nested
+        @DisplayName("실패 경우")
+        class Fail{
+            /**
+             * 노원역 -> 창동역
+             * 노원역 제거
+             */
+            @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거")
+            @Test
+            void case_0() {
+                //when
+                //then
+                assertThrows(BadRequestException.class, () -> line.removeSection(노원역));
+            }
+            /**
+             * 노원역 -> 창동역 -> 총신대입구역
+             * 사당역 제거
+             */
+            @DisplayName("노선에 등록되어있지 않은 역을 제거")
+            @Test
+            void case_1() {
+                //given
+                line.addSection(LineSection.of(line, 창동역, 총신대입구역, 10));
+                //when
+                //then
+                assertThrows(BadRequestException.class, () -> line.removeSection(사당역));
+            }
+        }
     }
 
     @DisplayName("구간 조회")
