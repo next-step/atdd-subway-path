@@ -11,15 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RouteFinder {
-    private Logger log = LoggerFactory.getLogger(RouteFinder.class);
+    private final Logger log = LoggerFactory.getLogger(RouteFinder.class);
 
-    private DijkstraShortestPath shortestPath;
+    private final DijkstraShortestPath shortestPath;
 
-    private RouteFinder(DijkstraShortestPath shortestPath) {
+    private RouteFinder(final DijkstraShortestPath shortestPath) {
         this.shortestPath = shortestPath;
     }
 
-    public List<Station> findShortestRoute(Station source, Station target) {
+    public List<Station> findShortestRoute(final Station source, final Station target) {
         if (source.equals(target)) {
             throw new BusinessException("출발역과 도착역은 같을 수 없습니다");
         }
@@ -32,7 +32,7 @@ public class RouteFinder {
         }
     }
 
-    public int totalDistance(Station source, Station target) {
+    public int totalDistance(final Station source, final Station target) {
         if (source.equals(target)) {
             throw new BusinessException("출발역과 도착역은 같을 수 없습니다");
         }
@@ -44,7 +44,7 @@ public class RouteFinder {
             .sum();
     }
 
-    public static RouteFinder from(List<Section> sections) {
+    public static RouteFinder from(final List<Section> sections) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
         sections.stream().forEach(section -> {
