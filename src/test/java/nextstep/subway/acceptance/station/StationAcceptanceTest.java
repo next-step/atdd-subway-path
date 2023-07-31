@@ -3,11 +3,12 @@ package nextstep.subway.acceptance.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.acceptance.constants.Endpoint;
-import nextstep.subway.station.dto.request.SaveStationRequestDto;
+import nextstep.subway.acceptance.step.StationAcceptanceStep;
+import nextstep.subway.fixture.StationFixture;
+import nextstep.subway.station.dto.request.SaveStationRequest;
 import nextstep.subway.support.AcceptanceTest;
+import nextstep.subway.support.AssertUtils;
 import nextstep.subway.support.DatabaseCleanup;
-import nextstep.subway.support.RestAssuredClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,6 @@ public class StationAcceptanceTest {
     @LocalServerPort
     private int port;
 
-    private static final String STATION_BASE_URL = Endpoint.STATION_BASE_URL.getUrl();
 
     private static final String STATION_ID_KEY = "id";
 
@@ -53,17 +53,17 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        SaveStationRequestDto 강남역 = StationFixture.강남역;
-        saveStation(강남역);
+        SaveStationRequest 강남역 = StationFixture.강남역;
+        StationAcceptanceStep.지하철역_생성을_요청한다(강남역);
 
         // then
-        List<String> stationNames = findStationsAll()
+        List<String> 지하철역_이름_목록 = StationAcceptanceStep.지하철역_목록_조회를_요청한다()
                 .jsonPath()
                 .getList(STATION_NAME_KEY, String.class);
 
         assertAll(
-                () -> assertThat(stationNames.size()).isEqualTo(1),
-                () -> assertThat(stationNames).containsAnyOf(강남역.getName())
+                () -> assertThat(지하철역_이름_목록.size()).isEqualTo(1),
+                () -> assertThat(지하철역_이름_목록).containsAnyOf(강남역.getName())
         );
     }
 
@@ -76,21 +76,18 @@ public class StationAcceptanceTest {
     @Test
     void readStations() {
         //given
-        SaveStationRequestDto 강남역 = StationFixture.강남역;
-        SaveStationRequestDto 광교역 = StationFixture.광교역;
+        SaveStationRequest 강남역 = StationFixture.강남역;
+        SaveStationRequest 광교역 = StationFixture.광교역;
 
-        Stream.of(강남역, 광교역)
-                .forEach(this::saveStation);
+        Stream.of(강남역, 광교역).forEach(StationAcceptanceStep::지하철역_생성을_요청한다);
 
         // when
-        ExtractableResponse<Response> findStationsAllResponse = findStationsAll();
-        List<String> stationNames = findStationsAllResponse
+        List<String> 지하철역_이름_목록 = StationAcceptanceStep.지하철역_목록_조회를_요청한다()
                 .jsonPath()
                 .getList(STATION_NAME_KEY, String.class);
 
         // then
-        assertThat(stationNames)
-                .containsOnly(강남역.getName(), 광교역.getName());
+        assertThat(지하철역_이름_목록).containsOnly(강남역.getName(), 광교역.getName());
     }
 
     /**
@@ -102,56 +99,24 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        SaveStationRequestDto 강남역 = StationFixture.강남역;
-        Long savedStationId = saveStation(강남역)
+        SaveStationRequest 강남역 = StationFixture.강남역;
+        Long 저장된_지하철역_아이디 = StationAcceptanceStep.지하철역_생성을_요청한다(강남역)
                 .jsonPath()
                 .getLong(STATION_ID_KEY);
 
         // when
-        String path = String.format("%s/%d", STATION_BASE_URL, savedStationId);
-        ExtractableResponse<Response> deleteStationByIdResponse = RestAssuredClient.delete(path);
+        ExtractableResponse<Response> 지하철역_삭제_응답 = StationAcceptanceStep
+                .지하철역_삭제을_요청한다(저장된_지하철역_아이디);
 
         // then
+        List<String> 지하철역_이름_목록 = StationAcceptanceStep.지하철역_목록_조회를_요청한다()
+                .jsonPath()
+                .getList(STATION_NAME_KEY, String.class);
+
         assertAll(
-                () -> assertThat(deleteStationByIdResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> {
-                    List<String> stationNames = RestAssuredClient.get(STATION_BASE_URL)
-                            .jsonPath()
-                            .getList(STATION_NAME_KEY, String.class);
-
-                    assertThat(stationNames).doesNotContain(강남역.getName());
-                }
+                () -> AssertUtils.assertThatStatusCode(지하철역_삭제_응답, HttpStatus.NO_CONTENT),
+                () -> assertThat(지하철역_이름_목록).doesNotContain(강남역.getName())
         );
-    }
-
-    /**
-     * <pre>
-     * 지하철역을 생성하는 API를 호출하는 함수
-     * </pre>
-     *
-     * @param station
-     * @return ExtractableResponse
-     */
-    private ExtractableResponse<Response> saveStation(SaveStationRequestDto station) {
-        ExtractableResponse<Response> saveStationResponse =
-                RestAssuredClient.post(STATION_BASE_URL, station);
-        assertThat(saveStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        return saveStationResponse;
-    }
-
-    /**
-     * <pre>
-     * 모든 지하철역들을 조회하는 API를 호출하는 함수
-     * </pre>
-     *
-     * @return ExtractableResponse
-     */
-    private ExtractableResponse<Response> findStationsAll() {
-        ExtractableResponse<Response> findStationsAllResponse = RestAssuredClient.get(STATION_BASE_URL);
-        assertThat(findStationsAllResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        return findStationsAllResponse;
     }
 
 }

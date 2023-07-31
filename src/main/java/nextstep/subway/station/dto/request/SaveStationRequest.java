@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class SaveStationRequestDto {
+public class SaveStationRequest {
 
     @NotBlank(message = "지하철역 이름은 빈칸일 수 없습니다.")
     @Size(max = 20, message = "지하철역 이름은 20자 이내여야 합니다.")

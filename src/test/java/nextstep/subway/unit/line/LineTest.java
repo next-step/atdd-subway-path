@@ -1,5 +1,6 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
+import nextstep.subway.fixture.StationFixture;
 import nextstep.subway.global.error.code.ErrorCode;
 import nextstep.subway.global.error.exception.InvalidLineSectionException;
 import nextstep.subway.section.entity.Section;
@@ -18,46 +19,37 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("지하철 구간 단위 테스트")
 class LineTest {
 
-    private Station 신사역;
+    private static final Station 까치산역 = StationFixture.까치산역;
 
-    private Station 강남역;
+    private static final Station 신도림역 = StationFixture.신도림역;
 
-    private Station 판교역;
+    private static final Station 신촌역 = StationFixture.신촌역;
 
-    private Station 광교역;
+    private static final Station 잠실역 = StationFixture.잠실역;
 
     private Sections sections;
 
     @BeforeEach
     void setUp() {
         // given
-        Long 신사역_아이디 = 1L;
-        Long 강남역_아이디 = 2L;
-        Long 판교역_아이디 = 3L;
-        Long 광교역_아이디 = 4L;
-        신사역 = new Station(신사역_아이디, "신사역");
-        강남역 = new Station(강남역_아이디, "강남역");
-        판교역 = new Station(판교역_아이디, "판교역");
-        광교역 = new Station(광교역_아이디, "광교역");
-
-        Section 신사역_강남역_구간 = new Section(신사역, 판교역, 23);
+        Section 까치산역_신촌역_구간 = new Section(까치산역, 신촌역, 23);
         sections = new Sections();
-        sections.addSection(신사역_강남역_구간);
+        sections.addSection(까치산역_신촌역_구간);
     }
 
     @Test
     @DisplayName("지하철 노선의 하행 종점역에 구간을 추가한다.")
     void addLastLineSection() {
-        // when: 신사역 - 판교역 노선에 판교역 - 광교역 노선을 추가
-        Section 판교역_광교역_노선 = new Section(판교역, 광교역, 5);
-        sections.addSection(판교역_광교역_노선);
+        // when: 까치산역 - 신촌역 노선에 신촌역 - 잠실역 노선을 추가
+        Section 신촌역_잠실역_노선 = new Section(신촌역, 잠실역, 5);
+        sections.addSection(신촌역_잠실역_노선);
 
-        // then: 신사역 - 판교역 - 광교역이 조회
+        // then: 까치산역 - 신촌역 - 잠실역이 조회
         // then: 23 + 5 = 28m의 길이가 조회
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         assertAll(
-                () -> assertThat(노선에_등록된_역_목록).containsExactly(신사역, 판교역, 광교역),
+                () -> assertThat(노선에_등록된_역_목록).containsExactly(까치산역, 신촌역, 잠실역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(28)
         );
     }
@@ -65,16 +57,16 @@ class LineTest {
     @Test
     @DisplayName("지하철 노선의 상행 종점역과 하행 종점역 사이에 구간을 추가한다.")
     void addMiddleLineSection() {
-        // when: 신사역 - 판교역 노선에 신사역 - 강남역 노선을 추가
-        Section 신사역_강남역_노선 = new Section(신사역, 강남역, 15);
-        sections.addSection(신사역_강남역_노선);
+        // when: 까치산역 - 신촌역 노선에 까치산역 - 신도림역 노선을 추가
+        Section 까치산역_신도림역_노선 = new Section(까치산역, 신도림역, 15);
+        sections.addSection(까치산역_신도림역_노선);
 
-        // then: 신사역 - 강남역 - 판교역이 조회
+        // then: 까치산역 - 신도림역 - 신촌역이 조회
         // then: 23m 길이가 조회
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         assertAll(
-                () -> assertThat(노선에_등록된_역_목록).containsExactly(신사역, 강남역, 판교역),
+                () -> assertThat(노선에_등록된_역_목록).containsExactly(까치산역, 신도림역, 신촌역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(23)
         );
     }
@@ -82,16 +74,16 @@ class LineTest {
     @Test
     @DisplayName("지하철 노선의 상행 종점역이 하행역인 구간을 추가한다.")
     void addFirstLineSection() {
-        // when: 신사역 - 판교역 노선에 강남역 - 신사역 노선을 추가
-        Section 강남역_신사역_노선 = new Section(강남역, 신사역, 15);
-        sections.addSection(강남역_신사역_노선);
+        // when: 까치산역 - 신촌역 노선에 신도림역 - 까치산역 노선을 추가
+        Section 신도림역_까치산역_노선 = new Section(신도림역, 까치산역, 15);
+        sections.addSection(신도림역_까치산역_노선);
 
-        // then:  강남역 - 신사역 - 판교역이 조회
+        // then:  신도림역 - 까치산역 - 신촌역이 조회
         // then: 15 + 23 = 38m 길이가 조회
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         assertAll(
-                () -> assertThat(노선에_등록된_역_목록).containsExactly(강남역, 신사역, 판교역),
+                () -> assertThat(노선에_등록된_역_목록).containsExactly(신도림역, 까치산역, 신촌역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(38)
         );
     }
@@ -99,11 +91,11 @@ class LineTest {
     @Test
     @DisplayName("역 사이에 기존 역 사이 길이보다 크거나 같은 노선을 등록한다.")
     void addInvalidDistanceLineSection() {
-        // when: 신사역 - 판교역 노선(23m)에 신사역 - 강남역 노선(23m)을 추가한다.
-        Section 신사역_강남역_노선 = new Section(신사역, 강남역, 23);
+        // when: 까치산역 - 신촌역 노선(23m)에 까치산역 - 신도림역 노선(23m)을 추가한다.
+        Section 까치산역_신도림역_노선 = new Section(까치산역, 신도림역, 23);
 
         // when & then
-        assertThatThrownBy(() -> sections.addSection(신사역_강남역_노선))
+        assertThatThrownBy(() -> sections.addSection(까치산역_신도림역_노선))
                 .isInstanceOf(InvalidLineSectionException.class)
                 .hasMessageContaining(ErrorCode.INVALID_DISTANCE.getMessage());
     }
@@ -111,11 +103,11 @@ class LineTest {
     @Test
     @DisplayName("이미 등록되어 있는 노선을 등록한다.")
     void addAlreadyRegisteredLineSection() {
-        // when: 신사역 - 판교역 노선에 동일한 노선인 신사역 - 판교역 노선을 추가한다.
-        Section 신사역_판교역_노선 = new Section(신사역, 판교역, 23);
+        // when: 까치산역 - 신촌역 노선에 동일한 노선인 까치산역 - 신촌역 노선을 추가한다.
+        Section 까치산역_신촌역_노선 = new Section(까치산역, 신촌역, 23);
 
         // when & then
-        assertThatThrownBy(() -> sections.addSection(신사역_판교역_노선))
+        assertThatThrownBy(() -> sections.addSection(까치산역_신촌역_노선))
                 .isInstanceOf(InvalidLineSectionException.class)
                 .hasMessageContaining(ErrorCode.ALREADY_REGISTERED_SECTION.getMessage());
     }
@@ -123,11 +115,11 @@ class LineTest {
     @Test
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않은 노선을 등록한다.")
     void addLineSectionWithUnregisteredStation() {
-        // when: 신사역 - 판교역 노선에 강남역 - 광교역 노선을 추가한다.
-        Section 강남역_광교역_노선 = new Section(강남역, 광교역, 13);
+        // when: 까치산역 - 신촌역 노선에 신도림역 - 잠실역 노선을 추가한다.
+        Section 신도림역_잠실역_노선 = new Section(신도림역, 잠실역, 13);
 
         // when &  then
-        assertThatThrownBy(() -> sections.addSection(강남역_광교역_노선))
+        assertThatThrownBy(() -> sections.addSection(신도림역_잠실역_노선))
                 .isInstanceOf(InvalidLineSectionException.class)
                 .hasMessageContaining(ErrorCode.UNREGISTERED_STATION.getMessage());
     }
@@ -139,24 +131,24 @@ class LineTest {
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         // then
-        assertThat(노선에_등록된_역_목록).containsExactly(신사역, 판교역);
+        assertThat(노선에_등록된_역_목록).containsExactly(까치산역, 신촌역);
     }
 
     @Test
     @DisplayName("지하철 노선의 첫번째 구간을 삭제한다.")
     void removeFirstSection() {
         // given
-        Section 판교역_광교역_구간 = new Section(판교역, 광교역, 5);
-        sections.addSection(판교역_광교역_구간);
+        Section 신촌역_잠실역_구간 = new Section(신촌역, 잠실역, 5);
+        sections.addSection(신촌역_잠실역_구간);
 
         // when
-        sections.deleteSectionByStationId(신사역.getId());
+        sections.deleteSectionByStationId(까치산역.getId());
 
         // then
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         assertAll(
-                () -> assertThat(노선에_등록된_역_목록).doesNotContain(신사역),
+                () -> assertThat(노선에_등록된_역_목록).doesNotContain(까치산역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(5)
         );
     }
@@ -165,17 +157,17 @@ class LineTest {
     @DisplayName("지하철 노선의 중간 구간을 삭제한다.")
     void removeMiddleSection() {
         // given
-        Section 판교역_광교역_구간 = new Section(판교역, 광교역, 5);
-        sections.addSection(판교역_광교역_구간);
+        Section 신촌역_잠실역_구간 = new Section(신촌역, 잠실역, 5);
+        sections.addSection(신촌역_잠실역_구간);
 
         // when
-        sections.deleteSectionByStationId(판교역.getId());
+        sections.deleteSectionByStationId(신촌역.getId());
 
         // then
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         assertAll(
-                () -> assertThat(노선에_등록된_역_목록).doesNotContain(판교역),
+                () -> assertThat(노선에_등록된_역_목록).doesNotContain(신촌역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(28)
         );
     }
@@ -184,17 +176,17 @@ class LineTest {
     @DisplayName("지하철의 노선의 마지막 구간을 삭제한다.")
     void removeSection() {
         // given
-        Section 판교역_광교역_구간 = new Section(판교역, 광교역, 5);
-        sections.addSection(판교역_광교역_구간);
+        Section 신촌역_잠실역_구간 = new Section(신촌역, 잠실역, 5);
+        sections.addSection(신촌역_잠실역_구간);
 
         // when
-        sections.deleteSectionByStationId(광교역.getId());
+        sections.deleteSectionByStationId(잠실역.getId());
 
         // then
         List<Station> 노선에_등록된_역_목록 = sections.getAllStations();
 
         assertAll(
-                () -> assertThat(노선에_등록된_역_목록).doesNotContain(광교역),
+                () -> assertThat(노선에_등록된_역_목록).doesNotContain(잠실역),
                 () -> assertThat(sections.getTotalDistance()).isEqualTo(23)
         );
     }
@@ -203,7 +195,7 @@ class LineTest {
     @DisplayName("등록되어 있지 않은 구간을 삭제한다.")
     void removeNotExistSection() {
         // when & then
-        assertThatThrownBy(() -> sections.deleteSectionByStationId(강남역.getId()))
+        assertThatThrownBy(() -> sections.deleteSectionByStationId(신도림역.getId()))
                 .isInstanceOf(InvalidLineSectionException.class)
                 .hasMessageContaining(ErrorCode.UNREGISTERED_STATION.getMessage());
     }
@@ -212,7 +204,7 @@ class LineTest {
     @DisplayName("구간이 1개일 때 삭제한다.")
     void removeStandaloneSection() {
         // when & then
-        assertThatThrownBy((() -> sections.deleteSectionByStationId(판교역.getId())))
+        assertThatThrownBy((() -> sections.deleteSectionByStationId(신촌역.getId())))
                 .isInstanceOf(InvalidLineSectionException.class)
                 .hasMessageContaining(ErrorCode.STAND_ALONE_LINE_SECTION.getMessage());
     }

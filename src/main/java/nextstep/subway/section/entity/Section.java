@@ -6,6 +6,7 @@ import nextstep.subway.station.entity.Station;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 
+@ToString
 @Builder
 @Getter
 @Embeddable

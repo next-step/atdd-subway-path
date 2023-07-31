@@ -50,11 +50,7 @@ public class Sections {
     }
 
     public void deleteSectionByStationId(Long stationId) {
-        List<Long> allStationIds = getAllStations()
-                .stream()
-                .map(Station::getId)
-                .collect(Collectors.toList());
-        if (!allStationIds.contains(stationId)) {
+        if (!containsStation(stationId)) {
             throw new InvalidLineSectionException(ErrorCode.UNREGISTERED_STATION);
         }
 
@@ -225,6 +221,15 @@ public class Sections {
         }
 
         return stations.get(index);
+    }
+
+    private boolean containsStation(Long stationId) {
+        List<Long> allStationIds = getAllStations()
+                .stream()
+                .map(Station::getId)
+                .collect(Collectors.toList());
+
+        return allStationIds.contains(stationId);
     }
 
     private boolean isUpStation(Long stationId) {

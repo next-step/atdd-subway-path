@@ -2,10 +2,10 @@ package nextstep.subway.line.service;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.adapters.persistence.LineJpaAdapter;
-import nextstep.subway.line.dto.request.SaveLineRequestDto;
-import nextstep.subway.line.dto.request.SaveLineSectionRequestDto;
-import nextstep.subway.line.dto.request.UpdateLineRequestDto;
-import nextstep.subway.line.dto.response.LineResponseDto;
+import nextstep.subway.line.dto.request.SaveLineRequest;
+import nextstep.subway.line.dto.request.SaveLineSectionRequest;
+import nextstep.subway.line.dto.request.UpdateLineRequest;
+import nextstep.subway.line.dto.response.LineResponse;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.section.entity.Section;
 import nextstep.subway.station.adapters.persistence.StationJpaAdapter;
@@ -26,27 +26,27 @@ public class LineService {
     private final LineJpaAdapter lineJpaAdapter;
 
     @Transactional
-    public LineResponseDto saveLine(SaveLineRequestDto lineRequest) {
+    public LineResponse saveLine(SaveLineRequest lineRequest) {
         Station upStation = stationJpaAdapter.findById(lineRequest.getUpStationId());
         Station downStation = stationJpaAdapter.findById(lineRequest.getDownStationId());
 
         Line line = lineJpaAdapter.save(lineRequest.toEntity(upStation, downStation));
-        return LineResponseDto.of(line);
+        return LineResponse.of(line);
     }
 
-    public List<LineResponseDto> findAllLines() {
+    public List<LineResponse> findAllLines() {
         return lineJpaAdapter.findAll()
                 .stream()
-                .map(LineResponseDto::of)
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
-    public LineResponseDto findLineById(Long id) {
-        return LineResponseDto.of(lineJpaAdapter.findById(id));
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(lineJpaAdapter.findById(id));
     }
 
     @Transactional
-    public void updateLine(Long id, UpdateLineRequestDto lineRequest) {
+    public void updateLine(Long id, UpdateLineRequest lineRequest) {
         Line targetLine = lineJpaAdapter.findById(id);
         targetLine.updateLine(lineRequest.toEntity());
     }
@@ -57,7 +57,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponseDto saveLineSection(Long lineId, SaveLineSectionRequestDto lineSectionRequest) {
+    public LineResponse saveLineSection(Long lineId, SaveLineSectionRequest lineSectionRequest) {
         Station upStation = stationJpaAdapter.findById(lineSectionRequest.getUpStationId());
         Station downStation = stationJpaAdapter.findById(lineSectionRequest.getDownStationId());
 
@@ -69,7 +69,7 @@ public class LineService {
                 .build();
         targetLine.addSection(section);
 
-        return LineResponseDto.of(targetLine);
+        return LineResponse.of(targetLine);
     }
 
     @Transactional

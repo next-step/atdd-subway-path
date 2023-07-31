@@ -6,14 +6,14 @@ import nextstep.subway.station.entity.Station;
 
 @Builder
 @Getter
-public class StationResponseDto {
+public class StationResponse {
 
     private Long id;
 
     private String name;
 
-    public static StationResponseDto of(Station station) {
-        return StationResponseDto.builder()
+    public static StationResponse of(Station station) {
+        return StationResponse.builder()
                 .id(station.getId())
                 .name(station.getName())
                 .build();
