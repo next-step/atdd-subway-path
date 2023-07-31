@@ -37,7 +37,10 @@ public class PathAcceptanceTest extends RestAssuredTest{
    * |                        |
    * *3호선*                   *신분당선*
    * |                        |
-   * 남부터미널역  --- *3호선* ---   양재
+   * 남부터미널역  --- *3호선* --- 양재역
+   *
+   *
+   * 고속 터미널역 --- *4호선* --- 신사역
    */
   @BeforeEach
   public void setUp() {
@@ -76,7 +79,7 @@ public class PathAcceptanceTest extends RestAssuredTest{
 
     // THEN
     경로_조회_구간_검증(response, "교대역", "남부터미널역", "양재역");
-    경로_조회_거리_검증(response, "12");
+    경로_조회_거리_검증(response, "5");
   }
 
   /**
