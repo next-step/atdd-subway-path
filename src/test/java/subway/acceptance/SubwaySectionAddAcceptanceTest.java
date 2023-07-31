@@ -39,11 +39,11 @@ public class SubwaySectionAddAcceptanceTest extends SubwayLineAcceptanceTest {
 
     /**
      * @given 지하철 노선이 생성 되어있다면
-     * @when 지하철 노선에 섹션을 추가할 때
-     * @then 지하철 노션 상세 조회에서 추가된 노선을 확인할 수 있다.
+     * @when 지하철 노선 종점역에 구간을 추가할 때
+     * @then 지하철 노션 상세 조회에서 추가된 구간을 확인할 수 있다.
      */
     @Test
-    @DisplayName("추가 시에 노션 상세 조회에서 추가된 노선을 확인할 수 있다.")
+    @DisplayName("노선 종점에 구간을 추가할 때 상세 조회 시에 추가된 구간을 확인할 수 있다.")
     void addSubwayLineSection() {
         //given
         SubwayLineResponse 이호선 = 지하철_노선_생성("이호선", "red", 서울대입구역, 강남역, 5).as(SubwayLineResponse.class);
@@ -52,32 +52,34 @@ public class SubwaySectionAddAcceptanceTest extends SubwayLineAcceptanceTest {
         addApiTester.노선에_구간을_추가한다(이호선, 강남역, 성수역, 5);
 
         //then
-        지하철_노선_구간_확인(이호선, List.of(서울대입구역, 강남역, 성수역));
+        지하철_노선_구간_확인(이호선, 서울대입구역, 강남역, 성수역);
     }
 
     /**
-     * @given 지하철 노선이 생성 되어있다면
-     * @when 추가할 구간의 상행역이 노선의 하행 종점역이 아닐 때
-     * @then 불가하다는 에러 메세지를 뱉는다.
+     * @given 지하철 노선이 생성 되어있고
+     * @when 기존 구간 중간에 구간을 추가할 때
+//     * @then 기존 구간이 추가될 구간을 제외한 구간으로 축소되고
+     * @then 지하철 노션 상세 조회에서 추가된 구간을 확인할 수 있다.
      */
     @Test
-    @DisplayName("추가할 구간의 상행역이 노선의 하행 종점역이 아니라면 에러가 발생한다")
-    void throwWhenNotDownStation() {
+    @DisplayName("구간 중간에 중간을 추가할 때 기존 구간이 추가될 구간을 제외한 구간으로 축소되고 상세 조회에서 확인이 가능하다.")
+    void addSubwayLineSectionAtMiddle() {
         //given
         SubwayLineResponse 이호선 = 지하철_노선_생성("이호선", "red", 서울대입구역, 강남역, 5).as(SubwayLineResponse.class);
 
         //when
-        ExtractableResponse<Response> response = addApiTester.노선에_구간을_추가한다(이호선, 신림역, 성수역, 5);
+        ExtractableResponse<Response> response = addApiTester.노선에_구간을_추가한다(이호선, 신림역, 강남역, 3);
 
         //then
-        addApiTester.추가하는_구간의_상행역이_하행_종점역이_아니면_에러_발생(response, 이호선, 신림역);
+        지하철_노선_구간_확인(이호선, 서울대입구역, 강남역, 신림역);
 
     }
 
     /**
      * @given 지하철 노선이 생성 되어있다면
-     * @when 추가할 구간의 하행역이 이미 노선에 존재할 때
-     * @then 불가하다는 에러 메세지를 뱉는다.
+     * @when 지하철 노선 기점역에 구간을 추가할 때
+     * @then 지하철 노선 기점역이 수정된다.
+     * @then 지하철 노션 상세 조회에서 추가된 구간을 확인할 수 있다.
      */
     @Test
     @DisplayName("추가할 구간의 하행역이 이미 노선에 존재한다면 에러가 발생한다")
@@ -91,5 +93,24 @@ public class SubwaySectionAddAcceptanceTest extends SubwayLineAcceptanceTest {
         //then
         addApiTester.추가하는_구간의_하행역이_이미_노선에_존재한다면_에러_발생(response, 이호선, 서울대입구역);
 
+    }
+
+
+    /**
+     * @given 지하철 노선이 생성 되어있다면
+     * @when 추가될 구간이 기존 구간과 이어지지 않는다면
+     * @then 에러 메세지를 뱉는다.
+     */
+    @Test
+    @DisplayName("추가될 구간이 기존 구간과 이어지지 않는다면 추가가 불가능하다.")
+    void throwWhenNotDownStation() {
+        //given
+        SubwayLineResponse 이호선 = 지하철_노선_생성("이호선", "red", 서울대입구역, 강남역, 5).as(SubwayLineResponse.class);
+
+        //when
+        ExtractableResponse<Response> response = addApiTester.노선에_구간을_추가한다(이호선, 신림역, 성수역, 5);
+
+        //then
+        addApiTester.추가하는_구간의_상행역이_하행_종점역이_아니면_에러_발생(response, 이호선, 신림역);
     }
 }

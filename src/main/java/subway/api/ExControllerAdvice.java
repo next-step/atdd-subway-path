@@ -15,13 +15,14 @@ public class ExControllerAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler
   public ResponseEntity<String> exHandler(RuntimeException e) {
-
+    System.out.println(e.getMessage());
     return ResponseEntity.badRequest().body(e.getMessage());
   }
 
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler
   public ResponseEntity<String> exHandler(Exception e) {
+    System.out.println(e.getMessage());
     return ResponseEntity.internalServerError().body(e.getMessage());
   }
 

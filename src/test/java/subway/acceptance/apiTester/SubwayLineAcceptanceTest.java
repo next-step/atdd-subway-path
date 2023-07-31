@@ -12,7 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public abstract class SubwayLineAcceptanceTest extends StationAcceptanceTest{
 
@@ -64,6 +66,7 @@ public abstract class SubwayLineAcceptanceTest extends StationAcceptanceTest{
                 .given().log().all()
                 .body(params.build())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/subway-lines")
                 .then().log().all()
                 .extract();
@@ -98,7 +101,7 @@ public abstract class SubwayLineAcceptanceTest extends StationAcceptanceTest{
                 .extract();
     }
 
-    protected void 지하철_노선_구간_확인(SubwayLineResponse subwayLine, List<StationResponse> stations) {
+    protected void 지하철_노선_구간_확인(SubwayLineResponse subwayLine, StationResponse... stations) {
 
         SubwayLineResponse subwayLineResponse = RestAssured
                 .given().log().all()
@@ -106,8 +109,10 @@ public abstract class SubwayLineAcceptanceTest extends StationAcceptanceTest{
                 .then().log().all()
                 .extract().as(SubwayLineResponse.class);
 
-        List<Long> stationIds = subwayLineResponse.getStations().stream().map(SubwayLineResponse.StationInfo::getId).distinct().collect(Collectors.toList());
-        Assertions.assertThat(stationIds).isEqualTo(stations.stream().map(StationResponse::getId).collect(Collectors.toList()));
+        Assertions.assertThat(subwayLineResponse.getStations())
+                .extracting("id")
+                .containsExactly(Arrays.stream(stations).map(StationResponse::getId).toArray(Long[]::new));
+
     }
 
     protected void 지하철_노선_구간_미포함_확인(SubwayLineResponse subwayLine, StationResponse... stations) {
@@ -126,12 +131,13 @@ public abstract class SubwayLineAcceptanceTest extends StationAcceptanceTest{
 
     protected void 지하철_노선_상세_조회_응답_비교(ExtractableResponse<Response> response, String name, String color, String upStationName, String downStationName) {
         SubwayLineResponse subwayLineResponse = response.body().as(SubwayLineResponse.class);
-        assertSoftly(soft -> {
-            soft.assertThat(subwayLineResponse.getName()).isEqualTo(name);
-            soft.assertThat(subwayLineResponse.getColor()).isEqualTo(color);
-            soft.assertThat(subwayLineResponse.getStations().stream()
-                    .map(SubwayLineResponse.StationInfo::getName).collect(Collectors.toList())).containsOnly(upStationName, downStationName);
-        });
+
+        assertAll(
+                () -> assertThat(subwayLineResponse.getName()).isEqualTo(name),
+                () -> assertThat(subwayLineResponse.getColor()).isEqualTo(color),
+                () -> assertThat(subwayLineResponse.getStations())
+                        .extracting(SubwayLineResponse.StationInfo::getName)
+                        .containsOnly(upStationName, downStationName));
 
     }
 

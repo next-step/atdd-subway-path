@@ -1,5 +1,8 @@
 package subway.api.controller;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,7 +32,8 @@ public class SubwayLineUpdateController {
         SubwayLineUpdateUsecase.Command.UpdateContents contents = new SubwayLineUpdateUsecase.Command.UpdateContents(request.getName(), request.getColor());
         return new SubwayLineUpdateUsecase.Command(domainId, contents);
     }
-
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Request {
         private String name;
         private String color;
@@ -37,17 +41,6 @@ public class SubwayLineUpdateController {
         public Request(String name, String color) {
             this.name = name;
             this.color = color;
-        }
-
-        private Request() {
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getColor() {
-            return color;
         }
     }
 

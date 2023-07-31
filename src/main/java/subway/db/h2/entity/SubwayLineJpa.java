@@ -22,7 +22,7 @@ public class SubwayLineJpa {
     private String color;
 
     @Column(nullable = false)
-    private Long startSectionId;
+    private Long startStationId;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "subway_line_id")
@@ -31,11 +31,11 @@ public class SubwayLineJpa {
     public SubwayLineJpa() {
     }
 
-    public SubwayLineJpa(Long id, String name, String color, Long startSectionId, List<SubwaySectionJpa> subwaySections) {
+    public SubwayLineJpa(Long id, String name, String color, Long startStationId, List<SubwaySectionJpa> subwaySections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.startSectionId = startSectionId;
+        this.startStationId = startStationId;
         this.subwaySections = subwaySections;
     }
 
@@ -51,8 +51,8 @@ public class SubwayLineJpa {
         return color;
     }
 
-    public Long getStartSectionId() {
-        return startSectionId;
+    public Long getStartStationId() {
+        return startStationId;
     }
 
     public List<SubwaySectionJpa> getSubwaySections() {

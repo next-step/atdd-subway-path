@@ -16,7 +16,7 @@ public class SubwayLineMapper {
                 new SubwayLine.Id(Objects.requireNonNull(subwayLineJpa.getId())),
                 subwayLineJpa.getName(),
                 subwayLineJpa.getColor(),
-                new Station.Id(subwayLineJpa.getStartSectionId()),
+                new Station.Id(subwayLineJpa.getStartStationId()),
                 subwayLineJpa.getSubwaySections()
                         .stream()
                         .map(this::from)

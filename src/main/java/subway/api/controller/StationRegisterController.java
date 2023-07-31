@@ -1,5 +1,8 @@
 package subway.api.controller;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,10 +32,9 @@ public class StationRegisterController {
         return new StationRegisterUsecase.Command(request.getName());
     }
 
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Request {
         private String name;
-        public String getName() {
-            return name;
-        }
     }
 }

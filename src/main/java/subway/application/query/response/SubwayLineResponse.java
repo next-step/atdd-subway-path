@@ -1,5 +1,8 @@
 package subway.application.query.response;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import subway.domain.Station;
 import subway.domain.SubwayLine;
 
@@ -45,6 +48,8 @@ public class SubwayLineResponse {
         return stations;
     }
 
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class StationInfo {
         private Long id;
         private String name;
@@ -59,15 +64,5 @@ public class SubwayLineResponse {
             this.name = name;
         }
 
-        private StationInfo() {
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
     }
 }

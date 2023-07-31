@@ -39,8 +39,10 @@ class SubwaySectionAddService implements SubwaySectionAddUsecase {
         Station upStation = getStationBy(command.getUpStationId(), idToStationMap);
         Station downStation = getStationBy(command.getDownStationId(), idToStationMap);
 
-        SubwaySection subwaySection = SubwaySection.register(upStation, downStation, command.getDistance());
         SubwayLine subwayLine = subwayLineLoadPort.findOne(command.getSubwayLineId());
+
+        SubwaySection subwaySection = SubwaySection.register(upStation, downStation, command.getDistance());
+
         subwayLine.addSection(subwaySection, sectionUpdateManager);
         subwaySectionAddPort.addSubwaySection(subwayLine);
     }

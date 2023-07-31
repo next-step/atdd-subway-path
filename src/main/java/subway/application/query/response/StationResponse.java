@@ -1,19 +1,17 @@
 package subway.application.query.response;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public class StationResponse {
-    private final Long id;
-    private final String name;
+    private Long id;
+    private String name;
 
     public StationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
     }
 }
