@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 @Component
 public class LineConverter {
     public LineResponse convert(Line line) {
-        List<Station> stations = line.getSections().getStations();
-        List<StationResponse> stationResponses = stations
+
+        List<StationResponse> stationResponses = line.getStations()
                 .stream()
                 .map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());
