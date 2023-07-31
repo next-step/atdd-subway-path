@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -57,10 +58,24 @@ public class LineSections {
         validateRemovableSection();
         if (deleteStation.equals(getFirstStation())) {
             this.sections.remove(0);
+            return;
         }
-        if (deleteStation.equals(getLastStation()))
+        if (deleteStation.equals(getLastStation())) {
             this.sections.remove(getLastSection());
+            return;
+        }
+        LineSection beforeSection = findSectionByCondition(section -> section.getDownStation().equals(deleteStation));
+        LineSection nextSection = findSectionByCondition(section -> section.getUpStation().equals(deleteStation));
+        sections.remove(beforeSection);
+        sections.remove(nextSection);
+        sections.add(LineSection.of(beforeSection.getLine(), beforeSection.getUpStation(), nextSection.getDownStation(), beforeSection.getDistance() + nextSection.getDistance()));
+    }
 
+    private LineSection findSectionByCondition(Predicate<LineSection> condition) {
+        return sections.stream()
+                .filter(condition::test)
+                .findAny()
+                .get();
     }
 
     private void validateRemovableSection() {
