@@ -200,7 +200,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
              * When 지하철 구간을 제거한다.
              * Then 지하철 구간이 제거 되지 않고 예외를 발생시킨다.
              */
-            @DisplayName("지하찰_구간_삭제 - 지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.")
+            @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다")
             @Test
             void case_1() {
                 //when
