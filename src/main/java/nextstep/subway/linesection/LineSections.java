@@ -55,7 +55,10 @@ public class LineSections {
 
     public void remove(Station deleteStation) {
         validateRemovableSection();
-        this.sections.remove(getLastSection());
+        if(deleteStation.equals(getFirstStation())) {
+            this.sections.remove(0);
+        }
+        else this.sections.remove(getLastSection());
     }
 
     private void validateRemovableSection() {
