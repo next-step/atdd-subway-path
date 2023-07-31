@@ -3,6 +3,7 @@ package nextstep.subway.domain.line;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.SectionDeleteMinSizeException;
 import nextstep.subway.exception.SectionExistException;
+import nextstep.subway.exception.SectionNotExistException;
 import nextstep.subway.exception.SectionNotFoundException;
 
 import javax.persistence.Embeddable;
@@ -29,11 +30,15 @@ public class Sections {
         values.add(new Section(line, upStation, downStation, distance));
     }
 
-    public void add(Section section) {
-        if (isExistedDownStation(section)) {
+    public void add(Section addSection) {
+        if (isExistedAllStation(addSection)) {
             throw new SectionExistException();
         }
-        values.add(section);
+        if (isNotExistedAllStation(addSection)) {
+            throw new SectionNotExistException();
+        }
+        modifyExistedSection(addSection);
+        values.add(addSection);
     }
 
     public void remove(Section section) {
@@ -53,8 +58,11 @@ public class Sections {
         return stations;
     }
 
-    public boolean isExistedDownStation(Section addSection) {
-        return values.stream().anyMatch(section -> section.isExistedDownStation(addSection));
+    public Section findSectionByUpStation(Station station) {
+        return values.stream()
+                .filter(section -> section.isUp(station))
+                .findAny()
+                .orElseThrow(SectionNotFoundException::new);
     }
 
     public Section findSectionByDownStation(Station station) {
@@ -73,6 +81,51 @@ public class Sections {
                 .filter(section -> section.isUp(station))
                 .findAny()
                 .orElseThrow(SectionNotFoundException::new);
+    }
+
+    private boolean isNotExistedAllStation(Section addSection) {
+        return !isExistedUpStation(addSection) && !isExistedDownStation(addSection);
+    }
+
+    private boolean isExistedAllStation(Section addSection) {
+        return isExistedUpStation(addSection) && isExistedDownStation(addSection);
+    }
+
+    private boolean isExistedDownStation(Section addSection) {
+        return values.stream().anyMatch(section -> section.isExistedStation(addSection.getDownStation()));
+    }
+
+    private boolean isExistedUpStation(Section addSection) {
+        return values.stream().anyMatch(section -> section.isExistedStation(addSection.getUpStation()));
+    }
+
+    private boolean isExistedUpStationSameSection(Section addSection) {
+        return values.stream().anyMatch(section -> section.isUp(addSection.getUpStation()));
+    }
+
+    private boolean isExistedDownStationSameSection(Section addSection) {
+        return values.stream().anyMatch(section -> section.isDown(addSection.getDownStation()));
+    }
+
+    private void modifyExistedSection(Section addSection) {
+        if (isExistedUpStationSameSection(addSection)) {
+            modifyUpStationSameSection(addSection);
+        }
+        if (isExistedDownStationSameSection(addSection)) {
+            modifyDownStationSameSection(addSection);
+        }
+    }
+
+    private void modifyUpStationSameSection(Section addSection) {
+        Section section = findSectionByUpStation(addSection.getUpStation());
+        section.modifyDistance(addSection);
+        section.modifyUpStation(addSection.getDownStation());
+    }
+
+    private void modifyDownStationSameSection(Section addSection) {
+        Section section = findSectionByDownStation(addSection.getDownStation());
+        section.modifyDistance(addSection);
+        section.modifyDownStation(addSection.getUpStation());
     }
 
 }
