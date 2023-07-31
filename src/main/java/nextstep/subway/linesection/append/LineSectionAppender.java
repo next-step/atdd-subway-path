@@ -1,4 +1,7 @@
-package nextstep.subway.linesection;
+package nextstep.subway.linesection.append;
+
+import nextstep.subway.linesection.LineSection;
+import nextstep.subway.linesection.LineSections;
 
 public interface LineSectionAppender {
     /**

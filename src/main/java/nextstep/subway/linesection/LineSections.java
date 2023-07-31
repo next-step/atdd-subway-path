@@ -1,5 +1,6 @@
 package nextstep.subway.linesection;
 
+import nextstep.subway.linesection.append.*;
 import org.springframework.util.CollectionUtils;
 import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.line.Line;
@@ -57,11 +58,11 @@ public class LineSections {
     public void remove(Station deleteStation) {
         validateRemovableSection();
         if (deleteStation.equals(getFirstStation())) {
-            this.sections.remove(0);
+            sections.remove(0);
             return;
         }
         if (deleteStation.equals(getLastStation())) {
-            this.sections.remove(getLastSection());
+            sections.remove(getLastSection());
             return;
         }
         LineSection beforeSection = findSectionByCondition(section -> section.getDownStation().equals(deleteStation));

@@ -1,6 +1,7 @@
-package nextstep.subway.linesection;
+package nextstep.subway.linesection.append;
 
-import nextstep.subway.station.Station;
+import nextstep.subway.linesection.LineSection;
+import nextstep.subway.linesection.LineSections;
 
 public class AppendInEndLineSectionAppender implements LineSectionAppender {
 

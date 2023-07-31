@@ -1,7 +1,8 @@
-package nextstep.subway.linesection;
+package nextstep.subway.linesection.append;
 
 import nextstep.subway.exception.BadRequestException;
-import nextstep.subway.station.Station;
+import nextstep.subway.linesection.LineSection;
+import nextstep.subway.linesection.LineSections;
 
 import java.util.List;
 
