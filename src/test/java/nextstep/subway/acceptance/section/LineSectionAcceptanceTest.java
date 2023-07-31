@@ -207,6 +207,18 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 //then
                 지하철_구간_삭제_응답_상태값_체크(fistLineId, secondStationId, HttpStatus.BAD_REQUEST);
             }
+
+            /**
+             * first -> second 노선
+             * fourth 역 삭제
+             */
+            @DisplayName("노선에 등록되어있지 않은 역을 제거하려 한다.")
+            @Test
+            void case_2() {
+                //when
+                //then
+                지하철_구간_삭제_응답_상태값_체크(fistLineId,fourthStationId,HttpStatus.BAD_REQUEST);
+            }
         }
     }
 
