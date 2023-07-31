@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import nextstep.subway.global.error.code.ErrorCode;
 import nextstep.subway.global.error.exception.InvalidLineSectionException;

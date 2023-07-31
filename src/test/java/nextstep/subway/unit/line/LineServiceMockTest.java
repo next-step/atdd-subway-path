@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import nextstep.subway.fixture.StationFixture;
 import nextstep.subway.global.error.code.ErrorCode;
@@ -57,7 +57,7 @@ public class LineServiceMockTest {
         lineService = new LineService(stationJpaAdapter, lineJpaAdapter);
 
         // given
-        this.이호선 = Line.builder()
+        이호선 = Line.builder()
                 .name("2호선")
                 .color("#52c41a")
                 .upStation(StationFixture.까치산역)

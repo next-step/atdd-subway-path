@@ -64,7 +64,7 @@ public class PathAcceptanceTest {
      * |                              |
      * *3호선(2)*                      *신분당선(10)*
      * |                              |
-     * 남부터미널역  --- *3호선(3)* --- 양재
+     * 남부터미널역  --- *3호선(3)* --- 양재역
      * </pre>
      */
     @BeforeEach
@@ -171,7 +171,7 @@ public class PathAcceptanceTest {
      * Then 조회에 실패한다.
      * </pre>
      */
-    @DisplayName("출발역과 도착역이 같은 경로를 조회한다.")
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우에 경로를 조회한다.")
     @Test
     void getUnlinkedDepartureAndArrivalStations() {
         // when

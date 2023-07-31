@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import nextstep.subway.fixture.StationFixture;
 import nextstep.subway.global.error.code.ErrorCode;

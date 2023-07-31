@@ -1,12 +1,12 @@
 package nextstep.subway.path.dto.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@Builder
 public class PathRequest {
 
     @NotNull(message = "출발역은 반드시 입력해야 합니다.")
