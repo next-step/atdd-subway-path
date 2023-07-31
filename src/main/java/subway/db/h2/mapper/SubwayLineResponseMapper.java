@@ -3,7 +3,7 @@ package subway.db.h2.mapper;
 import subway.db.h2.entity.SubwayLineJpa;
 import subway.db.h2.entity.SubwaySectionJpa;
 import subway.db.common.Mapper;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.SubwayLineResponse;
 
 import java.util.ArrayList;
 import java.util.List;

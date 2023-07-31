@@ -1,12 +1,12 @@
-package subway.application;
+package subway.application.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import subway.application.out.SubwaySectionAddPort;
-import subway.application.in.SubwaySectionAddUsecase;
-import subway.application.out.StationMapLoadByInPort;
-import subway.application.out.SubwayLineLoadPort;
+import subway.application.command.out.SubwaySectionAddPort;
+import subway.application.command.in.SubwaySectionAddUsecase;
+import subway.application.command.out.StationMapLoadByInPort;
+import subway.application.command.out.SubwayLineLoadPort;
 import subway.domain.SectionUpdateManager;
 import subway.domain.Station;
 import subway.domain.SubwayLine;
@@ -35,22 +35,28 @@ class SubwaySectionAddService implements SubwaySectionAddUsecase {
 
     @Override
     public void addSubwaySection(Command command) {
-        Map<Station.Id, Station> idToStationMap = stationMapLoadByInPort.findAllByIn(List.of(command.getUpStationId(), command.getDownStationId()));
-        Station upStation = getStationBy(command.getUpStationId(), idToStationMap);
-        Station downStation = getStationBy(command.getDownStationId(), idToStationMap);
+        Command.SectionCommand commandSection = command.getSubwaySection();
+        Map<Station.Id, Station> idToStationMap = getStationMapBy(commandSection);
 
+        Station upStation = getStationBy(commandSection.getUpStationId(), idToStationMap);
+        Station downStation = getStationBy(commandSection.getDownStationId(), idToStationMap);
         SubwayLine subwayLine = subwayLineLoadPort.findOne(command.getSubwayLineId());
 
-        SubwaySection subwaySection = SubwaySection.register(upStation, downStation, command.getDistance());
+        SubwaySection subwaySection = SubwaySection.register(upStation, downStation, commandSection.getDistance());
 
         subwayLine.addSection(subwaySection, sectionUpdateManager);
         subwaySectionAddPort.addSubwaySection(subwayLine);
+    }
+
+    private Map<Station.Id, Station> getStationMapBy(Command.SectionCommand commandSection) {
+        List<Station.Id> stationIds = List.of(commandSection.getUpStationId(), commandSection.getDownStationId());
+        return stationMapLoadByInPort.findAllByIn(stationIds);
     }
 
     private static Station getStationBy(Station.Id id, Map<Station.Id, Station> idToStationMap) {
         return Optional
                 .ofNullable(idToStationMap.get(id))
                 .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("%d는 존재하지 않는 역입니다.", id.getValue())));
+                        String.format("%d는 존재하지 않는 역 id 입니다.", id.getValue())));
     }
 }

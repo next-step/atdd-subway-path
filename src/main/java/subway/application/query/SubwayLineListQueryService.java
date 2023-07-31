@@ -3,7 +3,7 @@ package subway.application.query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.application.query.out.SubwayLineListQueryPort;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.SubwayLineResponse;
 import subway.application.query.in.SubwayLineListQuery;
 
 import java.util.List;

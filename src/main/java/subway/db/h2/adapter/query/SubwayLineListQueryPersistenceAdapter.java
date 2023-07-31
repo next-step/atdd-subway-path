@@ -5,7 +5,7 @@ import subway.db.common.PersistenceAdapter;
 import subway.db.h2.mapper.SubwayLineResponseMapper;
 import subway.db.h2.repository.SubwayLineJpaRepository;
 import subway.application.query.out.SubwayLineListQueryPort;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.SubwayLineResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;

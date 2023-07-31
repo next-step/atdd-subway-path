@@ -5,7 +5,7 @@ import subway.db.h2.entity.SubwayLineJpa;
 import subway.db.h2.mapper.SubwayLineResponseMapper;
 import subway.db.h2.repository.SubwayLineJpaRepository;
 import subway.application.query.out.SubwayLineDetailQueryPort;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.SubwayLineResponse;
 import subway.domain.SubwayLine;
 
 import java.util.NoSuchElementException;

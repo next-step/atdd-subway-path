@@ -4,7 +4,7 @@ import subway.db.common.PersistenceAdapter;
 import subway.db.h2.mapper.StationMapper;
 import subway.db.h2.repository.StationRepository;
 import subway.db.h2.entity.StationJpa;
-import subway.application.out.StationLoadPort;
+import subway.application.command.out.StationLoadPort;
 import subway.domain.Station;
 
 import java.util.NoSuchElementException;

@@ -1,19 +1,24 @@
 package subway.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 import java.util.Objects;
 
 public class SubwayLine {
     private final Id id;
 
+    @Getter
     private String name;
-
+    @Getter
     private String color;
+    @Getter
     private Station.Id startStationId;
     private final SubwaySections sections;
 
     public static SubwayLine register(String name, String color, SubwaySection subwaySection) {
-
         SubwayLine subwayLine = new SubwayLine(name, color, subwaySection);
         subwayLine.validate();
         return subwayLine;
@@ -48,19 +53,6 @@ public class SubwayLine {
             throw new IllegalArgumentException("아직 저장되지 않은 지하철 노선입니다.");
         }
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-
-    public Station.Id getStartStationId() {
-        return startStationId;
     }
 
     public SubwaySection getSection(Station.Id stationId) {
@@ -108,14 +100,12 @@ public class SubwayLine {
         sections.close(station);
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Id {
         private Long id;
 
         public Id(Long id) {
             this.id = id;
-        }
-
-        private Id() {
         }
 
         public Long getValue() {

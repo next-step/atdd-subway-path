@@ -1,4 +1,4 @@
-package subway.application.query.response;
+package subway.application.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,6 +8,8 @@ import subway.domain.SubwayLine;
 
 import java.util.List;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SubwayLineResponse {
     private Long id;
     private String name;
@@ -28,26 +30,6 @@ public class SubwayLineResponse {
         this.color = color;
         this.stations = stations;
     }
-
-    private SubwayLineResponse() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public List<StationInfo> getStations() {
-        return stations;
-    }
-
     @Getter
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class StationInfo {

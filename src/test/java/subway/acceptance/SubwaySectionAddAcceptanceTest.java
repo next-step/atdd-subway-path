@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import subway.acceptance.apiTester.SubwayLineAcceptanceTest;
 import subway.acceptance.apiTester.SubwaySectionAddApiTester;
 import subway.acceptance.utils.AcceptanceTest;
-import subway.application.query.response.StationResponse;
-import subway.application.query.response.SubwayLineResponse;
-
-import java.util.List;
+import subway.application.response.StationResponse;
+import subway.application.response.SubwayLineResponse;
 
 /**
  * 지하철 노선 추가 인수 테스트를 합니다.
@@ -58,7 +56,6 @@ public class SubwaySectionAddAcceptanceTest extends SubwayLineAcceptanceTest {
     /**
      * @given 지하철 노선이 생성 되어있고
      * @when 기존 구간 중간에 구간을 추가할 때
-//     * @then 기존 구간이 추가될 구간을 제외한 구간으로 축소되고
      * @then 지하철 노션 상세 조회에서 추가된 구간을 확인할 수 있다.
      */
     @Test

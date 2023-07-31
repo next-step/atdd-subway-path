@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import subway.application.in.StationRegisterUsecase;
-import subway.application.query.response.StationResponse;
+import subway.application.command.in.StationRegisterUsecase;
+import subway.application.response.StationResponse;
 
 import java.net.URI;
 

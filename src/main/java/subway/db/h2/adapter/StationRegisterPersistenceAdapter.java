@@ -5,8 +5,8 @@ import subway.db.h2.mapper.StationResponseMapper;
 import subway.db.h2.mapper.StationJpaMapper;
 import subway.db.h2.repository.StationRepository;
 import subway.db.h2.entity.StationJpa;
-import subway.application.out.StationRegisterPort;
-import subway.application.query.response.StationResponse;
+import subway.application.command.out.StationRegisterPort;
+import subway.application.response.StationResponse;
 import subway.domain.Station;
 
 @PersistenceAdapter

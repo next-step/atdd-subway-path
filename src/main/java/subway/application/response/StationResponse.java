@@ -1,4 +1,4 @@
-package subway.application.query.response;
+package subway.application.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;

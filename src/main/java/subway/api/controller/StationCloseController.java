@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import subway.application.in.StationCloseUsecase;
+import subway.application.command.in.StationCloseUsecase;
 import subway.domain.Station;
 
 @RestController

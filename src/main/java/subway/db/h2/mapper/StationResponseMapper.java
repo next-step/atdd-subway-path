@@ -2,7 +2,7 @@ package subway.db.h2.mapper;
 
 import subway.db.h2.entity.StationJpa;
 import subway.db.common.Mapper;
-import subway.application.query.response.StationResponse;
+import subway.application.response.StationResponse;
 
 @Mapper
 public class StationResponseMapper {

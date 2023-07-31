@@ -1,10 +1,10 @@
-package subway.application;
+package subway.application.command;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import subway.application.in.SubwayLineUpdateUsecase;
-import subway.application.out.SubwayLineLoadPort;
-import subway.application.out.SubwayLineUpdatePort;
+import subway.application.command.in.SubwayLineUpdateUsecase;
+import subway.application.command.out.SubwayLineLoadPort;
+import subway.application.command.out.SubwayLineUpdatePort;
 import subway.domain.SubwayLine;
 
 @Service

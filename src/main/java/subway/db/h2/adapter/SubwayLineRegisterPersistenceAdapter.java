@@ -5,8 +5,8 @@ import subway.db.h2.mapper.SubwayLineJpaMapper;
 import subway.db.h2.mapper.SubwayLineResponseMapper;
 import subway.db.h2.repository.SubwayLineJpaRepository;
 import subway.db.h2.entity.SubwayLineJpa;
-import subway.application.out.SubwayLineRegisterPort;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.command.out.SubwayLineRegisterPort;
+import subway.application.response.SubwayLineResponse;
 import subway.domain.SubwayLine;
 
 @PersistenceAdapter

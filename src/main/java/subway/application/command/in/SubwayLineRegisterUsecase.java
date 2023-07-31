@@ -1,6 +1,6 @@
-package subway.application.in;
+package subway.application.command.in;
 
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.SubwayLineResponse;
 import subway.domain.Kilometer;
 import subway.domain.Station;
 

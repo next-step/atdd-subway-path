@@ -21,4 +21,11 @@ public class Kilometer {
     public BigDecimal getValue() {
         return amount;
     }
+    public boolean isPositive() {
+        return amount.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    public int compareTo(Kilometer kilometer) {
+        return amount.compareTo(kilometer.getValue());
+    }
 }

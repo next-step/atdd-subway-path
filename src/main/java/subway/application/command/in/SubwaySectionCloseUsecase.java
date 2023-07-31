@@ -1,4 +1,4 @@
-package subway.application.in;
+package subway.application.command.in;
 
 import subway.domain.Station;
 import subway.domain.SubwayLine;

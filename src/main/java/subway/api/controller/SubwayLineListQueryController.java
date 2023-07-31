@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import subway.application.query.in.SubwayLineListQuery;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.SubwayLineResponse;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ class SubwayLineListQueryController {
 
     @GetMapping("/subway-lines")
     ResponseEntity<List<SubwayLineResponse>> findAll() {
-        List<SubwayLineResponse> subwayLineResponses = subwayLineListQuery.findAll();
-        return ResponseEntity.ok().body(subwayLineResponses);
+        List<SubwayLineResponse> subwayLineRespons = subwayLineListQuery.findAll();
+        return ResponseEntity.ok().body(subwayLineRespons);
     }
 }

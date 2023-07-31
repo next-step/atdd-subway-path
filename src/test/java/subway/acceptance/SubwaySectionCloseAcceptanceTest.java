@@ -10,8 +10,8 @@ import subway.acceptance.apiTester.SubwayLineAcceptanceTest;
 import subway.acceptance.apiTester.SubwaySectionAddApiTester;
 import subway.acceptance.apiTester.SubwaySectionCloseApiTester;
 import subway.acceptance.utils.AcceptanceTest;
-import subway.application.query.response.StationResponse;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.StationResponse;
+import subway.application.response.SubwayLineResponse;
 
 /**
  * 지하철 노선 추가 인수 테스트를 합니다.

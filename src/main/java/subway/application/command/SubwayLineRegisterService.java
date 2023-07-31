@@ -1,11 +1,11 @@
-package subway.application;
+package subway.application.command;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import subway.application.out.SubwayLineRegisterPort;
-import subway.application.in.SubwayLineRegisterUsecase;
-import subway.application.out.StationMapLoadByInPort;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.command.out.SubwayLineRegisterPort;
+import subway.application.command.in.SubwayLineRegisterUsecase;
+import subway.application.command.out.StationMapLoadByInPort;
+import subway.application.response.SubwayLineResponse;
 import subway.domain.Station;
 import subway.domain.SubwayLine;
 import subway.domain.SubwaySection;

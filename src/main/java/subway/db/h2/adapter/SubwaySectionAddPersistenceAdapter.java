@@ -3,7 +3,7 @@ package subway.db.h2.adapter;
 import subway.db.common.PersistenceAdapter;
 import subway.db.h2.entity.SubwayLineJpa;
 import subway.db.h2.repository.SubwayLineJpaRepository;
-import subway.application.out.SubwaySectionAddPort;
+import subway.application.command.out.SubwaySectionAddPort;
 import subway.domain.SubwayLine;
 
 import java.util.NoSuchElementException;

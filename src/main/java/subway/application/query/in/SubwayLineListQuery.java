@@ -1,6 +1,6 @@
 package subway.application.query.in;
 
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.SubwayLineResponse;
 
 import java.util.List;
 

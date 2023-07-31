@@ -1,12 +1,12 @@
-package subway.application;
+package subway.application.command;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import subway.application.in.SubwaySectionCloseUsecase;
-import subway.application.out.StationLoadPort;
-import subway.application.out.SubwayLineLoadPort;
-import subway.application.out.SubwaySectionClosePort;
+import subway.application.command.in.SubwaySectionCloseUsecase;
+import subway.application.command.out.StationLoadPort;
+import subway.application.command.out.SubwayLineLoadPort;
+import subway.application.command.out.SubwaySectionClosePort;
 import subway.domain.SectionCloseManager;
 import subway.domain.Station;
 import subway.domain.SubwayLine;

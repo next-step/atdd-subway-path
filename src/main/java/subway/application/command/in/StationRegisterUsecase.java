@@ -1,6 +1,6 @@
-package subway.application.in;
+package subway.application.command.in;
 
-import subway.application.query.response.StationResponse;
+import subway.application.response.StationResponse;
 
 public interface StationRegisterUsecase {
     StationResponse saveStation(Command command);

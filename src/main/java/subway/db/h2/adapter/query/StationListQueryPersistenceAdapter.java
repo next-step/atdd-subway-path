@@ -5,7 +5,7 @@ import subway.db.h2.entity.StationJpa;
 import subway.db.common.PersistenceAdapter;
 import subway.db.h2.repository.StationRepository;
 import subway.application.query.out.StationListQueryPort;
-import subway.application.query.response.StationResponse;
+import subway.application.response.StationResponse;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -5,15 +5,13 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
 import org.springframework.http.MediaType;
-import subway.application.query.response.StationResponse;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.StationResponse;
+import subway.application.response.SubwayLineResponse;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public abstract class SubwayLineAcceptanceTest extends StationAcceptanceTest{

@@ -1,10 +1,9 @@
 package subway.db.h2.mapper;
 
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.SubwayLineResponse;
+import subway.common.annotation.UnitTest;
 import subway.db.h2.entity.SubwayLineJpa;
 import subway.db.h2.entity.SubwaySectionJpa;
 
@@ -14,6 +13,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+/**
+ * 지하철 노선 응답 객체 변환을 테스트하기 위한 클래스 입니다.
+ */
+@UnitTest
+@DisplayName("지하철 노선 응답 객체 매퍼 단위 테스트")
 class SubwayLineResponseMapperTest {
 
     private final SubwayLineResponseMapper subwayLineResponseMapper = new SubwayLineResponseMapper();

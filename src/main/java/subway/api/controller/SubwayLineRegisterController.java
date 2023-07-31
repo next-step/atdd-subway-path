@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import subway.application.in.SubwayLineRegisterUsecase;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.command.in.SubwayLineRegisterUsecase;
+import subway.application.response.SubwayLineResponse;
 import subway.domain.Kilometer;
 import subway.domain.Station;
 

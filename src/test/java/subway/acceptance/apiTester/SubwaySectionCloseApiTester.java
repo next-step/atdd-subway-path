@@ -5,8 +5,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.assertj.core.api.Assertions;
 import org.springframework.http.MediaType;
-import subway.application.query.response.StationResponse;
-import subway.application.query.response.SubwayLineResponse;
+import subway.application.response.StationResponse;
+import subway.application.response.SubwayLineResponse;
 import subway.acceptance.utils.ApiTester;
 import subway.acceptance.utils.TestParam;
 

@@ -1,9 +1,9 @@
-package subway.application;
+package subway.application.command;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import subway.application.in.StationCloseUsecase;
-import subway.application.out.StationClosePort;
+import subway.application.command.in.StationCloseUsecase;
+import subway.application.command.out.StationClosePort;
 
 @Service
 @Transactional

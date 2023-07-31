@@ -5,7 +5,7 @@ import subway.db.common.PersistenceAdapter;
 import subway.db.h2.mapper.SubwayLineMapper;
 import subway.db.h2.repository.SubwayLineJpaRepository;
 import subway.db.h2.entity.SubwayLineJpa;
-import subway.application.out.SubwayLineLoadPort;
+import subway.application.command.out.SubwayLineLoadPort;
 import subway.domain.SubwayLine;
 
 import java.util.NoSuchElementException;
