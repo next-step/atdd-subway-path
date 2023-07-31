@@ -245,11 +245,11 @@ public class SectionAcceptanceTest {
         var 뉴욕역정보 = Long.MAX_VALUE;
         var 포틀랜드역정보 = Long.MIN_VALUE;
 
-        var 뉴욕역까지_경로조회_상태코드 = 지하철_경로_조회_상태코드_반환(판교역정보, 뉴욕역정보);
-        var 포틀랜드역부터_경로조회_상태코드 = 지하철_경로_조회_상태코드_반환(포틀랜드역정보, 판교역정보);
+        var 뉴욕역까지_조회 = 지하철_경로_조회_요청(판교역정보, 뉴욕역정보);
+        var 포틀랜드역부터_조회 = 지하철_경로_조회_요청(포틀랜드역정보, 판교역정보);
 
-        assertThat(뉴욕역까지_경로조회_상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(포틀랜드역부터_경로조회_상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(뉴욕역까지_조회.jsonPath().getString("message")).contains("존재하지 않는 리소스입니다.");
+        assertThat(포틀랜드역부터_조회.jsonPath().getString("message")).contains("존재하지 않는 리소스입니다.");
     }
 
     private Stream<String> 역이름_목록(PathResponse response) {

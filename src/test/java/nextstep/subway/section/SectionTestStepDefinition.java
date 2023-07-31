@@ -94,7 +94,7 @@ public class SectionTestStepDefinition {
         return 지하철_경로_조회_요청(sourceId, targetId).statusCode();
     }
 
-    private static ExtractableResponse<Response> 지하철_경로_조회_요청(Long sourceId, Long targetId) {
+    public static ExtractableResponse<Response> 지하철_경로_조회_요청(Long sourceId, Long targetId) {
         return RestAssured.given().log().all()
             .param("source", sourceId)
             .param("target", targetId)
