@@ -1,18 +1,27 @@
 package subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import subway.domain.Line;
 import subway.domain.Section;
 import subway.domain.Sections;
 import subway.domain.Station;
+import subway.exception.error.SubwayErrorCode;
+import subway.exception.impl.CannotDeleteSectionException;
 
 class LineTest {
+
+    private Station 강남역;
+
+    private Station 논현역;
+
+    private Station 광교역;
 
     private Line 신분당선;
 
@@ -20,20 +29,9 @@ class LineTest {
 
     @BeforeEach
     void setUp() {
-        Station 강남역 = Station.builder()
-            .id(1L)
-            .name("강남역")
-            .build();
-
-        Station 논현역 = Station.builder()
-            .id(2L)
-            .name("논현역")
-            .build();
-
-        Station 광교역 = Station.builder()
-            .id(3L)
-            .name("광교역")
-            .build();
+        this.강남역 = Station.builder().name("강남역").build();
+        this.논현역 = Station.builder().name("논현역").build();
+        this.광교역 = Station.builder().name("광교역").build();
 
         this.신분당선 = Line.builder()
             .name("신분당선")
@@ -77,17 +75,63 @@ class LineTest {
             .containsAll(List.of("강남역", "논현역"));
     }
 
-    @Disabled
     @Test
-    void removeSection() {
+    @DisplayName("[성공] 첫 번째 구간 삭제")
+    void removeFirstSection() {
         // Given
         신분당선.addSection(논현역_광교역_구간);
 
         // When
-        신분당선.removeSection(null);
+        신분당선.removeSection(강남역);
 
         // Then
-        assertThat(신분당선.getSections().getLastSection().getDownStation().getName()).isEqualTo("논현역");
-        assertThat(신분당선.getSections().getStations().size()).isEqualTo(2);
+        구간_검증(List.of("논현역", "광교역"), 10L);
+    }
+
+    @Test
+    @DisplayName("[성공] 중간 구간 삭제")
+    void removeMiddleSection() {
+        // Given
+        신분당선.addSection(논현역_광교역_구간);
+
+        // When
+        신분당선.removeSection(논현역);
+
+        // Then
+        구간_검증(List.of("강남역", "광교역"), 40L);
+    }
+
+    @Test
+    @DisplayName("[실패] 단일 구간 삭제")
+    void removeSingleSection() {
+        // Given
+        // When
+        assertThatThrownBy(() -> 신분당선.removeSection(강남역))
+            .isInstanceOf(CannotDeleteSectionException.class)
+            .hasMessage(SubwayErrorCode.CANNOT_DELETE_SECTION.getMessage());
+    }
+
+    @Test
+    @DisplayName("[실패] 노선에 포함되지 않은 지하철역 삭제")
+    void removeNotExistsStationSection() {
+        // Given
+        신분당선.addSection(논현역_광교역_구간);
+        Station 정자역 = Station.builder().name("정자역").build();
+
+        // When
+        assertThatThrownBy(() -> 신분당선.removeSection(정자역))
+            .isInstanceOf(CannotDeleteSectionException.class)
+            .hasMessage(SubwayErrorCode.CANNOT_DELETE_SECTION.getMessage());
+    }
+
+    void 구간_검증(List<String> stationNames, Long distance) {
+        List<String> stations = 신분당선.getStations().stream()
+            .map(Station::getName)
+            .collect(Collectors.toList());
+        for (int i=0; i< stations.size(); i++) {
+            assertThat(stations.get(i)).isEqualTo(stationNames.get(i));
+        }
+
+        assertThat(신분당선.getDistance()).isEqualTo(distance);
     }
 }
