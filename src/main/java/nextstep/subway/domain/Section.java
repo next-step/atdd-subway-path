@@ -85,4 +85,13 @@ public class Section {
         }
         this.distance -= section.distance;
     }
+
+    public void removeStation(Section section) {
+        this.downStation = section.downStation;
+        this.distance += section.distance;
+    }
+
+    public boolean has(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
 }

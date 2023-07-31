@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.exception.ErrorType;
+import nextstep.subway.exception.SectionDeleteException;
 
 import javax.persistence.*;
 import java.util.List;
@@ -25,16 +27,26 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        SectionAddType addType = SectionAddType.find(sections, upStation, downStation);
-        addType.apply(sections, new Section(this, upStation, downStation, distance));
+        sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void removeSection(Station station) {
+        if (sections.remainOneSection()) {
+            throw new SectionDeleteException(ErrorType.CANNOT_REMOVE_LAST_SECTION);
+        }
+        sections.remove(station);
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void updateName(String name) {
+        if (name != null) {
+            this.name = name;
+        }
+    }
+
+    public void updateColor(String color) {
+        if (color != null) {
+            this.color = color;
+        }
     }
 
     public List<Section> getSections() {
@@ -43,9 +55,5 @@ public class Line {
 
     public List<Station> getStations() {
         return sections.getStations();
-    }
-
-    public void removeSection(Station station) {
-        sections.removeLast(station);
     }
 }
