@@ -20,6 +20,10 @@ public class Sections {
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
 
+    private Long firstStationId;
+
+    private Long lastStationId;
+
     public void addSection(Section section) {
         AddSectionPolicy.validate(this, section);
         this.sections.add(section);
@@ -55,9 +59,23 @@ public class Sections {
     }
 
     public List<Station> getAllStation() {
-        List<Station> totalStation = this.sections.stream().map(Section::getUpStation).collect(Collectors.toList());
-        totalStation.add(this.sections.get(this.sections.size() - 1).getDownStation());
-        return Collections.unmodifiableList(totalStation);
+        List<Station> result = new ArrayList<>();
+        Long targetStationId = firstStationId;
+
+        while (targetStationId != null && !targetStationId.equals(lastStationId)) {
+            for (Section section : sections) {
+                if (Objects.equals(section.getUpStation().getId(), targetStationId)) {
+                    result.add(section.getUpStation());
+                    targetStationId = section.getDownStation().getId();
+                }
+                if (targetStationId.equals(lastStationId)) {
+                    result.add(section.getDownStation());
+                    break;
+                }
+            }
+        }
+
+        return Collections.unmodifiableList(result);
     }
 
     public Sections(List<Section> sections) {
@@ -65,5 +83,9 @@ public class Sections {
             throw new RuntimeException("sections: at least one section is required");
         }
         this.sections = sections;
+        this.firstStationId = sections.get(0).getUpStation().getId();
+        this.lastStationId = sections.get(sections.size() - 1).getDownStation().getId();
     }
+
+
 }
