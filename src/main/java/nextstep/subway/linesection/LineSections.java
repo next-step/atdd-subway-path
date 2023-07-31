@@ -56,7 +56,7 @@ public class LineSections {
     }
 
     public void remove(Station deleteStation) {
-        validateRemovableSection();
+        validateRemovableSection(deleteStation);
         if (deleteStation.equals(getFirstStation())) {
             sections.remove(0);
             return;
@@ -79,10 +79,12 @@ public class LineSections {
                 .get();
     }
 
-    private void validateRemovableSection() {
+    private void validateRemovableSection(Station deleteStation) {
         if (this.sections.size() <= MINIMUM_SIZE) {
             throw new BadRequestException("the section cannot be removed because of minimum size.");
         }
+        if(!containsStation(deleteStation))
+            throw new BadRequestException("the station is not on the line.");
     }
 
     private void validateAddableSection(LineSection section) {
