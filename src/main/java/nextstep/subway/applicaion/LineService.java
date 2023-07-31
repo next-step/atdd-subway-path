@@ -110,9 +110,6 @@ public class LineService {
             //기존 구간의 상행 종착역 == 새로 추가하는 구간의 하행역
             if ((section.getUpStationId() == newDownStation.getId())
                     && (section.getUpStationId() == line.getFinalUpStationId())) {
-                if (section.getDistance() <= newSectionDistance) {
-                    throw new IllegalArgumentException();
-                }
                 line.updateFinalUpStationId(newUpStation.getId());
                 break;
             }
@@ -120,9 +117,6 @@ public class LineService {
             //기존 구간의 하행 종착역 == 새로 추가하는 구간의 상행역
             if ((section.getDownStationId() == newUpStation.getId())
                     && (section.getDownStationId() == line.getFinalDownStationId())) {
-                if (section.getDistance() <= newSectionDistance) {
-                    throw new IllegalArgumentException();
-                }
                 line.updateFinalDownStationId(newDownStation.getId());
                 break;
             }
