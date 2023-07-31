@@ -58,7 +58,7 @@ public class SectionService {
             .orElseThrow();
         RouteFinder routeFinder = new RouteFinder(sections, sourceStation, targetStation);
 
-        return new PathResponse(routeFinder.findShortestRoute(), routeFinder.totalDistance());
+        return PathResponse.of(routeFinder.findShortestRoute(), routeFinder.totalDistance());
     }
 
     private Line findLineById(final Long id) {
