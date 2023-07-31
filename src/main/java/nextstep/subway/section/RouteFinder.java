@@ -1,20 +1,50 @@
 package nextstep.subway.section;
 
 import java.util.List;
+import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.station.Station;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RouteFinder {
-    private GraphPath path;
+    private Logger log = LoggerFactory.getLogger(RouteFinder.class);
 
-    public RouteFinder(List<Section> sectionList, Station source, Station target) {
-        this(new Sections(sectionList), source, target);
+    private DijkstraShortestPath shortestPath;
+
+    private RouteFinder(DijkstraShortestPath shortestPath) {
+        this.shortestPath = shortestPath;
     }
 
-    public RouteFinder(Sections sections, Station source, Station target) {
+    public List<Station> findShortestRoute(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new BusinessException("출발역과 도착역은 같을 수 없습니다");
+        }
+
+        try {
+            return shortestPath.getPath(source, target).getVertexList();
+        } catch (NullPointerException | IllegalArgumentException e) {
+            log.info(e.getMessage());
+            throw new BusinessException("출발역과 도착역이 연결되지 않았습니다");
+        }
+    }
+
+    public int totalDistance(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new BusinessException("출발역과 도착역은 같을 수 없습니다");
+        }
+
+        GraphPath path = shortestPath.getPath(source, target);
+
+        return path.getEdgeList().stream()
+            .mapToInt(edge -> (int) path.getGraph().getEdgeWeight(edge))
+            .sum();
+    }
+
+    public static RouteFinder from(List<Section> sections) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
         sections.stream().forEach(section -> {
@@ -25,18 +55,6 @@ public class RouteFinder {
             graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
         });
 
-        this.path = new DijkstraShortestPath(graph).getPath(source, target);
-    }
-
-    public List<Station> findShortestRoute() {
-
-        return path.getVertexList();
-    }
-
-    public int totalDistance() {
-
-        return path.getEdgeList().stream()
-            .mapToInt(edge -> (int) path.getGraph().getEdgeWeight(edge))
-            .sum();
+        return new RouteFinder(new DijkstraShortestPath(graph));
     }
 }

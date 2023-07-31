@@ -52,13 +52,11 @@ public class SectionService {
 
     public PathResponse findPath(final Long source, final Long target) {
         List<Section> sections = sectionRepository.findAll();
-        Station sourceStation = stationRepository.findById(source)
-            .orElseThrow();
-        Station targetStation = stationRepository.findById(target)
-            .orElseThrow();
-        RouteFinder routeFinder = new RouteFinder(sections, sourceStation, targetStation);
+        Station sourceStation = findStationById(source);
+        Station targetStation = findStationById(target);
+        RouteFinder routeFinder = RouteFinder.from(sections);
 
-        return PathResponse.of(routeFinder.findShortestRoute(), routeFinder.totalDistance());
+        return PathResponse.of(routeFinder.findShortestRoute(sourceStation, targetStation), routeFinder.totalDistance(sourceStation, targetStation));
     }
 
     private Line findLineById(final Long id) {
