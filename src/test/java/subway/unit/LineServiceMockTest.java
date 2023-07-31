@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -63,11 +62,10 @@ public class LineServiceMockTest {
         // when
         // lineService.addSection 호출
         LineService lineService = new LineService(lineRepository, stationService);
-        Line 구간저장후_노선 = lineService.addSection(1L, request);
+        lineService.addSection(1L, request);
 
         // then
         // lineService.findLineById 메서드를 통해 검증
-        when(lineRepository.findById(any())).thenReturn(Optional.of(구간저장후_노선));
         Line 조회한_노선 = lineService.findLineById(any());
 
         LineAssertions.구간추가후_검증(조회한_노선);
