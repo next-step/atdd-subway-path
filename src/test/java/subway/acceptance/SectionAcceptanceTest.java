@@ -25,7 +25,6 @@ import subway.acceptance.utils.RestAssuredClient;
 import subway.dto.LineResponse;
 import subway.dto.SectionRequest;
 import subway.dto.StationRequest;
-import subway.exception.dto.ErrorResponse;
 import subway.exception.error.SubwayErrorCode;
 import subway.utils.LineAssertions;
 
@@ -71,7 +70,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 50L, List.of(2L, 4L, 5L));
+        LineAssertions.구간연산_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 50L, List.of(2L, 4L, 5L));
     }
 
 
@@ -98,7 +97,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 30L, List.of(2L, 3L, 4L));
+        LineAssertions.구간연산_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 30L, List.of(2L, 3L, 4L));
     }
 
 
@@ -125,7 +124,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 30L, List.of(2L, 3L, 4L));
+        LineAssertions.구간연산_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 30L, List.of(2L, 3L, 4L));
     }
 
 
@@ -150,7 +149,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineAssertions.구간등록_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 37L, List.of(1L, 2L, 4L));
+        LineAssertions.구간연산_성공_검증(구간등록HTTP응답, HttpStatus.CREATED, 37L, List.of(1L, 2L, 4L));
     }
 
     /**
@@ -173,7 +172,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineAssertions.구간등록_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
+        LineAssertions.구간연산_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
     }
 
 
@@ -197,7 +196,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineAssertions.구간등록_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
+        LineAssertions.구간연산_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
     }
 
 
@@ -221,7 +220,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineAssertions.구간등록_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
+        LineAssertions.구간연산_실패_검증(구간등록HTTP응답, SubwayErrorCode.CANNOT_CREATE_SECTION);
     }
 
 
@@ -246,7 +245,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간등록HTTP응답 = 구간등록요청(sectionRequest);
 
         // Then
-        LineAssertions.구간등록_실패_검증(구간등록HTTP응답, SubwayErrorCode.STATION_NOT_FOUND);
+        LineAssertions.구간연산_실패_검증(구간등록HTTP응답, SubwayErrorCode.STATION_NOT_FOUND);
     }
 
 
@@ -277,7 +276,7 @@ public class SectionAcceptanceTest {
             .downStationId(5L)
             .distance(10L)
             .build();
-        
+
         assertThat(구간등록요청(기존역사이에추가되는구간).statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(구간등록요청(새로운상행종점구간).statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(구간등록요청(새로운하행종점구간).statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -286,23 +285,25 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 구간조회HTTP응답 = 구간조회요청();
 
         // Then
-        LineAssertions.구간등록_성공_검증(구간조회HTTP응답, HttpStatus.OK, 50L, List.of(1L, 2L, 3L, 4L, 5L));
+        LineAssertions.구간연산_성공_검증(구간조회HTTP응답, HttpStatus.OK, 50L, List.of(1L, 2L, 3L, 4L, 5L));
     }
 
 
     /**
-     * Given: 3개의 지하철역이 등록되어 있다.
+     * Given: 5개의 지하철역이 등록되어 있다.
      * And: 1개의 노선이 등록되어 있다.
      * And: 2개의 구간이 등록되어 있다.
-     * When: 구간을 제거한다.
+     * When: 중간 구간을 제거한다.
      * Then: 성공(204 NO CONTENT) 응답을 받는다.
+     * And: 구간을 조회한다.
+     * And: 성공(200 OK) 응답을 받는다.
+     * And: 노선의 총 구간 길이를 검증한다.
+     * And: 구간의 지하철역들을 검증한다.
      */
     @Test
-    @DisplayName("구간을 제거한다.")
-    void deleteSection() {
+    @DisplayName("[구간삭제 성공] 중간 구간을 제거한다.")
+    void deleteMiddleSection() {
         // Given
-        long lastStationId = 3L;
-
         SectionRequest secondSectionRequest = SectionRequest.builder()
             .upStationId(2L)
             .downStationId(3L)
@@ -311,27 +312,30 @@ public class SectionAcceptanceTest {
         구간등록요청(secondSectionRequest);
 
         // When
-        ExtractableResponse<Response> response = RestAssuredClient.requestDelete(
-            generatePathWithLineIdAndStationId(등록한노선.getId(), lastStationId))
-            .extract();
+        ExtractableResponse<Response> response = 구간삭제요청(3L);
 
         // Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 구간조회HTTP응답 = 구간조회요청();
+        LineAssertions.구간연산_성공_검증(구간조회HTTP응답, HttpStatus.OK, 30L, List.of(2L, 4L));
     }
 
     /**
-     * Given: 3개의 지하철역이 등록되어 있다.
+     * Given: 5개의 지하철역이 등록되어 있다.
      * And: 1개의 지하철 노선이 등록되어 있다.
      * And: 2개의 구간이 등록되어 있다.
      * When: 첫 번째 구간(상행 종점역)을 삭제한다.
-     * Then: 실패(400 Bad Request) 응답을 받는다.
-     * And: '마지막 구간만 삭제할 수 있습니다.' 메시지를 응답받는다.
+     * Then: 성공(204 NO CONTENT) 응답을 받는다.
+     * And: 구간을 조회한다.
+     * And: 성공(200 OK) 응답을 받는다.
+     * And: 노선의 총 구간 길이를 검증한다.
+     * And: 구간의 지하철역들을 검증한다.
      */
     @Test
-    @DisplayName("첫 번째 구간을 삭제한다.")
+    @DisplayName("[구간삭제 성공] 첫 번째 구간을 삭제한다.")
     void deleteFirstSection() {
         // Given
-        long firstStationId = 등록한노선.getStations().get(0).getId();
         SectionRequest secondSectionRequest = SectionRequest.builder()
             .upStationId(2L)
             .downStationId(3L)
@@ -339,91 +343,93 @@ public class SectionAcceptanceTest {
             .build();
         구간등록요청(secondSectionRequest);
 
-        // Then
-        ExtractableResponse<Response> response = RestAssuredClient.requestDelete(
-            generatePathWithLineIdAndStationId(등록한노선.getId(), firstStationId)).extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        // When
+        ExtractableResponse<Response> response = 구간삭제요청(2L);
 
-        ErrorResponse error = response.as(ErrorResponse.class);
-        assertThat(error.getMessage())
-            .isEqualTo(SubwayErrorCode.NON_LAST_STATION_DELETE_NOT_ALLOWED.getMessage());
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 구간조회HTTP응답 = 구간조회요청();
+        LineAssertions.구간연산_성공_검증(구간조회HTTP응답, HttpStatus.OK, 10L, List.of(3L, 4L));
     }
 
     /**
-     * Given: 4개의 지하철역이 등록되어 있다.
+     * Given: 5개의 지하철역이 등록되어 있다.
      * And: 1개의 지하철 노선이 등록되어 있다.
-     * And: 3개의 구간이 등록되어 있다.
-     * When: 두 번째 구간(상행 종점역 & 하행 종점역 둘 중 하나라도 속하지 않은 구간)을 삭제한다.
-     * Then: 실패(400 Bad Request) 응답을 받는다.
-     * And: '마지막 구간만 삭제할 수 있습니다.' 메시지를 응답받는다.
+     * And: 2개의 구간이 등록되어 있다.
+     * When: 구간을 제거한다.
+     * Then: 성공(204 NO CONTENT) 응답을 받는다.
+     * And: 구간을 조회한다.
+     * And: 성공(200 OK) 응답을 받는다.
+     * And: 노선의 총 구간 길이를 검증한다.
+     * And: 구간의 지하철역들을 검증한다.
      */
     @Test
-    @DisplayName("중간 구간을 삭제한다.")
-    void deleteMiddleSection() {
+    @DisplayName("[구간삭제 성공] 마지막 구간을 삭제한다.")
+    void deleteFinalSection() {
         // Given
-        long secondSectionUpStationId = 2L;
-
         SectionRequest secondSectionRequest = SectionRequest.builder()
-            .upStationId(secondSectionUpStationId)
-            .downStationId(3L)
+            .upStationId(4L)
+            .downStationId(5L)
             .distance(20L)
             .build();
         구간등록요청(secondSectionRequest);
 
-        SectionRequest thirdSectionRequest = SectionRequest.builder()
-            .upStationId(3L)
-            .downStationId(4L)
-            .distance(20L)
-            .build();
-        구간등록요청(thirdSectionRequest);
+        // When
+        ExtractableResponse<Response> 구간삭제HTTP응답 = 구간삭제요청(5L);
 
         // Then
+        assertThat(구간삭제HTTP응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        ExtractableResponse<Response> response = RestAssuredClient.requestDelete(
-                generatePathWithLineIdAndStationId(등록한노선.getId(), secondSectionUpStationId))
-            .extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        ErrorResponse error = response.as(ErrorResponse.class);
-        assertThat(error.getMessage())
-            .isEqualTo(SubwayErrorCode.NON_LAST_STATION_DELETE_NOT_ALLOWED.getMessage());
+        ExtractableResponse<Response> 구간조회HTTP응답 = 구간조회요청();
+        LineAssertions.구간연산_성공_검증(구간조회HTTP응답, HttpStatus.OK, 30L, List.of(2L, 4L));
     }
 
     /**
-     * Given: 2개의 지하철역이 등록되어 있다.
+     * Given: 5개의 지하철역이 등록되어 있다.
      * And: 1개의 노선이 등록되어 있다.
      * And: 1개의 구간이 등록되어 있다.
-     * When: 구간을 삭제한다.
+     * When: 구간을 제거한다.
      * Then: 실패(400 Bad Request) 응답을 받는다.
-     * And: '단일 구간 노선의 구간은 삭제할 수 없습니다.' 메시지를 응답받는다.
+     * And: '구간을 삭제할 수 없습니다.' 메시지를 응답받는다.
      */
     @Test
-    @DisplayName("단일 구간으로 이루어진 노선에서 구간을 삭제한다.")
+    @DisplayName("[구간삭제 실패] 단일 구간으로 이루어진 노선에서 구간을 삭제한다.")
     void deleteSingleSection() {
-        // Given
-        long secondStationId = 등록한노선.getStations().get(1).getId();
+        // When
+        ExtractableResponse<Response> 구간삭제HTTP응답 = 구간삭제요청(2L);
 
         // Then
-        ExtractableResponse<Response> response = RestAssuredClient.requestDelete(
-                generatePathWithLineIdAndStationId(등록한노선.getId(), secondStationId))
-            .extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(구간삭제HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        ErrorResponse error = response.as(ErrorResponse.class);
-        assertThat(error.getMessage())
-            .isEqualTo(SubwayErrorCode.SINGLE_SECTION_DELETE_NOT_ALLOWED.getMessage());
+        LineAssertions.구간연산_실패_검증(구간삭제HTTP응답, SubwayErrorCode.CANNOT_DELETE_SECTION);
+
     }
 
+    /**
+     * Given: 5개의 지하철역이 등록되어 있다.
+     * And: 1개의 노선이 등록되어 있다.
+     * And: 2개의 구간이 등록되어 있다.
+     * When: 노선에 등록되어있지 않은 역을 제거한다.
+     * Then: 실패(400 Bad Request) 응답을 받는다.
+     * And: '구간을 삭제할 수 없습니다.' 메시지를 응답받는다.
+     */
+    @Test
+    @DisplayName("[구간삭제 실패] 노선에 등록되어있지 않은 역을 제거한다.")
+    void deleteStationNotInLine() {
+        // Given
+        SectionRequest secondSectionRequest = SectionRequest.builder()
+            .upStationId(4L)
+            .downStationId(5L)
+            .distance(20L)
+            .build();
+        구간등록요청(secondSectionRequest);
 
-    private String generatePathWithLineIdAndStationId(long lineId, long stationId) {
-        return new StringBuilder()
-            .append(linePath)
-            .append("/")
-            .append(lineId)
-            .append("/sections")
-            .append("?stationId=")
-            .append(stationId)
-            .toString();
+        // When
+        ExtractableResponse<Response> 구간삭제HTTP응답 = 구간삭제요청(1L);
+
+        // Then
+        LineAssertions.구간연산_실패_검증(구간삭제HTTP응답, SubwayErrorCode.CANNOT_DELETE_SECTION);
     }
 
     private void 지하철역_5개_저장요청() {
@@ -448,6 +454,11 @@ public class SectionAcceptanceTest {
 
     private ExtractableResponse<Response> 구간조회요청() {
         return RestAssuredClient.requestGet(linePath + "/" + 등록한노선.getId())
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 구간삭제요청(Long stationId) {
+        return RestAssuredClient.requestDelete(linePath + "/" + 등록한노선.getId() + "/sections?stationId=" + stationId )
             .extract();
     }
 
