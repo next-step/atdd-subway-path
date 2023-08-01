@@ -39,11 +39,10 @@ public class PathService {
     }
 
     private PathGraph getGraph() {
-        List<Station> stationList = stationService.getAllStations();
         List<Line> lines = lineService.getAllLines();
         List<Section> sections = new ArrayList<>();
         lines.forEach(line -> sections.addAll(line.getSectionList()));
-        return new PathGraph(stationList, sections);
+        return new PathGraph(sections);
     }
 
     private List<StationResponse> getStationResponse(List<Station> stations) {

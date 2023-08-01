@@ -15,9 +15,10 @@ public class PathGraph {
   private final WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
   private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
-  public PathGraph(List<Station> vertexes, List<Section> edges) {
-    vertexes.forEach(graph::addVertex);
+  public PathGraph(List<Section> edges) {
     edges.forEach(section -> {
+      graph.addVertex(section.getUpwardStation());
+      graph.addVertex(section.getDownwardStation());
       DefaultWeightedEdge edge = graph.addEdge(section.getUpwardStation(), section.getDownwardStation());
       graph.setEdgeWeight(edge, section.getDistance());
     });
@@ -25,21 +26,26 @@ public class PathGraph {
   }
 
   public List<Station> getShortestPath(Station source, Station target) {
-    checkEqualStation(source, target);
-    GraphPath<Station, DefaultWeightedEdge> sourceTargetPath = dijkstraShortestPath.getPath(source, target);
-    if (sourceTargetPath == null) {
-      throw new CustomException(ErrorCode.STATIONS_ARE_NOT_CONNECTED);
-    }
+    GraphPath<Station, DefaultWeightedEdge> sourceTargetPath = getSourcePath(source, target);
     return sourceTargetPath.getVertexList();
   }
 
   public Double getDistance(Station source, Station target) {
-    checkEqualStation(source, target);
-    GraphPath<Station, DefaultWeightedEdge> sourceTargetPath = dijkstraShortestPath.getPath(source, target);
-    if (sourceTargetPath == null) {
+    GraphPath<Station, DefaultWeightedEdge> sourceTargetPath = getSourcePath(source, target);
+    return sourceTargetPath.getWeight();
+  }
+
+  private GraphPath<Station, DefaultWeightedEdge> getSourcePath(Station source, Station target) {
+    try {
+      checkEqualStation(source, target);
+      GraphPath<Station, DefaultWeightedEdge> sourceTargetPath = dijkstraShortestPath.getPath(source, target);
+      if (sourceTargetPath == null) {
+        throw new CustomException(ErrorCode.STATIONS_ARE_NOT_CONNECTED);
+      }
+      return sourceTargetPath;
+    } catch (IllegalArgumentException e) {
       throw new CustomException(ErrorCode.STATIONS_ARE_NOT_CONNECTED);
     }
-    return sourceTargetPath.getWeight();
   }
 
   private void checkEqualStation(Station source, Station target) {
