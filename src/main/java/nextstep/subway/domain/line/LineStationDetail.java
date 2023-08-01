@@ -3,6 +3,8 @@ package nextstep.subway.domain.line;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.SectionAddException;
 import nextstep.subway.exception.SectionDeleteException;
+import nextstep.subway.exception.SectionDeleteMinSizeException;
+import nextstep.subway.exception.StationNotExistException;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Embeddable
 public class LineStationDetail {
+
+    private static final int SECTIONS_MIN_SIZE = 1;
 
     @OneToOne
     private Station startStation;
@@ -41,12 +45,22 @@ public class LineStationDetail {
     }
 
     public void removeSection(Station station) {
-        Section section = sections.findSectionByDownStation(station);
-        if (!section.isDown(endStation)) {
-            throw new SectionDeleteException();
+        if (sections.size() == SECTIONS_MIN_SIZE) {
+            throw new SectionDeleteMinSizeException();
         }
-        endStation = section.getUpStation();
-        sections.remove(section);
+        if (endStation.equals(station)) {
+            Section section = sections.findSectionByDownStation(station);
+            endStation = section.getUpStation();
+            sections.removeTerminus(section);
+            return;
+        }
+        if (startStation.equals(station)) {
+            Section section = sections.findSectionByUpStation(station);
+            startStation = section.getDownStation();
+            sections.removeTerminus(section);
+            return;
+        }
+        sections.remove(sections.findSectionByDownStation(station));
     }
 
     public List<Station> getStations() {

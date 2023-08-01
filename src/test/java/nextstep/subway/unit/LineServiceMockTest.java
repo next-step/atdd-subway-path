@@ -156,12 +156,13 @@ public class LineServiceMockTest {
                 .hasMessage("구간이 1개인 경우 삭제할 수 없습니다.");
     }
 
-    @DisplayName("지하철 노선 구간 삭제시 하행종점역이 아닐경우 삭제가 실패되어야 한다.")
+    @DisplayName("지하철 노선 추가 후 구간 삭제시 구간에 포함된 역이 아닌경우 삭제에 실패되어야 한다.")
     @Test
-    void not_line_downstation_removeSection_fail() {
+    void not_exist_station_removeSection_fail() {
         // given
         when(stationRepository.findById(2L)).thenReturn(Optional.of(SEOLLEUNG_STATION));
         when(stationRepository.findById(3L)).thenReturn(Optional.of(SUWON_STATION));
+        when(stationRepository.findById(4L)).thenReturn(Optional.of(NOWON_STATION));
 
         when(lineRepository.findById(1L)).thenReturn(Optional.of(
                 new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10)
@@ -170,9 +171,9 @@ public class LineServiceMockTest {
         lineService.addSection(1L, new SectionAddRequest(2L, 3L, 3));
 
         // when then
-        assertThatThrownBy(() -> lineService.deleteSection(1L, 2L))
-                .isExactlyInstanceOf(SectionDeleteException.class)
-                .hasMessage("구간은 종점역만 삭제가능합니다.");
+        assertThatThrownBy(() -> lineService.deleteSection(1L, 4L))
+                .isExactlyInstanceOf(SectionNotFoundException.class)
+                .hasMessage("구간정보를 찾을 수 없습니다.");
     }
 
 }

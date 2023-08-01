@@ -240,22 +240,22 @@ public class LineFactorTest {
 
     /**
      * Given 지하철 노선을 생성하고
-     * When 하행종점역이 아닌 구간을 삭제하면
+     * When 노선에 존재하지 않는 역을 삭제 시도하면
      * Then 삭제가 실패된다.
      */
-    @DisplayName("지하철 노선 추가 후 구간 삭제시 하행종점역이 아닐경우 삭제가 실패되어야 한다.")
+    @DisplayName("지하철 노선 추가 후 구간 삭제시 노선에 존재하는 역이 아닐경우 삭제가 실패되어야 한다.")
     @Test
-    void 지하철노선_구간_삭제_하행종점역이아닐경우_삭제실패() {
+    void 지하철노선_구간_삭제_노선에존재하지않는_역_삭제실패() {
         // given
         Long id = 지하철노선_생성_후_식별값_리턴(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION_NAME, SEOLLEUNG_STATION_NAME, 10);
         지하철노선_구간_추가(id, SEOLLEUNG_STATION_NAME, NOWON_STATION_NAME, 3);
         지하철노선_구간_추가(id, NOWON_STATION_NAME, DEARIM_STATION_NAME, 5);
 
         // when
-        ExtractableResponse<Response> response = 지하철노선_구간_삭제(id, 지하철노선_하행종점역_이전역_식별값_조회(id));
+        ExtractableResponse<Response> response = 지하철노선_구간_삭제(id, 지하철역_추가_식별값_리턴(SUWON_STATION_NAME));
 
         // then
-        지하철노선_구간_삭제_하행종점역이아닐경우_삭제실패_응답값_검증(response);
+        지하철노선_구간_삭제_노선에존재하지않는_역_삭제실패_응답값_검증(response);
     }
 
 
@@ -305,6 +305,10 @@ public class LineFactorTest {
 
     private void 지하철노선_삭제_응답값_검증(Long id) {
         assertThat(findLine(id).response().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private Long 지하철역_추가_식별값_리턴(String stationName) {
+        return createStationThenReturnId(stationName);
     }
 
     private ExtractableResponse<Response> 지하철노선_구간_추가(Long lineId, String upStationName, String downStationName, int distance) {
@@ -357,9 +361,9 @@ public class LineFactorTest {
         assertThat(response.asString()).isEqualTo("구간이 1개인 경우 삭제할 수 없습니다.");
     }
 
-    private void 지하철노선_구간_삭제_하행종점역이아닐경우_삭제실패_응답값_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
-        assertThat(response.asString()).isEqualTo("구간은 종점역만 삭제가능합니다.");
+    private void 지하철노선_구간_삭제_노선에존재하지않는_역_삭제실패_응답값_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("구간정보를 찾을 수 없습니다.");
     }
 
 }

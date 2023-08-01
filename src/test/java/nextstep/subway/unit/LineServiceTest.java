@@ -2,12 +2,14 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.Section;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.exception.*;
 import nextstep.subway.service.line.LineService;
 import nextstep.subway.service.line.request.SectionAddRequest;
 import nextstep.subway.service.line.response.LineResponse;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,22 +195,23 @@ public class LineServiceTest {
                 .hasMessage("구간이 1개인 경우 삭제할 수 없습니다.");
     }
 
-    @DisplayName("지하철 노선 구간 삭제시 하행종점역이 아닐경우 삭제가 실패되어야 한다.")
+    @DisplayName("지하철 노선 추가 후 구간 삭제시 구간에 포함된 역이 아닌경우 삭제에 실패되어야 한다.")
     @Test
-    void not_line_downstation_removeSection_fail() {
+    void not_exist_station_removeSection_fail() {
         // given
         Station GANGNAM_STATION = saveStation(GANGNAM_STATION_NAME);
         Station SEOLLEUNG_STATION = saveStation(SEOLLEUNG_STATION_NAME);
         Station SUWON_STATION = saveStation(SUWON_STATION_NAME);
+        Station NOWON_STATION = saveStation(NOWON_STATION_NAME);
 
         Line line = saveLine(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10);
 
         line.addSection(SEOLLEUNG_STATION, SUWON_STATION, 3);
 
         // when then
-        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), SEOLLEUNG_STATION.getId()))
-                .isExactlyInstanceOf(SectionDeleteException.class)
-                .hasMessage("구간은 종점역만 삭제가능합니다.");
+        assertThatThrownBy(() -> lineService.deleteSection(line.getId(), NOWON_STATION.getId()))
+                .isExactlyInstanceOf(SectionNotFoundException.class)
+                .hasMessage("구간정보를 찾을 수 없습니다.");
     }
 
     private Station saveStation(String stationName) {

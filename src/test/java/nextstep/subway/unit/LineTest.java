@@ -150,16 +150,37 @@ class LineTest {
                 .hasMessage("구간이 1개인 경우 삭제할 수 없습니다.");
     }
 
-    @DisplayName("지하철 노선 구간 삭제시 하행종점역이 아닐경우 삭제가 실패되어야 한다.")
+    @DisplayName("지하철 노선 추가 후 구간 삭제시 구간에 포함된 역이 아닌경우 삭제에 실패되어야 한다.")
     @Test
-    void not_line_downstation_removeSection_fail() {
+    void not_exist_station_removeSection_fail() {
         // given
         Line line = new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10);
-        line.addSection(SEOLLEUNG_STATION, SUWON_STATION, 3);
+        line.addSection(SEOLLEUNG_STATION, SUWON_STATION, 8);
 
         // when then
-        assertThatThrownBy(() -> line.removeSection(SEOLLEUNG_STATION))
-                .isExactlyInstanceOf(SectionDeleteException.class)
-                .hasMessage("구간은 종점역만 삭제가능합니다.");
+        assertThatThrownBy(() -> line.removeSection(NOWON_STATION))
+                .isExactlyInstanceOf(SectionNotFoundException.class)
+                .hasMessage("구간정보를 찾을 수 없습니다.");
+    }
+
+    @DisplayName("지하철 노선 추가 및 삭제 후 지하철 노선에 등록된 구간을 조회하면 지금까지 등록된 모든 구간에 정보가 조회되야 한다.")
+    @Test
+    void removeSection_then_getSections() {
+        // given
+        Line line = new Line(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, GANGNAM_STATION, SEOLLEUNG_STATION, 10);
+        line.addSection(SEOLLEUNG_STATION, SUWON_STATION, 8);
+        line.addSection(NOWON_STATION, SUWON_STATION, 4);
+        line.removeSection(NOWON_STATION);
+        // when
+        List<Section> sections = line.unmodifiableSections();
+
+        // then
+        assertThat(sections)
+                .hasSize(2)
+                .extracting("upStation", "downStation", "distance")
+                .containsExactlyInAnyOrder(
+                        Tuple.tuple(GANGNAM_STATION, SEOLLEUNG_STATION, 10),
+                        Tuple.tuple(SEOLLEUNG_STATION, SUWON_STATION, 8)
+                );
     }
 }
