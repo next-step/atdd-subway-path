@@ -58,11 +58,15 @@ public class Section {
         return distance;
     }
 
-    public void modifyDistance(Section section) {
+    public void decreaseDistance(Section section) {
         if (isOverDistance(section)) {
             throw new SectionDistanceOverException();
         }
         this.distance -= section.getDistance();
+    }
+
+    public void increaseDistance(Section section) {
+        this.distance += section.getDistance();
     }
 
     private boolean isOverDistance(Section section) {

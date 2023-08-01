@@ -18,8 +18,6 @@ import static javax.persistence.FetchType.LAZY;
 @Embeddable
 public class Sections {
 
-    private static final int SECTIONS_MIN_SIZE = 1;
-
     @OneToMany(fetch = LAZY, mappedBy = "line", cascade = ALL, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
@@ -37,15 +35,19 @@ public class Sections {
         if (isNotExistedAllStation(addSection)) {
             throw new SectionNotExistException();
         }
-        modifyExistedSection(addSection);
+        modifyExistSectionByAdd(addSection);
         values.add(addSection);
     }
 
-    public void remove(Section section) {
-        if (values.size() == SECTIONS_MIN_SIZE) {
-            throw new SectionDeleteMinSizeException();
-        }
-        values.remove(section);
+    public void remove(Section removeSection) {
+        Section section = findSectionByUpStation(removeSection.getDownStation());
+        section.increaseDistance(removeSection);
+        section.modifyUpStation(removeSection.getUpStation());
+        values.remove(removeSection);
+    }
+
+    public void removeTerminus(Section removeSection) {
+        values.remove(removeSection);
     }
 
     public List<Station> getStations(Station station) {
@@ -56,6 +58,16 @@ public class Sections {
             station = section.getDownStation();
         }
         return stations;
+    }
+
+    public List<Section> getSections(Station station) {
+        List<Section> sections = new ArrayList<>();
+        while (hasNext(station)) {
+            Section section = next(station);
+            sections.add(section);
+            station = section.getDownStation();
+        }
+        return sections;
     }
 
     public Section findSectionByUpStation(Station station) {
@@ -70,6 +82,10 @@ public class Sections {
                 .filter(section -> section.isDown(station))
                 .findAny()
                 .orElseThrow(SectionNotFoundException::new);
+    }
+
+    public int size() {
+        return values.size();
     }
 
     private boolean hasNext(Station station) {
@@ -99,15 +115,7 @@ public class Sections {
         return values.stream().anyMatch(section -> section.isExistedStation(addSection.getUpStation()));
     }
 
-    private boolean isExistedUpStationSameSection(Section addSection) {
-        return values.stream().anyMatch(section -> section.isUp(addSection.getUpStation()));
-    }
-
-    private boolean isExistedDownStationSameSection(Section addSection) {
-        return values.stream().anyMatch(section -> section.isDown(addSection.getDownStation()));
-    }
-
-    private void modifyExistedSection(Section addSection) {
+    private void modifyExistSectionByAdd(Section addSection) {
         if (isExistedUpStationSameSection(addSection)) {
             modifyUpStationSameSection(addSection);
         }
@@ -116,15 +124,23 @@ public class Sections {
         }
     }
 
+    private boolean isExistedUpStationSameSection(Section addSection) {
+        return values.stream().anyMatch(section -> section.isUp(addSection.getUpStation()));
+    }
+
+    private boolean isExistedDownStationSameSection(Section addSection) {
+        return values.stream().anyMatch(section -> section.isDown(addSection.getDownStation()));
+    }
+
     private void modifyUpStationSameSection(Section addSection) {
         Section section = findSectionByUpStation(addSection.getUpStation());
-        section.modifyDistance(addSection);
+        section.decreaseDistance(addSection);
         section.modifyUpStation(addSection.getDownStation());
     }
 
     private void modifyDownStationSameSection(Section addSection) {
         Section section = findSectionByDownStation(addSection.getDownStation());
-        section.modifyDistance(addSection);
+        section.decreaseDistance(addSection);
         section.modifyDownStation(addSection.getUpStation());
     }
 

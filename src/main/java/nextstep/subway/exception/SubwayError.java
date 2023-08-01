@@ -12,6 +12,7 @@ public enum SubwayError {
     SECTION_DELETE_MIN_SIZE_EXCEPTION(HttpStatus.CONFLICT, "구간이 1개인 경우 삭제할 수 없습니다."),
     SECTION_DELETE_EXCEPTION(HttpStatus.CONFLICT, "구간은 종점역만 삭제가능합니다."),
     SECTION_DISTANCE_OVER_EXCEPTION(HttpStatus.CONFLICT, "구간길이를 초과했습니다."),
+    STATION_NOT_EXIST_EXCEPTION(HttpStatus.CONFLICT, "노선에 역이 존재하지 않습니다."),
     NOT_FOUND_STATION(HttpStatus.BAD_REQUEST, "역정보를 찾을 수 없습니다."),
     NAME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "이름정보가 유효하지 않습니다."),
     COLOR_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "색정보가 유효하지 않습니다."),

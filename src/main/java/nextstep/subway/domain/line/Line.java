@@ -55,4 +55,8 @@ public class Line {
         return Collections.unmodifiableList(lineStationDetail.getStations());
     }
 
+    public List<Section> unmodifiableSections() {
+        return Collections.unmodifiableList(lineStationDetail.getSections());
+    }
+
 }
