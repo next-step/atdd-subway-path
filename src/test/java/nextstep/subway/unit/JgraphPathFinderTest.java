@@ -28,6 +28,7 @@ public class JgraphPathFinderTest {
   private Line 삼호선;
   private Line 사호선;
   private Line 신분당선;
+  private Line 오호선;
   /**
    * 교대역    --- *2호선* ---   강남역
    * |                        |
@@ -54,6 +55,7 @@ public class JgraphPathFinderTest {
     신분당선 = Line.of("2호선", "green", 강남역, 양재역, 10L);
     삼호선 = Line.of("3호선", "orange", 교대역, 남부터미널역, 2L);
     사호선 = Line.of("4호선", "blue", 고속터미널역, 신사역, 2L);
+    오호선 = Line.of("5호선", "true", 서울역, 부산역, 2L);
     삼호선.addSection(Section.of(삼호선,3L, 남부터미널역, 양재역));
 
   }
@@ -62,7 +64,7 @@ public class JgraphPathFinderTest {
   @Test
   void getPath() {
     //When
-    PathFinderStrategy finder = new JgraphPathFinder(Arrays.asList(이호선,신분당선,삼호선,사호선,삼호선));
+    PathFinderStrategy finder = JgraphPathFinder.of(Arrays.asList(이호선,신분당선,삼호선,사호선,삼호선));
     //Then
     Path path = finder.findShortestPath(교대역, 양재역);
     assertThat(path.getSections().getStations()).containsExactly(교대역, 남부터미널역, 양재역);
@@ -73,22 +75,24 @@ public class JgraphPathFinderTest {
   @Test
   void getPathThrowsSameSourceTargetError() {
     //When
-    PathFinderStrategy finder = new JgraphPathFinder(Arrays.asList(이호선,신분당선,삼호선,사호선,삼호선));
+    PathFinderStrategy finder = JgraphPathFinder.of(Arrays.asList(이호선,신분당선,삼호선,사호선,삼호선));
     //Then
-    Throwable thrown = catchThrowable(() -> { Path path = finder.findShortestPath(교대역, 교대역);});
+    Throwable thrown = catchThrowable(() -> { finder.findShortestPath(교대역, 교대역);});
 
     assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
+    assertThat(thrown.getMessage()).isEqualTo("출발역과 도착역이 같습니다.");
   }
-
+  //TODO: 오류 메시지 까지 검증 했습니다.
   @DisplayName("오류케이스: 출발역과 도착역이 연결되지 않았을 때, 제일 짧은 경로 조회가 실패합니다")
   @Test
   void getPathThrowsNotConnectedError() {
     //When
-    PathFinderStrategy finder = new JgraphPathFinder(Arrays.asList(이호선,신분당선,삼호선,사호선,삼호선));
+    PathFinderStrategy finder = JgraphPathFinder.of(Arrays.asList(이호선,신분당선,삼호선,사호선,삼호선,오호선));
     //Then
-    Throwable thrown = catchThrowable(() -> { Path path = finder.findShortestPath(서울역, 부산역);});
+    Throwable thrown = catchThrowable(() -> { finder.findShortestPath(서울역, 교대역);});
 
     assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
+    assertThat(thrown.getMessage()).isEqualTo("연결되어 있지 않은 구간입니다.");
   }
 
 
