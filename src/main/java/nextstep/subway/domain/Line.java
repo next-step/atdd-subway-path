@@ -3,11 +3,12 @@ package nextstep.subway.domain;
 import nextstep.subway.applicaion.exception.domain.SectionException;
 
 import javax.persistence.*;
+import javax.servlet.ServletContainerInitializer;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Line {
+public class  Line {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,48 +55,55 @@ public class Line {
     }
 
     public Station getStartStation() {
-        List<Section> sections = getThisSections();
-        return sections.get(sections.size()-1).getUpStation();
+        return getStartSection().getUpStation();
     }
 
     public Station getLastStation() {
-        List<Section> sections = getThisSections();
-        return sections.get(sections.size()-1).getDownStation();
+        return getLastSection().getDownStation();
     }
 
     public List<Section> getSections() {
         return sections;
     }
 
-    private List<Section> getThisSections() { return this.sections; }
+    public int getSectionsLastIndex() { return sections.size()-1; }
 
     public Section getStartSection() {
-        return getThisSections().get(0);
+        return this.sections.get(0);
+    }
+
+    public Section getLastSection() { return sections.get(getSectionsLastIndex()); }
+
+    public void beforeAddSection(Section newSection) {
+        if (!checkDuplicatedStation(newSection.getUpStation()) &&
+                !checkDuplicatedStation(newSection.getDownStation())) {
+            throw new SectionException("Requested stations is not saved");
+        }
     }
 
     public void addSection(Section section) {
-        List<Section> sections = getThisSections();
-        sections.add(section);
+        this.sections.add(section);
     }
 
     public Line addSectionAtStart(Section newSection) {
         Section startSection = getStartSection();
         startSection.updateSection(newSection.getUpStation(), newSection.getDownStation(), newSection.getDistance());
-        getThisSections().add(newSection);
+        this.sections.add(newSection);
         return this;
     }
 
     public Line addSectionAtEnd(Section newSection) {
-        getThisSections().add(newSection);
+        this.sections.add(newSection);
         return this;
     }
 
     public Line addSectionAtMiddle(Section newSection) {
-        for (Section savedSection : getThisSections()) {
-            if (savedSection.getUpStation().getId().equals(newSection.getUpStation().getId())) {
+        for (Section savedSection : this.sections) {
+            if (savedSection.getUpStation().checkEqualStationByName(newSection.getUpStation())) {
                 checkValidDistance(savedSection, newSection);
-                getThisSections().add(0, newSection);
-                savedSection.updateDistance(newSection.getDistance());
+                this.sections.add(0, newSection);
+                int calculatedDistance = savedSection.getDistance() - newSection.getDistance();
+                savedSection.updateSection(newSection.getDownStation(), savedSection.getDownStation(), calculatedDistance);
                 break;
             }
         }
@@ -109,32 +117,54 @@ public class Line {
     }
 
     public boolean checkDuplicatedStation(Station newStation) {
-        for (Section savedSection : getThisSections()) {
-            if (savedSection.getUpStation().checkEqualStation(newStation)) {
+        for (Section savedSection : this.sections) {
+            if (savedSection.getUpStation().checkEqualStationByName(newStation)) {
                 return true;
-            } else if(savedSection.getDownStation().checkEqualStation(newStation)) {
+            } else if(savedSection.getDownStation().checkEqualStationByName(newStation)) {
                 return true;
             }
         }
         return false;
     }
 
-    public void beforeAddSection(Section newSection) {
-        if (!checkDuplicatedStation(newSection.getUpStation()) &&
-                !checkDuplicatedStation(newSection.getDownStation())) {
-            throw new SectionException("Requested stations is not saved");
+    public void beforeDeleteSection() {
+        if (this.getSectionsLastIndex() < 1) {
+            throw new SectionException("Can`t remove section by section count");
         }
     }
 
-    public void deleteSectionByUpStation(Station upStation) {
-        List<Section> sections = getThisSections();
+    public void deleteSectionAtStart() {
+        this.sections.remove(0);
+    }
 
-        for (Section savedSection : sections) {
-            Station savedUpStation = savedSection.getUpStation();
-            if (savedUpStation.getName().equals(upStation.getName())) {
-                sections.remove(savedSection);
-                return;
+    public void deleteSectionAtMiddle(Station deletedStation) {
+        Section preSection = this.findPreSectionByStation(deletedStation);
+        Section nextSection = this.findNextSectionByStation(deletedStation);
+        int calculatedDistance = preSection.getDistance() + nextSection.getDistance();
+
+        preSection.updateSection(preSection.getUpStation(), nextSection.getDownStation(), calculatedDistance);
+        this.sections.remove(nextSection);
+    }
+
+    public void deleteSectionAtLast() {
+        this.sections.remove(getSectionsLastIndex());
+    }
+
+    private Section findPreSectionByStation(Station station) {
+        for (Section savedSection : this.sections) {
+            if (savedSection.getDownStation().checkEqualStationByName(station)) {
+                return savedSection;
             }
         }
+        throw new SectionException("Section is not existed by requested station");
+    }
+
+    private Section findNextSectionByStation(Station station) {
+        for (Section savedSection : this.sections) {
+            if (savedSection.getUpStation().checkEqualStationByName(station)) {
+                return savedSection;
+            }
+        }
+        throw new SectionException("Section is not existed by requested station");
     }
 }
