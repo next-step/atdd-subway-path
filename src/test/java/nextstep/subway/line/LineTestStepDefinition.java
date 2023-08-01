@@ -14,8 +14,14 @@ import nextstep.subway.station.StationResponse;
 
 public class LineTestStepDefinition {
 
-    public static LineResponse 지하철_노선_생성_요청(String lineName, String color, Long upStationId, Long downStationId, int distance) {
-        LineRequest lineRequest = new LineRequest(lineName, color, upStationId, downStationId, distance);
+    public static LineResponse 지하철_노선_생성_요청(
+        String lineName,
+        String color,
+        Long upStationId,
+        Long downStationId,
+        int distance) {
+        LineRequest lineRequest = new LineRequest(lineName, color, upStationId, downStationId,
+            distance);
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -29,11 +35,17 @@ public class LineTestStepDefinition {
         return response.as(LineResponse.class);
     }
 
-    public static LineResponse 지하철_노선_생성_요청(String lineName, String color, String upStationName, String downStationName, int distance) {
+    public static LineResponse 지하철_노선_생성_요청(
+        String lineName,
+        String color,
+        String upStationName,
+        String downStationName,
+        int distance) {
         StationResponse upStationResponse = 지하철_역_생성_요청(upStationName);
         StationResponse downStationResponse = 지하철_역_생성_요청(downStationName);
 
-        return 지하철_노선_생성_요청(lineName, color, upStationResponse.getId(), downStationResponse.getId(), distance);
+        return 지하철_노선_생성_요청(lineName, color, upStationResponse.getId(), downStationResponse.getId(),
+            distance);
     }
 
     public static LineResponse 지하철_노선_조회_요청(Long id) {

@@ -1,12 +1,18 @@
 package nextstep.subway.section;
 
 import static common.Constants.강남역;
-import static common.Constants.또다른지하철역;
+import static common.Constants.교대역;
+import static common.Constants.남부터미널역;
+import static common.Constants.삼호선;
+import static common.Constants.양재역;
 import static common.Constants.빨강색600;
-import static common.Constants.새로운지하철역;
+import static common.Constants.광교역;
 import static common.Constants.신논현역;
 import static common.Constants.신분당선;
-import static common.Constants.지하철역;
+import static common.Constants.이호선;
+import static common.Constants.주황색600;
+import static common.Constants.파랑색600;
+import static common.Constants.판교역;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_생성_요청;
 import static nextstep.subway.line.LineTestStepDefinition.지하철_노선_조회_요청;
 import static nextstep.subway.section.SectionTestStepDefinition.*;
@@ -17,15 +23,26 @@ import common.AcceptanceTest;
 import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.station.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import nextstep.subway.line.LineResponse;
-import nextstep.subway.station.Station;
 
 @DisplayName("지하철 구간 관련 기능 인수 테스트")
 @AcceptanceTest
 public class SectionAcceptanceTest {
+
+    private Long 판교역정보;
+    private Long 광교역정보;
+    private Long 양재역정보;
+
+    @BeforeEach
+    public void init() {
+        판교역정보 = 지하철_역_생성_요청(판교역).getId();
+        광교역정보 = 지하철_역_생성_요청(광교역).getId();
+        양재역정보 = 지하철_역_생성_요청(양재역).getId();
+    }
 
     // Given 지하철 노선을 생성하고
     // When 지하철 노선 구간 사이에 존재하는 구간을 추가하면
@@ -33,18 +50,12 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선 사이에 존재하는 구간을 추가한다.")
     @Test
     void createSection_pass_insert() {
-        // given
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
 
-        // when
-        지하철_구간_생성_요청(신분당선응답.getId(), 지하철역응답.getId(), 또다른지하철역응답.getId(), 5);
+        지하철_구간_생성_요청(신분당선응답.getId(), 판교역정보, 양재역정보, 5);
 
-        // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
-        assertThat(getStationNames(노선조회응답)).containsExactly(지하철역, 또다른지하철역, 새로운지하철역);
+        assertThat(역이름_목록(노선조회응답)).containsExactly(판교역, 양재역, 광교역);
     }
 
     // Given 지하철 노선을 생성하고
@@ -53,18 +64,12 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선 사이에 존재하는 구간을 추가한다.")
     @Test
     void createSection_pass_addHead() {
-        // given
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
 
-        // when
-        지하철_구간_생성_요청(신분당선응답.getId(), 또다른지하철역응답.getId(), 지하철역응답.getId(), 5);
+        지하철_구간_생성_요청(신분당선응답.getId(), 양재역정보, 판교역정보, 5);
 
-        // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
-        assertThat(getStationNames(노선조회응답)).containsExactly(또다른지하철역, 지하철역, 새로운지하철역);
+        assertThat(역이름_목록(노선조회응답)).containsExactly(양재역, 판교역, 광교역);
     }
 
     // Given 지하철 노선을 생성하고
@@ -73,18 +78,12 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선 사이에 존재하는 구간을 추가한다.")
     @Test
     void createSection_pass_addTail() {
-        // given
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역응답 = 지하철_역_생성_요청(새로운지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역응답.getId(), 새로운지하철역응답.getId(), 10);
-        var 또다른지하철역응답 = 지하철_역_생성_요청(또다른지하철역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
 
-        // when
-        지하철_구간_생성_요청(신분당선응답.getId(), 새로운지하철역응답.getId(), 또다른지하철역응답.getId(), 5);
+        지하철_구간_생성_요청(신분당선응답.getId(), 광교역정보, 양재역정보, 5);
 
-        // then
         var 노선조회응답 = 지하철_노선_조회_요청(신분당선응답.getId());
-        assertThat(getStationNames(노선조회응답)).containsExactly(지하철역, 새로운지하철역, 또다른지하철역);
+        assertThat(역이름_목록(노선조회응답)).containsExactly(판교역, 광교역, 양재역);
     }
 
     // Given 지하철 노선을 생성하고
@@ -93,17 +92,10 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선에 기존 구간과 거리가 같거나 큰 구간을 역 사이에 추가하면 실패한다.")
     @Test
     void createSection_fail_sectionDistanceIsSame() {
-        // given
-        var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
-        var 신논현역응답 = 지하철_역_생성_요청(신논현역);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
 
-        // when
-        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(),
-            강남역응답.getId(), 신논현역응답.getId(), 10);
+        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 판교역정보, 양재역정보, 10);
 
-        // then
         assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -113,15 +105,10 @@ public class SectionAcceptanceTest {
     @DisplayName("이미 등록된 상행역과 하행역을 가진 구간을 추가하면 실패한다")
     @Test
     void createSection_fail_sectionAlreadyExist() {
-        // given
-        var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
 
-        // when
-        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 판교역정보, 광교역정보, 10);
 
-        // then
         assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -131,11 +118,9 @@ public class SectionAcceptanceTest {
     @DisplayName("상행역과 하행역 모두 등록되지 않은 구간을 추가하면 실패한다")
     @Test
     void createSection_fail_sectionNoIntersection() {
-        var 강남역응답 = 지하철_역_생성_요청(강남역);
-        var 지하철역응답 = 지하철_역_생성_요청(지하철역);
-        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 강남역응답.getId(), 지하철역응답.getId(), 10);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
 
-        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 신논현역, 또다른지하철역, 10);
+        var 상태코드 = 지하철_구간_생성_요청_상태_코드_반환(신분당선응답.getId(), 신논현역, 양재역, 10);
 
         assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -146,18 +131,13 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선의 하행 종점역에 대한 구간을 제거한다.")
     @Test
     void deleteSection() {
-        // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
-        var stationResponse = 지하철_역_생성_요청(또다른지하철역);
-        지하철_구간_생성_요청(lineCreateResponse.getId(), getDownEndStationId(lineCreateResponse),
-            stationResponse.getId(), 10);
+        var 신분당선응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역, 광교역, 10);
+        지하철_구간_생성_요청(신분당선응답.getId(), 하행종점역(신분당선응답), 양재역정보, 10);
 
-        // when
-        지하철_구간_제거_요청(lineCreateResponse.getId(), stationResponse.getId());
+        지하철_구간_제거_요청(신분당선응답.getId(), 양재역정보);
 
-        // then
-        var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
-        assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역);
+        var 신분당선_조회 = 지하철_노선_조회_요청(신분당선응답.getId());
+        assertThat(역이름_목록(신분당선_조회)).containsExactly(판교역, 광교역);
     }
 
     // Given 지하철 노선에 구간을 생성하고
@@ -166,19 +146,13 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선의 상행 종점역에 대한 구간을 제거한다.")
     @Test
     void deleteSection_deleteUpEnd() {
-        // given
-        var 지하철역_응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역_응답 = 지하철_역_생성_요청(새로운지하철역);
-        var 신분당선_응답 = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역_응답.getId(), 새로운지하철역_응답.getId(), 10);
-        var 또다른지하철역_응답 = 지하철_역_생성_요청(또다른지하철역);
-        지하철_구간_생성_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId(), 또다른지하철역_응답.getId(), 10);
+        var 신분당선_생성 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
+        지하철_구간_생성_요청(신분당선_생성.getId(), 광교역정보, 양재역정보, 10);
 
-        // when
-        지하철_구간_제거_요청(신분당선_응답.getId(), 지하철역_응답.getId());
+        지하철_구간_제거_요청(신분당선_생성.getId(), 판교역정보);
 
-        // then
-        var 노선_조회 = 지하철_노선_조회_요청(신분당선_응답.getId());
-        assertThat(getStationNames(노선_조회)).containsExactly(새로운지하철역, 또다른지하철역);
+        var 노선_조회 = 지하철_노선_조회_요청(신분당선_생성.getId());
+        assertThat(역이름_목록(노선_조회)).containsExactly(광교역, 양재역);
     }
 
     // Given 지하철 노선에 구간을 생성하고
@@ -187,17 +161,13 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 구간의 중간 역에 대해 제거한다")
     @Test
     void deleteSection_deleteMiddle() {
-        var 지하철역_응답 = 지하철_역_생성_요청(지하철역);
-        var 새로운지하철역_응답 = 지하철_역_생성_요청(새로운지하철역);
-        var 신분당선_응답 = 지하철_노선_생성_요청(신분당선, 빨강색600,
-            지하철역_응답.getId(), 새로운지하철역_응답.getId(), 10);
-        var 또다른지하철역_응답 = 지하철_역_생성_요청(또다른지하철역);
-        지하철_구간_생성_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId(), 또다른지하철역_응답.getId(), 10);
+        var 신분당선_생성 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 광교역정보, 10);
+        지하철_구간_생성_요청(신분당선_생성.getId(), 광교역정보, 양재역정보, 10);
 
-        지하철_구간_제거_요청(신분당선_응답.getId(), 새로운지하철역_응답.getId());
+        지하철_구간_제거_요청(신분당선_생성.getId(), 광교역정보);
 
-        var 노선_조회_응답 = 지하철_노선_조회_요청(신분당선_응답.getId());
-        assertThat(getStationNames(노선_조회_응답)).containsExactly(지하철역, 또다른지하철역);
+        var 신분당선_조회 = 지하철_노선_조회_요청(신분당선_생성.getId());
+        assertThat(역이름_목록(신분당선_조회)).containsExactly(판교역, 양재역);
     }
 
     // Given 지하철 노선을 생성하고
@@ -206,29 +176,96 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선에 구간 제거시 상행 종점역과 하행 종점역만 있는 노선에 구간이라면 실패한다.")
     @Test
     void deleteSection_fail_sectionOnlyExistsUpAndDownEndStationInLine() {
-        // given
-        var lineCreateResponse = 지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
+        var 신분당선_생성 = 지하철_노선_생성_요청(신분당선, 빨강색600, 판교역, 광교역, 10);
 
-        // when
-        var statusCode = 지하철_구간_제거_요청_상태_코드_반환(lineCreateResponse.getId(),
-            getUpEndStationId(lineCreateResponse));
+        var 상태코드 = 지하철_구간_제거_요청_상태_코드_반환(신분당선_생성.getId(), 상행종점역(신분당선_생성));
 
-        // then
-        var lineResponse = 지하철_노선_조회_요청(lineCreateResponse.getId());
-        assertThat(statusCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(getStationNames(lineResponse)).containsExactly(지하철역, 새로운지하철역);
+        var 신분당선_조회 = 지하철_노선_조회_요청(신분당선_생성.getId());
+        assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(역이름_목록(신분당선_조회)).containsExactly(판교역, 광교역);
     }
 
-    private Stream<String> getStationNames(LineResponse response) {
+    // Given 지하철 노선과 구간을 추가하고
+    // When 경로 조회 요청하면
+    // Then 가장 가까운 경로의 역 목록과 조회한 경로 구간의 거리를 확인할 수 있다
+    @DisplayName("지하철 경로 탐색")
+    @Test
+    void route() {
+        // given
+        var 남부터미널역정보 = 지하철_역_생성_요청(남부터미널역).getId();
+        var 강남역정보 = 지하철_역_생성_요청(강남역).getId();
+        var 교대역정보 = 지하철_역_생성_요청(교대역).getId();
+
+        지하철_노선_생성_요청(신분당선, 빨강색600, 강남역정보, 양재역정보, 2);
+        지하철_노선_생성_요청(이호선, 파랑색600, 교대역정보, 강남역정보, 3);
+        var 삼호선정보 = 지하철_노선_생성_요청(삼호선, 주황색600, 교대역정보, 남부터미널역정보, 10).getId();
+
+        지하철_구간_생성_요청(삼호선정보, 남부터미널역정보, 양재역정보, 10);
+
+        // when
+        var 양재역_교대역_경로_조회 = 지하철_경로_조회(양재역정보, 교대역정보);
+
+        // then
+        assertThat(역이름_목록(양재역_교대역_경로_조회)).containsExactly(양재역, 강남역, 교대역);
+        assertThat(양재역_교대역_경로_조회.getDistance()).isEqualTo(5);
+    }
+
+    // Given 지하철 노선과 구간을 추가하고
+    // When 출발지와 도착지가 같은 경로 조회 요청하면
+    // Then 경로 조회가 불가능하다는 응답을 받는다
+    @DisplayName("경로조회시 출발지와 도착지가 같으면 실패한다")
+    @Test
+    void route_fail_sameSourceAndTarget() {
+        지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 양재역정보, 2);
+
+        var 상태코드 = 지하철_경로_조회_상태코드_반환(판교역정보, 판교역정보);
+
+        assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    // Given 지하철 노선과 구간을 추가하고
+    // When 출발지와 도착지가 연결되지 않은 경로 조회 요청하면
+    // Then 경로 조회가 불가능하다는 응답을 받는다
+    @DisplayName("경로조회시 출발지와 도착지가 연결되지 않았으면 실패한다")
+    @Test
+    void route_fail_sourceAndTargetUnconnected() {
+        지하철_노선_생성_요청(신분당선, 빨강색600, 판교역정보, 양재역정보, 2);
+
+        var 상태코드 = 지하철_경로_조회_상태코드_반환(판교역정보, 광교역정보);
+
+        assertThat(상태코드).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    // Given 지하철 노선과 구간을 추가하고
+    // When 존재하지 않는 출발역 / 도착역에 경로 조회 요청하면
+    // Then 경로 조회가 불가능하다는 응답을 받는다
+    @DisplayName("경로조회시 존재하지 않는 역에 대해 요청하면 실패한다")
+    @Test
+    void route_fail_unknownStation() {
+        var 뉴욕역정보 = Long.MAX_VALUE;
+        var 포틀랜드역정보 = Long.MIN_VALUE;
+
+        var 뉴욕역까지_조회 = 지하철_경로_조회_요청(판교역정보, 뉴욕역정보);
+        var 포틀랜드역부터_조회 = 지하철_경로_조회_요청(포틀랜드역정보, 판교역정보);
+
+        assertThat(뉴욕역까지_조회.jsonPath().getString("message")).contains("존재하지 않는 리소스입니다.");
+        assertThat(포틀랜드역부터_조회.jsonPath().getString("message")).contains("존재하지 않는 리소스입니다.");
+    }
+
+    private Stream<String> 역이름_목록(PathResponse response) {
         return response.getStations().stream().map(StationResponse::getName);
     }
 
-    private Long getDownEndStationId(LineResponse response) {
+    private Stream<String> 역이름_목록(LineResponse response) {
+        return response.getStations().stream().map(StationResponse::getName);
+    }
+
+    private Long 하행종점역(LineResponse response) {
         List<StationResponse> stations = response.getStations();
         return stations.get(stations.size() - 1).getId();
     }
 
-    private Long getUpEndStationId(LineResponse response) {
+    private Long 상행종점역(LineResponse response) {
         return response.getStations().get(0).getId();
     }
 }

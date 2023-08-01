@@ -1,5 +1,6 @@
 package nextstep.study;
 
+import org.assertj.core.api.Assertions;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.alg.shortestpath.KShortestPaths;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 class JgraphtTest {
@@ -30,6 +32,22 @@ class JgraphtTest {
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
 
         assertThat(shortestPath.size()).isEqualTo(3);
+    }
+
+    @Test
+    void getDijkstraUnconnectedPath() {
+        String source = "v3";
+        String target = "v1";
+
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        graph.addVertex("v1");
+        graph.addVertex("v2");
+        graph.addVertex("v3");
+        graph.setEdgeWeight(graph.addEdge("v1", "v2"), 2);
+
+        GraphPath path = new DijkstraShortestPath(graph).getPath(source, target);
+        assertThatThrownBy(() -> path.getVertexList())
+            .isInstanceOf(NullPointerException.class);
     }
 
     @Test

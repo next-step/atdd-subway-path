@@ -9,8 +9,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import nextstep.subway.section.SectionRequest;
-import nextstep.subway.section.SectionResponse;
 
 public class SectionTestStepDefinition {
     public static SectionResponse 지하철_구간_생성_요청(Long lineId, Long upStationId, Long downStationId, Integer distance) {
@@ -81,5 +79,27 @@ public class SectionTestStepDefinition {
             .extract();
 
         return response.statusCode();
+    }
+
+    public static PathResponse 지하철_경로_조회(Long sourceId, Long targetId) {
+        ExtractableResponse<Response> response = 지하철_경로_조회_요청(sourceId, targetId);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        return response.as(PathResponse.class);
+    }
+
+    public static int 지하철_경로_조회_상태코드_반환(Long sourceId, Long targetId) {
+
+        return 지하철_경로_조회_요청(sourceId, targetId).statusCode();
+    }
+
+    public static ExtractableResponse<Response> 지하철_경로_조회_요청(Long sourceId, Long targetId) {
+        return RestAssured.given().log().all()
+            .param("source", sourceId)
+            .param("target", targetId)
+            .when().get("paths")
+            .then().log().all()
+            .extract();
     }
 }

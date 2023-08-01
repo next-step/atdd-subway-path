@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 import nextstep.subway.station.StationTestStepDefinition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import nextstep.subway.station.Station;
 import nextstep.subway.station.StationResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,14 +21,14 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        var response = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
+        var response = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600, 판교역, 광교역, 10);
 
         // then
         assertAll(
             () -> assertThat(response.getId()).isNotNull(),
             () -> assertThat(response.getName()).isEqualTo(신분당선),
             () -> assertThat(response.getColor()).isEqualTo(빨강색600),
-            () -> assertThat(getStationNames(response)).containsExactly(지하철역, 새로운지하철역)
+            () -> assertThat(getStationNames(response)).containsExactly(판교역, 광교역)
         );
     }
 
@@ -40,16 +39,22 @@ public class LineAcceptanceTest {
     @Test
     void getLineList() {
         // given
-        StationResponse someStationResponse = StationTestStepDefinition.지하철_역_생성_요청(지하철역);
-        StationResponse newStationResponse = StationTestStepDefinition.지하철_역_생성_요청(새로운지하철역);
-        StationResponse anotherStationResponse = StationTestStepDefinition.지하철_역_생성_요청(또다른지하철역);
+        StationResponse someStationResponse = StationTestStepDefinition.지하철_역_생성_요청(판교역);
+        StationResponse newStationResponse = StationTestStepDefinition.지하철_역_생성_요청(광교역);
+        StationResponse anotherStationResponse = StationTestStepDefinition.지하철_역_생성_요청(양재역);
 
-        var sinBundangLineResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600,
+        var sinBundangLineResponse = LineTestStepDefinition.지하철_노선_생성_요청(
+            신분당선,
+            빨강색600,
             someStationResponse.getId(),
-            newStationResponse.getId(), 10);
-        var bundangLineResponse = LineTestStepDefinition.지하철_노선_생성_요청(분당선, "bg-green-600",
+            newStationResponse.getId(),
+            10);
+        var bundangLineResponse = LineTestStepDefinition.지하철_노선_생성_요청(
+            분당선,
+            "bg-green-600",
             someStationResponse.getId(),
-            anotherStationResponse.getId(), 10);
+            anotherStationResponse.getId(),
+            10);
 
         // when
         var response = LineTestStepDefinition.지하철_노선_목록_조회_요청();
@@ -65,14 +70,14 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given & when
-        var response = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
+        var response = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600, 판교역, 광교역, 10);
 
         // then
         assertAll(
             () -> assertThat(response.getId()).isNotNull(),
             () -> assertThat(response.getName()).isEqualTo(신분당선),
             () -> assertThat(response.getColor()).isEqualTo(빨강색600),
-            () -> assertThat(getStationNames(response)).containsExactly(지하철역, 새로운지하철역)
+            () -> assertThat(getStationNames(response)).containsExactly(판교역, 광교역)
         );
     }
 
@@ -83,15 +88,15 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        var lineResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
+        var lineResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600, 판교역, 광교역, 10);
 
         // when
-        LineTestStepDefinition.지하철_노선_수정_요청(lineResponse.getId(), 또다른지하철역, 빨강색600);
+        LineTestStepDefinition.지하철_노선_수정_요청(lineResponse.getId(), 양재역, 빨강색600);
 
         // then
         var updateResponse = LineTestStepDefinition.지하철_노선_조회_요청(lineResponse.getId());
         assertAll(
-            () -> assertThat(updateResponse.getName()).isEqualTo(또다른지하철역),
+            () -> assertThat(updateResponse.getName()).isEqualTo(양재역),
             () -> assertThat(updateResponse.getColor()).isEqualTo(빨강색600));
     }
 
@@ -102,7 +107,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        var lineResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600, 지하철역, 새로운지하철역, 10);
+        var lineResponse = LineTestStepDefinition.지하철_노선_생성_요청(신분당선, 빨강색600, 판교역, 광교역, 10);
 
         // when
         LineTestStepDefinition.지하철_노선_삭제_요청(lineResponse.getId());

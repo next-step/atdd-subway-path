@@ -3,6 +3,7 @@ package nextstep.subway.section;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,7 @@ public class SectionController {
 
     private final SectionService sectionService;
 
-    SectionController(final SectionService sectionService) {
+    public SectionController(final SectionService sectionService) {
         this.sectionService = sectionService;
     }
 
@@ -30,5 +31,12 @@ public class SectionController {
         sectionService.deleteSection(lineId, stationId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/paths")
+    public ResponseEntity<PathResponse> findPath(final @RequestParam Long source, final @RequestParam Long target) {
+        PathResponse response = sectionService.findPath(source, target);
+
+        return ResponseEntity.ok(response);
     }
 }

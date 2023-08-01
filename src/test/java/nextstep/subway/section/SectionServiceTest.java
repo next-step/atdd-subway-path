@@ -29,10 +29,10 @@ class SectionServiceTest {
 
     private SectionService sectionService;
 
-    @BeforeEach
-    void init() {
-        sectionService = new SectionService(lineRepository, stationRepository);
-    }
+//    @BeforeEach
+//    void init() {
+//        sectionService = new SectionService(lineRepository, stationRepository);
+//    }
 
     /*
     어려운 점들이 존재한다
