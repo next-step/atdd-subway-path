@@ -56,7 +56,8 @@ class PathAcceptanceTest {
     // 7호선
     LineResponse seven = 지하철_노선도_등록_응답값반환("7호선", "갈색", 노원역, 논현역, 5);
     지하철_구간_등록(seven.getId(), 노원역, 하계역, 3);
-    지하철_구간_등록(seven.getId(), 노원역, 서현역, 300);
+    지하철_구간_등록(seven.getId(), 논현역, 서현역, 300);
+
 
     // 신분당선
     LineResponse newBundang = 지하철_노선도_등록_응답값반환("신분당선", "빨간색", 논현역, 정자역, 10);
