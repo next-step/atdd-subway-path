@@ -10,12 +10,16 @@ public class StationFixture {
     public static final Station 강남역 = new Station("강남역");
     public static final Station 양재역 = new Station("양재역");
     public static final Station 양재시민의숲역 = new Station("양재시민의숲역");
+    public static final Station 교대역 = new Station("교대역");
+    public static final Station 남부터미널역 = new Station("남부터미널역");
 
     public static final Map<Station, Long> stationIds = Map.of(
             신사역, 1L,
             논현역, 2L,
             강남역, 3L,
             양재역, 4L,
-            양재시민의숲역, 5L
+            양재시민의숲역, 5L,
+            교대역, 6L,
+            남부터미널역, 7L
     );
 }
