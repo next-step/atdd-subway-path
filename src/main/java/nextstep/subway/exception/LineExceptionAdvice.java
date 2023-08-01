@@ -17,4 +17,9 @@ public class LineExceptionAdvice {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(ExceptionResponse.from(exception));
   }
 
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler({LineException.class})
+  ResponseEntity<ExceptionResponse> handlePathNotFound(LineException exception) {
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(CustomExceptionResponse.from(exception));
+  }
 }
