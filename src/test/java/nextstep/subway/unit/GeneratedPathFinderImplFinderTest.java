@@ -95,7 +95,6 @@ class GeneratedPathFinderImplFinderTest {
         return Line.builder()
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(10)
                 .section(section(upStation, downStation, distance))
                 .build();
     }

@@ -161,7 +161,6 @@ public class SectionServiceTest {
                 .color("blue")
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(10)
                 .section(section(upStation, downStation))
                 .build();
     }

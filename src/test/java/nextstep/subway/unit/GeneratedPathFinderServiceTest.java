@@ -96,7 +96,6 @@ class GeneratedPathFinderServiceTest {
                 .color("blue")
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(distance)
                 .section(section(upStation, downStation, distance))
                 .build();
     }

@@ -43,21 +43,20 @@ public class Line {
     private Sections sections;
 
     @Builder
-    public Line(String name, String color, Station upStation, Station downStation, Integer distance, Section section) {
+    public Line(String name, String color, Station upStation, Station downStation, Section section) {
         this.name = name;
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
-        sections = new Sections(section, this, distance);
+        sections = new Sections(section, this);
     }
 
-    public static Line of(String name, String color, Station upStationId, Station downStationId, Integer distance) {
+    public static Line of(String name, String color, Station upStationId, Station downStationId) {
         return Line.builder()
                 .name(name)
                 .color(color)
                 .upStation(upStationId)
                 .downStation(downStationId)
-                .distance(distance)
                 .build();
     }
 

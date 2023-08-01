@@ -92,7 +92,6 @@ public class SectionServiceMockTest {
                 .color("blue")
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(10)
                 .section(section(upStation, downStation))
                 .build();
         ReflectionTestUtils.setField(line, "id", 1L);

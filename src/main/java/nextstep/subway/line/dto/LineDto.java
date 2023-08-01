@@ -53,7 +53,6 @@ public class LineDto {
                 .color(color)
                 .upStation(upStation)
                 .downStation(downStation)
-                .distance(distance)
                 .section(section)
                 .build();
     }

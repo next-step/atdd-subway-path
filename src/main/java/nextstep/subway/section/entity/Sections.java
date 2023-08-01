@@ -23,19 +23,15 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    private Integer distance;
-
     public Sections() {}
 
     public Sections(List<Section> sections) {
         this.sections = sections;
-        modifyDistance();
     }
 
-    public Sections(Section section, Line line, Integer distance) {
+    public Sections(Section section, Line line) {
         this.sections.add(section);
         section.addSection(line);
-        this.distance = distance;
     }
 
     public void addSection(Section section, Line line){
@@ -147,14 +143,6 @@ public class Sections {
         newSections(removeStation);
 
         this.sections.removeIf(section -> section.isExistsStation(removeStation));
-
-        modifyDistance();
-    }
-
-    private void modifyDistance() {
-        this.distance = sections.stream()
-                .mapToInt(Section::getDistance)
-                .sum();
     }
 
     private boolean alreadySection(Section section) {
@@ -243,5 +231,11 @@ public class Sections {
         } else {
             return Optional.of(sections.get(sections.size() - 1));
         }
+    }
+
+    public int getDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 }
