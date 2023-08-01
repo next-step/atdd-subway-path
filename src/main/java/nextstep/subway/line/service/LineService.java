@@ -1,6 +1,5 @@
 package nextstep.subway.line.service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.line.controller.dto.LineRequest;
@@ -37,8 +36,12 @@ public class LineService {
         return createLineResponse(savedLine);
     }
 
+    public List<Line> getAllLines() {
+        return lineRepository.findAll();
+    }
+
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
+        List<Line> lines = getAllLines();
         return createLineResponseList(lines);
     }
 

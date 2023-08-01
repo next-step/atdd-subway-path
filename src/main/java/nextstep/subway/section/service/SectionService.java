@@ -1,5 +1,7 @@
 package nextstep.subway.section.service;
 
+import java.util.List;
+import nextstep.subway.section.infra.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.domain.Line;
@@ -17,7 +19,8 @@ public class SectionService {
     private final StationService stationService;
 
     public SectionService(LineService lineService,
-            StationService stationService) {
+            StationService stationService
+        ) {
         this.lineService = lineService;
         this.stationService = stationService;
     }

@@ -8,7 +8,6 @@ import nextstep.subway.line.infra.LineRepository;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.section.controller.dto.SectionRequest;
 import nextstep.subway.section.service.SectionService;
-import nextstep.subway.station.controller.dto.StationRequest;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.infra.StationRepository;
 import nextstep.subway.station.service.StationService;
