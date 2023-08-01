@@ -29,24 +29,23 @@ public class SubwayLineRegisterDomainTest {
 
         Station.Id id = new Station.Id(1L);
         String name1 = "강남역";
-        Station station1 = Station.of(id, name1);
+        Station upStation = Station.of(id, name1);
 
         Station.Id id2 = new Station.Id(2L);
         String name2 = "역삼역";
-        Station station2 = Station.of(id2, name2);
+        Station downStation = Station.of(id2, name2);
 
         BigDecimal number = BigDecimal.TEN;
         Kilometer kilometer = Kilometer.of(number);
 
         //when
-        SubwaySection subwaySection = SubwaySection.register(station1, station2, kilometer);
-        SubwayLine subwayLine = SubwayLine.register(name, color, subwaySection);
+        SubwayLine subwayLine = SubwayLine.register(name, color, upStation, downStation, kilometer);
 
         //then
         Assertions.assertThat(subwayLine.getName()).isEqualTo(name);
         Assertions.assertThat(subwayLine.getColor()).isEqualTo(color);
         Assertions.assertThat(subwayLine.getSectionSize()).isEqualTo(1);
-        Assertions.assertThat(subwayLine.existsUpStation(subwaySection.getUpStationId())).isTrue();
+        Assertions.assertThat(subwayLine.existsUpStation(upStation.getId())).isTrue();
 
     }
 

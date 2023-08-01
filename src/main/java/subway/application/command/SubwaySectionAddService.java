@@ -7,10 +7,9 @@ import subway.application.command.out.SubwaySectionAddPort;
 import subway.application.command.in.SubwaySectionAddUsecase;
 import subway.application.command.out.StationMapLoadByInPort;
 import subway.application.command.out.SubwayLineLoadPort;
-import subway.domain.SectionUpdateManager;
+import subway.domain.SectionAddManager;
 import subway.domain.Station;
 import subway.domain.SubwayLine;
-import subway.domain.SubwaySection;
 
 import java.util.List;
 import java.util.Map;
@@ -22,14 +21,14 @@ class SubwaySectionAddService implements SubwaySectionAddUsecase {
 
     private final StationMapLoadByInPort stationMapLoadByInPort;
     private final SubwayLineLoadPort subwayLineLoadPort;
-    private final SectionUpdateManager sectionUpdateManager;
+    private final SectionAddManager sectionAddManager;
     private final SubwaySectionAddPort subwaySectionAddPort;
 
     @Autowired
-    SubwaySectionAddService(StationMapLoadByInPort stationMapLoadByInPort, SubwayLineLoadPort subwayLineLoadPort, SectionUpdateManager sectionUpdateManager, SubwaySectionAddPort subwaySectionAddPort) {
+    SubwaySectionAddService(StationMapLoadByInPort stationMapLoadByInPort, SubwayLineLoadPort subwayLineLoadPort, SectionAddManager sectionAddManager, SubwaySectionAddPort subwaySectionAddPort) {
         this.stationMapLoadByInPort = stationMapLoadByInPort;
         this.subwayLineLoadPort = subwayLineLoadPort;
-        this.sectionUpdateManager = sectionUpdateManager;
+        this.sectionAddManager = sectionAddManager;
         this.subwaySectionAddPort = subwaySectionAddPort;
     }
 
@@ -42,9 +41,7 @@ class SubwaySectionAddService implements SubwaySectionAddUsecase {
         Station downStation = getStationBy(commandSection.getDownStationId(), idToStationMap);
         SubwayLine subwayLine = subwayLineLoadPort.findOne(command.getSubwayLineId());
 
-        SubwaySection subwaySection = SubwaySection.register(upStation, downStation, commandSection.getDistance());
-
-        subwayLine.addSection(subwaySection, sectionUpdateManager);
+        subwayLine.addSection(upStation, downStation, commandSection.getDistance(), sectionAddManager);
         subwaySectionAddPort.addSubwaySection(subwayLine);
     }
 

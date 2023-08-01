@@ -18,7 +18,9 @@ public class SubwayLine {
     private Station.Id startStationId;
     private final SubwaySections sections;
 
-    public static SubwayLine register(String name, String color, SubwaySection subwaySection) {
+    public static SubwayLine register(String name, String color, Station upStation, Station downStation, Kilometer distance) {
+        SubwaySection subwaySection = SubwaySection.register(upStation, downStation, distance);
+
         SubwayLine subwayLine = new SubwayLine(name, color, subwaySection);
         subwayLine.validate();
         return subwayLine;
@@ -68,9 +70,10 @@ public class SubwayLine {
         this.color = color;
     }
 
-    public void addSection(SubwaySection subwaySection, SectionUpdateManager manager) {
-        SectionAdder updater = manager.getUpdater(this);
-        updater.apply(this, subwaySection);
+    public void addSection(Station upStation, Station downStation, Kilometer kilometer, SectionAddManager manager) {
+        SubwaySection subwaySection = SubwaySection.register(upStation, downStation, kilometer);
+        SectionAdder updater = manager.getUpdater(this, subwaySection);
+        updater.execute(this, subwaySection);
         validate();
     }
 
@@ -79,6 +82,8 @@ public class SubwayLine {
         closer.apply(this, station);
         validate();
     }
+
+
 
     void registerSection(SubwaySection subwaySection) {
         sections.add(subwaySection);
@@ -98,6 +103,21 @@ public class SubwayLine {
 
     void closeSection(Station station) {
         sections.close(station);
+    }
+
+    public boolean hasDuplicateSection(SubwaySection subwaySection) {
+        return sections.hasDuplicateSection(subwaySection);
+    }
+    public boolean isStartStation(Station.Id stationId) {
+        return startStationId.equals(stationId);
+    }
+
+    public void updateStartStation(Station.Id stationId) {
+        this.startStationId = stationId;
+    }
+
+    public void reduceSection(SubwaySection subwaySection) {
+        sections.reduceSection(subwaySection);
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

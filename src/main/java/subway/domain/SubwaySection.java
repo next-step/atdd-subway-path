@@ -1,17 +1,20 @@
 package subway.domain;
 
+import lombok.Getter;
+
 import java.util.Objects;
 
 public class SubwaySection {
 
     private final Id id;
-    private final SubwaySectionStation upStation;
-    private final SubwaySectionStation downStation;
-    private final Kilometer distance;
+    private SubwaySectionStation upStation;
+    private SubwaySectionStation downStation;
+    @Getter
+    private Kilometer distance;
 
-    public static SubwaySection register(Station startStation, Station endStation, Kilometer kilometer) {
-        SubwaySectionStation startSectionStation = SubwaySectionStation.from(startStation);
-        SubwaySectionStation endSectionStation = SubwaySectionStation.from(endStation);
+    public static SubwaySection register(Station upStation, Station downStation, Kilometer kilometer) {
+        SubwaySectionStation startSectionStation = SubwaySectionStation.from(upStation);
+        SubwaySectionStation endSectionStation = SubwaySectionStation.from(downStation);
         return new SubwaySection(startSectionStation, endSectionStation, kilometer);
     }
 
@@ -57,10 +60,6 @@ public class SubwaySection {
         return id;
     }
 
-    public Kilometer getDistance() {
-        return distance;
-    }
-
     public boolean isNew() {
         return id.isNew();
     }
@@ -69,6 +68,18 @@ public class SubwaySection {
         return downStation.getId().equals(station.getId());
     }
 
+    void reduce(SubwaySection newSection) {
+        if (this.equals(newSection)) {
+            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+        }
+        this.distance = this.distance.minus(newSection.distance);
+        this.upStation = this.upStation.equals(newSection.upStation) ? newSection.downStation : this.upStation;
+        this.downStation = this.downStation.equals(newSection.downStation) ? newSection.upStation : this.downStation;
+    }
+
+    void validate() {
+        this.distance.validate();
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
