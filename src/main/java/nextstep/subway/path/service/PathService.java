@@ -2,23 +2,15 @@ package nextstep.subway.path.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
-import nextstep.subway.common.exception.CustomException;
-import nextstep.subway.common.exception.ErrorCode;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.path.controller.dto.PathResponse;
 import nextstep.subway.path.domain.PathGraph;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.controller.dto.StationResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.service.StationService;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 
 @Service
