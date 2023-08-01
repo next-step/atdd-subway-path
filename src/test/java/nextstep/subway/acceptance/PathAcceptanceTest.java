@@ -11,11 +11,16 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
-public class PathAcceptanceTest extends RestAssuredTest{
+@DisplayName("지하철 경로조회 관련 기능")
+@Sql("/teardown.sql")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+public class PathAcceptanceTest {
   @LocalServerPort
   int port;
   private String 교대역;
@@ -49,12 +54,12 @@ public class PathAcceptanceTest extends RestAssuredTest{
     교대역 = 역_만들기("교대역").jsonPath().getString("id");
     강남역 = 역_만들기("강남역").jsonPath().getString("id");
     양재역 = 역_만들기("양재역").jsonPath().getString("id");
-    남부터미널역 = 역_만들기("남부터미널역").jsonPath().get("id");
-    고속터미널역 = 역_만들기("고속터미널역").jsonPath().get("id");
-    신사역 = 역_만들기("신사역").jsonPath().get("id");
+    남부터미널역 = 역_만들기("남부터미널역").jsonPath().getString("id");
+    고속터미널역 = 역_만들기("고속터미널역").jsonPath().getString("id");
+    신사역 = 역_만들기("신사역").jsonPath().getString("id");
 
-    서울역 = 역_만들기("서울역").jsonPath().get("id");
-    부산역 = 역_만들기("부산역").jsonPath().get("id");
+    서울역 = 역_만들기("서울역").jsonPath().getString("id");
+    부산역 = 역_만들기("부산역").jsonPath().getString("id");
 
     이호선 = 노선_만들기("2호선", "green", 교대역, 강남역, "10").jsonPath().getString("id");
     신분당선 = 노선_만들기("신분당선", "red", 강남역, 양재역, "10").jsonPath().getString("id");
@@ -79,7 +84,7 @@ public class PathAcceptanceTest extends RestAssuredTest{
 
     // THEN
     경로_조회_구간_검증(response, "교대역", "남부터미널역", "양재역");
-    경로_조회_거리_검증(response, "5");
+    경로_조회_거리_검증(response, 5L );
   }
 
   /**
@@ -110,6 +115,7 @@ public class PathAcceptanceTest extends RestAssuredTest{
 
     // Then
     assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+
   }
 
   /**
@@ -139,13 +145,13 @@ public class PathAcceptanceTest extends RestAssuredTest{
             .extract();
     return response;
   }
-  
+
   private void 경로_조회_구간_검증(ExtractableResponse<Response> response, String... values) {
     assertThat(response.jsonPath().getList("stations.name")).containsExactly(values);
   }
 
-  private void 경로_조회_거리_검증(ExtractableResponse<Response> response, String distance) {
-    assertThat(response.jsonPath().getList("distance")).isEqualTo(distance);
+  private void 경로_조회_거리_검증(ExtractableResponse<Response> response, Long distance) {
+    assertThat(response.jsonPath().getLong("distance")).isEqualTo(distance);
   }
 
 }
