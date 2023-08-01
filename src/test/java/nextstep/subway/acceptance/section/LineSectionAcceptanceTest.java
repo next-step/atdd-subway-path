@@ -6,6 +6,7 @@ import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
 import nextstep.subway.linesection.LineSectionRepository;
 import nextstep.subway.linesection.LineSectionRequest;
+import nextstep.subway.station.Station;
 import org.apache.commons.lang3.RandomUtils;
 import org.codehaus.groovy.transform.SourceURIASTTransformation;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static nextstep.subway.acceptance.line.LineFixture.지하철_노선_생성_ID;
 import static nextstep.subway.acceptance.line.LineFixture.지하철_노선_조회;
 import static nextstep.subway.acceptance.station.StationFixture.지하철역_생성_ID;
@@ -25,15 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
-
-    @Autowired
-    LineSectionRepository lineSectionRepository;
-
     private Long firstStationId;
     private Long secondStationId;
     private Long thirdStationId;
     private Long fourthStationId;
-
     private Long fistLineId;
 
     @BeforeEach
@@ -146,7 +145,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
              * When 지하철 구간을 제거한다.
              * then 지하철 노선에서 해당 구간이 제거되어있는지 확인한다.
              */
-            @DisplayName("지하찰_구간_삭제")
+            @DisplayName("지하찰_구간_끝역_삭제")
             @Test
             void case_0() {
                 //given
@@ -155,9 +154,39 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 //when
                 지하철_구간_삭제(fistLineId, fourthStationId);
                 //then
-                LineResponse response = 지하철_노선_조회(fistLineId);
-                assertThat(response.getStations().size()).isEqualTo(3);
-                assertThat(response.getStations().get(2).getId()).isEqualTo(thirdStationId);
+                assertThat(지하철역_ID_리스트_조회()).containsExactly(firstStationId, secondStationId, thirdStationId);
+            }
+
+            @DisplayName("지하찰_구간_중간역_삭제")
+            @Test
+            void case_1() {
+                //given
+                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId));
+                지하철_구간_생성(fistLineId, 구간_생성_요청서(thirdStationId, fourthStationId));
+                //when
+                지하철_구간_삭제(fistLineId, thirdStationId);
+                //then
+                assertThat(지하철역_ID_리스트_조회()).containsExactly(firstStationId, secondStationId, fourthStationId);
+            }
+
+            @DisplayName("지하찰_구간_첫번째역_삭제")
+            @Test
+            void case_2() {
+                //given
+                지하철_구간_생성(fistLineId, 구간_생성_요청서(secondStationId, thirdStationId));
+                지하철_구간_생성(fistLineId, 구간_생성_요청서(thirdStationId, fourthStationId));
+                //when
+                지하철_구간_삭제(fistLineId, firstStationId);
+                //then
+                assertThat(지하철역_ID_리스트_조회()).containsExactly(secondStationId, thirdStationId, fourthStationId);
+            }
+
+            private List<Long> 지하철역_ID_리스트_조회() {
+                List<Long> stationIdList = 지하철_노선_조회(fistLineId).getStations()
+                        .stream()
+                        .map(e -> e.getId())
+                        .collect(Collectors.toList());
+                return stationIdList;
             }
         }
 
@@ -171,12 +200,24 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
              * When 지하철 구간을 제거한다.
              * Then 지하철 구간이 제거 되지 않고 예외를 발생시킨다.
              */
-            @DisplayName("지하찰_구간_삭제 - 지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.")
+            @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없다")
             @Test
             void case_1() {
                 //when
                 //then
                 지하철_구간_삭제_응답_상태값_체크(fistLineId, secondStationId, HttpStatus.BAD_REQUEST);
+            }
+
+            /**
+             * first -> second 노선
+             * fourth 역 삭제
+             */
+            @DisplayName("노선에 등록되어있지 않은 역을 제거하려 한다.")
+            @Test
+            void case_2() {
+                //when
+                //then
+                지하철_구간_삭제_응답_상태값_체크(fistLineId,fourthStationId,HttpStatus.BAD_REQUEST);
             }
         }
     }
