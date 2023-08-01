@@ -38,7 +38,6 @@ public class LineService {
                 .map(this::createLineResponse)
                 .collect(Collectors.toList());
     }
-
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoSuchElementException::new);

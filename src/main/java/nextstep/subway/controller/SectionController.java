@@ -15,7 +15,7 @@ import nextstep.subway.service.LineService;
 @RestController
 public class SectionController {
 
-    private LineService lineService;
+    private final LineService lineService;
 
     public SectionController(LineService lineService) {
         this.lineService = lineService;
