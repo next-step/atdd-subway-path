@@ -16,7 +16,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
-
+    //TODO: 이 Getter가 다시 돌아 왔는데... Path에서 Lines 에 대한 Sections을 구할 때
+    //      어떻게 진행해야 잘하는 것인지 조금 궁금하네요..
+    @Getter
     @Embedded
     private final Sections sections = new Sections();
     @Id
@@ -62,6 +64,9 @@ public class Line {
 
     public Section getLastSection() {
         return sections.getLastSection();
+    }
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
 }

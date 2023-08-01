@@ -8,14 +8,19 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import lombok.Getter;
 
 @Embeddable
 public class Sections {
 
   public static final int MINIMUM_SIZE = 1;
   public static final int MINIMUM_DISTANCE = 0;
+  @Getter
   @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
   private final List<Section> sections = new ArrayList<>();
+
+  public Sections() {
+  }
 
   private static void compareDistance(Section section, Section registeredSection) {
     if (registeredSection.getDistance() - section.getDistance() <= MINIMUM_DISTANCE) {
@@ -167,5 +172,11 @@ public class Sections {
     return sections.stream().map(Section::getDownStation)
         .collect(Collectors.toList());
   }
+  public static Sections of(List<Section> addedSections){
+    Sections sections = new Sections();
+    Line line = new Line();
 
+    addedSections.forEach(section -> sections.addSection(section, line));
+    return sections;
+  }
 }
