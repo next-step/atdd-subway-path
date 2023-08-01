@@ -16,7 +16,7 @@ import static nextstep.subway.line.SubwayLineSteps.지하철노선등록요청_�
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 조회")
-class PathAcceptanceTest extends ApiTest {
+class GeneratedPathFinderAcceptanceTest extends ApiTest {
 
     private Long 교대역, 강남역, 남부터미널역, 양재역, 학동역, 청담역;
 

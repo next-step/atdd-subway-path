@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("PathService 테스트")
 @SpringBootTest
-class PathServiceTest {
+class GeneratedPathFinderServiceTest {
 
     @Autowired
     private StationRepository stationRepository;

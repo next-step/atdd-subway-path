@@ -12,7 +12,7 @@ public class PathDto {
     private final Set<StationDto> stationDtos;
     private final int distance;
 
-    public PathDto(Set<StationDto> stationDtos, int distance) {
+    private PathDto(Set<StationDto> stationDtos, int distance) {
         this.stationDtos = stationDtos;
         this.distance = distance;
     }
