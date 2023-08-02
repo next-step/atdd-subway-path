@@ -1,5 +1,6 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.exception.FindPathException;
 import nextstep.subway.exception.SectionAddException;
 import nextstep.subway.exception.SectionDeleteException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,6 +22,11 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(SectionDeleteException.class)
     public ResponseEntity<Void> handleSectionDeleteException(SectionDeleteException e) {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(FindPathException.class)
+    public ResponseEntity<Void> handleFindPathException(FindPathException e) {
         return ResponseEntity.badRequest().build();
     }
 }

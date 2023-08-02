@@ -60,7 +60,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id")).containsExactly(교대역, 남부터미널역, 양재역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(response.jsonPath().getObject("distance", Integer.class)).isEqualTo(5);
     }
 
