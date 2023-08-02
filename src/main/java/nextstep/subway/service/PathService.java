@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PathService {
   private final LineRepository lineRepository;
-  private final StationRepository stationRepository;
+  private final StationService stationService;
   public PathResponse findPath(Long source, Long target) {
     List<Line> lines = lineRepository.findAll();
 
-    Station sourceStation = stationRepository.findById(source).orElseThrow(() -> new RuntimeException("존재하지 않는 출발역입니다."));
-    Station targetStation = stationRepository.findById(target).orElseThrow(() -> new RuntimeException("존재하지 않는 도착역입니다."));;
+    Station sourceStation = stationService.getStation(source);
+    Station targetStation = stationService.getStation(target);
 
     PathFinderStrategy pathFinderStrategy = JgraphPathFinder.of(lines);
     Path path = pathFinderStrategy.findShortestPath(sourceStation, targetStation);
