@@ -68,11 +68,6 @@ public class PathAcceptanceTest {
     구간_추가(삼호선, 남부터미널역, 양재역, "3");
   }
 
-  /**
-   * Given 노선이 3개 주어지고 노선이 서로 연결되었을때,
-   * When 교대역에서 양재역까지 최소 거리를 구할 때,
-   * Then 교대역 -> 남부터미널역 -> 양재역 으로 총 12 의 거리를 최소 경로로 조회한다.
-   */
   @DisplayName("최소 거리의 경로를 조회한다.")
   @Test
   void findShortestRoute() {
@@ -88,7 +83,7 @@ public class PathAcceptanceTest {
   }
 
   /**
-   * Given 노선이 3개 주어지고 노선이 서로 연결되었을때,
+   * Given 노선들이 주어지고 노선이 서로 연결되었을때,
    * When 교대역에서 교대역까지 최소 거리를 구할 때,
    * Then 빈 경로로 최소 경로로 조회에 실패한다.
    */
@@ -99,12 +94,12 @@ public class PathAcceptanceTest {
     ExtractableResponse<Response> response = 경로_조회(교대역, 교대역);
 
     // Then
-    assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
   /**
-   * Given 노선이 4개 주어지고 4호선은 연결되어 있지 않을때,
-   * When 교대역에서 신사역까지 최소 거리를 구할 때,
+   * Given 노선이 주어지고 노선 연결되어 있지 않을때,
+   * When 역에서 역까지 최소 거리를 구할 때,
    * Then 연결되어 있지 않아 조회에 실패한다.
    */
   @DisplayName("오류 케이스: 출발역과 도착역이 연결되어 있지 않아 경로 조회에 실패한다.")
@@ -114,13 +109,13 @@ public class PathAcceptanceTest {
     ExtractableResponse<Response> response = 경로_조회(교대역, 신사역);
 
     // Then
-    assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
   }
 
   /**
-   * Given 노선이 3개 주어지고 노선이 서로 연결되었을때,
-   * When 서울역에서 부산역까지 최소 거리를 구할 때,
+   * Given 노선이 주어지고 노선이 서로 연결되었을때,
+   * When 존재하지 않는 역에서 존재하지 않는 역까지 최소 거리를 구할 때,
    * Then 존재하지 않는 역으로 경로 조회가 실패한다.
    */
   @DisplayName("오류 케이스: 출발역과 도착역이 존재하지 않아 경로 조회에 실패한다.")
@@ -130,7 +125,7 @@ public class PathAcceptanceTest {
     ExtractableResponse<Response> response = 경로_조회(서울역, 부산역);
 
     // Then
-    assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
   }
 
   private static ExtractableResponse<Response> 경로_조회(String source, String target) {
