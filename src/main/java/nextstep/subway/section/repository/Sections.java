@@ -1,6 +1,7 @@
 package nextstep.subway.section.repository;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.section.policy.AddSectionPolicy;
 import nextstep.subway.section.policy.DeleteSectionPolicy;
@@ -20,8 +21,10 @@ public class Sections {
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
 
+    @Getter
     private Long firstStationId;
 
+    @Getter
     private Long lastStationId;
 
     public void addSection(Section section) {
