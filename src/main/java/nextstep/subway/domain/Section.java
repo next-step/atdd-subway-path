@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.exception.ErrorType;
 import nextstep.subway.exception.SectionAddException;
-import org.jgrapht.graph.WeightedMultigraph;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -94,9 +93,5 @@ public class Section {
 
     public boolean has(Station station) {
         return upStation.equals(station) || downStation.equals(station);
-    }
-
-    public void addEdge(WeightedMultigraph graph) {
-        graph.setEdgeWeight(graph.addEdge(upStation, downStation), distance);
     }
 }

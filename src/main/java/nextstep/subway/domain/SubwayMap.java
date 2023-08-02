@@ -18,7 +18,11 @@ public class SubwayMap {
 
     public static SubwayMap create(List<Line> lines) {
         WeightedMultigraph graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        lines.forEach(line -> line.addVertexAndEdge(graph));
+        lines.forEach(line -> {
+            line.getStations().forEach(graph::addVertex);
+            line.getSections().forEach(section -> graph.setEdgeWeight(graph.addEdge(
+                    section.getUpStation(), section.getDownStation()), section.getDistance()));
+        });
         return new SubwayMap(graph);
     }
 
