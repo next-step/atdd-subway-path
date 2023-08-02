@@ -2,6 +2,8 @@ package nextstep.subway.service.line;
 
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.PathFinder;
+import nextstep.subway.domain.line.ShortPath;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.exception.LineNotFoundException;
@@ -10,6 +12,7 @@ import nextstep.subway.service.line.request.LineCreateRequest;
 import nextstep.subway.service.line.request.LineModifyRequest;
 import nextstep.subway.service.line.request.SectionAddRequest;
 import nextstep.subway.service.line.response.LineResponse;
+import nextstep.subway.service.line.response.ShortPathResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +62,18 @@ public class LineService {
         return lineRepository.findById(id)
                 .map(LineResponse::of)
                 .orElseThrow(LineNotFoundException::new);
+    }
+
+    public ShortPathResponse findShortPath(Long startStationId, Long endStationId) {
+        Station startStation = stationRepository.findById(startStationId)
+                .orElseThrow(StationNotFoundException::new);
+
+        Station endStation = stationRepository.findById(endStationId)
+                .orElseThrow(StationNotFoundException::new);
+
+        PathFinder pathFinder = new PathFinder(lineRepository.findAll());
+        ShortPath shortPath = pathFinder.findShortPath(startStation, endStation);
+        return ShortPathResponse.of(shortPath);
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import nextstep.subway.service.line.request.LineCreateRequest;
 import nextstep.subway.service.line.request.LineModifyRequest;
 import nextstep.subway.service.line.request.SectionAddRequest;
 import nextstep.subway.service.line.response.LineResponse;
+import nextstep.subway.service.line.response.ShortPathResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +60,12 @@ public class LineController {
     public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
         lineService.deleteSection(id, stationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/path")
+    public ResponseEntity<ShortPathResponse> findShortPath(@RequestParam Long startStationId, @RequestParam Long endStationId) {
+        ShortPathResponse shortPath = lineService.findShortPath(startStationId, endStationId);
+        return ResponseEntity.ok().body(shortPath);
     }
 
 }

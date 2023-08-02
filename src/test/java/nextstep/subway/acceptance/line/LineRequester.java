@@ -25,6 +25,11 @@ public class LineRequester {
                 .jsonPath().getObject("id", Long.class);
     }
 
+    public static Long createLineThenReturnId(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return createLineRequest(name, color, upStationId, downStationId, distance)
+                .jsonPath().getObject("id", Long.class);
+    }
+
     public static ExtractableResponse<Response> modifyLine(Long id, String name, String color) {
         return modifyLineRequest(id, name, color);
     }
@@ -39,6 +44,10 @@ public class LineRequester {
 
     public static ExtractableResponse<Response> deleteSection(Long id, Long stationId) {
         return deleteSectionRequest(id, stationId);
+    }
+
+    public static ExtractableResponse<Response> findShortPath(Long startStationId, Long endStationId) {
+        return findShortPathRequest(startStationId, endStationId);
     }
 
     private static ExtractableResponse<Response> findLineRequest(Long id) {
@@ -98,6 +107,15 @@ public class LineRequester {
                 .pathParam("id", id)
                 .param("stationId", stationId)
                 .when().delete("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> findShortPathRequest(Long startStationId, Long endStationId) {
+        return RestAssured.given().log().all()
+                .param("startStationId", startStationId)
+                .param("endStationId", endStationId)
+                .when().get("/lines/path")
                 .then().log().all()
                 .extract();
     }
