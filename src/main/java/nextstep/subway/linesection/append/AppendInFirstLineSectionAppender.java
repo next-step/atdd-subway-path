@@ -7,7 +7,7 @@ public class AppendInFirstLineSectionAppender implements LineSectionAppender {
     @Override
     public boolean append(LineSections sections, LineSection addSection) {
         if (isAddableInFirst(sections, addSection)) {
-            sections.getSections().add(0, addSection);
+            sections.addInFirst(addSection);
             return true;
         }
         return false;

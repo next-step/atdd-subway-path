@@ -10,13 +10,12 @@ public class DownStationLineSectionAppender implements LineSectionAppender {
     @Override
     public boolean append(LineSections sections, LineSection addSection) {
         int idx = sections.getIndex(addSection);
-        List<LineSection> sectionList = sections.getSections();
         if (sections.containsStation(addSection.getDownStation())) {
-            LineSection section = sectionList.get(idx);
+            LineSection section = sections.getSections().get(idx);
             checkDistance(section, addSection);
-            sectionList.add(idx, LineSection.of(addSection.getLine(), section.getUpStation(), addSection.getUpStation(), section.getDistance() - addSection.getDistance()));
-            sectionList.add(idx + 1, LineSection.of(addSection.getLine(), addSection.getUpStation(), section.getDownStation(), addSection.getDistance()));
-            sectionList.remove(section);
+            sections.addToIndex(idx, LineSection.of(addSection.getLine(), section.getUpStation(), addSection.getUpStation(), section.getDistance() - addSection.getDistance()));
+            sections.addToIndex(idx + 1, LineSection.of(addSection.getLine(), addSection.getUpStation(), section.getDownStation(), addSection.getDistance()));
+            sections.removeSection(section);
             return true;
         }
         return false;

@@ -8,7 +8,7 @@ public class AppendInEndLineSectionAppender implements LineSectionAppender {
     @Override
     public boolean append(LineSections sections, LineSection addSection) {
         if (isAddableInEnd(sections,addSection)) {
-            sections.getSections().add(addSection);
+            sections.addInEnd(addSection);
             return true;
         }
         return false;

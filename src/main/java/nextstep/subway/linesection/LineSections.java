@@ -1,16 +1,22 @@
 package nextstep.subway.linesection;
 
-import nextstep.subway.linesection.append.*;
-import org.springframework.util.CollectionUtils;
 import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.line.Line;
+import nextstep.subway.linesection.append.LineSectionAppenderHolder;
+import nextstep.subway.linesection.remove.LineSectionRemover;
+import nextstep.subway.linesection.remove.LineSectionRemoverHolder;
 import nextstep.subway.station.Station;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -20,9 +26,6 @@ public class LineSections {
     @OrderColumn
     @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private final List<LineSection> sections = new ArrayList<>();
-
-    private static List<LineSectionAppender> appenders = List.of(new AppendInFirstLineSectionAppender(), new AppendInEndLineSectionAppender(),
-            new UpStationLineSectionAppender(), new DownStationLineSectionAppender());
     private static final int MINIMUM_SIZE = 1;
 
     public static LineSections of(Line line, Station upStation, Station downStation, Integer distance) {
@@ -33,7 +36,7 @@ public class LineSections {
 
     public void add(LineSection addSection) {
         validateAddableSection(addSection);
-        for (var appender : appenders) {
+        for (var appender : LineSectionAppenderHolder.getContext()) {
             boolean isExecuted = appender.append(this, addSection);
             if (isExecuted)
                 return;
@@ -44,7 +47,7 @@ public class LineSections {
         return IntStream.range(0, sections.size())
                 .filter(idx -> containsUpStationOrDownStation(section, sections.get(idx)))
                 .findFirst()
-                .getAsInt();
+                .orElseThrow(() -> new BadRequestException("the section is not eixisted in line."));
     }
 
     private boolean containsUpStationOrDownStation(LineSection section, LineSection target) {
@@ -57,33 +60,24 @@ public class LineSections {
 
     public void remove(Station deleteStation) {
         validateRemovableSection(deleteStation);
-        if (deleteStation.equals(getFirstStation())) {
-            sections.remove(0);
-            return;
+        for (LineSectionRemover remover : LineSectionRemoverHolder.getContext()) {
+            if (remover.remove(this, deleteStation))
+                return;
         }
-        if (deleteStation.equals(getLastStation())) {
-            sections.remove(getLastSection());
-            return;
-        }
-        LineSection beforeSection = findSectionByCondition(section -> section.getDownStation().equals(deleteStation));
-        LineSection nextSection = findSectionByCondition(section -> section.getUpStation().equals(deleteStation));
-        sections.remove(beforeSection);
-        sections.remove(nextSection);
-        sections.add(LineSection.of(beforeSection.getLine(), beforeSection.getUpStation(), nextSection.getDownStation(), beforeSection.getDistance() + nextSection.getDistance()));
     }
 
-    private LineSection findSectionByCondition(Predicate<LineSection> condition) {
+    public LineSection findSectionByCondition(Predicate<LineSection> condition) {
         return sections.stream()
                 .filter(condition::test)
                 .findAny()
-                .get();
+                .orElseThrow(() -> new BadRequestException("result finding by condition is not existed."));
     }
 
     private void validateRemovableSection(Station deleteStation) {
         if (this.sections.size() <= MINIMUM_SIZE) {
             throw new BadRequestException("the section cannot be removed because of minimum size.");
         }
-        if(!containsStation(deleteStation))
+        if (!containsStation(deleteStation))
             throw new BadRequestException("the station is not on the line.");
     }
 
@@ -132,6 +126,26 @@ public class LineSections {
     }
 
     public List<LineSection> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
+    }
+
+    public void addInEnd(LineSection addSection) {
+        sections.add(addSection);
+    }
+
+    public void addInFirst(LineSection addSection) {
+        sections.add(0, addSection);
+    }
+
+    public void addToIndex(int idx, LineSection addSection) {
+        sections.add(idx, addSection);
+    }
+
+    public void removeSection(LineSection section) {
+        sections.remove(section);
+    }
+
+    public void removeByIndex(int idx) {
+        sections.remove(idx);
     }
 }
