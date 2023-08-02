@@ -25,7 +25,7 @@ public class LineResponse {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                line.unmodifiableStations().stream().map(StationResponse::of).collect(Collectors.toList())
+                line.getStations().stream().map(StationResponse::of).collect(Collectors.toList())
         );
     }
 

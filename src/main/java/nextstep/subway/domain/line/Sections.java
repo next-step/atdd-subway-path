@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static javax.persistence.CascadeType.ALL;
@@ -57,7 +58,7 @@ public class Sections {
             stations.add(section.getDownStation());
             station = section.getDownStation();
         }
-        return stations;
+        return Collections.unmodifiableList(stations);
     }
 
     public List<Section> getSections(Station station) {
@@ -67,7 +68,7 @@ public class Sections {
             sections.add(section);
             station = section.getDownStation();
         }
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
     public Section findSectionByUpStation(Station station) {

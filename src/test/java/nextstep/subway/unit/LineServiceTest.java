@@ -2,14 +2,12 @@ package nextstep.subway.unit;
 
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
-import nextstep.subway.domain.line.Section;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.exception.*;
 import nextstep.subway.service.line.LineService;
 import nextstep.subway.service.line.request.SectionAddRequest;
 import nextstep.subway.service.line.response.LineResponse;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,10 +61,10 @@ public class LineServiceTest {
         // then
         List<Station> stations = lineRepository.findById(line.getId())
                 .orElse(null)
-                .unmodifiableStations();
+                .getStations();
 
         assertThat(stations).hasSize(5)
-                .containsExactlyInAnyOrder(DEARIM_STATION, GANGNAM_STATION, SEOLLEUNG_STATION, NOWON_STATION, SUWON_STATION);
+                .containsExactly(DEARIM_STATION, GANGNAM_STATION, SEOLLEUNG_STATION, NOWON_STATION, SUWON_STATION);
     }
 
     @DisplayName("지하철 노선 추가 시 노선에 구간에 역이 둘다 존재할 경우 에러를 던진다.")
@@ -144,7 +142,7 @@ public class LineServiceTest {
         // then
         assertThat(lineResponse.getStations()).hasSize(5)
                 .extracting("name")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         DEARIM_STATION.getName(),
                         GANGNAM_STATION.getName(),
                         NOWON_STATION.getName(),
@@ -173,7 +171,7 @@ public class LineServiceTest {
         // then
         assertThat(lineService.findLine(line.getId()).getStations()).hasSize(3)
                 .extracting("name")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         GANGNAM_STATION.getName(),
                         SEOLLEUNG_STATION.getName(),
                         SUWON_STATION.getName()

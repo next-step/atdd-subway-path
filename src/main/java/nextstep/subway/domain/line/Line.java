@@ -3,7 +3,6 @@ package nextstep.subway.domain.line;
 import nextstep.subway.domain.station.Station;
 
 import javax.persistence.*;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -51,12 +50,12 @@ public class Line {
         return lineDetail.getColor();
     }
 
-    public List<Station> unmodifiableStations() {
-        return Collections.unmodifiableList(lineStationDetail.getStations());
+    public List<Station> getStations() {
+        return lineStationDetail.getStations();
     }
 
-    public List<Section> unmodifiableSections() {
-        return Collections.unmodifiableList(lineStationDetail.getSections());
+    public List<Section> getSections() {
+        return lineStationDetail.getSections();
     }
 
 }

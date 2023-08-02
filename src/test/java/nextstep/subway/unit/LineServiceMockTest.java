@@ -58,7 +58,7 @@ public class LineServiceMockTest {
         // lineService.findLineById 메서드를 통해 검증
         assertThat(lineService.findLine(1L).getStations()).hasSize(3)
                 .extracting("name")
-                .containsExactlyInAnyOrder("강남역", "선릉역", "수원역");
+                .containsExactly("강남역", "선릉역", "수원역");
     }
 
     @DisplayName("지하철 노선 추가 시 노선에 구간에 역이 둘다 존재할 경우 에러를 던진다.")
@@ -134,7 +134,7 @@ public class LineServiceMockTest {
         // then
         assertThat(lineService.findLine(1L).getStations()).hasSize(2)
                 .extracting("name")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         GANGNAM_STATION.getName(),
                         SEOLLEUNG_STATION.getName()
                 );

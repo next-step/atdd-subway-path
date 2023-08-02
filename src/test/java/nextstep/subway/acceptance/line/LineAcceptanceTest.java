@@ -3,14 +3,10 @@ package nextstep.subway.acceptance.line;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.utils.DatabaseCleanup;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.acceptance.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
@@ -19,9 +15,7 @@ import static nextstep.subway.acceptance.station.StationRequester.createStationT
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철노선 관련 기능")
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class LineFactorTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final String GANGNAM_STATION_NAME = "강남역";
     private static final String SEOLLEUNG_STATION_NAME = "선릉역";
@@ -33,14 +27,6 @@ public class LineFactorTest {
     private static final String SHINBUNDANG_LINE_COLOR = "bg-red-600";
     private static final String BUNDANG_LINE_NAME = "분당선";
     private static final String BUNDANG_LINE_COLOR = "bg-green-600";
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        databaseCleanup.execute();
-    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -344,11 +330,6 @@ public class LineFactorTest {
     private Long 지하철노선_하행종점역_식별값_조회(Long id) {
         List<Long> stationIds = findLine(id).response().jsonPath().getList("stations.id", Long.class);
         return stationIds.get(stationIds.size() - 1);
-    }
-
-    private Long 지하철노선_하행종점역_이전역_식별값_조회(Long id) {
-        List<Long> stationIds = findLine(id).response().jsonPath().getList("stations.id", Long.class);
-        return stationIds.get(stationIds.size() - 2);
     }
 
     private void 지하철노선_구간_삭제_정상_역이름_검증(Long id) {

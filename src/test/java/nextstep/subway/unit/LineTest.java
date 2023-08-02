@@ -5,7 +5,6 @@ import nextstep.subway.domain.line.Section;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.*;
 import org.assertj.core.groups.Tuple;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +36,7 @@ class LineTest {
         line.addSection(SEOLLEUNG_STATION, NOWON_STATION, 2);
 
         // then
-        assertThat(line.unmodifiableStations())
+        assertThat(line.getStations())
                 .containsExactly(DEARIM_STATION, GANGNAM_STATION, SEOLLEUNG_STATION, NOWON_STATION, SUWON_STATION);
     }
 
@@ -91,7 +90,7 @@ class LineTest {
         line.addSection(NOWON_STATION, SEOLLEUNG_STATION, 1);
 
         // when
-        List<Station> stations = line.unmodifiableStations();
+        List<Station> stations = line.getStations();
 
         // then
         assertThat(stations).hasSize(5);
@@ -109,13 +108,13 @@ class LineTest {
         line.addSection(NOWON_STATION, SEOLLEUNG_STATION, 4);
 
         // when
-        List<Section> sections = line.unmodifiableSections();
+        List<Section> sections = line.getSections();
 
         // then
         assertThat(sections)
                 .hasSize(4)
                 .extracting("upStation", "downStation", "distance")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         Tuple.tuple(DEARIM_STATION, GANGNAM_STATION, 7),
                         Tuple.tuple(GANGNAM_STATION, NOWON_STATION, 6),
                         Tuple.tuple(NOWON_STATION, SEOLLEUNG_STATION, 4),
@@ -135,7 +134,7 @@ class LineTest {
         line.removeSection(NOWON_STATION);
 
         // then
-        assertThat(line.unmodifiableStations()).containsExactly(GANGNAM_STATION, SEOLLEUNG_STATION, SUWON_STATION);
+        assertThat(line.getStations()).containsExactly(GANGNAM_STATION, SEOLLEUNG_STATION, SUWON_STATION);
     }
 
     @DisplayName("지하철 노선 추가 후 구간 삭제시 구간정보가 1개이므로 삭제가 실패되어야 한다.")
@@ -172,13 +171,13 @@ class LineTest {
         line.addSection(NOWON_STATION, SUWON_STATION, 4);
         line.removeSection(NOWON_STATION);
         // when
-        List<Section> sections = line.unmodifiableSections();
+        List<Section> sections = line.getSections();
 
         // then
         assertThat(sections)
                 .hasSize(2)
                 .extracting("upStation", "downStation", "distance")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         Tuple.tuple(GANGNAM_STATION, SEOLLEUNG_STATION, 10),
                         Tuple.tuple(SEOLLEUNG_STATION, SUWON_STATION, 8)
                 );
