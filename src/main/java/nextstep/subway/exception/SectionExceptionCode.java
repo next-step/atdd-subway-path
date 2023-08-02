@@ -10,6 +10,10 @@ public enum SectionExceptionCode implements ExceptionCode {
   CANNOT_DELETE_SECTION(HttpStatus.BAD_REQUEST, "section-1001", "구간을 제거 할 수 없습니다."),
   EXCEED_MAXIMUM_DISTANCE(HttpStatus.BAD_REQUEST, "section-1002", "해당 구간에 허용된 거리를 초과하였습니다."),
   ONLY_POSITIVE_DISTANCE_ALLOWED(HttpStatus.BAD_REQUEST, "section-1003", "구간의 거리는 양수만 가능합니다."),
+  START_SECTION_NOT_FOUND(HttpStatus.NOT_FOUND, "section-1004", "시작 구간을 찾을 수 없습니다."),
+  CANNOT_DELETE_LAST_SECTION(HttpStatus.BAD_REQUEST, "section-1005", "노선에 구간이 하나만 남은 경우 삭제 할 수 없습니다."),
+  CANNOT_DELETE_NOT_INCLUDED_STATION(HttpStatus.BAD_REQUEST, "section-1006", "노선에 포함되지 않은 역은 삭제 할 수 없습니다."),
+  SECTION_NOT_FOUND(HttpStatus.NOT_FOUND, "section-1007", "구간을 찾을 수 없습니다."),
   ;
 
   private final HttpStatus httpStatus;

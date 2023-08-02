@@ -59,10 +59,10 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return this.sections.getStationsOfAllSection();
+        return this.sections.getStationsOfSection();
     }
 
     public void removeSection(Station station) {
-        sections.removeSectionDownStationOf(station);
+        sections.removeSection(this, station);
     }
 }
