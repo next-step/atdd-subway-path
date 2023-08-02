@@ -77,7 +77,7 @@ public class JgraphPathFinderTest {
     //When
     PathFinderStrategy finder = JgraphPathFinder.of(Arrays.asList(이호선,신분당선,삼호선,사호선,삼호선));
     //Then
-    Throwable thrown = catchThrowable(() -> { finder.findShortestPath(교대역, 교대역);});
+    Throwable thrown = catchThrowable(() -> finder.findShortestPath(교대역, 교대역));
 
     assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
     assertThat(thrown.getMessage()).isEqualTo("출발역과 도착역이 같습니다.");
@@ -89,7 +89,7 @@ public class JgraphPathFinderTest {
     //When
     PathFinderStrategy finder = JgraphPathFinder.of(Arrays.asList(이호선,신분당선,삼호선,사호선,삼호선,오호선));
     //Then
-    Throwable thrown = catchThrowable(() -> { finder.findShortestPath(서울역, 교대역);});
+    Throwable thrown = catchThrowable(() -> finder.findShortestPath(서울역, 교대역));
 
     assertThat(thrown).isInstanceOf(IllegalArgumentException.class);
     assertThat(thrown.getMessage()).isEqualTo("연결되어 있지 않은 구간입니다.");
