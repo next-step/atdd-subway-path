@@ -16,6 +16,7 @@ public enum SubwayError {
     NOT_FOUND_STATION(HttpStatus.BAD_REQUEST, "역정보를 찾을 수 없습니다."),
     NAME_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "이름정보가 유효하지 않습니다."),
     COLOR_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "색정보가 유효하지 않습니다."),
+    SHORTPATH_SAME_STATION(HttpStatus.BAD_REQUEST, "최단경로 시작역, 종착역이 동일할 수 없습니다.")
     ;
 
     SubwayError(HttpStatus status, String message) {

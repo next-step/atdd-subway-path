@@ -3,14 +3,10 @@ package nextstep.subway.acceptance.line;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.utils.DatabaseCleanup;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.acceptance.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
@@ -19,9 +15,7 @@ import static nextstep.subway.acceptance.station.StationRequester.createStationT
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철노선 관련 기능")
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class LineFactorTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
     private static final String GANGNAM_STATION_NAME = "강남역";
     private static final String SEOLLEUNG_STATION_NAME = "선릉역";
@@ -33,14 +27,10 @@ public class LineFactorTest {
     private static final String SHINBUNDANG_LINE_COLOR = "bg-red-600";
     private static final String BUNDANG_LINE_NAME = "분당선";
     private static final String BUNDANG_LINE_COLOR = "bg-green-600";
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        databaseCleanup.execute();
-    }
+    private static final String TWO_LINE_NAME = "2호선";
+    private static final String TWO_LINE_COLOR = "bg-green-600";
+    private static final String THREE_LINE_NAME = "3호선";
+    private static final String TRHEE_LINE_COLOR = "bg-blue-600";
 
     /**
      * When 지하철 노선을 생성하면
@@ -258,9 +248,103 @@ public class LineFactorTest {
         지하철노선_구간_삭제_노선에존재하지않는_역_삭제실패_응답값_검증(response);
     }
 
+    @DisplayName("강남역에서 수원역으로 가는 경로 2가지중 선릉역을 경유한 최단거리 경로를 리턴해야한다.")
+    @Test
+    void 강남역_수원역_최단경로_조회() {
+        // given
+        Long 강남역 = 지하철역_추가_식별값_리턴(GANGNAM_STATION_NAME);
+        Long 선릉역 = 지하철역_추가_식별값_리턴(SEOLLEUNG_STATION_NAME);
+        Long 수원역 = 지하철역_추가_식별값_리턴(SUWON_STATION_NAME);
+        Long 노원역 = 지하철역_추가_식별값_리턴(NOWON_STATION_NAME);
+
+        Long 신분당선 = 지하철노선_생성_후_식별값_리턴(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, 강남역, 선릉역, 2);
+        Long 이호선 = 지하철노선_생성_후_식별값_리턴(TWO_LINE_NAME, TWO_LINE_COLOR, 선릉역, 수원역, 3);
+        Long 삼호선 = 지하철노선_생성_후_식별값_리턴(THREE_LINE_NAME, TRHEE_LINE_COLOR, 강남역, 노원역, 2);
+
+        지하철노선_구간_추가(삼호선, 노원역, 수원역, 3);
+
+        // when
+        ExtractableResponse<Response> response = 최단거리조회(강남역, 수원역);
+
+        // then
+        강남역_수원역_최단경로_조회_응답값_검증(response);
+    }
+
+    @DisplayName("선릉역에서 수원역으로 가는 경로 1가지를 리턴해야한다.")
+    @Test
+    void 선릉역_수원역_최단경로_조회() {
+        // given
+        Long 강남역 = 지하철역_추가_식별값_리턴(GANGNAM_STATION_NAME);
+        Long 선릉역 = 지하철역_추가_식별값_리턴(SEOLLEUNG_STATION_NAME);
+        Long 수원역 = 지하철역_추가_식별값_리턴(SUWON_STATION_NAME);
+        Long 노원역 = 지하철역_추가_식별값_리턴(NOWON_STATION_NAME);
+
+        Long 신분당선 = 지하철노선_생성_후_식별값_리턴(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, 강남역, 선릉역, 2);
+        Long 이호선 = 지하철노선_생성_후_식별값_리턴(TWO_LINE_NAME, TWO_LINE_COLOR, 선릉역, 수원역, 3);
+        Long 삼호선 = 지하철노선_생성_후_식별값_리턴(THREE_LINE_NAME, TRHEE_LINE_COLOR, 강남역, 노원역, 2);
+
+        지하철노선_구간_추가(삼호선, 노원역, 수원역, 3);
+
+        // when
+        ExtractableResponse<Response> response = 최단거리조회(선릉역, 수원역);
+
+        // then
+        선릉역_수원역_최단경로_조회_응답값_검증(response);
+    }
+
+    @DisplayName("최단경로 조회 역중 노선에 포함되지 않은 역이 존재할 경우 에러를 응답한다.")
+    @Test
+    void 최단경로_노선_미포함역_조회시_조회실패() {
+        // given
+        Long 강남역 = 지하철역_추가_식별값_리턴(GANGNAM_STATION_NAME);
+        Long 선릉역 = 지하철역_추가_식별값_리턴(SEOLLEUNG_STATION_NAME);
+        Long 수원역 = 지하철역_추가_식별값_리턴(SUWON_STATION_NAME);
+        Long 노원역 = 지하철역_추가_식별값_리턴(NOWON_STATION_NAME);
+        Long 대림역 = 지하철역_추가_식별값_리턴(DEARIM_STATION_NAME);
+
+        Long 신분당선 = 지하철노선_생성_후_식별값_리턴(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, 강남역, 선릉역, 2);
+        Long 이호선 = 지하철노선_생성_후_식별값_리턴(TWO_LINE_NAME, TWO_LINE_COLOR, 선릉역, 수원역, 3);
+        Long 삼호선 = 지하철노선_생성_후_식별값_리턴(THREE_LINE_NAME, TRHEE_LINE_COLOR, 강남역, 노원역, 2);
+
+        지하철노선_구간_추가(삼호선, 노원역, 수원역, 3);
+
+        // when
+        ExtractableResponse<Response> response = 최단거리조회(선릉역, 대림역);
+
+        // then
+        최단경로_노선_미포함역_조회시_조회실패_응답값_검증(response);
+    }
+
+    @DisplayName("최단경로 조회 시작역, 종착역이 동일할 경우 에러를 응답한다.")
+    @Test
+    void 최단경로_시작역_종착역_동일할경우_조회실패() {
+        // given
+        Long 강남역 = 지하철역_추가_식별값_리턴(GANGNAM_STATION_NAME);
+        Long 선릉역 = 지하철역_추가_식별값_리턴(SEOLLEUNG_STATION_NAME);
+        Long 수원역 = 지하철역_추가_식별값_리턴(SUWON_STATION_NAME);
+        Long 노원역 = 지하철역_추가_식별값_리턴(NOWON_STATION_NAME);
+        Long 대림역 = 지하철역_추가_식별값_리턴(DEARIM_STATION_NAME);
+
+        Long 신분당선 = 지하철노선_생성_후_식별값_리턴(SHINBUNDANG_LINE_NAME, SHINBUNDANG_LINE_COLOR, 강남역, 선릉역, 2);
+        Long 이호선 = 지하철노선_생성_후_식별값_리턴(TWO_LINE_NAME, TWO_LINE_COLOR, 선릉역, 수원역, 3);
+        Long 삼호선 = 지하철노선_생성_후_식별값_리턴(THREE_LINE_NAME, TRHEE_LINE_COLOR, 강남역, 노원역, 2);
+
+        지하철노선_구간_추가(삼호선, 노원역, 수원역, 3);
+
+        // when
+        ExtractableResponse<Response> response = 최단거리조회(대림역, 대림역);
+
+        // then
+        최단경로_시작역_종착역_동일할경우_조회실패_응답값_검증(response);
+    }
+
 
     private Long 지하철노선_생성_후_식별값_리턴(String name, String color, String upStationName, String downStationName, int distance) {
         return createLineThenReturnId(name, color, upStationName, downStationName, distance);
+    }
+
+    private Long 지하철노선_생성_후_식별값_리턴(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return createLineThenReturnId(name, color, upStationId, downStationId, distance);
     }
 
     private void 지하철노선생성_역이름_검증(Long id) {
@@ -311,6 +395,10 @@ public class LineFactorTest {
         return createStationThenReturnId(stationName);
     }
 
+    private ExtractableResponse<Response> 지하철노선_구간_추가(Long lineId, Long upStationId, Long downStationId, int distance) {
+        return addSection(lineId, upStationId, downStationId, distance);
+    }
+
     private ExtractableResponse<Response> 지하철노선_구간_추가(Long lineId, String upStationName, String downStationName, int distance) {
         Long upStationId = createStationThenReturnId(upStationName);
         Long downStationId = createStationThenReturnId(downStationName);
@@ -319,6 +407,10 @@ public class LineFactorTest {
 
     private ExtractableResponse<Response> 지하철노선_구간_삭제(Long lineId, Long stationId) {
         return deleteSection(lineId, stationId);
+    }
+
+    private ExtractableResponse<Response> 최단거리조회(Long startStationId, Long endStationId) {
+        return findShortPath(startStationId, endStationId);
     }
 
     private void 지하철노선_구간_추가_결과_역이름_검증(Long id) {
@@ -346,11 +438,6 @@ public class LineFactorTest {
         return stationIds.get(stationIds.size() - 1);
     }
 
-    private Long 지하철노선_하행종점역_이전역_식별값_조회(Long id) {
-        List<Long> stationIds = findLine(id).response().jsonPath().getList("stations.id", Long.class);
-        return stationIds.get(stationIds.size() - 2);
-    }
-
     private void 지하철노선_구간_삭제_정상_역이름_검증(Long id) {
         JsonPath jsonPath = findLine(id).jsonPath();
         assertThat(jsonPath.getList("stations.name", String.class)).containsExactly(GANGNAM_STATION_NAME, SEOLLEUNG_STATION_NAME);
@@ -364,6 +451,28 @@ public class LineFactorTest {
     private void 지하철노선_구간_삭제_노선에존재하지않는_역_삭제실패_응답값_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.asString()).isEqualTo("구간정보를 찾을 수 없습니다.");
+    }
+
+    private void 강남역_수원역_최단경로_조회_응답값_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly(GANGNAM_STATION_NAME, SEOLLEUNG_STATION_NAME, SUWON_STATION_NAME);
+        assertThat(response.jsonPath().getObject("distance", Integer.class)).isEqualTo(5);
+    }
+
+    private void 선릉역_수원역_최단경로_조회_응답값_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly(SEOLLEUNG_STATION_NAME, SUWON_STATION_NAME);
+        assertThat(response.jsonPath().getObject("distance", Integer.class)).isEqualTo(3);
+    }
+
+    private void 최단경로_노선_미포함역_조회시_조회실패_응답값_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.asString()).isEqualTo("노선에 역이 존재하지 않습니다.");
+    }
+
+    private void 최단경로_시작역_종착역_동일할경우_조회실패_응답값_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("최단경로 시작역, 종착역이 동일할 수 없습니다.");
     }
 
 }
