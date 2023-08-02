@@ -133,7 +133,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 구간_추가("1", 네번째지하철역_아이디, 두번째지하철역_아이디, "10");
 
         // THEN
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -199,7 +199,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 구간_제거(첫째노선_아이디, 첫째지하철역_아이디);
 
         // THEN
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -216,7 +216,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 구간_제거("1", 첫째지하철역_아이디);
 
         // THEN
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("구간 추가 인수 테스트")
@@ -280,7 +280,7 @@ public class SectionAcceptanceTest {
             // WHEN
             ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 두번째지하철역_아이디, 세번째지하철역_아이디, "10");
             // THEN
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
         /**
@@ -297,7 +297,7 @@ public class SectionAcceptanceTest {
             // WHEN
             ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 두번째지하철역_아이디, 네번째지하철역_아이디, "5");
             // THEN
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
         /**
          * Given 1개의 지하철 노선을 생성하고 한개의 구간을 생성하고
@@ -313,7 +313,7 @@ public class SectionAcceptanceTest {
             // WHEN
             ExtractableResponse<Response> response = 구간_추가(첫째노선_아이디, 세번째지하철역_아이디, 네번째지하철역_아이디, "5");
             // THEN
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CONFLICT.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 
