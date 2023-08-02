@@ -1,8 +1,14 @@
 package nextstep.subway.domain;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import nextstep.subway.applicaion.exception.SectionDistanceException;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,10 +28,6 @@ public class Section {
 
     private int distance;
 
-    public Section() {
-
-    }
-
     public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
@@ -33,23 +35,29 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
-        return id;
+    public void modifyDistance(Section section){
+        if(this.distance <= section.getDistance()){
+            throw new SectionDistanceException("등록할 구간의 길이가 기존 역 사이 길이보다 크거나 같습니다.");
+        }
+        this.distance -= section.getDistance();
     }
 
-    public Line getLine() {
-        return line;
+    public void modifyUp(Station station){
+        this.upStation = station;
+    }
+    public void modifyDown(Station station){
+        this.downStation = station;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public boolean isUp(Station station){
+        return upStation.equals(station);
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public boolean isDown(Station station){
+        return downStation.equals(station);
     }
 
-    public int getDistance() {
-        return distance;
+    public boolean isExistedStation(Station station){
+        return isUp(station) || isDown(station);
     }
 }
