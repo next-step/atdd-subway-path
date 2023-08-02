@@ -1,21 +1,15 @@
 package subway.service;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.domain.Line;
-import subway.domain.Section;
 import subway.domain.Sections;
 import subway.domain.Station;
 import subway.dto.LineRequest;
 import subway.dto.SectionRequest;
-import subway.exception.impl.AlreadyExistDownStation;
-import subway.exception.impl.CannotCreateSectionException;
+import subway.exception.impl.CannotDeleteSectionException;
 import subway.exception.impl.LineNotFoundException;
-import subway.exception.impl.NoMatchStationException;
-import subway.exception.impl.NonLastStationDeleteNotAllowedException;
-import subway.exception.impl.SingleSectionDeleteNotAllowedException;
 import subway.repository.LineRepository;
 
 @Service
@@ -70,16 +64,8 @@ public class LineService {
     @Transactional
     public void removeSection(Long id, Long stationId) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
-        Sections sections = line.getSections();
+        Station station = stationService.findStationById(stationId);
 
-        if (sections.hasSingleSection()) {
-            throw new SingleSectionDeleteNotAllowedException();
-        }
-
-        if (sections.isNotLastStation(stationId)) {
-            throw new NonLastStationDeleteNotAllowedException();
-        }
-
-        line.removeSection();
+        line.removeSection(station);
     }
 }

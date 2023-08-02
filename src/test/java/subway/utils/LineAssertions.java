@@ -31,7 +31,7 @@ public class LineAssertions {
         Assertions.assertThat(노선.getDistance()).isEqualTo(40L);
     }
 
-    public static void 구간등록_성공_검증(ExtractableResponse<Response> HTTP응답, HttpStatus httpStatus,
+    public static void 구간연산_성공_검증(ExtractableResponse<Response> HTTP응답, HttpStatus httpStatus,
         Long distance, List<Long> stationIds) {
         assertThat(HTTP응답.statusCode()).isEqualTo(httpStatus.value());
 
@@ -44,7 +44,7 @@ public class LineAssertions {
         }
     }
 
-    public static void 구간등록_실패_검증(ExtractableResponse<Response> HTTP응답, SubwayErrorCode errorCode) {
+    public static void 구간연산_실패_검증(ExtractableResponse<Response> HTTP응답, SubwayErrorCode errorCode) {
         assertThat(HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
         ErrorResponse 오류응답 = HTTP응답.as(ErrorResponse.class);

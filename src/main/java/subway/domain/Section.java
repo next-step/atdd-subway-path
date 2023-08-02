@@ -71,6 +71,10 @@ public class Section {
         return this.upStation == station;
     }
 
+    public boolean isSameDownStation(Station station) {
+        return this.downStation == station;
+    }
+
     public boolean isIncludeStations(Set<Station> stationSet) {
         return stationSet.contains(this.upStation)
             && stationSet.contains(this.downStation);
@@ -93,5 +97,13 @@ public class Section {
     public boolean isAppendedToEnds(Section section) {
         return section.upStation.equals(this.downStation)
             || section.downStation.equals(this.upStation);
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return section.upStation.equals(this.upStation);
+    }
+
+    public boolean containsStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
     }
 }
