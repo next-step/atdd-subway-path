@@ -96,7 +96,6 @@ public class PathServiceTest {
         // given
         when(stationService.findById(stationIds.get(교대역))).thenReturn(교대역);
         when(stationService.findById(stationIds.get(양재역))).thenReturn(양재역);
-        when(stationService.findAllStations()).thenReturn(List.of(교대역, 강남역, 양재역, 남부터미널역));
         when(lineService.findAllLines()).thenReturn(List.of(이호선, 삼호선, 신분당선));
 
         // when
@@ -113,7 +112,6 @@ public class PathServiceTest {
         // given
         when(stationService.findById(stationIds.get(교대역))).thenReturn(교대역);
         when(stationService.findById(stationIds.get(신사역))).thenReturn(신사역);
-        when(stationService.findAllStations()).thenReturn(List.of(교대역, 강남역, 양재역, 남부터미널역, 신사역));
         when(lineService.findAllLines()).thenReturn(List.of(이호선, 삼호선, 신분당선));
 
         // when

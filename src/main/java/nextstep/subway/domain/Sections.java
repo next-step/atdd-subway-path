@@ -7,6 +7,7 @@ import nextstep.subway.domain.delete.SectionDeleteStrategy;
 import nextstep.subway.domain.delete.SectionDeleteType;
 import nextstep.subway.exception.ErrorType;
 import nextstep.subway.exception.SectionAddException;
+import org.jgrapht.graph.WeightedMultigraph;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -108,5 +109,9 @@ public class Sections {
 
     public boolean empty() {
         return sections.isEmpty();
+    }
+
+    public void addEdges(WeightedMultigraph graph) {
+        sections.forEach(section -> section.addEdge(graph));
     }
 }

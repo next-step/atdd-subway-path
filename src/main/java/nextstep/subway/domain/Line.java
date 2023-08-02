@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.exception.ErrorType;
 import nextstep.subway.exception.SectionDeleteException;
+import org.jgrapht.graph.WeightedMultigraph;
 
 import javax.persistence.*;
 import java.util.List;
@@ -55,5 +56,10 @@ public class Line {
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    public void addVertexAndEdge(WeightedMultigraph graph) {
+        getStations().forEach(graph::addVertex);
+        sections.addEdges(graph);
     }
 }
