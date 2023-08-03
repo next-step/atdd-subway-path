@@ -20,12 +20,12 @@ import nextstep.subway.repository.StationRepository;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
     public LineService(LineRepository lineRepository,
-                       StationRepository stationRepository) {
+        StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse findLineById(Long id) {
@@ -40,8 +40,8 @@ public class LineService {
     }
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoSuchElementException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NoSuchElementException::new);
+        Station upStation = stationService.getStation(lineRequest.getUpStationId());
+        Station downStation = stationService.getStation(lineRequest.getDownStationId());
         Line line = lineRequest.toEntity(upStation, downStation);
         lineRepository.save(line);
         return createLineResponse(line);
@@ -65,8 +65,8 @@ public class LineService {
     @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementException("해당 line 값이 없습니다."));
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NoSuchElementException("해당 station 값이 없습니다."));
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NoSuchElementException("해당 station 값이 없습니다."));
+        Station upStation = stationService.getStation(sectionRequest.getUpStationId());
+        Station downStation = stationService.getStation(sectionRequest.getDownStationId());
         Long distance = sectionRequest.getDistance();
 
         Section section = Section.of(line, distance, upStation, downStation);
@@ -78,7 +78,7 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
-        Station downStation = stationRepository.findById(stationId).orElseThrow(NoSuchElementException::new);
+        Station downStation = stationService.getStation(stationId);
         line.deleteSection(downStation);
     }
 }

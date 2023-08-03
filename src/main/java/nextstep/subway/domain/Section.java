@@ -69,7 +69,7 @@ public class Section {
     public boolean containSameDownStation(Station Station){
         return (downStation.equals(Station));
     }
-    private List<Station> getStations(){
+    public List<Station> getStations(){
         return Arrays.asList(upStation, downStation);
     }
     public boolean containSameStation(Section otherSection){

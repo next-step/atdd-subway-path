@@ -11,32 +11,26 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 public class JgraphPathFinder implements PathFinderStrategy {
 
-  private final List<Line> lines;
+  private final List<Section> sections;
 
-  private JgraphPathFinder(List<Line> lines) {
-    this.lines = lines;
+  private JgraphPathFinder(List<Section> sections) {
+    this.sections = sections;
   }
 
-  //TODO: PathFinder 를 DI 할지 아니면 STATIC FACTORY로 불변객체로 가져갈지
-  //      도메인 로직을 service layer에서 최대한 내리고 싶어서
-  //      이렇게 불변 객체로 진행했습니다.
-  public static JgraphPathFinder of(List<Line> lines) {
-    return new JgraphPathFinder(lines);
+  public static JgraphPathFinder of(List<Section> sections) {
+    return new JgraphPathFinder(sections);
   }
 
-  public DirectedGraph drawGraph(List<Line> lines) {
+  private DirectedGraph drawGraph(List<Section> sections) {
     SimpleDirectedWeightedGraph<Station, SectionEdge> graph = new SimpleDirectedWeightedGraph<>(
         SectionEdge.class);
 
-    lines.stream()
-        .flatMap(line -> line.getStations().stream())
+    sections.stream()
+        .flatMap(section -> section.getStations().stream())
         .collect(Collectors.toSet())
         .forEach(station -> graph.addVertex(station));
 
-    lines.stream()
-        .flatMap(line -> line.getSections().stream())
-        .collect(Collectors.toList())
-        .forEach(section -> {
+    sections.forEach(section -> {
           SectionEdge edge = SectionEdge.of(section);
           graph.addEdge(section.getUpStation(), section.getDownStation(), edge);
           graph.setEdgeWeight(edge, section.getDistance());
@@ -45,8 +39,7 @@ public class JgraphPathFinder implements PathFinderStrategy {
     return graph;
   }
 
-  @Override
-  public void sourceTargetValidate(Station source, Station target) {
+  private void sourceTargetValidate(Station source, Station target) {
     if (isSameStation(source, target)) {
       throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
     }
@@ -60,7 +53,7 @@ public class JgraphPathFinder implements PathFinderStrategy {
   public Path findShortestPath(Station source, Station target) {
     sourceTargetValidate(source, target);
 
-    DirectedGraph<String, SectionEdge> graph = drawGraph(lines);
+    DirectedGraph<String, SectionEdge> graph = drawGraph(sections);
 
     ShortestPathAlgorithm<Station, SectionEdge> dijkstraShortestPath =
         new DijkstraShortestPath(graph);

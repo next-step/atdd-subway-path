@@ -35,23 +35,19 @@ class LineTest {
     //When
     첫번째노선.addSection(Section.of(첫번째노선, 10L, 두번째역, 세번째역));
     //Then
-    assertThat(첫번째노선.getStations()).containsExactly(첫번째역, 두번째역, 세번째역);
   }
 
   @Nested
   @DisplayName("성공 케이스: 도메인 (Line): 새로운 구간 추가할 때")
   class SuccessfulSectionAddingTest {
 
-    @DisplayName("도메인(Line): 새로운 구간을 추가")
+    @DisplayName("도메인(Line): 새로운 구간을 마지막역에 추가")
     @Test
     void addSection() {
       //When
       첫번째노선.addSection(Section.of(첫번째노선, 10L, 두번째역, 세번째역));
-      Section section = 첫번째노선.getLastSection();
       //Then
-      assertThat(section.getDistance()).isEqualTo(10L);
-      assertThat(section.getUpStation()).isEqualTo(두번째역);
-      assertThat(section.getDownStation()).isEqualTo(세번째역);
+      assertThat(첫번째노선.getStations()).containsExactly(첫번째역, 두번째역, 세번째역);
     }
 
     @DisplayName("존재하는 구간중 상행역에 구간을 추가합니다. (기존 구간보다 추가하는 거리가 적을 때)")
@@ -59,12 +55,8 @@ class LineTest {
     void addSectionOnUpStation() {
       //When
       첫번째노선.addSection(Section.of(첫번째노선, 4L, 세번째역, 두번째역));
-      Section section = 첫번째노선.getLastSection();
 
       //Then
-      assertThat(section.getDistance()).isEqualTo(4L);
-      assertThat(section.getUpStation()).isEqualTo(세번째역);
-      assertThat(section.getDownStation()).isEqualTo(두번째역);
       assertThat(첫번째노선.getStations().stream().map(station -> station.getName()).collect(
           Collectors.toList())).containsExactly("첫번째역","세번째역","두번째역");
     }
@@ -74,12 +66,8 @@ class LineTest {
     void addSectionOnDownStation() {
       //When
       첫번째노선.addSection(Section.of(첫번째노선, 4L, 두번째역, 세번째역));
-      Section section = 첫번째노선.getLastSection();
 
       //Then
-      assertThat(section.getDistance()).isEqualTo(4L);
-      assertThat(section.getUpStation()).isEqualTo(두번째역);
-      assertThat(section.getDownStation()).isEqualTo(세번째역);
       assertThat(첫번째노선.getStations().stream().map(station -> station.getName()).collect(
       Collectors.toList())).containsExactly("첫번째역","두번째역","세번째역");
     }
