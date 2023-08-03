@@ -66,7 +66,7 @@ public class SubwaySectionAddCommandValidator {
         }
 
         if (!subwaySection.getDistance().isPositive()) {
-            errors.add(ValidationError.of("subwaySection.distance"," is less than 0"));
+            errors.add(ValidationError.of("subwaySection.distance"," is less than or equal to 0"));
         }
 
         if (!errors.isEmpty()) {

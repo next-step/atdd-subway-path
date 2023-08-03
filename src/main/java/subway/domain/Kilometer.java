@@ -35,12 +35,9 @@ public class Kilometer {
     }
 
     public void validate() {
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+        if (!isPositive()) {
             throw new IllegalArgumentException("거리는 0 초과이어야 합니다.");
         }
-    }
-    public Double doubleValue() {
-        return amount.doubleValue();
     }
 
     @Override
