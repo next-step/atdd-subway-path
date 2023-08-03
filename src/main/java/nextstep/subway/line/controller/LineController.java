@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.dto.CreateLineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.UpdateLineRequest;
+import nextstep.subway.line.repository.Line;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.section.dto.CreateSectionRequest;
 import org.springframework.http.ResponseEntity;

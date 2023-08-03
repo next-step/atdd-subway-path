@@ -35,6 +35,8 @@ public class SectionAcceptanceTest {
         CREATE_LINE_URL = createdResponse.header("Location");
     }
 
+    // TODO: 구간 추가에 대한 상세 사항은 Policy 의 단위 테스트에서 검증한다.
+
     /**
      * When 지하철 구간을 추가하면
      * Then 지하철 노선 조회시, 추가된 구간을 확인할 수 있다
@@ -50,32 +52,6 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 하행역이 지하철 노선에 등록된 구간으로
-     * When 구간을 등록하면
-     * Then 에러가 발생한다
-     */
-    @DisplayName("하행역이 이미 지하철 노선에 등록된 지하철 구간을 추가하면 에러가 발생한다.")
-    @Test
-    void createSection_already_register() {
-        CreateSectionRequest request = 하행역이_지하철_노선에_등록된_구간에_대한_요청이_존재한다();
-
-        구간을_등록하면_에러가_발생한다(request);
-    }
-
-    /**
-     * Given 상행역이 노선의 하행 종점역이 아닌 구간으로
-     * When 구간을 등록하면
-     * Then 에러가 발생한다
-     */
-    @DisplayName("상행역이 노선의 하행 종점역이 아닌 지하철 구간을 추가하면 에러가 발생한다.")
-    @Test
-    void createSection_not_include() {
-        CreateSectionRequest request = 상행역이_노선의_하행_종점역이_아닌_구간에_대한_요청이_존재한다();
-
-        구간을_등록하면_에러가_발생한다(request);
-    }
-
-    /**
      * Given 새로운 지하철 구간을 추가하고
      * When 해당 노선의 구간을 제거하면
      * Then 마지막에 추가된 구간이 제거된다.
@@ -83,11 +59,8 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 구간을 삭제한다.")
     @Test
     void deleteSection() {
-        ExtractableResponse<Response> selectedResponse = 지하철_노선을_조회한다();
         ExtractableResponse<Response> createdResponse = 지하철_구간을_추가한다(UP_STATION_ID, DOWN_STATION_ID, DISTANCE);
-
         지하철_구간을_삭제한다(createdResponse.header("Location") + "/sections?stationId=" + DOWN_STATION_ID);
-
         삭제한_구간의_역이_노선에서_제외된다();
     }
 

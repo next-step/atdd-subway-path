@@ -1,9 +1,6 @@
 package nextstep.subway.section.repository;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nextstep.subway.station.repository.Station;
 
 import javax.persistence.*;

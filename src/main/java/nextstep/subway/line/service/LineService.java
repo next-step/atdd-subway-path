@@ -6,6 +6,7 @@ import nextstep.subway.line.dto.UpdateLineRequest;
 import nextstep.subway.line.repository.Line;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.section.dto.CreateSectionRequest;
+import nextstep.subway.section.policy.add.AddSectionPolicy;
 import nextstep.subway.section.repository.Section;
 import nextstep.subway.station.repository.Station;
 import nextstep.subway.station.service.StationFindable;
@@ -21,6 +22,7 @@ public
 class LineService implements LineFindable, LineSavable, LineUpdatable, LineDeletable {
     private final LineRepository lineRepository;
     private final StationFindable stationFindable;
+    private final AddSectionPolicy addSectionPolicy;
 
     @Transactional
     public Line saveLine(CreateLineRequest request) {
@@ -56,9 +58,10 @@ class LineService implements LineFindable, LineSavable, LineUpdatable, LineDelet
     @Transactional
     public Line addSection(Long id, CreateSectionRequest request) {
         Line line = findLineById(id);
-        System.out.println(line.getSections().size());
-        line.getSections().addSection(createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()));
-        System.out.println(line.getSections().size());
+        line.getSections().addSection(
+                createSection(request.getUpStationId(), request.getDownStationId(), request.getDistance()),
+                addSectionPolicy
+        );
         return line;
     }
 
