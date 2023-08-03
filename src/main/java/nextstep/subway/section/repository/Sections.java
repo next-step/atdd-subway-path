@@ -3,8 +3,8 @@ package nextstep.subway.section.repository;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.section.policy.AddSectionPolicy;
-import nextstep.subway.section.policy.DeleteSectionPolicy;
+import nextstep.subway.section.policy.add.AddSectionPolicy;
+import nextstep.subway.section.policy.delete.DeleteSectionPolicy;
 import nextstep.subway.station.repository.Station;
 
 import javax.persistence.CascadeType;
@@ -12,12 +12,11 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Sections {
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
 
@@ -27,13 +26,28 @@ public class Sections {
     @Getter
     private Long lastStationId;
 
-    public void addSection(Section section) {
-        AddSectionPolicy.validate(this, section);
+    public void addSection(Section section, AddSectionPolicy policy) {
+        policy.validate(this, section);
+        Optional<Station> upStation = getAllStation().stream()
+                .filter(station -> Objects.equals(station, section.getUpStation()))
+                .findFirst();
+        Optional<Station> downStation = getAllStation().stream()
+                .filter(station -> Objects.equals(station, section.getDownStation()))
+                .findFirst();
+
+        if (upStation.isPresent() && upStation.get().getId().equals(lastStationId)) {
+            lastStationId = section.getDownStation().getId();
+        }
+        if (downStation.isPresent() && downStation.get().getId().equals(firstStationId)) {
+            firstStationId = section.getUpStation().getId();
+        }
+
         this.sections.add(section);
     }
 
     public void deleteSectionByLastStation(Station station) {
         DeleteSectionPolicy.validate(this, station);
+        this.lastStationId = getLastSection().getUpStation().getId();
         this.sections.remove(getLastSection());
     }
 

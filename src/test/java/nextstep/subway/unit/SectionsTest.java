@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.section.policy.add.AddSectionPolicy;
 import nextstep.subway.section.repository.Section;
 import nextstep.subway.section.repository.Sections;
 import nextstep.subway.station.repository.Station;
@@ -19,6 +20,9 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class SectionsTest {
+
+    private AddSectionPolicy addSectionPolicy = mock(AddSectionPolicy.class);
+
     @Test
     void addSection() {
         // given
@@ -40,7 +44,7 @@ class SectionsTest {
                 .upStation(신논현역)
                 .downStation(논현역)
                 .distance(5L)
-                .build());
+                .build(), addSectionPolicy);
 
         // then
         assertThat(sections.size()).isEqualTo(2);
@@ -68,7 +72,7 @@ class SectionsTest {
                 .upStation(강남역)
                 .downStation(신논현역)
                 .distance(10L)
-                .build());
+                .build(), addSectionPolicy);
 
         // then
         assertThat(sections.getFirstStationId()).isEqualTo(1L);
@@ -96,7 +100,7 @@ class SectionsTest {
                 .upStation(신논현역)
                 .downStation(논현역)
                 .distance(5L)
-                .build());
+                .build(), addSectionPolicy);
 
         // then
         assertThat(sections.getLastStationId()).isEqualTo(3L);

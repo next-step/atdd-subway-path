@@ -1,4 +1,4 @@
-package nextstep.subway.section.policy;
+package nextstep.subway.section.policy.delete;
 
 import nextstep.subway.section.repository.Sections;
 import nextstep.subway.station.repository.Station;

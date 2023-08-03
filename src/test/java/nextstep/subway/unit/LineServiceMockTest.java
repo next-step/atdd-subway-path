@@ -3,6 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.section.dto.CreateSectionRequest;
+import nextstep.subway.section.policy.add.AddSectionPolicy;
 import nextstep.subway.station.service.StationFindable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import static nextstep.fixture.LineFixture.신분당선;
 import static nextstep.fixture.LineFixture.신분당선_ID;
 import static nextstep.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,12 +26,14 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationFindable stationFindable;
+    @Mock
+    private AddSectionPolicy addSectionPolicy;
 
     private LineService lineService;
 
     @BeforeEach
     void init() {
-        lineService = new LineService(lineRepository, stationFindable);
+        lineService = new LineService(lineRepository, stationFindable, addSectionPolicy);
     }
 
     @Test
