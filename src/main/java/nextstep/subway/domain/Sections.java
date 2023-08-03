@@ -161,7 +161,7 @@ public class Sections {
             .orElseThrow(() -> new IllegalStateException("역끼리의 연결을 확인해주세요!"));
   }
 
-  public Section getLastSection() {
+  private Section getLastSection() {
     if (sections.size() <= MINIMUM_SIZE) {
       throw new IllegalStateException("마지막 section이 존재하지 않습니다.");
     }
