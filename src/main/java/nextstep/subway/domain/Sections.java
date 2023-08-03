@@ -1,8 +1,10 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -11,9 +13,7 @@ import javax.persistence.OneToMany;
 import nextstep.subway.exception.SectionExceptionCode;
 import nextstep.subway.exception.StationExceptionCode;
 import nextstep.subway.exception.SubwayException;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.server.ResponseStatusException;
 
 @Embeddable
 public class Sections {
@@ -25,17 +25,17 @@ public class Sections {
     return sections;
   }
 
-  public List<Station> getStationsOfAllSection() {
-    Station startStation = sections.stream()
-        .filter(Section::isStartSection)
-        .findFirst()
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "노선의 시작점이 없습니다."))
-        .getUpStation();
-
-    return traversalAndGetStationsInOrder(startStation);
+  public List<Station> getStationsOfSection() {
+    return this.getStartSection()
+        .map(startSection -> traversalAndGetStationsInOrder(startSection.getUpStation()))
+        .orElse(Collections.emptyList());
   }
 
   private List<Station> traversalAndGetStationsInOrder(Station startStation) {
+    if (startStation == null) {
+      return Collections.emptyList();
+    }
+
     Map<Long, Section> upStationMap = sections.stream()
         .filter(section -> !section.getDownStation().equals(startStation))
         .collect(Collectors.toMap(section -> section.getUpStation().getId(), Function.identity()));
@@ -64,16 +64,25 @@ public class Sections {
     return stations;
   }
 
-  public Section addSection(Section newSection) {
+  public Optional<Section> getStartSection() {
+    Map<Long, Station> downStationMap = sections.stream()
+        .map(Section::getDownStation)
+        .collect(Collectors.toMap(Station::getId, Function.identity()));
 
-    // 시작 역인 경우, 시작점을 표시하기 위해  (상행역, 상행역) 인 구간을 하나 더 추가
-    if (CollectionUtils.isEmpty(sections)) {
-      return addStartStation(newSection);
+    return sections.stream()
+        .filter(section -> downStationMap.get(section.getUpStation().getId()) == null)
+        .findFirst();
+  }
+
+  public Section addSection(Section newSection) {
+    List<Station> stationsOfSection = this.getStationsOfSection();
+    if (CollectionUtils.isEmpty(stationsOfSection)) {
+      sections.add(newSection);
+      return newSection;
     }
 
-    List<Station> stationsOfAllSection = this.getStationsOfAllSection();
     throwIfBothStationAreAlreadyIncluded(newSection);
-    throwIfBothStationAreNotIncluded(stationsOfAllSection, newSection);
+    throwIfBothStationAreNotIncluded(stationsOfSection, newSection);
 
     sections.stream()
         .filter(section -> section.isSuperSetOf(newSection))
@@ -88,14 +97,6 @@ public class Sections {
 
   // 구간 사이에 새로운 구간을 추가 해야 하는 경우
   private void interposeSection(Section superSetSection, Section newSection) {
-
-    // 새로운 역이 상행 종점으로 등록되는 경우
-    if (superSetSection.isStartSection()) {
-      removeStartSection(superSetSection);
-      addStartStation(newSection);
-      return;
-    }
-
     if (superSetSection.isUpStationEquals(newSection.getUpStation())) {
       superSetSection.interposeSectionAtUpStation(newSection);
     }
@@ -105,24 +106,6 @@ public class Sections {
     }
 
     sections.add(newSection);
-  }
-
-  private Section addStartStation(Section newSection) {
-    sections.add(newSection.convertToStartSection());
-    sections.add(newSection);
-    return newSection;
-  }
-
-  private void removeStartSection(Section startSection) {
-    if (!startSection.isStartSection()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제하려는 구간은 노선의 시작구간이 아닙니다.");
-    }
-
-    List<Section> startSectionFilteredSections = sections.stream()
-        .filter(section -> !section.isSectionEquals(startSection))
-        .collect(Collectors.toList());
-    sections.clear();
-    sections.addAll(startSectionFilteredSections);
   }
 
   // 신규 구간이 이미 존재하는 구간인 경우 (역방향 포함)
@@ -142,17 +125,45 @@ public class Sections {
     }
   }
 
-  public void removeSectionDownStationOf(Station station) {
+  public void removeSection(Line line, Station station) {
     if (CollectionUtils.isEmpty(sections)) {
       throw new SubwayException(SectionExceptionCode.CANNOT_DELETE_SECTION, "삭제 할 구간이 없습니다.");
     }
 
-    // 하행 종점역만 제거 할 수 있음
-    int lastIdx = sections.size() - 1;
-    Section lastSection = sections.get(lastIdx);
-    if (lastSection.getDownStation().equals(station)) {
-      sections.remove(lastIdx);
+    if (sections.size() == 1) {
+      throw new SubwayException(SectionExceptionCode.CANNOT_DELETE_LAST_SECTION);
     }
+
+    List<Section> sectionsToRemove = sections.stream()
+        .filter(section -> section.containsStation(station))
+        .collect(Collectors.toUnmodifiableList());
+
+    if (CollectionUtils.isEmpty(sectionsToRemove)) {
+      throw new SubwayException(SectionExceptionCode.SECTION_NOT_FOUND);
+    }
+
+    sections.removeAll(sectionsToRemove);
+    if (sectionsToRemove.size() == 1) {
+      return;
+    }
+
+    addRebalancedSectionIfMiddleSectionDeleted(line, station, sectionsToRemove);
+  }
+
+  private void addRebalancedSectionIfMiddleSectionDeleted(Line line, Station stationToDelete, List<Section> sectionsToRemove) {
+    Section upSection = sectionsToRemove.stream()
+        .filter(sectionToRemove -> sectionToRemove.isDownStationEquals(stationToDelete))
+        .findFirst()
+        .orElseThrow(() -> new SubwayException(SectionExceptionCode.SECTION_NOT_FOUND));
+
+    Section downSection = sectionsToRemove.stream()
+        .filter(sectionToRemove -> sectionToRemove.isUpStationEquals(stationToDelete))
+        .findFirst()
+        .orElseThrow(() -> new SubwayException(SectionExceptionCode.SECTION_NOT_FOUND));
+
+    int distance = upSection.getDistance() + downSection.getDistance();
+    Section rebalancedSection = new Section(line, upSection.getUpStation(), downSection.getDownStation(), distance);
+    sections.add(rebalancedSection);
   }
 
   public int getTotalDistance() {

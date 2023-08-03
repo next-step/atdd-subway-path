@@ -40,14 +40,6 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean isStartSection() {
-        return this.upStation.equals(this.downStation);
-    }
-
-    public Section convertToStartSection() {
-        return new Section(this.getLine(), this.getUpStation(), this.getUpStation(), 0);
-    }
-
     public boolean isSuperSetOf(Section subSetSection) {
         if (this.isSectionEquals(subSetSection)) {
             return false;
@@ -84,6 +76,18 @@ public class Section {
 
     public boolean isDownStationEquals(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public boolean containsStation(Station station) {
+        if (this.isUpStationEquals(station)) {
+            return true;
+        }
+
+        if (this.isDownStationEquals(station)) {
+            return true;
+        }
+
+        return false;
     }
 
     public void interposeSectionAtDownStation(Section newSection) {
