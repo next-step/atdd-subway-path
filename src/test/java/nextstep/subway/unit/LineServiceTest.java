@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
@@ -38,5 +40,30 @@ public class LineServiceTest {
 
         assertThat(line.getSections().stream().anyMatch(section -> section.isUp(upStation) && section.isDown(addStation)))
                 .isEqualTo(true);
+    }
+
+    @Test
+    void deleteSection() {
+        // given
+        Station upStation = stationRepository.save(new Station("강남역"));
+        Station downStation = stationRepository.save(new Station("양재역"));
+        Station addStation = stationRepository.save(new Station("판교역"));
+        Station addStation2 = stationRepository.save(new Station("청계산입구역"));
+
+        LineResponse lineResponse = lineService.saveLine(new LineRequest("신분당선", "노랑", upStation.getId(), downStation.getId(), 10));
+        lineService.addSection(lineResponse.getId(), new SectionRequest(upStation.getId(), addStation.getId(), 2));
+        lineService.addSection(lineResponse.getId(), new SectionRequest(downStation.getId(), addStation2.getId(), 5));
+
+        // when
+        lineService.deleteSection(lineResponse.getId(), downStation.getId());
+        Line line = lineRepository.findById(lineResponse.getId()).get();
+
+        // then
+        assertThat(line.getSections().size()).isEqualTo(2);
+
+        Optional<Section> findSection = line.getSections().stream().filter(section -> section.isUp(addStation) && section.isDown(addStation2)).findFirst();
+        assertThat(findSection.isPresent()).isEqualTo(true);
+        assertThat(findSection.get().getDistance()).isEqualTo(13);;
+
     }
 }
