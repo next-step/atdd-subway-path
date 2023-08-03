@@ -117,6 +117,44 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역);
     }
 
+    /**
+     * Given 지하철 노선에 1개의 구간이 있을 때
+     * When 지하철 노선의 구간을 제거하면
+     * Then 구간을 제거할 수 없다
+     */
+    @DisplayName("지하철 노선 구간을 제거 - 실패 (구간이 하나)")
+    @Test
+    void removeLineSectionByOne() {
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+
+        // then
+        assertThat(response.body().asString()).isEqualTo("구간이 하나인 경우 구간을 삭제할 수 없습니다.");
+    }
+
+    /**
+     * Given 지하철 노선에 2개의 구간이 있을 때
+     * When 지하철 노선에 존재하지 않는 역이 포함된 구간을 제거하면
+     * Then 구간을 제거할 수 없다
+     */
+    @DisplayName("지하철 노선 구간을 제거 - 실패 (노선에 등록되지 않은 역이 있음)")
+    @Test
+    void removeLineSectionNoSection() {
+        // given
+        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
+        Long 범계역 = 지하철역_생성_요청("범계").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 범계역);
+
+        // then
+        assertThat(response.body().asString()).isEqualTo("노선에 등록되지 않은 역은 제거할 수 없습니다.");
+    }
+
+
+
     private Map<String, String> createLineCreateParams(Long upStationId, Long downStationId) {
         Map<String, String> lineCreateParams;
         lineCreateParams = new HashMap<>();

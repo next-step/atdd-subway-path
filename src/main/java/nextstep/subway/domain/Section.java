@@ -35,11 +35,14 @@ public class Section {
         this.distance = distance;
     }
 
-    public void modifyDistance(Section section){
+    public void modifyDistanceForAdd(Section section){
         if(this.distance <= section.getDistance()){
             throw new SectionDistanceException("등록할 구간의 길이가 기존 역 사이 길이보다 크거나 같습니다.");
         }
         this.distance -= section.getDistance();
+    }
+    public void modifyDistanceForRemove(Section section){
+        this.distance += section.getDistance();
     }
 
     public void modifyUp(Station station){

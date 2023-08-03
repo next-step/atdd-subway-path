@@ -3,12 +3,15 @@ package nextstep.subway.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import nextstep.subway.applicaion.exception.SectionDeleteException;
 import nextstep.subway.applicaion.exception.SectionExistException;
 import nextstep.subway.applicaion.exception.SectionNotFoundException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -40,32 +43,56 @@ public class Line {
         sections.add(section);
     }
 
+    public void deleteSection(Station station) {
+        if(sections.size() == 1) {
+            throw new SectionDeleteException("구간이 하나인 경우 구간을 삭제할 수 없습니다.");
+        }
+        if(!isExistedStation(station)) {
+            throw new SectionDeleteException("노선에 등록되지 않은 역은 제거할 수 없습니다.");
+        }
+
+        Optional<Section> upSection = findSectionByUpStation(station);
+        Optional<Section> downSection = findSectionByDownStation(station);
+
+        if(upSection.isEmpty() && downSection.isPresent()) {
+            sections.remove(downSection.get());
+
+        } else if(upSection.isPresent() && downSection.isEmpty()) {
+            sections.remove(upSection.get());
+
+        } else if(upSection.isPresent() && downSection.isPresent()) {
+            upSection.get().modifyUp(downSection.get().getUpStation());
+            upSection.get().modifyDistanceForRemove(downSection.get());
+            sections.remove(downSection.get());
+        }
+
+    }
+
     private boolean isExistedStation(Station station) {
         return sections.stream().anyMatch(section -> section.isExistedStation(station));
     }
     private void modifyExistedSection(Section addSection) {
         if (sections.stream().anyMatch(section -> section.isUp(addSection.getUpStation()))) {
-            Section section = findSectionByUpStation(addSection.getUpStation());
-            section.modifyDistance(addSection);
+            Section section = findSectionByUpStation(addSection.getUpStation())
+                    .orElseThrow(() -> new SectionNotFoundException("구간을 찾을 수 없습니다."));
+            section.modifyDistanceForAdd(addSection);
             section.modifyUp(addSection.getDownStation());
         }
         if (sections.stream().anyMatch(section -> section.isDown(addSection.getDownStation()))) {
-            Section section = findSectionByDownStation(addSection.getDownStation());
-            section.modifyDistance(addSection);
+            Section section = findSectionByDownStation(addSection.getDownStation())
+                    .orElseThrow(() -> new SectionNotFoundException("구간을 찾을 수 없습니다."));
+            section.modifyDistanceForAdd(addSection);
             section.modifyDown(addSection.getUpStation());
         }
     }
-
-    public Section findSectionByUpStation(Station station) {
+    public Optional<Section> findSectionByUpStation(Station station) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(station))
-                .findAny()
-                .orElseThrow(() -> new SectionNotFoundException("구간을 찾을 수 없습니다."));
+                .findAny();
     }
-    public Section findSectionByDownStation(Station station) {
+    public Optional<Section> findSectionByDownStation(Station station) {
         return sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
-                .findAny()
-                .orElseThrow(() -> new SectionNotFoundException("구간을 찾을 수 없습니다."));
+                .findAny();
     }
 }
