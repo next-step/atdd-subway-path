@@ -63,17 +63,9 @@ public class LineServiceTest {
 
     @DisplayName("구간이 하나인 노선에서 구간 삭제 요청을 하면 예외가 발생한다.")
     @Test
-    void removeSectionSavedOneSection() {
-        // when
-        HttpStatus result = HttpStatus.OK;
-
-        try {
-            lineService.deleteSection(신분당선.getId(), 강남역.getId());
-        } catch (SectionException e) {
-            result = e.getStatus();
-        }
-
-        // then
-        Assertions.assertThat(result.value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    void removeSectionWhenSavedOneSection() {
+        Assertions.assertThatThrownBy(() -> lineService.deleteSection(신분당선.getId(), 강남역.getId()))
+                .isInstanceOf(SectionException.class)
+                .hasMessageContaining("Can`t remove section by section count");
     }
 }

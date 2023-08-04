@@ -3,7 +3,6 @@ package nextstep.subway.applicaion;
 import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.applicaion.dto.*;
 import nextstep.subway.applicaion.exception.domain.LineException;
-import nextstep.subway.applicaion.exception.domain.SectionException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -91,7 +90,7 @@ public class LineService {
     public LineResponse deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(LineException::new);
         Station deletedStation = stationService.findById(stationId);
-        line.beforeDeleteSection();
+        line.checkDeleteSectionValidity();
         deleteSectionByType(line, deletedStation);
 
         return createLineResponse(line);

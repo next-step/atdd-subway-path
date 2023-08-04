@@ -127,7 +127,7 @@ public class  Line {
         return false;
     }
 
-    public void beforeDeleteSection() {
+    public void checkDeleteSectionValidity() {
         if (this.getSectionsLastIndex() < 1) {
             throw new SectionException("Can`t remove section by section count");
         }
