@@ -8,15 +8,22 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import lombok.Getter;
 
 @Embeddable
 public class Sections {
 
+  public static final int MINIMUM_SIZE = 1;
+  public static final int MINIMUM_DISTANCE = 0;
+  @Getter
   @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
   private final List<Section> sections = new ArrayList<>();
 
+  public Sections() {
+  }
+
   private static void compareDistance(Section section, Section registeredSection) {
-    if (registeredSection.getDistance() - section.getDistance() <= 0) {
+    if (registeredSection.getDistance() - section.getDistance() <= MINIMUM_DISTANCE) {
       throw new IllegalArgumentException("추가하려고하는 구간의 거리가 추가되는 구간의 거리보다 큽니다!!");
     }
   }
@@ -37,12 +44,8 @@ public class Sections {
         .filter(registeredSection -> registeredSection.containSameDownStation(section))
         .findFirst();
 
-    if (upMatch.isPresent()) {
-      addUpSection(section, line, upMatch.get());
-    }
-    if (downMatch.isPresent()) {
-      addDownSection(section, line, downMatch.get());
-    }
+    upMatch.ifPresent(upSection -> addUpSection(section, line, upSection));
+    downMatch.ifPresent(downSection -> addDownSection(section, line, downSection));
 
     sections.add(section);
   }
@@ -108,12 +111,13 @@ public class Sections {
   }
 
   private void notRegisteredStationValidate(Station targetStation) {
-    getStations().stream().filter(station -> station.equals(targetStation)).findAny().orElseThrow(
-        () -> new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다."));
+    getStations().stream().filter(station -> station.equals(targetStation))
+        .findAny()
+        .orElseThrow(() -> new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다."));
   }
 
   private void sectionMinimumSizeValidate() {
-    if (sections.size() <= 1) {
+    if (sections.size() <= MINIMUM_SIZE) {
       throw new IllegalStateException("Section에 삭제할 수 있는 Station이 없습니다.");
     }
   }
@@ -145,27 +149,34 @@ public class Sections {
     return topSection;
   }
 
-  public boolean hasNextSection(Section startingSection) {
+  private boolean hasNextSection(Section startingSection) {
     return sections.stream().anyMatch(iteratingSection ->
         startingSection.getDownStation().equals(iteratingSection.getUpStation()));
   }
 
-  public Section getNextSection(Section startingSection) {
-    return sections.stream().filter(iteratingSection ->
-            startingSection.getDownStation().equals(iteratingSection.getUpStation())).findFirst()
-        .orElseThrow(() -> new IllegalStateException("역끼리의 연결을 확인해주세요!"));
+  private Section getNextSection(Section startingSection) {
+    Station downStation = startingSection.getDownStation();
+    return sections.stream().filter(iteratingSection -> downStation.equals(iteratingSection.getUpStation()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("역끼리의 연결을 확인해주세요!"));
   }
 
-  public Section getLastSection() {
-    if (sections.size() <= 1) {
+  private Section getLastSection() {
+    if (sections.size() <= MINIMUM_SIZE) {
       throw new IllegalStateException("마지막 section이 존재하지 않습니다.");
     }
     return sections.get(sections.size() - 1);
   }
 
   private List<Station> getDownStations() {
-    return sections.stream().map(Section::getDownStation).collect(
-        Collectors.toList());
+    return sections.stream().map(Section::getDownStation)
+        .collect(Collectors.toList());
   }
+  public static Sections of(List<Section> addedSections){
+    Sections sections = new Sections();
+    Line line = new Line();
 
+    addedSections.forEach(section -> sections.addSection(section, line));
+    return sections;
+  }
 }

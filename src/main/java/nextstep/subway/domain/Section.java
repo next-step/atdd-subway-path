@@ -10,32 +10,35 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "line_id")
+    @Getter
     private Line line;
     @Column
+    @Getter
     private Long distance;
 
     @OneToOne
     @JoinColumn(name = "up_station_id")
+    @Getter
     private Station upStation;
 
     @OneToOne
     @JoinColumn(name = "down_station_id")
+    @Getter
     private Station downStation;
 
     @Builder
@@ -66,7 +69,7 @@ public class Section {
     public boolean containSameDownStation(Station Station){
         return (downStation.equals(Station));
     }
-    private List<Station> getStations(){
+    public List<Station> getStations(){
         return Arrays.asList(upStation, downStation);
     }
     public boolean containSameStation(Section otherSection){

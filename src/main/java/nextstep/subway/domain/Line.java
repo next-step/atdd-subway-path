@@ -16,7 +16,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Line {
-
+    // TODO: 짜릿하네요... SectionService를 도입해서 Line에 대한 객체의 노출을 줄였습니다.
+    //
     @Embedded
     private final Sections sections = new Sections();
     @Id
@@ -58,10 +59,6 @@ public class Line {
 
     public void deleteSection(Station station) {
         sections.deleteSection(station);
-    }
-
-    public Section getLastSection( ) {
-        return sections.getLastSection();
     }
 
 }
