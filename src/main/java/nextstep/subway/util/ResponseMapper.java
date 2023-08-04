@@ -3,8 +3,10 @@ package nextstep.subway.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.PathResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Station;
 
 import java.util.List;
@@ -31,6 +33,13 @@ public class ResponseMapper {
         return new StationResponse(
                 station.getId(),
                 station.getName()
+        );
+    }
+
+    public static PathResponse from(Path path) {
+        return new PathResponse(
+                path.getStations(),
+                path.getDistance()
         );
     }
 }

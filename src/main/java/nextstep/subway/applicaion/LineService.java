@@ -41,4 +41,8 @@ public class LineService {
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
     }
+
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
+    }
 }
