@@ -3,7 +3,7 @@ package nextstep.subway.applicaion.service;
 import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.applicaion.dto.path.PathFinderResponse;
 import nextstep.subway.applicaion.dto.station.StationResponse;
-import nextstep.subway.domain.line.Section;
+import nextstep.subway.applicaion.exception.domain.PathFinderException;
 import nextstep.subway.domain.path.PathFinder;
 import nextstep.subway.domain.station.Station;
 import org.jgrapht.GraphPath;
@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,13 +28,19 @@ public class PathFinderService {
     }
 
     public PathFinderResponse findPath(Long sourceId, Long targetId) {
-        List<Section> allSections = lineService.findAllSections();
-        PathFinder pathFinder = new PathFinder(allSections);
-
+        PathFinder pathFinder = new PathFinder(lineService.findAllSections());
         Station sourceStation = stationService.findById(sourceId);
         Station targetStation = stationService.findById(targetId);
+
+        checkFindPathValidity(sourceStation, targetStation);
         GraphPath shortestPath = pathFinder.findPath(sourceStation, targetStation);
         return createPathFinderResponse(shortestPath);
+    }
+
+    private void checkFindPathValidity(Station sourceStation, Station targetStation) {
+        if (sourceStation.getId().equals(targetStation.getId())) {
+            throw new PathFinderException("출발역과 도착역이 동일합니다.");
+        }
     }
 
     private PathFinderResponse createPathFinderResponse(GraphPath shortestPath) {

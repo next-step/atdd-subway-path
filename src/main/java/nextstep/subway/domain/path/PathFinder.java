@@ -1,6 +1,7 @@
 package nextstep.subway.domain.path;
 
 import lombok.extern.slf4j.Slf4j;
+import nextstep.subway.applicaion.exception.domain.PathFinderException;
 import nextstep.subway.domain.line.Section;
 import nextstep.subway.domain.station.Station;
 import org.jgrapht.GraphPath;
@@ -45,7 +46,17 @@ public class PathFinder {
 
     public GraphPath findPath(Station sourceStation, Station targetStation) {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        hasStation(sourceStation, targetStation);
         GraphPath shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation);
+        if (shortestPath == null) throw new PathFinderException("조회되지 않는 경로입니다.");
         return shortestPath;
+    }
+
+    private void hasStation(Station sourceStation, Station targetStation) {
+        if (!graph.containsVertex(sourceStation)) {
+            throw new PathFinderException("요청한 출발역은 연결되지 않은 역입니다.");
+        } else if (!graph.containsVertex(targetStation)) {
+            throw new PathFinderException("요청한 종점역은 연결되지 않은 역입니다.");
+        }
     }
 }
