@@ -1,14 +1,14 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line;
 
 import nextstep.subway.applicaion.exception.domain.SectionException;
+import nextstep.subway.domain.station.Station;
 
 import javax.persistence.*;
-import javax.servlet.ServletContainerInitializer;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class  Line {
+public class Line {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

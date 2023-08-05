@@ -3,8 +3,8 @@ package nextstep.subway.handler;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineUpdateRequest;
+import nextstep.subway.applicaion.dto.line.LineRequest;
+import nextstep.subway.applicaion.dto.line.LineUpdateRequest;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;

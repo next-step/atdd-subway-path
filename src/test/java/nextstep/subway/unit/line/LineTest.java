@@ -1,6 +1,8 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.Section;
+import nextstep.subway.domain.station.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

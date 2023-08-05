@@ -1,16 +1,19 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
-import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.service.LineService;
+import nextstep.subway.applicaion.dto.section.SectionRequest;
 import nextstep.subway.applicaion.exception.domain.SectionException;
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.Section;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.StationRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
