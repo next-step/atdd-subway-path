@@ -38,7 +38,7 @@ public class LineServiceTest {
         Line line = lineRepository.findById(lineResponse.getId()).get();
         // then
 
-        assertThat(line.getSections().stream().anyMatch(section -> section.isUp(upStation) && section.isDown(addStation)))
+        assertThat(line.getSections().isExistedUpAndDownStation(upStation,addStation))
                 .isEqualTo(true);
     }
 
@@ -61,9 +61,8 @@ public class LineServiceTest {
         // then
         assertThat(line.getSections().size()).isEqualTo(2);
 
-        Optional<Section> findSection = line.getSections().stream().filter(section -> section.isUp(addStation) && section.isDown(addStation2)).findFirst();
-        assertThat(findSection.isPresent()).isEqualTo(true);
-        assertThat(findSection.get().getDistance()).isEqualTo(13);;
+        Section findSection = line.getSections().findSectionByUpAndDownStation(addStation, addStation2);
+        assertThat(findSection.getDistance()).isEqualTo(13);
 
     }
 }
