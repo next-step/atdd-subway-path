@@ -21,7 +21,7 @@ public class SubwaySections {
                         .collect(Collectors.toMap(SubwaySection::getUpStationId, Function.identity()));
     }
 
-    void add(SubwaySection section) {
+    public void register(SubwaySection section) {
         subwaySections.put(section.getUpStationId(), section);
     }
 
@@ -33,42 +33,79 @@ public class SubwaySections {
         return subwaySections.isEmpty();
     }
 
-    public SubwaySection getSection(Station.Id stationId) {
+    public Optional<SubwaySection> getSectionMatchedUpStation(Station.Id stationId) {
         SubwaySection subwaySection = subwaySections.get(stationId);
-        return Objects.requireNonNull(subwaySection, String.format("%d 역은 현재 노선에 존재하지 않은 역입니다.", stationId.getValue()));
+        return Optional.ofNullable(subwaySection);
     }
 
-    public SubwaySection removeSection(SubwaySection section) {
-        return Objects.requireNonNull(this.subwaySections.remove(section.getUpStationId()), String.format("%d 역은 현재 노선에 존재하지 않은 역입니다.", section.getUpStationId().getValue()));
+    public Optional<SubwaySection> getSectionMatchedUpStation(Station station) {
+        return getSectionMatchedUpStation(station.getId());
     }
 
-    boolean existsUpStation(Station.Id stationId) {
+    public Optional<SubwaySection> getSectionMatchedDownStation(Station station) {
+        return subwaySections
+                .values()
+                .stream()
+                .filter(subwaySection -> subwaySection.isSameDownStation(station))
+                .findAny();
+    }
+
+    public Station.Id getStartStationId() {
+        List<Station.Id> downStationIds = subwaySections
+                .values()
+                .stream()
+                .map(SubwaySection::getDownStationId)
+                .collect(Collectors.toList());
+        Optional<Station.Id> result = this.subwaySections
+                .keySet()
+                .stream()
+                .filter(stationId -> !downStationIds.contains(stationId))
+                .findAny();
+        if (result.isEmpty()) {
+            validate();
+        }
+        return result.get();
+    }
+
+    public boolean existsUpStation(Station.Id stationId) {
         return subwaySections.containsKey(stationId);
     }
 
-    void validate(Station.Id startStationId) {
+    public boolean existsUpStation(Station station) {
+        return existsUpStation(station.getId());
+    }
+
+    public boolean existsDownStation(Station station) {
+        return existsDownStation(station.getId());
+    }
+
+    public boolean existsDownStation(Station.Id stationId) {
+        return existsStationBy(subwaySection -> subwaySection.isSameDownStation(stationId));
+    }
+
+    public void validate() {
         if (isEmpty()) {
             throw new IllegalArgumentException("구간이 비어있습니다.");
-        }
-        if (!isConnected(startStationId)) {
-            throw new IllegalArgumentException("구간이 연결되어있지 않습니다.");
         }
         if (isDuplicated()) {
             throw new IllegalArgumentException("구간이 중복되어있습니다.");
         }
-        if (isCircular(startStationId)) {
+        if (isCircular()) {
             throw new IllegalArgumentException("구간이 순환되어있습니다.");
+        }
+        if (!isConnected()) {
+            throw new IllegalArgumentException("구간이 연결되어있지 않습니다.");
         }
 
         subwaySections.values().forEach(SubwaySection::validate);
     }
 
-    boolean isCircular(Station.Id startStationId) {
-        return subwaySections
+    boolean isCircular() {
+        return this.subwaySections
                 .values()
                 .stream()
-                .map(SubwaySection::getDownStationId)
-                .anyMatch(downStationId -> downStationId.equals(startStationId));
+                .filter(subwaySection -> subwaySections.containsKey(subwaySection.getDownStationId()))
+                .count() == this.size();
     }
 
     boolean isDuplicated() {
@@ -84,71 +121,96 @@ public class SubwaySections {
         Station.Id stationId = startStationId;
         int count = 0;
         while (count < size() && existsUpStation(stationId)) {
-            stationId = getSection(stationId).getDownStationId();
+            Optional<SubwaySection> sectionOptional = getSectionMatchedUpStation(stationId);
+            if (sectionOptional.isEmpty()) {
+                return false;
+            }
+            stationId = sectionOptional.get().getDownStationId();
             count++;
         }
         return count == this.size();
+    }
+
+    boolean isConnected() {
+        return this.subwaySections
+                .values()
+                .stream()
+                .filter(subwaySection -> subwaySections.containsKey(subwaySection.getDownStationId()))
+                .count() == this.size() - 1;
     }
 
     public List<SubwaySection> getSections() {
         return new ArrayList<>(subwaySections.values());
     }
 
-    void close(Station station) {
-        SubwaySection subwaySection = getSectionByDownStation(station);
+    public void close(Station station) {
+        SubwaySection subwaySection =
+                getSectionMatchedUpStation(station)
+                        .orElseThrow(() -> new IllegalArgumentException(String.format("%s 역은 현재 노선에 존재하지 않은 역입니다.", station.getName())));
         close(subwaySection);
     }
 
-    private void close(SubwaySection subwaySection) {
-        subwaySections.remove(subwaySection.getUpStationId());
+    public void closeTail(Station station) {
+        SubwaySection subwaySection =
+                getSectionMatchedDownStation(station)
+                        .orElseThrow(() -> new IllegalArgumentException(String.format("%s 역은 현재 노선에 존재하지 않은 역입니다.", station.getName())));
+        close(subwaySection);
     }
 
-    private SubwaySection getSectionByDownStation(Station station) {
-        return getSection(
-                section -> section.matchesDownStation(station),
-                String.format("%s 역은 현재 노선에 존재하지 않은 역입니다.", station.getName()));
+    private void close(SubwaySection section) {
+        Objects.requireNonNull(this.subwaySections.remove(section.getUpStationId()), String.format("%d 역은 현재 노선에 존재하지 않은 역입니다.", section.getUpStationId().getValue()));
+        return;
     }
 
-    private SubwaySection getSection(Predicate<SubwaySection> predicate, String message) {
+    private Optional<SubwaySection> getSectionBy(Predicate<SubwaySection> predicate) {
         return subwaySections
                 .values()
                 .stream()
                 .filter(predicate)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(message));
+                .findAny();
     }
 
     public void reduceSection(SubwaySection newSection) {
-        SubwaySection subwaySection = getDuplicatedSection(newSection);
-        removeSection(subwaySection);
+        SubwaySection subwaySection = getDuplicatedSection(newSection)
+                .orElseThrow(IllegalArgumentException::new);
+        close(subwaySection);
         subwaySection.reduce(newSection);
-        add(subwaySection);
+        register(subwaySection);
     }
 
-    private SubwaySection getDuplicatedSection(SubwaySection newSection) {
-        if (existsUpStation(newSection.getUpStationId())) {
-            return getSection(newSection.getUpStationId());
+    private Optional<SubwaySection> getDuplicatedSection(SubwaySection newSection) {
+        Optional<SubwaySection> upStationOptional = getSectionMatchedUpStation(newSection.getUpStationId());
+
+        if (upStationOptional.isPresent()) {
+            return upStationOptional;
         }
-        if (existsUpStation(newSection.getDownStationId())) {
-            return getSection(newSection.getDownStationId());
+        Optional<SubwaySection> downStationOptional = getSectionMatchedUpStation(newSection.getDownStationId());
+
+        if (downStationOptional.isPresent()) {
+            return downStationOptional;
         }
 
-        return subwaySections.values()
-                .stream()
-                .filter(subwaySection -> subwaySection.getDownStationId().equals(newSection.getDownStationId()))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("중복된 구간이 존재하지 않습니다."));
+        return getSectionBy(section -> section.isSameDownStation(newSection.getDownStation()));
     }
 
     public boolean hasDuplicateSection(SubwaySection section) {
-        if (subwaySections.containsKey(section.getUpStationId()))
+        if (this.existsUpStation(section.getUpStationId()))
             return true;
-        if (subwaySections.containsKey(section.getDownStationId()))
-            return true;
+        return existsDownStation(section.getDownStationId());
+    }
+
+    private boolean existsStationBy(Predicate<SubwaySection> predicate) {
         return subwaySections
                 .values()
                 .stream()
-                .anyMatch(subwaySection ->
-                        subwaySection.getDownStationId().equals(section.getDownStationId()));
+                .anyMatch(predicate);
+    }
+
+    public void extendSection(Station station) {
+        SubwaySection closeSection = getSectionMatchedUpStation(station)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("%s 역은 현재 노선에 존재하지 않은 역입니다.", station.getName())));
+        SubwaySection extendSection = getSectionMatchedDownStation(station)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("%s 역은 현재 노선에 존재하지 않은 역입니다.", station.getName())));
+        extendSection.extend(closeSection);
     }
 }

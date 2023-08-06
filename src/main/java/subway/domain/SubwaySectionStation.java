@@ -24,6 +24,14 @@ public class SubwaySectionStation {
         this.name = name;
     }
 
+    public boolean isSame(Station.Id id) {
+        return this.id.equals(id);
+    }
+
+    public boolean isSame(Station station) {
+        return this.id.equals(station.getId());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

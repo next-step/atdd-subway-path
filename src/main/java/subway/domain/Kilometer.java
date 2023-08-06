@@ -34,6 +34,10 @@ public class Kilometer {
         return Kilometer.of(amount.subtract(distance.amount));
     }
 
+    public Kilometer plus(Kilometer distance) {
+        return Kilometer.of(amount.add(distance.amount));
+    }
+
     public void validate() {
         if (!isPositive()) {
             throw new IllegalArgumentException("거리는 0 초과이어야 합니다.");
