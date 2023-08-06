@@ -1,10 +1,10 @@
-package nextstep.subway.acceptance;
+package nextstep.subway.acceptance.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.StationResponse;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.acceptance.AcceptanceTest;
+import nextstep.subway.applicaion.dto.station.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

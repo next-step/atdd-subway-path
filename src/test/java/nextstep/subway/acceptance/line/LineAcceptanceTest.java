@@ -1,9 +1,10 @@
-package nextstep.subway.acceptance;
+package nextstep.subway.acceptance.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineUpdateRequest;
+import nextstep.subway.acceptance.AcceptanceTest;
+import nextstep.subway.applicaion.dto.line.LineRequest;
+import nextstep.subway.applicaion.dto.line.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

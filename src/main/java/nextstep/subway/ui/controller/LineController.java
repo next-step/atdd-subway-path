@@ -1,11 +1,11 @@
-package nextstep.subway.ui;
+package nextstep.subway.ui.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.LineRequest;
-import nextstep.subway.applicaion.dto.LineResponse;
-import nextstep.subway.applicaion.dto.LineUpdateRequest;
-import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.service.LineService;
+import nextstep.subway.applicaion.dto.line.LineRequest;
+import nextstep.subway.applicaion.dto.line.LineResponse;
+import nextstep.subway.applicaion.dto.line.LineUpdateRequest;
+import nextstep.subway.applicaion.dto.section.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

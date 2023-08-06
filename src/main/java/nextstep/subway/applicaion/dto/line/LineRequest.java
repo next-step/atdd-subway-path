@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.applicaion.dto.line;
 
 import javax.validation.constraints.Positive;
 

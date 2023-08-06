@@ -1,16 +1,20 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.applicaion.service;
 
 import lombok.extern.slf4j.Slf4j;
-import nextstep.subway.applicaion.dto.*;
+import nextstep.subway.applicaion.dto.line.LineRequest;
+import nextstep.subway.applicaion.dto.line.LineResponse;
+import nextstep.subway.applicaion.dto.line.LineUpdateRequest;
+import nextstep.subway.applicaion.dto.section.SectionRequest;
+import nextstep.subway.applicaion.dto.station.StationResponse;
 import nextstep.subway.applicaion.exception.domain.LineException;
-import nextstep.subway.applicaion.exception.domain.SectionException;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.Section;
+import nextstep.subway.domain.station.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,11 +91,18 @@ public class LineService {
         return line.addSectionAtMiddle(newSection);
     }
 
+    public List<Section> findAllSections() {
+        return lineRepository.findAll().stream()
+                .map(Line::getSections)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public LineResponse deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(LineException::new);
         Station deletedStation = stationService.findById(stationId);
-        line.beforeDeleteSection();
+        line.checkDeleteSectionValidity();
         deleteSectionByType(line, deletedStation);
 
         return createLineResponse(line);

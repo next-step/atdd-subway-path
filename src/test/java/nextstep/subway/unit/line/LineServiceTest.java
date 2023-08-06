@@ -1,16 +1,19 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
-import nextstep.subway.applicaion.LineService;
-import nextstep.subway.applicaion.dto.SectionRequest;
+import nextstep.subway.applicaion.service.LineService;
+import nextstep.subway.applicaion.dto.section.SectionRequest;
 import nextstep.subway.applicaion.exception.domain.SectionException;
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.Section;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.StationRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -63,17 +66,9 @@ public class LineServiceTest {
 
     @DisplayName("구간이 하나인 노선에서 구간 삭제 요청을 하면 예외가 발생한다.")
     @Test
-    void removeSectionSavedOneSection() {
-        // when
-        HttpStatus result = HttpStatus.OK;
-
-        try {
-            lineService.deleteSection(신분당선.getId(), 강남역.getId());
-        } catch (SectionException e) {
-            result = e.getStatus();
-        }
-
-        // then
-        Assertions.assertThat(result.value()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    void removeSectionWhenSavedOneSection() {
+        Assertions.assertThatThrownBy(() -> lineService.deleteSection(신분당선.getId(), 강남역.getId()))
+                .isInstanceOf(SectionException.class)
+                .hasMessageContaining("Can`t remove section by section count");
     }
 }

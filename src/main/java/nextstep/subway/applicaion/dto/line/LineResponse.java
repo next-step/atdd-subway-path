@@ -1,4 +1,6 @@
-package nextstep.subway.applicaion.dto;
+package nextstep.subway.applicaion.dto.line;
+
+import nextstep.subway.applicaion.dto.station.StationResponse;
 
 import java.util.List;
 
