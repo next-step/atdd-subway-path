@@ -114,7 +114,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void exceptionCase3() {
         //when
         var 새로운역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
-        Long 새로운역1 = 지하철역_생성_요청("새로운역1").jsonPath().getLong("id");
+        var 새로운역1 = 지하철역_생성_요청("새로운역1").jsonPath().getLong("id");
         Map<String, String> addMiddleParam = createSectionCreateParams(새로운역, 새로운역1, 3);
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, addMiddleParam);
 
@@ -131,7 +131,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
+        var 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
 
         // when
