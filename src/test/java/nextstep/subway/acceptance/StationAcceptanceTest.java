@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.config.AcceptanceTest;
 import nextstep.subway.steps.LineSteps;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -19,7 +19,6 @@ public class PathController {
 
   @GetMapping
   public PathSearchResponse getPathBetween(@Valid PathSearchRequest request, BindingResult bindingResult) {
-//    bindingResult.hasErr
     return pathService.searchAndGetPath(request, bindingResult);
   }
 }

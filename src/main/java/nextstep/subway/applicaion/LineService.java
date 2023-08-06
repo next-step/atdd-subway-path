@@ -45,6 +45,10 @@ public class LineService {
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
+    public List<Line> getAllLines() {
+        return lineRepository.findAll();
+    }
+
     public List<LineResponse> showLines() {
         return lineRepository.findAll().stream()
                 .map(this::createLineResponse)

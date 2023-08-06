@@ -66,7 +66,7 @@ public class Sections {
     return stations;
   }
 
-  public Optional<Section> getStartSection() {
+  private Optional<Section> getStartSection() {
     Map<Long, Station> downStationMap = sections.stream()
         .map(Section::getDownStation)
         .collect(Collectors.toMap(Station::getId, Function.identity()));
