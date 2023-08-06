@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.BadRequestException;
+import nextstep.subway.exception.ERROR_CODE;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +124,7 @@ public class Line {
 
     private void isEqualException(Station station, Station newStation) {
         if(station.equals(newStation)) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있다면 추가할 수 없다.");
+            throw new BadRequestException(ERROR_CODE.DUPLICATED_STATION);
         }
     }
 
@@ -133,7 +136,7 @@ public class Line {
         List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
         downStations.addAll(upStations);
         if(!(downStations.contains(downStation) || downStations.contains(upStation))) {
-            throw new IllegalArgumentException("상행선과 하행선 둘 중 하나도 포함되어 있지 않은 구간을 추가할 수 없다.");
+            throw new BadRequestException(ERROR_CODE.NOT_FOUND_ANY_STATION);
         }
     }
 
