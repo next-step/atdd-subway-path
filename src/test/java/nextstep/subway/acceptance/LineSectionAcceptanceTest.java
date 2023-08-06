@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.acceptance.LineSteps.*;
-import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
+import static nextstep.subway.steps.LineSteps.*;
+import static nextstep.subway.steps.StationSteps.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리 기능")
@@ -123,7 +123,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 1개의 지하철 노선을 생성하고
      * When 상행 종점역 지하철 역을 삭제하면
-     * Then 지하철 역을 삭제 할 수 없고, section-1005 에러 코드를 반환한다.
+     * Then 지하철 역은 삭제되지 않는다.
      */
     @DisplayName("지하철 노선에 역을 제거 - 실패 - section-1005")
     @Test
@@ -140,7 +140,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 2개의 지하철 노선을 생성하고
      * When 노선에 포함되지 않은 역을 삭제하면
-     * Then 지하철 역을 삭제 할 수 없고, station-1001 에러 코드를 반환한다.
+     * Then 지하철 역을 삭제 할 수 없다.
      */
     @DisplayName("지하철 노선에 역을 제거 - 실패 - station-1001")
     @Test

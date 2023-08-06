@@ -2,11 +2,10 @@ package nextstep.subway.unit;
 
 import java.util.List;
 import nextstep.config.BaseUnitTest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.section.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SectionExceptionCode;
-import nextstep.subway.exception.StationExceptionCode;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
