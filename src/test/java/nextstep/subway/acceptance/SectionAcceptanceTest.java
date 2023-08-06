@@ -16,9 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 관리 기능")
+
 class SectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
-
     private Long 강남역;
     private Long 양재역;
 
@@ -44,13 +44,13 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // when
-        Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
+        var 광교역 = 지하철역_생성_요청("광교역").jsonPath().getLong("id");
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 광교역));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 정자역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 양재역, 광교역);
     }
 
 
@@ -63,7 +63,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addMiddleLineSection() {
         //when
-        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        var 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
         Map<String, String> addMiddleParam = createSectionCreateParams(강남역, 중간역);
         지하철_노선에_지하철_구간_생성_요청(신분당선, addMiddleParam);
 
@@ -82,7 +82,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void exceptionCase1() {
         //when
-        Long 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
+        var 중간역 = 지하철역_생성_요청("중간역").jsonPath().getLong("id");
         Map<String, String> addMiddleParam = createSectionCreateParams(강남역, 중간역, 10);
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, addMiddleParam);
 
@@ -113,7 +113,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void exceptionCase3() {
         //when
-        Long 새로운역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
+        var 새로운역 = 지하철역_생성_요청("새로운역").jsonPath().getLong("id");
         Long 새로운역1 = 지하철역_생성_요청("새로운역1").jsonPath().getLong("id");
         Map<String, String> addMiddleParam = createSectionCreateParams(새로운역, 새로운역1, 3);
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, addMiddleParam);

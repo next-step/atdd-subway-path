@@ -29,24 +29,12 @@ public class Line {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public List<Section> getSections() {
@@ -63,6 +51,11 @@ public class Line {
 
     public void addSections(Section section) {
         this.sections.add(section);
+    }
+
+    public void updateLine(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
     // 다음 역을 찾는 메소드
     private Optional<Section> findNextSection(Station downStation) {
@@ -82,15 +75,17 @@ public class Line {
 
     public void addSection(Section section) {
         isAnyMatch(section);
-        this.sections.add(section);
         if(isUpStation(section.getUpStation())) {
-            updatePrevDownSection(section);
+            updateUpSection(section);
+            this.sections.add(section);
             return;
         }
         if(isDownStation(section.getDownStation())) {
-            updatePrevUpSection(section);
+            updateDownSection(section);
+            this.sections.add(section);
             return;
         }
+        this.sections.add(section);
     }
 
     public void removeSection(Station station) {
@@ -103,24 +98,25 @@ public class Line {
     }
 
     // 추가되는 구간의 상행선 역이 기존 구간의 상행선으로 등록되어있으면 구간 사이에 들어간다. 기존 구간은 하행선 역으로 변경
-    private void updatePrevDownSection(Section newSection) {
-        Section downSection = sections.stream()
+    private void updateUpSection(Section newSection) {
+        Section prevUpSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst()
                 .get();
-        isEqualException(downSection.getDownStation(), newSection.getDownStation());
-        downSection.updateSection(newSection, true);
+        isEqualException(prevUpSection.getDownStation(), newSection.getDownStation());
+        // 기존에 있던 상행-하행에서 상행이 동일할 시 기존 상행이 새로운 역으로 바뀐다.
+        prevUpSection.updateSection(newSection, true);
 
     }
 
     // 추가되는 구간이 하행선 역이 기존 구간의 하행선으로 등록되어있으면 구간 사이에 들어간다. 기존 구간은 상행선 역으로 변경
-    private void updatePrevUpSection(Section newSection) {
-        Section upSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+    private void updateDownSection(Section newSection) {
+        Section prevDownSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
                 .findFirst()
                 .get();
-        isEqualException(upSection.getUpStation(), newSection.getUpStation());
-        upSection.updateSection(newSection, false);
+        isEqualException(prevDownSection.getUpStation(), newSection.getUpStation());
+        prevDownSection.updateSection(newSection, false);
     }
 
     private void isEqualException(Station station, Station newStation) {
@@ -130,10 +126,13 @@ public class Line {
     }
 
 
-    private void isAnyMatch(Section section) {
-        boolean isMatch = sections.stream().anyMatch(section1 -> isUpStation(section.getDownStation()));
-        isMatch = sections.stream().anyMatch(section1 -> isDownStation(section.getUpStation()));
-        if(!isMatch) {
+    private void isAnyMatch(Section newSection) {
+        Station downStation = newSection.getDownStation();
+        Station upStation = newSection.getUpStation();
+        List<Station> downStations = sections.stream().map(Section::getDownStation).collect(Collectors.toList());
+        List<Station> upStations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        downStations.addAll(upStations);
+        if(!(downStations.contains(downStation) || downStations.contains(upStation))) {
             throw new IllegalArgumentException("상행선과 하행선 둘 중 하나도 포함되어 있지 않은 구간을 추가할 수 없다.");
         }
     }
