@@ -26,27 +26,30 @@ public class PathService {
 
     @Transactional(readOnly = true)
     public PathResponse findPath(final Long sourceStationId, final Long targetStationId) {
-        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        GraphPath<String, DefaultWeightedEdge> path = new DijkstraShortestPath<>(createGraph())
+                .getPath(sourceStationId.toString(), targetStationId.toString());
+        List<StationResponse> pathStations = createStationResponseByGraph(path);
+
+        return new PathResponse(pathStations, (long) path.getWeight());
+    }
+
+    private WeightedMultigraph<String, DefaultWeightedEdge> createGraph() {
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         sectionRepository.findAll().forEach(section -> {
             graph.addVertex(section.getUpStation().getId().toString());
             graph.addVertex(section.getDownStation().getId().toString());
             graph.setEdgeWeight(graph.addEdge(section.getUpStation().getId().toString(), section.getDownStation().getId().toString()), section.getDistance());
         });
+        return graph;
+    }
 
-
-        DijkstraShortestPath shortestPath = new DijkstraShortestPath(graph);
-        GraphPath path = shortestPath.getPath(sourceStationId.toString(), targetStationId.toString());
-
+    private List<StationResponse> createStationResponseByGraph(GraphPath<String, DefaultWeightedEdge> path) {
         List<String> vertexList = path.getVertexList();
-        List<StationResponse> pathStations = vertexList.stream()
+        return vertexList.stream()
                 .map(Long::parseLong)
                 .map(stationRepository::findById)
                 .map(Optional::orElseThrow)
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
-
-
-        return new PathResponse(pathStations, (long) path.getWeight());
     }
-
 }
