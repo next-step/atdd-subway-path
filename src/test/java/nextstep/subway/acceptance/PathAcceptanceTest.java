@@ -29,9 +29,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 양재역;
     private Long 남부터미널역;
+    private Long 노원역;
+    private Long 창동역;
+    private Long 존재하지_않는_역;
     private Long 이호선;
     private Long 신분당선;
     private Long 삼호선;
+    private Long 사호선;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -39,6 +43,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * *3호선*                   *신분당선*
      * |                        |
      * 남부터미널역  --- *3호선* ---   양재
+     *
+     *
+     * 노원역  --- 창동역
      */
     @BeforeEach
     public void setUp() {
@@ -47,6 +54,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성_ID("강남역");
         양재역 = 지하철역_생성_ID("양재역");
         남부터미널역 = 지하철역_생성_ID("남부터미널역");
+        노원역 = 지하철역_생성_ID("노원역");
+        창동역 = 지하철역_생성_ID("창동역");
 
         이호선 = 지하철_노선_생성_ID(지하철_노선_생성_요청서("2호선", "green", 교대역, 강남역, 10));
         신분당선 = 지하철_노선_생성_ID(지하철_노선_생성_요청서("신분당선", "red", 강남역, 양재역, 10));
@@ -75,10 +84,25 @@ public class PathAcceptanceTest extends AcceptanceTest {
     class Fail {
         @DisplayName("지하철 경로 조회 - 출발역 도착역이 같은 경우 ")
         @Test
-        void getPath() {
+        void case_0() {
             //when
             //then
-            assertThrows(BadRequestException.class, () -> 지하철_경로_조회_요청(교대역, 교대역));
+            지하철_경로_조회_요청_상태값_체크(교대역, 교대역, HttpStatus.BAD_REQUEST);
+        }
+        @DisplayName("지하철 경로 조회 - 출발역과 도착역이 연결이 되어 있지 않은 경우")
+        @Test
+        void case_1() {
+            //when
+            //then
+            지하철_경로_조회_요청_상태값_체크(교대역, 창동역, HttpStatus.BAD_REQUEST);
+        }
+
+        @DisplayName("지하철 경로 조회 - 존재하지 않은 출발역이나 도착역을 조회 할 경우")
+        @Test
+        void case_2() {
+            //when
+            //then
+            지하철_경로_조회_요청_상태값_체크(존재하지_않는_역, 창동역, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -101,6 +125,17 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .extract()
                 .jsonPath()
                 .getObject(".", PathResponse.class);
+    }
+
+    public static void 지하철_경로_조회_요청_상태값_체크(Long source, Long target, HttpStatus expected) {
+        Map<String, Long> params = new HashMap<>();
+        params.put("source", source);
+        params.put("target", target);
+        RestAssured.given().log().all()
+                .params(params)
+                .when().get("/paths")
+                .then().log().all()
+                .statusCode(expected.value());
     }
 
 }

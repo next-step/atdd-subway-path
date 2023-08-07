@@ -1,5 +1,6 @@
 package nextstep.subway.path;
 
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.graph.GraphService;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationConverter;
@@ -22,14 +23,19 @@ public class PathService {
     }
 
     public PathResponse getShortestPath(Long source, Long target) {
-        Station start = stationService.getStation(source);
-        Station end = stationService.getStation(target);
-
-        ShortestPath<Station> shortestPath = new ShortestPath(graphService.getGraph(), start, end);
+        ShortestPath<Station> shortestPath = new ShortestPath(graphService.getGraph(),
+                stationService.getStation(source),
+                stationService.getStation(target));
+        validatePath(shortestPath);
         var stations = shortestPath.getVertexList()
                 .stream()
                 .map(e -> stationConverter.convert(e))
                 .collect(Collectors.toList());
         return new PathResponse(stations, shortestPath.getShortestDistance());
+    }
+
+    private static void validatePath(ShortestPath<Station> shortestPath) {
+        if (!shortestPath.isFound())
+            throw new BadRequestException("the path is not found.");
     }
 }
