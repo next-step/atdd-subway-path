@@ -21,7 +21,7 @@ public class PathService {
   private final LineService lineService;
   private final StationService stationService;
 
-  @Transactional
+  @Transactional(readOnly = true)
   public PathSearchResponse searchAndGetPath(PathSearchRequest request, BindingResult bindingResult) {
 
     if(bindingResult.hasErrors()) {
