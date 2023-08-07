@@ -42,6 +42,9 @@ public class PathAcceptanceTest {
         // then
         assertThat(pathResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(pathResponse.body().as(PathResponse.class).getDistance()).isEqualTo(15L);
+        assertThat(pathResponse.body().as(PathResponse.class).getStations())
+            .extracting(StationResponse::getName)
+            .containsExactly("서현역", "이매역", "야탑역");
     }
 
     @Test
@@ -68,4 +71,63 @@ public class PathAcceptanceTest {
         assertThat(pathResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(pathResponse.body().as(PathResponse.class).getDistance()).isEqualTo(10L);
     }
+
+    /**
+     * GIVEN 출발역과 도착역이 같은 라인에 속행있으며, 가는 길은 하나이다.
+     * WHEN 출발역과 도착역을 동일하게 검색한다.
+     * THEN 예외가 발생한다
+     */
+    @Test
+    @DisplayName("출발역과 도착역이 같은 경우 예외를 발생시킨다.")
+    void exceptionTest1() {
+        // given
+        StationResponse 서현역 = StationTestHelper.createStation("서현역");
+        StationResponse 이매역 = StationTestHelper.createStation("이매역");
+        LineResponse 분당선 = LineTestHelper.createLine("분당선");
+        LineTestHelper.createSection(분당선.getId(), 서현역.getId(), 이매역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> pathResponse = PathTestHelper.findPath(서현역.getId(), 서현역.getId());
+
+        // then
+        assertThat(pathResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * GIVEN 출발역과 도착역이 다른 라인에 속해있으며, 가는 길은 없다
+     * WHEN 출발역과 도착역을 입력받는다.
+     * THEN 예외가 발생한다
+     */
+    @Test
+    @DisplayName("출발역과 도착역이 연결되어있지 않은 경우 예외를 발생시킨다.")
+    void exceptionTest2() {
+        // given
+        StationResponse 서현역 = StationTestHelper.createStation("서현역");
+        StationResponse 이매역 = StationTestHelper.createStation("이매역");
+        StationResponse 야탑역 = StationTestHelper.createStation("야탑역");
+        LineResponse 분당선 = LineTestHelper.createLine("분당선");
+        LineTestHelper.createSection(분당선.getId(), 서현역.getId(), 이매역.getId(), 5);
+
+        // when
+        ExtractableResponse<Response> pathResponse = PathTestHelper.findPath(서현역.getId(), 야탑역.getId());
+
+        // then
+        assertThat(pathResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * GIVEN 출발역, 도착역이 존재하지 않는다
+     * WHEN 존재하지 않는 출발역, 도착역을 입력한다
+     * THEN 예외가 발생한다
+     */
+    @Test
+    @DisplayName("존재하지 않는 출발역, 도착역을 입력하면 예외를 발생시킨다.")
+    void exceptionTest3() {
+        // when
+        ExtractableResponse<Response> pathResponse = PathTestHelper.findPath(-1L, -2L);
+
+        // then
+        assertThat(pathResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 }

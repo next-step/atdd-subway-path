@@ -1,11 +1,13 @@
 package nextstep.subway.path;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/paths")
+@RestControllerAdvice
 public class PathController {
     private final PathService pathService;
 
@@ -18,4 +20,9 @@ public class PathController {
         return pathService.findPath(source, target);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleIllegalArgumentException(IllegalArgumentException e) {
+
+    }
 }

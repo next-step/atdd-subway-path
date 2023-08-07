@@ -1,6 +1,7 @@
 package nextstep.subway.path;
 
 import nextstep.subway.section.SectionRepository;
+import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
 import org.jgrapht.GraphPath;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,30 +28,41 @@ public class PathService {
 
     @Transactional(readOnly = true)
     public PathResponse findPath(final Long sourceStationId, final Long targetStationId) {
-        GraphPath<String, DefaultWeightedEdge> path = new DijkstraShortestPath<>(createGraph())
-                .getPath(sourceStationId.toString(), targetStationId.toString());
+        assertParameterValid(sourceStationId, targetStationId);
+
+        GraphPath<Station, DefaultWeightedEdge> path = new DijkstraShortestPath<>(createGraph())
+                .getPath(stationRepository.getReferenceById(sourceStationId), stationRepository.getReferenceById(targetStationId));
+
         List<StationResponse> pathStations = createStationResponseByGraph(path);
 
         return new PathResponse(pathStations, (long) path.getWeight());
     }
 
-    private WeightedMultigraph<String, DefaultWeightedEdge> createGraph() {
-        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+    private WeightedMultigraph<Station, DefaultWeightedEdge> createGraph() {
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         sectionRepository.findAll().forEach(section -> {
-            graph.addVertex(section.getUpStation().getId().toString());
-            graph.addVertex(section.getDownStation().getId().toString());
-            graph.setEdgeWeight(graph.addEdge(section.getUpStation().getId().toString(), section.getDownStation().getId().toString()), section.getDistance());
+            graph.addVertex(section.getUpStation());
+            graph.addVertex(section.getDownStation());
+            graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
         });
         return graph;
     }
 
-    private List<StationResponse> createStationResponseByGraph(GraphPath<String, DefaultWeightedEdge> path) {
-        List<String> vertexList = path.getVertexList();
+    private List<StationResponse> createStationResponseByGraph(GraphPath<Station, DefaultWeightedEdge> path) {
+        List<Station> vertexList = path.getVertexList();
         return vertexList.stream()
-                .map(Long::parseLong)
-                .map(stationRepository::findById)
-                .map(Optional::orElseThrow)
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
+    }
+
+
+    private void assertParameterValid(Long sourceStationId, Long targetStationId) {
+        if (Objects.equals(sourceStationId, targetStationId)) {
+            throw new IllegalArgumentException("출발역과 도착역이 동일합니다.");
+        }
+
+        if (stationRepository.findById(sourceStationId).isEmpty() || stationRepository.findById(targetStationId).isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
+        }
     }
 }
