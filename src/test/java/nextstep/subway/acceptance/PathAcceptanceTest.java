@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import nextstep.subway.config.ManualCleanAcceptanceTest;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -68,18 +68,19 @@ public class PathAcceptanceTest extends ManualCleanAcceptanceTest {
    * <999호선> (연결 X)
    * _999_시작역 --5-- _999_종점역
    */
-  @BeforeEach
+  @BeforeAll
   public void setup() {
-    if(노선_초기화_완료) {
-      return;
-    }
-
     사당역 = 지하철역_생성_요청("사당역").jsonPath().getLong("id");
     총신대입구역 = 지하철역_생성_요청("총신대입구역").jsonPath().getLong("id");
     _2호선_init();
     _4호선_init();
     _7호선_init();
     _999호선_init();
+  }
+
+  @AfterAll
+  public void teardown() {
+    super.databaseCleanup.execute();
   }
 
   /**
@@ -177,13 +178,6 @@ public class PathAcceptanceTest extends ManualCleanAcceptanceTest {
     // then
     Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     Assertions.assertThat(response.jsonPath().getString("serviceErrorCode")).isEqualTo("validation-1000");
-  }
-
-  @Test
-  @Order(99999)
-  @DisplayName("[teardown] 클래스단위 테스트가 종료되면 db를 teardown한다.")
-  void tearDown() {
-    super.databaseCleanup.execute();
   }
 
   private static void _2호선_init() {
