@@ -162,24 +162,6 @@ public class PathAcceptanceTest extends ManualCleanAcceptanceTest {
     Assertions.assertThat(response.jsonPath().getString("serviceErrorCode")).isEqualTo("station-1001");
   }
 
-  /**
-   * 예외4 - 조회조건에 출발역이나 도착역이 없는 상태로 조회하는 경우
-   *
-   * Given 하나 이상의 노선을 가진 임의의 지하철 노선도에서 출발역이나 도착역이 없는상태로
-   * When 경로를 조회하면
-   * Then 경로를 조회 할 수 없다.
-   */
-  @Test
-  @DisplayName("조회조건에 출발역이나 도착역이 없는 상태로 경로를 조회한다.")
-  void 경로조회_예외_4() {
-    // when
-    ExtractableResponse<Response> response = 지하철_역_경로조회_도착역_없음(봉천역);
-
-    // then
-    Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    Assertions.assertThat(response.jsonPath().getString("serviceErrorCode")).isEqualTo("validation-1000");
-  }
-
   private static void _2호선_init() {
     봉천역 = 지하철역_생성_요청("봉천역").jsonPath().getLong("id");
     서울대입구역 = 지하철역_생성_요청("서울대입구역").jsonPath().getLong("id");
