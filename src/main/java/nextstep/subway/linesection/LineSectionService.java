@@ -7,6 +7,10 @@ import nextstep.subway.line.LineService;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationService;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class LineSectionService {
     private final LineService lineService;

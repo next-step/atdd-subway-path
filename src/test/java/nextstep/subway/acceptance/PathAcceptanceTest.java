@@ -1,12 +1,10 @@
 package nextstep.subway.acceptance;
 
 import io.restassured.RestAssured;
-import nextstep.subway.acceptance.line.LineFixture;
 import nextstep.subway.acceptance.section.LineSectionFixture;
-import nextstep.subway.acceptance.station.StationFixture;
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.path.PathResponse;
 import nextstep.subway.station.StationResponse;
-import org.assertj.core.util.Maps;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,11 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.acceptance.line.LineFixture.*;
-import static nextstep.subway.acceptance.section.LineSectionFixture.*;
-import static nextstep.subway.acceptance.station.StationFixture.지하철역_생성;
+import static nextstep.subway.acceptance.line.LineFixture.지하철_노선_생성_ID;
+import static nextstep.subway.acceptance.line.LineFixture.지하철_노선_생성_요청서;
+import static nextstep.subway.acceptance.section.LineSectionFixture.지하철_구간_생성;
 import static nextstep.subway.acceptance.station.StationFixture.지하철역_생성_ID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("지하철 경로 검색")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -71,9 +70,21 @@ public class PathAcceptanceTest extends AcceptanceTest {
         }
     }
 
+    @DisplayName("실패 경우")
+    @Nested
+    class Fail {
+        @DisplayName("지하철 경로 조회 - 출발역 도착역이 같은 경우 ")
+        @Test
+        void getPath() {
+            //when
+            //then
+            assertThrows(BadRequestException.class, () -> 지하철_경로_조회_요청(교대역, 교대역));
+        }
+    }
+
     private static List<Long> 지하철_경로에_있는_역_ID_리스트_조회(PathResponse response) {
         List<Long> stationIds = response.getStations().stream()
-                .map(e -> e.getId())
+                .map(StationResponse::getId)
                 .collect(Collectors.toList());
         return stationIds;
     }

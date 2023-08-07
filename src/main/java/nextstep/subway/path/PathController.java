@@ -15,7 +15,7 @@ public class PathController {
 
     @GetMapping("/paths")
     public ResponseEntity<PathResponse> getPathInfo(@RequestParam Long source, @RequestParam Long target) {
-        PathResponse response = pathService.getPath(source, target);
+        var response = pathService.getShortestPath(source, target);
         return ResponseEntity.ok()
                 .body(response);
     }
