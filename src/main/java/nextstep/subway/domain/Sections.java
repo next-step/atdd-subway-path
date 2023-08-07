@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.applicaion.constants.ErrorMessage;
 import nextstep.subway.applicaion.exception.SectionDeleteException;
 import nextstep.subway.applicaion.exception.SectionExistException;
 import nextstep.subway.applicaion.exception.SectionNotFoundException;
@@ -38,10 +39,10 @@ public class Sections {
 
     public void addSection(Section section) {
         if (isExistedStation(section.getUpStation()) && isExistedStation(section.getDownStation())) {
-            throw new SectionExistException("이미 지정된 구간입니다.");
+            throw new SectionExistException(ErrorMessage.SECTION_ALREADY_EXISTED);
         }
         if (!isExistedStation(section.getUpStation()) && !isExistedStation(section.getDownStation())) {
-            throw new SectionExistException("구간으로 등록하려면 상행역 또는 하행역이 포함되어 있어야 합니다.");
+            throw new SectionExistException(ErrorMessage.CONCLUED_UP_OR_DOWN);
         }
         modifyExistedSection(section);
         sections.add(section);
@@ -62,10 +63,10 @@ public class Sections {
 
     public void deleteSection(Station station) {
         if(sections.size() == 1) {
-            throw new SectionDeleteException("구간이 하나인 경우 구간을 삭제할 수 없습니다.");
+            throw new SectionDeleteException(ErrorMessage.SECTION_MORE_THAN_TWO);
         }
         if(!isExistedStation(station)) {
-            throw new SectionDeleteException("노선에 등록되지 않은 역은 제거할 수 없습니다.");
+            throw new SectionDeleteException(ErrorMessage.STATION_IS_NOT_SELECTED);
         }
 
         boolean isUp = isExistedUpStation(station);

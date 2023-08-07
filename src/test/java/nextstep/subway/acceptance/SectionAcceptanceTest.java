@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.applicaion.constants.ErrorMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -64,7 +65,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 6));
 
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 강남역, 10));
-        assertThat(response.body().asString()).isEqualTo("이미 지정된 구간입니다.");
+        assertThat(response.body().asString()).isEqualTo(ErrorMessage.SECTION_ALREADY_EXISTED);
     }
 
     /**
@@ -78,7 +79,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 11));
 
-        assertThat(response.body().asString()).isEqualTo("등록할 구간의 길이가 기존 역 사이 길이보다 크거나 같습니다.");
+        assertThat(response.body().asString()).isEqualTo(ErrorMessage.LENGTH_ERROR);
     }
 
     /**
@@ -93,7 +94,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long 명동역 = 지하철역_생성_요청("명동역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 명동역, 11));
 
-        assertThat(response.body().asString()).isEqualTo("구간으로 등록하려면 상행역 또는 하행역이 포함되어 있어야 합니다.");
+        assertThat(response.body().asString()).isEqualTo(ErrorMessage.CONCLUED_UP_OR_DOWN);
     }
 
     /**
@@ -152,7 +153,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
 
         // then
-        assertThat(response.body().asString()).isEqualTo("구간이 하나인 경우 구간을 삭제할 수 없습니다.");
+        assertThat(response.body().asString()).isEqualTo(ErrorMessage.SECTION_MORE_THAN_TWO);
     }
 
     /**
@@ -172,7 +173,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(신분당선, 범계역);
 
         // then
-        assertThat(response.body().asString()).isEqualTo("노선에 등록되지 않은 역은 제거할 수 없습니다.");
+        assertThat(response.body().asString()).isEqualTo(ErrorMessage.STATION_IS_NOT_SELECTED);
     }
 
 
