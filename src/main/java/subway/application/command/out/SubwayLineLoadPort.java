@@ -2,6 +2,8 @@ package subway.application.command.out;
 
 import subway.domain.SubwayLine;
 
+import java.util.Optional;
+
 public interface SubwayLineLoadPort {
-    SubwayLine findOne(SubwayLine.Id id);
+    Optional<SubwayLine> findOne(SubwayLine.Id id);
 }

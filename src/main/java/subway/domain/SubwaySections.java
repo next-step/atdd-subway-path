@@ -56,11 +56,13 @@ public class SubwaySections {
                 .stream()
                 .map(SubwaySection::getDownStationId)
                 .collect(Collectors.toList());
+
         Optional<Station.Id> result = this.subwaySections
                 .keySet()
                 .stream()
                 .filter(stationId -> !downStationIds.contains(stationId))
                 .findAny();
+
         if (result.isEmpty()) {
             validate();
         }
@@ -115,20 +117,6 @@ public class SubwaySections {
                 .map(SubwaySection::getDownStationId)
                 .distinct()
                 .count() != this.size();
-    }
-
-    boolean isConnected(Station.Id startStationId) {
-        Station.Id stationId = startStationId;
-        int count = 0;
-        while (count < size() && existsUpStation(stationId)) {
-            Optional<SubwaySection> sectionOptional = getSectionMatchedUpStation(stationId);
-            if (sectionOptional.isEmpty()) {
-                return false;
-            }
-            stationId = sectionOptional.get().getDownStationId();
-            count++;
-        }
-        return count == this.size();
     }
 
     boolean isConnected() {

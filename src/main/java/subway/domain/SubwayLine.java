@@ -75,19 +75,19 @@ public class SubwayLine {
         SubwaySection subwaySection = SubwaySection.register(upStation, downStation, kilometer);
         SectionAdder updater = manager.getUpdater(this.sections, subwaySection);
         this.sections = updater.addSection(this.sections, subwaySection);
-        this.startStationId = sections.getStartStationId();
+        updateStartStationId();
         validate();
     }
 
     public void closeSection(Station station, SectionCloseManager manager) {
         SectionCloser closer = manager.getOperator(this.sections, station);
         this.sections = closer.closeSection(this.sections, station);
-        this.startStationId = sections.getStartStationId();
+        updateStartStationId();
         validate();
     }
 
-    public boolean existsUpStation(Station.Id stationId) {
-        return sections.existsUpStation(stationId);
+    private void updateStartStationId() {
+        this.startStationId = sections.getStartStationId();
     }
 
     public List<SubwaySection> getSections() {

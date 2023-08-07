@@ -1,6 +1,7 @@
 package subway.application.command.in;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import subway.application.command.validator.SubwaySectionCloseCommandValidator;
@@ -23,6 +24,7 @@ public interface SubwaySectionCloseUsecase {
             return section.getStationId();
         }
 
+        @Builder
         public Command(SubwayLine.Id subwayLineId, SectionCommand section, SubwaySectionCloseCommandValidator validator) {
             this.subwayLineId = subwayLineId;
             this.section = section;
@@ -33,6 +35,7 @@ public interface SubwaySectionCloseUsecase {
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static class SectionCommand {
             private Station.Id stationId;
+            @Builder
             public SectionCommand(Station.Id stationId) {
                 this.stationId = stationId;
             }

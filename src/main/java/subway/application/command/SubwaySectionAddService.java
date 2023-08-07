@@ -13,6 +13,7 @@ import subway.domain.SubwayLine;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Transactional
@@ -39,10 +40,16 @@ class SubwaySectionAddService implements SubwaySectionAddUsecase {
 
         Station upStation = getStationBy(commandSection.getUpStationId(), idToStationMap);
         Station downStation = getStationBy(commandSection.getDownStationId(), idToStationMap);
-        SubwayLine subwayLine = subwayLineLoadPort.findOne(command.getSubwayLineId());
+        SubwayLine subwayLine = getSubwayLineBy(command);
 
         subwayLine.addSection(upStation, downStation, commandSection.getDistance(), sectionAddManager);
         subwaySectionAddPort.addSubwaySection(subwayLine);
+    }
+
+    private SubwayLine getSubwayLineBy(Command command) {
+        return subwayLineLoadPort.findOne(command.getSubwayLineId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("%d는 존재하지 않는 노선 id 입니다.", command.getSubwayLineId().getValue())));
     }
 
     private Map<Station.Id, Station> getStationMapBy(Command.SectionCommand commandSection) {
@@ -53,7 +60,7 @@ class SubwaySectionAddService implements SubwaySectionAddUsecase {
     private static Station getStationBy(Station.Id id, Map<Station.Id, Station> idToStationMap) {
         return Optional
                 .ofNullable(idToStationMap.get(id))
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new NoSuchElementException(
                         String.format("%d는 존재하지 않는 역 id 입니다.", id.getValue())));
     }
 }

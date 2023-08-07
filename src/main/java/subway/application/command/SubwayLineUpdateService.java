@@ -7,6 +7,8 @@ import subway.application.command.out.SubwayLineLoadPort;
 import subway.application.command.out.SubwayLineUpdatePort;
 import subway.domain.SubwayLine;
 
+import java.util.NoSuchElementException;
+
 @Service
 @Transactional
 public class SubwayLineUpdateService implements SubwayLineUpdateUsecase {
@@ -21,8 +23,14 @@ public class SubwayLineUpdateService implements SubwayLineUpdateUsecase {
 
     @Override
     public void updateSubwayLine(Command command) {
-        SubwayLine subwayLine = subwayLineLoadPort.findOne(command.getId());
+        SubwayLine subwayLine = getSubwayLineBy(command);
         subwayLine.update(command.getName(), command.getColor());
         subwayLineUpdatePort.update(subwayLine);
+    }
+
+    private SubwayLine getSubwayLineBy(Command command) {
+        return subwayLineLoadPort.findOne(command.getId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("%d는 존재하지 않는 노선 id 입니다.", command.getId().getValue())));
     }
 }

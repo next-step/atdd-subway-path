@@ -87,6 +87,6 @@ public class SubwayLineJpa {
     private void deleteSections(SubwayLine subwayLine) {
         subwaySections
                 .removeIf(subwaySectionJpa ->
-                        !subwayLine.existsUpStation(new Station.Id(subwaySectionJpa.getUpStationId())));
+                        subwayLine.getSection(new Station.Id(subwaySectionJpa.getUpStationId())).isEmpty());
     }
 }

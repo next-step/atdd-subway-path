@@ -45,7 +45,7 @@ public class SubwayLineRegisterDomainTest {
         Assertions.assertThat(subwayLine.getName()).isEqualTo(name);
         Assertions.assertThat(subwayLine.getColor()).isEqualTo(color);
         Assertions.assertThat(subwayLine.getSections()).hasSize(1);
-        Assertions.assertThat(subwayLine.existsUpStation(upStation.getId())).isTrue();
+        Assertions.assertThat(subwayLine.getSection(upStation.getId()).isPresent()).isTrue();
 
     }
 

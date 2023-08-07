@@ -14,6 +14,8 @@ import subway.domain.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +52,7 @@ class SubwaySectionAddServiceTest {
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection));
 
         given(subwayLineLoadPort.findOne(any()))
-                .willReturn(이호선);
+                .willReturn(Optional.of(이호선));
 
         //given
         Station 선릉역 = Station.of(new Station.Id(3L), "선릉역");
@@ -102,7 +104,7 @@ class SubwaySectionAddServiceTest {
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection));
 
         given(subwayLineLoadPort.findOne(any()))
-                .willReturn(이호선);
+                .willReturn(Optional.of(이호선));
 
         //given
         Station 선릉역 = Station.of(new Station.Id(3L), "선릉역");
@@ -150,7 +152,7 @@ class SubwaySectionAddServiceTest {
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection));
 
         given(subwayLineLoadPort.findOne(any()))
-                .willReturn(이호선);
+                .willReturn(Optional.of(이호선));
 
         //given
         given(stationMapLoadByInPort.findAllByIn(anyList()))
@@ -175,7 +177,7 @@ class SubwaySectionAddServiceTest {
         Throwable throwable = catchThrowable(() -> subwaySectionAddService.addSubwaySection(command));
         //then
         assertThat(throwable)
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(NoSuchElementException.class)
                 .hasMessage(String.format("%d는 존재하지 않는 역 id 입니다.", 3L));
     }
 }
