@@ -69,11 +69,11 @@ public abstract class StationAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     /**
-     * name 을 가진 지하철역을 삭제 요청을 합니다
+     * name 을 가진 지하철역을 비활성화 요청을 합니다
      * @param name 지하철 역 이름
-     * @return 지하철 역 삭제 요청 결과
+     * @return 지하철역 비활성화 요청 결과
      */
-    protected ExtractableResponse<Response> 지하철역_삭제(String name) {
+    protected ExtractableResponse<Response> 지하철역_비활성화(String name) {
         long id = 지하철_역_식별자_조회(name);
 
         return RestAssured

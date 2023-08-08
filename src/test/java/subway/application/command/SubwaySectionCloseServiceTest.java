@@ -1,6 +1,5 @@
 package subway.application.command;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -13,14 +12,12 @@ import subway.common.annotation.UnitTest;
 import subway.domain.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
@@ -48,7 +45,7 @@ class SubwaySectionCloseServiceTest {
      * @then 노선에 구간이 삭제된다.
      */
     @Test
-    @DisplayName("구간을 비활성화할 때 노선에 구간이 삭제된다.")
+    @DisplayName("구간을 비활성화할 때 노선에 구간이 비활성화된다.")
     void closeSection() {
         //given
         Station 강남역 = Station.of(new Station.Id(1L), "강남역");
@@ -91,11 +88,11 @@ class SubwaySectionCloseServiceTest {
      * @given 구간을 3개 가진 기존 지하철 노선이 존재하고
      * @given 비활성화할 구간이 존재한다면
      * @when 구간을 비활성화할 때
-     * @then 구간 데이터를 삭제하기 위해 노선 업데이트 요청을 한다.
+     * @then 구간 데이터 비활성화 요청을 한다.
      */
     @Test
-    @DisplayName("구간을 비활성화할 때 구간 데이터를 삭제하기 위해 노선 업데이트 요청을 한다.")
-    void requestToDeleteSectionData() {
+    @DisplayName("구간을 비활성화할 때 구간 데이터 비활성화 요청을 한다.")
+    void requestToCloseSectionData() {
         //given
         Station 강남역 = Station.of(new Station.Id(1L), "강남역");
         Station 역삼역 = Station.of(new Station.Id(2L), "역삼역");
@@ -136,12 +133,12 @@ class SubwaySectionCloseServiceTest {
 
     /**
      * @given 기존 지하철 노선이 존재하고
-     * @given 삭제될 지하철 역이 존재하지 않다면
+     * @given 비활성화할 지하철 역이 존재하지 않다면
      * @when 지하철 구간을 비활성화할 때
      * @then 에러 메세지를 출력한다.
      */
     @Test
-    @DisplayName("존재하지 않은 지하철 역을 노선에서 삭제할 수 없다.")
+    @DisplayName("존재하지 않은 지하철 역을 노선에서 비활성화할 수 없다.")
     void tryToNotExistStation() {
         //given
         Station 강남역 = Station.of(new Station.Id(1L), "강남역");

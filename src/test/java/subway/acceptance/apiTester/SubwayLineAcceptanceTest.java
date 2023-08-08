@@ -174,11 +174,11 @@ public abstract class SubwayLineAcceptanceTest extends StationAcceptanceTest{
     }
 
     /**
-     * 지하철 노선 삭제 요청을 합니다.
-     * @param name 삭제할 지하철 노선 이름
-     * @return 지하철 노선 삭제 요청 결과
+     * 지하철 노선 비활성화 요청을 합니다.
+     * @param name 비활성화할 지하철 노선 이름
+     * @return 지하철 노선 비활성화 요청 결과
      */
-    protected ExtractableResponse<Response> 지하철_노선_삭제(String name) {
+    protected ExtractableResponse<Response> 지하철_노선_비활성화(String name) {
         long id = 지하철_노선_식별자_검색(name);
 
         return RestAssured
