@@ -19,7 +19,7 @@ class SubwayLineUpdatePersistenceAdapter implements SubwayLineUpdatePort {
     @Override
     public void update(SubwayLine subwayLine) {
         SubwayLineJpa subwayLineJpa = subwayLineJpaRepository.findOneWithSectionsById(subwayLine.getId().getValue()).orElseThrow(() -> new NoSuchElementException("해당하는 지하철 노선이 없습니다."));
-        subwayLineJpa.update(subwayLine.getName(), subwayLine.getColor());
+        subwayLineJpa.update(subwayLine);
         subwayLineJpaRepository.save(subwayLineJpa);
     }
 }

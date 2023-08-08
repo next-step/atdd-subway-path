@@ -2,7 +2,9 @@ package subway.application.command.out;
 
 import subway.domain.Station;
 
+import java.util.Optional;
+
 public interface StationLoadPort {
-    Station findOne(Station.Id stationId);
+    Optional<Station> findOne(Station.Id stationId);
 
 }

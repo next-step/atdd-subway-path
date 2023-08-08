@@ -11,6 +11,8 @@ import subway.domain.SectionCloseManager;
 import subway.domain.Station;
 import subway.domain.SubwayLine;
 
+import java.util.NoSuchElementException;
+
 @Transactional
 @Service
 public class SubwaySectionCloseService implements SubwaySectionCloseUsecase {
@@ -30,11 +32,23 @@ public class SubwaySectionCloseService implements SubwaySectionCloseUsecase {
 
     @Override
     public void closeSection(Command command) {
-        SubwayLine subwayLine = subwayLineLoadPort.findOne(command.getSubwayLineId());
-        Station station = stationLoadPort.findOne(command.getStationId());
+        SubwayLine subwayLine = getSubwayLineBy(command);
+        Station station = getStationBy(command);
 
         subwayLine.closeSection(station, sectionCloseManager);
 
         subwaySectionClosePort.closeSection(subwayLine);
+    }
+
+    private Station getStationBy(Command command) {
+        return stationLoadPort.findOne(command.getStationId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("%d는 존재하지 않는 역 id 입니다.", command.getStationId().getValue())));
+    }
+
+    private SubwayLine getSubwayLineBy(Command command) {
+        return subwayLineLoadPort.findOne(command.getSubwayLineId())
+                .orElseThrow(() -> new NoSuchElementException(
+                        String.format("%d는 존재하지 않는 노선 id 입니다.", command.getSubwayLineId().getValue())));
     }
 }

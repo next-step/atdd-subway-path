@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class SubwayLine {
     private final Id id;
@@ -16,7 +17,7 @@ public class SubwayLine {
     private String color;
     @Getter
     private Station.Id startStationId;
-    private final SubwaySections sections;
+    private SubwaySections sections;
 
     public static SubwayLine register(String name, String color, Station upStation, Station downStation, Kilometer distance) {
         SubwaySection subwaySection = SubwaySection.register(upStation, downStation, distance);
@@ -47,7 +48,7 @@ public class SubwayLine {
     }
 
     private void validate() {
-        sections.validate(startStationId);
+        sections.validate();
     }
 
     public Id getId() {
@@ -57,8 +58,8 @@ public class SubwayLine {
         return id;
     }
 
-    public SubwaySection getSection(Station.Id stationId) {
-        return sections.getSection(stationId);
+    public Optional<SubwaySection> getSection(Station.Id stationId) {
+        return sections.getSectionMatchedUpStation(stationId);
     }
 
     public boolean isNew() {
@@ -72,52 +73,25 @@ public class SubwayLine {
 
     public void addSection(Station upStation, Station downStation, Kilometer kilometer, SectionAddManager manager) {
         SubwaySection subwaySection = SubwaySection.register(upStation, downStation, kilometer);
-        SectionAdder updater = manager.getUpdater(this, subwaySection);
-        updater.execute(this, subwaySection);
+        SectionAdder updater = manager.getUpdater(this.sections, subwaySection);
+        this.sections = updater.addSection(this.sections, subwaySection);
+        updateStartStationId();
         validate();
     }
 
     public void closeSection(Station station, SectionCloseManager manager) {
-        SectionCloser closer = manager.getOperator(this);
-        closer.apply(this, station);
+        SectionCloser closer = manager.getOperator(this.sections, station);
+        this.sections = closer.closeSection(this.sections, station);
+        updateStartStationId();
         validate();
     }
 
-
-
-    void registerSection(SubwaySection subwaySection) {
-        sections.add(subwaySection);
-    }
-
-    public boolean existsUpStation(Station.Id stationId) {
-        return sections.existsUpStation(stationId);
+    private void updateStartStationId() {
+        this.startStationId = sections.getStartStationId();
     }
 
     public List<SubwaySection> getSections() {
         return sections.getSections();
-    }
-
-    public int getSectionSize() {
-        return sections.size();
-    }
-
-    void closeSection(Station station) {
-        sections.close(station);
-    }
-
-    public boolean hasDuplicateSection(SubwaySection subwaySection) {
-        return sections.hasDuplicateSection(subwaySection);
-    }
-    public boolean isStartStation(Station.Id stationId) {
-        return startStationId.equals(stationId);
-    }
-
-    public void updateStartStation(Station.Id stationId) {
-        this.startStationId = stationId;
-    }
-
-    public void reduceSection(SubwaySection subwaySection) {
-        sections.reduceSection(subwaySection);
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

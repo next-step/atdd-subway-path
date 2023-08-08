@@ -8,6 +8,7 @@ import subway.application.command.out.StationLoadPort;
 import subway.domain.Station;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @PersistenceAdapter
 public class StationLoadPersistenceAdapter implements StationLoadPort {
@@ -22,8 +23,8 @@ public class StationLoadPersistenceAdapter implements StationLoadPort {
 
 
     @Override
-    public Station findOne(Station.Id stationId) {
+    public Optional<Station> findOne(Station.Id stationId) {
         StationJpa stationJpa = stationRepository.findById(stationId.getValue()).orElseThrow(() -> new NoSuchElementException("해당하는 지하철 역이 없습니다."));
-        return stationMapper.from(stationJpa);
+        return Optional.of(stationMapper.from(stationJpa));
     }
 }

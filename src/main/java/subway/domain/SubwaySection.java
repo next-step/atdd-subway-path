@@ -7,7 +7,9 @@ import java.util.Objects;
 public class SubwaySection {
 
     private final Id id;
+    @Getter
     private SubwaySectionStation upStation;
+    @Getter
     private SubwaySectionStation downStation;
     @Getter
     private Kilometer distance;
@@ -48,6 +50,21 @@ public class SubwaySection {
         return downStation.getId();
     }
 
+    public boolean isSameUpStation(Station station) {
+        return isSameUpStation(station.getId());
+    }
+
+    public boolean isSameUpStation(Station.Id id) {
+        return upStation.isSame(id);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return isSameDownStation(station.getId());
+    }
+
+    public boolean isSameDownStation(Station.Id id) {
+        return downStation.isSame(id);
+    }
 
     public String getDownStationName() {
         return downStation.getName();
@@ -63,9 +80,12 @@ public class SubwaySection {
     public boolean isNew() {
         return id.isNew();
     }
+    boolean matchesDownStation(Station.Id id) {
+        return downStation.getId().equals(id);
+    }
 
-    boolean matchesDownStation(Station station) {
-        return downStation.getId().equals(station.getId());
+    boolean isSameDownStation(SubwaySectionStation subwaySectionStation) {
+        return downStation.equals(subwaySectionStation);
     }
 
     void reduce(SubwaySection newSection) {
@@ -91,6 +111,14 @@ public class SubwaySection {
     @Override
     public int hashCode() {
         return Objects.hash(upStation.getId(), downStation.getId());
+    }
+
+    public void extend(SubwaySection closeSection) {
+        if (this.equals(closeSection)) {
+            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+        }
+        this.distance = this.distance.plus(closeSection.distance);
+        this.downStation = closeSection.downStation;
     }
 
     public static class Id {

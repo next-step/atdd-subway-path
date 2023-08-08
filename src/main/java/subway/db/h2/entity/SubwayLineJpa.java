@@ -1,5 +1,8 @@
 package subway.db.h2.entity;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import subway.domain.Station;
 import subway.domain.SubwayLine;
 import subway.domain.SubwaySection;
@@ -8,8 +11,10 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
 @Entity
 @Table(name = "subway_lines")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubwayLineJpa {
 
     @Id
@@ -28,9 +33,6 @@ public class SubwayLineJpa {
     @JoinColumn(name = "subway_line_id")
     private List<SubwaySectionJpa> subwaySections = new ArrayList<>();
 
-    public SubwayLineJpa() {
-    }
-
     public SubwayLineJpa(Long id, String name, String color, Long startStationId, List<SubwaySectionJpa> subwaySections) {
         this.id = id;
         this.name = name;
@@ -39,51 +41,33 @@ public class SubwayLineJpa {
         this.subwaySections = subwaySections;
     }
 
-    public Long getId() {
-        return id;
+    public void update(SubwayLine subwayLine) {
+        update(subwayLine.getName(), subwayLine.getColor());
+        updateSections(subwayLine);
+        addSections(subwayLine);
+        deleteSections(subwayLine);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public Long getStartStationId() {
-        return startStationId;
-    }
-
-    public List<SubwaySectionJpa> getSubwaySections() {
-        return subwaySections;
-    }
-
-    public void update(String name, String color) {
+    private void update(String name, String color) {
         this.name = name;
         this.color = color;
     }
 
-    public boolean isNew() {
-        return id == null;
-    }
-
-    public void updateSections(SubwayLine subwayLine) {
+    private void updateSections(SubwayLine subwayLine) {
         for (SubwaySectionJpa subwaySectionJpa : subwaySections) {
             Station.Id id = new Station.Id(subwaySectionJpa.getUpStationId());
-            if (subwayLine.existsUpStation(id)) {
-                SubwaySection section = subwayLine.getSection(id);
-                subwaySectionJpa.update(
-                        section.getUpStationId().getValue(),
-                        section.getUpStationName(),
-                        section.getDownStationId().getValue(),
-                        section.getDownStationName(),
-                        section.getDistance().getValue());
-            }
+            subwayLine.getSection(id)
+                    .ifPresent(subwaySection ->
+                            subwaySectionJpa.update(
+                                    subwaySection.getUpStationId().getValue(),
+                                    subwaySection.getUpStationName(),
+                                    subwaySection.getDownStationId().getValue(),
+                                    subwaySection.getDownStationName(),
+                                    subwaySection.getDistance().getValue()));
         }
     }
 
-    public void addSections(SubwayLine subwayLine) {
+    private void addSections(SubwayLine subwayLine) {
 
         subwayLine.getSections()
                 .stream()
@@ -100,9 +84,9 @@ public class SubwayLineJpa {
     }
 
 
-    public void deleteSections(SubwayLine subwayLine) {
+    private void deleteSections(SubwayLine subwayLine) {
         subwaySections
                 .removeIf(subwaySectionJpa ->
-                        !subwayLine.existsUpStation(new Station.Id(subwaySectionJpa.getUpStationId())));
+                        subwayLine.getSection(new Station.Id(subwaySectionJpa.getUpStationId())).isEmpty());
     }
 }

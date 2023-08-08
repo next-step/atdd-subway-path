@@ -1,23 +1,18 @@
 package subway.domain;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class SectionAddManager {
-    private final SectionTailAdder sectionAddOperator;
+    private final SectionDefaultAdder sectionDefaultOperator;
     private final SectionMiddleAdder sectionMiddleAdder;
-    private final SectionHeadAdder sectionHeadAdder;
 
-    SectionAdder getUpdater(SubwayLine subwayLine, SubwaySection subwaySection) {
-        if (subwayLine.isStartStation(subwaySection.getDownStationId())) {
-            return sectionHeadAdder;
-        }
-        if (subwayLine.hasDuplicateSection(subwaySection)) {
+    SectionAdder getUpdater(SubwaySections sections, SubwaySection newSection) {
+        if (sections.hasDuplicateSection(newSection)) {
             return sectionMiddleAdder;
         }
-        return sectionAddOperator;
+        return sectionDefaultOperator;
     }
 }

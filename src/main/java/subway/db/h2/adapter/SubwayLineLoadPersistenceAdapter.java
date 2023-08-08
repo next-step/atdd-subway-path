@@ -9,6 +9,7 @@ import subway.application.command.out.SubwayLineLoadPort;
 import subway.domain.SubwayLine;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @PersistenceAdapter
 public class SubwayLineLoadPersistenceAdapter implements SubwayLineLoadPort {
@@ -23,8 +24,8 @@ public class SubwayLineLoadPersistenceAdapter implements SubwayLineLoadPort {
     }
 
     @Override
-    public SubwayLine findOne(SubwayLine.Id id) {
+    public Optional<SubwayLine> findOne(SubwayLine.Id id) {
         SubwayLineJpa subwayLineJpa = subwayLineJpaRepository.findOneWithSectionsById(id.getValue()).orElseThrow(() -> new NoSuchElementException("해당하는 지하철 노선이 없습니다."));
-        return subwayLineMapper.from(subwayLineJpa);
+        return Optional.of(subwayLineMapper.from(subwayLineJpa));
     }
 }
