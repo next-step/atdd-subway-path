@@ -26,4 +26,8 @@ public class Station {
     public String getName() {
         return name;
     }
+
+    public Boolean isEqual(Station station) {
+        return this.id.equals(station.id);
+    }
 }

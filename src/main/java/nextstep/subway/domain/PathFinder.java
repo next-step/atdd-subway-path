@@ -10,6 +10,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
@@ -40,10 +41,17 @@ public class PathFinder {
     }
 
     public GraphPath findPath(Station sourceStation, Station targetStation) {
+        if(sourceStation.isEqual(targetStation)) {
+            throw new PathFinderException(ErrorMessage.SAME_BETWEEN_STATIONS);
+        }
+
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         validatePath(sourceStation, targetStation);
+
         GraphPath shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation);
-        if (shortestPath == null) throw new PathFinderException(ErrorMessage.NOT_FOUND_PATH);
+        if (Objects.isNull(shortestPath)) {
+            throw new PathFinderException(ErrorMessage.NOT_FOUND_PATH);
+        }
         return shortestPath;
     }
 

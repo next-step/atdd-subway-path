@@ -11,7 +11,6 @@ import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,7 +75,7 @@ public class LineService {
 
     public List<Section> getAllSections() {
         return lineRepository.findAll().stream()
-                .map(line -> line.getSections().getSections())
+                .map(Line::getAllSections)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
