@@ -8,8 +8,8 @@ import nextstep.subway.applicaion.dto.path.PathSearchResponse;
 import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.line.section.Section;
 import nextstep.subway.exception.PathExceptionCode;
+import nextstep.subway.unit.fixture.SubwayLineFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,56 +17,11 @@ import org.junit.jupiter.api.Test;
 @DisplayName("경로탐색 단위 테스트")
 public class PathFinderTest extends BaseUnitTest {
 
-  // 2 - 4 호선 겹침
-  private Station 사당역;
+  private SubwayLineFixture 지하철_노선도;
 
-  // 4 - 7 호선 겹침
-  private Station 총신대입구역;
-
-  // 2호선
-  private Line _2호선;
-  private Station 봉천역;
-  private Station 서울대입구역;
-  private Station 낙성대역;
-
-  // 7호선
-  private Line _7호선;
-  private Station 남성역;
-  private Station 숭실대입구역;
-
-  // 4호선
-  private Line _4호선;
-  private Station 동작역;
-
-  // 999호선 (다른 노선들과 연결 되어있지 않음)
-  private Line _999호선;
-  private Station _999_시작역;
-  private Station _999_종점역;
-
-  /**
-   * 노선도
-   *
-   * <2호선>
-   * 봉천역 --3-- 서울대입구역 --4-- 낙성대역 --5-- 사당역
-   *
-   * <4호선>
-   * 사당역 --5-- 총신대입구역 --5-- 동작역
-   *
-   * <7호선>
-   * 총신대입구역 --5-- 남성역 --5-- 숭실대입구역
-   *
-   *
-   * <999호선> (연결 X)
-   * _999_시작역 --5-- _999_종점역
-   */
   @BeforeEach
   void setup() {
-    사당역 = new Station(20L, "사당역");
-    총신대입구역 = new Station(21L, "총신대입구역");
-    _2호선_init();
-    _4호선_init();
-    _7호선_init();
-    _999호선_init();
+    지하철_노선도 = new SubwayLineFixture();
   }
 
   @Test
@@ -74,25 +29,29 @@ public class PathFinderTest extends BaseUnitTest {
   void 경로조회_성공() {
 
     // given
-    List<Line> 노선_목록 = List.of(_2호선, _4호선, _7호선, _999호선);
+    List<Line> 노선_목록 = 지하철_노선도.전체_노선;
+    Station 봉천역 = 지하철_노선도.봉천역;
+    Station 서울대입구역 = 지하철_노선도.서울대입구역;
+    Station 낙성대역 = 지하철_노선도.낙성대역;
+    Station 사당역 = 지하철_노선도.사당역;
+    Station 교대역 = 지하철_노선도.교대역;
+    Station 고속터미널역 = 지하철_노선도.고속터미널역;
 
-    PathFinder finder = new PathFinder(노선_목록, 봉천역, 숭실대입구역);
+    PathFinder finder = new PathFinder(노선_목록, 봉천역, 고속터미널역);
 
     // when
     PathSearchResponse path = finder.findPath();
 
     // then
-    assertThat(path.getDistance()).isEqualTo(27);
-    assertThat(path.getStations()).extracting("id").asList()
-        .hasSize(7)
+    assertThat(path.getDistance()).isEqualTo(22);
+    assertThat(path.getStations()).extracting("name").asList()
         .containsExactly(
-            봉천역.getId(),
-            서울대입구역.getId(),
-            낙성대역.getId(),
-            사당역.getId(),
-            총신대입구역.getId(),
-            남성역.getId(),
-            숭실대입구역.getId()
+            봉천역.getName(),
+            서울대입구역.getName(),
+            낙성대역.getName(),
+            사당역.getName(),
+            교대역.getName(),
+            고속터미널역.getName()
         );
   }
 
@@ -101,7 +60,9 @@ public class PathFinderTest extends BaseUnitTest {
   void 경로조회_실패_1() {
 
     // given
-    List<Line> 노선_목록 = List.of(_2호선, _4호선, _7호선, _999호선);
+    List<Line> 노선_목록 = 지하철_노선도.전체_노선;
+    Station 봉천역 = 지하철_노선도.봉천역;
+    Station _999_시작역 = 지하철_노선도._999_시작역;
 
     PathFinder finder = new PathFinder(노선_목록, 봉천역, _999_시작역);
 
@@ -110,41 +71,5 @@ public class PathFinderTest extends BaseUnitTest {
         finder::findPath,
         PathExceptionCode.UNREACHABLE_PATH
     );
-  }
-
-
-  private void _2호선_init() {
-    봉천역 = new Station(1L, "봉천역");
-    서울대입구역 = new Station(2L, "서울대입구역");
-    낙성대역 = new Station(3L, "낙성대역");
-    _2호선 = new Line("2호선", "#00ff00");
-    _2호선.addSection(new Section(_2호선, 봉천역, 서울대입구역, 3));
-    _2호선.addSection(new Section(_2호선, 서울대입구역, 낙성대역, 4));
-    _2호선.addSection(new Section(_2호선, 낙성대역, 사당역, 5));
-  }
-
-  private void _7호선_init() {
-    남성역 = new Station(10L, "동작역");
-    숭실대입구역 = new Station(11L, "숭실대입구역");
-
-    _7호선 = new Line("7호선", "#ggffgg");
-    _7호선.addSection(new Section(_7호선, 총신대입구역, 남성역, 5));
-    _7호선.addSection(new Section(_7호선, 남성역, 숭실대입구역, 5));
-  }
-
-  private void _4호선_init() {
-    동작역 = new Station(6L, "동작역");
-
-    _4호선 = new Line("4호선", "#cfcfcf");
-    _4호선.addSection(new Section(_4호선, 사당역, 총신대입구역, 5));
-    _4호선.addSection(new Section(_4호선, 총신대입구역, 동작역, 5));
-  }
-
-  private void _999호선_init() {
-    _999_시작역 = new Station(900L, "_999_시작역");
-    _999_종점역 = new Station(901L, "_999_종점역");
-
-    _999호선 = new Line("999호선", "#00000");
-    _999호선.addSection(new Section(_999호선, _999_시작역, _999_종점역, 5));
   }
 }
