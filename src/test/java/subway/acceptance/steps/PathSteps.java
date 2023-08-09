@@ -19,6 +19,8 @@ import subway.dto.PathResponse;
 import subway.dto.SectionRequest;
 import subway.dto.StationRequest;
 import subway.dto.StationResponse;
+import subway.exception.dto.ErrorResponse;
+import subway.exception.error.SubwayErrorCode;
 
 public class PathSteps {
 
@@ -102,6 +104,10 @@ public class PathSteps {
         assertThat(response.getDistance()).isEqualTo(distance);
         assertThat(response.getStations().stream().map(StationResponse::getName).collect(Collectors.toList()))
             .containsAll(stationNames);
+    }
+
+    public static void 경로_조회_예외_검증(ErrorResponse response, String message) {
+        assertThat(response.getMessage()).isEqualTo(message);
     }
 
 }
