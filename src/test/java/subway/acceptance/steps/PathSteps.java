@@ -6,8 +6,11 @@ import static subway.factory.SubwayNameFactory.구호선;
 import static subway.factory.SubwayNameFactory.논현역;
 import static subway.factory.SubwayNameFactory.반포역;
 import static subway.factory.SubwayNameFactory.사평역;
+import static subway.factory.SubwayNameFactory.삼호선;
 import static subway.factory.SubwayNameFactory.신논현역;
 import static subway.factory.SubwayNameFactory.신분당선;
+import static subway.factory.SubwayNameFactory.압구정역;
+import static subway.factory.SubwayNameFactory.옥수역;
 import static subway.factory.SubwayNameFactory.칠호선;
 
 import io.restassured.response.ValidatableResponse;
@@ -26,13 +29,20 @@ public class PathSteps {
 
     /**
      *
-     * 논현역   --- *신분당선* ---  신논현역
-     * |                        |
-     * 반포역                     |
-     * |                        |
-     * *7호선*                   *9호선*
-     * |                        |
-     * 고속터미널역 --- *9호선* --- 사평역
+     * 논현역(1L)   --- *신분당선* ---  신논현역(1L)
+     * |                            |
+     * 반포역(2L)                     |
+     * |                            |
+     * *7호선*                       *9호선*
+     * |                            |
+     * 고속터미널역(5L) --- *9호선* --- 사평역(4L)
+     *
+     * *3호선*
+     * ( 구간 연결 X )
+     *
+     * 압구정역(7L)
+     * |
+     * 옥수역(6L)
      *
      */
 
@@ -46,6 +56,8 @@ public class PathSteps {
         RestAssuredClient.requestPost(STATION_PATH, StationRequest.builder().name(반포역).build());
         RestAssuredClient.requestPost(STATION_PATH, StationRequest.builder().name(사평역).build());
         RestAssuredClient.requestPost(STATION_PATH, StationRequest.builder().name(고속터미널역).build());
+        RestAssuredClient.requestPost(STATION_PATH, StationRequest.builder().name(옥수역).build());
+        RestAssuredClient.requestPost(STATION_PATH, StationRequest.builder().name(압구정역).build());
     }
 
     public static void 노선_등록() {
@@ -76,12 +88,21 @@ public class PathSteps {
             .distance(5L)
             .build();
         RestAssuredClient.requestPost(LINE_PATH, 구호선_노선_등록_파라미터);
+
+        LineRequest 삼호선_노선_등록_파라미터 = LineRequest.builder()
+            .name(삼호선)
+            .color("bg-orange-600")
+            .upStationId(6L)
+            .downStationId(7L)
+            .distance(2L)
+            .build();
+        RestAssuredClient.requestPost(LINE_PATH, 삼호선_노선_등록_파라미터);
     }
 
     public static void 구간_등록() {
         SectionRequest 칠호선_고속터미널_반포_구간_등록_파라미터 = SectionRequest.builder()
-            .upStationId(5L)
-            .downStationId(3L)
+            .upStationId(3L)
+            .downStationId(5L)
             .distance(4L)
             .build();
         RestAssuredClient.requestPost(LINE_PATH + "/" + 2 + "/sections",

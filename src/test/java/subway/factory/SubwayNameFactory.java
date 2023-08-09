@@ -12,6 +12,8 @@ public class SubwayNameFactory {
     public static final String 고속터미널역 = "고속터미널역";
     public static final String 사평역 = "사평역";
     public static final String 반포역 = "반포역";
+    public static final String 옥수역 = "옥수역";
+    public static final String 압구정역 = "압구정역";
 
     /* 노선 이름 */
     public static final String 신분당선 = "신분당선";
@@ -19,5 +21,6 @@ public class SubwayNameFactory {
     public static final String 수인분당선 = "수인분당선";
     public static final String 칠호선 = "7호선";
     public static final String 구호선 = "9호선";
+    public static final String 삼호선 = "3호선";
 
 }
