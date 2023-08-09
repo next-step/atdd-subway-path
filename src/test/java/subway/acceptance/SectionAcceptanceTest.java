@@ -26,7 +26,7 @@ import subway.dto.LineResponse;
 import subway.dto.SectionRequest;
 import subway.dto.StationRequest;
 import subway.exception.error.SubwayErrorCode;
-import subway.utils.LineAssertions;
+import subway.acceptance.assertions.LineAssertions;
 
 
 @DisplayName("구간 관련 기능")

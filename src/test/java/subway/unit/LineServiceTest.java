@@ -11,7 +11,7 @@ import subway.dto.SectionRequest;
 import subway.repository.LineRepository;
 import subway.repository.StationRepository;
 import subway.service.LineService;
-import subway.utils.LineAssertions;
+import subway.acceptance.assertions.LineAssertions;
 
 @SpringBootTest
 @Transactional

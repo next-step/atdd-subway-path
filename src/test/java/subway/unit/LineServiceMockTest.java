@@ -14,7 +14,7 @@ import subway.dto.SectionRequest;
 import subway.repository.LineRepository;
 import subway.service.LineService;
 import subway.service.StationService;
-import subway.utils.LineAssertions;
+import subway.acceptance.assertions.LineAssertions;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
