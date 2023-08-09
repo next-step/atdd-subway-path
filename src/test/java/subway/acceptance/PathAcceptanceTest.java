@@ -30,14 +30,13 @@ public class PathAcceptanceTest {
     /**
      * Given: 5개의 지하철역이 등록되어 있다.
      * And: 3개의 노선이 등록되어 있다.
-     * And: 6개의 구간이 등록되어 있다.
      * When: 경로를 조회한다.
      * Then: 성공(200 OK) 응답을 받는다.
      * And: 지하철역 목록을 검증한다.
      * And: 경로 거리를 검증한다.
      */
     @Test
-    @DisplayName("지하철 경로를 조회한다.")
+    @DisplayName("[성공] 지하철 경로를 조회한다.")
     void 지하철_경로_조회() {
         // When
         ExtractableResponse<Response> 조회한_경로 = 경로_조회(5L, 1L)

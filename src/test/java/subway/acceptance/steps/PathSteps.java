@@ -1,6 +1,6 @@
 package subway.acceptance.steps;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static subway.factory.SubwayNameFactory.고속터미널역;
 import static subway.factory.SubwayNameFactory.구호선;
 import static subway.factory.SubwayNameFactory.논현역;
@@ -13,7 +13,6 @@ import static subway.factory.SubwayNameFactory.칠호선;
 import io.restassured.response.ValidatableResponse;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.assertj.core.api.Assertions;
 import subway.acceptance.utils.RestAssuredClient;
 import subway.dto.LineRequest;
 import subway.dto.PathResponse;
