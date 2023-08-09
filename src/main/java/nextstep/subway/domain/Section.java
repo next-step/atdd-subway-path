@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.applicaion.constants.ErrorMessage;
 import nextstep.subway.applicaion.exception.SectionDistanceException;
 
 import javax.persistence.*;
@@ -37,7 +38,7 @@ public class Section {
 
     public void modifyDistanceForAdd(int distance){
         if(this.distance <= distance){
-            throw new SectionDistanceException("등록할 구간의 길이가 기존 역 사이 길이보다 크거나 같습니다.");
+            throw new SectionDistanceException(ErrorMessage.LENGTH_ERROR);
         }
         this.distance -= distance;
     }

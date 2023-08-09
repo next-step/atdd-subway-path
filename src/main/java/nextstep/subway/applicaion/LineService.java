@@ -73,6 +73,12 @@ public class LineService {
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
+    public List<Section> getAllSections() {
+        return lineRepository.findAll().stream()
+                .map(Line::getAllSections)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
                 line.getId(),

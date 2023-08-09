@@ -32,6 +32,9 @@ public class Line {
         this.color = color;
     }
 
+    public List<Section> getAllSections() {
+        return sections.getSections();
+    }
     public void addSection(Section section) {
         sections.addSection(section);
     }
