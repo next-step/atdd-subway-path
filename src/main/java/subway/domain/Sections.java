@@ -22,9 +22,17 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     private List<Section> sections;
 
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public Sections(Section section) {
         sections = new ArrayList<>();
         sections.add(section);
+    }
+
+    public List<Section> get() {
+        return sections;
     }
 
     public void add(Section section) {
