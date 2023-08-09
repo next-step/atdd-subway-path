@@ -31,10 +31,4 @@ public class LineRequestFactory {
         return LINE_MAP.get(name);
     }
 
-    public static LineRequest createNameAndColorUpdateParams(String name, String color) {
-        return LineRequest.builder()
-            .name(name)
-            .color(color)
-            .build();
-    }
 }
