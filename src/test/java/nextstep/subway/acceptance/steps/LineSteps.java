@@ -19,7 +19,7 @@ public class LineSteps {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성_요청(String name, String color,
-                                                             Long upStationId, Long downStationId, Long distance) {
+                                                             Long upStationId, Long downStationId, Integer distance) {
         Map<String, Object> bodyParams = new HashMap<>();
         bodyParams.put("name", name);
         bodyParams.put("color", color);
@@ -61,7 +61,7 @@ public class LineSteps {
 
 
     public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Long upStationId,
-                                                                     Long downStationId, Long distance) {
+                                                                     Long downStationId, Integer distance) {
         Map<String, Object> pathParams = new HashMap<>();
         pathParams.put("lineId", lineId);
         Map<String, Object> bodyParams = new HashMap<>();
