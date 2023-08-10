@@ -62,12 +62,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineFirstSection() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, 거리_10);
+        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 교대역_ID, 강남역_ID, 거리_10);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(분당선_ID);
         상태코드_확인(response, HttpStatus.OK);
-        assertThat(노선의_역ID_목록_추출(response)).containsExactly(강남역_ID, 교대역_ID, 역삼역_ID);
+        assertThat(노선의_역ID_목록_추출(response)).containsExactly(교대역_ID, 강남역_ID, 역삼역_ID);
     }
 
     /**

@@ -4,7 +4,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -67,10 +66,19 @@ public class Line {
         if (this.getSections().isEmpty()) {
             return Collections.emptyList();
         }
-        List<Station> stations = this.getSections().stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-        stations.add(0, this.getSections().get(0).getUpStation());
+
+        List<Station> stations = new ArrayList<>();
+        Station nowStation = startStation;
+        stations.add(nowStation);
+        while (!nowStation.equals(endStation)) {
+            for (Section section : sections) {
+                if (section.getUpStation().equals(nowStation)) {
+                    nowStation = section.getDownStation();
+                    stations.add(nowStation);
+                    break;
+                }
+            }
+        }
         return stations;
     }
 
@@ -98,7 +106,13 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        this.sections.remove(this.sections.size() - 1);
+        for (Section section : sections) {
+            if (section.getDownStation().equals(station)) {
+                endStation = section.getUpStation();
+                this.sections.remove(section);
+                break;
+            }
+        }
     }
 
 }
