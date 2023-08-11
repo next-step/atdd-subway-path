@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.common.exception.BusinessException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -8,11 +9,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static nextstep.subway.fixture.LineFixture.분당선_색;
 import static nextstep.subway.fixture.LineFixture.분당선_이름;
 import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LineTest {
     Line 분당선;
@@ -64,6 +67,46 @@ class LineTest {
 
         //then
         assertThat(분당선.getEndStation()).isEqualTo(선릉역);
+    }
+
+    @Test
+    @DisplayName("구간 중간 추가")
+    void addMiddleSection() {
+        //given
+        Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 10);
+        분당선.addSections(강남역_선릉역_구간);
+
+        //when
+        Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 4);
+        분당선.addSections(역삼역_선릉역_구간);
+
+        //then
+        List<Section> sections = 분당선.getSections();
+        assertThat(sections).hasSize(2);
+        Optional<Section> 변경된_강남역_역삼역_구간 = sections.stream().filter(section ->
+                section.getUpStation().equals(강남역)).findFirst();
+        Optional<Section> 변경된_역삼역_선릉역_구간 = sections.stream().filter(section ->
+                section.getUpStation().equals(역삼역)).findFirst();
+
+        assertThat(변경된_강남역_역삼역_구간.get().getUpStation()).isEqualTo(강남역);
+        assertThat(변경된_강남역_역삼역_구간.get().getDownStation()).isEqualTo(역삼역);
+        assertThat(변경된_강남역_역삼역_구간.get().getDistance()).isEqualTo(6);
+
+        assertThat(변경된_역삼역_선릉역_구간.get().getUpStation()).isEqualTo(역삼역);
+        assertThat(변경된_역삼역_선릉역_구간.get().getDownStation()).isEqualTo(선릉역);
+        assertThat(변경된_역삼역_선릉역_구간.get().getDistance()).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("구간 추가 실패 - 길이 제약")
+    void addLongSection() {
+        //given
+        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
+        분당선.addSections(강남역_역삼역_구간);
+
+        //when then
+        Section 교대역_강남역_구간 = new Section(분당선, 역삼역, 선릉역, 12);
+        assertThatThrownBy(() -> 분당선.addSections(교대역_강남역_구간)).isInstanceOf(BusinessException.class);
     }
 
 

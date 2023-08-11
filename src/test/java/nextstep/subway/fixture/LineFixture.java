@@ -11,6 +11,7 @@ public class LineFixture {
     public static final String 분당선_색 = "Yellow";
     public static final String 이호선_색 = "Green";
     public static final Integer 거리_10 = 10;
+    public static final Integer 거리_04 = 4;
 
     public static final Line 이호선 = new Line(이호선_이름, 이호선_색);
 }
