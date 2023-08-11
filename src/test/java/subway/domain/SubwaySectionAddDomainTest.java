@@ -33,7 +33,7 @@ public class SubwaySectionAddDomainTest {
         //given
         SubwaySection firstSection = SubwaySection.of(new SubwaySection.Id(1L), SubwaySectionStation.from(강남역), SubwaySectionStation.from(역삼역), Kilometer.of(10));
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         이호선.addSection(역삼역, 선릉역, Kilometer.of(10), manager);
@@ -67,7 +67,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         이호선.addSection(역삼역, 성수역, Kilometer.of(1), manager);
@@ -99,7 +99,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         이호선.addSection(역삼역, 성수역, Kilometer.of(1), manager);
@@ -131,7 +131,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         이호선.addSection(성수역, 선릉역, Kilometer.of(1), manager);
@@ -163,7 +163,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         이호선.addSection(성수역, 강남역, Kilometer.of(1), manager);
@@ -196,7 +196,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         이호선.addSection(성수역, 강남역, Kilometer.of(1), manager);
@@ -225,7 +225,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         Throwable throwable = catchThrowable(() -> 이호선.addSection(역삼역, 성수역, Kilometer.of(10), manager));
@@ -255,7 +255,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         Throwable throwable = catchThrowable(() -> 이호선.addSection(선릉역, 강남역, Kilometer.of(10), manager));
@@ -285,7 +285,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection firstSection = SubwaySection.of(new SubwaySection.Id(1L), SubwaySectionStation.from(강남역), SubwaySectionStation.from(역삼역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         Throwable throwable = catchThrowable(() -> 이호선.addSection(선릉역, 성수역, Kilometer.of(10), manager));
@@ -318,7 +318,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection thirdSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(선릉역), SubwaySectionStation.from(성수역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection, thirdSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         Throwable throwable = catchThrowable(() -> 이호선.addSection(역삼역, 성수역, Kilometer.of(10), manager));
@@ -351,7 +351,7 @@ public class SubwaySectionAddDomainTest {
         SubwaySection thirdSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(선릉역), SubwaySectionStation.from(성수역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection, thirdSection));
-        SectionAddManager manager = new SectionAddManager(new SectionDefaultAdder(), new SectionMiddleAdder());
+        SectionAddManager manager = new SectionAddManager();
 
         //when
         Throwable throwable = catchThrowable(() -> 이호선.addSection(선릉역, 성수역, Kilometer.of(10), manager));

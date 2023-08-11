@@ -29,7 +29,7 @@ import static org.mockito.Mockito.times;
 @DisplayName("지하철 구간 비활성화에 대한 서비스 단위 테스트")
 class SubwaySectionCloseServiceTest {
 
-    private final SectionCloseManager sectionCloseManager = new SectionCloseManager(new SectionDefaultCloser(), new SectionTailCloser(), new SectionMiddleCloser());
+    private final SectionCloseManager sectionCloseManager = new SectionCloseManager();
     private final StationLoadPort stationLoadPort = Mockito.mock(StationLoadPort.class);
 
     private final SubwayLineLoadPort subwayLineLoadPort = Mockito.mock(SubwayLineLoadPort.class);

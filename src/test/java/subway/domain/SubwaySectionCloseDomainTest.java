@@ -34,7 +34,7 @@ public class SubwaySectionCloseDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionCloseManager manager = new SectionCloseManager(new SectionDefaultCloser(), new SectionTailCloser(), new SectionMiddleCloser());
+        SectionCloseManager manager = new SectionCloseManager();
 
         //when
         이호선.closeSection(선릉역, manager);
@@ -65,7 +65,7 @@ public class SubwaySectionCloseDomainTest {
         SubwaySection firstSection = SubwaySection.of(new SubwaySection.Id(1L), SubwaySectionStation.from(강남역), SubwaySectionStation.from(역삼역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection));
-        SectionCloseManager manager = new SectionCloseManager(new SectionDefaultCloser(), new SectionTailCloser(), new SectionMiddleCloser());
+        SectionCloseManager manager = new SectionCloseManager();
 
         //when
         Throwable throwable = catchThrowable(() -> 이호선.closeSection(역삼역, manager));
@@ -94,7 +94,7 @@ public class SubwaySectionCloseDomainTest {
         //given
         SubwaySection firstSection = SubwaySection.of(new SubwaySection.Id(1L), SubwaySectionStation.from(강남역), SubwaySectionStation.from(역삼역), Kilometer.of(10));
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection));
-        SectionCloseManager manager = new SectionCloseManager(new SectionDefaultCloser(), new SectionTailCloser(), new SectionMiddleCloser());
+        SectionCloseManager manager = new SectionCloseManager();
 
         //when
         Throwable throwable = catchThrowable(() -> 이호선.closeSection(선릉역, manager));
@@ -124,7 +124,7 @@ public class SubwaySectionCloseDomainTest {
         SubwaySection secondSection = SubwaySection.of(new SubwaySection.Id(2L), SubwaySectionStation.from(역삼역), SubwaySectionStation.from(선릉역), Kilometer.of(10));
 
         SubwayLine 이호선 = SubwayLine.of(new SubwayLine.Id(1L), "2호선", "green", 강남역.getId(), List.of(firstSection, secondSection));
-        SectionCloseManager manager = new SectionCloseManager(new SectionDefaultCloser(), new SectionTailCloser(), new SectionMiddleCloser());
+        SectionCloseManager manager = new SectionCloseManager();
 
         //when
         이호선.closeSection(강남역, manager);

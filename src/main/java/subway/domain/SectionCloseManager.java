@@ -5,22 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class SectionCloseManager {
-    private final SectionDefaultCloser sectionDefaultCloser;
-    private final SectionTailCloser sectionTailCloser;
-    private final SectionMiddleCloser sectionMiddleCloser;
-
 
     SectionCloser getOperator(SubwaySections sections, Station station) {
         if (!sections.existsUpStation(station)) {
-            return sectionTailCloser;
+            return new SectionTailCloser();
         }
 
         if (sections.existsDownStation(station)) {
-            return sectionMiddleCloser;
+            return new SectionMiddleCloser();
         }
-        return sectionDefaultCloser;
+        return new SectionDefaultCloser();
     }
 
 }
