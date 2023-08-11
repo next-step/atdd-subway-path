@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line.section;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SectionExceptionCode;
 import nextstep.subway.exception.StationExceptionCode;
 import nextstep.subway.exception.SubwayException;
@@ -64,7 +66,7 @@ public class Sections {
     return stations;
   }
 
-  public Optional<Section> getStartSection() {
+  private Optional<Section> getStartSection() {
     Map<Long, Station> downStationMap = sections.stream()
         .map(Section::getDownStation)
         .collect(Collectors.toMap(Station::getId, Function.identity()));

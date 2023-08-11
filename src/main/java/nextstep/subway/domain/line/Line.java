@@ -1,8 +1,11 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line;
 
 import javax.persistence.*;
 import java.util.List;
 import lombok.Getter;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.line.section.Section;
+import nextstep.subway.domain.line.section.Sections;
 
 @Entity
 public class Line {

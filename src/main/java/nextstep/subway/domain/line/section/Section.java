@@ -1,8 +1,10 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line.section;
 
 import javax.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.LineExceptionCode;
 import nextstep.subway.exception.SectionExceptionCode;
 import nextstep.subway.exception.StationExceptionCode;
