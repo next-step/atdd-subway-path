@@ -3,10 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.common.exception.BusinessException;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Entity
 public class Line {
@@ -86,6 +83,10 @@ public class Line {
     }
 
     public void addSections(Section section) {
+        if (new HashSet<>(this.getStations()).containsAll(List.of(section.getUpStation(), section.getDownStation()))) {
+            throw new BusinessException();
+        }
+
         if (this.sections.isEmpty()) {
             this.startStation = section.getUpStation();
             this.endStation = section.getDownStation();
