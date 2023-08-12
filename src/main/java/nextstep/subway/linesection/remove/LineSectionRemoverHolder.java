@@ -3,9 +3,18 @@ package nextstep.subway.linesection.remove;
 import java.util.List;
 
 public class LineSectionRemoverHolder {
-    private static List<LineSectionRemover> removers = List.of(new FirstStationRemover(), new EndStationRemover(), new MiddleStationRemover());
+    private static LineSectionRemoverHolder instance = new LineSectionRemoverHolder();
+    private List<LineSectionRemover> removers;
 
-    public static List<LineSectionRemover> getContext() {
+    private LineSectionRemoverHolder() {
+        removers = List.of(new FirstStationRemover(), new EndStationRemover(), new MiddleStationRemover());
+    }
+
+    public static LineSectionRemoverHolder getInstance() {
+        return instance;
+    }
+
+    public List<LineSectionRemover> getContext() {
         return removers;
     }
 

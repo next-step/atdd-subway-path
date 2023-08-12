@@ -10,5 +10,7 @@ public interface LineSectionRemover {
      * @param deleteStation
      * @return removed : boolean
      */
-    boolean remove(LineSections sections, Station deleteStation);
+    void remove(LineSections sections, Station deleteStation);
+
+    boolean support(LineSections sections, Station deleteStation);
 }

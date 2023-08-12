@@ -5,11 +5,12 @@ import nextstep.subway.station.Station;
 
 public class EndStationRemover implements LineSectionRemover {
     @Override
-    public boolean remove(LineSections sections, Station deleteStation) {
-        if (deleteStation.equals(sections.getLastStation())) {
-            sections.removeSection(sections.getLastSection());
-            return true;
-        }
-        return false;
+    public void remove(LineSections sections, Station deleteStation) {
+        sections.removeSection(sections.getLastSection());
+    }
+
+    @Override
+    public boolean support(LineSections sections, Station deleteStation) {
+        return deleteStation.equals(sections.getLastStation());
     }
 }

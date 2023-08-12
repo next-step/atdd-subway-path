@@ -36,11 +36,12 @@ public class LineSections {
 
     public void add(LineSection addSection) {
         validateAddableSection(addSection);
-        for (var appender : LineSectionAppenderHolder.getContext()) {
-            boolean isExecuted = appender.append(this, addSection);
-            if (isExecuted)
-                return;
-        }
+        LineSectionAppenderHolder.getInstance()
+                .getContext()
+                .stream()
+                .filter(appender -> appender.support(this, addSection))
+                .findFirst()
+                .ifPresent(appender -> appender.append(this, addSection));
     }
 
     public int getIndex(LineSection section) {
@@ -48,6 +49,12 @@ public class LineSections {
                 .filter(idx -> containsUpStationOrDownStation(section, sections.get(idx)))
                 .findFirst()
                 .orElseThrow(() -> new BadRequestException("the section is not eixisted in line."));
+    }
+
+    public LineSection getSectionByIndex(int idx) {
+        if (idx < 0 || sections.size() <= idx)
+            throw new BadRequestException("idx must be between 0 and sections size");
+        return sections.get(idx);
     }
 
     private boolean containsUpStationOrDownStation(LineSection section, LineSection target) {
@@ -60,10 +67,12 @@ public class LineSections {
 
     public void remove(Station deleteStation) {
         validateRemovableSection(deleteStation);
-        for (LineSectionRemover remover : LineSectionRemoverHolder.getContext()) {
-            if (remover.remove(this, deleteStation))
-                return;
-        }
+        LineSectionRemoverHolder.getInstance()
+                .getContext()
+                .stream()
+                .filter(remover -> remover.support(this, deleteStation))
+                .findFirst()
+                .ifPresent((remover) -> remover.remove(this, deleteStation));
     }
 
     public LineSection findSectionByCondition(Predicate<LineSection> condition) {
@@ -137,8 +146,8 @@ public class LineSections {
         sections.add(0, addSection);
     }
 
-    public void addToIndex(int idx, LineSection addSection) {
-        sections.add(idx, addSection);
+    public void addToIndex(int idx, Line line, Station upStation, Station downStation, Integer distance) {
+        sections.add(idx, LineSection.of(line, upStation, downStation, distance));
     }
 
     public void removeSection(LineSection section) {

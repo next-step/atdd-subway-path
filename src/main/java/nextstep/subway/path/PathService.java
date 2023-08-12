@@ -4,10 +4,12 @@ import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.graph.GraphService;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationConverter;
+import nextstep.subway.station.StationResponse;
 import nextstep.subway.station.StationService;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +29,7 @@ public class PathService {
                 stationService.getStation(source),
                 stationService.getStation(target));
         validatePath(shortestPath);
-        var stations = shortestPath.getVertexList()
+        List<StationResponse> stations = shortestPath.getVertexList()
                 .stream()
                 .map(e -> stationConverter.convert(e))
                 .collect(Collectors.toList());
@@ -35,7 +37,8 @@ public class PathService {
     }
 
     private static void validatePath(ShortestPath<Station> shortestPath) {
-        if (!shortestPath.isFound())
+        if (!shortestPath.isFound()) {
             throw new BadRequestException("the path is not found.");
+        }
     }
 }
