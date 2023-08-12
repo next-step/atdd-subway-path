@@ -109,6 +109,48 @@ class LineTest {
         assertThatThrownBy(() -> 분당선.addSections(역삼역_선릉역_구간)).isInstanceOf(BusinessException.class);
     }
 
+    @Test
+    @DisplayName("구간 추가 실패 - 역이 하나도 포함되어 있지 않은경우")
+    void addNotExistsSection() {
+        //given
+        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
+        분당선.addSections(강남역_역삼역_구간);
+
+        //when then
+        Section 선릉역_교대역_구간 = new Section(분당선, 선릉역, 교대역, 4);
+        assertThatThrownBy(() -> 분당선.addSections(선릉역_교대역_구간)).isInstanceOf(BusinessException.class);
+    }
+
+    @Test
+    @DisplayName("구간 추가 실패 - 역이 모두 등록되어 있는 경우_붙어있는 구간")
+    void addAllExistsSection1() {
+        //given
+        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
+        분당선.addSections(강남역_역삼역_구간);
+        Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
+        분당선.addSections(역삼역_선릉역_구간);
+
+        //when then
+        assertThatThrownBy(() -> 분당선.addSections(강남역_역삼역_구간)).isInstanceOf(BusinessException.class);
+    }
+
+    @Test
+    @DisplayName("구간 추가 실패 - 역이 모두 등록되어 있는 경우_떨어져있는 구간")
+    void addAllExistsSection2() {
+        //given
+        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
+        분당선.addSections(강남역_역삼역_구간);
+        Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
+        분당선.addSections(역삼역_선릉역_구간);
+
+        //when then
+        Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 9);
+        assertThatThrownBy(() -> 분당선.addSections(강남역_선릉역_구간)).isInstanceOf(BusinessException.class);
+    }
+
+
+
+
 
     @Test
     @DisplayName("역 조회")
