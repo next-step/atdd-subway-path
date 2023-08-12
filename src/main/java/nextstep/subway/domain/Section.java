@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.common.exception.BusinessException;
+
 import javax.persistence.*;
 
 @Entity
@@ -52,5 +54,20 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void splitSection(Section newSection) {
+        if (this.distance <= newSection.getDistance()) {
+            throw new BusinessException();
+        }
+
+        if (this.upStation.equals(newSection.upStation)) {
+            this.upStation = newSection.getDownStation();
+        }
+        if (this.downStation.equals(newSection.downStation)) {
+            this.downStation = newSection.getUpStation();
+        }
+
+        this.distance = this.distance - newSection.distance;
     }
 }

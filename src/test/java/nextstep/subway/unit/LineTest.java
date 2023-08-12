@@ -101,12 +101,12 @@ class LineTest {
     @DisplayName("구간 추가 실패 - 길이 제약")
     void addLongSection() {
         //given
-        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 10);
+        분당선.addSections(강남역_선릉역_구간);
 
         //when then
-        Section 교대역_강남역_구간 = new Section(분당선, 역삼역, 선릉역, 12);
-        assertThatThrownBy(() -> 분당선.addSections(교대역_강남역_구간)).isInstanceOf(BusinessException.class);
+        Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 12);
+        assertThatThrownBy(() -> 분당선.addSections(역삼역_선릉역_구간)).isInstanceOf(BusinessException.class);
     }
 
 

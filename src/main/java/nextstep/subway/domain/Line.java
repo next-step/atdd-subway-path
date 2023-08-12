@@ -1,9 +1,12 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.common.exception.BusinessException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -86,14 +89,26 @@ public class Line {
         if (this.sections.isEmpty()) {
             this.startStation = section.getUpStation();
             this.endStation = section.getDownStation();
+            sections.add(section);
+            return;
         }
 
         if (this.endStation.equals(section.getUpStation())) {
             this.endStation = section.getDownStation();
+            sections.add(section);
+            return;
         }
         if (this.startStation.equals(section.getDownStation())) {
             this.startStation = section.getUpStation();
+            sections.add(section);
+            return;
         }
+
+        Optional<Section> beforeSection = sections.stream()
+                .filter(sectionIter ->
+                        sectionIter.getUpStation().equals(section.getUpStation()) || sectionIter.getDownStation().equals(section.getDownStation()
+                        )).findFirst();
+        beforeSection.orElseThrow(BusinessException::new).splitSection(section);
         sections.add(section);
     }
 
