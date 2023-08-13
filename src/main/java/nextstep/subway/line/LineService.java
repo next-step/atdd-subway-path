@@ -57,4 +57,8 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("line is not existed by id > " + id));
     }
+
+    public List<Line> getAllLines() {
+        return lineRepository.findAll();
+    }
 }

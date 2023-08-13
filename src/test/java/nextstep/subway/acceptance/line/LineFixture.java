@@ -76,4 +76,14 @@ public class LineFixture {
                 .jsonPath()
                 .getList(".", LineResponse.class);
     }
+
+    public static LineRequest 지하철_노선_생성_요청서(String name, String color, Long upStationId, Long downStationId, int distance) {
+        return LineRequest.builder()
+                .name(name)
+                .color(color)
+                .upStationId(upStationId)
+                .downStationId(downStationId)
+                .distance(distance)
+                .build();
+    }
 }
