@@ -1,7 +1,5 @@
 package nextstep.subway.applicaion;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.SectionRequest;
@@ -11,6 +9,9 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,12 +28,10 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest request) {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        if (request.getUpStationId() != null && request.getDownStationId() != null
-                && request.getDistance() != 0) {
+        if (request.hasStationAndDistance()) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections()
-                    .add(new Section(line, upStation, downStation, request.getDistance()));
+            line.addSections(new Section(line, upStation, downStation, request.getDistance()));
         }
         return LineResponse.from(line);
     }
@@ -71,8 +70,7 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.getSections()
-                .add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.addSections(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     @Transactional
@@ -80,11 +78,10 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation()
-                .equals(station)) {
+        if (!line.getEndStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
-        line.getSections().remove(line.getSections().size() - 1);
+        line.removeSection(station);
     }
 }

@@ -8,7 +8,6 @@ import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static nextstep.subway.fixture.LineFixture.*;
+import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -32,74 +33,63 @@ public class LineServiceMockTest {
     private StationService stationService;
 
     private LineService lineService;
-    private Station station_1;
-    private Station station_2;
-    private Station station_3;
-
-    static Long LINE_ID_1 = 1L;
-    static String LINE_NAME_1 = "분당선";
-    static String LINE_COLOR_1 = "Yellow";
-    static String LINE_NAME_UPDATE = "신분당선";
-    static String LINE_COLOR_UPDATE = "RED";
-    static Long LINE_ID_1000 = 1000L;
-    static Long STATION_ID_1 = 1L;
-    static String STATION_NAME_1 = "강남역";
-    static Long STATION_ID_2 = 2L;
-    static String STATION_NAME_2 = "역삼역";
-    static Long STATION_ID_3 = 3L;
-    static int DISTANCE_10 = 10;
 
     @BeforeEach
     void setUp() {
         lineService = new LineService(lineRepository, stationService);
-        station_1 = new Station(STATION_NAME_1);
-        station_2 = new Station(STATION_NAME_2);
     }
 
     @Test
     @DisplayName("새로운 노선을 저장")
     void saveLine() {
         // given
-        LineRequest request = new LineRequest(LINE_NAME_1, LINE_COLOR_1, STATION_ID_1, STATION_ID_2,
-                DISTANCE_10);
-        Line line = new Line(request.getName(), request.getColor());
+        Long 강남역_ID = 1L;
+        Long 역삼역_ID = 2L;
+        LineRequest request = LineRequest.builder().name(이호선_이름).color(이호선_색)
+                .upStationId(강남역_ID).downStationId(역삼역_ID).distance(거리_10).build();
+        Line line = new Line(이호선_이름, 이호선_색);
         given(lineRepository.save(any())).willReturn(line);
-        given(stationService.findById(STATION_ID_1)).willReturn(station_1);
-        given(stationService.findById(STATION_ID_2)).willReturn(station_2);
+        given(stationService.findById(강남역_ID)).willReturn(강남역);
+        given(stationService.findById(역삼역_ID)).willReturn(역삼역);
 
         // when
         LineResponse response = lineService.saveLine(request);
 
         // then
         assertThat(response.getName()).isNotNull();
-        assertThat(response.getName()).isEqualTo(LINE_NAME_1);
+        assertThat(response.getName()).isEqualTo(이호선_이름);
+        assertThat(response.getStations()).hasSize(2);
     }
 
     @Test
     @DisplayName("기존 노선을 수정")
     void updateLine() {
         // given
-        LineRequest request = new LineRequest(LINE_NAME_UPDATE, LINE_COLOR_UPDATE);
-        Line line = new Line(LINE_NAME_1, LINE_COLOR_1);
+        Long 기존_라인_ID = 1L;
+        LineRequest request = LineRequest.builder().name(분당선_이름).color(분당선_색).build();
+        Line line = new Line(분당선_이름, 분당선_색);
         given(lineRepository.findById(any())).willReturn(
                 Optional.of(line));
 
         // when
-        lineService.updateLine(LINE_ID_1000, request);
+        lineService.updateLine(기존_라인_ID, request);
 
         // then
-        assertThat(line.getName()).isEqualTo(LINE_NAME_UPDATE);
-        assertThat(line.getColor()).isEqualTo(LINE_COLOR_UPDATE);
+        assertThat(line.getName()).isEqualTo(분당선_이름);
+        assertThat(line.getColor()).isEqualTo(분당선_색);
     }
 
     @Test
     @DisplayName("기존 노선을 삭제")
     void deleteLine() {
+        // given
+        Long 기존_라인_ID = 1L;
+
         // when
-        lineService.deleteLine(LINE_ID_1000);
+        lineService.deleteLine(기존_라인_ID);
 
         // then
-        verify(lineRepository).deleteById(LINE_ID_1000);
+        verify(lineRepository).deleteById(기존_라인_ID);
     }
 
 
@@ -107,20 +97,22 @@ public class LineServiceMockTest {
     @DisplayName("기존 노선에 구간을 추가")
     void addSection() {
         // given
-        SectionRequest request = new SectionRequest(STATION_ID_2, STATION_ID_3, DISTANCE_10);
-        Line line = new Line(LINE_NAME_1, LINE_COLOR_1);
-        given(stationService.findById(STATION_ID_2)).willReturn(station_2);
-        given(stationService.findById(STATION_ID_3)).willReturn(station_3);
-        given(lineRepository.findById(LINE_ID_1000)).willReturn(Optional.of(line));
+        Long 역삼역_ID = 2L;
+        Long 삼성역_ID = 3L;
+        Long 생성_라인_ID = 1L;
+        SectionRequest request = new SectionRequest(역삼역_ID, 삼성역_ID, 거리_10);
+        Line line = new Line(이호선_이름, 이호선_색);
+        line.addSections(new Section(line, 강남역, 역삼역, 거리_10));
+        given(stationService.findById(역삼역_ID)).willReturn(역삼역);
+        given(stationService.findById(삼성역_ID)).willReturn(삼성역);
+        given(lineRepository.findById(any())).willReturn(Optional.of(line));
 
         // when
-        lineService.addSection(LINE_ID_1000, request);
+        lineService.addSection(생성_라인_ID, request);
 
         // then
         assertThat(line).isNotNull();
-        Section lastSection = line.getSections().get(line.getSections().size() - 1);
-        assertThat(lastSection.getUpStation()).isEqualTo(station_2);
-        assertThat(lastSection.getDownStation()).isEqualTo(station_3);
-        assertThat(lastSection.getDistance()).isEqualTo(DISTANCE_10);
+        assertThat(line.getSections()).hasSize(2);
+
     }
 }

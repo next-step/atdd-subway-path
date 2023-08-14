@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import static nextstep.subway.acceptance.steps.LineSteps.*;
 import static nextstep.subway.acceptance.steps.StationSteps.역_생성_ID_추출;
 import static nextstep.subway.acceptance.steps.StationSteps.지하철역_생성_요청;
-import static nextstep.subway.fixture.LineFixture.DISTANCE_10;
-import static nextstep.subway.fixture.LineFixture.분당선;
+import static nextstep.subway.fixture.LineFixture.거리_10;
+import static nextstep.subway.fixture.LineFixture.분당선_이름;
 import static nextstep.subway.fixture.StationFixture.*;
 import static nextstep.subway.utils.CustomAssertions.상태코드_확인;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,11 +31,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        강남역_ID = 역_생성_ID_추출(지하철역_생성_요청(강남역));
-        역삼역_ID = 역_생성_ID_추출(지하철역_생성_요청(역삼역));
-        선릉역_ID = 역_생성_ID_추출(지하철역_생성_요청(선릉역));
+        강남역_ID = 역_생성_ID_추출(지하철역_생성_요청(강남역_이름));
+        역삼역_ID = 역_생성_ID_추출(지하철역_생성_요청(역삼역_이름));
+        선릉역_ID = 역_생성_ID_추출(지하철역_생성_요청(선릉역_이름));
 
-        분당선_ID = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선, 강남역, 강남역_ID, 역삼역_ID, DISTANCE_10));
+        분당선_ID = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선_이름, 강남역_이름, 강남역_ID, 역삼역_ID, 거리_10));
     }
 
     /**
@@ -46,7 +46,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSection() {
         // when
-        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, DISTANCE_10);
+        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, 거리_10);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(분당선_ID);
@@ -63,7 +63,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void removeLineSection() {
         // given
-        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, DISTANCE_10);
+        지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, 거리_10);
 
         // when
         지하철_노선에_지하철_구간_제거_요청(분당선_ID, 선릉역_ID);

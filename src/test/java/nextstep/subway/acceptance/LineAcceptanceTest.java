@@ -23,9 +23,9 @@ class LineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     void setup() {
-        강남역_ID = 역_생성_ID_추출(지하철역_생성_요청(강남역));
-        역삼역_ID = 역_생성_ID_추출(지하철역_생성_요청(역삼역));
-        선릉역_ID = 역_생성_ID_추출(지하철역_생성_요청(선릉역));
+        강남역_ID = 역_생성_ID_추출(지하철역_생성_요청(강남역_이름));
+        역삼역_ID = 역_생성_ID_추출(지하철역_생성_요청(역삼역_이름));
+        선릉역_ID = 역_생성_ID_추출(지하철역_생성_요청(선릉역_이름));
     }
 
     /**
@@ -36,11 +36,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(분당선, 빨간색);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(분당선_이름, 신분당선_색);
 
         // then
         상태코드_확인(response, HttpStatus.CREATED);
-        assertThat((노선_이름_목록_추출(지하철_노선_목록_조회_요청()))).contains(분당선);
+        assertThat((노선_이름_목록_추출(지하철_노선_목록_조회_요청()))).contains(분당선_이름);
 
     }
 
@@ -53,15 +53,15 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철_노선_생성_요청(분당선, 노란색);
-        지하철_노선_생성_요청(신분당선, 빨간색);
+        지하철_노선_생성_요청(분당선_이름, 분당선_색);
+        지하철_노선_생성_요청(신분당선_이름, 신분당선_색);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
 
         // then
         상태코드_확인(response, HttpStatus.OK);
-        assertThat(노선_이름_목록_추출(response)).contains(분당선, 신분당선);
+        assertThat(노선_이름_목록_추출(response)).contains(분당선_이름, 신분당선_이름);
     }
 
     /**
@@ -73,14 +73,14 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        Long createdId = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선, 노란색));
+        Long createdId = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선_이름, 분당선_색));
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdId);
 
         // then
         상태코드_확인(response, HttpStatus.OK);
-        assertThat(노선_이름_추출(response)).isEqualTo(분당선);
+        assertThat(노선_이름_추출(response)).isEqualTo(분당선_이름);
     }
 
     /**
@@ -92,16 +92,16 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        Long createdId = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선, 노란색));
+        Long createdId = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선_이름, 분당선_색));
 
         // when
-        지하철_노선_수정_요청(createdId, 신분당선, 빨간색);
+        지하철_노선_수정_요청(createdId, 신분당선_이름, 신분당선_색);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createdId);
         상태코드_확인(response, HttpStatus.OK);
-        assertThat(노선_이름_추출(response)).isEqualTo(신분당선);
-        assertThat(노선_색깔_추출(response)).isEqualTo(빨간색);
+        assertThat(노선_이름_추출(response)).isEqualTo(신분당선_이름);
+        assertThat(노선_색깔_추출(response)).isEqualTo(신분당선_색);
     }
 
     /**
@@ -113,7 +113,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Long createdId = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선, 노란색));
+        Long createdId = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선_이름, 분당선_색));
 
         // when
         ExtractableResponse<Response> response = 노선_삭제_요청(createdId);

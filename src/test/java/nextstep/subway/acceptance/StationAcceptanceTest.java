@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 import static nextstep.subway.acceptance.steps.StationSteps.*;
-import static nextstep.subway.fixture.StationFixture.강남역;
-import static nextstep.subway.fixture.StationFixture.역삼역;
+import static nextstep.subway.fixture.StationFixture.강남역_이름;
+import static nextstep.subway.fixture.StationFixture.역삼역_이름;
 import static nextstep.subway.utils.CustomAssertions.상태코드_확인;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,14 +27,14 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성_요청(강남역);
+        ExtractableResponse<Response> response = 지하철역_생성_요청(강남역_이름);
 
         // then
         상태코드_확인(response, HttpStatus.CREATED);
 
         // then
         List<String> stationNames = 역_이름_목록_추출(지하철역_목록_조회_요청());
-        assertThat(stationNames).containsExactly(강남역);
+        assertThat(stationNames).containsExactly(강남역_이름);
     }
 
     /**
@@ -46,8 +46,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        지하철역_생성_요청(강남역);
-        지하철역_생성_요청(역삼역);
+        지하철역_생성_요청(강남역_이름);
+        지하철역_생성_요청(역삼역_이름);
 
         // when
         ExtractableResponse<Response> stationResponse = 지하철역_목록_조회_요청();
@@ -67,7 +67,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Long createdId = 역_생성_ID_추출(지하철역_생성_요청(강남역));
+        Long createdId = 역_생성_ID_추출(지하철역_생성_요청(강남역_이름));
 
         // when
         ExtractableResponse<Response> response = 지하철역_삭제_요청(createdId);
@@ -77,6 +77,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         // then
         List<String> stationNames = 역_이름_목록_추출(지하철역_목록_조회_요청());
-        assertThat(stationNames).doesNotContain(강남역);
+        assertThat(stationNames).doesNotContain(강남역_이름);
     }
 }
