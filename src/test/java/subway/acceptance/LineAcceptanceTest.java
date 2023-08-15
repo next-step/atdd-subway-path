@@ -1,66 +1,44 @@
 package subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static subway.acceptance.steps.LineSteps.지하철역_생성;
-import static subway.acceptance.steps.LineSteps.노선_삭제;
-import static subway.acceptance.steps.LineSteps.노선_생성;
-import static subway.acceptance.steps.LineSteps.노선_수정;
-import static subway.acceptance.steps.LineSteps.노선_조회;
-import static subway.factory.SubwayNameFactory.수인분당선;
-import static subway.factory.SubwayNameFactory.신분당선;
-import static subway.factory.SubwayNameFactory.우이신설선;
+import static subway.acceptance.assertions.LineAssertions.노선_목록_검증;
+import static subway.acceptance.assertions.LineAssertions.노선_응답_성공_검증;
+import static subway.acceptance.utils.SubwayClient.노선_삭제_요청;
+import static subway.acceptance.utils.SubwayClient.노선_생성_요청;
+import static subway.acceptance.utils.SubwayClient.노선_수정_요청;
+import static subway.acceptance.utils.SubwayClient.노선_조회_요청;
+import static subway.acceptance.utils.SubwayClient.지하철역_생성_요청;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import subway.acceptance.factory.LineRequestFactory;
 import subway.dto.LineRequest;
+import subway.dto.StationRequest;
 
 @DisplayName("노선 관련 기능")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LineAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        지하철역_생성(); // 노선 생성에 필요한 지하철역 추가
-    }
-
-    private static final String linePath = "/lines";
+class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철 노선을 생성하면
-     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     * Then 지하철 노선 목록 조회 시 생성한 노선 찾을 수 있다
      */
     @DisplayName("[성공] 노선을 생성한다.")
     @Test
-    void createLine() {
-        // when
-        노선_생성(LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value());
+    void 노선을_생성() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        // then
-        ExtractableResponse<Response> 조회한_노선 = 노선_조회().extract();
+        // When
+        Long 신분당선 = 노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
 
-        assertThat(조회한_노선.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<String> lineNames = 조회한_노선.jsonPath().getList("name", String.class);
-        assertThat(lineNames.size()).isEqualTo(1);
-        assertThat(lineNames).contains(신분당선);
+        // Then
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(신분당선);
+        노선_응답_성공_검증(노선_조회_응답, HttpStatus.OK, 30L, List.of(강남역, 광교역));
     }
 
     /**
@@ -70,20 +48,22 @@ class LineAcceptanceTest {
      */
     @DisplayName("[성공] 지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
-        // given
-        노선_생성(LineRequestFactory.create(신분당선)).statusCode(HttpStatus.CREATED.value());
-        노선_생성(LineRequestFactory.create(우이신설선)).statusCode(HttpStatus.CREATED.value());
+    void 지하철_노선_목록을_조회() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        // when
-        ExtractableResponse<Response> 조회한_노선 = 노선_조회().extract();
+        Long 판교역 = 지하철역_생성_요청(new StationRequest("판교역")).jsonPath().getLong("id");
+        Long 이매역 = 지하철역_생성_요청(new StationRequest("이매역")).jsonPath().getLong("id");
 
-        // then
-        assertThat(조회한_노선.statusCode()).isEqualTo(HttpStatus.OK.value());
+        노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
+        노선_생성_요청(new LineRequest("경강선", "bg-blue-600", 판교역, 이매역, 10L)).jsonPath().getLong("id");
 
-        List<String> lineNames = 조회한_노선.jsonPath().getList("name", String.class);
-        assertThat(lineNames.size()).isEqualTo(2);
-        assertThat(lineNames).contains(신분당선, 우이신설선);
+        // When
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청();
+
+        // Then
+        노선_목록_검증(노선_조회_응답, HttpStatus.OK, List.of("신분당선", "경강선"));
     }
 
     /**
@@ -93,19 +73,17 @@ class LineAcceptanceTest {
      */
     @DisplayName("[성공] 지하철 노선을 조회한다.")
     @Test
-    void getLine() {
-        // given
-        노선_생성(LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value())
-            .extract();
+    void 지하철_노선을_조회() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        // when
-        ExtractableResponse<Response> 조회한_노선 = 노선_조회().extract();
+        // When
+        Long 신분당선 = 노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
 
-        // then
-        List<String> lineNames = 조회한_노선.jsonPath().getList("name", String.class);
-        assertThat(lineNames.size()).isEqualTo(1);
-        assertThat(lineNames).contains(신분당선);
+        // Then
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(신분당선);
+        노선_응답_성공_검증(노선_조회_응답, HttpStatus.OK, 30L, List.of(강남역, 광교역));
     }
 
     /**
@@ -115,27 +93,22 @@ class LineAcceptanceTest {
      */
     @DisplayName("[성공] 지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
-        // given
-        노선_생성(LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value())
-            .extract();
-        // when
+    void 지하철_노선을_수정() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        LineRequest 노선_수정_사항 = LineRequest.builder()
-            .name("수인분당선")
-            .color("bg-yellow-600")
-            .build();
-        String updatedLineName = 수인분당선;
-        String updatedLineColor = "bg-yellow-600";
-        ExtractableResponse<Response> 수정한_노선 = 노선_수정(1L, 노선_수정_사항).extract();
+        Long 신분당선 = 노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
+
+        // When
+        ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(신분당선, new LineRequest("수인분당선", "bg-yellow-600", null, null, null));
 
         // then
-        assertThat(수정한_노선.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(노선_수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        JsonPath responseJsonPath = 수정한_노선.jsonPath();
-        assertThat((String) responseJsonPath.get("name")).isEqualTo(updatedLineName);
-        assertThat((String) responseJsonPath.get("color")).isEqualTo(updatedLineColor);
+        JsonPath responseJsonPath = 노선_수정_응답.jsonPath();
+        assertThat((String) responseJsonPath.get("name")).isEqualTo("수인분당선");
+        assertThat((String) responseJsonPath.get("color")).isEqualTo("bg-yellow-600");
     }
 
     /**
@@ -145,17 +118,19 @@ class LineAcceptanceTest {
      */
     @DisplayName("[성공] 지하철 노선을 삭제한다.")
     @Test
-    void deleteLine() {
-        // given
-        노선_생성(LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value())
-            .extract();
+    void 지하철_노선을_삭제() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        // when
-        ExtractableResponse<Response> response = 노선_삭제(1L).extract();
+        Long 신분당선 = 노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // When
+        ExtractableResponse<Response> 노선_삭제_응답 = 노선_삭제_요청(신분당선);
+
+        // Then
+        assertThat(노선_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
 }

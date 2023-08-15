@@ -31,24 +31,32 @@ public class LineAssertions {
         Assertions.assertThat(노선.getDistance()).isEqualTo(40L);
     }
 
-    public static void 구간연산_성공_검증(ExtractableResponse<Response> HTTP응답, HttpStatus httpStatus,
+    public static void 노선_응답_성공_검증(ExtractableResponse<Response> response, HttpStatus httpStatus,
         Long distance, List<Long> stationIds) {
-        assertThat(HTTP응답.statusCode()).isEqualTo(httpStatus.value());
+        assertThat(response.statusCode()).isEqualTo(httpStatus.value());
 
-        LineResponse 구간등록응답 = HTTP응답.as(LineResponse.class);
-        assertThat(구간등록응답.getDistance()).isEqualTo(distance);
+        LineResponse 구간_응답 = response.as(LineResponse.class);
+        assertThat(구간_응답.getDistance()).isEqualTo(distance);
 
-        List<StationResponse> 구간지하철역리스트 = 구간등록응답.getStations();
-        for (int i = 0; i < 구간지하철역리스트.size(); i++) {
-            assertThat(구간지하철역리스트.get(i).getId()).isEqualTo(stationIds.get(i));
+        List<StationResponse> 지하철역_목록 = 구간_응답.getStations();
+        for (int i = 0; i < 지하철역_목록.size(); i++) {
+            assertThat(지하철역_목록.get(i).getId()).isEqualTo(stationIds.get(i));
         }
     }
 
-    public static void 구간연산_실패_검증(ExtractableResponse<Response> HTTP응답, SubwayErrorCode errorCode) {
-        assertThat(HTTP응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    public static void 노선_응답_실패_검증(ExtractableResponse<Response> response, SubwayErrorCode errorCode) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
-        ErrorResponse 오류응답 = HTTP응답.as(ErrorResponse.class);
-        assertThat(오류응답.getMessage()).isEqualTo(errorCode.getMessage());
+        ErrorResponse 오류_응답 = response.as(ErrorResponse.class);
+        assertThat(오류_응답.getMessage()).isEqualTo(errorCode.getMessage());
+    }
+
+    public static void 노선_목록_검증(ExtractableResponse<Response> response, HttpStatus httpStatus,
+        List<String> lineNames) {
+        assertThat(response.statusCode()).isEqualTo(httpStatus.value());
+
+        List<String> 노선_이름_목록 = response.jsonPath().getList("name", String.class);
+        assertThat(노선_이름_목록).containsExactlyInAnyOrderElementsOf(lineNames);
     }
 
 }

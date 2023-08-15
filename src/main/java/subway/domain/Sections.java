@@ -32,7 +32,7 @@ public class Sections {
     }
 
     public List<Section> get() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
     public void add(Section section) {
