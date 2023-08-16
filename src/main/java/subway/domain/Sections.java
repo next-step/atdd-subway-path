@@ -26,11 +26,6 @@ public class Sections {
         this.sections = sections;
     }
 
-    public Sections(Section section) {
-        sections = new ArrayList<>();
-        sections.add(section);
-    }
-
     public List<Section> get() {
         return Collections.unmodifiableList(sections);
     }
