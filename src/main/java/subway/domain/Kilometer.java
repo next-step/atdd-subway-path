@@ -19,6 +19,9 @@ public class Kilometer {
         return new Kilometer(BigDecimal.valueOf(amount));
     }
 
+    public static Kilometer of(double amount) {
+        return new Kilometer(BigDecimal.valueOf(amount));
+    }
     public BigDecimal getValue() {
         return amount;
     }
