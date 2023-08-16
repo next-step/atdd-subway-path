@@ -7,7 +7,7 @@ import subway.exception.SubwayException;
 import subway.exception.dto.ErrorResponse;
 
 @ControllerAdvice
-public class SubwayExceptionController {
+public class SubwayExceptionHandler {
 
     @ExceptionHandler(SubwayException.class)
     protected ResponseEntity<ErrorResponse> handleSubwayException(SubwayException e) {

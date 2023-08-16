@@ -82,4 +82,11 @@ public class SubwayClient {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 경로_조회_요청() {
+        return RestAssured.given().log().all()
+            .when().get("/paths")
+            .then().log().all()
+            .extract();
+    }
+
 }

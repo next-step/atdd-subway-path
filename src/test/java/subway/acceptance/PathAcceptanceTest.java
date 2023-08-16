@@ -19,6 +19,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import subway.dto.LineRequest;
 import subway.dto.SectionRequest;
 import subway.dto.StationRequest;
+import subway.exception.error.ServerErrorCode;
 import subway.exception.error.SubwayErrorCode;
 
 /**
@@ -144,5 +145,33 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // Then
         경로_조회_실패_검증(경로_조회_응답, HttpStatus.BAD_REQUEST, SubwayErrorCode.STATION_NOT_FOUND.getMessage());
 
+    }
+
+
+    /**
+     * Bean Validation
+     */
+    @Test
+    @DisplayName("[실패] 출발역과 도착역을 지정하지 않는다.")
+    void 출발역과_도착역을_지정하지_않는다() {
+        // When
+        ExtractableResponse<Response> 경로_조회_응답 = 경로_조회_요청();
+
+        // Then
+        경로_조회_실패_검증(경로_조회_응답, HttpStatus.BAD_REQUEST, ServerErrorCode.BAD_PARAMETER.getMessage());
+    }
+
+
+    /**
+     * Bean Validation
+     */
+    @Test
+    @DisplayName("[실패] 출발역을 null string 으로 요청한다.")
+    void 출발역을_null_string_으로_요청한다() {
+        // When
+        ExtractableResponse<Response> 경로_조회_응답 = 경로_조회_요청(null, 1L);
+
+        // Then
+        경로_조회_실패_검증(경로_조회_응답, HttpStatus.BAD_REQUEST, ServerErrorCode.BAD_PARAMETER.getMessage());
     }
 }

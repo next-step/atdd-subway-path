@@ -2,7 +2,7 @@ package subway.validation.impl;
 
 import subway.exception.impl.CannotFindPath;
 import subway.validation.PathValidator;
-import subway.validation.request.PathRequest;
+import subway.dto.PathRequest;
 
 public class PathSourceTargetEqualsValidator extends PathValidator {
 

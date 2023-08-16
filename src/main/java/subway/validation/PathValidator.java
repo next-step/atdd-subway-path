@@ -1,7 +1,7 @@
 package subway.validation;
 
 
-import subway.validation.request.PathRequest;
+import subway.dto.PathRequest;
 
 public abstract class PathValidator {
 
