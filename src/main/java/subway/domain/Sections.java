@@ -31,12 +31,17 @@ public class Sections {
     }
 
     public void add(Section section) {
+        removeSectionForAdd(section);
+        sections.add(section);
+    }
+
+    private void removeSectionForAdd(Section section) {
         Section connectedSection = getConnectedSection(section);
 
         if (section.isInsertedBetween(connectedSection)) {
             addBetween(section, connectedSection);
+            sections.remove(connectedSection);
         }
-        sections.add(section);
     }
 
     private void addBetween(Section section, Section connectedSection) {
@@ -45,9 +50,7 @@ public class Sections {
         }
 
         Section dividedSection = getDividedSection(connectedSection, section);
-
         sections.add(dividedSection);
-        sections.remove(connectedSection);
     }
 
     private Section getConnectedSection(Section newSection) {
