@@ -36,23 +36,23 @@ public class Sections {
     }
 
     public void add(Section section) {
-        processIfInsertedBetween(section);
+        Section connectedSection = getConnectedSection(section);
+
+        if (section.isInsertedBetween(connectedSection)) {
+            addBetween(section, connectedSection);
+        }
         sections.add(section);
     }
 
-    private void processIfInsertedBetween(Section newSection) {
-        Section connectedSection = getConnectedSection(newSection);
-
-        if (newSection.isInsertedBetween(connectedSection)) {
-            if (newSection.hasLoggerDistance(connectedSection)) {
-                throw new CannotCreateSectionException();
-            }
-
-            Section dividedSection = getDividedSection(connectedSection, newSection);
-
-            sections.add(dividedSection);
-            sections.remove(connectedSection);
+    private void addBetween(Section section, Section connectedSection) {
+        if (section.hasLoggerDistance(connectedSection)) {
+            throw new CannotCreateSectionException();
         }
+
+        Section dividedSection = getDividedSection(connectedSection, section);
+
+        sections.add(dividedSection);
+        sections.remove(connectedSection);
     }
 
     private Section getConnectedSection(Section newSection) {
