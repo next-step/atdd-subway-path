@@ -63,16 +63,11 @@ public class Sections {
             throw new CannotCreateSectionException();
         }
 
-        Optional<Section> optionalSection = sections.stream()
-            .filter(section -> newSection.isInsertedBetween(section) || newSection.isAppendedToEnds(
-                section))
-            .findFirst();
-
-        if (optionalSection.isEmpty()) {
-            throw new CannotCreateSectionException();
-        }
-
-        return optionalSection.get();
+        return sections.stream()
+            .filter(section -> newSection.isInsertedBetween(section)
+                || newSection.isAppendedToEnds(section))
+            .findFirst()
+            .orElseThrow(CannotCreateSectionException::new);
     }
 
     private Section getDividedSection(Section connectedSection, Section newSection) {
@@ -143,17 +138,11 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        if (hasSingleSection()) {
+        if (hasSingleSection() || isNotContains(station)) {
             throw new CannotDeleteSectionException();
         }
 
-        List<Section> sectionsContainStation = getStationSections(station);
-
-        // 노선에 등록되어있지 않은 역을 제거하는 경우
-        if (sectionsContainStation.isEmpty()) {
-            throw new CannotDeleteSectionException();
-        }
-
+        List<Section> sectionsContainStation = getSectionsContainsStation(station);
         Optional<Section> firstSection = sectionsContainStation.stream()
             .filter(section -> section.isSameDownStation(station))
             .findAny();
@@ -167,7 +156,7 @@ public class Sections {
         secondSection.ifPresent(section -> sections.remove(section));
     }
 
-    private List<Section> getStationSections(Station station) {
+    private List<Section> getSectionsContainsStation(Station station) {
         return sections.stream()
             .filter(section -> section.containsStation(station))
             .collect(Collectors.toList());
@@ -208,6 +197,10 @@ public class Sections {
 
     public boolean hasSingleSection() {
         return sections.size() == 1;
+    }
+
+    public boolean isNotContains(Station station) {
+        return !getStations().contains(station);
     }
 
 }
