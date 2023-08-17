@@ -4,11 +4,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.domain.Line;
-import subway.domain.Sections;
 import subway.domain.Station;
 import subway.dto.LineRequest;
 import subway.dto.SectionRequest;
-import subway.exception.impl.CannotDeleteSectionException;
 import subway.exception.impl.LineNotFoundException;
 import subway.repository.LineRepository;
 

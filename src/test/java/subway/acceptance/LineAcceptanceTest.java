@@ -1,69 +1,44 @@
 package subway.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static subway.factory.SubwayNameFactory.강남역;
-import static subway.factory.SubwayNameFactory.광교역;
-import static subway.factory.SubwayNameFactory.논현역;
-import static subway.factory.SubwayNameFactory.수서역;
-import static subway.factory.SubwayNameFactory.수인분당선;
-import static subway.factory.SubwayNameFactory.신논현역;
-import static subway.factory.SubwayNameFactory.신분당선;
-import static subway.factory.SubwayNameFactory.양재역;
-import static subway.factory.SubwayNameFactory.우이신설선;
+import static subway.acceptance.assertions.LineAssertions.노선_목록_검증;
+import static subway.acceptance.assertions.LineAssertions.노선_응답_성공_검증;
+import static subway.acceptance.utils.SubwayClient.노선_삭제_요청;
+import static subway.acceptance.utils.SubwayClient.노선_생성_요청;
+import static subway.acceptance.utils.SubwayClient.노선_수정_요청;
+import static subway.acceptance.utils.SubwayClient.노선_조회_요청;
+import static subway.acceptance.utils.SubwayClient.지하철역_생성_요청;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import subway.acceptance.factory.LineRequestFactory;
-import subway.acceptance.utils.RestAssuredClient;
+import subway.dto.LineRequest;
 import subway.dto.StationRequest;
 
 @DisplayName("노선 관련 기능")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LineAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    void setUp() {
-        RestAssured.port = port;
-        saveStations(); // 노선 생성에 필요한 지하철역 추가
-    }
-
-    private static final String linePath = "/lines";
+class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철 노선을 생성하면
-     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     * Then 지하철 노선 목록 조회 시 생성한 노선 찾을 수 있다
      */
-    @DisplayName("노선을 생성한다.")
+    @DisplayName("[성공] 노선을 생성한다.")
     @Test
-    void createLine() {
-        // when
-        RestAssuredClient.requestPost(linePath, LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value());
+    void 노선을_생성() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        // then
-        ExtractableResponse<Response> response = RestAssuredClient.requestGet(linePath)
-            .extract();
+        // When
+        Long 신분당선 = 노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
 
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        List<String> lineNames = response.jsonPath().getList("name", String.class);
-        assertThat(lineNames.size()).isEqualTo(1);
-        assertThat(lineNames).contains(신분당선);
+        // Then
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(신분당선);
+        노선_응답_성공_검증(노선_조회_응답, HttpStatus.OK, 30L, List.of(강남역, 광교역));
     }
 
     /**
@@ -71,26 +46,24 @@ class LineAcceptanceTest {
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
-    @DisplayName("지하철 노선 목록을 조회한다.")
+    @DisplayName("[성공] 지하철 노선 목록을 조회한다.")
     @Test
-    void getLines() {
-        // given
-        RestAssuredClient.requestPost(linePath, LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value());
+    void 지하철_노선_목록을_조회() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        RestAssuredClient.requestPost(linePath, LineRequestFactory.create(우이신설선))
-            .statusCode(HttpStatus.CREATED.value());
+        Long 판교역 = 지하철역_생성_요청(new StationRequest("판교역")).jsonPath().getLong("id");
+        Long 이매역 = 지하철역_생성_요청(new StationRequest("이매역")).jsonPath().getLong("id");
 
-        // when
-        ExtractableResponse<Response> response = RestAssuredClient.requestGet(linePath)
-            .extract();
+        노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
+        노선_생성_요청(new LineRequest("경강선", "bg-blue-600", 판교역, 이매역, 10L)).jsonPath().getLong("id");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // When
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청();
 
-        List<String> lineNames = response.jsonPath().getList("name", String.class);
-        assertThat(lineNames.size()).isEqualTo(2);
-        assertThat(lineNames).contains(신분당선, 우이신설선);
+        // Then
+        노선_목록_검증(노선_조회_응답, HttpStatus.OK, List.of("신분당선", "경강선"));
     }
 
     /**
@@ -98,23 +71,19 @@ class LineAcceptanceTest {
      * When 생성한 지하철 노선을 조회하면
      * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
      */
-    @DisplayName("지하철 노선을 조회한다.")
+    @DisplayName("[성공] 지하철 노선을 조회한다.")
     @Test
-    void getLine() {
-        // given
-        ExtractableResponse<Response> creationResponse = RestAssuredClient.requestPost(linePath,
-                LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value()).extract();
+    void 지하철_노선을_조회() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        // when
-        long lineId = creationResponse.jsonPath().getLong("id");
-        String path = generatePathForId(lineId);
-        ExtractableResponse<Response> response = RestAssuredClient.requestGet(path)
-            .extract();
+        // When
+        Long 신분당선 = 노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat((String) response.jsonPath().get("name")).isEqualTo(신분당선);
+        // Then
+        ExtractableResponse<Response> 노선_조회_응답 = 노선_조회_요청(신분당선);
+        노선_응답_성공_검증(노선_조회_응답, HttpStatus.OK, 30L, List.of(강남역, 광교역));
     }
 
     /**
@@ -122,31 +91,24 @@ class LineAcceptanceTest {
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
      */
-    @DisplayName("지하철 노선을 수정한다.")
+    @DisplayName("[성공] 지하철 노선을 수정한다.")
     @Test
-    void updateLine() {
-        // given
-        ExtractableResponse<Response> creationResponse = RestAssuredClient.requestPost(linePath,
-                LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value()).extract();
+    void 지하철_노선을_수정() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        // when
-        long lineId = creationResponse.jsonPath().getLong("id");
-        String path = generatePathForId(lineId);
+        Long 신분당선 = 노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
 
-        String updatedLineName = 수인분당선;
-        String updatedLineColor = "bg-yellow-600";
-        ExtractableResponse<Response> response =
-            RestAssuredClient.requestPut(path,
-                    LineRequestFactory.createNameAndColorUpdateParams(updatedLineName, updatedLineColor))
-                .extract();
+        // When
+        ExtractableResponse<Response> 노선_수정_응답 = 노선_수정_요청(신분당선, new LineRequest("수인분당선", "bg-yellow-600", null, null, null));
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(노선_수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        JsonPath responseJsonPath = response.jsonPath();
-        assertThat((String) responseJsonPath.get("name")).isEqualTo(updatedLineName);
-        assertThat((String) responseJsonPath.get("color")).isEqualTo(updatedLineColor);
+        JsonPath responseJsonPath = 노선_수정_응답.jsonPath();
+        assertThat((String) responseJsonPath.get("name")).isEqualTo("수인분당선");
+        assertThat((String) responseJsonPath.get("color")).isEqualTo("bg-yellow-600");
     }
 
     /**
@@ -154,40 +116,21 @@ class LineAcceptanceTest {
      * When 생성한 지하철 노선을 삭제하면
      * Then 해당 지하철 노선 정보는 삭제된다
      */
-    @DisplayName("지하철 노선을 삭제한다.")
+    @DisplayName("[성공] 지하철 노선을 삭제한다.")
     @Test
-    void deleteLine() {
-        // given
-        ExtractableResponse<Response> creationResponse = RestAssuredClient.requestPost(linePath,
-                LineRequestFactory.create(신분당선))
-            .statusCode(HttpStatus.CREATED.value()).extract();
+    void 지하철_노선을_삭제() {
+        // Given
+        Long 강남역 = 지하철역_생성_요청(new StationRequest("강남역")).jsonPath().getLong("id");
+        Long 광교역 = 지하철역_생성_요청(new StationRequest("광교역")).jsonPath().getLong("id");
 
-        // when
-        long lineId = creationResponse.jsonPath().getLong("id");
-        String path = generatePathForId(lineId);
-        ExtractableResponse<Response> response = RestAssuredClient.requestDelete(path)
-            .extract();
+        Long 신분당선 = 노선_생성_요청(new LineRequest("신분당선", "bg-red-600", 강남역, 광교역, 30L)).jsonPath().getLong("id");
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // When
+        ExtractableResponse<Response> 노선_삭제_응답 = 노선_삭제_요청(신분당선);
+
+        // Then
+        assertThat(노선_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-
-    private String generatePathForId(long id) {
-        return new StringBuilder()
-            .append(linePath)
-            .append("/")
-            .append(id)
-            .toString();
-    }
-
-    private void saveStations() {
-        String stationPath = "/stations";
-        RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(강남역).build());
-        RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(광교역).build());
-        RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(양재역).build());
-        RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(논현역).build());
-        RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(신논현역).build());
-        RestAssuredClient.requestPost(stationPath, StationRequest.builder().name(수서역).build());
-    }
 }

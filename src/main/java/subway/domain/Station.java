@@ -47,8 +47,4 @@ public class Station {
             .build();
     }
 
-    public boolean isSameId(Long stationId) {
-        return this.id.equals(stationId);
-    }
-
 }

@@ -41,12 +41,12 @@ public class Line {
         this.color = color;
         this.distance = distance;
         this.sections = new Sections(
-            Section.builder()
+            List.of(Section.builder()
                 .line(this)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(distance)
-                .build()
+                .build())
         );
     }
 

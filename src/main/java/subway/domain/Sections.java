@@ -22,29 +22,35 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     private List<Section> sections;
 
-    public Sections(Section section) {
-        sections = new ArrayList<>();
-        sections.add(section);
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public List<Section> get() {
+        return Collections.unmodifiableList(sections);
     }
 
     public void add(Section section) {
-        processIfInsertedBetween(section);
+        removeSectionForAdd(section);
         sections.add(section);
     }
 
-    private void processIfInsertedBetween(Section newSection) {
-        Section connectedSection = getConnectedSection(newSection);
+    private void removeSectionForAdd(Section section) {
+        Section connectedSection = getConnectedSection(section);
 
-        if (newSection.isInsertedBetween(connectedSection)) {
-            if (newSection.hasLoggerDistance(connectedSection)) {
-                throw new CannotCreateSectionException();
-            }
-
-            Section dividedSection = getDividedSection(connectedSection, newSection);
-
-            sections.add(dividedSection);
+        if (section.isInsertedBetween(connectedSection)) {
+            addBetween(section, connectedSection);
             sections.remove(connectedSection);
         }
+    }
+
+    private void addBetween(Section section, Section connectedSection) {
+        if (section.hasLoggerDistance(connectedSection)) {
+            throw new CannotCreateSectionException();
+        }
+
+        Section dividedSection = getDividedSection(connectedSection, section);
+        sections.add(dividedSection);
     }
 
     private Section getConnectedSection(Section newSection) {
@@ -55,16 +61,11 @@ public class Sections {
             throw new CannotCreateSectionException();
         }
 
-        Optional<Section> optionalSection = sections.stream()
-            .filter(section -> newSection.isInsertedBetween(section) || newSection.isAppendedToEnds(
-                section))
-            .findFirst();
-
-        if (optionalSection.isEmpty()) {
-            throw new CannotCreateSectionException();
-        }
-
-        return optionalSection.get();
+        return sections.stream()
+            .filter(section -> newSection.isInsertedBetween(section)
+                || newSection.isAppendedToEnds(section))
+            .findFirst()
+            .orElseThrow(CannotCreateSectionException::new);
     }
 
     private Section getDividedSection(Section connectedSection, Section newSection) {
@@ -135,17 +136,11 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        if (hasSingleSection()) {
+        if (hasSingleSection() || isNotContains(station)) {
             throw new CannotDeleteSectionException();
         }
 
-        List<Section> sectionsContainStation = getStationSections(station);
-
-        // 노선에 등록되어있지 않은 역을 제거하는 경우
-        if (sectionsContainStation.isEmpty()) {
-            throw new CannotDeleteSectionException();
-        }
-
+        List<Section> sectionsContainStation = getSectionsContainsStation(station);
         Optional<Section> firstSection = sectionsContainStation.stream()
             .filter(section -> section.isSameDownStation(station))
             .findAny();
@@ -159,7 +154,7 @@ public class Sections {
         secondSection.ifPresent(section -> sections.remove(section));
     }
 
-    private List<Section> getStationSections(Station station) {
+    private List<Section> getSectionsContainsStation(Station station) {
         return sections.stream()
             .filter(section -> section.containsStation(station))
             .collect(Collectors.toList());
@@ -200,6 +195,10 @@ public class Sections {
 
     public boolean hasSingleSection() {
         return sections.size() == 1;
+    }
+
+    public boolean isNotContains(Station station) {
+        return !getStations().contains(station);
     }
 
 }

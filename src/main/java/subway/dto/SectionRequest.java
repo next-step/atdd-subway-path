@@ -1,18 +1,15 @@
 package subway.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import subway.domain.Line;
 import subway.domain.Section;
 import subway.domain.Station;
 
 @Builder
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class SectionRequest {
 
     private Long upStationId;
