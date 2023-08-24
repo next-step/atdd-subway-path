@@ -110,6 +110,10 @@ public class SubwayLine {
             return id == null;
         }
 
+        public boolean isEmpty() {
+            return id == null;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
