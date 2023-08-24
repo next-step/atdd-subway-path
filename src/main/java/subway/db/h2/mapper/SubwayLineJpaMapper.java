@@ -27,7 +27,7 @@ public class SubwayLineJpaMapper {
                 .collect(Collectors.toList());
     }
     private SubwaySectionJpa from(SubwaySection subwaySection) {
-        return new SubwaySectionJpa(
+        return SubwaySectionJpa.register(
                 subwaySection.getUpStationId().getValue(),
                 subwaySection.getUpStationName(),
                 subwaySection.getDownStationId().getValue(),

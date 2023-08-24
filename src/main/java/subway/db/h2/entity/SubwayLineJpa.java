@@ -78,7 +78,7 @@ public class SubwayLineJpa {
                 .stream()
                 .filter(SubwaySection::isNew)
                 .map(subwaySection ->
-                        new SubwaySectionJpa(
+                        SubwaySectionJpa.register(
                                 subwaySection.getUpStationId().getValue(),
                                 subwaySection.getUpStationName(),
                                 subwaySection.getDownStationId().getValue(),
