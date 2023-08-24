@@ -52,5 +52,9 @@ public class PathStation {
             return id == null;
         }
 
+        public boolean isEmpty() {
+            return id == null;
+        }
+
     }
 }
