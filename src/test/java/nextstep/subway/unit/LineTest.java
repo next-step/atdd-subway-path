@@ -33,7 +33,7 @@ class LineTest {
     void addSection() {
         //when
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        분당선.addSection(강남역_역삼역_구간);
 
         //then
         assertThat(분당선.getEndStation()).isEqualTo(역삼역);
@@ -44,11 +44,11 @@ class LineTest {
     void addStartSection() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        분당선.addSection(강남역_역삼역_구간);
 
         //when
         Section 역삼역_선릉역_구간 = new Section(분당선, 교대역, 강남역, 10);
-        분당선.addSections(역삼역_선릉역_구간);
+        분당선.addSection(역삼역_선릉역_구간);
 
         //then
         assertThat(분당선.getStartStation()).isEqualTo(교대역);
@@ -59,11 +59,11 @@ class LineTest {
     void addLastSection() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        분당선.addSection(강남역_역삼역_구간);
 
         //when
         Section 교대역_강남역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
-        분당선.addSections(교대역_강남역_구간);
+        분당선.addSection(교대역_강남역_구간);
 
         //then
         assertThat(분당선.getEndStation()).isEqualTo(선릉역);
@@ -74,14 +74,14 @@ class LineTest {
     void addMiddleSection() {
         //given
         Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 10);
-        분당선.addSections(강남역_선릉역_구간);
+        분당선.addSection(강남역_선릉역_구간);
 
         //when
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 4);
-        분당선.addSections(역삼역_선릉역_구간);
+        분당선.addSection(역삼역_선릉역_구간);
 
         //then
-        List<Section> sections = 분당선.getSections();
+        List<Section> sections = 분당선.getSections().getSections();
         assertThat(sections).hasSize(2);
         Optional<Section> 변경된_강남역_역삼역_구간 = sections.stream().filter(section ->
                 section.getUpStation().equals(강남역)).findFirst();
@@ -102,11 +102,11 @@ class LineTest {
     void addLongSection() {
         //given
         Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 10);
-        분당선.addSections(강남역_선릉역_구간);
+        분당선.addSection(강남역_선릉역_구간);
 
         //when then
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 12);
-        assertThatThrownBy(() -> 분당선.addSections(역삼역_선릉역_구간)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> 분당선.addSection(역삼역_선릉역_구간)).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -114,11 +114,11 @@ class LineTest {
     void addNotExistsSection() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        분당선.addSection(강남역_역삼역_구간);
 
         //when then
         Section 선릉역_교대역_구간 = new Section(분당선, 선릉역, 교대역, 4);
-        assertThatThrownBy(() -> 분당선.addSections(선릉역_교대역_구간)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> 분당선.addSection(선릉역_교대역_구간)).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -126,12 +126,12 @@ class LineTest {
     void addAllExistsSection1() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        분당선.addSection(강남역_역삼역_구간);
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
-        분당선.addSections(역삼역_선릉역_구간);
+        분당선.addSection(역삼역_선릉역_구간);
 
         //when then
-        assertThatThrownBy(() -> 분당선.addSections(강남역_역삼역_구간)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> 분당선.addSection(강남역_역삼역_구간)).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -139,13 +139,13 @@ class LineTest {
     void addAllExistsSection2() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        분당선.addSection(강남역_역삼역_구간);
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
-        분당선.addSections(역삼역_선릉역_구간);
+        분당선.addSection(역삼역_선릉역_구간);
 
         //when then
         Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 9);
-        assertThatThrownBy(() -> 분당선.addSections(강남역_선릉역_구간)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> 분당선.addSection(강남역_선릉역_구간)).isInstanceOf(BusinessException.class);
     }
 
 
@@ -154,9 +154,9 @@ class LineTest {
     void getStations() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        분당선.addSection(강남역_역삼역_구간);
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
-        분당선.addSections(역삼역_선릉역_구간);
+        분당선.addSection(역삼역_선릉역_구간);
 
         //when
         List<Station> stations = 분당선.getStations();
@@ -170,14 +170,14 @@ class LineTest {
     void removeSection() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
-        분당선.addSections(강남역_역삼역_구간);
+        분당선.addSection(강남역_역삼역_구간);
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
-        분당선.addSections(역삼역_선릉역_구간);
+        분당선.addSection(역삼역_선릉역_구간);
 
         //when
         분당선.removeSection(선릉역);
 
         //then
-        assertThat(분당선.getSections()).containsAnyOf(강남역_역삼역_구간);
+        assertThat(분당선.getSections().getSections()).containsAnyOf(강남역_역삼역_구간);
     }
 }

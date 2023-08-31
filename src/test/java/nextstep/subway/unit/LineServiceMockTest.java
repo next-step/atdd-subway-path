@@ -108,7 +108,7 @@ public class LineServiceMockTest {
         // given 호선 추가
         Long 생성_라인_ID = 1L;
         Line line = new Line(이호선_이름, 이호선_색);
-        line.addSections(new Section(line, 강남역, 역삼역, 거리_10));
+        line.addSection(new Section(line, 강남역, 역삼역, 거리_10));
         given(lineRepository.findById(any())).willReturn(Optional.of(line));
         // given 구간 생성 요청
         SectionRequest request = new SectionRequest(역삼역_ID, 삼성역_ID, 거리_10);
@@ -118,6 +118,6 @@ public class LineServiceMockTest {
 
         // then
         assertThat(line).isNotNull();
-        assertThat(line.getSections()).hasSize(2);
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 }

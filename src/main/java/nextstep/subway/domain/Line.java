@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.exception.BusinessException;
-
 import javax.persistence.*;
 import java.util.*;
 
@@ -14,17 +12,8 @@ public class Line {
     private String name;
     private String color;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "start_station_id")
-    private Station startStation;
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "end_station_id")
-    private Station endStation;
-
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
-            CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
@@ -32,6 +21,7 @@ public class Line {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
     }
 
     public Long getId() {
@@ -58,77 +48,29 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 
     public List<Station> getStations() {
-        if (this.getSections().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Station> stations = new ArrayList<>();
-        Station nowStation = startStation;
-        stations.add(nowStation);
-        while (!nowStation.equals(endStation)) {
-            for (Section section : sections) {
-                if (section.getUpStation().equals(nowStation)) {
-                    nowStation = section.getDownStation();
-                    stations.add(nowStation);
-                    break;
-                }
-            }
-        }
-        return stations;
+        return sections.getStations();
     }
 
-    public void addSections(Section section) {
-        if (new HashSet<>(this.getStations()).containsAll(List.of(section.getUpStation(), section.getDownStation()))) {
-            throw new BusinessException();
-        }
-
-        if (this.sections.isEmpty()) {
-            this.startStation = section.getUpStation();
-            this.endStation = section.getDownStation();
-            sections.add(section);
-            return;
-        }
-
-        if (this.endStation.equals(section.getUpStation())) {
-            this.endStation = section.getDownStation();
-            sections.add(section);
-            return;
-        }
-        if (this.startStation.equals(section.getDownStation())) {
-            this.startStation = section.getUpStation();
-            sections.add(section);
-            return;
-        }
-
-        Optional<Section> beforeSection = sections.stream()
-                .filter(sectionIter ->
-                        sectionIter.getUpStation().equals(section.getUpStation()) || sectionIter.getDownStation().equals(section.getDownStation()
-                        )).findFirst();
-        beforeSection.orElseThrow(BusinessException::new).splitSection(section);
-        sections.add(section);
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 
     public Station getStartStation() {
-        return this.startStation;
+        return sections.getStartStation();
     }
 
     public Station getEndStation() {
-        return this.endStation;
+        return sections.getEndStation();
     }
 
+
     public void removeSection(Station station) {
-        for (Section section : sections) {
-            if (section.getDownStation().equals(station)) {
-                endStation = section.getUpStation();
-                this.sections.remove(section);
-                break;
-            }
-        }
+        sections.removeSection(station);
     }
 
 }
