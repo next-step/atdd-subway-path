@@ -133,7 +133,7 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         지하철_노선에_지하철_구간_생성_요청(분당선_ID, 역삼역_ID, 선릉역_ID, 거리_10);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(분당선_ID, 선릉역_ID);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(분당선_ID, 강남역_ID);
 
         // then
         상태코드_확인(response, HttpStatus.OK);

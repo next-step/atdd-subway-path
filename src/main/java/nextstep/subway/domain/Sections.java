@@ -88,13 +88,32 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        if (startStation.equals(station)) {
+            sections.stream().filter(section -> section.getUpStation().equals(station))
+                    .findFirst().ifPresent(section -> {
+                        startStation = section.getDownStation();
+                        sections.remove(section);
+                    });
+            return;
+        }
+
         sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
                 .findFirst()
-                .ifPresent(section -> {
-                    endStation = section.getUpStation();
-                    sections.remove(section);
+                .ifPresent(upSection -> {
+                    if (endStation.equals(station)) {
+                        endStation = upSection.getUpStation();
+                        sections.remove(upSection);
+                        return;
+                    }
+                    Section downSection = this.getSectionEqualsUpStation(station);
+                    upSection.unionDownSection(downSection);
+                    sections.remove(downSection);
                 });
+    }
+
+    private Section getSectionEqualsUpStation(Station station){
+        return sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst().orElseThrow(BusinessException::new);
     }
 
 }

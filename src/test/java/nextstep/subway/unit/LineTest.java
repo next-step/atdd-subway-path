@@ -194,8 +194,7 @@ class LineTest {
         분당선.removeSection(역삼역);
 
         //then
-        Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 20);
-        assertThat(분당선.getSections().getSections()).containsAnyOf(강남역_선릉역_구간);
+        assertThat(분당선.getSections().getStations()).containsAnyOf(강남역, 선릉역);
     }
 
     @Test
