@@ -16,6 +16,7 @@ import static nextstep.subway.fixture.LineFixture.분당선_이름;
 import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
     Line 분당선;
@@ -211,5 +212,29 @@ class LineTest {
 
         //then
         assertThat(분당선.getSections().getSections()).containsAnyOf(역삼역_선릉역_구간);
+    }
+
+    @Test
+    @DisplayName("구간 삭제 실패 - 구간이 1개")
+    void removeOnlyOneSection() {
+        //given
+        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
+        분당선.addSection(강남역_역삼역_구간);
+
+        //when //then
+        assertThrows(BusinessException.class, () -> 분당선.removeSection(강남역));
+    }
+
+    @Test
+    @DisplayName("구간 삭제 실패 - 존재하지 않는 구간")
+    void removeNotExistsSection() {
+        //given
+        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
+        분당선.addSection(강남역_역삼역_구간);
+        Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
+        분당선.addSection(역삼역_선릉역_구간);
+
+        //when //then
+        assertThrows(BusinessException.class, () -> 분당선.removeSection(삼성역));
     }
 }
