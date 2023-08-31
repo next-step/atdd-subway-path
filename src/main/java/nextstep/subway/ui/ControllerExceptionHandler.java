@@ -15,7 +15,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<Void> handleBusinessException(DataIntegrityViolationException e) {
+    public ResponseEntity<Void> handleBusinessException(BusinessException e) {
         return ResponseEntity.badRequest().build();
     }
 

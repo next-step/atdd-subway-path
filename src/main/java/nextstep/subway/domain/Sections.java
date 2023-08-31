@@ -88,6 +88,14 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        if (sections.size() <= 1) {
+            throw new BusinessException();
+        }
+
+        if (!this.getStations().contains(station)) {
+            throw new BusinessException();
+        }
+
         if (startStation.equals(station)) {
             sections.stream().filter(section -> section.getUpStation().equals(station))
                     .findFirst().ifPresent(section -> {
