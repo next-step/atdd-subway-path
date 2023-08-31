@@ -166,8 +166,8 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("구간 삭제")
-    void removeSection() {
+    @DisplayName("구간 삭제 성공 - 하행 종점")
+    void removeLastSection() {
         //given
         Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
         분당선.addSection(강남역_역삼역_구간);
@@ -179,5 +179,38 @@ class LineTest {
 
         //then
         assertThat(분당선.getSections().getSections()).containsAnyOf(강남역_역삼역_구간);
+    }
+
+    @Test
+    @DisplayName("구간 삭제 성공 - 중간")
+    void removeMiddleSection() {
+        //given
+        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
+        분당선.addSection(강남역_역삼역_구간);
+        Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
+        분당선.addSection(역삼역_선릉역_구간);
+
+        //when
+        분당선.removeSection(역삼역);
+
+        //then
+        Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 20);
+        assertThat(분당선.getSections().getSections()).containsAnyOf(강남역_선릉역_구간);
+    }
+
+    @Test
+    @DisplayName("구간 삭제 성공 - 상행 종점")
+    void removeFirstSection() {
+        //given
+        Section 강남역_역삼역_구간 = new Section(분당선, 강남역, 역삼역, 10);
+        분당선.addSection(강남역_역삼역_구간);
+        Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 10);
+        분당선.addSection(역삼역_선릉역_구간);
+
+        //when
+        분당선.removeSection(강남역);
+
+        //then
+        assertThat(분당선.getSections().getSections()).containsAnyOf(역삼역_선릉역_구간);
     }
 }
