@@ -42,15 +42,18 @@ public class LineServiceMockTest {
     @Test
     @DisplayName("새로운 노선을 저장")
     void saveLine() {
-        // given
+        // given 역 생성
         Long 강남역_ID = 1L;
         Long 역삼역_ID = 2L;
-        LineRequest request = LineRequest.builder().name(이호선_이름).color(이호선_색)
-                .upStationId(강남역_ID).downStationId(역삼역_ID).distance(거리_10).build();
-        Line line = new Line(이호선_이름, 이호선_색);
-        given(lineRepository.save(any())).willReturn(line);
         given(stationService.findById(강남역_ID)).willReturn(강남역);
         given(stationService.findById(역삼역_ID)).willReturn(역삼역);
+        // given 호선 생성
+        Line line = new Line(이호선_이름, 이호선_색);
+        given(lineRepository.save(any())).willReturn(line);
+
+        // given 생성 요청
+        LineRequest request = LineRequest.builder().name(이호선_이름).color(이호선_색)
+                .upStationId(강남역_ID).downStationId(역삼역_ID).distance(거리_10).build();
 
         // when
         LineResponse response = lineService.saveLine(request);
@@ -64,12 +67,13 @@ public class LineServiceMockTest {
     @Test
     @DisplayName("기존 노선을 수정")
     void updateLine() {
-        // given
+        // given 호선 추가
         Long 기존_라인_ID = 1L;
-        LineRequest request = LineRequest.builder().name(분당선_이름).color(분당선_색).build();
         Line line = new Line(분당선_이름, 분당선_색);
         given(lineRepository.findById(any())).willReturn(
                 Optional.of(line));
+        // given 수정 요청 생성
+        LineRequest request = LineRequest.builder().name(분당선_이름).color(분당선_색).build();
 
         // when
         lineService.updateLine(기존_라인_ID, request);
@@ -96,16 +100,18 @@ public class LineServiceMockTest {
     @Test
     @DisplayName("기존 노선에 구간을 추가")
     void addSection() {
-        // given
+        // given 역 추가
         Long 역삼역_ID = 2L;
         Long 삼성역_ID = 3L;
-        Long 생성_라인_ID = 1L;
-        SectionRequest request = new SectionRequest(역삼역_ID, 삼성역_ID, 거리_10);
-        Line line = new Line(이호선_이름, 이호선_색);
-        line.addSections(new Section(line, 강남역, 역삼역, 거리_10));
         given(stationService.findById(역삼역_ID)).willReturn(역삼역);
         given(stationService.findById(삼성역_ID)).willReturn(삼성역);
+        // given 호선 추가
+        Long 생성_라인_ID = 1L;
+        Line line = new Line(이호선_이름, 이호선_색);
+        line.addSections(new Section(line, 강남역, 역삼역, 거리_10));
         given(lineRepository.findById(any())).willReturn(Optional.of(line));
+        // given 구간 생성 요청
+        SectionRequest request = new SectionRequest(역삼역_ID, 삼성역_ID, 거리_10);
 
         // when
         lineService.addSection(생성_라인_ID, request);
@@ -113,6 +119,5 @@ public class LineServiceMockTest {
         // then
         assertThat(line).isNotNull();
         assertThat(line.getSections()).hasSize(2);
-
     }
 }
