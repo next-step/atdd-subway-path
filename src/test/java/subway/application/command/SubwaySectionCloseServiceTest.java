@@ -29,14 +29,13 @@ import static org.mockito.Mockito.times;
 @DisplayName("지하철 구간 비활성화에 대한 서비스 단위 테스트")
 class SubwaySectionCloseServiceTest {
 
-    private final SectionCloseManager sectionCloseManager = new SectionCloseManager();
     private final StationLoadPort stationLoadPort = Mockito.mock(StationLoadPort.class);
 
     private final SubwayLineLoadPort subwayLineLoadPort = Mockito.mock(SubwayLineLoadPort.class);
 
     private final SubwaySectionClosePort subwaySectionClosePort = Mockito.mock(SubwaySectionClosePort.class);
 
-    private final SubwaySectionCloseService subwaySectionCloseService = new SubwaySectionCloseService(sectionCloseManager, subwayLineLoadPort, stationLoadPort, subwaySectionClosePort);
+    private final SubwaySectionCloseService subwaySectionCloseService = new SubwaySectionCloseService(subwayLineLoadPort, stationLoadPort, subwaySectionClosePort);
 
     /**
      * @given 구간을 3개 가진 기존 지하철 노선이 존재하고

@@ -17,14 +17,12 @@ import java.util.NoSuchElementException;
 @Service
 public class SubwaySectionCloseService implements SubwaySectionCloseUsecase {
 
-    private final SectionCloseManager sectionCloseManager;
     private final SubwayLineLoadPort subwayLineLoadPort;
     private final StationLoadPort stationLoadPort;
     private final SubwaySectionClosePort subwaySectionClosePort;
 
     @Autowired
-    public SubwaySectionCloseService(SectionCloseManager sectionCloseManager, SubwayLineLoadPort subwayLineLoadPort, StationLoadPort stationLoadPort, SubwaySectionClosePort subwaySectionClosePort) {
-        this.sectionCloseManager = sectionCloseManager;
+    public SubwaySectionCloseService(SubwayLineLoadPort subwayLineLoadPort, StationLoadPort stationLoadPort, SubwaySectionClosePort subwaySectionClosePort) {
         this.subwayLineLoadPort = subwayLineLoadPort;
         this.stationLoadPort = stationLoadPort;
         this.subwaySectionClosePort = subwaySectionClosePort;
@@ -34,7 +32,7 @@ public class SubwaySectionCloseService implements SubwaySectionCloseUsecase {
     public void closeSection(Command command) {
         SubwayLine subwayLine = getSubwayLineBy(command);
         Station station = getStationBy(command);
-
+        SectionCloseManager sectionCloseManager = new SectionCloseManager();
         subwayLine.closeSection(station, sectionCloseManager);
 
         subwaySectionClosePort.closeSection(subwayLine);
