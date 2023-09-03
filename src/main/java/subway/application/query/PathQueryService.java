@@ -10,11 +10,10 @@ import subway.application.query.out.PathSearcherLoadPort;
 import subway.application.response.PathResponse;
 import subway.domain.PathSearcher;
 import subway.domain.PathStation;
-import subway.domain.PathSubway;
+import subway.domain.SubwayPath;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,7 +32,7 @@ class PathQueryService implements PathQuery {
         PathSearcher searcher = pathSearcherLoadPort.findOne()
                 .orElseThrow(() -> new NoSuchElementException("최단 거리를 찾을 수 없습니다."));
 
-        PathSubway search = searcher.search(startStation, endStation);
+        SubwayPath search = searcher.search(startStation, endStation);
         return pathResponseMapper.from(search);
     }
 

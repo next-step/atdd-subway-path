@@ -65,12 +65,12 @@ class PathShortestDistanceSearcherTest {
 
         //when
         PathSearcher pathSearcher = PathShortestDistanceSearcher.from(List.of(firstSection, secondSection, thirdSection, fourthSection));
-        PathSubway response = pathSearcher.search(서울대입구역, 성수역);
+        SubwayPath response = pathSearcher.search(서울대입구역, 성수역);
 
         //then
         assertAll(
                 () -> assertThat(response).isNotNull()
-                        .extracting(PathSubway::getDistance)
+                        .extracting(SubwayPath::getDistance)
                         .isEqualTo(Kilometer.of(13)),
                 () -> assertThat(response.getStations())
                         .containsExactly(서울대입구역, 건대입구역, 성수역));
@@ -97,12 +97,12 @@ class PathShortestDistanceSearcherTest {
 
         //when
         PathSearcher pathSearcher = PathShortestDistanceSearcher.from(List.of(firstSection, secondSection, thirdSection));
-        PathSubway response = pathSearcher.search(서울대입구역, 건대입구역);
+        SubwayPath response = pathSearcher.search(서울대입구역, 건대입구역);
 
         //then
         assertAll(
                 () -> assertThat(response).isNotNull()
-                        .extracting(PathSubway::getDistance)
+                        .extracting(SubwayPath::getDistance)
                         .isEqualTo(Kilometer.of(25)),
                 () -> assertThat(response.getStations())
                         .containsExactly(서울대입구역, 강남역, 성수역, 건대입구역));
@@ -133,12 +133,12 @@ class PathShortestDistanceSearcherTest {
 
         //when
         PathSearcher pathSearcher = PathShortestDistanceSearcher.from(List.of(firstSection, secondSection, thirdSection, fourthSection));
-        PathSubway response = pathSearcher.search(서울대입구역, 성수역);
+        SubwayPath response = pathSearcher.search(서울대입구역, 성수역);
 
         //then
         assertAll(
                 () -> assertThat(response).isNotNull()
-                        .extracting(PathSubway::getDistance)
+                        .extracting(SubwayPath::getDistance)
                         .isEqualTo(Kilometer.of(25)),
                 () -> assertThat(response.getStations())
                         .containsExactly(서울대입구역, 강남역, 건대입구역, 성수역));

@@ -11,6 +11,6 @@ public interface PathSearcher {
      * @param target 도착역
      * @return 경로 탐색 결과
      */
-    PathSubway search(PathStation source, PathStation target);
+    SubwayPath search(PathStation source, PathStation target);
 
 }

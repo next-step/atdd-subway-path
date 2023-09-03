@@ -41,9 +41,9 @@ public class PathShortestDistanceSearcher implements PathSearcher {
     }
 
     @Override
-    public PathSubway search(PathStation source, PathStation target) {
+    public SubwayPath search(PathStation source, PathStation target) {
         GraphPath<PathStation, PathSectionJGraph> path = this.path.getPath(source, target);
 
-        return PathSubway.of(Kilometer.of(path.getWeight()), path.getVertexList());
+        return SubwayPath.of(Kilometer.of(path.getWeight()), path.getVertexList());
     }
 }

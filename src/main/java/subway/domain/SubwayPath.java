@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * 경로 탐색 결과
  */
-public class PathSubway {
+public class SubwayPath {
     /**
      * 경로의 거리 총합
      */
@@ -17,15 +17,15 @@ public class PathSubway {
      */
     private final PathStations stations;
 
-    private PathSubway(Kilometer distance, List<PathStation> stations) {
+    private SubwayPath(Kilometer distance, List<PathStation> stations) {
         this.distance = distance;
         this.stations = PathStations.from(stations);
     }
 
-    public static PathSubway of(Kilometer distance, List<PathStation> stations) {
-        PathSubway pathSubway = new PathSubway(distance, stations);
-        pathSubway.validate();
-        return pathSubway;
+    public static SubwayPath of(Kilometer distance, List<PathStation> stations) {
+        SubwayPath subwayPath = new SubwayPath(distance, stations);
+        subwayPath.validate();
+        return subwayPath;
     }
 
     private void validate() {
