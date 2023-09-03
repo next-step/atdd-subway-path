@@ -31,9 +31,8 @@ class SubwaySectionAddServiceTest {
 
     private final StationMapLoadByInPort stationMapLoadByInPort = Mockito.mock(StationMapLoadByInPort.class);
     private final SubwayLineLoadPort subwayLineLoadPort = Mockito.mock(SubwayLineLoadPort.class);
-    private final SectionAddManager sectionAddManager = new SectionAddManager();
     private final SubwaySectionAddPort subwaySectionAddPort = Mockito.mock(SubwaySectionAddPort.class);
-    private final SubwaySectionAddService subwaySectionAddService = new SubwaySectionAddService(stationMapLoadByInPort, subwayLineLoadPort, sectionAddManager, subwaySectionAddPort);
+    private final SubwaySectionAddService subwaySectionAddService = new SubwaySectionAddService(stationMapLoadByInPort, subwayLineLoadPort, subwaySectionAddPort);
 
 
     /**

@@ -22,14 +22,12 @@ class SubwaySectionAddService implements SubwaySectionAddUsecase {
 
     private final StationMapLoadByInPort stationMapLoadByInPort;
     private final SubwayLineLoadPort subwayLineLoadPort;
-    private final SectionAddManager sectionAddManager;
     private final SubwaySectionAddPort subwaySectionAddPort;
 
     @Autowired
-    SubwaySectionAddService(StationMapLoadByInPort stationMapLoadByInPort, SubwayLineLoadPort subwayLineLoadPort, SectionAddManager sectionAddManager, SubwaySectionAddPort subwaySectionAddPort) {
+    SubwaySectionAddService(StationMapLoadByInPort stationMapLoadByInPort, SubwayLineLoadPort subwayLineLoadPort, SubwaySectionAddPort subwaySectionAddPort) {
         this.stationMapLoadByInPort = stationMapLoadByInPort;
         this.subwayLineLoadPort = subwayLineLoadPort;
-        this.sectionAddManager = sectionAddManager;
         this.subwaySectionAddPort = subwaySectionAddPort;
     }
 
@@ -41,6 +39,7 @@ class SubwaySectionAddService implements SubwaySectionAddUsecase {
         Station upStation = getStationBy(commandSection.getUpStationId(), idToStationMap);
         Station downStation = getStationBy(commandSection.getDownStationId(), idToStationMap);
         SubwayLine subwayLine = getSubwayLineBy(command);
+        SectionAddManager sectionAddManager = new SectionAddManager();
 
         subwayLine.addSection(upStation, downStation, commandSection.getDistance(), sectionAddManager);
         subwaySectionAddPort.addSubwaySection(subwayLine);
