@@ -33,11 +33,6 @@ public class LineSteps {
         return requestGet("/lines");
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(
-            ExtractableResponse<Response> createResponse) {
-        return requestGet(createResponse);
-    }
-
     public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long lineId) {
         Map<String, Long> pathParams = new HashMap<>();
         pathParams.put("lineId", lineId);
@@ -96,5 +91,9 @@ public class LineSteps {
 
     public static Long 노선_생성_ID_추출(ExtractableResponse<Response> response) {
         return response.jsonPath().getLong("id");
+    }
+
+    public static List<Long> 노선의_역ID_목록_추출(Long lineId) {
+        return 노선의_역ID_목록_추출(지하철_노선_조회_요청(lineId));
     }
 }

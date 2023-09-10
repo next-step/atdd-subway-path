@@ -103,7 +103,7 @@ public class LineServiceTest {
     void addSection() {
         // given
         lineRepository.save(이호선);
-        이호선.addSections(new Section(이호선, 강남역, 역삼역, 거리_10));
+        이호선.addSection(new Section(이호선, 강남역, 역삼역, 거리_10));
         SectionRequest request = new SectionRequest(역삼역.getId(), 선릉역.getId(), 거리_10);
 
         // when

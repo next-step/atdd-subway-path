@@ -70,4 +70,9 @@ public class Section {
 
         this.distance = this.distance - newSection.distance;
     }
+
+    public void unionDownSection(Section downSection) {
+        this.downStation = downSection.getDownStation();
+        this.distance += downSection.getDistance();
+    }
 }
