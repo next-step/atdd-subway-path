@@ -108,4 +108,31 @@ public class PathSearchAcceptanceTest extends SubwayLineAcceptanceTest {
         //then
         pathSearchApiTester.경로_조회_응답됨(경로_조회_요청, 13, 서울대입구역, 강남역, 신림역);
     }
+
+
+
+
+    /**
+     * @given A-B-C 구간을 갖는 ABC 노선이 존재하고
+     * @given B-C-D 구간을 갖는  BCD 노선이 존재한다고 한다면
+     * @when A역과 C역을 기준으로 경로탐색을 할 때
+     * @then 최단 거리로 갈 수 있다.
+     */
+    @Test
+    @DisplayName("존재하지 않은 역을 기준으로 경로 탐색을 할 수 없다.")
+    public void searchPathBetweenNotExistStations() {
+        //given
+        이호선 = 지하철_노선_생성("2호선", "green", 서울대입구역, 강남역, 5).as(SubwayLineResponse.class);
+        sectionAddApiTester.노선에_구간을_추가한다(이호선, 강남역, 신림역, 12);
+
+        //given
+        사호선 = 지하철_노선_생성("4호선", "blue", 강남역, 신림역, 8).as(SubwayLineResponse.class);
+        sectionAddApiTester.노선에_구간을_추가한다(사호선, 신림역, 성수역, 12);
+
+        //when
+        ExtractableResponse<Response> 경로_조회_요청 = pathSearchApiTester.경로_조회_요청(서울대입구역, new StationResponse(100L, "없는역"));
+
+        //then
+        pathSearchApiTester.경로_조회_실패됨(경로_조회_요청);
+    }
 }
