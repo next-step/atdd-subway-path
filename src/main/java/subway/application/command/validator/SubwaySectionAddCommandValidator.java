@@ -27,7 +27,7 @@ public class SubwaySectionAddCommandValidator {
             errors.add(ValidationError.of("subwayLineId", " is null"));
         }
 
-        if (command.getSubwayLineId().getValue() == null) {
+        if (command.getSubwayLineId() != null && command.getSubwayLineId().isEmpty()) {
             errors.add(ValidationError.of("subwayLineId", " value is null"));
         }
 
@@ -42,18 +42,23 @@ public class SubwaySectionAddCommandValidator {
     private void validate(SubwaySectionAddUsecase.Command.SectionCommand subwaySection, List<ValidationError> errors) {
         if (subwaySection.getUpStationId() == null) {
             errors.add(ValidationError.of("subwaySection.upStationId", " is null"));
+            throw new ValidationErrorException(errors);
         }
 
-        if (subwaySection.getUpStationId().getValue() == null) {
+        if (subwaySection.getUpStationId().isEmpty()) {
             errors.add(ValidationError.of("subwaySection.upStationId"," value is null"));
+            throw new ValidationErrorException(errors);
+
         }
 
         if (subwaySection.getDownStationId() == null) {
             errors.add(ValidationError.of("subwaySection.downStationId"," is null"));
+            throw new ValidationErrorException(errors);
         }
 
-        if (subwaySection.getDownStationId().getValue() == null) {
+        if (subwaySection.getDownStationId().isEmpty()) {
             errors.add(ValidationError.of("subwaySection.downStationId"," value is null"));
+            throw new ValidationErrorException(errors);
         }
 
         if (subwaySection.getUpStationId().equals(subwaySection.getDownStationId())) {

@@ -8,7 +8,7 @@ import subway.domain.Station;
 public class StationJpaMapper {
 
     public StationJpa from(Station station) {
-        return new StationJpa(station.getName());
+        return StationJpa.of(station.getName());
     }
 
 }

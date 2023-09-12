@@ -43,9 +43,14 @@ public class SubwayLineJpa {
 
     public void update(SubwayLine subwayLine) {
         update(subwayLine.getName(), subwayLine.getColor());
+        updateStartId(subwayLine);
         updateSections(subwayLine);
         addSections(subwayLine);
         deleteSections(subwayLine);
+    }
+
+    private void updateStartId(SubwayLine subwayLine) {
+        this.startStationId = subwayLine.getStartStationId().getValue();
     }
 
     private void update(String name, String color) {
@@ -73,7 +78,7 @@ public class SubwayLineJpa {
                 .stream()
                 .filter(SubwaySection::isNew)
                 .map(subwaySection ->
-                        new SubwaySectionJpa(
+                        SubwaySectionJpa.register(
                                 subwaySection.getUpStationId().getValue(),
                                 subwaySection.getUpStationName(),
                                 subwaySection.getDownStationId().getValue(),

@@ -1,8 +1,6 @@
 package subway.domain;
 
-import org.springframework.stereotype.Component;
 
-@Component
 public class SectionDefaultAdder implements SectionAdder {
     @Override
     public SubwaySections addSection(SubwaySections subwaySections, SubwaySection subwaySection) {

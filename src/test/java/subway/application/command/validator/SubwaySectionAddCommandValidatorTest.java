@@ -55,7 +55,7 @@ class SubwaySectionAddCommandValidatorTest {
                                 SubwaySectionAddUsecase.Command.SectionCommand::getUpStationId,
                                 SubwaySectionAddUsecase.Command.SectionCommand::getDownStationId)
                         .containsExactly(Kilometer.of(1), new Station.Id(1L), new Station.Id(2L)),
-                () -> assertThat(command.getSubwaySection().getDistance().compareTo(Kilometer.of(1))).isNotNull());
+                () -> assertThat(command.getSubwaySection().getDistance().isPositive()).isTrue());
     }
 
     /**

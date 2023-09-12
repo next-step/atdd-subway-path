@@ -1,8 +1,6 @@
 package subway.domain;
 
-import org.springframework.stereotype.Component;
 
-@Component
 public class SectionMiddleCloser implements SectionCloser{
     @Override
     public SubwaySections closeSection(SubwaySections subwaySections, Station station) {

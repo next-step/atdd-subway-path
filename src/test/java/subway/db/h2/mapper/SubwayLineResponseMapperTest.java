@@ -31,8 +31,8 @@ class SubwayLineResponseMapperTest {
     @DisplayName("영속성 객체를 응답 객체로 변환할 때 값이 일치한다.")
     void returnSubwayLineJpa() {
         //given
-        SubwaySectionJpa subwaySectionJpa1 = new SubwaySectionJpa(1L, 2L, "강남역", 3L, "교대역", BigDecimal.valueOf(1L));
-        SubwaySectionJpa subwaySectionJpa2 = new SubwaySectionJpa(2L, 1L, "신림역", 2L, "강남역", BigDecimal.valueOf(1L));
+        SubwaySectionJpa subwaySectionJpa1 = SubwaySectionJpa.of(1L, 2L, "강남역", 3L, "교대역", BigDecimal.valueOf(1L));
+        SubwaySectionJpa subwaySectionJpa2 = SubwaySectionJpa.of(2L, 1L, "신림역", 2L, "강남역", BigDecimal.valueOf(1L));
 
         SubwayLineJpa subwayLineJpa = new SubwayLineJpa(1L, "테스트", "red", 1L, List.of(subwaySectionJpa1, subwaySectionJpa2));
         //when
@@ -54,8 +54,8 @@ class SubwayLineResponseMapperTest {
     @DisplayName("영속성 객체를 응답 객체로 변환할 때 역 목록이 종점 순으로 정렬되어 반환된다.")
     void orderedStations() {
         //given
-        SubwaySectionJpa subwaySectionJpa1 = new SubwaySectionJpa(1L, 1L, "강남역", 2L, "교대역", BigDecimal.valueOf(1L));
-        SubwaySectionJpa subwaySectionJpa2 = new SubwaySectionJpa(2L, 3L, "신림역", 1L, "강남역", BigDecimal.valueOf(1L));
+        SubwaySectionJpa subwaySectionJpa1 = SubwaySectionJpa.of(1L, 1L, "강남역", 2L, "교대역", BigDecimal.valueOf(1L));
+        SubwaySectionJpa subwaySectionJpa2 = SubwaySectionJpa.of(2L, 3L, "신림역", 1L, "강남역", BigDecimal.valueOf(1L));
 
         SubwayLineJpa subwayLineJpa = new SubwayLineJpa(1L, "테스트", "red", 3L, List.of(subwaySectionJpa1, subwaySectionJpa2));
         //when

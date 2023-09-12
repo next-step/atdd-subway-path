@@ -1,5 +1,6 @@
 package subway.domain;
 
+
 import lombok.Getter;
 
 import java.util.Objects;
@@ -7,7 +8,6 @@ import java.util.Objects;
 public class SubwaySection {
 
     private final Id id;
-    @Getter
     private SubwaySectionStation upStation;
     @Getter
     private SubwaySectionStation downStation;
@@ -62,6 +62,10 @@ public class SubwaySection {
         return isSameDownStation(station.getId());
     }
 
+    public boolean isSameDownStation(SubwaySectionStation station) {
+        return isSameDownStation(station.getId());
+    }
+
     public boolean isSameDownStation(Station.Id id) {
         return downStation.isSame(id);
     }
@@ -79,13 +83,6 @@ public class SubwaySection {
 
     public boolean isNew() {
         return id.isNew();
-    }
-    boolean matchesDownStation(Station.Id id) {
-        return downStation.getId().equals(id);
-    }
-
-    boolean isSameDownStation(SubwaySectionStation subwaySectionStation) {
-        return downStation.equals(subwaySectionStation);
     }
 
     void reduce(SubwaySection newSection) {

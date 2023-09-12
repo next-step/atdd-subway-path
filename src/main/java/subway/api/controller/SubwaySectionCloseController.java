@@ -20,7 +20,7 @@ public class SubwaySectionCloseController {
 
 
     @DeleteMapping("/subway-lines/{id}/sections")
-    public ResponseEntity<Void> addSubwaySection(@PathVariable Long id, @RequestParam Long stationId) {
+    public ResponseEntity<Void> closeSubwaySection(@PathVariable Long id, @RequestParam Long stationId) {
         SubwaySectionCloseUsecase.Command command = of(id, stationId);
         subwaySectioncloseUsecase.closeSection(command);
         return ResponseEntity.ok().build();

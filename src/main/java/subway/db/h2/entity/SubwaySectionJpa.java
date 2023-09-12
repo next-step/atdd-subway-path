@@ -1,10 +1,14 @@
 package subway.db.h2.entity;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "subway_sections")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubwaySectionJpa {
 
     @Id
@@ -22,11 +26,8 @@ public class SubwaySectionJpa {
     @Column(nullable = false)
     private BigDecimal distance;
 
-    public SubwaySectionJpa() {
-    }
 
-
-    public SubwaySectionJpa(Long upStationId, String upStationName, Long downStationId, String downStationName, BigDecimal distance) {
+    private SubwaySectionJpa(Long upStationId, String upStationName, Long downStationId, String downStationName, BigDecimal distance) {
         this.upStationId = upStationId;
         this.upStationName = upStationName;
         this.downStationId = downStationId;
@@ -34,13 +35,21 @@ public class SubwaySectionJpa {
         this.distance = distance;
     }
 
-    public SubwaySectionJpa(Long id, Long upStationId, String upStationName, Long downStationId, String downStationName, BigDecimal distance) {
+    private SubwaySectionJpa(Long id, Long upStationId, String upStationName, Long downStationId, String downStationName, BigDecimal distance) {
         this.id = id;
         this.upStationId = upStationId;
         this.upStationName = upStationName;
         this.downStationId = downStationId;
         this.downStationName = downStationName;
         this.distance = distance;
+    }
+
+    public static SubwaySectionJpa register(Long upStationId, String upStationName, Long downStationId, String downStationName, BigDecimal distance) {
+        return new SubwaySectionJpa(upStationId, upStationName, downStationId, downStationName, distance);
+    }
+
+    public static SubwaySectionJpa of(Long id, Long upStationId, String upStationName, Long downStationId, String downStationName, BigDecimal distance) {
+        return new SubwaySectionJpa(id, upStationId, upStationName, downStationId, downStationName, distance);
     }
 
     public Long getId() {

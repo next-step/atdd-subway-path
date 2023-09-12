@@ -27,7 +27,7 @@ public class SubwaySectionCloseCommandValidator {
             errors.add(ValidationError.of("subwayLineId", " is null"));
         }
 
-        if (command.getSubwayLineId().getValue() == null) {
+        if (command.getSubwayLineId() != null && command.getSubwayLineId().isEmpty()) {
             errors.add(ValidationError.of("subwayLineId", " value is null"));
         }
 
@@ -44,7 +44,7 @@ public class SubwaySectionCloseCommandValidator {
             errors.add(ValidationError.of("section.stationId", " is null"));
         }
 
-        if (subwaySection.getStationId().getValue() == null) {
+        if (subwaySection.getStationId() != null && subwaySection.getStationId().isEmpty()) {
             errors.add(ValidationError.of("section.stationId"," value is null"));
         }
 
