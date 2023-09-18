@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.exception.BusinessException;
+import nextstep.subway.common.exception.ContainsAllStationException;
+import nextstep.subway.common.exception.NotExistStationException;
+import nextstep.subway.common.exception.OnlyOneSectionException;
 
 import javax.persistence.*;
 import java.util.*;
@@ -58,7 +60,7 @@ public class Sections {
 
     public void addSection(Section section) {
         if (new HashSet<>(this.getStations()).containsAll(List.of(section.getUpStation(), section.getDownStation()))) {
-            throw new BusinessException();
+            throw new ContainsAllStationException();
         }
 
         if (this.sections.isEmpty()) {
@@ -83,17 +85,17 @@ public class Sections {
                 .filter(sectionIter ->
                         sectionIter.getUpStation().equals(section.getUpStation()) || sectionIter.getDownStation().equals(section.getDownStation()
                         )).findFirst();
-        beforeSection.orElseThrow(BusinessException::new).splitSection(section);
+        beforeSection.orElseThrow(NotExistStationException::new).splitSection(section);
         sections.add(section);
     }
 
     public void removeSection(Station station) {
         if (sections.size() <= 1) {
-            throw new BusinessException();
+            throw new OnlyOneSectionException();
         }
 
         if (!this.getStations().contains(station)) {
-            throw new BusinessException();
+            throw new NotExistStationException();
         }
 
         if (startStation.equals(station)) {
@@ -114,14 +116,14 @@ public class Sections {
                         sections.remove(upSection);
                         return;
                     }
-                    Section downSection = this.getSectionEqualsUpStation(station);
+                    Section downSection = this.getSectionEqualsUpStation(station).orElseThrow(NotExistStationException::new);
                     upSection.unionDownSection(downSection);
                     sections.remove(downSection);
                 });
     }
 
-    private Section getSectionEqualsUpStation(Station station){
-        return sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst().orElseThrow(BusinessException::new);
+    private Optional<Section> getSectionEqualsUpStation(Station station) {
+        return sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst();
     }
 
 }

@@ -1,8 +1,7 @@
 package nextstep.subway.common.exception;
 
 public class BusinessException extends RuntimeException {
-
-    public BusinessException() {
-        super("Business Exception");
+    public BusinessException(String message) {
+        super(message);
     }
 }
