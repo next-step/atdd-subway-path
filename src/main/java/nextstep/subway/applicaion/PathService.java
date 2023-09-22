@@ -1,7 +1,7 @@
 package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.PathRequest;
-import nextstep.subway.domain.Path;
+import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.applicaion.dto.PathResponse;
@@ -20,10 +20,10 @@ public class PathService {
     }
 
     public PathResponse showPath(PathRequest request) {
-        Path path = new Path(sectionRepository.findAll());
+        PathFinder pathFinder = new PathFinder(sectionRepository.findAll());
         Station source = stationService.findById(request.getSource());
         Station target = stationService.findById(request.getTarget());
-        path.setSourceAndTarget(source, target);
-        return PathResponse.from(path);
+        pathFinder.setSourceAndTarget(source, target);
+        return PathResponse.from(pathFinder);
     }
 }

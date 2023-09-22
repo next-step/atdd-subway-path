@@ -7,7 +7,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 import java.util.List;
 import java.util.Optional;
 
-public class Path {
+public class PathFinder {
     private List<Section> sections;
 
     private Station source;
@@ -16,7 +16,7 @@ public class Path {
     private List<Station> pathStations;
     private Integer distance;
 
-    public Path(List<Section> sections) {
+    public PathFinder(List<Section> sections) {
         this.sections = sections;
     }
 
