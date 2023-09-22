@@ -3,7 +3,6 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -59,6 +58,8 @@ public class PathTest {
         path.setSourceAndTarget(교대역, 양재역);
 
         // then 최단경로의 역 목록이 반환된다.
-        assertThat(path.findPathStations()).containsExactly(교대역, 남부터미널역, 양재역);
+        assertThat(path.getPathStations()).containsExactly(교대역, 남부터미널역, 양재역);
+        // then 최단경로의 거리가 반환된다.
+        assertThat(path.getDistance()).isEqualTo(6);
     }
 }
