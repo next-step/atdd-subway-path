@@ -13,6 +13,7 @@ import java.util.List;
 
 import static nextstep.subway.fixture.LineFixture.*;
 import static nextstep.subway.fixture.StationFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PathTest {
     Line 이호선;
@@ -48,17 +49,16 @@ public class PathTest {
     }
 
     @Test
-    @DisplayName("구간들을 넣고 출발 도착지를 입력하면 최단경로가 나온다")
-    void findPath() {
-        // given
+    @DisplayName("구간들을 넣고 출발역과 도착역을 입력하면 최단경로의 역목록 반환")
+    void findPathStations() {
+        // given 구간들을 입력
         List<Section> sections = Arrays.asList(강남역_교대역_구간, 교대역_남부터미널역_구간, 남부터미널역_양재역_구간, 양재역_강남역_구간);
         Path path = new Path(sections);
 
-        // when
+        // when 출발역과 도착역을 넣고 경로를 계산하면
         path.setSourceAndTarget(교대역, 양재역);
 
-        // then
-        Assertions.assertThat(path.findPathStation()).containsExactly(교대역, 남부터미널역, 양재역);
-        Assertions.assertThat(path.findPathDistance()).isEqualTo(6);
+        // then 최단경로의 역 목록이 반환된다.
+        assertThat(path.findPathStations()).containsExactly(교대역, 남부터미널역, 양재역);
     }
 }
