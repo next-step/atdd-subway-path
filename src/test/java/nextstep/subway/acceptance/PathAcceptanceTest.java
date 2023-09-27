@@ -102,4 +102,17 @@ public class PathAcceptanceTest extends AcceptanceTest {
         // then
         상태코드_확인(response, HttpStatus.BAD_REQUEST);
     }
+
+    /**
+     * When 존재하지 않는 역을 경로 탐색한다.
+     * Then 경로 탐색에 실패한다
+     */
+    @DisplayName("존재하지 않는 역을 탐색하는 경우 경로조회에 실패")
+    @Test
+    void findPathNotExistsStation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_경로_탐색_요청(1000L, 1001L);
+        // then
+        상태코드_확인(response, HttpStatus.BAD_REQUEST);
+    }
 }
