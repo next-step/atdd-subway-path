@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class PathFinder {
+    private Lines lines;
     private List<Section> sections;
 
     private Station source;
@@ -16,8 +17,9 @@ public class PathFinder {
     private List<Station> pathStations;
     private Integer distance;
 
-    public PathFinder(List<Section> sections) {
-        this.sections = sections;
+    public PathFinder(List<Line> lines) {
+        this.lines = Lines.from(lines);
+        this.sections = this.lines.getSections();
     }
 
     public List<Station> getPathStations() {
@@ -28,7 +30,7 @@ public class PathFinder {
         return this.distance;
     }
 
-    public void setSourceAndTarget(Station source, Station target) {
+    public void calculatePath(Station source, Station target) {
         this.source = source;
         this.target = target;
         this.calculatePath();
@@ -62,8 +64,6 @@ public class PathFinder {
             Station station = pathStations.get(i);
             Optional<Section> sect = sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst();
             if (sect.isPresent()) {
-                System.out.println(sect.get().getUpStation().getName());
-                System.out.println(distance);
                 distance += sect.get().getDistance();
             }
         }
