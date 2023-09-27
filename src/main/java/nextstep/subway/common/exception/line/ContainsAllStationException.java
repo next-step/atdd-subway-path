@@ -1,4 +1,6 @@
-package nextstep.subway.common.exception;
+package nextstep.subway.common.exception.line;
+
+import nextstep.subway.common.exception.BusinessException;
 
 public class ContainsAllStationException extends BusinessException {
     public ContainsAllStationException() {

@@ -1,8 +1,8 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.common.exception.ContainsAllStationException;
-import nextstep.subway.common.exception.NotExistStationException;
-import nextstep.subway.common.exception.OnlyOneSectionException;
+import nextstep.subway.common.exception.line.ContainsAllStationException;
+import nextstep.subway.common.exception.station.NotExistStationException;
+import nextstep.subway.common.exception.line.OnlyOneSectionException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;

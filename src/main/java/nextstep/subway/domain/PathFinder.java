@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.exception.DisconnectedPathException;
-import nextstep.subway.common.exception.SameStationException;
+import nextstep.subway.common.exception.pathFinder.DisconnectedPathException;
+import nextstep.subway.common.exception.pathFinder.SameStationException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;

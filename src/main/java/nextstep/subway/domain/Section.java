@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.exception.SectionDistanceException;
+import nextstep.subway.common.exception.section.SectionDistanceException;
 
 import javax.persistence.*;
 

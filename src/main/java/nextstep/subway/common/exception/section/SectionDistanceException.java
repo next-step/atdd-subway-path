@@ -1,4 +1,6 @@
-package nextstep.subway.common.exception;
+package nextstep.subway.common.exception.section;
+
+import nextstep.subway.common.exception.BusinessException;
 
 public class SectionDistanceException extends BusinessException {
     public SectionDistanceException() {
