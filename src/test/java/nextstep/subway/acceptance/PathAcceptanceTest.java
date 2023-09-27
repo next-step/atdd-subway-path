@@ -70,5 +70,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(경로_탐색_최단거리_추출(response)).isEqualTo(4 + 2);
     }
 
+    @DisplayName("출발역과 도착역이 같을 경우 경로조회에 실패")
+    @Test
+    void findPathEqualStation() {
+        // when
+        ExtractableResponse<Response> response = 지하철_경로_탐색_요청(교대역_ID, 교대역_ID);
 
+        // then
+        상태코드_확인(response, HttpStatus.BAD_REQUEST);
+    }
 }
