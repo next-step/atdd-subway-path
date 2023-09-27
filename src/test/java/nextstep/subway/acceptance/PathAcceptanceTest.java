@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Line;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,12 +71,34 @@ public class PathAcceptanceTest extends AcceptanceTest {
         Assertions.assertThat(경로_탐색_최단거리_추출(response)).isEqualTo(4 + 2);
     }
 
+    /**
+     * When 출발역과 도착역을 같게 경로를 탐색하면
+     * Then 경로 탐색에 실패한다
+     */
     @DisplayName("출발역과 도착역이 같을 경우 경로조회에 실패")
     @Test
     void findPathEqualStation() {
         // when
         ExtractableResponse<Response> response = 지하철_경로_탐색_요청(교대역_ID, 교대역_ID);
+        // then
+        상태코드_확인(response, HttpStatus.BAD_REQUEST);
+    }
 
+    /**
+     * Given 연결되지 않은 역,노선,구간을 추가한다.
+     * When 출발역과 도착역에 연결되지 않은 역을 넣는다.
+     * Then 경로 탐색에 실패한다
+     */
+    @DisplayName("출발역과 도착역이 연결되어 있지 않는 경우 경로조회에 실패")
+    @Test
+    void findPathDisConnectedStation() {
+        // given 연결되지 않은 역,노선,구간을 추가한다.
+        Long 복정역_ID = 역_생성_ID_추출(지하철역_생성_요청("복정역"));
+        Long 수서역_ID = 역_생성_ID_추출(지하철역_생성_요청("수서역"));
+        Long 분당선_ID = 노선_생성_ID_추출(지하철_노선_생성_요청(분당선_이름, 분당선_색));
+        지하철_노선에_지하철_구간_생성_요청(복정역_ID, 수서역_ID, 분당선_ID, 3);
+        // when
+        ExtractableResponse<Response> response = 지하철_경로_탐색_요청(교대역_ID, 수서역_ID);
         // then
         상태코드_확인(response, HttpStatus.BAD_REQUEST);
     }

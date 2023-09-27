@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.common.exception.DisconnectedPathException;
 import nextstep.subway.common.exception.SameStationException;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -59,7 +60,12 @@ public class PathFinder {
 
         });
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        this.pathStations = dijkstraShortestPath.getPath(this.source, this.target).getVertexList();
+        try {
+            this.pathStations = dijkstraShortestPath.getPath(this.source, this.target).getVertexList();
+        } catch (IllegalArgumentException e) {
+            throw new DisconnectedPathException();
+        }
+
     }
 
     private void calculateDistance() {
