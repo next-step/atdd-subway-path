@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.exception.BusinessException;
+import nextstep.subway.common.exception.section.SectionDistanceException;
 
 import javax.persistence.*;
 
@@ -58,7 +58,7 @@ public class Section {
 
     public void splitSection(Section newSection) {
         if (this.distance <= newSection.getDistance()) {
-            throw new BusinessException();
+            throw new SectionDistanceException();
         }
 
         if (this.upStation.equals(newSection.upStation)) {

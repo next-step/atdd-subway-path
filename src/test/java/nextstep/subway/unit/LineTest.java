@@ -1,6 +1,9 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.common.exception.BusinessException;
+import nextstep.subway.common.exception.line.ContainsAllStationException;
+import nextstep.subway.common.exception.station.NotExistStationException;
+import nextstep.subway.common.exception.line.OnlyOneSectionException;
+import nextstep.subway.common.exception.section.SectionDistanceException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -107,7 +110,7 @@ class LineTest {
 
         //when then
         Section 역삼역_선릉역_구간 = new Section(분당선, 역삼역, 선릉역, 12);
-        assertThatThrownBy(() -> 분당선.addSection(역삼역_선릉역_구간)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> 분당선.addSection(역삼역_선릉역_구간)).isInstanceOf(SectionDistanceException.class);
     }
 
     @Test
@@ -119,7 +122,7 @@ class LineTest {
 
         //when then
         Section 선릉역_교대역_구간 = new Section(분당선, 선릉역, 교대역, 4);
-        assertThatThrownBy(() -> 분당선.addSection(선릉역_교대역_구간)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> 분당선.addSection(선릉역_교대역_구간)).isInstanceOf(NotExistStationException.class);
     }
 
     @Test
@@ -132,7 +135,7 @@ class LineTest {
         분당선.addSection(역삼역_선릉역_구간);
 
         //when then
-        assertThatThrownBy(() -> 분당선.addSection(강남역_역삼역_구간)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> 분당선.addSection(강남역_역삼역_구간)).isInstanceOf(ContainsAllStationException.class);
     }
 
     @Test
@@ -146,7 +149,7 @@ class LineTest {
 
         //when then
         Section 강남역_선릉역_구간 = new Section(분당선, 강남역, 선릉역, 9);
-        assertThatThrownBy(() -> 분당선.addSection(강남역_선릉역_구간)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> 분당선.addSection(강남역_선릉역_구간)).isInstanceOf(ContainsAllStationException.class);
     }
 
 
@@ -222,7 +225,7 @@ class LineTest {
         분당선.addSection(강남역_역삼역_구간);
 
         //when //then
-        assertThrows(BusinessException.class, () -> 분당선.removeSection(강남역));
+        assertThrows(OnlyOneSectionException.class, () -> 분당선.removeSection(강남역));
     }
 
     @Test
@@ -235,6 +238,6 @@ class LineTest {
         분당선.addSection(역삼역_선릉역_구간);
 
         //when //then
-        assertThrows(BusinessException.class, () -> 분당선.removeSection(삼성역));
+        assertThrows(NotExistStationException.class, () -> 분당선.removeSection(삼성역));
     }
 }

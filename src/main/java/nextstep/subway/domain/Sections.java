@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.exception.BusinessException;
+import nextstep.subway.common.exception.line.ContainsAllStationException;
+import nextstep.subway.common.exception.station.NotExistStationException;
+import nextstep.subway.common.exception.line.OnlyOneSectionException;
 
 import javax.persistence.*;
 import java.util.*;
@@ -57,71 +59,108 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        if (new HashSet<>(this.getStations()).containsAll(List.of(section.getUpStation(), section.getDownStation()))) {
-            throw new BusinessException();
+        if (hasAllStations(section)) throw new ContainsAllStationException();
+
+        if (addIfEmpty(section)) return;
+        if (addIfStartStation(section)) return;
+        if (addIfEndStation(section)) return;
+        addIfMiddleStation(section);
+    }
+
+
+    public void removeSection(Station station) {
+        if (sections.size() <= 1) {
+            throw new OnlyOneSectionException();
         }
 
+        if (!this.getStations().contains(station)) {
+            throw new NotExistStationException();
+        }
+
+        if (removeIfStartStation(station)) return;
+        if (removeIfEndStation(station)) return;
+
+        removeIfMiddleStation(station);
+    }
+
+    private boolean hasAllStations(Section section) {
+        return new HashSet<>(this.getStations()).containsAll(List.of(section.getUpStation(), section.getDownStation()));
+    }
+
+    private boolean addIfEmpty(Section section) {
         if (this.sections.isEmpty()) {
             this.startStation = section.getUpStation();
             this.endStation = section.getDownStation();
             sections.add(section);
-            return;
+            return true;
         }
+        return false;
+    }
 
-        if (this.endStation.equals(section.getUpStation())) {
-            this.endStation = section.getDownStation();
-            sections.add(section);
-            return;
-        }
+    private boolean addIfStartStation(Section section) {
         if (this.startStation.equals(section.getDownStation())) {
             this.startStation = section.getUpStation();
             sections.add(section);
-            return;
+            return true;
         }
+        return false;
+    }
 
-        Optional<Section> beforeSection = sections.stream()
-                .filter(sectionIter ->
-                        sectionIter.getUpStation().equals(section.getUpStation()) || sectionIter.getDownStation().equals(section.getDownStation()
-                        )).findFirst();
-        beforeSection.orElseThrow(BusinessException::new).splitSection(section);
+    private boolean addIfEndStation(Section section) {
+        if (this.endStation.equals(section.getUpStation())) {
+            this.endStation = section.getDownStation();
+            sections.add(section);
+            return true;
+        }
+        return false;
+    }
+
+    private void addIfMiddleStation(Section section) {
+        Section oldSection = getSectionByDownStation(section.getDownStation())
+                .or(() -> getSectionByUpStation(section.getUpStation()))
+                .orElseThrow(NotExistStationException::new);
+        oldSection.splitSection(section);
         sections.add(section);
     }
 
-    public void removeSection(Station station) {
-        if (sections.size() <= 1) {
-            throw new BusinessException();
-        }
-
-        if (!this.getStations().contains(station)) {
-            throw new BusinessException();
-        }
-
+    private boolean removeIfStartStation(Station station) {
         if (startStation.equals(station)) {
-            sections.stream().filter(section -> section.getUpStation().equals(station))
-                    .findFirst().ifPresent(section -> {
-                        startStation = section.getDownStation();
-                        sections.remove(section);
-                    });
-            return;
+            this.getSectionByUpStation(station).ifPresent(section -> {
+                startStation = section.getDownStation();
+                sections.remove(section);
+            });
+            return true;
         }
+        return false;
+    }
 
-        sections.stream()
+    private boolean removeIfEndStation(Station station) {
+        if (endStation.equals(station)) {
+            this.getSectionByDownStation(station).ifPresent(section -> {
+                endStation = section.getUpStation();
+                sections.remove(section);
+            });
+            return true;
+        }
+        return false;
+    }
+
+    private void removeIfMiddleStation(Station station) {
+        Section upSection = getSectionByDownStation(station).get();
+        Section downSection = getSectionByUpStation(station).get();
+        upSection.unionDownSection(downSection);
+        sections.remove(downSection);
+    }
+
+    private Optional<Section> getSectionByDownStation(Station station) {
+        return sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
-                .findFirst()
-                .ifPresent(upSection -> {
-                    if (endStation.equals(station)) {
-                        endStation = upSection.getUpStation();
-                        sections.remove(upSection);
-                        return;
-                    }
-                    Section downSection = this.getSectionEqualsUpStation(station);
-                    upSection.unionDownSection(downSection);
-                    sections.remove(downSection);
-                });
+                .findFirst();
     }
 
-    private Section getSectionEqualsUpStation(Station station){
-        return sections.stream().filter(section -> section.getUpStation().equals(station)).findFirst().orElseThrow(BusinessException::new);
+    private Optional<Section> getSectionByUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst();
     }
-
 }

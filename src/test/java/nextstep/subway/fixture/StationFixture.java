@@ -8,10 +8,14 @@ public class StationFixture {
     public static final String 역삼역_이름 = "역삼역";
     public static final String 선릉역_이름 = "선릉역";
     public static final String 삼성역_이름 = "삼성역";
+    public static final String 양재역_이름 = "양재역";
+    public static final String 남부터미널역_이름 = "남부터미널역";
 
     public static final Station 교대역 = new Station(교대역_이름);
     public static final Station 강남역 = new Station(강남역_이름);
     public static final Station 역삼역 = new Station(역삼역_이름);
     public static final Station 선릉역 = new Station(선릉역_이름);
     public static final Station 삼성역 = new Station(삼성역_이름);
+    public static final Station 양재역 = new Station(양재역_이름);
+    public static final Station 남부터미널역 = new Station(남부터미널역_이름);
 }
