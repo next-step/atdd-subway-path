@@ -49,6 +49,12 @@ class SectionsTest {
         sections.connect(선릉역_역삼역_구간);
     }
 
+    @Test
+    @DisplayName("마지막 section 의 distance 를 반환받을 수 있다.")
+    void getLastSectionDistanceTest() {
+        assertThat(sections.getLastSectionDistance()).isEqualTo(두번째구간_Distance);
+    }
+
     @Nested
     @DisplayName("Sections connect 테스트")
     class ConnectTest {
