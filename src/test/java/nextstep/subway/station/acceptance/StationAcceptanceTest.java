@@ -3,7 +3,7 @@ package nextstep.subway.station.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.core.AcceptanceTest;
-import nextstep.subway.common.StationApiHelper;
+import nextstep.subway.common.api.StationApiHelper;
 import nextstep.subway.station.service.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
