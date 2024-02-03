@@ -3,7 +3,6 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.application.dto.LineResponse;
-import nextstep.subway.application.dto.SectionResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,7 +76,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void 구간제거_마지막구간이_아닐때() {
         final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 1L, 2L);
 
-        구간이_등록되어_있다(lineId, 2L, 3L, 10);
+        구간을_등록한다(lineId, 2L, 3L, 10);
 
         final ExtractableResponse<Response> response = 구간을_제거한다(lineId, 1L);
 
@@ -110,7 +109,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void 구간제거_정상() {
         final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 1L, 2L);
 
-        구간이_등록되어_있다(lineId, 2L, 3L, 10);
+        구간을_등록한다(lineId, 2L, 3L, 10);
 
         final ExtractableResponse<Response> response = 구간을_제거한다(lineId, 3L);
 
@@ -122,17 +121,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 구간이_정상_등록한다(final ExtractableResponse<Response> response, final HttpStatus httpStatus) {
-        final SectionResponse sectionResponse = response.as(SectionResponse.class);
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
-        assertThat(sectionResponse.getDistance()).isEqualTo(10);
     }
 
     private void 예외가_발생한다(final ExtractableResponse<Response> response, HttpStatus httpStatus) {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
-    }
-
-    private Long 구간이_등록되어_있다(final Long lineId, final Long upStationId,
-                             final Long downStationId, final int distance) {
-        return 구간을_등록한다(lineId, upStationId, downStationId, distance).as(SectionResponse.class).getId();
     }
 }

@@ -68,11 +68,11 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(final Section section) {
-        registerValidate(section.getUpStation(), section.getDownStation());
-        changeDownStation(section.getDownStation());
+    public void addSection(final Station upStation, final Station downStation, final int distance) {
+        registerValidate(upStation, downStation);
+        changeDownStation(downStation);
 
-        this.sections.add(section);
+        this.sections.add(new Section(upStation, downStation, distance, this));
     }
 
     private void registerValidate(final Station upStation, final Station downStation) {
@@ -104,5 +104,9 @@ public class Line {
         if (this.sections.count() < 2) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제할 수 없는 지하철 역 입니다.");
         }
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
     }
 }

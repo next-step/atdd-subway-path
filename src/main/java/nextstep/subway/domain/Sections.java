@@ -1,15 +1,13 @@
 package nextstep.subway.domain;
 
 
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -44,5 +42,14 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException("역을 찾을 수 없습니다."));
 
         this.sections.remove(deleteSection);
+    }
+
+    public List<Station> getStations() {
+        final List<Station> list = this.sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+        list.add(this.sections.get(this.sections.size() -1).getDownStation());
+
+        return list;
     }
 }

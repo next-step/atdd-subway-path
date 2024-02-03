@@ -1,7 +1,6 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.dto.SectionRequest;
-import nextstep.subway.application.dto.SectionResponse;
 import nextstep.subway.application.SectionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +15,9 @@ public class SectionController {
     }
 
     @PostMapping("/lines/{lineId}/sections")
-    public ResponseEntity<SectionResponse> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        final SectionResponse sectionResponse = sectionService.saveSection(lineId, sectionRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(sectionResponse);
+    public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        sectionService.saveSection(lineId, sectionRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/lines/{lineId}/sections")

@@ -1,7 +1,6 @@
 package nextstep.subway.application;
 
 import nextstep.subway.application.dto.SectionRequest;
-import nextstep.subway.application.dto.SectionResponse;
 import nextstep.subway.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class SectionService {
     }
 
     @Transactional
-    public SectionResponse saveSection(final Long lineId, final SectionRequest sectionRequest) {
+    public void saveSection(final Long lineId, final SectionRequest sectionRequest) {
         final Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, EMPTY_LINE_MSG));
 
@@ -36,11 +35,7 @@ public class SectionService {
         final Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(() -> new IllegalArgumentException(EMPTY_DOWN_STATION_MSG));
 
-        final Section section = new Section(upStation, downStation, sectionRequest.getDistance(), line);
-        line.addSection(section);
-
-        final Section savedSection = sectionRepository.save(section);
-        return new SectionResponse(savedSection.getId(), savedSection.getDistance());
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
     }
 
     @Transactional
