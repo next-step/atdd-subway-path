@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.line.repository.domain;
 
 import org.junit.jupiter.api.Test;
 
