@@ -1,7 +1,5 @@
-package nextstep.subway.line;
+package nextstep.subway.domain;
 
-import nextstep.subway.section.Section;
-import nextstep.subway.station.Station;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 

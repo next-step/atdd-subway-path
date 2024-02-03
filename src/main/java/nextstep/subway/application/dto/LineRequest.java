@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.application.dto;
 
 public class LineRequest {
     private Long id;

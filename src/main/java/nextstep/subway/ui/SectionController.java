@@ -1,5 +1,8 @@
-package nextstep.subway.section;
+package nextstep.subway.ui;
 
+import nextstep.subway.application.dto.SectionRequest;
+import nextstep.subway.application.dto.SectionResponse;
+import nextstep.subway.application.SectionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

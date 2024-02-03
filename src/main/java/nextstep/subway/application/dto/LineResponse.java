@@ -1,8 +1,8 @@
-package nextstep.subway.line;
+package nextstep.subway.application.dto;
 
-import nextstep.subway.section.Section;
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationResponse;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;

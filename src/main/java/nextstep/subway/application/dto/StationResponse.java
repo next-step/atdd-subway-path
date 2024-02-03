@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.application.dto;
 
 public class StationResponse {
     private Long id;

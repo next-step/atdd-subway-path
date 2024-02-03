@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.application.dto;
 
 public class SectionResponse {
     private Long id;
