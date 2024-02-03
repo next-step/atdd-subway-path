@@ -3,6 +3,7 @@ package nextstep.subway.line.repository.domain;
 import nextstep.subway.common.fixture.SectionFactory;
 import nextstep.subway.common.fixture.StationFactory;
 import nextstep.subway.line.exception.SectionConnectException;
+import nextstep.subway.line.exception.SectionDisconnectException;
 import nextstep.subway.station.repository.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -76,6 +77,38 @@ class SectionsTest {
                     .isInstanceOf(SectionConnectException.class)
                     .hasMessageContaining("생성할 구간 상행역이 해당 노선의 하행 종점역이 아닙니다.");
         }
+    }
+
+    @Nested
+    @DisplayName("Sections disconnectLastSection 테스트")
+    class disconnectTest {
+
+        @Test
+        @DisplayName("마지막 역을 제거할 수 있다.")
+        void canDisconnectLastStation() {
+            sections.disconnectLastSection(역삼역);
+
+            assertThat(sections).containsExactly(강남역_선릉역_구간);
+        }
+
+        @Test
+        @DisplayName("Sections 의 길이가 1 이하일때는 SectionDisconnectException 이 던져진다.")
+        void disconnectLastSectionFailsWhenLengthIsLoeToOne() {
+            sections.disconnectLastSection(역삼역);
+
+            assertThatThrownBy(() -> sections.disconnectLastSection(선릉역))
+                    .isInstanceOf(SectionDisconnectException.class)
+                    .hasMessageContaining("더이상 구간을 제거할 수 없습니다.");
+        }
+
+        @Test
+        @DisplayName("마지막 구간이 아닌 Station 을 disconnectLastSection 시 SectionDisconnectException 이 던져진다.")
+        void disconnectingStationIsNotDownStationOfLastSection() {
+            assertThatThrownBy(() -> sections.disconnectLastSection(선릉역))
+                    .isInstanceOf(SectionDisconnectException.class)
+                    .hasMessageContaining("마지막 구간만 제거할 수 있습니다.");
+        }
+
     }
 
 }
