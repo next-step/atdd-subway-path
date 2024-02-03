@@ -31,10 +31,6 @@ public class Sections implements Iterable<Section> {
         return sections.iterator();
     }
 
-    public Stream<Section> stream() {
-        return sections.stream();
-    }
-
     public List<Station> getStations() {
         return sections.stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
