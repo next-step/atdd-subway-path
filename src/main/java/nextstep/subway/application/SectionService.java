@@ -13,14 +13,10 @@ public class SectionService {
     public static final String EMPTY_LINE_MSG = "존재하지 않는 노선 입니다.";
     public static final String EMPTY_UP_STATION_MSG = "존재 하지 않는 상행종점역 입니다.";
     public static final String EMPTY_DOWN_STATION_MSG = "존재 하지 않는 하행종점역 입니다.";
-
-    private final SectionRepository sectionRepository;
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
-    public SectionService(final SectionRepository sectionRepository, final LineRepository lineRepository,
-                          final StationRepository stationRepository) {
-        this.sectionRepository = sectionRepository;
+    public SectionService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }

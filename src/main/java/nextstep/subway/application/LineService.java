@@ -20,12 +20,10 @@ public class LineService {
     public static final String EMPTY_DOWN_STATION_MSG = "존재 하지 않는 하행종점역 입니다.";
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public LineService(final LineRepository lineRepository, final StationRepository stationRepository, final SectionRepository sectionRepository) {
+    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
