@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class LineTest {
@@ -56,7 +55,6 @@ class LineTest {
     void addSectionTest() {
         line.addSection(선릉역_역삼역_구간);
 
-        assertThat(line.getStations()).containsExactly(강남역, 선릉역, 역삼역);
         assertSoftly(softly -> {
             softly.assertThat(line.getDistance()).isEqualTo(강남역_선릉역_구간.getDistance() + 선릉역_역삼역_구간.getDistance());
             softly.assertThat(line.getStations()).containsExactly(강남역, 선릉역, 역삼역);
