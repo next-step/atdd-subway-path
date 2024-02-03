@@ -135,7 +135,7 @@ public class LineServiceMockTest {
 
         @Test
         @DisplayName("section 을 제거 시 line 이 존재하지 않으면 LineNotExistException 이 던져진다.")
-        void addSectionFailWhenLineNotExistTest() {
+        void removeSectionFailWhenLineNotExistTest() {
             // given
             given(lineRepository.findByIdWithSections(LINE_ID)).willReturn(Optional.empty());
 
