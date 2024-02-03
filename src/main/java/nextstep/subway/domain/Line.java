@@ -24,6 +24,12 @@ public class Line {
         this.color = color;
     }
 
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
     public void addSection(Section section) {
         sections.add(section);
     }
@@ -61,6 +67,6 @@ public class Line {
     }
 
     public List<Section> sections() {
-        return Collections.unmodifiableList(sections);
+        return sections;
     }
 }
