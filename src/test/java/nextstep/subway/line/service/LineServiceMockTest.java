@@ -52,7 +52,7 @@ public class LineServiceMockTest {
     @Mock
     private StationProvider stationProvider;
 
-    LineService lineService;
+    private LineService lineService;
 
     @BeforeEach
     void setUp() {
@@ -70,6 +70,7 @@ public class LineServiceMockTest {
     @DisplayName("addSection 테스트")
     class AddSection {
         SectionCreateRequest sectionCreateRequest;
+
         @BeforeEach
         void setUp() {
             sectionCreateRequest = new SectionCreateRequest(선릉역_ID, 역삼역_ID, 첫번째구간_길이);
@@ -102,6 +103,44 @@ public class LineServiceMockTest {
 
             // when then
             assertThatThrownBy(() -> lineService.addSection(LINE_ID, sectionCreateRequest))
+                    .isInstanceOf(LineNotExistException.class);
+
+        }
+    }
+
+    @Nested
+    @DisplayName("removeSection 테스트")
+    class RemoveSection {
+        @BeforeEach
+        void setUp() {
+            line.addSection(선릉역_역삼역_구간);
+            given(stationProvider.findById(역삼역_ID)).willReturn(역삼역);
+        }
+
+        @Test
+        @DisplayName("section 을 제거 할 수 있다.")
+        void removeSection() {
+            // given
+            given(lineRepository.findByIdWithSections(LINE_ID)).willReturn(Optional.of(line));
+
+            // when
+            lineService.removeSection(LINE_ID, 역삼역_ID);
+
+            // then
+            assertSoftly(softly -> {
+                softly.assertThat(line.getDistance()).isEqualTo(강남역_선릉역_구간.getDistance());
+                softly.assertThat(line.getStations()).containsExactly(강남역, 선릉역);
+            });
+        }
+
+        @Test
+        @DisplayName("section 을 제거 시 line 이 존재하지 않으면 LineNotExistException 이 던져진다.")
+        void addSectionFailWhenLineNotExistTest() {
+            // given
+            given(lineRepository.findByIdWithSections(LINE_ID)).willReturn(Optional.empty());
+
+            // when then
+            assertThatThrownBy(() -> lineService.removeSection(LINE_ID, 역삼역_ID))
                     .isInstanceOf(LineNotExistException.class);
 
         }
