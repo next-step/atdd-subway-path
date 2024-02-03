@@ -54,11 +54,9 @@ public class Sections implements Iterable<Section> {
         sections.add(0, newSection);
     }
 
-    public void addSection(Section newSection) {
-        /*
-        * newSection의 upstation, downstation 둘 다 노선에 등록되어있는 거면 안 됨
-        * */
-        // 새 구간의 상행역과 하행역이 노선에 이미 존재하는지 검사
+    public void addSection(Section newSection, int lineDistance) {
+
+        // newSection의 upstation, downstation 둘 다 노선에 등록되어있는 거면 안 됨
         boolean upstationExists = sections.stream().anyMatch(section ->
                 section.getUpstation().getId().equals(newSection.getUpstation().getId()) ||
                         section.getDownstation().getId().equals(newSection.getUpstation().getId()));
@@ -79,6 +77,7 @@ public class Sections implements Iterable<Section> {
                 Section currentSection = sections.get(i);
                 if (currentSection.getUpstation().getId().equals(newSection.getUpstation().getId())) {
                     currentSection.setUpstation(newSection.getDownstation());
+                    currentSection.setDistance(lineDistance - newSection.getDistance());
                     sections.add(i, newSection);
                     return;
                 }
@@ -88,6 +87,7 @@ public class Sections implements Iterable<Section> {
                 Section currentSection = sections.get(i);
                 if (currentSection.getDownstation().getId().equals(newSection.getDownstation().getId())) {
                     currentSection.setDownstation(newSection.getUpstation());
+                    currentSection.setDistance(lineDistance - newSection.getDistance());
                     sections.add(i + 1, newSection);
                     return;
                 }

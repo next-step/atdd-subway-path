@@ -54,19 +54,15 @@ public class Line {
          * 이 둘 중 아무것도 아니면
          * addSection() 호출
          * */
-
         if (section.getDownstation().getId() == sections.getFirstUpstation().getId()) {
-            log.info("sections.addFirstSection()");
             sections.addFirstSection(section);
+            distance += section.getDistance();
         } else if(section.getUpstation().getId() == sections.getLastDownstation().getId()) {
-            log.info("sections.addLastSection()");
             sections.addLastSection(section);
+            distance += section.getDistance();
         } else {
-            log.info("sections.addSection()");
-            sections.addSection(section);
+            sections.addSection(section, distance);
         }
-
-        distance += section.getDistance();
     }
 
     public void popSection(Station station) {

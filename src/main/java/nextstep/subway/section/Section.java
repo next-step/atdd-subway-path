@@ -27,6 +27,7 @@ public class Section {
     @Setter
     private Station downstation;
 
+    @Setter
     private int distance;
 
     public static Section initSection(Line line, Station upstation, Station downstation) {

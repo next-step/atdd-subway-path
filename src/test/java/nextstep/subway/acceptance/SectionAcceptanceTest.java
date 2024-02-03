@@ -29,8 +29,10 @@ public class SectionAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-
-
+        /*
+        * databaseCleanup.execute()를 해도 DB 클린이 안 되는 것 같습니다...
+        * DirtiesContext를 쓰면 정상적으로 실행됩니다 왜 이러는 걸까요
+        * */
         StationFactory.createStation("banghwa");
         StationFactory.createStation("gangdong");
         StationFactory.createStation("macheon");
@@ -98,31 +100,12 @@ public class SectionAcceptanceTest {
         // then
         List<String> stationNames = response.jsonPath().getList("[0].stations.name", String.class);
         assertThat(stationNames).containsExactly("banghwa", "macheon", "gangdong");
+
+
     }
 
     /**
-     * Given 지하철노선에 등록되어 있는 하행종점역을 상행역으로 하지 않는 구간을 노선에 추가하려고 한다
-     * When 이러한 구간을 노선에 추가하려고 하면
-     * Then 이 요청은 실패해야 한다
-     */
-//    @DisplayName("하행종점역을 상행역으로 하지 않는 구간 추가 실패")
-//    @Test
-//    void addSectionFailWhenUpstationNotDownstationofLine() {
-//        // given
-//        Long wrongUpstationId = 3L;
-//        Long downstationId = 2L;
-//
-//        // when
-//        ExtractableResponse<Response> response = SectionFactory.createSection(1L, wrongUpstationId, downstationId);
-//
-//        // then
-//        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//        assertThat(response.body().asString()).contains("해당 노선의 하행 종점역과 새로운 구간의 상행역이 일치해야 합니다.");
-//
-//    }
-
-    /**
-     * Given 해당 노선에 등록되어있는 역을 새 구간의 하행역으로 해서 추가하려고 한다
+     * Given 새 구간의 상행역, 하행역 모두 노선에 등록되어있는 역으로 설정하고
      * When 이러한 구간을 노선에 추가하려고 하면
      * Then 이 요청은 실패해야 한다
      */
@@ -149,6 +132,12 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철노선 구간 삭제 성공")
     @Test
     void sectionDeleteSuccess() {
+        /*
+        * 이 테스트 메소드에서는 1L, 2L 등 값을 하드코딩하고 있는데
+        * 알아듣기 쉬운 이름을 가진 변수에 할당해서 그 변수를 사용하는 게 나은가요,
+        * 숫자로 하드코딩하는 게 나은가요?
+        * */
+
         // given
         SectionFactory.createSection(1L, 2L, 3L);
 
