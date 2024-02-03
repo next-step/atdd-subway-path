@@ -57,9 +57,11 @@ public class Line {
         this.color = color;
     }
 
-    public void register(final Station upStation, final Station downStation) {
+    public void addSection(final Station upStation, final Station downStation, final Section section) {
         registerValidate(upStation, downStation);
         changeDownStation(downStation);
+
+        this.sections.add(section);
     }
 
     private void registerValidate(final Station upStation, final Station downStation) {
