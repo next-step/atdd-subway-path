@@ -22,13 +22,13 @@ class SectionsTest {
     private static final long 선릉역_ID = 2L;
     private static final long 역삼역_ID = 3L;
     private static final long 교대역_ID = 4L;
+    private static final int 첫번째구간_길이 = 10;
+    private static final int 두번째구간_길이 = 20;
+    private static final int 세번째구간_길이 = 5;
     private Station 강남역;
     private Station 선릉역;
     private Station 역삼역;
     private Station 교대역;
-    private int 첫번째구간_Distance;
-    private int 두번째구간_Distance;
-    private int 세번째구간_Distance;
     private Section 강남역_선릉역_구간;
     private Section 선릉역_역삼역_구간;
     private Sections sections;
@@ -39,11 +39,8 @@ class SectionsTest {
         선릉역 = StationFactory.createStation(선릉역_ID, "선릉역");
         역삼역 = StationFactory.createStation(역삼역_ID, "선릉역");
         교대역 = StationFactory.createStation(교대역_ID, "교대역");
-        첫번째구간_Distance = 10;
-        두번째구간_Distance = 20;
-        세번째구간_Distance = 5;
-        강남역_선릉역_구간 = SectionFactory.createSection(첫번째구간_ID, 강남역, 선릉역, 첫번째구간_Distance);
-        선릉역_역삼역_구간 = SectionFactory.createSection(두번째구간_ID, 선릉역, 역삼역, 두번째구간_Distance);
+        강남역_선릉역_구간 = SectionFactory.createSection(첫번째구간_ID, 강남역, 선릉역, 첫번째구간_길이);
+        선릉역_역삼역_구간 = SectionFactory.createSection(두번째구간_ID, 선릉역, 역삼역, 두번째구간_길이);
         sections = new Sections();
         sections.connect(강남역_선릉역_구간);
         sections.connect(선릉역_역삼역_구간);
@@ -52,7 +49,7 @@ class SectionsTest {
     @Test
     @DisplayName("마지막 section 의 distance 를 반환받을 수 있다.")
     void getLastSectionDistanceTest() {
-        assertThat(sections.getLastSectionDistance()).isEqualTo(두번째구간_Distance);
+        assertThat(sections.getLastSectionDistance()).isEqualTo(두번째구간_길이);
     }
 
     @Test
@@ -73,7 +70,7 @@ class SectionsTest {
         @Test
         @DisplayName("추가할 Section 의 하행역이 이미 등록되어있으면 SectionConnectException 이 던져진다.")
         void connectFailsWhenSectionsAlreadyHasDownStation() {
-            final Section 역삼역_강남역_구간 = SectionFactory.createSection(세번째구간_ID, 역삼역, 강남역, 세번째구간_Distance);
+            final Section 역삼역_강남역_구간 = SectionFactory.createSection(세번째구간_ID, 역삼역, 강남역, 세번째구간_길이);
 
             assertThatThrownBy(() -> sections.connect(역삼역_강남역_구간))
                     .isInstanceOf(SectionConnectException.class)
@@ -83,7 +80,7 @@ class SectionsTest {
         @Test
         @DisplayName("추가할 Section 의 상행역이 현재 Sections 의 마지막 구간의 하행역과 같지 않다면 SectionConnectException 이 던져진다.")
         void connectFailsWhenSectionsNotConnectable() {
-            final Section 선릉역_교대역_구간 = SectionFactory.createSection(세번째구간_ID, 선릉역, 교대역, 세번째구간_Distance);
+            final Section 선릉역_교대역_구간 = SectionFactory.createSection(세번째구간_ID, 선릉역, 교대역, 세번째구간_길이);
 
             assertThatThrownBy(() -> sections.connect(선릉역_교대역_구간))
                     .isInstanceOf(SectionConnectException.class)
