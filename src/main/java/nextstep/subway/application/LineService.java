@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.application.dto.LineRequest;
 import nextstep.subway.application.dto.LineResponse;
+import nextstep.subway.application.dto.SectionRequest;
 import nextstep.subway.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,22 +17,18 @@ import java.util.stream.Collectors;
 public class LineService {
 
     public static final String EMPTY_LINE_MSG = "존재하지 않는 노선 입니다.";
-    public static final String EMPTY_UP_STATION_MSG = "존재 하지 않는 상행종점역 입니다.";
-    public static final String EMPTY_DOWN_STATION_MSG = "존재 하지 않는 하행종점역 입니다.";
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
+    public LineService(final LineRepository lineRepository, final StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
-        final Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(() -> new IllegalArgumentException(EMPTY_UP_STATION_MSG));
-        final Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(() -> new IllegalArgumentException(EMPTY_DOWN_STATION_MSG));
+        final Station upStation = stationService.findStation(lineRequest.getUpStationId());
+        final Station downStation = stationService.findStation(lineRequest.getDownStationId());
 
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
         final Line savedLine = lineRepository.save(line);
@@ -67,5 +64,24 @@ public class LineService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, EMPTY_LINE_MSG));
 
         lineRepository.delete(line);
+    }
+
+    @Transactional
+    public void saveSection(final Long lineId, final SectionRequest sectionRequest) {
+        final Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, EMPTY_LINE_MSG));
+
+        final Station upStation = stationService.findStation(sectionRequest.getUpStationId());
+        final Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+
+        line.addSection(upStation, downStation, sectionRequest.getDistance());
+    }
+
+    @Transactional
+    public void deleteSection(final Long stationId, final Long lineId) {
+        final Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, EMPTY_LINE_MSG));
+
+        line.removeSection(stationId);
     }
 }

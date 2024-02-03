@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
+    public static final String EMPTY_STATION_MSG = "존재 하지 않는 지하철역 입니다.";
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
@@ -29,6 +30,10 @@ public class StationService {
         return stationRepository.findAll().stream()
                 .map(this::createStationResponse)
                 .collect(Collectors.toList());
+    }
+    public Station findStation(final Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException(EMPTY_STATION_MSG));
     }
 
     @Transactional
