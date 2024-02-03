@@ -41,20 +41,20 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        return lineRepository.findAllWithLines().stream()
+        return lineRepository.findAllWithSections().stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(final Long id) {
-        final Line line = findLine(id);
+        final Line line = findByIdWithSections(id);
         return LineResponse.from(line);
     }
 
     @Transactional
     public void updateLine(final Long id, final LineUpdateRequest updateRequest) {
         updateRequest.validate();
-        final Line line = findLine(id);
+        final Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotExistException(id));
         line.changeName(updateRequest.getName());
         line.changeColor(updateRequest.getColor());
     }
@@ -69,7 +69,7 @@ public class LineService {
         createRequest.validate();
         final Section savedSection = sectionRepository.save(createSection(createRequest));
 
-        final Line line = findLine(lineId);
+        final Line line = findByIdWithSections(lineId);
         line.addSection(savedSection);
 
         return SectionResponse.from(savedSection);
@@ -78,7 +78,7 @@ public class LineService {
     @Transactional
     public void removeSection(final Long lineId, final Long stationId) {
         final Station station = stationProvider.findById(stationId);
-        final Line line = findLine(lineId);
+        final Line line = findByIdWithSections(lineId);
         line.removeSectionByStation(station);
     }
 
@@ -88,8 +88,8 @@ public class LineService {
         return new Section(upStation, downStation, sectionCreateRequest.getDistance());
     }
 
-    private Line findLine(final Long id) {
-        return lineRepository.findByIdWithSection(id).orElseThrow(() -> new LineNotExistException(id));
+    private Line findByIdWithSections(final Long id) {
+        return lineRepository.findByIdWithSections(id).orElseThrow(() -> new LineNotExistException(id));
     }
 
 }
