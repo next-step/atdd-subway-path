@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -23,7 +24,19 @@ public class Line {
         this.color = color;
     }
 
-    public Long getId() {
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public int sectionsSize() {
+        return sections.size();
+    }
+
+    public void removeSection(Section section) {
+        sections.remove(section);
+    }
+
+    public Long id() {
         return id;
     }
 
@@ -31,7 +44,7 @@ public class Line {
         this.id = id;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
@@ -39,7 +52,7 @@ public class Line {
         this.name = name;
     }
 
-    public String getColor() {
+    public String color() {
         return color;
     }
 
@@ -47,7 +60,7 @@ public class Line {
         this.color = color;
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Section> sections() {
+        return Collections.unmodifiableList(sections);
     }
 }

@@ -32,7 +32,7 @@ public class LineService {
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() != 0) {
             Station upStation = stationService.findById(request.getUpStationId());
             Station downStation = stationService.findById(request.getDownStationId());
-            line.getSections().add(new Section(line, upStation, downStation, request.getDistance()));
+            line.sections().add(new Section(line, upStation, downStation, request.getDistance()));
         }
         return createLineResponse(line);
     }
@@ -70,28 +70,28 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
-        line.getSections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        line.sections().add(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 
     private LineResponse createLineResponse(Line line) {
         return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
+                line.id(),
+                line.name(),
+                line.color(),
                 createStationResponses(line)
         );
     }
 
     private List<StationResponse> createStationResponses(Line line) {
-        if (line.getSections().isEmpty()) {
+        if (line.sections().isEmpty()) {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
+        List<Station> stations = line.sections().stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
 
-        stations.add(0, line.getSections().get(0).getUpStation());
+        stations.add(0, line.sections().get(0).getUpStation());
 
         return stations.stream()
                 .map(it -> stationService.createStationResponse(it))
@@ -103,10 +103,10 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station station = stationService.findById(stationId);
 
-        if (!line.getSections().get(line.getSections().size() - 1).getDownStation().equals(station)) {
+        if (!line.sections().get(line.sections().size() - 1).getDownStation().equals(station)) {
             throw new IllegalArgumentException();
         }
 
-        line.getSections().remove(line.getSections().size() - 1);
+        line.sections().remove(line.sections().size() - 1);
     }
 }
