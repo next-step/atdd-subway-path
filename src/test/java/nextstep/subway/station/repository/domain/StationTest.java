@@ -10,7 +10,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class StationTest {
     private static final long 강남역_ID = 1L;
-    Station 강남역;
+    private Station 강남역;
 
     @BeforeEach
     void setUp() {
