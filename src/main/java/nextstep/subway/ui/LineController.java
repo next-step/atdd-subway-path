@@ -32,7 +32,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLine(id));
+        return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
     @PutMapping("/lines")
@@ -48,7 +48,7 @@ public class LineController {
     }
     @PostMapping("/lines/{lineId}/sections")
     public ResponseEntity<Void> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.saveSection(lineId, sectionRequest);
+        lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

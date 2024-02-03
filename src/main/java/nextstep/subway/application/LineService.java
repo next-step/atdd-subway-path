@@ -27,8 +27,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
-        final Station upStation = stationService.findStation(lineRequest.getUpStationId());
-        final Station downStation = stationService.findStation(lineRequest.getDownStationId());
+        final Station upStation = stationService.findStationById(lineRequest.getUpStationId());
+        final Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
         final Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
         final Line savedLine = lineRepository.save(line);
@@ -42,7 +42,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(final Long id) {
+    public LineResponse findLineById(final Long id) {
         final Line line = lineRepository.findByIdFetchJoin(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, EMPTY_LINE_MSG));
 
@@ -67,12 +67,12 @@ public class LineService {
     }
 
     @Transactional
-    public void saveSection(final Long lineId, final SectionRequest sectionRequest) {
+    public void addSection(final Long lineId, final SectionRequest sectionRequest) {
         final Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, EMPTY_LINE_MSG));
 
-        final Station upStation = stationService.findStation(sectionRequest.getUpStationId());
-        final Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+        final Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        final Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
 
         line.addSection(upStation, downStation, sectionRequest.getDistance());
     }

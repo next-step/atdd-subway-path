@@ -31,7 +31,7 @@ public class StationService {
                 .map(this::createStationResponse)
                 .collect(Collectors.toList());
     }
-    public Station findStation(final Long stationId) {
+    public Station findStationById(final Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException(EMPTY_STATION_MSG));
     }
