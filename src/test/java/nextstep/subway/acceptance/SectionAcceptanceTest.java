@@ -8,16 +8,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 
 import static nextstep.subway.acceptance.SectionSteps.구간을_등록한다;
 import static nextstep.subway.acceptance.SectionSteps.구간을_제거한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql("classpath:db/teardown.sql")
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class SectionAcceptanceTest {
+public class SectionAcceptanceTest extends AcceptanceTest {
 
     public static Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId) {
         return LineSteps.노선이_생성되어_있다(name, color, upStationId, downStationId).as(LineResponse.class).getId();
