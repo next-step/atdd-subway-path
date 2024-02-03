@@ -37,7 +37,7 @@ public class SectionService {
                 .orElseThrow(() -> new IllegalArgumentException(EMPTY_DOWN_STATION_MSG));
 
         final Section section = new Section(upStation, downStation, sectionRequest.getDistance(), line);
-        line.addSection(upStation, downStation, section);
+        line.addSection(section);
 
         final Section savedSection = sectionRepository.save(section);
         return new SectionResponse(savedSection.getId(), savedSection.getDistance());

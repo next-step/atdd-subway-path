@@ -20,10 +20,21 @@ public class Line {
     private Long upStationId;
     private Long downStationId;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStation.getId();
+        this.downStationId = downStation.getId();
+
+        Section section = new Section(upStation, downStation, distance, this);
+        this.sections.add(section);
+    }
+
+    public Line(Long id ,String name, String color, Station upStation, Station downStation, int distance) {
+        this.id = id;
         this.name = name;
         this.color = color;
         this.upStationId = upStation.getId();
@@ -57,9 +68,9 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(final Station upStation, final Station downStation, final Section section) {
-        registerValidate(upStation, downStation);
-        changeDownStation(downStation);
+    public void addSection(final Section section) {
+        registerValidate(section.getUpStation(), section.getDownStation());
+        changeDownStation(section.getDownStation());
 
         this.sections.add(section);
     }
