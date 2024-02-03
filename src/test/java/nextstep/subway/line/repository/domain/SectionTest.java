@@ -12,9 +12,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class SectionTest {
     private static final long SECTION_ID = 1L;
-    private static final long 강남역_ID = 1L;
-    private static final long 선릉역_ID = 2L;
-    private static final long 역삼역_ID = 3L;
     private Station 강남역;
     private Station 선릉역;
     private int sectionDistance;
@@ -22,8 +19,8 @@ class SectionTest {
 
     @BeforeEach
     void setUp() {
-        강남역 = StationFactory.createStation(강남역_ID, "강남역");
-        선릉역 = StationFactory.createStation(선릉역_ID, "선릉역");
+        강남역 = StationFactory.createStation(1L, "강남역");
+        선릉역 = StationFactory.createStation(2L, "선릉역");
         sectionDistance = 10;
         section = SectionFactory.createSection(SECTION_ID, 강남역, 선릉역, sectionDistance);
     }
@@ -50,7 +47,7 @@ class SectionTest {
     @Test
     @DisplayName("Section 의 contains 메서드를 통해 해당 station 을 포함하고 있는지 알 수 있다.")
     void sectionContainsTest() {
-        final Station 역삼역 = StationFactory.createStation(역삼역_ID, "역삼역");
+        final Station 역삼역 = StationFactory.createStation(3L, "역삼역");
 
         assertSoftly(softly -> {
             softly.assertThat(section.contains(강남역)).isTrue();
