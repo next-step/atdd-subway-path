@@ -32,6 +32,9 @@ public class Line {
 
     public void addSection(Section section) {
         sections.add(section);
+        if(section.getLine() != this){
+            section.setLine(this);
+        }
     }
 
     public int sectionsSize() {

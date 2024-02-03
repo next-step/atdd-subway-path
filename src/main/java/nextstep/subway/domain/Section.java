@@ -60,4 +60,14 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void setLine(Line line) {
+        if(this.line != null){
+            this.line.sections().remove(this);
+        }
+        this.line = line;
+        if(!line.sections().contains(this)){
+            line.sections().add(this);
+        }
+    }
 }
