@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.line;
 
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.station.StationService;
