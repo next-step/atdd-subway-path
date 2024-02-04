@@ -25,14 +25,22 @@ public class LineServiceTest {
 
     @Autowired
     private LineService lineService;
+    private Station 강남역;
+    private Station 선릉역;
+    private Station 삼성역;
+    private Line 강남_선릉_노선;
 
+    @BeforeEach
+    void init() {
+        강남역 = new Station(1L, "강남역");
+        선릉역 = new Station(2L, "선릉역");
+        삼성역 = new Station(3L, "삼성역");
+        강남_선릉_노선 = new Line(1L, "노선", "red", 강남역, 선릉역, 10);
+    }
     @Test
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        final Station 강남역 = new Station(1L, "강남역");
-        final Station 선릉역 = new Station(2L, "선릉역");
-        final Station 삼성역 = new Station(3L, "삼성역");
         stationRepository.save(강남역);
         stationRepository.save(선릉역);
         stationRepository.save(삼성역);
