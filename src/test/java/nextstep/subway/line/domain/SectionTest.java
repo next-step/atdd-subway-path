@@ -15,24 +15,24 @@ class SectionTest {
     private Station 강남역;
     private Station 선릉역;
     private int sectionDistance;
-    private Section section;
+    private Section 강남역_선릉역_구간;
 
     @BeforeEach
     void setUp() {
         강남역 = StationFactory.createStation(1L, "강남역");
         선릉역 = StationFactory.createStation(2L, "선릉역");
         sectionDistance = 10;
-        section = SectionFactory.createSection(SECTION_ID, 강남역, 선릉역, sectionDistance);
+        강남역_선릉역_구간 = SectionFactory.createSection(SECTION_ID, 강남역, 선릉역, sectionDistance);
     }
 
     @Test
     @DisplayName("Section 을 생성할 수 있다.")
     void sectionTest() {
         assertSoftly(softly -> {
-            softly.assertThat(section.getId()).isEqualTo(SECTION_ID);
-            softly.assertThat(section.getUpStation()).isEqualTo(강남역);
-            softly.assertThat(section.getDownStation()).isEqualTo(선릉역);
-            softly.assertThat(section.getDistance()).isEqualTo(sectionDistance);
+            softly.assertThat(강남역_선릉역_구간.getId()).isEqualTo(SECTION_ID);
+            softly.assertThat(강남역_선릉역_구간.getUpStation()).isEqualTo(강남역);
+            softly.assertThat(강남역_선릉역_구간.getDownStation()).isEqualTo(선릉역);
+            softly.assertThat(강남역_선릉역_구간.getDistance()).isEqualTo(sectionDistance);
         });
     }
 
@@ -41,7 +41,7 @@ class SectionTest {
     void sectionEqualsTest() {
         final Section newSection = SectionFactory.createSection(SECTION_ID, 강남역, 선릉역, sectionDistance);
 
-        assertThat(section).isEqualTo(newSection);
+        assertThat(강남역_선릉역_구간).isEqualTo(newSection);
     }
 
     @Test
@@ -50,9 +50,9 @@ class SectionTest {
         final Station 역삼역 = StationFactory.createStation(3L, "역삼역");
 
         assertSoftly(softly -> {
-            softly.assertThat(section.contains(강남역)).isTrue();
-            softly.assertThat(section.contains(선릉역)).isTrue();
-            softly.assertThat(section.contains(역삼역)).isFalse();
+            softly.assertThat(강남역_선릉역_구간.contains(강남역)).isTrue();
+            softly.assertThat(강남역_선릉역_구간.contains(선릉역)).isTrue();
+            softly.assertThat(강남역_선릉역_구간.contains(역삼역)).isFalse();
         });
     }
 }
