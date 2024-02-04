@@ -36,7 +36,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 구간을 등록 할 때, 구간의 상행역이 노선의 하행좀정역이 아니면 오류가 발생한다.")
     @Test
     public void 새로운_구간의_상행역이_노선의_하행종점역이_아닐_떄() {
-        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 선릉역Id, 역삼역Id, 10);
 
@@ -51,7 +51,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 구간을 등록 할 때, 노선에 이미 등록되어 있는 역을 등록하면 오류가 발생한다.")
     @Test
     public void 이미_등록되어_있는_지하철역_일_때() {
-        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 역삼역Id, 강남역Id, 10);
 
@@ -63,15 +63,30 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * 노선의 끝에 구간을 등록한다.
      * Then 정상 응답 처리된다.
      */
-    @DisplayName("노선에 끝에 구간을 등록한다.")
+    @DisplayName("노선의 끝에 구간을 등록한다.")
     @Test
-    public void 구간등록_정상처리() {
-        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+    public void 구간의_끝_등록_정상처리() {
+        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 역삼역Id, 선릉역Id, 10);
 
         구간이_정상_등록한다(response, HttpStatus.CREATED);
     }
+
+    /**
+     * Given 노선이 생성되어 있다.
+     * When 노선의 중간에 구간을 등록한다.
+     * Then 정상 응답 처리 된다.
+     * And 추가된 구간의 길이를 뺸 나머지 길이가 새롭게 추가된 역과의 길이가 된다.
+     */
+    @DisplayName("노선의 중간에 구간을 등록한다.")
+    @Test
+    public void 구간의_중간_등록_정상처리() {
+        final Long lineId = 노선이_생성되어_있다("이호선", "bg-red-600", 강남역Id, 선릉역Id, 10);
+        final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 강남역Id, 역삼역Id, 5);
+
+    }
+
 
     /**
      * When 노선이 생성되어 있다.
@@ -82,7 +97,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선의 구간을 제거할 때 마지막구간이 아니면 오류가 발생한다.")
     @Test
     public void 구간제거_마지막구간이_아닐때() {
-        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         구간을_등록한다(lineId, 역삼역Id, 선릉역Id, 10);
 
@@ -99,7 +114,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선의 구간을 제거할 때 구간이 1개인 경우 오류가 발생한다.")
     @Test
     public void 구간제거_구간이_하나일때() {
-        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         final ExtractableResponse<Response> response = 구간을_제거한다(lineId, 역삼역Id);
 
@@ -115,7 +130,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선의 구간을 제거한다.")
     @Test
     public void 구간제거_정상() {
-        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         구간을_등록한다(lineId, 역삼역Id, 선릉역Id, 10);
 
@@ -124,8 +139,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간이_정상_제거된다(response, HttpStatus.NO_CONTENT);
     }
 
-    public Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId) {
-        return LineSteps.노선이_생성되어_있다(name, color, upStationId, downStationId).as(LineResponse.class).getId();
+    public Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {
+        return LineSteps.노선이_생성되어_있다(name, color, upStationId, downStationId, distance).as(LineResponse.class).getId();
     }
 
     private void 구간이_정상_제거된다(final ExtractableResponse<Response> response, final HttpStatus httpStatus) {

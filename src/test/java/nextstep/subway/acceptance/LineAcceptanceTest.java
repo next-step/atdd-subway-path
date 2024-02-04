@@ -36,7 +36,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void apiCreateLine() {
         // when
-        노선이_생성되어_있다("이호선", "bg-red-600", 강남역Id, 역삼역Id);
+        노선이_생성되어_있다("이호선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         // then
         final ExtractableResponse<Response> extract = 노선목록을_조회한다();
@@ -53,8 +53,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
-        노선이_생성되어_있다("분당선", "bg-green-600", 강남역Id, 선릉역Id);
+        노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
+        노선이_생성되어_있다("분당선", "bg-green-600", 강남역Id, 선릉역Id, 10);
 
         // when
         final ExtractableResponse<Response> extract = 노선목록을_조회한다();
@@ -74,7 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void apiGetLine() {
         // given
-        Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+        Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         // when
         final ExtractableResponse<Response> extract = LineSteps.노선을_조회한다(lineId);
@@ -94,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+        Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         // when
         노선을_수정한다(lineId, "다른분당선", "bg-red-900");
@@ -114,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id);
+        Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         // when
         노선을_삭제한다(lineId);
@@ -129,8 +129,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
 
-    public static Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId) {
-        return LineSteps.노선이_생성되어_있다(name, color, upStationId, downStationId).as(LineResponse.class).getId();
+    public static Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId,
+                                   final int distance) {
+        return LineSteps.노선이_생성되어_있다(name, color, upStationId, downStationId, distance).as(LineResponse.class).getId();
     }
 
     private static LineResponse 노선을_조회한다(final Long lineId) {
