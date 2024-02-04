@@ -43,7 +43,6 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         Line line = new Line(
                 1L,
                 "신분당선",
@@ -58,12 +57,10 @@ public class LineServiceMockTest {
         when(stationRepository.findById(교대역.getId())).thenReturn(Optional.of(교대역));
 
         // when
-        // lineService.addSection 호출
         SectionsUpdateRequest 선릉역_부터_교대역 = new SectionsUpdateRequest(3L, 2L, 10L);
         LineResponse actual = lineService.addSection(1L, 선릉역_부터_교대역);
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
         LineResponse expected = lineService.findLine(actual.getId());
         assertThat(actual).isEqualTo(expected);
     }

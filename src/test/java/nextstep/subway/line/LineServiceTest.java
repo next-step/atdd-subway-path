@@ -22,7 +22,6 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Station 강남역 = stationRepository.save(new Station("강남역"));
         Station 선릉역 = stationRepository.save(new Station("선릉역"));
         Station 교대역 = stationRepository.save(new Station("교대역"));
@@ -34,12 +33,10 @@ public class LineServiceTest {
         Line 신분당선 = lineRepository.save(line);
 
         // when
-        // lineService.addSection 호출
         SectionsUpdateRequest 선릉역_부터_교대역 = new SectionsUpdateRequest(교대역.getId(), 선릉역.getId(), 10L);
         lineService.addSection(신분당선.getId(), 선릉역_부터_교대역);
 
         // then
-        // line.getSections 메서드를 통해 검증
         LineResponse actual = lineService.findLine(신분당선.getId());
         Line findLine = lineRepository.findById(신분당선.getId()).orElseThrow(RuntimeException::new);
         LineResponse expected = LineResponseFactory.createLineResponse(findLine);
