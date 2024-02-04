@@ -61,7 +61,7 @@ public class LineService {
 	}
 
 	@Transactional
-	public void createSection(Long id, SectionRequest sectionRequest) {
+	public void addSection(Long id, SectionRequest sectionRequest) {
 		Line line = findLindById(id);
 
 		Section section = new Section(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance());
