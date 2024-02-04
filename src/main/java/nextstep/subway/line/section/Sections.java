@@ -42,11 +42,11 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if(!isSameLastStationAndStartStation(section)) {
+        if (!isSameLastStationAndStartStation(section)) {
             throw new IllegalArgumentException("마지막 구간과 추가될 구간의 시작은 같아야 합니다.");
         }
 
-        if(anyMatchStation(section)) {
+        if (anyMatchStation(section)) {
             throw new IllegalArgumentException("이미 구간에 포함 되어 있는 역 입니다.");
         }
 
@@ -63,7 +63,7 @@ public class Sections {
     }
 
     public Section delete(Station station) {
-        if(this.sectionList.size() == 1) {
+        if (this.sectionList.size() == 1) {
             throw new IllegalArgumentException("구간이 하나 일 때는 삭제를 할 수 없습니다.");
         }
 
@@ -72,7 +72,7 @@ public class Sections {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("삭제할 역을 찾지 못하였습니다."));
 
-        if(!lastSection().equals(findSection)) {
+        if (!lastSection().equals(findSection)) {
             throw new IllegalArgumentException("마지막 구간의 역이 아닙니다.");
         }
 

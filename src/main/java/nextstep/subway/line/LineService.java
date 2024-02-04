@@ -1,15 +1,12 @@
 package nextstep.subway.line;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.section.Section;
-import nextstep.subway.line.section.Sections;
 import nextstep.subway.line.section.SectionsUpdateRequest;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
-import nextstep.subway.station.StationResponse;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,18 +26,18 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRepository.save(createLine(lineRequest));
-        return createLineResponse(line);
+        return LineResponseFactory.createLineResponse(line);
     }
 
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
+                .map(LineResponseFactory::createLineResponse)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
         Line line = getLine(id);
-        return createLineResponse(line);
+        return LineResponseFactory.createLineResponse(line);
     }
 
     @Transactional
@@ -57,11 +54,11 @@ public class LineService {
 
     @Transactional
     public LineResponse addSection(Long id,
-                           SectionsUpdateRequest sectionsUpdateRequest) {
+                                   SectionsUpdateRequest sectionsUpdateRequest) {
         Line line = getLine(id);
         line.addSection(createSection(sectionsUpdateRequest));
         lineRepository.save(line);
-        return createLineResponse(line);
+        return LineResponseFactory.createLineResponse(line);
     }
 
     @Transactional
@@ -70,10 +67,6 @@ public class LineService {
         Line line = getLine(id);
         line.deleteSection(getStation(stationId));
         lineRepository.save(line);
-    }
-
-    private Line getLine(Long id) {
-        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 지하철라인 정보를 찾지 못했습니다."));
     }
 
     private Section createSection(SectionsUpdateRequest sectionsUpdateRequest) {
@@ -90,33 +83,12 @@ public class LineService {
                 lineRequest.getDistance());
     }
 
+    private Line getLine(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 지하철라인 정보를 찾지 못했습니다."));
+    }
+
     private Station getStation(Long stationId) {
         return stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException("해당 지하철역 정보를 찾지 못했습니다."));
-    }
-
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(line.getId(),
-                line.getName(),
-                line.getColor(),
-                getStations(line));
-    }
-
-    private List<StationResponse> getStations(Line line) {
-        Sections sections = line.getSections();
-        List<StationResponse> stationResponses = new ArrayList<>(getStationResponses(sections.startStations()));
-        stationResponses.add(getStationResponses(sections.lastStation()));
-        return stationResponses;
-    }
-
-    private List<StationResponse> getStationResponses(List<Station> stations) {
-        return stations.stream()
-                .map(this::getStationResponses)
-                .collect(Collectors.toList());
-    }
-
-    private StationResponse getStationResponses(Station station) {
-        return new StationResponse(station.getId(),
-                station.getName());
     }
 
 }

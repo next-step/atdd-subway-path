@@ -1,8 +1,8 @@
 package nextstep.subway.line;
 
+import nextstep.subway.line.section.SectionsUpdateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import nextstep.subway.line.section.SectionsUpdateRequest;
 
 import java.net.URI;
 import java.util.List;
@@ -46,13 +46,14 @@ public class LineController {
 
     @PostMapping(value = "/lines/{id}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long id,
-                                           @RequestBody SectionsUpdateRequest sectionsUpdateRequest) {
+                                                   @RequestBody SectionsUpdateRequest sectionsUpdateRequest) {
         LineResponse line = lineService.addSection(id, sectionsUpdateRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @DeleteMapping(value = "/lines/{id}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestParam Long stationId) {
+    public ResponseEntity<Void> addSection(@PathVariable Long id,
+                                           @RequestParam Long stationId) {
         lineService.deleteSection(id, stationId);
         return ResponseEntity.noContent().build();
     }
