@@ -51,15 +51,20 @@ public class Line {
         return new Line(id, name, color, sections);
     }
 
-    public void addSection(Section section) {
-        this.sections.add(section);
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(
+            Section.of(
+                this,
+                upStation,
+                downStation,
+                distance
+            )
+        );
     }
 
     public void removeSection(Section section) {
         this.sections.remove(section);
     }
-
-
 
     public List<Station> getStations() {
         return this.sections.getStations();

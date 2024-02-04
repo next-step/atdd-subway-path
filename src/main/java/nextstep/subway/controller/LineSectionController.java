@@ -1,7 +1,7 @@
 package nextstep.subway.controller;
 
 import nextstep.subway.controller.dto.SectionAddRequest;
-import nextstep.subway.service.SectionService;
+import nextstep.subway.service.LineService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LineSectionController {
 
-    private final SectionService service;
+    private final LineService service;
 
-    public LineSectionController(SectionService service) {
+    public LineSectionController(LineService service) {
         this.service = service;
     }
 

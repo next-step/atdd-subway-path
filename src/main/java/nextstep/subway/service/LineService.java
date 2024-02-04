@@ -3,6 +3,7 @@ package nextstep.subway.service;
 import nextstep.subway.controller.dto.LineCreateRequest;
 import nextstep.subway.controller.dto.LineResponse;
 import nextstep.subway.controller.dto.LineUpdateRequest;
+import nextstep.subway.controller.dto.SectionAddRequest;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -48,10 +49,7 @@ public class LineService {
             createRequest.getColor()
         );
 
-        Section section = Section.of(line, upStation, downStation, createRequest.getDistance());
-
-        sectionRepository.save(section);
-        line.addSection(section);
+        line.addSection(upStation, downStation, createRequest.getDistance());
 
         return LineResponse.of(lineRepository.save(line));
     }
@@ -108,6 +106,26 @@ public class LineService {
 
         sectionRepository.deleteAll(line.getAllSections());
         lineRepository.delete(line);
+    }
+
+    @Transactional
+    public void addSection(Long lineId, SectionAddRequest request) {
+        Line line = findLineById(lineId);
+
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+
+        line.addSection(upStation, downStation, request.getDistance());
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+
+        Section section = sectionRepository.findByLineIdAndDownStationId(lineId, stationId)
+            .orElseThrow(EntityNotFoundException::new);
+
+        line.removeSection(section);
     }
 
     /** 주어진 지하철 노선 식별자로 찾은 노선정보 엔티티 반환. 찾지못하면 예외 던짐 */

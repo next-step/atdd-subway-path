@@ -56,7 +56,7 @@ public class Sections {
         return sections.get(sections.size() - 1);
     }
 
-    public void verifyAddableSection(Section section) {
+    private void verifyAddableSection(Section section) {
         if (sections.isEmpty()) {
             return;
         }
@@ -70,7 +70,7 @@ public class Sections {
         }
     }
 
-    public void verifyDeletableStation(Section section) {
+    private void verifyDeletableStation(Section section) {
         if (hasOnlyOneSection()) {
             throw new SectionDeleteFailureException("노선의 구간은 최소 한 개 이상 존재해야 합니다.");
         }
@@ -81,13 +81,13 @@ public class Sections {
         }
     }
 
-    public boolean isAlreadyExistStation(Station station) {
+    private boolean isAlreadyExistStation(Station station) {
         return sections.stream().anyMatch(section ->
             station.equals(section.getUpStation()) || station.equals(section.getDownStation())
         );
     }
 
-    public boolean hasOnlyOneSection() {
+    private boolean hasOnlyOneSection() {
         return sections.size() == 1;
     }
 }
