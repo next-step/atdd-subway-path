@@ -12,6 +12,7 @@ public class LineResponse {
     private String name;
     private String color;
     private final List<StationResponse> stations = new ArrayList<>();
+    private int distance = 0;
 
     public LineResponse() {
     }
@@ -24,8 +25,10 @@ public class LineResponse {
         final List<Section> sections = savedLine.getSections();
         this.stations.add(createStationResponse(sections.get(0).getUpStation()));
 
+
         for (Section section : savedLine.getSections()) {
             this.stations.add(createStationResponse(section.getDownStation()));
+            this.distance += section.getDistance();
         }
     }
 
@@ -43,6 +46,10 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     private StationResponse createStationResponse(Station station) {
