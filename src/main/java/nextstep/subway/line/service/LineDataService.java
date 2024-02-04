@@ -1,7 +1,7 @@
 package nextstep.subway.line.service;
 
 import org.springframework.stereotype.Service;
-import nextstep.subway.line.entity.Line;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.exception.LineException;
 import nextstep.subway.line.LineRepository;
 

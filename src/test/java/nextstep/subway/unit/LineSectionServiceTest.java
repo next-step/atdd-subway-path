@@ -1,11 +1,12 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.line.LineRepository;
-import nextstep.subway.line.entity.Line;
-import nextstep.subway.section.SectionCreateRequest;
-import nextstep.subway.section.SectionService;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.SectionCreateRequest;
+import nextstep.subway.line.service.LineSectionService;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,18 +16,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-public class LineServiceTest {
+public class LineSectionServiceTest {
     @Autowired
     private LineRepository lineRepository;
     @Autowired
     private StationRepository stationRepository;
     @Autowired
-    private SectionService sectionService;
+    private LineSectionService lineSectionService;
 
+    @DisplayName("노선에 구간을 등록한다.")
     @Test
     void addSection() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Line 이호선 = new Line("이호선", "green");
         lineRepository.save(이호선);
 
@@ -38,11 +39,9 @@ public class LineServiceTest {
         SectionCreateRequest request = new SectionCreateRequest(잠실역.getId(), 성수역.getId(), 10);
 
         // when
-        // lineService.addSection 호출
-        sectionService.saveSection(이호선.getId(), request);
+        lineSectionService.saveSection(이호선.getId(), request);
 
         // then
-        // line.getSections 메서드를 통해 검증
         assertThat(이호선.getSections().getSections()).hasSize(1);
     }
 }

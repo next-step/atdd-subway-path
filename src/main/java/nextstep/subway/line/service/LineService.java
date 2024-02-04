@@ -2,7 +2,7 @@ package nextstep.subway.line.service;
 
 import nextstep.subway.station.service.StationDataService;
 import org.springframework.stereotype.Service;
-import nextstep.subway.line.entity.Line;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.LineResponse;

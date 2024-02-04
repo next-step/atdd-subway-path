@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.controller;
 
 import nextstep.subway.line.service.LineService;
 import org.springframework.http.HttpStatus;

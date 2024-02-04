@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import nextstep.subway.line.dto.LineCreateRequest;
-import nextstep.subway.section.SectionCreateRequest;
+import nextstep.subway.line.dto.SectionCreateRequest;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.JsonPathUtil;
 

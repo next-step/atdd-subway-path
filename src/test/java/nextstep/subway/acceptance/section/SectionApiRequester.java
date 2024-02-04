@@ -3,7 +3,7 @@ package nextstep.subway.acceptance.section;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
-import nextstep.subway.section.SectionCreateRequest;
+import nextstep.subway.line.dto.SectionCreateRequest;
 
 import static io.restassured.RestAssured.given;
 

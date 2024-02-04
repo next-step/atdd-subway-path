@@ -18,4 +18,11 @@ public class LineControllerAdvice {
         log.debug("LineException 발생 ::: {}", e.getMessage());
         return e.getMessage();
     }
+
+    @ExceptionHandler(SectionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String lineExceptionAdvice(SectionException e) {
+        log.debug("SectionException 발생 ::: {}", e.getMessage());
+        return e.getMessage();
+    }
 }

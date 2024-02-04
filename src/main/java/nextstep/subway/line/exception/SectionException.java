@@ -1,4 +1,4 @@
-package nextstep.subway.section.exception;
+package nextstep.subway.line.exception;
 
 public class SectionException extends RuntimeException {
 

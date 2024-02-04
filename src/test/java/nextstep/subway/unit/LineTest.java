@@ -1,8 +1,9 @@
 package nextstep.subway.unit;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import nextstep.subway.line.entity.Line;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.Station;
 
 import java.util.List;
@@ -11,15 +12,20 @@ import static org.assertj.core.api.Assertions.*;
 
 class LineTest {
 
-    private final Line 이호선 = new Line("이호선", "green");
+    private Line 이호선;
+    private Station 잠실역;
+    private Station 성수역;
+
+    @BeforeEach
+    void setUp() {
+        이호선 = new Line("이호선", "green");
+        잠실역 = new Station("잠실역");
+        성수역 = new Station("성수역");
+    }
 
     @DisplayName("노선에 구간을 등록한다.")
     @Test
     void addSection() {
-        //given
-        Station 잠실역 = new Station("잠실역");
-        Station 성수역 = new Station("성수역");
-
         //when
         이호선.generateSection(10, 잠실역, 성수역);
 
@@ -31,8 +37,6 @@ class LineTest {
     @Test
     void getStations() {
         //given
-        Station 잠실역 = new Station("잠실역");
-        Station 성수역 = new Station("성수역");
         이호선.generateSection(10, 잠실역, 성수역);
 
         //when
@@ -47,8 +51,6 @@ class LineTest {
     @Test
     void removeSection() {
         //given
-        Station 잠실역 = new Station("잠실역");
-        Station 성수역 = new Station("성수역");
         이호선.generateSection(10, 잠실역, 성수역);
 
         Station 건대입구역 = new Station("건대입구역");

@@ -1,7 +1,7 @@
-package nextstep.subway.section;
+package nextstep.subway.line.service;
 
-import nextstep.subway.line.entity.Line;
-import nextstep.subway.line.service.LineDataService;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.SectionCreateRequest;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.service.StationDataService;
 import org.springframework.stereotype.Service;
@@ -10,13 +10,12 @@ import javax.transaction.Transactional;
 
 @Transactional
 @Service
-public class SectionService {
-
+public class LineSectionService {
     private final LineDataService lineDataService;
 
     private final StationDataService stationDataService;
 
-    public SectionService(LineDataService lineDataService, StationDataService stationDataService) {
+    public LineSectionService(LineDataService lineDataService, StationDataService stationDataService) {
         this.lineDataService = lineDataService;
         this.stationDataService = stationDataService;
     }

@@ -1,6 +1,6 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.entity.Line;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.util.List;
