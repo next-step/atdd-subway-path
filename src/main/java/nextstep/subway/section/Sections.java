@@ -24,12 +24,20 @@ public class Sections implements Iterable<Section> {
         return sections.iterator();
     }
 
+    public int size() {
+        return sections.size();
+    }
+
     public Stream<Section> stream() {
         return sections.stream();
     }
 
     public void initSection(Section section) {
         sections.add(section);
+    }
+
+    public int getFirstSectionDistance() {
+        return sections.get(0).getDistance();
     }
 
     public int getLastSectionDistance() {
@@ -55,7 +63,6 @@ public class Sections implements Iterable<Section> {
     }
 
     public void addSection(Section newSection, int lineDistance) {
-
         // newSection의 upstation, downstation 둘 다 노선에 등록되어있는 거면 안 됨
         boolean upstationExists = sections.stream().anyMatch(section ->
                 section.getUpstation().getId().equals(newSection.getUpstation().getId()) ||
@@ -110,18 +117,24 @@ public class Sections implements Iterable<Section> {
 
         sections.add(newSection);
     }
-    public void popSection(Station station) {
-        Station lastDownstation = getLastDownstation();
-        if (station.getId() != lastDownstation.getId()) {
-            throw new InvalidInputException("노선에 등록된 하행 종점역만 제거할 수 있습니다.");
-        }
-        if (sections.size() == 1) {
-            throw new InvalidInputException("노선에 상행 종점역과 하행 종점역만 있는 경우에는 제거할 수 없습니다.");
-        }
 
+    public void removeFirstSection() {
+        sections.remove(0);
+    }
+    public void removeLastSection() {
         sections.remove(sections.size() - 1);
     }
 
-
+    public void removeSection(Station station) {
+        for (int i = 0; i < sections.size(); i++) {
+            Section currentSection = sections.get(i);
+            if (currentSection.getDownstation().getId().equals(station.getId())) {
+                Section nextSection = sections.get(i + 1);
+                currentSection.setDownstation(nextSection.getDownstation());
+                currentSection.setDistance(currentSection.getDistance() + nextSection.getDistance());
+                sections.remove(i + 1);
+            }
+        }
+    }
 
 }

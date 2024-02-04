@@ -9,14 +9,14 @@ public class StationFixture {
     public static final Long MACHEON_ID = 3L;
 
     public static Station BanghwaStation() {
-        return new Station("방화역");
+        return new Station(BANGHWA_ID, "방화역");
     }
 
     public static Station GangdongStation() {
-        return new Station("강동역");
+        return new Station(GANGDONG_ID, "강동역");
     }
 
     public static Station MacheonStation() {
-        return new Station("마천역");
+        return new Station(MACHEON_ID, "마천역");
     }
 }

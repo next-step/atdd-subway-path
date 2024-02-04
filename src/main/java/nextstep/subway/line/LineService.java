@@ -84,6 +84,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
         Station deleteStation = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
 
-        line.popSection(deleteStation);
+        line.removeSection(deleteStation);
     }
 }

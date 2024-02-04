@@ -29,10 +29,6 @@ public class SectionAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        /*
-        * databaseCleanup.execute()를 해도 DB 클린이 안 되는 것 같습니다...
-        * DirtiesContext를 쓰면 정상적으로 실행됩니다 왜 이러는 걸까요
-        * */
         StationFactory.createStation("banghwa");
         StationFactory.createStation("gangdong");
         StationFactory.createStation("macheon");
@@ -111,7 +107,7 @@ public class SectionAcceptanceTest {
      */
     @DisplayName("노선에 등록되어있는 역을 하행역으로 하는 구간 실패")
     @Test
-    void addSectionFailWhenNewDownstationAlreadyOnLine() {
+    void addSectionFailWhenNewSectionAlreadyOnLine() {
         // given
         Long upstationId = 2L;
         Long existingStationId = 1L;
@@ -126,18 +122,56 @@ public class SectionAcceptanceTest {
 
     /**
      * Given 구간을 생성하고
-     * When 구간을 삭제하면
+     * When 첫번째 구간을 삭제하면
      * Then 노선을 조회했을 때 삭제한 구간을 찾을 수 없다
      */
-    @DisplayName("지하철노선 구간 삭제 성공")
+    @DisplayName("지하철노선 첫번째 구간 삭제 성공")
     @Test
-    void sectionDeleteSuccess() {
-        /*
-        * 이 테스트 메소드에서는 1L, 2L 등 값을 하드코딩하고 있는데
-        * 알아듣기 쉬운 이름을 가진 변수에 할당해서 그 변수를 사용하는 게 나은가요,
-        * 숫자로 하드코딩하는 게 나은가요?
-        * */
+    void firstSectionDeleteSuccess() {
+        // given
+        SectionFactory.createSection(1L, 2L, 3L);
 
+        // when
+        ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 1L);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        response = LineFactory.getLines();
+        List<String> stationIds = response.jsonPath().getList("[0].stations.id", String.class);
+        assertThat(stationIds).hasSize(2);
+        assertThat(stationIds).doesNotContain("1");
+    }
+
+    /**
+     * Given 구간을 생성하고
+     * When 중간 구간을 삭제하면
+     * Then 노선을 조회했을 때 삭제한 구간을 찾을 수 없다
+     */
+    @DisplayName("지하철노선 중간 구간 삭제 성공")
+    @Test
+    void removeSectionDeleteSuccess() {
+        // given
+        SectionFactory.createSection(1L, 2L, 3L);
+
+        // when
+        ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 2L);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        response = LineFactory.getLines();
+        List<String> stationIds = response.jsonPath().getList("[0].stations.id", String.class);
+        assertThat(stationIds).hasSize(2);
+        assertThat(stationIds).doesNotContain("2");
+    }
+
+    /**
+     * Given 구간을 생성하고
+     * When 마지막 구간을 삭제하면
+     * Then 노선을 조회했을 때 삭제한 구간을 찾을 수 없다
+     */
+    @DisplayName("지하철노선 마지막 구간 삭제 성공")
+    @Test
+    void LastSectionDeleteSuccess() {
         // given
         SectionFactory.createSection(1L, 2L, 3L);
 
@@ -155,26 +189,6 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 구간을 생성하고
-     * When 마지막 구간이 아닌 구간을 삭제하려고 할 때
-     * Then 이 요청은 실패한다
-     */
-    @DisplayName("마지막 구간이 아닌 구간 삭제 실패")
-    @Test
-    void NonLastSectionDeleteFail() {
-        // given
-        SectionFactory.createSection(1L, 2L, 3L);
-
-        // when
-        ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 2L);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).contains("노선에 등록된 하행 종점역만 제거할 수 있습니다.");
-
-    }
-
-    /**
      * Given 상행 종점역과 하행 종점역만 있는 노선에서
      * When 마지막 구간을 삭제하려고 할 때
      * Then 이 요청은 실패한다
@@ -188,7 +202,6 @@ public class SectionAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).contains("노선에 상행 종점역과 하행 종점역만 있는 경우에는 제거할 수 없습니다.");
-
     }
 
 }

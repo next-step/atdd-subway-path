@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nextstep.subway.exception.InvalidInputException;
 import nextstep.subway.section.Section;
 import nextstep.subway.section.Sections;
 import nextstep.subway.station.Station;
@@ -46,18 +47,10 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        /*
-         * newSection의 upstation이 line의 하행종점역이면
-         * addLastSection() 호출
-         * newSection의 upstation이 line의 상행종점역이면
-         * addFirstSection() 호출
-         * 이 둘 중 아무것도 아니면
-         * addSection() 호출
-         * */
         if (section.getDownstation().getId() == sections.getFirstUpstation().getId()) {
             sections.addFirstSection(section);
             distance += section.getDistance();
-        } else if(section.getUpstation().getId() == sections.getLastDownstation().getId()) {
+        } else if (section.getUpstation().getId() == sections.getLastDownstation().getId()) {
             sections.addLastSection(section);
             distance += section.getDistance();
         } else {
@@ -65,10 +58,22 @@ public class Line {
         }
     }
 
-    public void popSection(Station station) {
-        int lastSectionDistance = sections.getLastSectionDistance();
-        distance -= lastSectionDistance;
-        sections.popSection(station);
+    public void removeSection(Station station) {
+        if (sections.size() == 1) {
+            throw new InvalidInputException("노선에 상행 종점역과 하행 종점역만 있는 경우에는 제거할 수 없습니다.");
+        }
+
+        if (station.getId() == sections.getFirstUpstation().getId()) {
+            int firstSectionDistance = sections.getFirstSectionDistance();
+            distance -= firstSectionDistance;
+            sections.removeFirstSection();
+        } else if (station.getId() == sections.getLastDownstation().getId()) {
+            int lastSectionDistance = sections.getLastSectionDistance();
+            distance -= lastSectionDistance;
+            sections.removeLastSection();
+        } else {
+            sections.removeSection(station);
+        }
     }
 
     @Builder
