@@ -3,6 +3,8 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.application.dto.LineResponse;
+import nextstep.subway.domain.Station;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,9 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SectionAcceptanceTest extends AcceptanceTest {
+    private Station 강남역;
+    private Station 역삼역;
+    private Station 선릉역;
 
-    public static Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId) {
-        return LineSteps.노선이_생성되어_있다(name, color, upStationId, downStationId).as(LineResponse.class).getId();
+    @BeforeEach
+    void init() {
+
     }
 
     /**
@@ -52,10 +58,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 노선이 생성되어 있다.
-     * 구간을 등록한다.
+     * 노선의 끝에 구간을 등록한다.
      * Then 정상 응답 처리된다.
      */
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("노선에 끝에 구간을 등록한다.")
     @Test
     public void 구간등록_정상처리() {
         final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 1L, 2L);
@@ -114,6 +120,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = 구간을_제거한다(lineId, 3L);
 
         구간이_정상_제거된다(response, HttpStatus.NO_CONTENT);
+    }
+
+
+    public Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId) {
+        return LineSteps.노선이_생성되어_있다(name, color, upStationId, downStationId).as(LineResponse.class).getId();
     }
 
     private void 구간이_정상_제거된다(final ExtractableResponse<Response> response, final HttpStatus httpStatus) {
