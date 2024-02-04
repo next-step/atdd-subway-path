@@ -48,6 +48,10 @@ public class Sections {
 				.orElseThrow(EntityNotFoundException::new);
 	}
 
+	public int getSize() {
+		return sections.size();
+	}
+
 	public List<SectionResponse> convertToSectionResponse() {
 		return sections.stream()
 				.map(SectionResponse::new)

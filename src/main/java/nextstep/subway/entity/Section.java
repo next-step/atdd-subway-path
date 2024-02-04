@@ -47,13 +47,16 @@ public class Section {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(id, upStationId, downStationId);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof Section) {
-			return Objects.equals(((Section) obj).getId(), id);
+			Section section = (Section) obj;
+			return Objects.equals(id, section.getId()) &&
+					Objects.equals(upStationId, section.getUpStationId()) &&
+					Objects.equals(downStationId, section.getDownStationId());
 		}
 
 		return false;
