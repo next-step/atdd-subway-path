@@ -36,9 +36,9 @@ public class DatabaseCleanup implements InitializingBean {
             entityManager.createNativeQuery("ALTER TABLE " + tableName + " ALTER COLUMN ID RESTART WITH 1").executeUpdate();
         }
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
-        entityManager.createNativeQuery("insert into station (id, name) values (1, '지하철역')").executeUpdate();
-        entityManager.createNativeQuery("insert into station (id, name) values (2, '새로운지하철역')").executeUpdate();
-        entityManager.createNativeQuery("insert into station (id, name) values (3, '또다른지하철역')").executeUpdate();
-        entityManager.createNativeQuery("ALTER TABLE station ALTER COLUMN id RESTART WITH 4").executeUpdate();
+//        entityManager.createNativeQuery("insert into station (id, name) values (1, '지하철역')").executeUpdate();
+//        entityManager.createNativeQuery("insert into station (id, name) values (2, '새로운지하철역')").executeUpdate();
+//        entityManager.createNativeQuery("insert into station (id, name) values (3, '또다른지하철역')").executeUpdate();
+//        entityManager.createNativeQuery("ALTER TABLE station ALTER COLUMN id RESTART WITH 4").executeUpdate();
     }
 }
