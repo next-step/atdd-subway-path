@@ -3,8 +3,8 @@ package nextstep.subway.acceptance.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
-import subway.line.dto.LineCreateRequest;
-import subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LineCreateRequest;
+import nextstep.subway.line.dto.LineUpdateRequest;
 
 import static io.restassured.RestAssured.given;
 

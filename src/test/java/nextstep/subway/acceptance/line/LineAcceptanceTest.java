@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import nextstep.subway.acceptance.annotation.AcceptanceTest;
 import nextstep.subway.acceptance.station.StationApiRequester;
-import subway.line.dto.LineCreateRequest;
-import subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LineCreateRequest;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.utils.JsonPathUtil;
 
 import static org.assertj.core.api.Assertions.*;

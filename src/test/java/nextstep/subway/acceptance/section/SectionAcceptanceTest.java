@@ -9,9 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import subway.line.dto.LineCreateRequest;
-import subway.section.SectionCreateRequest;
-import subway.station.dto.StationResponse;
+import nextstep.subway.line.dto.LineCreateRequest;
+import nextstep.subway.section.SectionCreateRequest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.JsonPathUtil;
 
 import java.util.List;
