@@ -2,14 +2,13 @@ package nextstep.subway.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import nextstep.subway.testhelper.AcceptanceTest;
 import nextstep.subway.testhelper.JsonPathHelper;
 import nextstep.subway.testhelper.StationApiCaller;
 import nextstep.subway.testhelper.StationFixture;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,16 +16,15 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@DirtiesContext
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest {
     private static final String 강남역 = "강남역";
     private static final String 삼성역 = "삼성역";
     private StationFixture stationFixture;
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
+        super.setUp();
         stationFixture = new StationFixture();
     }
 

@@ -2,14 +2,12 @@ package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.testhelper.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
-import nextstep.subway.testhelper.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,9 +17,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철노선 관련 기능")
-@Sql({"/test-sql/table-truncate.sql"})
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class LineAcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
 
     private Map<String, String> 신분당선;
     private Map<String, String> 영호선;
@@ -33,7 +29,8 @@ public class LineAcceptanceTest {
     private Long 선릉역_ID;
 
     @BeforeEach
-    void setUpClass() {
+    public void setUp() {
+        super.setUp();
         StationFixture stationFixture = new StationFixture();
         강남역_ID = stationFixture.get강남역_ID();
         삼성역_ID = stationFixture.get삼성역_ID();
