@@ -65,7 +65,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("노선의 끝에 구간을 등록한다.")
     @Test
-    public void 구간의_끝_등록_정상처리() {
+    public void 노선의_끝_구간등록_정상처리() {
         final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 역삼역Id, 선릉역Id, 10);
@@ -77,16 +77,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * Given 노선이 생성되어 있다.
      * When 노선의 중간에 구간을 등록한다.
      * Then 정상 응답 처리 된다.
-     * And 추가된 구간의 길이를 뺸 나머지 길이가 새롭게 추가된 역과의 길이가 된다.
+     * And 중간에 구간을 추가했기 때문에 노선을 조회하면, 구간 추가 전과 노선의 길이가 동일하다.
      */
     @DisplayName("노선의 중간에 구간을 등록한다.")
     @Test
-    public void 구간의_중간_등록_정상처리() {
+    public void 노선의_중간_구간등록_정상처리() {
         final Long lineId = 노선이_생성되어_있다("이호선", "bg-red-600", 강남역Id, 선릉역Id, 10);
         final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 강남역Id, 역삼역Id, 5);
-
+        구간이_정상_등록한다(response, HttpStatus.CREATED);
+        노선의_길이가_동일하다(lineId, 10);
     }
-
 
     /**
      * When 노선이 생성되어 있다.
@@ -153,5 +153,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private void 예외가_발생한다(final ExtractableResponse<Response> response, HttpStatus httpStatus) {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
+    }
+
+    private static void 노선의_길이가_동일하다(final Long lineId, final int distance) {
+        final LineResponse lineResponse = LineSteps.노선을_조회한다(lineId).as(LineResponse.class);
+        assertThat(lineResponse.getDistance()).isEqualTo(distance);
     }
 }

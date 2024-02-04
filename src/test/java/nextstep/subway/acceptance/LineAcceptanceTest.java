@@ -63,6 +63,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(extract.jsonPath().getList("name").size()).isEqualTo(2);
         assertThat(extract.jsonPath().getList("name")).contains("신분당선", "분당선");
         assertThat(extract.jsonPath().getList("color")).contains("bg-red-600", "bg-green-600");
+        assertThat(extract.jsonPath().getList("color")).contains("bg-red-600", "bg-green-600");
     }
 
     /**
@@ -83,6 +84,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         final LineResponse lineResponse = extract.as(LineResponse.class);
         assertThat(lineResponse.getName()).isEqualTo("신분당선");
         assertThat(lineResponse.getColor()).isEqualTo("bg-red-600");
+        assertThat(lineResponse.getDistance()).isEqualTo(10);
     }
 
     /**
