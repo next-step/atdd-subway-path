@@ -1,6 +1,6 @@
 package nextstep.subway.line.repository;
 
-import nextstep.subway.line.repository.domain.Line;
+import nextstep.subway.line.domain.Line;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

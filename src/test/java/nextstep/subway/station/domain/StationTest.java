@@ -1,6 +1,7 @@
-package nextstep.subway.station.repository.domain;
+package nextstep.subway.station.domain;
 
 import nextstep.subway.common.fixture.StationFactory;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

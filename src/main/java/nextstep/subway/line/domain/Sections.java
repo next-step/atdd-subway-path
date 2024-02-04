@@ -1,8 +1,8 @@
-package nextstep.subway.line.repository.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.SectionConnectException;
 import nextstep.subway.line.exception.SectionDisconnectException;
-import nextstep.subway.station.repository.domain.Station;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;

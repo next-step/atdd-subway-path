@@ -1,4 +1,4 @@
-package nextstep.subway.station.repository.domain;
+package nextstep.subway.station.domain;
 
 import javax.persistence.*;
 import java.util.Objects;

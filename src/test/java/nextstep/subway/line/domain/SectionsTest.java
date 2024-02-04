@@ -1,10 +1,10 @@
-package nextstep.subway.line.repository.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.fixture.SectionFactory;
 import nextstep.subway.common.fixture.StationFactory;
 import nextstep.subway.line.exception.SectionConnectException;
 import nextstep.subway.line.exception.SectionDisconnectException;
-import nextstep.subway.station.repository.domain.Station;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
