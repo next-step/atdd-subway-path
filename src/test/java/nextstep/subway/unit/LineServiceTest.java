@@ -35,7 +35,6 @@ public class LineServiceTest {
         Long 세번째_역 = stationRepository.save(new Station("세번째_역")).getId();
 
         Line 노선 = lineRepository.save(new Line("노선", "빨강", 첫번째_역, 두번째_역, 1));
-        노선.createSection(new Section(노선, 첫번째_역, 두번째_역, 1));
 
         // when
         // lineService.addSection 호출

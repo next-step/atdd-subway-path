@@ -10,17 +10,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class LineTest {
-    private static final String 노선명 = "신분당선";
-    private static final String 노선색 = "bg-red";
     private static final Long 첫번째_역 = 1L;
     private static final Long 두번째_역 = 2L;
     private static final Long 세번째_역 = 3L;
     private Line 노선;
 
     @BeforeEach
-    void createLine() {
-        노선 = new Line(노선명, 노선색, 첫번째_역, 두번째_역, 10);
-        노선.createSection(new Section(노선, 첫번째_역, 두번째_역, 1));
+    void set노선() {
+        노선 = new Line("노선", "파란색", 첫번째_역, 두번째_역, 10);
     }
 
     @Test

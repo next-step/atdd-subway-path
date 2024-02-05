@@ -32,6 +32,8 @@ public class Line {
 		this.startStationId = startStationId;
 		this.endStationId = endStationId;
 		this.distance = distance;
+		this.sections = new Sections();
+		sections.addSection(new Section(this, startStationId, endStationId, distance));
 	}
 
 	public Long getId() {
@@ -65,11 +67,6 @@ public class Line {
 	public void setUpdateInfo(String name, String color) {
 		this.name = name;
 		this.color = color;
-	}
-
-	public void createSection(Section section) {
-		this.sections = new Sections();
-		sections.addSection(section);
 	}
 
 	public void addSection(Section section) {

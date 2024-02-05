@@ -11,6 +11,8 @@ public class LineResponse {
 
 	private String color;
 
+	private int distance;
+
 	private List<StationResponse> staions;
 
 	public LineResponse() {
@@ -20,6 +22,7 @@ public class LineResponse {
 		this.id = line.getId();
 		this.name = line.getName();
 		this.color = line.getColor();
+		this.distance = line.getDistance();
 		this.staions = stations;
 	}
 
@@ -33,6 +36,10 @@ public class LineResponse {
 
 	public String getColor() {
 		return color;
+	}
+
+	public int getDistance() {
+		return distance;
 	}
 
 	public List<StationResponse> getStaions() {
