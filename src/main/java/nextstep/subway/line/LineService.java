@@ -27,7 +27,7 @@ public class LineService {
         Line line = LineCreateRequest.toEntity(request);
 
         lineRepository.save(line);
-        line.initSection(upstation, downstation);
+        line.initSection(upstation, downstation, request.getDistance());
 
         return LineResponse.from(line);
     }
@@ -84,6 +84,6 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
         Station deleteStation = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
 
-        line.popSection(deleteStation);
+        line.removeSection(deleteStation);
     }
 }

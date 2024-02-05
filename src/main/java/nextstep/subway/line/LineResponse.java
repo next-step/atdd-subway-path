@@ -30,7 +30,7 @@ public class LineResponse {
                 .id(line.getId())
                 .name(line.getName())
                 .color(line.getColor())
-                .distance(line.getDistance())
+                .distance(line.getSections().getTotalDistance())
                 .stations(stations)
                 .build();
     }

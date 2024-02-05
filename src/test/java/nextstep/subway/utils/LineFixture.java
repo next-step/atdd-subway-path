@@ -11,10 +11,9 @@ public class LineFixture {
         Line line = Line.builder()
                 .name("5호선")
                 .color("purple")
-                .distance(5)
                 .build();
 
-        line.initSection(BanghwaStation(), GangdongStation());
+        line.initSection(BanghwaStation(), GangdongStation(), 3);
         return line;
     }
 }

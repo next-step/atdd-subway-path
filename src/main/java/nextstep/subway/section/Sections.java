@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 
+import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.exception.InvalidInputException;
 import nextstep.subway.station.Station;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 @Embeddable
+@Slf4j
 public class Sections implements Iterable<Section> {
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -24,16 +26,38 @@ public class Sections implements Iterable<Section> {
         return sections.iterator();
     }
 
+    public int size() {
+        return sections.size();
+    }
+
     public Stream<Section> stream() {
         return sections.stream();
+    }
+
+    public int getTotalDistance() {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 
     public void initSection(Section section) {
         sections.add(section);
     }
 
+    public int getFirstSectionDistance() {
+        return sections.get(0).getDistance();
+    }
+
     public int getLastSectionDistance() {
         return sections.get(sections.size() - 1).getDistance();
+    }
+
+    public boolean isFirstUpstation(Station station) {
+        return getFirstUpstation().getId().equals(station.getId());
+    }
+
+    public boolean isLastDownstation(Station station) {
+        return getLastDownstation().getId().equals(station.getId());
     }
 
     public Station getFirstUpstation() {
@@ -46,23 +70,21 @@ public class Sections implements Iterable<Section> {
 
     public void addFirstSection(Section newSection) {
         if (sections.stream().anyMatch(section ->
-                section.getDownstation().getId().equals(newSection.getUpstation().getId()) ||
-                        section.getUpstation().getId().equals(newSection.getUpstation().getId()))) {
+                section.isInSection(newSection))) {
             throw new InvalidInputException("새로운 구간의 하행역은 이미 노선에 존재하는 역이면 안 됩니다.");
         }
 
         sections.add(0, newSection);
     }
 
-    public void addSection(Section newSection, int lineDistance) {
-
+    public void addSection(Section newSection) {
         // newSection의 upstation, downstation 둘 다 노선에 등록되어있는 거면 안 됨
         boolean upstationExists = sections.stream().anyMatch(section ->
-                section.getUpstation().getId().equals(newSection.getUpstation().getId()) ||
-                        section.getDownstation().getId().equals(newSection.getUpstation().getId()));
+                section.isUpstation(newSection.getUpstation()) ||
+                section.isDownstation(newSection.getUpstation()));
         boolean downstationExists = sections.stream().anyMatch(section ->
-                section.getUpstation().getId().equals(newSection.getDownstation().getId()) ||
-                        section.getDownstation().getId().equals(newSection.getDownstation().getId()));
+                section.isUpstation(newSection.getDownstation()) ||
+                section.isDownstation(newSection.getDownstation()));
 
         if (upstationExists && downstationExists) {
             throw new InvalidInputException("새로운 구간의 상행역과 하행역 둘 다 이미 노선에 등록되어 있습니다.");
@@ -75,9 +97,9 @@ public class Sections implements Iterable<Section> {
         if (upstationExists) {
             for (int i = 0; i < sections.size(); i++) {
                 Section currentSection = sections.get(i);
-                if (currentSection.getUpstation().getId().equals(newSection.getUpstation().getId())) {
+                if (currentSection.isUpstation(newSection.getUpstation())) {
                     currentSection.setUpstation(newSection.getDownstation());
-                    currentSection.setDistance(lineDistance - newSection.getDistance());
+                    currentSection.setDistance(currentSection.getDistance() - newSection.getDistance());
                     sections.add(i, newSection);
                     return;
                 }
@@ -85,9 +107,9 @@ public class Sections implements Iterable<Section> {
         } else {
             for (int i = 0; i < sections.size(); i++) {
                 Section currentSection = sections.get(i);
-                if (currentSection.getDownstation().getId().equals(newSection.getDownstation().getId())) {
+                if (currentSection.isDownstation(newSection.getDownstation())) {
                     currentSection.setDownstation(newSection.getUpstation());
-                    currentSection.setDistance(lineDistance - newSection.getDistance());
+                    currentSection.setDistance(currentSection.getDistance() - newSection.getDistance());
                     sections.add(i + 1, newSection);
                     return;
                 }
@@ -97,31 +119,37 @@ public class Sections implements Iterable<Section> {
     }
 
     public void addLastSection(Section newSection) {
-        Station lastDownstation = getLastDownstation();
-        if (!Objects.equals(lastDownstation.getId(), newSection.getUpstation().getId())) {
-            throw new InvalidInputException("해당 노선의 하행 종점역과 새로운 구간의 상행역이 일치해야 합니다.");
-        }
-
+        log.info("addLastSection!");
         if (sections.stream().anyMatch(section ->
-                section.getDownstation().getId().equals(newSection.getDownstation().getId()) ||
-                        section.getUpstation().getId().equals(newSection.getDownstation().getId()))) {
+                section.isInSection(newSection))) {
             throw new InvalidInputException("새로운 구간의 하행역은 이미 노선에 존재하는 역이면 안 됩니다.");
         }
 
         sections.add(newSection);
     }
-    public void popSection(Station station) {
-        Station lastDownstation = getLastDownstation();
-        if (station.getId() != lastDownstation.getId()) {
-            throw new InvalidInputException("노선에 등록된 하행 종점역만 제거할 수 있습니다.");
-        }
-        if (sections.size() == 1) {
-            throw new InvalidInputException("노선에 상행 종점역과 하행 종점역만 있는 경우에는 제거할 수 없습니다.");
-        }
 
+    public void removeFirstSection() {
+        sections.remove(0);
+    }
+
+    public void removeLastSection() {
         sections.remove(sections.size() - 1);
     }
 
+    public void removeSection(Station station) {
+        int size = sections.size();
+        for (int i = 0; i < size; i++) {
+            Section currentSection = sections.get(i);
+            if (currentSection.isDownstation(station)) {
 
+                Section nextSection = sections.get(i + 1);
+                currentSection.setDownstation(nextSection.getDownstation());
+                currentSection.setDistance(currentSection.getDistance() + nextSection.getDistance());
+                sections.remove(i + 1);
+
+                return;
+            }
+        }
+    }
 
 }
