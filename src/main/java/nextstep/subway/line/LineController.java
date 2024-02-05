@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/lines")
 public class LineController {
 
-    private LineService lineService;
-    private SectionService sectionService;
+    private final LineService lineService;
+    private final SectionService sectionService;
 
     public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
