@@ -52,7 +52,6 @@ public class Line {
 
     public void addSection(Section section) {
         sections.addSection(section);
-
     }
 
     public void deleteSection(Long stationId) {

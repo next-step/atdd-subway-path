@@ -51,7 +51,7 @@ public class Sections {
     }
 
     public List<Station> allStations() {
-        return sections.stream().flatMap(section1 -> Stream.of(section1.getUpStation(), section1.getDownStation())).distinct().collect(Collectors.toList());
+        return sections.stream().flatMap(section -> section.stations().stream()).distinct().collect(Collectors.toList());
     }
 
     private Station lastDownStation() {

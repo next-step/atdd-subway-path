@@ -5,6 +5,7 @@ import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -33,6 +34,10 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public List<Station> stations() {
+        return List.of(upStation, downStation);
     }
 
     public Long getId() {
