@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.entity.Section;
-import nextstep.subway.domain.entity.Station;
 
 import java.util.List;
 

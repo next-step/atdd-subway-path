@@ -32,9 +32,9 @@ public class LineServiceMockTest {
     @InjectMocks
     private LineService lineService;
 
-    private Long STATION_ID_1 = 1L;
-    private Long STATION_ID_2 = 2L;
-    private Long LINE_ID_1 = 1L;
+    private final Long STATION_ID_1 = 1L;
+    private final Long STATION_ID_2 = 2L;
+    private final Long LINE_ID_1 = 1L;
 
     @Test
     void addSection() {

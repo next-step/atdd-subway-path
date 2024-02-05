@@ -51,7 +51,7 @@ class LineTest {
         // getStations 를 호출했을 때
         List<Station> stations = line.getStations();
         List<String> stationNames = stations.stream()
-                .map(station -> station.getName())
+                .map(Station::getName)
                 .collect(Collectors.toList());
 
         assertAll(

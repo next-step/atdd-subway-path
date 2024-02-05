@@ -72,7 +72,7 @@ public class Line {
 
     public List<Station> getStations() {
         List<Station> stations = this.sections.stream()
-                .map(section -> section.getUpStation())
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
 
         stations.add(sections.get(sections.size() - 1).getDownStation()); //종착역 추가
