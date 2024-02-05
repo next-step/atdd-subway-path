@@ -3,24 +3,24 @@ package nextstep.subway;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import nextstep.subway.controller.dto.LineCreateRequest;
 import nextstep.subway.controller.dto.LineResponse;
 import nextstep.subway.controller.dto.LineUpdateRequest;
 import nextstep.subway.controller.dto.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
 
+import static nextstep.subway.fixture.LineFixture.BUNDANG_LINE;
+import static nextstep.subway.fixture.LineFixture.SHINBUNDANG_LINE;
+import static nextstep.subway.fixture.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.http.HttpStatus.*;
-import static nextstep.subway.fixture.LineFixture.분당선;
-import static nextstep.subway.fixture.LineFixture.신분당선;
-import static nextstep.subway.fixture.StationFixture.*;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -48,7 +48,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineCreateRequest request = 신분당선.toCreateRequest(강남역_ID, 선릉역_ID);
+        LineCreateRequest request = SHINBUNDANG_LINE.toCreateRequest(강남역_ID, 선릉역_ID);
 
         // when
         ExtractableResponse<Response> createResponse = 노선_생성_요청(request, CREATED.value());
@@ -69,10 +69,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void selectLines() {
         // given
-        LineCreateRequest shinbundangRequest = 신분당선.toCreateRequest(강남역_ID, 선릉역_ID);
+        LineCreateRequest shinbundangRequest = SHINBUNDANG_LINE.toCreateRequest(강남역_ID, 선릉역_ID);
         노선_생성_요청(shinbundangRequest, CREATED.value());
 
-        LineCreateRequest bundangRequest = 분당선.toCreateRequest(강남역_ID, 양재역_ID);
+        LineCreateRequest bundangRequest = BUNDANG_LINE.toCreateRequest(강남역_ID, 양재역_ID);
         노선_생성_요청(bundangRequest, CREATED.value());
 
         //when
@@ -93,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void selectLine() {
         // given
-        LineCreateRequest shinbundangRequest = 신분당선.toCreateRequest(강남역_ID, 선릉역_ID);
+        LineCreateRequest shinbundangRequest = SHINBUNDANG_LINE.toCreateRequest(강남역_ID, 선릉역_ID);
         ExtractableResponse<Response> shinbundangCreateResponse = 노선_생성_요청(shinbundangRequest, CREATED.value());
         LineResponse createLineResponse = shinbundangCreateResponse.as(LineResponse.class);
 
@@ -123,7 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineCreateRequest shinbundangRequest = 신분당선.toCreateRequest(강남역_ID, 선릉역_ID);
+        LineCreateRequest shinbundangRequest = SHINBUNDANG_LINE.toCreateRequest(강남역_ID, 선릉역_ID);
         ExtractableResponse<Response> shinbundangCreateResponse = 노선_생성_요청(shinbundangRequest, CREATED.value());
         LineResponse createLineResponse = shinbundangCreateResponse.as(LineResponse.class);
 
@@ -155,7 +155,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineCreateRequest shinbundangRequest = 신분당선.toCreateRequest(강남역_ID, 선릉역_ID);
+        LineCreateRequest shinbundangRequest = SHINBUNDANG_LINE.toCreateRequest(강남역_ID, 선릉역_ID);
         ExtractableResponse<Response> shinbundangCreateResponse = 노선_생성_요청(shinbundangRequest, CREATED.value());
         LineResponse createLineResponse = shinbundangCreateResponse.as(LineResponse.class);
 

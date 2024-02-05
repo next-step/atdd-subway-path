@@ -19,7 +19,7 @@ public class Sections {
 
     private void validateSize(List<Section> sections) {
         if (sections.isEmpty()) {
-            throw new IllegalArgumentException("구간이 존재하지 않습니다.");
+            throw new ApplicationException("구간이 존재하지 않습니다.");
         }
     }
 

@@ -17,10 +17,10 @@ import nextstep.subway.exception.ExceptionResponse;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static nextstep.subway.fixture.LineFixture.SHINBUNDANG_LINE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.springframework.http.HttpStatus.*;
-import static nextstep.subway.fixture.LineFixture.신분당선;
 import static nextstep.subway.fixture.StationFixture.*;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -47,7 +47,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         양재역_ID = 지하철역_생성_요청(YANGJAE_STATION.toCreateRequest(), CREATED.value())
                 .as(StationResponse.class).getId();
 
-        LineCreateRequest request = 신분당선.toCreateRequest(강남역_ID, 선릉역_ID);
+        LineCreateRequest request = SHINBUNDANG_LINE.toCreateRequest(강남역_ID, 선릉역_ID);
         이호선 = 노선_생성_요청(request, CREATED.value())
                 .as(LineResponse.class).getId();
     }
