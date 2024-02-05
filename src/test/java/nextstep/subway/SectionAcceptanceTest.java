@@ -81,64 +81,100 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * WHEN 새로운 지하철 구간의 상행역을 노선의 하행 종점역이 아닌 곳에 생성하면
+     * WHEN 새로운 지하철 구간이 기존 구간과 같다면
      * Then 새로운 구간을 생성할 수 없다
      */
     @Test
-    void 실패_새로운_구간_생성시_상행역을_노선의_하행_종점역에_생성하지_않으면_예외가_발생한다() {
+    void 실패_새로운_구간_생성시_기존_구간과_같다면_구간을_생성할_수_없다() {
+        // given
+        SectionCreateRequest request = sectionCreateRequest(강남역_ID, 선릉역_ID, 10);
+
+        // when
+        String message = 구간_생성_요청(request, OK.value())
+                .as(ExceptionResponse.class).getMessage();
+
+        // then
+        assertThat(message).isEqualTo("신규 구간이 기존 구간과 일치하여 구간을 생성할 수 없습니다.");
+    }
+
+    /**
+     * WHEN 새로운 지하철 구간 생성시 노선의 처음에 생성하면
+     * Then 새로운 구간이 생성된다
+     */
+    @Test
+    void 성공_새로운_지하철_구간_생성시_노선의_처음에_생성할_수_있다() {
+        // given
+        SectionCreateRequest request = sectionCreateRequest(양재역_ID, 강남역_ID, 10);
+
+        // when
+        구간_생성_요청(request, OK.value())
+                .as(ExceptionResponse.class).getMessage();
+
+        // then
+        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        assertThat(response.getStations()).hasSize(3)
+                .extracting("id", "name")
+                .containsExactly(
+                        tuple(3L, "양재역"),
+                        tuple(1L, "강남역"),
+                        tuple(2L, "선릉역")
+                );
+    }
+
+    /**
+     * WHEN 새로운 지하철 구간 생성시 상행역을 기준으로 노선의 가운데에 생성하면
+     * Then 새로운 구간이 생성된다
+     */
+    @Test
+    void 성공_새로운_지하철_구간_생성시_상행역을_기준으로_노선의_가운데에_생성할_수_있다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(강남역_ID, 양재역_ID, 10);
 
         // when
-        String message = 구간_생성_요청(request, OK.value())
+        구간_생성_요청(request, OK.value())
                 .as(ExceptionResponse.class).getMessage();
 
         // then
-        assertThat(message).isEqualTo("새로운 구간의 상행역은 노선의 하행 종점역에만 생성할 수 있습니다.");
-    }
-
-
-    /**
-     * WHEN 새로운 지하철 구간의 하행역을 노선의 존재하는 역에 생성하면
-     * Then 새로운 구간을 생성할 수 없다
-     */
-    @Test
-    void 실패_새로운_구간_생성시_하행역을_노선의_존재하는_역에_생성하면_예외가_발생한다() {
-        // given
-        SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 강남역_ID, 10);
-
-        // when
-        String message = 구간_생성_요청(request, OK.value())
-                .as(ExceptionResponse.class).getMessage();
-
-        // then
-        assertThat(message).isEqualTo("새로운 구간의 하행역은 노선에 존재하는 역에 생성할 수 없습니다.");
+        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        assertThat(response.getStations()).hasSize(3)
+                .extracting("id", "name")
+                .containsExactly(
+                        tuple(1L, "강남역"),
+                        tuple(3L, "양재역"),
+                        tuple(2L, "선릉역")
+                );
     }
 
     /**
-     * WHEN 새로운 지하철 구간의 상행역을 노선의 하행 종점역이 아닌 곳에 생성하면
-     * Then 새로운 구간을 생성할 수 없다
+     * WHEN 새로운 지하철 구간 생성시 하행역을 기준으로 노선의 가운데에 생성하면
+     * Then 새로운 구간이 생성된다
      */
     @Test
-    void 실패_새로운_구간_생성시_하행역을_노선의_하행역에_생성하면_예외가_발생한다() {
+    void 성공_새로운_지하철_구간_생성시_하행역을_기준으로_노선의_가운데에_생성할_수_있다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(양재역_ID, 선릉역_ID, 10);
 
         // when
-        String message = 구간_생성_요청(request, OK.value())
+        구간_생성_요청(request, OK.value())
                 .as(ExceptionResponse.class).getMessage();
 
         // then
-        assertThat(message).isEqualTo("새로운 구간의 하행역은 노선에 존재하는 역에 생성할 수 없습니다.");
+        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        assertThat(response.getStations()).hasSize(3)
+                .extracting("id", "name")
+                .containsExactly(
+                        tuple(1L, "강남역"),
+                        tuple(3L, "양재역"),
+                        tuple(2L, "선릉역")
+                );
     }
 
-
     /**
-     * WHEN 새로운 지하철 구간 생성시 노선의 하행 종점역에 생성하면
+     * WHEN 새로운 지하철 구간 생성시 노선의 마지막에 생성하면
      * Then 새로운 구간이 생성된다
      */
     @Test
-    void 성공_새로운_지하철_구간_생성시_노선의_하행_종점역에_생성할_수_있다() {
+    void 성공_새로운_지하철_구간_생성시_노선의_마지막에_생성할_수_있다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
 
@@ -174,7 +210,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * Then 구간을 제거할 수 없다
      */
     @Test
-    void 실패_지하철_구간_제거시_마지막_구간이_아닐경우_예외가_발생한다() {
+    void 실패_지하철_구간_제거시_마지막_구간이_아닐경우_구간을_제거할_수_없다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
         post("/lines/{lineId}/sections", request, CREATED.value(), 이호선);
@@ -193,7 +229,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * Then 구간을 제거할 수 없다
      */
     @Test
-    void 실패_지하철_구간_제거시_구간이_한개만_있는_경우_예외가_발생한다() {
+    void 실패_지하철_구간_제거시_구간이_한개만_있는_경우_구간을_제거할_수_없다() {
         // when
         String message = 구간_제거_요청(OK.value(), Map.of("stationId", "1"))
                 .as(ExceptionResponse.class).getMessage();
