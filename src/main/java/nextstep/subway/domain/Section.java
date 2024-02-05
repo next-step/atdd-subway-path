@@ -53,7 +53,7 @@ public class Section {
         return distance;
     }
 
-    public void splitBySection(Section section) {
+    public void splitTheSectionWith(Section section) {
         if (upStation == section.getUpStation()) {
             upStation = section.getDownStation();
             distance -= section.getDistance();

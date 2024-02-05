@@ -73,7 +73,7 @@ public class Line {
         sections.stream()
             .filter(isTheSectionToSplit)
             .findAny()
-            .ifPresent(sectionToSplit -> sectionToSplit.splitBySection(sectionToAdd));
+            .ifPresent(section -> section.splitTheSectionWith(sectionToAdd));
 
         sections.add(sectionToAdd);
     }
