@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
@@ -96,12 +97,51 @@ class LineTest {
         assertThat(line.getSections()).hasSize(2);
 
         // then
-        Section addedSection = line.getSections().stream().filter(section -> section.getUpStation() == 강남역).findFirst().orElseThrow(
+        final Section addedSection = line.getSections().stream().filter(section -> section.getUpStation() == 강남역).findFirst().orElseThrow(
             EntityNotFoundException::new);
-        Section splitedSection = line.getSections().stream().filter(section -> section.getUpStation() == 선릉역).findFirst().orElseThrow(
+        final Section splitedSection = line.getSections().stream().filter(section -> section.getUpStation() == 선릉역).findFirst().orElseThrow(
             EntityNotFoundException::new
         );
         assertThat(addedSection.getDistance()).isEqualTo(3);
         assertThat(splitedSection.getDistance()).isEqualTo(7);
+    }
+
+    /**
+     * Given 1개의 구간을 가진 지하철 노선이 등록되어 있다.
+     * When 같은 노선을 추가한다.
+     * Then 실패한다.
+     */
+    @Test
+    void 노선에_역_추가시_노선에_같은_역_추가시_실패한다() {
+        // given
+        final Station 강남역 = new Station("강남역");
+        final Station 역삼역 = new Station("역삼역");
+
+        final Line line = new Line("2호선", "green", 강남역, 역삼역, 10);
+
+        // when
+        // then
+        assertThatThrownBy(() -> line.addSection(강남역, 역삼역, 3))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+    /**
+     * Given 1개의 구간을 가진 지하철 노선이 등록되어 있다.
+     * When 같은 노선을 추가한다.
+     * Then 실패한다.
+     */
+    @Test
+    void 노선에_역_추가시_둘다_기존_노선에_포함되지_않는_경우_실패한다() {
+        // given
+        final Station 강남역 = new Station("강남역");
+        final Station 역삼역 = new Station("역삼역");
+        final Station 선릉역 = new Station("선릉역");
+        final Station 삼성역 = new Station("삼성역");
+
+        final Line line = new Line("2호선", "green", 강남역, 역삼역, 10);
+
+        // when
+        // then
+        assertThatThrownBy(() -> line.addSection(선릉역, 삼성역, 3))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }
