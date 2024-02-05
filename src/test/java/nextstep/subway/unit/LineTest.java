@@ -24,20 +24,20 @@ class LineTest {
 
     @Test
     void addSection() {
-        line.getSections().add(section);
-        assertThat(line.getSections()).contains(section);
+        line.addSection(section);
+        assertThat(line.contains(section)).isTrue();
     }
 
     @Test
     void getStations() {
-        line.getSections().add(section);
-        assertThat(line.getSections()).contains(section);
+        line.addSection(section);
+        assertThat(line.contains(section)).isTrue();
     }
 
     @Test
     void removeSection() {
-        line.getSections().add(section);
+        line.addSection(section);
         line.removeSection(section);
-        assertThat(line.getSections()).hasSize(0);
+        assertThat(line.contains(section)).isFalse();
     }
 }

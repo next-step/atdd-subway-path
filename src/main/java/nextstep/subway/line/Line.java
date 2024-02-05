@@ -43,6 +43,14 @@ public class Line {
         return sections;
     }
 
+    public boolean contains(Section section) {
+        return sections.contains(section);
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
     public Long getId() {
         return id;
     }
