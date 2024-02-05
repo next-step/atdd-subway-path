@@ -3,7 +3,7 @@ package nextstep.subway.applicaion.dto;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-public class LineRequest {
+public class LineCreateRequest {
     private String name;
     private String color;
     @NotNull

@@ -1,7 +1,8 @@
 package nextstep.subway.applicaion;
 
-import nextstep.subway.applicaion.dto.LineRequest;
+import nextstep.subway.applicaion.dto.LineCreateRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
+import nextstep.subway.applicaion.dto.LineUpdateRequest;
 import nextstep.subway.applicaion.dto.SectionRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Line;
@@ -28,7 +29,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest request) {
+    public LineResponse saveLine(LineCreateRequest request) {
         final Station upStation = stationService.findById(request.getUpStationId());
         final Station downStation = stationService.findById(request.getDownStationId());
         final Line line = lineRepository.save(
@@ -56,7 +57,7 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineUpdateRequest lineRequest) {
         final Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
 
         if (lineRequest.getName() != null) {
