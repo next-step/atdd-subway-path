@@ -41,7 +41,7 @@ public class LineServiceTest {
         lineRepository.save(강남선);
     }
 
-    @DisplayName("구간 추가")
+    @DisplayName("구간 1개 추가")
     @Test
     void addSection() {
         // given
@@ -57,7 +57,7 @@ public class LineServiceTest {
         assertThat(강남선.getSections().get()).hasSize(1);
     }
 
-    @DisplayName("구간 제거")
+    @DisplayName("마지막 구간 1개 제거")
     @Test
     void deleteSection() {
         // given
