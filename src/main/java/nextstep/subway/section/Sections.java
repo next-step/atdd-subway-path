@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 
+import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.exception.InvalidInputException;
 import nextstep.subway.station.Station;
 
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 @Embeddable
+@Slf4j
 public class Sections implements Iterable<Section> {
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -24,12 +26,12 @@ public class Sections implements Iterable<Section> {
         return sections.iterator();
     }
 
-    public Stream<Section> stream() {
-        return sections.stream();
-    }
-
     public int size() {
         return sections.size();
+    }
+
+    public Stream<Section> stream() {
+        return sections.stream();
     }
 
     public int getTotalDistance() {
@@ -40,6 +42,10 @@ public class Sections implements Iterable<Section> {
 
     public void initSection(Section section) {
         sections.add(section);
+    }
+
+    public int getFirstSectionDistance() {
+        return sections.get(0).getDistance();
     }
 
     public int getLastSectionDistance() {
@@ -72,13 +78,12 @@ public class Sections implements Iterable<Section> {
     }
 
     public void addSection(Section newSection) {
-
         // newSection의 upstation, downstation 둘 다 노선에 등록되어있는 거면 안 됨
         boolean upstationExists = sections.stream().anyMatch(section ->
                 section.isUpstation(newSection.getUpstation()) ||
-                section.isUpstation(newSection.getDownstation()));
+                section.isDownstation(newSection.getUpstation()));
         boolean downstationExists = sections.stream().anyMatch(section ->
-                section.isDownstation(newSection.getUpstation()) ||
+                section.isUpstation(newSection.getDownstation()) ||
                 section.isDownstation(newSection.getDownstation()));
 
         if (upstationExists && downstationExists) {
@@ -114,6 +119,7 @@ public class Sections implements Iterable<Section> {
     }
 
     public void addLastSection(Section newSection) {
+        log.info("addLastSection!");
         if (sections.stream().anyMatch(section ->
                 section.isInSection(newSection))) {
             throw new InvalidInputException("새로운 구간의 하행역은 이미 노선에 존재하는 역이면 안 됩니다.");
@@ -135,12 +141,15 @@ public class Sections implements Iterable<Section> {
         for (int i = 0; i < size; i++) {
             Section currentSection = sections.get(i);
             if (currentSection.isDownstation(station)) {
+
                 Section nextSection = sections.get(i + 1);
                 currentSection.setDownstation(nextSection.getDownstation());
                 currentSection.setDistance(currentSection.getDistance() + nextSection.getDistance());
                 sections.remove(i + 1);
+
                 return;
             }
         }
     }
+
 }

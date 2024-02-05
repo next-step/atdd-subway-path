@@ -5,6 +5,7 @@ import nextstep.subway.section.SectionAddRequest;
 import nextstep.subway.section.Sections;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -29,10 +29,6 @@ public class SectionAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        /*
-        * databaseCleanup.execute()를 해도 DB 클린이 안 되는 것 같습니다...
-        * DirtiesContext를 쓰면 정상적으로 실행됩니다 왜 이러는 걸까요
-        * */
         StationFactory.createStation("banghwa");
         StationFactory.createStation("gangdong");
         StationFactory.createStation("macheon");
@@ -121,15 +117,16 @@ public class SectionAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.body().asString()).contains("새로운 구간의 하행역은 이미 노선에 존재하는 역이면 안 됩니다.");
+        assertThat(response.body().asString()).contains("새로운 구간의 상행역과 하행역 둘 다 이미 노선에 등록되어 있습니다.");
     }
 
     /**
      * Given 구간을 생성하고
-     * When 구간을 삭제하면
+     * When 첫번째 구간을 삭제하면
      * Then 노선을 조회했을 때 삭제한 구간을 찾을 수 없다
      */
-    @DisplayName("지하철노선 첫 번째 구간 삭제 성공")
+
+    @DisplayName("지하철노선 첫번째 구간 삭제 성공")
     @Test
     void firstSectionDeleteSuccess() {
         // given

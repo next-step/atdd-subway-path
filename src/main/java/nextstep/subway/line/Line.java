@@ -48,7 +48,7 @@ public class Line {
         sections.initSection(section);
     }
 
-    public void addSection(Section section) {
+    public void addSection(Section newSection) {
         /*
          * newSection의 upstation이 line의 하행종점역이면
          * addLastSection() 호출
@@ -57,13 +57,23 @@ public class Line {
          * 이 둘 중 아무것도 아니면
          * addSection() 호출
          * */
+        boolean upstationExists = sections.stream().anyMatch(section ->
+                section.isUpstation(newSection.getUpstation()) ||
+                        section.isDownstation(newSection.getUpstation()));
+        boolean downstationExists = sections.stream().anyMatch(section ->
+                section.isUpstation(newSection.getDownstation()) ||
+                        section.isDownstation(newSection.getDownstation()));
 
-        if (sections.isFirstUpstation(section.getDownstation())) {
-            sections.addFirstSection(section);
-        } else if(sections.isLastDownstation(section.getUpstation())) {
-            sections.addLastSection(section);
+        if (upstationExists && downstationExists) {
+            throw new InvalidInputException("새로운 구간의 상행역과 하행역 둘 다 이미 노선에 등록되어 있습니다.");
+        }
+
+        if (sections.isFirstUpstation(newSection.getDownstation())) {
+            sections.addFirstSection(newSection);
+        } else if(sections.isLastDownstation(newSection.getUpstation())) {
+            sections.addLastSection(newSection);
         } else {
-            sections.addSection(section);
+            sections.addSection(newSection);
         }
     }
 
