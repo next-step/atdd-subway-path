@@ -30,7 +30,7 @@ public class Line {
         this.downStationId = downStation.getId();
 
         Section section = new Section(upStation, downStation, distance, this);
-        this.sections.add(section);
+        this.sections.addEnd(section);
     }
 
     public Line(Long id ,String name, String color, Station upStation, Station downStation, int distance) {
@@ -41,7 +41,7 @@ public class Line {
         this.downStationId = downStation.getId();
 
         Section section = new Section(upStation, downStation, distance, this);
-        this.sections.add(section);
+        this.sections.addEnd(section);
     }
 
     public Long getId() {
@@ -69,26 +69,22 @@ public class Line {
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
-        registerValidate(upStation, downStation);
-        changeDownStation(downStation);
+        if (this.downStationId.equals(upStation.getId())) {
+            // 끝에 추가
+            this.sections.checkLineStationsDuplicate(downStation);
+            this.sections.addEnd(new Section(upStation, downStation, distance, this));
+            this.downStationId = downStation.getId();
 
-        this.sections.add(new Section(upStation, downStation, distance, this));
-    }
+        } else if (this.upStationId.equals(downStation.getId())) {
+            // 앞에 추가
+            this.sections.checkLineStationsDuplicate(upStation);
+            this.sections.addFirst(new Section(upStation, downStation, distance, this));
+            this.upStationId = upStation.getId();
+        } else {
+            //중간에 추가
+            System.out.println("중간에 추가");
 
-    private void registerValidate(final Station upStation, final Station downStation) {
-        checkEqualsLineDownStation(upStation);
-
-        this.sections.checkLineStationsDuplicate(downStation);
-    }
-
-    private void checkEqualsLineDownStation(final Station upStation) {
-        if (!this.downStationId.equals(upStation.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "노선의 하행종점역과 등록하려는 구간의 상행역이 다릅니다.");
         }
-    }
-
-    private void changeDownStation(final Station station) {
-        this.downStationId = station.getId();
     }
 
     public void removeSection(final Long stationId) {
