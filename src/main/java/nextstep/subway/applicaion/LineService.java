@@ -76,6 +76,11 @@ public class LineService {
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         final Station upStation = stationService.findById(sectionRequest.getUpStationId());
         final Station downStation = stationService.findById(sectionRequest.getDownStationId());
+
+        if(upStation.equals(downStation)){
+            throw new IllegalArgumentException("상행역과 하행역이 같습니다.");
+        }
+
         final Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
 
         line.addSection(upStation, downStation, sectionRequest.getDistance());
