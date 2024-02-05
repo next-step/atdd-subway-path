@@ -35,12 +35,13 @@ public class LineService {
         final Line line = lineRepository.save(
             new Line(
                 request.getName(),
-                request.getColor(),
-                upStation,
-                downStation,
-                request.getDistance()
+                request.getColor()
             )
         );
+
+        if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() > 0) {
+            line.addSection(upStation, downStation, request.getDistance());
+        }
 
         return createLineResponse(line);
     }

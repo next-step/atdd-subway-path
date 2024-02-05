@@ -85,7 +85,7 @@ public class Line {
             throw new IllegalArgumentException("이미 등록된 구간입니다.");
         }
 
-        if(!stationSet.contains(sectionToAdd.getUpStation()) && !stationSet.contains(sectionToAdd.getDownStation())) {
+        if(!stationSet.isEmpty() && !stationSet.contains(sectionToAdd.getUpStation()) && !stationSet.contains(sectionToAdd.getDownStation())) {
             throw new IllegalArgumentException("연결할 수 없는 구간입니다.");
         }
     }
