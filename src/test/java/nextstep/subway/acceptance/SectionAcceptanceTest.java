@@ -9,6 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+import java.util.List;
+
+import static nextstep.subway.acceptance.LineSteps.노선을_조회한다;
 import static nextstep.subway.acceptance.SectionSteps.구간을_등록한다;
 import static nextstep.subway.acceptance.SectionSteps.구간을_제거한다;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
@@ -17,15 +21,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SectionAcceptanceTest extends AcceptanceTest {
+    public static final String 강남역 = "강남역";
+    public static final String 역삼역 = "역삼역";
+    public static final String 선릉역 = "선릉역";
+    public static final String 삼성역 = "삼성역";
     private Long 강남역Id;
     private Long 역삼역Id;
     private Long 선릉역Id;
+    private Long 삼성역Id;
 
     @BeforeEach
     void init() {
-        강남역Id = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
-        역삼역Id = 지하철역_생성_요청("역삼역").jsonPath().getLong("id");
-        선릉역Id = 지하철역_생성_요청("선릉역").jsonPath().getLong("id");
+        강남역Id = 지하철역_생성_요청(강남역).jsonPath().getLong("id");
+        역삼역Id = 지하철역_생성_요청(역삼역).jsonPath().getLong("id");
+        선릉역Id = 지하철역_생성_요청(선릉역).jsonPath().getLong("id");
+        삼성역Id = 지하철역_생성_요청(삼성역).jsonPath().getLong("id");
     }
 
     /**
@@ -62,6 +72,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * When 노선이 생성되어 있다.
      * 노선의 끝에 구간을 등록한다.
      * Then 정상 응답 처리된다.
+     * And 노선을 조회하면 강남역 - 역삼역 - 선릉역이 조회된다.
      */
     @DisplayName("노선의 끝에 구간을 등록한다.")
     @Test
@@ -70,22 +81,45 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 역삼역Id, 선릉역Id, 10);
 
-        구간이_정상_등록한다(response, HttpStatus.CREATED);
+        구간이_정상_등록된다(response, HttpStatus.CREATED);
+
+        노선을_조회하여_지하철역을_확인한다(lineId, Arrays.asList(강남역, 역삼역, 선릉역));
+    }
+
+    /**
+     * Given 노선이 생성되어 있다.
+     * When 노선의 앞에 구간을 등록한다.
+     * Then 정상 응답 처리 된다.
+     * And 노선을 조회하면 강남역 - 역삼역 - 선릉역이 조회된다.
+     */
+    @DisplayName("노선의 맨앞에 구간을 등록한다.")
+    @Test
+    public void 노선의_맨_앞_구간등록_정상처리() {
+        final Long lineId = 노선이_생성되어_있다("이호선", "bg-red-600", 역삼역Id, 선릉역Id, 10);
+
+        final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 강남역Id, 역삼역Id, 5);
+
+        구간이_정상_등록된다(response, HttpStatus.CREATED);
+
+        노선을_조회하여_지하철역을_확인한다(lineId, Arrays.asList(강남역, 역삼역, 선릉역));
     }
 
     /**
      * Given 노선이 생성되어 있다.
      * When 노선의 중간에 구간을 등록한다.
      * Then 정상 응답 처리 된다.
-     * And 중간에 구간을 추가했기 때문에 노선을 조회하면, 구간 추가 전과 노선의 길이가 동일하다.
+     * And 노선을 조회하면 강남역 - 선릉역 - 삼성역이 조회된다.
      */
     @DisplayName("노선의 중간에 구간을 등록한다.")
     @Test
     public void 노선의_중간_구간등록_정상처리() {
-        final Long lineId = 노선이_생성되어_있다("이호선", "bg-red-600", 강남역Id, 선릉역Id, 10);
-        final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 강남역Id, 역삼역Id, 5);
-        구간이_정상_등록한다(response, HttpStatus.CREATED);
-        노선의_길이가_동일하다(lineId, 10);
+        final Long lineId = 노선이_생성되어_있다("이호선", "bg-red-600", 강남역Id, 삼성역Id, 10);
+
+        final ExtractableResponse<Response> response = 구간을_등록한다(lineId, 강남역Id, 선릉역Id, 5);
+
+        구간이_정상_등록된다(response, HttpStatus.CREATED);
+
+        노선을_조회하여_지하철역을_확인한다(lineId, Arrays.asList(강남역, 선릉역, 삼성역));
     }
 
     /**
@@ -147,7 +181,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
-    private void 구간이_정상_등록한다(final ExtractableResponse<Response> response, final HttpStatus httpStatus) {
+    private void 구간이_정상_등록된다(final ExtractableResponse<Response> response, final HttpStatus httpStatus) {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
@@ -155,8 +189,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
-    private static void 노선의_길이가_동일하다(final Long lineId, final int distance) {
-        final LineResponse lineResponse = LineSteps.노선을_조회한다(lineId).as(LineResponse.class);
-        assertThat(lineResponse.getDistance()).isEqualTo(distance);
+    private void 노선을_조회하여_지하철역을_확인한다(Long lineId, List<String> stations) {
+        assertThat(노선을_조회한다(lineId).jsonPath().getList("stations.name"))
+                .containsExactlyElementsOf(stations);
     }
 }
