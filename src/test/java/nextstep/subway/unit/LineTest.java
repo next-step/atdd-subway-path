@@ -67,4 +67,34 @@ class LineTest {
         // then
         assertThat(line.getSections()).hasSize(1);
     }
+
+    /**
+     * Given 1개의 구간을 가진 지하철 노선이 등록되어 있다.
+     * When 가운데에 역을 추가한다.
+     * Then 다시 조회한 노선의 역은 3개이다.
+     * Then 구간은 2개다.
+     * Then 역의 거리는 나뉘어져 있다.
+     */
+    @Test
+    void 노선에_역_추가시_노선_가운데_추가할_수_있다() {
+        // given
+        final Station 강남역 = new Station("강남역");
+        final Station 역삼역 = new Station("역삼역");
+        final Station 선릉역 = new Station("선릉역");
+
+        final Line line = new Line("2호선", "green", 강남역, 역삼역, 10);
+
+        // when
+        line.addSection(강남역, 선릉역, 3);
+
+        // then
+        assertThat(line.getStations()).hasSize(3);
+
+        // then
+        assertThat(line.getSections()).hasSize(2);
+
+        // then
+        assertThat(line.getSections().get(0).getDistance()).isEqualTo(3);
+        assertThat(line.getSections().get(1).getDistance()).isEqualTo(7);
+    }
 }
