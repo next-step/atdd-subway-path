@@ -1,22 +1,27 @@
 package nextstep.subway.domain;
 
+import org.hibernate.Hibernate;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 20, nullable = false)
     private String name;
+
+    @Column(length = 20, nullable = false)
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    protected Line() {
+    }
 
-    public Line() {
+    public Line(Long id) {
+        this.id = id;
     }
 
     public Line(String name, String color) {
@@ -24,52 +29,34 @@ public class Line {
         this.color = color;
     }
 
-    public Line(Long id, String name, String color) {
-        this.id = id;
+    public void update(String name, String color){
         this.name = name;
         this.color = color;
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
-        if(section.getLine() != this){
-            section.setLine(this);
-        }
-    }
-
-    public int sectionsSize() {
-        return sections.size();
-    }
-
-    public void removeSection(Section section) {
-        sections.remove(section);
-    }
-
-    public Long id() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String name() {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String color() {
+    public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || Hibernate.getClass(this) != Hibernate.getClass(object)) return false;
+        Line line = (Line) object;
+        return Objects.equals(id, line.id);
     }
 
-    public List<Section> sections() {
-        return sections;
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
+
