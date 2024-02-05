@@ -74,4 +74,11 @@ public class Sections {
         }
         sections.remove(sections.size() - 1);
     }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+                "sections=" + sections +
+                '}';
+    }
 }

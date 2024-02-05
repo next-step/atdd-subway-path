@@ -52,13 +52,13 @@ public class LineController {
 
     @PostMapping("/lines/{id}/sections")
     public ResponseEntity<SectionResponse> addLineSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        SectionResponse sectionResponse = lineService.addLineSection(id, sectionRequest);
+        SectionResponse sectionResponse = lineService.addSection(id, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + id + "/sections/" + sectionResponse.getId())).body(sectionResponse);
     }
 
     @DeleteMapping("/lines/{id}/sections")
     public ResponseEntity<Void> deleteLineSection(@PathVariable Long id, @RequestParam Long stationId) {
-        lineService.deleteLineSection(id, stationId);
+        lineService.deleteSection(id, stationId);
         return ResponseEntity.noContent().build();
     }
 }

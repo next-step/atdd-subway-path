@@ -81,7 +81,7 @@ public class LineService {
         return createLineSectionResponse(lineRepository.findById(id).orElseThrow(() -> new LineException(ErrorCode.LINE_NOT_FOUND, "")));
     }
 
-    public SectionResponse addLineSection(Long id, SectionRequest sectionRequest) {
+    public SectionResponse addSection(Long id, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(id).get();
 
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).get();
@@ -92,7 +92,7 @@ public class LineService {
         return createSectionResponse(section);
     }
 
-    public void deleteLineSection(Long id, Long stationId) {
+    public void deleteSection(Long id, Long stationId) {
         Line line = lineRepository.findById(id).get();
         line.deleteSection(stationId);
     }
