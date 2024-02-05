@@ -16,7 +16,7 @@ class LineTest {
     private Line 노선;
 
     @BeforeEach
-    void set노선() {
+    void setup() {
         노선 = new Line("노선", "파란색", 첫번째_역, 두번째_역, 10);
     }
 
