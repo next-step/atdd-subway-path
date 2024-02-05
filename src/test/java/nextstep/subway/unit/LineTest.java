@@ -2,7 +2,9 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.Test;
 
@@ -94,7 +96,12 @@ class LineTest {
         assertThat(line.getSections()).hasSize(2);
 
         // then
-        assertThat(line.getSections().get(0).getDistance()).isEqualTo(3);
-        assertThat(line.getSections().get(1).getDistance()).isEqualTo(7);
+        Section addedSection = line.getSections().stream().filter(section -> section.getUpStation() == 강남역).findFirst().orElseThrow(
+            EntityNotFoundException::new);
+        Section splitedSection = line.getSections().stream().filter(section -> section.getUpStation() == 선릉역).findFirst().orElseThrow(
+            EntityNotFoundException::new
+        );
+        assertThat(addedSection.getDistance()).isEqualTo(3);
+        assertThat(splitedSection.getDistance()).isEqualTo(7);
     }
 }

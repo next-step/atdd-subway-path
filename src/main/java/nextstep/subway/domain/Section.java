@@ -52,4 +52,17 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
+    public void splitBySection(Section section) {
+        if (upStation == section.getUpStation()) {
+            upStation = section.getDownStation();
+            distance -= section.getDistance();
+            return;
+        }
+
+        if (downStation == section.getDownStation()) {
+            downStation = section.getUpStation();
+            distance -= section.getDistance();
+        }
+    }
 }

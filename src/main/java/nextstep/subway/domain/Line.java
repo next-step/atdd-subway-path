@@ -62,7 +62,19 @@ public class Line {
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        sections.add(new Section(this, upStation, downStation, distance));
+        final Section sectionToAdd = new Section(this, upStation, downStation, distance);
+
+        final Predicate<Section> isTheSectionToSplit =
+            section ->
+                section.getUpStation().equals(upStation)
+                || section.getDownStation().equals(downStation);
+
+        sections.stream()
+            .filter(isTheSectionToSplit)
+            .findAny()
+            .ifPresent(sectionToSplit -> sectionToSplit.splitBySection(sectionToAdd));
+
+        sections.add(sectionToAdd);
     }
 
     public List<Station> getStations() {
@@ -76,15 +88,13 @@ public class Line {
     }
 
     public void removeSection(Station upStation, Station downStation) {
-        final var isTheSectionToDelete = generateSectionChecker(upStation, downStation);
-        sections = sections.stream()
-            .filter(isTheSectionToDelete)
-            .collect(Collectors.toList());
-    }
-
-    private static Predicate<Section> generateSectionChecker(Station upStation, Station downStation) {
-        return section ->
-            section.getUpStation() != upStation
+        final Predicate<Section> isNotTheSectionToDelete =
+            section ->
+                section.getUpStation() != upStation
                 && section.getDownStation() != downStation;
+
+        sections = sections.stream()
+            .filter(isNotTheSectionToDelete)
+            .collect(Collectors.toList());
     }
 }
