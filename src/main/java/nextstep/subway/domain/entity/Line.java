@@ -2,17 +2,20 @@ package nextstep.subway.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,5 +68,14 @@ public class Line {
     public void deleteSection(Section section) {
         this.sections.remove(section);
         this.distance -= section.getDistance();
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = this.sections.stream()
+                .map(section -> section.getUpStation())
+                .collect(Collectors.toList());
+
+        stations.add(sections.get(sections.size() - 1).getDownStation()); //종착역 추가
+        return stations;
     }
 }

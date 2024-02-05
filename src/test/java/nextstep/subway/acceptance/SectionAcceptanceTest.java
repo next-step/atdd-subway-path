@@ -58,6 +58,8 @@ public class SectionAcceptanceTest {
 
         //when
         ExtractableResponse<Response> response = addSection(params, lineId);
+
+        // ERROR
         SectionResponse sectionResponse = response.as(SectionResponse.class);
 
         // then
