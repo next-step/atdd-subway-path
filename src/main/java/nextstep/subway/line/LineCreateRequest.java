@@ -16,7 +16,6 @@ public class LineCreateRequest {
         return Line.builder()
                 .name(request.getName())
                 .color(request.getColor())
-                .distance(request.getDistance())
                 .build();
     }
 }

@@ -30,15 +30,25 @@ public class Section {
     @Setter
     private int distance;
 
-    public static Section initSection(Line line, Station upstation, Station downstation) {
-        Section section = Section.builder()
+    public static Section initSection(Line line, Station upstation, Station downstation, int distance) {
+        return Section.builder()
                 .line(line)
                 .upstation(upstation)
                 .downstation(downstation)
-                .distance(line.getDistance())
+                .distance(distance)
                 .build();
+    }
 
-        //sectionRepository.save(section);
-        return section;
+    public boolean isInSection(Section section) {
+        return downstation.getId().equals(section.getDownstation().getId()) ||
+                upstation.getId().equals(section.getUpstation().getId());
+    }
+
+    public boolean isUpstation(Station station) {
+        return upstation.getId().equals(station.getId());
+    }
+
+    public boolean isDownstation(Station station) {
+        return downstation.getId().equals(station.getId());
     }
 }
