@@ -76,14 +76,13 @@ public class Line {
     }
 
     public void removeSection(Station upStation, Station downStation) {
-        final var isSameStation = generateSameStationChecker(upStation, downStation);
-
+        final var isTheSectionToDelete = generateSectionChecker(upStation, downStation);
         sections = sections.stream()
-            .filter(isSameStation)
+            .filter(isTheSectionToDelete)
             .collect(Collectors.toList());
     }
 
-    private static Predicate<Section> generateSameStationChecker(Station upStation, Station downStation) {
+    private static Predicate<Section> generateSectionChecker(Station upStation, Station downStation) {
         return section ->
             section.getUpStation() != upStation
                 && section.getDownStation() != downStation;
