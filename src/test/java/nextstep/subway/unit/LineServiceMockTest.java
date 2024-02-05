@@ -34,9 +34,6 @@ public class LineServiceMockTest {
     @Mock
     private StationRepository stationRepository;
 
-    @Mock
-    private StationService stationService;
-
     @Test
     @DisplayName("지하철 노선에 구간을 추가한다.")
     void addSection() {
@@ -46,12 +43,12 @@ public class LineServiceMockTest {
         lineMock.setId(1L);
         when(lineRepository.findById(1L)).thenReturn(Optional.of(lineMock));
 
-        when(stationService.findStationById(1L)).thenReturn(new Station("강남역"));
-        when(stationService.findStationById(2L)).thenReturn(new Station("역삼역"));
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(new Station("강남역")));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(new Station("역삼역")));
 
         // when
         // lineService.addSection 호출
-        SectionService sectionService = new SectionService(stationService, lineRepository, sectionRepository, stationRepository);
+        SectionService sectionService = new SectionService(lineRepository, sectionRepository, stationRepository);
         sectionService.addSection(lineMock.getId(), new SectionRequest(1L, 2L, 10));
 
         // then
