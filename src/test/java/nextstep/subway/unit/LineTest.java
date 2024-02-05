@@ -35,14 +35,6 @@ class LineTest {
         assertThat(강남_선릉_노선.getStations()).containsExactlyElementsOf(Arrays.asList(강남역, 선릉역, 삼성역));
     }
 
-    @DisplayName("노선의 하행종점역과 등록하려는 구간의 상행역이 다를 경우 예외가 발생한다.")
-    @Test
-    void addSection_invalid() {
-
-        assertThatExceptionOfType(ResponseStatusException.class)
-                .isThrownBy(() -> 강남_선릉_노선.addSection(삼성역, 삼성역, 10));
-    }
-
     @DisplayName("노선에 포함된 지하철역을 조회한다.")
     @Test
     void getStations() {

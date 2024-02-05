@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
-    @OrderColumn(name = "line_order")
+//    @OrderColumn(name = "line_order")
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
 
@@ -29,7 +29,8 @@ public class Sections {
 
     public void checkLineStationsDuplicate(final Station station) {
         boolean isDuplicate = this.sections.stream()
-                .flatMap(Sections::apply)
+//                .flatMap((Section s1) -> apply(s1))
+                .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
                 .distinct()
                 .anyMatch(s -> s.isSame(station));
 
@@ -53,7 +54,8 @@ public class Sections {
 
     public List<Station> getStations() {
         return this.sections.stream()
-                .flatMap(Sections::apply)
+//                .flatMap(Sections::apply)
+                .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -64,5 +66,11 @@ public class Sections {
 
     public void addFirst(Section section) {
         this.sections.add(0, section);
+    }
+
+    public int totalDistance() {
+        return this.sections.stream()
+                .mapToInt(Section::getDistance)
+                .sum();
     }
 }

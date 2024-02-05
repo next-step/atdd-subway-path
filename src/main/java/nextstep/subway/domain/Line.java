@@ -60,6 +60,10 @@ public class Line {
         return this.sections.getSections();
     }
 
+    public int totalDistance() {
+        return this.sections.totalDistance();
+    }
+
     public void changeName(final String name) {
         this.name = name;
     }

@@ -1,10 +1,8 @@
 package nextstep.subway.application.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,8 +10,8 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    private int distance;
     private List<StationResponse> stations;
-    private int distance = 0;
 
     public LineResponse() {
     }
@@ -22,10 +20,9 @@ public class LineResponse {
         this.id = savedLine.getId();
         this.name = savedLine.getName();
         this.color = savedLine.getColor();
-
+        this.distance = savedLine.totalDistance();
         this.stations =  savedLine.getStations().stream()
                 .map(this::createStationResponse)
-                .distinct()
                 .collect(Collectors.toList());
     }
 
