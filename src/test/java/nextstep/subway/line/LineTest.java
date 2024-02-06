@@ -52,12 +52,13 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("생성된 라인에 끝 구간을 더할 수 있다")
+    @DisplayName("생성된 라인에 끝 구간을 더 할 수 있다")
     void addSection2() {
         Section newSection = new Section(
                 new Station(2L, StationFixture.선릉역),
                 new Station(3L, StationFixture.선릉역),
                 5L);
+        line.addSection(newSection);
 
         Sections actual = line.getSections();
         Sections expected = Sections.from(

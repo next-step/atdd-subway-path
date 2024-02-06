@@ -57,6 +57,14 @@ public class Section {
         return this.downStation.equals(station);
     }
 
+    public boolean isSameUpStationInputDownStation(Section section) {
+        return this.upStation.equals(section.downStation);
+    }
+
+    public boolean isSameDownStationInputUpStation(Section section) {
+        return this.downStation.equals(section.upStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,5 +77,4 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance);
     }
-
 }

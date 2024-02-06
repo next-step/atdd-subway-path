@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
+    public static final int FIRST_INDEX = 0;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     @OrderBy("upStation.id ASC")
@@ -33,16 +34,37 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    private Section firstSection() {
+        return this.sectionList.get(0);
+    }
+
     private Section lastSection() {
-        return this.sectionList.get(sectionList.size() - 1);
+        return this.sectionList.get(lastIndex());
     }
 
     public Station lastStation() {
         return lastSection().getDownStation();
     }
 
+    private int lastIndex() {
+        return this.sectionList.size() - 1;
+    }
+
     public void add(Section section) {
-        this.sectionList.add(0, section);
+        if(canAddFirst(section)) {
+            this.sectionList.add(FIRST_INDEX, section);
+        }
+        if(canAddLast(section)) {
+            this.sectionList.add(section);
+        }
+    }
+
+    private boolean canAddFirst(Section section) {
+        return firstSection().isSameUpStationInputDownStation(section);
+    }
+
+    private boolean canAddLast(Section section) {
+        return lastSection().isSameDownStationInputUpStation(section);
     }
 
     public boolean isSameLastStationAndStartStation(Section station) {
