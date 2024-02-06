@@ -1,13 +1,13 @@
 package nextstep.subway.line;
 
+import nextstep.subway.line.section.Section;
+import nextstep.subway.line.section.Sections;
+import nextstep.subway.station.Station;
 import nextstep.subway.testhelper.LineFixture;
 import nextstep.subway.testhelper.StationFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import nextstep.subway.line.section.Section;
-import nextstep.subway.line.section.Sections;
-import nextstep.subway.station.Station;
 
 import java.util.List;
 
@@ -33,18 +33,22 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("생성된 라인에 구간을 더할 수 있다")
+    @DisplayName("생성된 라인에 시작 구간을 더할 수 있다")
     void addSection1() {
-        line.addSection(inputSection);
+        Section newSection = new Section(
+                new Station(4L, StationFixture.교대역),
+                new Station(1L, StationFixture.강남역),
+                5L);
+        line.addSection(newSection);
 
         Sections actual = line.getSections();
         Sections expected = Sections.from(
-                List.of(new Section(new Station(1L, StationFixture.강남역),
+                List.of(new Section(new Station(3L, StationFixture.교대역),
+                                new Station(1L, StationFixture.강남역),
+                                5L),
+                        new Section(new Station(1L, StationFixture.강남역),
                                 new Station(2L, StationFixture.선릉역),
-                                10L),
-                        new Section(new Station(2L, StationFixture.선릉역),
-                                new Station(3L, StationFixture.선릉역),
-                                5L)));
+                                10L)));
         assertThat(actual).isEqualTo(expected);
 
         Long actualDistance = line.getDistance();
@@ -83,8 +87,8 @@ class LineTest {
         Sections actual = line.getSections();
         Sections expected = Sections.from(
                 List.of(new Section(new Station(1L, StationFixture.강남역),
-                                new Station(2L, StationFixture.선릉역),
-                                10L)));
+                        new Station(2L, StationFixture.선릉역),
+                        10L)));
         assertThat(actual).isEqualTo(expected);
 
         Long actualDistance = line.getDistance();
