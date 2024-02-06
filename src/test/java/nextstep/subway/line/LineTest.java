@@ -16,20 +16,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
     private Line line;
-    private Section inputSection;
+    private Section createdSection;
 
     @BeforeEach
     void setUp() {
+        createdSection = new Section(new Station(1L, StationFixture.강남역),
+                new Station(2L, StationFixture.선릉역),
+                10L);
+
         line = new Line(LineFixture.신분당선,
                 "bg-red-600",
                 new Station(1L, StationFixture.강남역),
                 new Station(2L, StationFixture.선릉역),
                 10L);
-
-        inputSection = new Section(
-                new Station(2L, StationFixture.선릉역),
-                new Station(3L, StationFixture.선릉역),
-                5L);
     }
 
     @Test
@@ -43,12 +42,27 @@ class LineTest {
 
         Sections actual = line.getSections();
         Sections expected = Sections.from(
-                List.of(new Section(new Station(3L, StationFixture.교대역),
-                                new Station(1L, StationFixture.강남역),
-                                5L),
-                        new Section(new Station(1L, StationFixture.강남역),
-                                new Station(2L, StationFixture.선릉역),
-                                10L)));
+                List.of(newSection,
+                        createdSection));
+        assertThat(actual).isEqualTo(expected);
+
+        Long actualDistance = line.getDistance();
+        Long expectedDistance = 15L;
+        assertThat(actualDistance).isEqualTo(expectedDistance);
+    }
+
+    @Test
+    @DisplayName("생성된 라인에 끝 구간을 더할 수 있다")
+    void addSection2() {
+        Section newSection = new Section(
+                new Station(2L, StationFixture.선릉역),
+                new Station(3L, StationFixture.선릉역),
+                5L);
+
+        Sections actual = line.getSections();
+        Sections expected = Sections.from(
+                List.of(createdSection,
+                        newSection));
         assertThat(actual).isEqualTo(expected);
 
         Long actualDistance = line.getDistance();
@@ -58,7 +72,7 @@ class LineTest {
 
     @Test
     @DisplayName("생성된 라인의 마지막 역과 더하는 구간의 시작역이 다르면 더할 수 없다")
-    void addSection2() {
+    void addSection20() {
         Section input = new Section(
                 new Station(3L, StationFixture.선릉역),
                 new Station(4L, StationFixture.서초역),
@@ -68,8 +82,8 @@ class LineTest {
 
     @Test
     @DisplayName("생성된 라인의 역들에 더하는 구간의 마지막역이 포함되어 있으면 더할 수 없다")
-    void addSection3() {
-        line.addSection(inputSection);
+    void addSection30() {
+        line.addSection(createdSection);
 
         Section input = new Section(
                 new Station(3L, StationFixture.선릉역),
@@ -81,7 +95,7 @@ class LineTest {
     @Test
     @DisplayName("생성된 라인의 구간을 삭제 할 수 있다.")
     void deleteSection1() {
-        line.addSection(inputSection);
+        line.addSection(createdSection);
         line.deleteSection(new Station(3L, StationFixture.선릉역));
 
         Sections actual = line.getSections();
@@ -99,7 +113,7 @@ class LineTest {
     @Test
     @DisplayName("생성된 라인의 마지막 구간이 아니면 삭제가 안된다")
     void deleteSection2() {
-        line.addSection(inputSection);
+        line.addSection(createdSection);
         assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
     }
 
