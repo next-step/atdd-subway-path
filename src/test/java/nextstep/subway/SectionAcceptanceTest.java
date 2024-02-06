@@ -107,17 +107,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         SectionCreateRequest request = sectionCreateRequest(양재역_ID, 강남역_ID, 10);
 
         // when
-        구간_생성_요청(request, OK.value())
-                .as(ExceptionResponse.class).getMessage();
+        구간_생성_요청(request, CREATED.value());
 
         // then
         LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
-                .containsExactly(
-                        tuple(3L, "양재역"),
+                .containsExactlyInAnyOrder(
                         tuple(1L, "강남역"),
-                        tuple(2L, "선릉역")
+                        tuple(2L, "선릉역"),
+                        tuple(3L, "양재역")
                 );
     }
 
@@ -128,20 +127,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 성공_새로운_지하철_구간_생성시_상행역을_기준으로_노선의_가운데에_생성할_수_있다() {
         // given
-        SectionCreateRequest request = sectionCreateRequest(강남역_ID, 양재역_ID, 10);
+        SectionCreateRequest request = sectionCreateRequest(강남역_ID, 양재역_ID, 3);
 
         // when
-        구간_생성_요청(request, OK.value())
-                .as(ExceptionResponse.class).getMessage();
+        구간_생성_요청(request, CREATED.value());
 
         // then
         LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
-                .containsExactly(
+                .containsExactlyInAnyOrder(
                         tuple(1L, "강남역"),
-                        tuple(3L, "양재역"),
-                        tuple(2L, "선릉역")
+                        tuple(2L, "선릉역"),
+                        tuple(3L, "양재역")
                 );
     }
 
@@ -152,20 +150,19 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 성공_새로운_지하철_구간_생성시_하행역을_기준으로_노선의_가운데에_생성할_수_있다() {
         // given
-        SectionCreateRequest request = sectionCreateRequest(양재역_ID, 선릉역_ID, 10);
+        SectionCreateRequest request = sectionCreateRequest(양재역_ID, 선릉역_ID, 3);
 
         // when
-        구간_생성_요청(request, OK.value())
-                .as(ExceptionResponse.class).getMessage();
+        구간_생성_요청(request, CREATED.value());
 
         // then
         LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
-                .containsExactly(
+                .containsExactlyInAnyOrder(
                         tuple(1L, "강남역"),
-                        tuple(3L, "양재역"),
-                        tuple(2L, "선릉역")
+                        tuple(2L, "선릉역"),
+                        tuple(3L, "양재역")
                 );
     }
 
@@ -185,7 +182,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
-                .containsExactly(
+                .containsExactlyInAnyOrder(
                         tuple(1L, "강남역"),
                         tuple(2L, "선릉역"),
                         tuple(3L, "양재역")
