@@ -107,6 +107,6 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        return this.sections.getStations();
+        return this.sections.getStations(this.upStationId);
     }
 }

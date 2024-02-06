@@ -8,6 +8,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -52,9 +54,18 @@ public class Sections {
         this.sections.remove(deleteSection);
     }
 
-    public List<Station> getStations() {
-        return this.sections.stream()
-//                .flatMap(Sections::apply)
+    public List<Station> getStations(Long upStationId) {
+        Map<Long, Section> sectionMap = this.sections.stream()
+                .collect(Collectors.toMap(s -> s.getUpStation().getId(), Function.identity()));
+
+        List<Section> results = new ArrayList<>();
+        for (int i = 0; i < this.sections.size(); i++) {
+            Section section = sectionMap.get(upStationId);
+            results.add(section);
+            upStationId = section.getDownStation().getId();
+        }
+
+        return results.stream()
                 .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
