@@ -8,6 +8,7 @@ import nextstep.subway.service.dto.LineDto;
 import nextstep.subway.service.dto.LineSectionDto;
 import nextstep.subway.service.dto.AddSectionCommand;
 import nextstep.subway.service.dto.StationDto;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +35,7 @@ public class LineServiceMockTest {
     private LineService lineService;
 
     @Test
+    @DisplayName("addSection을 호출하면 섹션이 추가된다.")
     void addSection() {
         Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
 
@@ -58,11 +60,11 @@ public class LineServiceMockTest {
                 .stream().map(StationDto::getName)
                 .collect(Collectors.toList());
 
-        Set<String> expectedLineStationNames = Set.of(
+        Set<String> addedStationNames = Set.of(
                 createdSection.getUpStation().getName(),
                 createdSection.getDownStation().getName()
         );
 
-        assertTrue(actualLineStationNames.containsAll(expectedLineStationNames));
+        assertTrue(actualLineStationNames.containsAll(addedStationNames));
     }
 }

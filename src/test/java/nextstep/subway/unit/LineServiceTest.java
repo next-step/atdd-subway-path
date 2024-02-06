@@ -6,6 +6,7 @@ import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.LineService;
 import nextstep.subway.service.dto.AddSectionCommand;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,7 @@ public class LineServiceTest {
     private LineService lineService;
 
     @Test
+    @DisplayName("addSection을 호출하면 섹션이 추가된다.")
     void addSection() {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
@@ -33,6 +35,9 @@ public class LineServiceTest {
         Station 선릉역 = stationRepository.save(선릉역_엔티티);
         Line line = Line.create("신분당선", "bg-red-600", 강남역, 역삼역, 10);
         lineRepository.save(line);
+
+        // 비교 대상
+        int initialSectionSize = line.getSections().size();
 
         // when
         // lineService.addSection 호출
@@ -43,6 +48,6 @@ public class LineServiceTest {
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertEquals(line.getSections().size(), 2);
+        assertEquals(line.getSections().size() - initialSectionSize, 1);
     }
 }
