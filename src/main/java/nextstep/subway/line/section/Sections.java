@@ -52,6 +52,10 @@ public class Sections {
     }
 
     public AddType add(Section section) {
+        if(canAdd(section)) {
+            throw new IllegalArgumentException("이미 추가된 구간입니다.");
+        }
+
         if(canAddFirst(section)) {
             this.sectionList.add(FIRST_INDEX, section);
             return AddType.FIRST;
@@ -62,6 +66,11 @@ public class Sections {
         }
         addMiddle(section);
         return AddType.MIDDLE;
+    }
+
+    private boolean canAdd(Section section) {
+        return this.sectionList.stream()
+                .anyMatch(s -> s.anyMatchUpStationAndDownStation(section));
     }
 
     private void addMiddle(Section section) {

@@ -78,6 +78,10 @@ public class Section {
         this.distance = calculateSubDistance(section.distance);
     }
 
+    public boolean anyMatchUpStationAndDownStation(Section section) {
+        return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,4 +94,5 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance);
     }
+
 }
