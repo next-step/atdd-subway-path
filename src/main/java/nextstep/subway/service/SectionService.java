@@ -35,15 +35,15 @@ public class SectionService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
 
         // 새로운 구간의 상행역이 등록된 노선의 하행 종점역이 아니면 에러
-        sectionValidation(sectionRequest, line, upStation, downStation);
+        sectionValidation(line, upStation, downStation);
 
         Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
         line.addSection(newSection);
-        Section savedSection = sectionRepository.save(newSection);
-        return createSectionResponse(savedSection);
+        newSection = sectionRepository.save(newSection);
+        return createSectionResponse(newSection);
     }
 
-    private void sectionValidation(SectionRequest sectionRequest, Line line, Station upStation, Station downStation) {
+    private void sectionValidation(Line line, Station upStation, Station downStation) {
         List<Section> sections = line.getSections();
 
         if (sections.isEmpty()) {
@@ -61,7 +61,7 @@ public class SectionService {
         }
 
         // 새로운 구간의 상행역과 하행역이 같으면 에러
-        if (sectionRequest.getUpStationId().equals(sectionRequest.getDownStationId())) {
+        if (upStation.getId().equals(downStation.getId())) {
             throw new ApplicationException(ExceptionMessage.NEW_SECTION_VALIDATION_EXCEPTION.getMessage());
         }
     }
