@@ -9,6 +9,7 @@ import nextstep.subway.line.section.SectionResponse;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
+import org.springframework.data.geo.format.DistanceFormatter;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -38,8 +39,7 @@ public class LineService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new LineException(ErrorCode.STATION_NOT_FOUND, ""));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new LineException(ErrorCode.STATION_NOT_FOUND, ""));
 
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
-        line.addSection(new Section(line, upStation, downStation, lineRequest.getDistance()));
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
 
         lineRepository.save(line);
         return createLineResponse(line);

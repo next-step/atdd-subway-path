@@ -10,3 +10,7 @@
   - [x] 구간 서비스 단위 테스트 with Mock (LineServiceMockTest)
   - [x] 구간 서비스 단위 테스트 without Mock (LineServiceTest)
   - [ ] 단위 테스트를 기반으로 비즈니스 로직을 리팩터링 하세요.
+
+## 24.02.06 Feedback
+- [x] Line을 생성할 때 구간을 1개 포함하도록 모델링 수정(테스트-프로덕션 간 상태 불일치 해소)
+  - Line 생성 시 생성자에 Section 생성을 위한 인자를 받도록 수정
