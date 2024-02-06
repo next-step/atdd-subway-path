@@ -42,6 +42,10 @@ public class Section {
         if(addType.isDistanceChange()) {
             return distance + this.distance;
         }
+
+        if(distance <= this.distance) {
+            throw new IllegalArgumentException("중간에 추가되는 구간은 라인보다 길수 없습니다.");
+        }
         return distance;
     }
 

@@ -104,20 +104,18 @@ class LineTest {
 
     @Test
     @DisplayName("이미 추가된 구간은 추가 할 수 없다")
-    void addSection20() {
+    void addSection4() {
         assertThrows(IllegalArgumentException.class, () -> line.addSection(createdSection));
     }
 
     @Test
-    @DisplayName("생성된 라인의 역들에 더하는 구간의 마지막역이 포함되어 있으면 더할 수 없다")
-    void addSection30() {
-        line.addSection(createdSection);
-
-        Section input = new Section(
-                new Station(3L, StationFixture.선릉역),
-                new Station(2L, StationFixture.선릉역),
-                5L);
-        assertThrows(IllegalArgumentException.class, () -> line.addSection(input));
+    @DisplayName("중간에 더하는 구간의 길이는 전체 라인의 길이보다 작아야한다")
+    void addSection5() {
+        Section newSection = new Section(
+                new Station(1L, StationFixture.강남역),
+                new Station(3L, StationFixture.교대역),
+                10L);
+        assertThrows(IllegalArgumentException.class, () -> line.addSection(newSection));
     }
 
     @Test
