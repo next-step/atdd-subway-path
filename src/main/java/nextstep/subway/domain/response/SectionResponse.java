@@ -15,5 +15,4 @@ public class SectionResponse {
     Station upStation;
     Station downStation;
     int distance;
-
 }

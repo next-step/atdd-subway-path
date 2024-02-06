@@ -1,8 +1,10 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.request.LineRequest;
 import nextstep.subway.domain.response.SectionResponse;
 import nextstep.subway.exception.ExceptionMessage;
 import nextstep.subway.exception.ExceptionResponse;
@@ -13,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
-import nextstep.subway.domain.request.LineRequest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,13 +34,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class SectionAcceptanceTest {
 
     long stationId1, stationId2, stationId3, lineId;
+    int distance;
+
     @BeforeEach
     void setUp() {
         stationId1 = StationTestUtil.createStation("지하철역").jsonPath().getLong("id");
         stationId2 = StationTestUtil.createStation("새로운지하철역").jsonPath().getLong("id");
         stationId3 = StationTestUtil.createStation("또다른지하철역").jsonPath().getLong("id");
 
-        lineId = createSubwayLine(new LineRequest("2호선", "green", stationId1, stationId2, 10)).jsonPath().getLong("id");
+        lineId = createSubwayLine(new LineRequest("2호선", "green", stationId1, stationId2, distance)).jsonPath().getLong("id");
     }
 
     /**
@@ -197,5 +200,46 @@ public class SectionAcceptanceTest {
 
         //then
         assertThat(message).isEqualTo(ExceptionMessage.DELETE_ONLY_ONE_SECTION_EXCEPTION.getMessage());
+    }
+
+    /**
+     * Given 지하철 노선에 구간 추가하고
+     * When 추가한 지하철 구간을 조회하면
+     * Then 등록한 지하철 노선의 구간 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 구간 조회")
+    @Test
+    void showSection() {
+        //given
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", stationId2);
+        params.put("downStationId", stationId3);
+        params.put("distance", 11);
+        addSection(params, lineId);
+
+        //when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/lines/{lineId}/sections/{sectionId}", lineId, 1L)
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        //then
+        long id = response.jsonPath().getLong("id");
+        long lineId = response.jsonPath().getLong("line.id");
+        long upStationId = response.jsonPath().getLong("upStation.id");
+        long downStationId = response.jsonPath().getLong("downStation.id");
+        int sectionDistance = response.jsonPath().getInt("distance");
+
+        // QUESTION
+        // SectionResponse section = response.as(SectionResponse.class);
+        assertAll(
+                () -> assertThat(id).isEqualTo(1L),
+                () -> assertThat(lineId).isEqualTo(1L),
+                () -> assertThat(upStationId).isEqualTo(stationId1),
+                () -> assertThat(downStationId).isEqualTo(stationId2),
+                () -> assertThat(sectionDistance).isEqualTo(distance)
+        );
     }
 }

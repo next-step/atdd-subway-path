@@ -39,11 +39,17 @@ public class SectionService {
 
         Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
         line.addSection(newSection);
-        return createSectionResponse(newSection);
+        Section savedSection = sectionRepository.save(newSection);
+        return createSectionResponse(savedSection);
     }
 
     private void sectionValidation(SectionRequest sectionRequest, Line line, Station upStation, Station downStation) {
         List<Section> sections = line.getSections();
+
+        if (sections.isEmpty()) {
+            return;
+        }
+
         Section section = sections.get(sections.size() - 1);
         if (!section.getDownStation().equals(upStation)) {
             throw new ApplicationException(ExceptionMessage.UPSTATION_VALIDATION_EXCEPTION.getMessage());

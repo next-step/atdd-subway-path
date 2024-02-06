@@ -20,11 +20,11 @@ public class Section {
     private Line line;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name="up_station_id")
+//    @JoinColumn(name="up_station_id")
     private Station upStation;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name="down_station_id")
+//    @JoinColumn(name="down_station_id")
     private Station downStation;
 
     private int distance;
