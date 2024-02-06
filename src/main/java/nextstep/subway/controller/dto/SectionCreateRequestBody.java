@@ -1,6 +1,6 @@
 package nextstep.subway.controller.dto;
 
-import nextstep.subway.service.dto.SaveLineSectionCommand;
+import nextstep.subway.service.dto.AddSectionCommand;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -32,7 +32,7 @@ public class SectionCreateRequestBody {
         return distance;
     }
 
-    public SaveLineSectionCommand toCommand(Long lineId) {
-        return new SaveLineSectionCommand(lineId, upStationId, downStationId, distance);
+    public AddSectionCommand toCommand(Long lineId) {
+        return new AddSectionCommand(lineId, upStationId, downStationId, distance);
     }
 }

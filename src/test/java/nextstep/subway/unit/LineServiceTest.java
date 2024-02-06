@@ -5,13 +5,12 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.LineService;
-import nextstep.subway.service.dto.SaveLineSectionCommand;
+import nextstep.subway.service.dto.AddSectionCommand;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static nextstep.subway.helper.fixture.LineFixture.신분당선_엔티티;
 import static nextstep.subway.helper.fixture.StationFixture.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,7 +21,6 @@ public class LineServiceTest {
     private StationRepository stationRepository;
     @Autowired
     private LineRepository lineRepository;
-
     @Autowired
     private LineService lineService;
 
@@ -33,15 +31,15 @@ public class LineServiceTest {
         Station 강남역 = stationRepository.save(강남역_엔티티);
         Station 역삼역 = stationRepository.save(역삼역_엔티티);
         Station 선릉역 = stationRepository.save(선릉역_엔티티);
-        Line line = 신분당선_엔티티(강남역, 역삼역);
+        Line line = Line.create("신분당선", "bg-red-600", 강남역, 역삼역, 10);
         lineRepository.save(line);
 
         // when
         // lineService.addSection 호출
-        SaveLineSectionCommand command = new SaveLineSectionCommand(
+        AddSectionCommand command = new AddSectionCommand(
                 line.getId(), 역삼역.getId(), 선릉역.getId(), 10
         );
-        lineService.saveLineSection(command);
+        lineService.addSection(command);
 
         // then
         // line.getSections 메서드를 통해 검증

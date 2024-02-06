@@ -6,7 +6,7 @@ import nextstep.subway.service.LineService;
 import nextstep.subway.service.StationService;
 import nextstep.subway.service.dto.LineDto;
 import nextstep.subway.service.dto.LineSectionDto;
-import nextstep.subway.service.dto.SaveLineSectionCommand;
+import nextstep.subway.service.dto.AddSectionCommand;
 import nextstep.subway.service.dto.StationDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,10 +45,10 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        SaveLineSectionCommand command = new SaveLineSectionCommand(
+        AddSectionCommand command = new AddSectionCommand(
                 신분당선.getId(), 역삼역_엔티티.getId(), 선릉역_엔티티.getId(), 10
         );
-        LineSectionDto createdSection = lineService.saveLineSection(command);
+        LineSectionDto createdSection = lineService.addSection(command);
 
         // then
         // lineService.findLineById 메서드를 통해 검증

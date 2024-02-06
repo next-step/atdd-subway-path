@@ -39,6 +39,7 @@ public class Line {
     }
 
     public static Line createWithId(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        System.out.println("HELLO");
         Line line = new Line(id, name, color);
         return getSectionAddedLine(line, upStation, downStation, distance);
     }

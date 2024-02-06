@@ -59,7 +59,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineSectionDto saveLineSection(SaveLineSectionCommand command) {
+    public LineSectionDto addSection(AddSectionCommand command) {
         Station upStation = stationService.findStationById(command.getUpStationId());
         Station downStation = stationService.findStationById(command.getDownStationId());
 
@@ -72,7 +72,7 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteLineSection(Long lineId, Long stationId) {
+    public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineByIdOrFail(lineId);
         line.deleteStation(stationId);
     }

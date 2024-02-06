@@ -56,7 +56,7 @@ public class LineController {
             @PathVariable Long id,
             @RequestBody SectionCreateRequestBody sectionCreateRequestBody
     ) {
-        lineService.saveLineSection(sectionCreateRequestBody.toCommand(id));
+        lineService.addSection(sectionCreateRequestBody.toCommand(id));
         return ResponseEntity.created(URI.create("/lines/" + id)).build();
     }
 
@@ -64,7 +64,7 @@ public class LineController {
     public ResponseEntity<Void> deleteLineSection(
             @PathVariable("id") Long lineId,
             @RequestParam("stationId") Long stationId) {
-        lineService.deleteLineSection(lineId, stationId);
+        lineService.deleteSection(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }
