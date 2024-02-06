@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -56,10 +53,8 @@ public class Section {
         return downStation;
     }
 
-    public void checkEqualsUpStation(final Station downStation) {
-        if (this.upStation.isSame(downStation)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 등록되어 있는 지하철역 입니다.");
-        }
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
     @Override
@@ -78,5 +73,13 @@ public class Section {
     @Override
     public String toString() {
         return "Section{" + "id=" + id + ", line=" + line + ", upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + '}';
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDistance(int distance) {
+        this.distance = distance;
     }
 }

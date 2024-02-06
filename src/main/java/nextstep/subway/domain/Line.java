@@ -86,8 +86,8 @@ public class Line {
             this.upStationId = upStation.getId();
         } else {
             //중간에 추가
-            System.out.println("중간에 추가");
-
+            this.sections.checkLineStationsDuplicate(downStation);
+            this.sections.addMiddle(upStation, downStation, distance, this);
         }
     }
 

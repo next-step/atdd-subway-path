@@ -79,6 +79,18 @@ public class Sections {
         this.sections.add(0, section);
     }
 
+    public void addMiddle(Station upStation, Station downStation, int distance, Line line) {
+        Section upSection = this.sections.stream()
+                .filter(s -> s.isSameUpStation(upStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("지하철역이 존재하지 않습니다."));
+
+        upSection.changeUpStation(downStation);
+        upSection.changeDistance(upSection.getDistance() - distance);
+
+        this.sections.add(new Section(upStation, downStation, distance, line));
+    }
+
     public int totalDistance() {
         return this.sections.stream()
                 .mapToInt(Section::getDistance)
