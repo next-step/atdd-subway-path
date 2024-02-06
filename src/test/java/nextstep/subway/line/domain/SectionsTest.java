@@ -19,6 +19,7 @@ class SectionsTest {
     private Station 선릉역;
     private Station 역삼역;
     private Station 교대역;
+    private Station 잠실역;
     private Section 강남역_선릉역_구간;
     private Section 선릉역_역삼역_구간;
     private Sections sections;
@@ -27,8 +28,9 @@ class SectionsTest {
     void setUp() {
         강남역 = StationFactory.createStation(1L, "강남역");
         선릉역 = StationFactory.createStation(2L, "선릉역");
-        역삼역 = StationFactory.createStation(3L, "선릉역");
+        역삼역 = StationFactory.createStation(3L, "역삼역");
         교대역 = StationFactory.createStation(4L, "교대역");
+        잠실역 = StationFactory.createStation(5L, "잠실역");
         강남역_선릉역_구간 = SectionFactory.createSection(1L, 강남역, 선릉역, 10);
         선릉역_역삼역_구간 = SectionFactory.createSection(2L, 선릉역, 역삼역, 20);
         sections = new Sections();
@@ -52,9 +54,18 @@ class SectionsTest {
     @DisplayName("Sections connect 테스트")
     class ConnectTest {
         @Test
-        @DisplayName("Section 을 추가할 수 있다.")
-        void canConnectSection() {
+        @DisplayName("Section 을 마지막에 추가할 수 있다.")
+        void canConnectSectionAtLast() {
             assertThat(sections).containsExactly(강남역_선릉역_구간, 선릉역_역삼역_구간);
+        }
+
+        @Test
+        @DisplayName("Section 을 가운데에 추가할 수 있다.")
+        void canConnectSectionAtMiddle() {
+            final Section 강남역_교대역_구간 = SectionFactory.createSection(3L, 강남역, 교대역, 10);
+            sections.connect(강남역_교대역_구간);
+
+            assertThat(sections).containsExactly(강남역_교대역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
         }
 
         @Test
@@ -68,13 +79,23 @@ class SectionsTest {
         }
 
         @Test
-        @DisplayName("추가할 Section 의 상행역이 현재 Sections 의 마지막 구간의 하행역과 같지 않다면 SectionConnectException 이 던져진다.")
-        void connectFailsWhenSectionsNotConnectable() {
-            final Section 선릉역_교대역_구간 = SectionFactory.createSection(3L, 선릉역, 교대역, 10);
+        @DisplayName("추가할 Section 의 상행역이 현재 Sections 에 포함되어 있지 않다면 SectionConnectException 이 던져진다.")
+        void connectFailsWhenSectionsNotContainsUpStationOfSection() {
+            final Section 교대역_잠실역_구간 = SectionFactory.createSection(3L, 교대역, 잠실역, 10);
 
-            assertThatThrownBy(() -> sections.connect(선릉역_교대역_구간))
+            assertThatThrownBy(() -> sections.connect(교대역_잠실역_구간))
                     .isInstanceOf(SectionConnectException.class)
-                    .hasMessageContaining("생성할 구간 상행역이 해당 노선의 하행 종점역이 아닙니다.");
+                    .hasMessageContaining("생성할 구간 상행역이 해당 노선에 포함되어 있지 않습니다.");
+        }
+
+        @Test
+        @DisplayName("추가할 Section 이 Sections 가운데인데, 길이가 현재 Sections 의 총 길이보다 길거나 길다면 SectionConnectException 이 던져진다.")
+        void connectFailsWhenSectionsDistanceLoeThanNewMiddleSection() {
+            final Section 강남역_교대역_구간 = SectionFactory.createSection(3L, 강남역, 교대역, 강남역_선릉역_구간.getDistance() + 선릉역_역삼역_구간.getDistance());
+
+            assertThatThrownBy(() -> sections.connect(강남역_교대역_구간))
+                    .isInstanceOf(SectionConnectException.class)
+                    .hasMessageContaining("가운데에 생성할 구간의 길이가 해당 노선의 총 길이보다 길거나 같을 수 없습니다.");
         }
     }
 
