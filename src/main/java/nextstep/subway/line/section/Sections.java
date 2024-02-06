@@ -52,18 +52,20 @@ public class Sections {
     }
 
     public AddType add(Section section) {
-        if(canAdd(section)) {
+        if (canAdd(section)) {
             throw new IllegalArgumentException("이미 추가된 구간입니다.");
         }
 
-        if(canAddFirst(section)) {
+        if (canAddFirst(section)) {
             this.sectionList.add(FIRST_INDEX, section);
             return AddType.FIRST;
         }
-        if(canAddLast(section)) {
+
+        if (canAddLast(section)) {
             this.sectionList.add(section);
             return AddType.LAST;
         }
+
         addMiddle(section);
         return AddType.MIDDLE;
     }
@@ -93,16 +95,6 @@ public class Sections {
                 .filter(i -> this.sectionList.get(i).isSameUpStationInputUpStation(section))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("추가 할 구간을 찾지 못했습니다."));
-    }
-
-
-    public boolean isSameLastStationAndStartStation(Section station) {
-        return station.isSameUpStation(lastStation());
-    }
-
-    public boolean anyMatchStation(Section section) {
-        return this.sectionList.stream()
-                .anyMatch(s -> s.anyMatchUpStationOrDownStation(section));
     }
 
     public Section delete(Station station) {

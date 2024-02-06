@@ -39,11 +39,11 @@ public class Section {
 
     public Long calculateAddDistance(AddType addType,
                                      Long distance) {
-        if(addType.isDistanceChange()) {
+        if (addType.isDistanceChange()) {
             return distance + this.distance;
         }
 
-        if(distance <= this.distance) {
+        if (distance <= this.distance) {
             throw new IllegalArgumentException("중간에 추가되는 구간은 라인보다 길수 없습니다.");
         }
         return distance;
@@ -51,14 +51,6 @@ public class Section {
 
     public Long calculateSubDistance(Long distance) {
         return Math.abs(distance - this.distance);
-    }
-
-    public boolean anyMatchUpStationOrDownStation(Section section) {
-        return isSameUpStation(section.downStation) || isSameDownStation(section.downStation);
-    }
-
-    public boolean isSameUpStation(Station station) {
-        return this.upStation.equals(station);
     }
 
     public boolean isSameDownStation(Station station) {
