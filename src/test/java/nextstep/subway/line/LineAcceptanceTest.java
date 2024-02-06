@@ -19,11 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    private Map<String, String> 신분당선;
-    private Map<String, String> 영호선;
+    private Map<String, String> 신분당선_강남역_부터_삼성역;
+    private Map<String, String> 영호선_강남역_부터_삼성역;
+    private Map<String, String> 잠실역_부터_강남역_구간;
     private Map<String, String> 삼성역_부터_선릉역_구간;
-    private Map<String, String> 선릉역_부터_교대역_구간;
-    private Map<String, String> 삼성역_부터_강남역_구간;
+    private Map<String, String> 강남역_부터_선릉역_구간;
+    private Map<String, String> 강남역_부터_삼성역_구간;
+    private Long 잠실역_ID;
     private Long 강남역_ID;
     private Long 삼성역_ID;
     private Long 선릉역_ID;
@@ -32,18 +34,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
         StationFixture stationFixture = new StationFixture();
+        잠실역_ID = stationFixture.get잠실역_ID();
         강남역_ID = stationFixture.get강남역_ID();
         삼성역_ID = stationFixture.get삼성역_ID();
         선릉역_ID = stationFixture.get선릉역_ID();
 
         LineFixture lineFixture = new LineFixture(stationFixture);
-        신분당선 = lineFixture.get신분당선_params();
-        영호선 = lineFixture.get영호선_params();
+        신분당선_강남역_부터_삼성역 = lineFixture.get신분당선_강남역_부터_삼성역_params();
+        영호선_강남역_부터_삼성역 = lineFixture.get영호선_강남역_부터_삼성역_params();
 
         SectionFixture sectionFixture = new SectionFixture(stationFixture);
+
+        잠실역_부터_강남역_구간 = sectionFixture.get잠실역_부터_강남역_구간_params();
         삼성역_부터_선릉역_구간 = sectionFixture.get삼성역_부터_선릉역_구간_params();
-        선릉역_부터_교대역_구간 = sectionFixture.get선릉역_부터_교대역_구간_params();
-        삼성역_부터_강남역_구간 = sectionFixture.get삼성역_부터_강남역_구간_params();
+        강남역_부터_선릉역_구간 = sectionFixture.get강남역_부터_선릉역_구간_params();
+        강남역_부터_삼성역_구간 = sectionFixture.get강남역_부터_삼성역_구간_params();
     }
 
     /**
@@ -54,7 +59,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        LineApiCaller.지하철_노선_생성(신분당선);
+        LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
 
         // then
         ExtractableResponse<Response> response = LineApiCaller.지하철_노선들_조회();
@@ -72,8 +77,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLines() {
         // given
-        LineApiCaller.지하철_노선_생성(신분당선);
-        LineApiCaller.지하철_노선_생성(영호선);
+        LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
+        LineApiCaller.지하철_노선_생성(영호선_강남역_부터_삼성역);
 
         // when
         ExtractableResponse<Response> response = LineApiCaller.지하철_노선들_조회();
@@ -93,7 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLine() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
 
         // when
@@ -114,7 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
 
         // when
@@ -139,7 +144,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
 
         // when
@@ -154,14 +159,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * GIVEN 지하철 노선을 생성하고
-     * WHEN 지하철 노선에 구간을 추가하면
+     * WHEN 지하철 노선 시작에 구간을 추가하면
      * THEN 수정된 구간을 조회 할 수 있다
      */
-    @DisplayName("지하철노선의 구간을 수정한다.")
+    @DisplayName("지하철노선에 시작에 구간을 추가 할 수 있다.")
     @Test
     void updateSections() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
+        String location = response.header("location");
+
+        // when
+        LineApiCaller.지하철_노선에_구간_추가(잠실역_부터_강남역_구간, location);
+
+        // then
+        response = LineApiCaller.지하철_노선_조회(location);
+        List<Long> actual = JsonPathHelper.getAll(response, "stations.id", Long.class);
+        Long[] expected = {잠실역_ID, 강남역_ID, 삼성역_ID};
+        assertThat(actual).containsExactly(expected);
+    }
+
+    /**
+     * GIVEN 지하철 노선을 생성하고
+     * WHEN 지하철 노선 끝에 구간을 추가하면
+     * THEN 수정된 구간을 조회 할 수 있다
+     */
+    @DisplayName("지하철노선의 끝에 구간을 추가 할 수 있다.")
+    @Test
+    void updateSections2() {
+        // given
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
 
         // when
@@ -176,47 +203,41 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * GIVEN 지하철 노선을 생성하고
-     * WHEN 새로운 구간의 상행역이 기존의 하행역과 일치 하지 않는다면
-     * THEN 에러 처리와 함께 '마지막 구간과 추가될 구간의 시작은 같아야 합니다.' 라는 메세지가 출력된다.
+     * WHEN 지하철 노선 중간에 구간을 추가하면
+     * THEN 수정된 구간을 조회 할 수 있다
      */
-    @DisplayName("새로운 구간의 상행역이 기존의 하행역과 일치 하지 않는다면 에러 처리 된다.")
+    @DisplayName("지하철노선의 중간에 노선을 추가 할 수 있다.")
     @Test
-    void updateSections2() {
+    void updateSections3() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
 
         // when
-        response = given().log().all()
-                .body(선릉역_부터_교대역_구간)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(location + "/sections")
-                .then().log().all()
-                .extract();
+        LineApiCaller.지하철_노선에_구간_추가(강남역_부터_선릉역_구간, location);
 
         // then
-        int actual = response.statusCode();
-        int expected = HttpStatus.BAD_REQUEST.value();
-        assertThat(actual).isEqualTo(expected);
-
-        String actualBody = response.asString();
-        String expectedBody = "마지막 구간과 추가될 구간의 시작은 같아야 합니다.";
-        assertThat(actualBody).isEqualTo(expectedBody);
+        response = LineApiCaller.지하철_노선_조회(location);
+        List<Long> actual = JsonPathHelper.getAll(response, "stations.id", Long.class);
+        Long[] expected = {강남역_ID, 선릉역_ID, 삼성역_ID};
+        assertThat(actual).containsExactly(expected);
     }
 
     /**
      * GIVEN 지하철 노선을 생성하고
-     * WHEN 새로운 구간이 이미 해당 노선에 등록되어있는 역이면
-     * THEN 에러처리와 함께 '이미 구간에 포함 되어 있는 역 입니다.' 라는 메세지가 출력된다.
+     * WHEN 지하철 노선에 이미 추가된 구간을 추가하면
+     * THEN 에러 처리와 함께 '이미 추가된 구간입니다.' 라는 메세지가 출력된다
      */
-    @DisplayName("새로운 구간이 이미 해당 노선에 등록되어있는 역이면 에러 처리된다.")
+    @DisplayName("새로운 구간이 이미 추가된 역이라면 에러 처리와 함께 '이미 추가된 구간입니다.' 라는 메세지가 출력된다.")
     @Test
-    void updateSections3() {
+    void updateSections4() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
+
+        // when
         response = given().log().all()
-                .body(삼성역_부터_강남역_구간)
+                .body(강남역_부터_삼성역_구간)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(location + "/sections")
                 .then().log().all()
@@ -228,7 +249,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actual).isEqualTo(expected);
 
         String actualBody = response.asString();
-        String expectedBody = "이미 구간에 포함 되어 있는 역 입니다.";
+        String expectedBody = "이미 추가된 구간입니다.";
         assertThat(actualBody).isEqualTo(expectedBody);
     }
 
@@ -241,7 +262,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSections() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
         LineApiCaller.지하철_노선에_구간_추가(삼성역_부터_선릉역_구간, location);
 
@@ -264,7 +285,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSections2() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
         LineApiCaller.지하철_노선에_구간_추가(삼성역_부터_선릉역_구간, location);
 
@@ -295,7 +316,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSections3() {
         // given
-        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선);
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
 
         // when
