@@ -56,7 +56,7 @@ class LineTest {
     void addSection2() {
         Section newSection = new Section(
                 new Station(2L, StationFixture.선릉역),
-                new Station(3L, StationFixture.선릉역),
+                new Station(3L, StationFixture.교대역),
                 5L);
         line.addSection(newSection);
 
@@ -68,6 +68,30 @@ class LineTest {
 
         Long actualDistance = line.getDistance();
         Long expectedDistance = 15L;
+        assertThat(actualDistance).isEqualTo(expectedDistance);
+    }
+
+    @Test
+    @DisplayName("생성된 라인에 중간에 구간을 더 할 수 있다")
+    void addSection3() {
+        Section newSection = new Section(
+                new Station(1L, StationFixture.강남역),
+                new Station(3L, StationFixture.교대역),
+                5L);
+        line.addSection(newSection);
+
+        Sections actual = line.getSections();
+        Sections expected = Sections.from(
+                List.of(new Section(new Station(1L, StationFixture.강남역),
+                                new Station(3L, StationFixture.교대역),
+                                5L),
+                        new Section(new Station(3L, StationFixture.교대역),
+                                new Station(2L, StationFixture.선릉역),
+                                5L)));
+        assertThat(actual).isEqualTo(expected);
+
+        Long actualDistance = line.getDistance();
+        Long expectedDistance = 10L;
         assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 
