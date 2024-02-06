@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StationFixture {
-    private static final String 잠실역 = "잠실역";
-    private static final String 강남역 = "강남역";
-    private static final String 삼성역 = "삼성역";
-    private static final String 선릉역 = "선릉역";
-    private static final String 교대역 = "교대역";
+    public static final String 잠실역 = "잠실역";
+    public static final String 강남역 = "강남역";
+    public static final String 삼성역 = "삼성역";
+    public static final String 선릉역 = "선릉역";
+    public static final String 교대역 = "교대역";
+    public static final String 서초역 = "서초역";
     private Map<String, String> 잠실역_params;
     private Map<String, String> 강남역_params;
     private Map<String, String> 삼성역_params;

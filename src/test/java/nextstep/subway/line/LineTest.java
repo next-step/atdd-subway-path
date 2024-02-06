@@ -1,5 +1,7 @@
 package nextstep.subway.line;
 
+import nextstep.subway.testhelper.LineFixture;
+import nextstep.subway.testhelper.StationFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,25 +15,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LineTest {
-    private static final String 신분당선 = "신분당선";
-    private static final String 강남역 = "강남역";
-    private static final String 선릉역 = "선릉역";
-    private static final String 교대역 = "교대역";
-    private static final String 서초역 = "서초역";
     private Line line;
     private Section inputSection;
 
     @BeforeEach
     void setUp() {
-        line = new Line(신분당선,
+        line = new Line(LineFixture.신분당선,
                 "bg-red-600",
-                new Station(1L, 강남역),
-                new Station(2L, 선릉역),
+                new Station(1L, StationFixture.강남역),
+                new Station(2L, StationFixture.선릉역),
                 10L);
 
         inputSection = new Section(
-                new Station(2L, 선릉역),
-                new Station(3L, 교대역),
+                new Station(2L, StationFixture.선릉역),
+                new Station(3L, StationFixture.선릉역),
                 5L);
     }
 
@@ -42,11 +39,11 @@ class LineTest {
 
         Sections actual = line.getSections();
         Sections expected = Sections.from(
-                List.of(new Section(new Station(1L, 강남역),
-                                new Station(2L, 선릉역),
+                List.of(new Section(new Station(1L, StationFixture.강남역),
+                                new Station(2L, StationFixture.선릉역),
                                 10L),
-                        new Section(new Station(2L, 선릉역),
-                                new Station(3L, 교대역),
+                        new Section(new Station(2L, StationFixture.선릉역),
+                                new Station(3L, StationFixture.선릉역),
                                 5L)));
         assertThat(actual).isEqualTo(expected);
 
@@ -59,8 +56,8 @@ class LineTest {
     @DisplayName("생성된 라인의 마지막 역과 더하는 구간의 시작역이 다르면 더할 수 없다")
     void addSection2() {
         Section input = new Section(
-                new Station(3L, 교대역),
-                new Station(4L, 서초역),
+                new Station(3L, StationFixture.선릉역),
+                new Station(4L, StationFixture.서초역),
                 5L);
         assertThrows(IllegalArgumentException.class, () -> line.addSection(input));
     }
@@ -71,8 +68,8 @@ class LineTest {
         line.addSection(inputSection);
 
         Section input = new Section(
-                new Station(3L, 교대역),
-                new Station(2L, 선릉역),
+                new Station(3L, StationFixture.선릉역),
+                new Station(2L, StationFixture.선릉역),
                 5L);
         assertThrows(IllegalArgumentException.class, () -> line.addSection(input));
     }
@@ -81,12 +78,12 @@ class LineTest {
     @DisplayName("생성된 라인의 구간을 삭제 할 수 있다.")
     void deleteSection1() {
         line.addSection(inputSection);
-        line.deleteSection(new Station(3L, 교대역));
+        line.deleteSection(new Station(3L, StationFixture.선릉역));
 
         Sections actual = line.getSections();
         Sections expected = Sections.from(
-                List.of(new Section(new Station(1L, 강남역),
-                                new Station(2L, 선릉역),
+                List.of(new Section(new Station(1L, StationFixture.강남역),
+                                new Station(2L, StationFixture.선릉역),
                                 10L)));
         assertThat(actual).isEqualTo(expected);
 
@@ -99,13 +96,13 @@ class LineTest {
     @DisplayName("생성된 라인의 마지막 구간이 아니면 삭제가 안된다")
     void deleteSection2() {
         line.addSection(inputSection);
-        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, 선릉역)));
+        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
     }
 
     @Test
     @DisplayName("생성된 라인의 마지막 구간이 2개면 삭제가 안된다")
     void deleteSection3() {
-        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, 선릉역)));
+        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
     }
 
 }
