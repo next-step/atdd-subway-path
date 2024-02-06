@@ -41,7 +41,7 @@ public class SectionAcceptanceTest {
 	@DisplayName("지하철 노선에 구간을 등록한다.")
 	@DirtiesContext
 	@Test
-	void createSectionTest() {
+	void 지하철_노선_등록() {
 		// when
 		ExtractableResponse<Response> response = SectionSteps.구간_생성_요청(두번째_등록한_종점역, 처음_등록한_종점역, 10, 노선);
 

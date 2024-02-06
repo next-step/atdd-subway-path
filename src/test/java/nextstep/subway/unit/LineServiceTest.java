@@ -32,7 +32,6 @@ public class LineServiceTest {
     @BeforeEach
     void setup() {
         // given
-        // lineRepository를 활용하여 초기값 셋팅
         노선 = lineRepository.save(new Line("노선", "빨강", 첫번째_역_id, 두번째_역_id, 1));
     }
 
@@ -40,12 +39,10 @@ public class LineServiceTest {
     @DisplayName("지하철의 노선의 구간을 등록한다.")
     void addSection() {
         // when
-        // lineService.addSection 호출
         lineService.addSection(노선.getId(), new SectionRequest(세번째_역, 두번째_역_id, 1));
 
         // then
-        // line.getSections 메서드를 통해 검증
-        assertThat(노선.getSections().getSize()).isEqualTo(2);
+        assertThat(노선.getDistance()).isEqualTo(2);
         assertTrue(노선.hasStation(세번째_역));
     }
 
@@ -53,15 +50,12 @@ public class LineServiceTest {
     @DisplayName("지하철 노선의 구간을 제거한다.")
     void deleteSection() {
         // given
-        // lineSevice.addSection 호출을 통해 삭제할 section을 추가한다.
         lineService.addSection(노선.getId(), new SectionRequest(세번째_역, 두번째_역_id, 1));
 
         // when
-        // lineService.deleteSection 호출
         lineService.deleteSection(노선.getId(), 세번째_역);
 
         // then
-        // line.hasStation 메서드를 통해 검증
         assertFalse(노선.hasStation(세번째_역));
     }
 }
