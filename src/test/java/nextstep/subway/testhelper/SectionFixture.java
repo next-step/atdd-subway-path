@@ -30,7 +30,7 @@ public class SectionFixture {
         강남역_부터_선릉역_구간_params = new HashMap<>();
         강남역_부터_선릉역_구간_params.put("upStationId", stationFixture.get강남역_ID().toString());
         강남역_부터_선릉역_구간_params.put("downStationId", stationFixture.get선릉역_ID().toString());
-        강남역_부터_선릉역_구간_params.put("distance", "10");
+        강남역_부터_선릉역_구간_params.put("distance", "5");
 
         강남역_부터_삼성역_구간_params = new HashMap<>();
         강남역_부터_삼성역_구간_params.put("upStationId", stationFixture.get강남역_ID().toString());
