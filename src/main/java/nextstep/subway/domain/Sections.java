@@ -24,23 +24,15 @@ public class Sections {
     }
 
     public void validateRegisterStationBy(Station upStation, Station downStation) {
-        validateUpStation(upStation);
-        validateDownStation(downStation);
-    }
-
-    private void validateUpStation(Station upStation) {
-        if (sections.stream().anyMatch(section -> section.isUpStation(upStation))) {
-            throw new ApplicationException("새로운 구간의 상행역은 노선의 하행 종점역에만 생성할 수 있습니다.");
+        boolean hasDuplicateSection = sections.stream()
+                .allMatch(section -> isSameSection(upStation, downStation, section));
+        if(hasDuplicateSection){
+            throw new ApplicationException("신규 구간이 기존 구간과 일치하여 구간을 생성할 수 없습니다.");
         }
     }
 
-    private void validateDownStation(Station downStation) {
-        boolean isDownStationRegistered = sections.stream()
-                .anyMatch(section -> section.matchesStation(downStation));
-
-        if (isDownStationRegistered) {
-            throw new ApplicationException("새로운 구간의 하행역은 노선에 존재하는 역에 생성할 수 없습니다.");
-        }
+    private boolean isSameSection(Station upStation, Station downStation, Section section) {
+        return section.isUpStation(upStation) && section.isDownStation(downStation);
     }
 
     public void validateDeleteSection(Long stationId) {
@@ -66,20 +58,7 @@ public class Sections {
         List<Station> downStations = downStations();
 
         Station downTerminalStation = downTerminalStation(downStations, upStations);
-
         return lastSection(downTerminalStation);
-    }
-
-    private List<Station> downStations() {
-        return sections.stream()
-                .map(Section::downStation)
-                .collect(Collectors.toList());
-    }
-
-    private List<Station> upStations() {
-        return sections.stream()
-                .map(Section::upStation)
-                .collect(Collectors.toList());
     }
 
     private Station downTerminalStation(List<Station> downStations, List<Station> upStations) {
@@ -94,6 +73,18 @@ public class Sections {
                 .filter(section -> section.downStation().equals(downTerminalStation))
                 .findFirst()
                 .orElseThrow(() -> new ApplicationException("하행 종점역을 포함하는 구간을 찾을 수 없습니다."));
+    }
+
+    private List<Station> upStations() {
+        return sections.stream()
+                .map(Section::upStation)
+                .collect(Collectors.toList());
+    }
+
+    private List<Station> downStations() {
+        return sections.stream()
+                .map(Section::downStation)
+                .collect(Collectors.toList());
     }
 
 }
