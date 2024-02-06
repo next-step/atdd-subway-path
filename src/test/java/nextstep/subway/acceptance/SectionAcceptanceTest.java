@@ -22,13 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class SectionAcceptanceTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
     void setUp() {
+        databaseCleanup.execute();
         StationFactory.createStation("banghwa");
         StationFactory.createStation("gangdong");
         StationFactory.createStation("macheon");
@@ -96,8 +96,6 @@ public class SectionAcceptanceTest {
         // then
         List<String> stationNames = response.jsonPath().getList("[0].stations.name", String.class);
         assertThat(stationNames).containsExactly("banghwa", "macheon", "gangdong");
-
-
     }
 
     /**

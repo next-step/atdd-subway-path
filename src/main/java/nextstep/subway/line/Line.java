@@ -30,7 +30,6 @@ public class Line {
     @Embedded
     private Sections sections = new Sections();
 
-
     public void updateName(String name) {
         this.name = name;
     }

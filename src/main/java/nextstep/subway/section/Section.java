@@ -17,6 +17,7 @@ public class Section {
     private Long id;
 
     @ManyToOne
+    @Setter
     private Line line;
 
     @ManyToOne
@@ -40,15 +41,15 @@ public class Section {
     }
 
     public boolean isInSection(Section section) {
-        return downstation.getId().equals(section.getDownstation().getId()) ||
-                upstation.getId().equals(section.getUpstation().getId());
+        return downstation.equals(section.getDownstation()) ||
+                upstation.equals(section.getUpstation());
     }
 
     public boolean isUpstation(Station station) {
-        return upstation.getId().equals(station.getId());
+        return upstation.equals(station);
     }
 
     public boolean isDownstation(Station station) {
-        return downstation.getId().equals(station.getId());
+        return downstation.equals(station);
     }
 }

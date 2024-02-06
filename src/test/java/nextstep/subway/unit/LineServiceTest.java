@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.line.*;
+import nextstep.subway.section.Section;
 import nextstep.subway.section.SectionAddRequest;
 import nextstep.subway.section.Sections;
 import nextstep.subway.station.Station;
@@ -91,7 +92,7 @@ public class LineServiceTest {
         Line line = lineRepository.findById(line5.getId()).orElseThrow();
         assertThat(line.getSections().getLastDownstation()).isEqualTo(gangdong);
         assertThat(line.getDistance()).isEqualTo(5);
-        assertThat(line.getSections().getLastSectionDistance()).isEqualTo(2);
+        assertThat(getLastSectionDistance(line.getSections())).isEqualTo(2);
     }
 
     /**
@@ -233,5 +234,12 @@ public class LineServiceTest {
         Line line = lineRepository.findById(line5.getId()).orElseThrow();
         assertThat(line.getSections().getLastDownstation()).isEqualTo(gangdong);
         assertThat(line.getDistance()).isEqualTo(5);
+    }
+
+    private int getLastSectionDistance(Sections sections) {
+        return sections.stream()
+                .mapToInt(Section::getDistance)
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new AssertionError("구간이 존재하지 않습니다."));
     }
 }

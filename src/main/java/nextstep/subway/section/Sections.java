@@ -8,6 +8,7 @@ import nextstep.subway.station.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +19,8 @@ import java.util.stream.Stream;
 @Slf4j
 public class Sections implements Iterable<Section> {
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OrderColumn(name = "sections_sequence")
     private List<Section> sections = new ArrayList<>();
 
     @Override
@@ -44,20 +46,12 @@ public class Sections implements Iterable<Section> {
         sections.add(section);
     }
 
-    public int getFirstSectionDistance() {
-        return sections.get(0).getDistance();
-    }
-
-    public int getLastSectionDistance() {
-        return sections.get(sections.size() - 1).getDistance();
-    }
-
     public boolean isFirstUpstation(Station station) {
-        return getFirstUpstation().getId().equals(station.getId());
+        return getFirstUpstation().equals(station);
     }
 
     public boolean isLastDownstation(Station station) {
-        return getLastDownstation().getId().equals(station.getId());
+        return getLastDownstation().equals(station);
     }
 
     public Station getFirstUpstation() {
@@ -119,7 +113,6 @@ public class Sections implements Iterable<Section> {
     }
 
     public void addLastSection(Section newSection) {
-        log.info("addLastSection!");
         if (sections.stream().anyMatch(section ->
                 section.isInSection(newSection))) {
             throw new InvalidInputException("새로운 구간의 하행역은 이미 노선에 존재하는 역이면 안 됩니다.");
@@ -129,11 +122,13 @@ public class Sections implements Iterable<Section> {
     }
 
     public void removeFirstSection() {
-        sections.remove(0);
+        Section removedSection = sections.remove(0);
+        removedSection.setLine(null);
     }
 
     public void removeLastSection() {
-        sections.remove(sections.size() - 1);
+        Section removedSection = sections.remove(sections.size() - 1);
+        removedSection.setLine(null);
     }
 
     public void removeSection(Station station) {
@@ -145,7 +140,8 @@ public class Sections implements Iterable<Section> {
                 Section nextSection = sections.get(i + 1);
                 currentSection.setDownstation(nextSection.getDownstation());
                 currentSection.setDistance(currentSection.getDistance() + nextSection.getDistance());
-                sections.remove(i + 1);
+                Section removedSection = sections.remove(i + 1);
+                removedSection.setLine(null);
 
                 return;
             }

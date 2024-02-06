@@ -25,14 +25,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class LineAcceptanceTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
     public void setUp() {
-        //databaseCleanup.execute();
+        databaseCleanup.execute();
         StationFactory.createStation("마천역");
         StationFactory.createStation("방화역");
     }
