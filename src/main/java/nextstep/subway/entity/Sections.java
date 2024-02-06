@@ -15,7 +15,7 @@ public class Sections {
 	@OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private List<Section> sections;
 
-	public Sections() {
+	protected Sections() {
 		this.sections = new ArrayList<>();
 	}
 

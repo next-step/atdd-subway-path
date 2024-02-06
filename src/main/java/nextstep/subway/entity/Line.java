@@ -22,7 +22,7 @@ public class Line {
 	@Embedded
 	private Sections sections;
 
-	public Line() {
+	protected Line() {
 
 	}
 
