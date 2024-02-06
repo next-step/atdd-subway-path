@@ -27,7 +27,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         신논현역Id = StationApi.create(StationFixture.신논현역).getLong("id");
         논현역Id = StationApi.create(StationFixture.논현역).getLong("id");
         // line
-        신분당선Id = LineApi.노선생성요청(LineFixture.신분당선(강남역Id, 신논현역Id)).getLong("id");
+        신분당선Id = LineApi.노선생성요청(LineFixture.신분당선_생성_바디(강남역Id, 신논현역Id)).getLong("id");
     }
 
     @Nested
@@ -42,7 +42,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         void createLineSectionFailForUpStationValidation() {
             // when
             ExtractableResponse<Response> response = LineApi.구간생성요청(
-                    신분당선Id, SectionFixture.추가구간(강남역Id, 논현역Id)
+                    신분당선Id, SectionFixture.추가구간_생성_바디(강남역Id, 논현역Id)
             );
 
             // then
@@ -61,7 +61,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         void createLineSectionFailForDownStationValidation() {
             // when
             ExtractableResponse<Response> response = LineApi.구간생성요청(
-                    신분당선Id, SectionFixture.추가구간(논현역Id, 강남역Id)
+                    신분당선Id, SectionFixture.추가구간_생성_바디(논현역Id, 강남역Id)
             );
 
             // then
@@ -81,7 +81,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         void createLineSection() {
             // when
             ExtractableResponse<Response> response = LineApi.구간생성요청(
-                    신분당선Id, SectionFixture.추가구간(신논현역Id, 논현역Id)
+                    신분당선Id, SectionFixture.추가구간_생성_바디(신논현역Id, 논현역Id)
             );
 
             // then
@@ -137,7 +137,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         @Test
         void deleteLineSectionSuccess() {
             // given
-            LineApi.구간생성요청(신분당선Id, SectionFixture.추가구간(신논현역Id, 논현역Id));
+            LineApi.구간생성요청(신분당선Id, SectionFixture.추가구간_생성_바디(신논현역Id, 논현역Id));
 
             // when
             ExtractableResponse<Response> response = LineApi.구간삭제요청(신분당선Id, 논현역Id);

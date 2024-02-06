@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import static nextstep.subway.helper.fixture.LineFixture.신분당선_엔티티;
+import static nextstep.subway.helper.fixture.StationFixture.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -26,17 +28,19 @@ public class LineServiceTest {
 
     @Test
     void addSection() {
-        Station 강남역 = stationRepository.save(new Station("강남역"));
-        Station 역삼역 = stationRepository.save(new Station("역삼역"));
-        Station 선릉역 = stationRepository.save(new Station("선릉역"));
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
-        Line line = Line.create("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+        Station 강남역 = stationRepository.save(강남역_엔티티);
+        Station 역삼역 = stationRepository.save(역삼역_엔티티);
+        Station 선릉역 = stationRepository.save(선릉역_엔티티);
+        Line line = 신분당선_엔티티(강남역, 역삼역);
         lineRepository.save(line);
 
         // when
         // lineService.addSection 호출
-        SaveLineSectionCommand command = new SaveLineSectionCommand(line.getId(), 역삼역.getId(), 선릉역.getId(), 10);
+        SaveLineSectionCommand command = new SaveLineSectionCommand(
+                line.getId(), 역삼역.getId(), 선릉역.getId(), 10
+        );
         lineService.saveLineSection(command);
 
         // then

@@ -16,7 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private final String routePrefix = "/lines";
     private static Long 강남역Id;
     private static Long 신논현역Id;
     private static Long 역삼역Id;
@@ -36,7 +35,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createSubwayLine() {
         // when
-        LineCreateRequestBody 신분당선 = LineFixture.신분당선(강남역Id, 신논현역Id);
+        LineCreateRequestBody 신분당선 = LineFixture.신분당선_생성_바디(강남역Id, 신논현역Id);
         LineApi.노선생성요청(신분당선);
 
         // then
@@ -61,8 +60,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getSubwayLineList() {
         // given
-        JsonPath 신분당선 = LineApi.노선생성요청(LineFixture.신분당선(강남역Id, 신논현역Id));
-        JsonPath 이호선 = LineApi.노선생성요청(LineFixture.이호선(강남역Id, 역삼역Id));
+        JsonPath 신분당선 = LineApi.노선생성요청(LineFixture.신분당선_생성_바디(강남역Id, 신논현역Id));
+        JsonPath 이호선 = LineApi.노선생성요청(LineFixture.이호선_생성_바디(강남역Id, 역삼역Id));
 
         // when
         JsonPath response = LineApi.노선목록조회요청();
@@ -81,7 +80,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 상세 정보를 조회한다.")
     @Test
     void getSubwayLine() {
-        JsonPath 신분당선 = LineApi.노선생성요청(LineFixture.신분당선(강남역Id, 신논현역Id));
+        JsonPath 신분당선 = LineApi.노선생성요청(LineFixture.신분당선_생성_바디(강남역Id, 신논현역Id));
 
         // when
         JsonPath response = LineApi.노선조회요청(신분당선.getLong("id"));
@@ -109,7 +108,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateSubwayLine() {
         // given
-        JsonPath 신분당선 = LineApi.노선생성요청(LineFixture.신분당선(강남역Id, 신논현역Id));
+        JsonPath 신분당선 = LineApi.노선생성요청(LineFixture.신분당선_생성_바디(강남역Id, 신논현역Id));
 
         // when
         LineUpdateRequestBody requestBody = new LineUpdateRequestBody("구분당선", "bg-blue-600");
@@ -137,7 +136,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSubwayLine() {
         // given
-        JsonPath 신분당선 = LineApi.노선생성요청(LineFixture.신분당선(강남역Id, 신논현역Id));
+        JsonPath 신분당선 = LineApi.노선생성요청(LineFixture.신분당선_생성_바디(강남역Id, 신논현역Id));
 
         // when
         LineApi.노선삭제요청(신분당선.getLong("id"));
