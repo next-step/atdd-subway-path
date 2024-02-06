@@ -1,0 +1,12 @@
+
+### 신규 노선도 생성
+POST http://localhost:8080/lines
+Content-Type: application/json
+
+{
+  "name": "신분당선",
+  "color": "bg-red-600",
+  "upStationId": 1,
+  "downStationId": 3,
+  "distance": 7
+}

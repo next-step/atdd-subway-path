@@ -1,0 +1,14 @@
+### 신규 구간 생성
+POST http://localhost:8080/lines/1/sections
+Content-Type: application/json
+
+{
+  "upStationId": 2,
+  "downStationId": 3,
+  "distance": 4
+}
+
+
+### 구간의 역 삭제
+DELETE http://localhost:8080/lines/1/sections/2
+
