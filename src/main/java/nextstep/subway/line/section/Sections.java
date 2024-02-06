@@ -3,7 +3,7 @@ package nextstep.subway.line.section;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -14,7 +14,7 @@ public class Sections {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     @OrderBy("upStation.id ASC")
-    private List<Section> sectionList = new ArrayList<>();
+    private List<Section> sectionList = new LinkedList<>();
 
     protected Sections() {
     }
@@ -42,15 +42,7 @@ public class Sections {
     }
 
     public void add(Section section) {
-        if (!isSameLastStationAndStartStation(section)) {
-            throw new IllegalArgumentException("마지막 구간과 추가될 구간의 시작은 같아야 합니다.");
-        }
-
-        if (anyMatchStation(section)) {
-            throw new IllegalArgumentException("이미 구간에 포함 되어 있는 역 입니다.");
-        }
-
-        this.sectionList.add(section);
+        this.sectionList.add(0, section);
     }
 
     public boolean isSameLastStationAndStartStation(Section station) {

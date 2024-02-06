@@ -36,7 +36,7 @@ class LineTest {
     @DisplayName("생성된 라인에 시작 구간을 더할 수 있다")
     void addSection1() {
         Section newSection = new Section(
-                new Station(4L, StationFixture.교대역),
+                new Station(3L, StationFixture.교대역),
                 new Station(1L, StationFixture.강남역),
                 5L);
         line.addSection(newSection);
