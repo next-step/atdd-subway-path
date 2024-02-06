@@ -18,6 +18,8 @@ class LineTest {
     private Line line;
     private Section createdSection;
 
+    private Section inputSection;
+
     @BeforeEach
     void setUp() {
         createdSection = new Section(new Station(1L, StationFixture.강남역),
@@ -29,6 +31,11 @@ class LineTest {
                 new Station(1L, StationFixture.강남역),
                 new Station(2L, StationFixture.선릉역),
                 10L);
+
+        inputSection = new Section(
+                new Station(2L, StationFixture.선릉역),
+                new Station(3L, StationFixture.교대역),
+                5L);
     }
 
     @Test
@@ -52,7 +59,7 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("생성된 라인에 끝 구간을 더 할 수 있다")
+    @DisplayName("생성된 라인에 끝 구간을 더할 수 있다")
     void addSection2() {
         Section newSection = new Section(
                 new Station(2L, StationFixture.선릉역),
@@ -72,7 +79,7 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("생성된 라인에 중간에 구간을 더 할 수 있다")
+    @DisplayName("생성된 라인에 중간에 구간을 더할 수 있다")
     void addSection3() {
         Section newSection = new Section(
                 new Station(1L, StationFixture.강남역),
@@ -120,8 +127,8 @@ class LineTest {
     @Test
     @DisplayName("생성된 라인의 구간을 삭제 할 수 있다.")
     void deleteSection1() {
-        line.addSection(createdSection);
-        line.deleteSection(new Station(3L, StationFixture.선릉역));
+        line.addSection(inputSection);
+        line.deleteSection(new Station(3L, StationFixture.교대역));
 
         Sections actual = line.getSections();
         Sections expected = Sections.from(
@@ -138,7 +145,7 @@ class LineTest {
     @Test
     @DisplayName("생성된 라인의 마지막 구간이 아니면 삭제가 안된다")
     void deleteSection2() {
-        line.addSection(createdSection);
+        line.addSection(inputSection);
         assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
     }
 

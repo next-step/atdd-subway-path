@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -50,13 +51,24 @@ public class Sections {
         return this.sectionList.size() - 1;
     }
 
-    public void add(Section section) {
+    public AddType add(Section section) {
         if(canAddFirst(section)) {
             this.sectionList.add(FIRST_INDEX, section);
+            return AddType.FIRST;
         }
         if(canAddLast(section)) {
             this.sectionList.add(section);
+            return AddType.LAST;
         }
+        addMiddle(section);
+        return AddType.MIDDLE;
+    }
+
+    private void addMiddle(Section section) {
+        int index = findMatchSectionIndex(section);
+        Section existing = this.sectionList.get(index);
+        existing.changeSectionFromToInput(section);
+        this.sectionList.add(index, section);
     }
 
     private boolean canAddFirst(Section section) {
@@ -66,6 +78,14 @@ public class Sections {
     private boolean canAddLast(Section section) {
         return lastSection().isSameDownStationInputUpStation(section);
     }
+
+    private int findMatchSectionIndex(Section section) {
+        return IntStream.range(0, this.sectionList.size())
+                .filter(i -> this.sectionList.get(i).isSameUpStationInputUpStation(section))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("추가 할 구간을 찾지 못했습니다."));
+    }
+
 
     public boolean isSameLastStationAndStartStation(Section station) {
         return station.isSameUpStation(lastStation());

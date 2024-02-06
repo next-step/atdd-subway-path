@@ -37,12 +37,16 @@ public class Section {
         return downStation;
     }
 
-    public Long calculateAddDistance(Long distance) {
-        return distance + this.distance;
+    public Long calculateAddDistance(AddType addType,
+                                     Long distance) {
+        if(addType.isDistanceChange()) {
+            return distance + this.distance;
+        }
+        return distance;
     }
 
     public Long calculateSubDistance(Long distance) {
-        return distance - this.distance;
+        return Math.abs(distance - this.distance);
     }
 
     public boolean anyMatchUpStationOrDownStation(Section section) {
@@ -61,8 +65,17 @@ public class Section {
         return this.upStation.equals(section.downStation);
     }
 
+    public boolean isSameUpStationInputUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
     public boolean isSameDownStationInputUpStation(Section section) {
         return this.downStation.equals(section.upStation);
+    }
+
+    public void changeSectionFromToInput(Section section) {
+        this.upStation = section.downStation;
+        this.distance = calculateSubDistance(section.distance);
     }
 
     @Override
