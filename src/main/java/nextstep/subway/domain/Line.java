@@ -25,10 +25,25 @@ public class Line {
         this.color = color;
     }
 
+    private Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+    }
+
     protected Line() {}
 
     public static Line create(String name, String color, Station upStation, Station downStation, int distance) {
         Line line = new Line(name, color);
+        return getSectionAddedLine(line, upStation, downStation, distance);
+    }
+
+    public static Line createWithId(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        Line line = new Line(id, name, color);
+        return getSectionAddedLine(line, upStation, downStation, distance);
+    }
+
+    private static Line getSectionAddedLine(Line line, Station upStation, Station downStation, int distance) {
         Section section = Section.create(upStation, downStation, distance);
         line.sections.add(section);
         return line;
