@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -60,6 +63,10 @@ public class Line {
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
+        if (distance < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "거리는 1 이하 일 수 없습니다.");
+        }
+
         this.sections.addSection(upStation, downStation, distance, this);
     }
 

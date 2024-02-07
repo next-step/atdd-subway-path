@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -33,16 +36,8 @@ public class Section implements Comparable<Section> {
         this.line = line;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public int getDistance() {
         return distance;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -61,12 +56,20 @@ public class Section implements Comparable<Section> {
         this.upStation = station;
     }
 
-    public void changeDistance(int distance) {
-        this.distance = distance;
+    public void reduceDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "중간에 추가되는 길이가 상행역의 길이보다 크거나 같을 수 없습니다.");
+        }
+
+        this.distance = this.distance - distance;
     }
 
     public Station[] getStations() {
         return new Station[]{this.upStation, this.downStation};
+    }
+
+    public boolean isNotSameDownStationId(final Long stationId) {
+        return !this.downStation.isSameId(stationId);
     }
 
     @Override
@@ -90,9 +93,5 @@ public class Section implements Comparable<Section> {
     @Override
     public String toString() {
         return "Section{" + "id=" + id + ", line=" + line + ", upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + '}';
-    }
-
-    public boolean isNotSameDownStationId(final Long stationId) {
-        return !this.downStation.isSameId(stationId);
     }
 }
