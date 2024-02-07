@@ -65,13 +65,27 @@ public class Section {
         return this.upStation.equals(section.upStation);
     }
 
+    public boolean isSameDownStationInputDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
     public boolean isSameDownStationInputUpStation(Section section) {
         return this.downStation.equals(section.upStation);
     }
 
-    public void changeSectionFromToInput(Section section) {
-        this.upStation = section.downStation;
+    public void changeSectionFromToInput(AddingPosition addingPosition,
+                                         Section section) {
         this.distance = calculateSubDistance(section.distance);
+        changeSection(addingPosition, section);
+    }
+
+    private void changeSection(AddingPosition addingPosition,
+                               Section section) {
+        if (addingPosition.addingStart()) {
+            this.upStation = section.downStation;
+            return;
+        }
+        this.downStation = section.upStation;
     }
 
     public boolean anyMatchUpStationAndDownStation(Section section) {
