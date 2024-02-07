@@ -3,7 +3,7 @@ package nextstep.subway.line.section;
 public enum AddType {
     FIRST, LAST, MIDDLE;
 
-    public boolean isDistanceChange() {
+    public boolean isAddMiddle() {
         return this != MIDDLE;
     }
 }

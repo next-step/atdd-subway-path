@@ -39,7 +39,7 @@ public class Section {
 
     public Long calculateAddDistance(AddType addType,
                                      Long distance) {
-        if (addType.isDistanceChange()) {
+        if (!addType.isAddMiddle()) {
             return distance + this.distance;
         }
 
