@@ -72,14 +72,10 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-//        Station upStation = findStationById(line.getUpStation().getId());
-//        Station downStation = findStationById(line.getDownStation().getId());
-
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-//                List.of(upStation, downStation),
                 line.getDistance(),
                 line.getSections()
         );

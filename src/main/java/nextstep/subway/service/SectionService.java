@@ -61,7 +61,7 @@ public class SectionService {
         }
 
         // 새로운 구간의 상행역과 하행역이 같으면 에러
-        if (upStation.getId().equals(downStation.getId())) {
+        if (upStation.equals(downStation)) {
             throw new ApplicationException(ExceptionMessage.NEW_SECTION_VALIDATION_EXCEPTION.getMessage());
         }
     }
