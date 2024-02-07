@@ -1,0 +1,14 @@
+### 신규 역 생성
+POST http://localhost:8080/stations
+Content-Type: application/json
+
+{
+  "name": "C"
+}
+
+
+
+
+### 역 조회
+GET http://localhost:8080/stations
+Content-Type: application/json
