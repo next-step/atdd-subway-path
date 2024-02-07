@@ -38,12 +38,8 @@ public class AddingPosition {
         return new AddingPosition(false, index);
     }
 
-    public boolean isNotDefine() {
+    private boolean isNotDefine() {
         return index < 0;
-    }
-
-    public boolean addingStart() {
-        return this.addingStart;
     }
 
     public int findingIndex() {
