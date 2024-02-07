@@ -37,7 +37,7 @@ public class LineService {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         Section section = new Section(line, upStation, downStation, request.getDistance());
         line.addSection(section);
-        sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
+        sectionRepository.save(section);
         return createLineResponse(line);
     }
 
@@ -55,10 +55,8 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(Long id, LineRequest request) {
         Line line = lineRepository.findById(id).get();
-
-        Line newLine = new Line(line.getId(), request.getName(), request.getColor(), line.getDistance(), line.getSections());
-
-        Line updatedLine = lineRepository.save(newLine);
+        line.updateNameAndColor(request.getName(), request.getColor());
+        Line updatedLine = lineRepository.save(line);
         return createLineResponse(updatedLine);
     }
 

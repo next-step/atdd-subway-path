@@ -1,10 +1,7 @@
 package nextstep.subway.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -52,5 +50,10 @@ public class Line {
 
         stations.add(sections.get(sections.size() - 1).getDownStation()); //종착역 추가
         return stations;
+    }
+
+    public void updateNameAndColor(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }
