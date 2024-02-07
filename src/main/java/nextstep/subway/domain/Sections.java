@@ -25,9 +25,6 @@ public class Sections {
     public List<Section> getSections() {
         return this.sections;
     }
-    private static Stream<? extends Station> apply(Section s) {
-        return Arrays.stream(new Station[]{s.getUpStation(), s.getDownStation()});
-    }
 
     public void checkLineStationsDuplicate(final Station station) {
         boolean isDuplicate = this.sections.stream()
@@ -54,19 +51,10 @@ public class Sections {
         this.sections.remove(deleteSection);
     }
 
-    public List<Station> getStations(Long upStationId) {
-        Map<Long, Section> sectionMap = this.sections.stream()
-                .collect(Collectors.toMap(s -> s.getUpStation().getId(), Function.identity()));
-
-        List<Section> results = new ArrayList<>();
-        for (int i = 0; i < this.sections.size(); i++) {
-            Section section = sectionMap.get(upStationId);
-            results.add(section);
-            upStationId = section.getDownStation().getId();
-        }
-
-        return results.stream()
-                .flatMap(s -> Stream.of(s.getUpStation(), s.getDownStation()))
+    public List<Station> getStations() {
+        return this.sections.stream()
+                .sorted()
+                .flatMap(s -> Arrays.stream(s.getStations()))
                 .distinct()
                 .collect(Collectors.toList());
     }

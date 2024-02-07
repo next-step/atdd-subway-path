@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,6 +57,23 @@ public class Section {
         return this.upStation.equals(station);
     }
 
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public Station[] getStations() {
+        return new Station[]{this.upStation, this.downStation};
+    }
+
+    @Override
+    public int compareTo(Section otherSection) {
+        return Objects.equals(this.downStation.getId(), otherSection.getUpStation().getId()) ? -1 : 1;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -73,13 +90,5 @@ public class Section {
     @Override
     public String toString() {
         return "Section{" + "id=" + id + ", line=" + line + ", upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + '}';
-    }
-
-    public void changeUpStation(Station station) {
-        this.upStation = station;
-    }
-
-    public void changeDistance(int distance) {
-        this.distance = distance;
     }
 }
