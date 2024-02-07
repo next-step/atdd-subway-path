@@ -21,12 +21,13 @@ public class SectionService {
     public Long createSection(Long lineId, SectionCreateRequest request) {
         Line line = findBy(lineId);
         Sections sections = findBy(line);
-
         Stations stations = new Stations(stationRepository.findByIdIn(request.stationIds()));
         Station upStation = stations.findBy(request.getUpStationId());
         Station downStation = stations.findBy(request.getDownStationId());
+
         sections.validateRegisterStationBy(upStation, downStation);
 
+        sections.addSectionInMiddle(upStation, downStation, request.getDistance());
         Section section = sectionRepository.save(
                 new Section(line, upStation, downStation, request.getDistance())
         );

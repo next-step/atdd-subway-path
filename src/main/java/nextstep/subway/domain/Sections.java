@@ -26,13 +26,45 @@ public class Sections {
     public void validateRegisterStationBy(Station upStation, Station downStation) {
         boolean hasDuplicateSection = sections.stream()
                 .allMatch(section -> isSameSection(upStation, downStation, section));
-        if(hasDuplicateSection){
+        if (hasDuplicateSection) {
             throw new ApplicationException("신규 구간이 기존 구간과 일치하여 구간을 생성할 수 없습니다.");
         }
     }
 
     private boolean isSameSection(Station upStation, Station downStation, Section section) {
         return section.isUpStation(upStation) && section.isDownStation(downStation);
+    }
+
+    public void addSectionInMiddle(Station upStation, Station downStation, long distance) {
+        if (!isTerminalAddStation(upStation, downStation)) {
+            updateExistingSection(upStation, downStation, distance);
+        }
+    }
+
+    private void updateExistingSection(Station upStation, Station downStation, long distance) {
+        Section matchingSection = findMatchingSection(upStation);
+        if (matchingSection.isUpStation(upStation)) {
+            matchingSection.changeUpStation(downStation, distance);
+            return;
+        }
+        matchingSection.changeDownStation(upStation, distance);
+    }
+
+    private boolean isTerminalAddStation(Station upStation, Station downStation) {
+        return isTerminalStation(upStation, downStation);
+    }
+
+    private boolean isTerminalStation(Station upStation, Station downStation) {
+        Section firstSection = findFirstSection();
+        Section lastSection = findLastSection();
+        return firstSection.isUpStation(downStation) || lastSection.isDownStation(upStation);
+    }
+
+    public Section findMatchingSection(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(upStation))
+                .findFirst()
+                .orElseGet(this::findLastSection);
     }
 
     public void validateDeleteSection(Long stationId) {
@@ -73,6 +105,28 @@ public class Sections {
                 .filter(section -> section.downStation().equals(downTerminalStation))
                 .findFirst()
                 .orElseThrow(() -> new ApplicationException("하행 종점역을 포함하는 구간을 찾을 수 없습니다."));
+    }
+
+    private Section findFirstSection() {
+        List<Station> upStations = upStations();
+        List<Station> downStations = downStations();
+
+        Station upTerminalStation = upTerminalStation(upStations, downStations);
+        return firstSection(upTerminalStation);
+    }
+
+    private Station upTerminalStation(List<Station> upStations, List<Station> downStations) {
+        return upStations.stream()
+                .filter(station -> !downStations.contains(station))
+                .findFirst()
+                .orElseThrow(() -> new ApplicationException("상행 종점역을 찾을 수 없습니다."));
+    }
+
+    private Section firstSection(Station upTerminalStation) {
+        return sections.stream()
+                .filter(section -> section.upStation().equals(upTerminalStation))
+                .findFirst()
+                .orElseThrow(() -> new ApplicationException("상행 종점역을 포함하는 구간을 찾을 수 없습니다."));
     }
 
     private List<Station> upStations() {

@@ -52,16 +52,22 @@ public class Section {
         return this.downStation.equals(station);
     }
 
-    public boolean matchesStation(Station station) {
-        return isUpStation(station) || isDownStation(station);
-    }
-
     public List<Station> stations() {
         return List.of(upStation, downStation);
     }
 
     public boolean isSameId(Long id) {
         return this.id.equals(id);
+    }
+
+    public void changeUpStation(Station station, Long distance) {
+        this.upStation = station;
+        this.distance -= distance;
+    }
+
+    public void changeDownStation(Station station, Long distance) {
+        this.downStation = station;
+        this.distance -= distance;
     }
 
     public Long id() {
