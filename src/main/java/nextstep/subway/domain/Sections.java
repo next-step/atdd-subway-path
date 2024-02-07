@@ -25,7 +25,7 @@ public class Sections {
 
     public void validateRegisterStationBy(Station upStation, Station downStation) {
         boolean hasDuplicateSection = sections.stream()
-                .allMatch(section -> isSameSection(upStation, downStation, section));
+                .anyMatch(section -> isSameSection(upStation, downStation, section));
         if (hasDuplicateSection) {
             throw new ApplicationException("신규 구간이 기존 구간과 일치하여 구간을 생성할 수 없습니다.");
         }
@@ -50,6 +50,13 @@ public class Sections {
         matchingSection.changeDownStation(upStation, distance);
     }
 
+    public Section findMatchingSection(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(upStation))
+                .findFirst()
+                .orElseGet(this::findLastSection);
+    }
+
     private boolean isTerminalAddStation(Station upStation, Station downStation) {
         return isTerminalStation(upStation, downStation);
     }
@@ -58,13 +65,6 @@ public class Sections {
         Section firstSection = findFirstSection();
         Section lastSection = findLastSection();
         return firstSection.isUpStation(downStation) || lastSection.isDownStation(upStation);
-    }
-
-    public Section findMatchingSection(Station upStation) {
-        return sections.stream()
-                .filter(section -> section.isUpStation(upStation))
-                .findFirst()
-                .orElseGet(this::findLastSection);
     }
 
     public void validateDeleteSection(Long stationId) {

@@ -1,9 +1,12 @@
 package nextstep.subway.domain;
 
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@EqualsAndHashCode(of = "id")
 public class Section {
 
     @Id

@@ -1,8 +1,11 @@
 package nextstep.subway.domain;
 
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.*;
 
 @Entity
+@EqualsAndHashCode(of = "id")
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
