@@ -36,7 +36,7 @@ public class StationSteps {
 
     public static ExtractableResponse<Response> 지하철역_조회_요청(final Long 강남역Id) {
         return RestAssured.given().log().all()
-                .when().delete(STATIONS_URL + 강남역Id)
+                .when().delete(STATIONS_URL + "/" + 강남역Id)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();

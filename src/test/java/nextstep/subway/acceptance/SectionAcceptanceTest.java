@@ -68,7 +68,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         구간이_정상_등록된다(response, HttpStatus.CREATED);
 
-        노선을_조회하여_지하철역을_확인한다(lineId, Arrays.asList(강남역, 역삼역, 선릉역));
+        노선을_조회하여_지하철역과_길이를_확인한다(lineId, Arrays.asList(강남역, 역삼역, 선릉역), 20);
     }
 
     /**
@@ -86,7 +86,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         구간이_정상_등록된다(response, HttpStatus.CREATED);
 
-        노선을_조회하여_지하철역을_확인한다(lineId, Arrays.asList(강남역, 역삼역, 선릉역));
+        노선을_조회하여_지하철역과_길이를_확인한다(lineId, Arrays.asList(강남역, 역삼역, 선릉역), 15);
     }
 
     /**
@@ -104,7 +104,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         구간이_정상_등록된다(response, HttpStatus.CREATED);
 
-        노선을_조회하여_지하철역을_확인한다(lineId, Arrays.asList(강남역, 선릉역, 삼성역));
+        노선을_조회하여_지하철역과_길이를_확인한다(lineId, Arrays.asList(강남역, 선릉역, 삼성역), 10);
     }
 
     /**
@@ -174,8 +174,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(httpStatus.value());
     }
 
-    private void 노선을_조회하여_지하철역을_확인한다(Long lineId, List<String> stations) {
-        assertThat(노선을_조회한다(lineId).jsonPath().getList("stations.name"))
-                .containsExactlyElementsOf(stations);
+    private void 노선을_조회하여_지하철역과_길이를_확인한다(Long lineId, List<String> stations, int totalDistance) {
+        final ExtractableResponse<Response> response = 노선을_조회한다(lineId);
+        final int distance = response.as(LineResponse.class).getDistance();
+        final List<String> stationNames = response.jsonPath().getList("stations.name");
+
+        assertThat(stationNames).containsExactlyElementsOf(stations);
+        assertThat(distance).isEqualTo(totalDistance);
     }
 }
