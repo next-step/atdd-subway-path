@@ -25,6 +25,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private Map<String, String> 삼성역_부터_선릉역_구간;
     private Map<String, String> 강남역_부터_선릉역_구간;
     private Map<String, String> 강남역_부터_삼성역_구간;
+    private Map<String, String> 선릉역_부터_삼성역_구간;
     private Long 잠실역_ID;
     private Long 강남역_ID;
     private Long 삼성역_ID;
@@ -49,6 +50,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         삼성역_부터_선릉역_구간 = sectionFixture.get삼성역_부터_선릉역_구간_params();
         강남역_부터_선릉역_구간 = sectionFixture.get강남역_부터_선릉역_구간_params();
         강남역_부터_삼성역_구간 = sectionFixture.get강남역_부터_삼성역_구간_params();
+        선릉역_부터_삼성역_구간 = sectionFixture.get선릉역_부터_삼성역_구간_params();
     }
 
     /**
@@ -203,10 +205,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * GIVEN 지하철 노선을 생성하고
-     * WHEN 지하철 노선 중간에 구간을 추가하면
+     * WHEN 지하철 시작 구간에 노선 중간에 구간을 추가하면
      * THEN 수정된 구간을 조회 할 수 있다
      */
-    @DisplayName("지하철노선의 중간에 노선을 추가 할 수 있다.")
+    @DisplayName("지하철노선의 중간에 노선을 추가 할 수 있다 (시작 부분).")
     @Test
     void updateSections3() {
         // given
@@ -225,12 +227,34 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * GIVEN 지하철 노선을 생성하고
+     * WHEN 지하철 시작 구간에 노선 중간에 구간을 추가하면
+     * THEN 수정된 구간을 조회 할 수 있다
+     */
+    @DisplayName("지하철노선의 중간에 노선을 추가 할 수 있다 (끝 부분).")
+    @Test
+    void updateSections4() {
+        // given
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
+        String location = response.header("location");
+
+        // when
+        LineApiCaller.지하철_노선에_구간_추가(선릉역_부터_삼성역_구간, location);
+
+        // then
+        response = LineApiCaller.지하철_노선_조회(location);
+        List<Long> actual = JsonPathHelper.getAll(response, "stations.id", Long.class);
+        Long[] expected = {강남역_ID, 선릉역_ID, 삼성역_ID};
+        assertThat(actual).containsExactly(expected);
+    }
+
+    /**
+     * GIVEN 지하철 노선을 생성하고
      * WHEN 지하철 노선에 이미 추가된 구간을 추가하면
      * THEN 에러 처리와 함께 '이미 추가된 구간입니다.' 라는 메세지가 출력된다
      */
     @DisplayName("새로운 구간이 이미 추가된 역이라면 에러 처리와 함께 '이미 추가된 구간입니다.' 라는 메세지가 출력된다.")
     @Test
-    void updateSections4() {
+    void updateSections5() {
         // given
         ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
