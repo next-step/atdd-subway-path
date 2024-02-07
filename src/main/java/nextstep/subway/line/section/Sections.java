@@ -51,7 +51,7 @@ public class Sections {
     }
 
     public AddType add(Section section) {
-        if (canAdd(section)) {
+        if (isAlreadyAdded(section)) {
             throw new IllegalArgumentException("이미 추가된 구간입니다.");
         }
 
@@ -69,7 +69,7 @@ public class Sections {
         return AddType.MIDDLE;
     }
 
-    private boolean canAdd(Section section) {
+    private boolean isAlreadyAdded(Section section) {
         return this.sectionList.stream()
                 .anyMatch(s -> s.anyMatchUpStationAndDownStation(section));
     }
