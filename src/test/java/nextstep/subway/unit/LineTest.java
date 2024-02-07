@@ -22,68 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class LineTest {
     @Nested
     class SectionAddTest {
-        /**
-         * Given 노선을 생성한 뒤
-         * When 위 노선에 추가하려는 구간의 상행역, 하행역이 일치할 때
-         * Then 실패한다
-         */
-        @Test
-        @DisplayName("추가하려는 구간의 상행역과 하행역이 일치하면 실패한다")
-        void failForStationsValidation() throws LineSectionException {
-            // Given
-            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
-            // When
-            Section 추가구간 = 추가구간_엔티티(역삼역_엔티티, 역삼역_엔티티);
-            // Then
-            Exception thrown = assertThrows(
-                    LineSectionException.class,
-                    () -> 신분당선.addSection(추가구간),
-                    "should throw"
-            );
-            assertNotNull(thrown);
-        }
-
-        /**
-         * Given 노선을 생성한 뒤
-         * When 위 노선을 생성할 때 넣어둔 역 중 하나를 하행역으로 두는 구간을 추가하려는 경우
-         * Then 실패한다
-         */
-        @Test
-        @DisplayName("추가하려는 구간의 하행역이 이미 노선에 있는 역이면 실패한다")
-        void failForDownStationValidation() throws LineSectionException {
-            // Given
-            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
-            // When
-            Section 추가구간 = 추가구간_엔티티(역삼역_엔티티, 강남역_엔티티);
-            // Then
-            Exception thrown = assertThrows(
-                    LineSectionException.class,
-                    () -> 신분당선.addSection(추가구간),
-                    "should throw"
-            );
-            assertNotNull(thrown);
-        }
-
-        /**
-         * Given 노선을 생성한 뒤
-         * When 위 노선을 생성할 때 넣어둔 하행역을 상행역으로 두지 않는 구간을 추가하는 경우
-         * Then 실패한다
-         */
-        @Test
-        @DisplayName("추가하려는 구간의 상행역이 기존 노선의 하행역이 아니면 실패한다")
-        void failForUpStationValidation() throws LineSectionException {
-            // Given
-            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
-            // When
-            Section 추가구간 = 추가구간_엔티티(강남역_엔티티, StationFixture.선릉역_엔티티);
-            // Then
-            Exception thrown = assertThrows(
-                    LineSectionException.class,
-                    () -> 신분당선.addSection(추가구간),
-                    "should throw"
-            );
-            assertNotNull(thrown);
-        }
 
         /**
          * Given 노선을 생성한 뒤
@@ -101,10 +39,87 @@ class LineTest {
             // Then
             assertEquals(신분당선.getSections().size(), 2);
         }
+
+        /**
+         * Given 노선을 생성한 뒤
+         * When 위 노선에 추가하려는 구간의 상행역, 하행역이 일치할 때
+         * Then 실패한다
+         */
+        @Test
+        @DisplayName("추가하려는 구간의 상행역과 하행역이 일치하면 실패한다")
+        void failForStationsValidation() throws LineSectionException {
+            // Given
+            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+            // When
+            Section 추가구간 = 추가구간_엔티티(역삼역_엔티티, 역삼역_엔티티);
+            // Then
+            assertThrows(
+                    LineSectionException.class,
+                    () -> 신분당선.addSection(추가구간),
+                    "should throw"
+            );
+        }
+
+        /**
+         * Given 노선을 생성한 뒤
+         * When 위 노선을 생성할 때 넣어둔 역 중 하나를 하행역으로 두는 구간을 추가하려는 경우
+         * Then 실패한다
+         */
+        @Test
+        @DisplayName("추가하려는 구간의 하행역이 이미 노선에 있는 역이면 실패한다")
+        void failForDownStationValidation() throws LineSectionException {
+            // Given
+            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+            // When
+            Section 추가구간 = 추가구간_엔티티(역삼역_엔티티, 강남역_엔티티);
+            // Then
+            assertThrows(
+                    LineSectionException.class,
+                    () -> 신분당선.addSection(추가구간),
+                    "should throw"
+            );
+        }
+
+        /**
+         * Given 노선을 생성한 뒤
+         * When 위 노선을 생성할 때 넣어둔 하행역을 상행역으로 두지 않는 구간을 추가하는 경우
+         * Then 실패한다
+         */
+        @Test
+        @DisplayName("추가하려는 구간의 상행역이 기존 노선의 하행역이 아니면 실패한다")
+        void failForUpStationValidation() throws LineSectionException {
+            // Given
+            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+            // When
+            Section 추가구간 = 추가구간_엔티티(강남역_엔티티, StationFixture.선릉역_엔티티);
+            // Then
+            assertThrows(
+                    LineSectionException.class,
+                    () -> 신분당선.addSection(추가구간),
+                    "should throw"
+            );
+        }
     }
 
     @Nested
     class StationsGetTest {
+        /**
+         * Given 노선을 생성한 뒤
+         * When 노선에 구간을 하나 더 올바르게 추가했을 때
+         * Then 하행역은 마지막에 추가한 구간의 하행역이 조회된다.
+         */
+        @Test
+        @DisplayName("하행역을 조회한다")
+        void succeedToGetTheMostDownStation() {
+            // Given
+            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+            // When
+            신분당선.addSection(추가구간_엔티티(역삼역_엔티티, StationFixture.선릉역_엔티티));
+            // Then
+            Station station = 신분당선.getTheMostDownStation();
+            assertEquals(station.getName(), "선릉역");
+        }
+
         /**
          * When 노선을 생성한 뒤
          * Then 노선에 포함된 모든 역을 조회하면 두 개의 역이 조회된다.
@@ -139,27 +154,28 @@ class LineTest {
                     .collect(Collectors.toList());
             assertEquals(stationNames, List.of("강남역", "역삼역", "선릉역"));
         }
-
-        /**
-         * Given 노선을 생성한 뒤
-         * When 노선에 구간을 하나 더 올바르게 추가했을 때
-         * Then 하행역은 마지막에 추가한 구간의 하행역이 조회된다.
-         */
-        @Test
-        @DisplayName("하행역을 조회한다")
-        void succeedToGetTheMostDownStation() {
-            // Given
-            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
-            // When
-            신분당선.addSection(추가구간_엔티티(역삼역_엔티티, StationFixture.선릉역_엔티티));
-            // Then
-            Station station = 신분당선.getTheMostDownStation();
-            assertEquals(station.getName(), "선릉역");
-        }
     }
 
     @Nested
     class SectionRemoveTest {
+        /**
+         * Given 노선을 생성하고, 구간을 하나 더 추가한 뒤
+         * When 하행역을 삭제하면
+         * Then 구간이 하나 제거되고, 삭제한 하행역은 역 목록에 조회되지 않는다.
+         */
+        @Test
+        @DisplayName("하행역을 올바르게 삭제하면 구간이 삭제된다")
+        void succeed() throws LineSectionException {
+            // Given
+            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+            신분당선.addSection(추가구간_엔티티(역삼역_엔티티, StationFixture.선릉역_엔티티));
+            // When
+            신분당선.deleteStation(StationFixture.선릉역_엔티티.getId());
+            // Then
+            assertEquals(신분당선.getSections().size(), 1);
+            assertFalse(신분당선.getAllStations().contains(StationFixture.선릉역_엔티티));
+        }
+
         /**
          * Given
          * When 노선을 생성한 직후에
@@ -171,12 +187,12 @@ class LineTest {
             // When
             Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
             // Then
-            Exception thrown = assertThrows(
+            assertThrows(
                     LineSectionException.class,
                     () -> 신분당선.deleteStation(역삼역_엔티티.getId()),
                     "should throw"
             );
-            assertNotNull(thrown);
+
         }
 
         /**
@@ -193,30 +209,11 @@ class LineTest {
             Section 추가구간 = 추가구간_엔티티(역삼역_엔티티, StationFixture.선릉역_엔티티);
             신분당선.addSection(추가구간);
             // Then
-            Exception thrown = assertThrows(
+            assertThrows(
                     LineSectionException.class,
                     () -> 신분당선.deleteStation(역삼역_엔티티.getId()),
                     "should throw"
             );
-            assertNotNull(thrown);
-        }
-
-        /**
-         * Given 노선을 생성하고, 구간을 하나 더 추가한 뒤
-         * When 하행역을 삭제하면
-         * Then 구간이 하나 제거되고, 삭제한 하행역은 역 목록에 조회되지 않는다.
-         */
-        @Test
-        @DisplayName("하행역이 아닌 역을 제거하려 하면 실패한다")
-        void succeed() throws LineSectionException {
-            // Given
-            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
-            신분당선.addSection(추가구간_엔티티(역삼역_엔티티, StationFixture.선릉역_엔티티));
-            // When
-            신분당선.deleteStation(StationFixture.선릉역_엔티티.getId());
-            // Then
-            assertEquals(신분당선.getSections().size(), 1);
-            assertFalse(신분당선.getAllStations().contains(StationFixture.선릉역_엔티티));
         }
     }
 }

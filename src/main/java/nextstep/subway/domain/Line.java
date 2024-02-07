@@ -39,7 +39,6 @@ public class Line {
     }
 
     public static Line createWithId(Long id, String name, String color, Station upStation, Station downStation, int distance) {
-        System.out.println("HELLO");
         Line line = new Line(id, name, color);
         return getSectionAddedLine(line, upStation, downStation, distance);
     }
@@ -102,7 +101,7 @@ public class Line {
         if (sections.isEmpty()) {
             return;
         }
-        if (section.getUpStation() == section.getDownStation()) {
+        if (Objects.equals(section.getUpStation(), section.getDownStation())) {
             throw new LineSectionException("상행역과 하행역을 동일할 수 없습니다.");
         }
         if (isDownStationAlreadyIncluded(section.getDownStation())) {
