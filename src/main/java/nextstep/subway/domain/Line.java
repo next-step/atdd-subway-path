@@ -1,11 +1,11 @@
 package nextstep.subway.domain;
 
-import org.hibernate.Hibernate;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
+@EqualsAndHashCode(of = "id")
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,17 +51,5 @@ public class Line {
         return color;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || Hibernate.getClass(this) != Hibernate.getClass(object)) return false;
-        Line line = (Line) object;
-        return Objects.equals(id, line.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }
 
