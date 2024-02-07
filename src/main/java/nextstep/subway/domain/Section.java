@@ -91,4 +91,8 @@ public class Section implements Comparable<Section> {
     public String toString() {
         return "Section{" + "id=" + id + ", line=" + line + ", upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + '}';
     }
+
+    public boolean isNotSameDownStationId(final Long stationId) {
+        return !this.downStation.isSameId(stationId);
+    }
 }
