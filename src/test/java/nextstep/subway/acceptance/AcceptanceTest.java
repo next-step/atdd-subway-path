@@ -1,19 +1,29 @@
 package nextstep.subway.acceptance;
 
-import nextstep.subway.utils.DatabaseCleanup;
+import io.restassured.RestAssured;
+import nextstep.subway.helper.db.Truncator;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class AcceptanceTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class AcceptanceTest implements InitializingBean {
+
+    @LocalServerPort
+    private int port;
+
     @Autowired
-    private DatabaseCleanup databaseCleanup;
+    private Truncator truncator;
 
     @BeforeEach
-    public void setUp() {
-        databaseCleanup.execute();
+    public void setPort() {
+        RestAssured.port = port;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        truncator.truncateAll();
     }
 }
