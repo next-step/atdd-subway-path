@@ -67,8 +67,8 @@ public class Line {
         this.distance = section.getDistance();
     }
 
-    public void removeSection(Long stationId) {
-        this.sections.removeSection(stationId);
+    public void removeSection(Station station) {
+        this.sections.removeSection(station);
     }
 
     public Long getId() {

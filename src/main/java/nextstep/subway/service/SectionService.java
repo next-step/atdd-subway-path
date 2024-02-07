@@ -4,6 +4,7 @@ import nextstep.subway.dto.section.SectionRequest;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
+import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 @Service
@@ -35,6 +36,8 @@ public class SectionService {
     /** 구간을 삭제한다. */
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineService.findLine(lineId);
-        line.removeSection(stationId);
+        Station station = stationService.findStation(stationId);
+
+        line.removeSection(station);
     }
 }
