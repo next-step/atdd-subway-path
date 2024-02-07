@@ -3,7 +3,7 @@ package nextstep.subway.line.section;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -11,10 +11,11 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
+    public static final int FIRST_INDEX = 0;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     @OrderBy("upStation.id ASC")
-    private List<Section> sectionList = new ArrayList<>();
+    private List<Section> sectionList = new LinkedList<>();
 
     protected Sections() {
     }
@@ -33,33 +34,59 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    private Section firstSection() {
+        return this.sectionList.get(0);
+    }
+
     private Section lastSection() {
-        return this.sectionList.get(sectionList.size() - 1);
+        return this.sectionList.get(lastIndex());
     }
 
     public Station lastStation() {
         return lastSection().getDownStation();
     }
 
-    public void add(Section section) {
-        if (!isSameLastStationAndStartStation(section)) {
-            throw new IllegalArgumentException("마지막 구간과 추가될 구간의 시작은 같아야 합니다.");
-        }
-
-        if (anyMatchStation(section)) {
-            throw new IllegalArgumentException("이미 구간에 포함 되어 있는 역 입니다.");
-        }
-
-        this.sectionList.add(section);
+    private int lastIndex() {
+        return this.sectionList.size() - 1;
     }
 
-    public boolean isSameLastStationAndStartStation(Section station) {
-        return station.isSameUpStation(lastStation());
+    public AddType add(Section section) {
+        if (isAlreadyAdded(section)) {
+            throw new IllegalArgumentException("이미 추가된 구간입니다.");
+        }
+
+        if (canAddFirst(section)) {
+            this.sectionList.add(FIRST_INDEX, section);
+            return AddType.FIRST;
+        }
+
+        if (canAddLast(section)) {
+            this.sectionList.add(section);
+            return AddType.LAST;
+        }
+
+        addMiddle(section);
+        return AddType.MIDDLE;
     }
 
-    public boolean anyMatchStation(Section section) {
+    private boolean isAlreadyAdded(Section section) {
         return this.sectionList.stream()
-                .anyMatch(s -> s.anyMatchUpStationOrDownStation(section));
+                .anyMatch(s -> s.anyMatchUpStationAndDownStation(section));
+    }
+
+    private void addMiddle(Section section) {
+        AddingPosition addingPosition = AddingPosition.of(this.sectionList, section);
+        Section existing = this.sectionList.get(addingPosition.findingIndex());
+        existing.changeSectionFromToInput(addingPosition, section);
+        this.sectionList.add(addingPosition.addingIndex(), section);
+    }
+
+    private boolean canAddFirst(Section section) {
+        return firstSection().isSameUpStationInputDownStation(section);
+    }
+
+    private boolean canAddLast(Section section) {
+        return lastSection().isSameDownStationInputUpStation(section);
     }
 
     public Section delete(Station station) {

@@ -4,14 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StationFixture {
-    private static final String 강남역 = "강남역";
-    private static final String 삼성역 = "삼성역";
-    private static final String 선릉역 = "선릉역";
-    private static final String 교대역 = "교대역";
+    public static final String 잠실역 = "잠실역";
+    public static final String 강남역 = "강남역";
+    public static final String 삼성역 = "삼성역";
+    public static final String 선릉역 = "선릉역";
+    public static final String 교대역 = "교대역";
+    public static final String 서초역 = "서초역";
+    private Map<String, String> 잠실역_params;
     private Map<String, String> 강남역_params;
     private Map<String, String> 삼성역_params;
     private Map<String, String> 선릉역_params;
     private Map<String, String> 교대역_params;
+    private Long 잠실역_ID;
     private Long 강남역_ID;
     private Long 삼성역_ID;
     private Long 선릉역_ID;
@@ -19,6 +23,10 @@ public class StationFixture {
 
     public StationFixture() {
         Map<String, String> params = new HashMap<>();
+        params.put("name", 잠실역);
+        잠실역_params = params;
+        잠실역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(잠실역_params), "id", Long.class);
+
         params.put("name", 강남역);
         강남역_params = params;
         강남역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(강남역_params), "id", Long.class);
@@ -36,6 +44,10 @@ public class StationFixture {
         교대역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(교대역_params), "id", Long.class);
     }
 
+    public Map<String, String> get잠실역_params() {
+        return 잠실역_params;
+    }
+
     public Map<String, String> get강남역_params() {
         return 강남역_params;
     }
@@ -50,6 +62,10 @@ public class StationFixture {
 
     public Map<String, String> get교대역_params() {
         return 교대역_params;
+    }
+
+    public Long get잠실역_ID() {
+        return 잠실역_ID;
     }
 
     public Long get강남역_ID() {

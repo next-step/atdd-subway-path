@@ -37,24 +37,59 @@ public class Section {
         return downStation;
     }
 
-    public Long calculateAddDistance(Long distance) {
-        return distance + this.distance;
+    public Long calculateAddDistance(AddType addType,
+                                     Long distance) {
+        if (!addType.isAddMiddle()) {
+            return distance + this.distance;
+        }
+
+        if (distance <= this.distance) {
+            throw new IllegalArgumentException("중간에 추가되는 구간은 라인보다 길수 없습니다.");
+        }
+        return distance;
     }
 
     public Long calculateSubDistance(Long distance) {
-        return distance - this.distance;
-    }
-
-    public boolean anyMatchUpStationOrDownStation(Section section) {
-        return isSameUpStation(section.downStation) || isSameDownStation(section.downStation);
-    }
-
-    public boolean isSameUpStation(Station station) {
-        return this.upStation.equals(station);
+        return Math.abs(distance - this.distance);
     }
 
     public boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public boolean isSameUpStationInputDownStation(Section section) {
+        return this.upStation.equals(section.downStation);
+    }
+
+    public boolean isSameUpStationInputUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public boolean isSameDownStationInputDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
+    public boolean isSameDownStationInputUpStation(Section section) {
+        return this.downStation.equals(section.upStation);
+    }
+
+    public void changeSectionFromToInput(AddingPosition addingPosition,
+                                         Section section) {
+        this.distance = calculateSubDistance(section.distance);
+        changeSection(addingPosition, section);
+    }
+
+    private void changeSection(AddingPosition addingPosition,
+                               Section section) {
+        if (addingPosition.addingStart()) {
+            this.upStation = section.downStation;
+            return;
+        }
+        this.downStation = section.upStation;
+    }
+
+    public boolean anyMatchUpStationAndDownStation(Section section) {
+        return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
 
     @Override

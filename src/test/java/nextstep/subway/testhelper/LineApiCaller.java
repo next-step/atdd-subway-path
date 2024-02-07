@@ -2,9 +2,9 @@ package nextstep.subway.testhelper;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.line.LineUpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import nextstep.subway.line.LineUpdateRequest;
 
 import java.util.Map;
 
