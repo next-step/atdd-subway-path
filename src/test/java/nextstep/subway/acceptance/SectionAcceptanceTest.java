@@ -5,12 +5,17 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.LineRequest;
+import nextstep.subway.line.LineSectionResponse;
 import nextstep.subway.line.section.SectionRequest;
+import nextstep.subway.utils.DatabaseCleanup;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -19,10 +24,19 @@ import static nextstep.subway.utils.AcceptanceMethods.*;
 import static nextstep.subway.utils.StationFixtures.stationFixtures;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql(value = "/table_truncate.sql")
+//@Sql(value = "/table_truncate.sql")
 @DisplayName("지하철 구간 테스트")
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SectionAcceptanceTest {
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
+    @BeforeEach
+    void setUp() {
+        databaseCleanup.execute();
+    }
+
     /**
      * given 1개의 지하철 노선을 등록하고
      * when 1개의 지하철 구간을 추가 등록하면
@@ -42,6 +56,26 @@ public class SectionAcceptanceTest {
         // then
         assertThat(response.jsonPath().getLong("upStation.id")).isEqualTo(stationIds.get(1));
         assertThat(response.jsonPath().getLong("downStation.id")).isEqualTo(stationIds.get(2));
+    }
+
+    /**
+     * given A-C 구간을 보유한 노선을 생성하고
+     * when A-B 구간을 추가하면
+     * then 2개의 구간을 가진 노선 정보를 응답받을 수 있다.
+     */
+    @DisplayName("노선 구간 중간 역 등록")
+    @Test
+    void addSection_middle() {
+        // given
+        List<Long> stationIds = stationFixtures(3);
+        Long lineId = makeLine(new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10L)).jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = makeSection(lineId, new SectionRequest(stationIds.get(0), stationIds.get(2), 7L));
+
+        // then
+        assertThat(response.as(LineSectionResponse.class).getSections()).hasSize(2);
+        assertThat(response.jsonPath().getList("sections.distance", Long.class)).contains(7L, 3L);
     }
 
     /**

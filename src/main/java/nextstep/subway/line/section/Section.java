@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 public class Section {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "lineId")

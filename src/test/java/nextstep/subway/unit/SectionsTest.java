@@ -16,6 +16,7 @@ public class SectionsTest {
 
     private final Section 강남_역삼 = new Section(new Line(), 강남역, 역삼역, 10L);
     private final Section 역삼_선릉 = new Section(new Line(), 역삼역, 선릉역, 3L);
+    private final Section 강남_선릉 = new Section(new Line(), 강남역, 선릉역, 20L);
 
     @DisplayName("구간 1개 추가")
     @Test
@@ -24,6 +25,16 @@ public class SectionsTest {
 
         sections.addSection(강남_역삼);
         assertThat(sections.get()).hasSize(1);
+    }
+
+    @DisplayName("구간 1개_중간 역 추가")
+    @Test
+    void addSection_middle() {
+        Sections sections = new Sections();
+        sections.addSection(강남_선릉);
+        sections.addSection(강남_역삼);
+
+        assertThat(sections.allStations()).containsExactly(강남역, 역삼역, 선릉역);
     }
 
     @DisplayName("구간 2개 추가_1개 삭제")
