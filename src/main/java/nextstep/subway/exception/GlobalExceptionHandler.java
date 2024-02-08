@@ -15,7 +15,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {InvalidInputException.class})
     protected ResponseEntity<FailResponse> handleInvalidInputException(InvalidInputException ex) {
+        return ResponseEntity.badRequest().body(new FailResponse(ex.getMessage()));
+    }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {PathNotFoundException.class})
+    protected ResponseEntity<FailResponse> handlePathNotFoundException(PathNotFoundException ex) {
         return ResponseEntity.badRequest().body(new FailResponse(ex.getMessage()));
     }
 }

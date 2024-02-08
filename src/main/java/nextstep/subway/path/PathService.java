@@ -1,6 +1,7 @@
 package nextstep.subway.path;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.exception.InvalidInputException;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
@@ -19,6 +20,9 @@ public class PathService {
     private final StationRepository stationRepository;
 
     public PathResponse showShortestPath(Long sourceId, Long targetId) {
+        if (sourceId.equals(targetId)) {
+            throw new InvalidInputException("출발역과 도착역이 동일합니다.");
+        }
         stationRepository.findById(sourceId).orElseThrow(EntityNotFoundException::new);
         stationRepository.findById(targetId).orElseThrow(EntityNotFoundException::new);
 
@@ -30,7 +34,6 @@ public class PathService {
                 .map(Optional::get)
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
-
         int distance = pair.getSecond();
 
         return new PathResponse(stations, distance);

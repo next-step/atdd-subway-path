@@ -1,9 +1,10 @@
-package nextstep.study;
+package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.utils.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -41,6 +41,7 @@ public class PathAcceptanceTest {
      * When : 최소 경로를 조회하면
      * Then : 경로는 (교대역, 남부터미널역, 양재역), 총 거리는 5가 되어야 한다.
      */
+    @DisplayName("최단 경로 조회 성공")
     @Test
     void findShortestPathSuccess() {
         // given

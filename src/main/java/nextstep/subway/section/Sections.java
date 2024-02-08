@@ -121,17 +121,19 @@ public class Sections implements Iterable<Section> {
         sections.add(newSection);
     }
 
-    public void removeFirstSection() {
+    public Section removeFirstSection() {
         Section removedSection = sections.remove(0);
         removedSection.setLine(null);
+        return removedSection;
     }
 
-    public void removeLastSection() {
+    public Section removeLastSection() {
         Section removedSection = sections.remove(sections.size() - 1);
         removedSection.setLine(null);
+        return removedSection;
     }
 
-    public void removeSection(Station station) {
+    public Section removeSection(Station station) {
         int size = sections.size();
         for (int i = 0; i < size; i++) {
             Section currentSection = sections.get(i);
@@ -143,9 +145,10 @@ public class Sections implements Iterable<Section> {
                 Section removedSection = sections.remove(i + 1);
                 removedSection.setLine(null);
 
-                return;
+                return removedSection;
             }
         }
+        return null;
     }
 
 }

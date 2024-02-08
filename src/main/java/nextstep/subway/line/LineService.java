@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.path.PathFinder;
 import nextstep.subway.section.Section;
 import nextstep.subway.section.SectionAddRequest;
 import nextstep.subway.section.SectionResponse;
@@ -19,6 +20,8 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
+    private final PathFinder pathFinder;
+
     @Transactional
     public LineResponse create(LineCreateRequest request) {
         Station upstation = stationRepository.findById(request.getUpstationId()).orElseThrow(EntityNotFoundException::new);
@@ -27,7 +30,8 @@ public class LineService {
         Line line = LineCreateRequest.toEntity(request);
 
         lineRepository.save(line);
-        line.initSection(upstation, downstation, request.getDistance());
+        Section section = line.initSection(upstation, downstation, request.getDistance());
+        pathFinder.apply(true, section);
 
         return LineResponse.from(line);
     }
@@ -75,6 +79,7 @@ public class LineService {
                 .build();
 
         line.addSection(newSection);
+        pathFinder.apply(true, newSection);
 
         return SectionResponse.from(newSection);
     }
@@ -84,6 +89,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
         Station deleteStation = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
 
-        line.removeSection(deleteStation);
+        Section removedSection = line.removeSection(deleteStation);
+        pathFinder.apply(false, removedSection);
     }
 }

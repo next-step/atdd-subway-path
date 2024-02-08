@@ -42,9 +42,10 @@ public class Line {
         return sections.getTotalDistance();
     }
 
-    public void initSection(Station upstation, Station downstation, int distance) {
+    public Section initSection(Station upstation, Station downstation, int distance) {
         Section section = Section.initSection(this, upstation, downstation, distance);
         sections.initSection(section);
+        return section;
     }
 
     public void addSection(Section newSection) {
@@ -76,18 +77,21 @@ public class Line {
         }
     }
 
-    public void removeSection(Station station) {
+    public Section removeSection(Station station) {
         if (sections.size() == 1) {
             throw new InvalidInputException("노선에 상행 종점역과 하행 종점역만 있는 경우에는 제거할 수 없습니다.");
         }
 
+        Section removedSection;
+
         if (sections.isFirstUpstation(station)) {
-            sections.removeFirstSection();
+            removedSection = sections.removeFirstSection();
         } else if (sections.isLastDownstation(station)) {
-            sections.removeLastSection();
+            removedSection = sections.removeLastSection();
         } else {
-            sections.removeSection(station);
+            removedSection = sections.removeSection(station);
         }
+        return removedSection;
     }
 
     @Builder

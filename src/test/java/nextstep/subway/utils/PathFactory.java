@@ -13,7 +13,8 @@ public class PathFactory {
                 .queryParam("source", sourceId)
                 .queryParam("target", targetId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/paths")
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/paths")
                 .then().log().all()
                 .extract();
     }
