@@ -19,7 +19,7 @@ public class CommonAcceptanceTest {
 	private DatabaseCleanupExecutor databaseCleanupExecutor;
 
 	@BeforeEach
-	void databaseCleanup() {
+	public void databaseCleanup() {
 		databaseCleanupExecutor.execute();
 	}
 }
