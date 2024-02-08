@@ -10,8 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 
 class LineTest {
     private Station 역삼역;
@@ -41,8 +40,9 @@ class LineTest {
     @DisplayName("노선에 맨앞에 구간을 추가할 때, 추가구간의 상행선이 기존에 포함되면 오류가 발생한다.")
     @Test
     void addSection_first_duplicate() {
-        assertThatExceptionOfType(ResponseStatusException.class)
-                .isThrownBy(() -> 이호선.addSection(삼성역, 역삼역, 10));
+        assertThatThrownBy(() -> { 이호선.addSection(삼성역, 역삼역, 10); })
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("이미 등록되어 있는 지하철역 입니다.");
     }
 
     @DisplayName("노선의 중간에 구간을 추가한다.")
@@ -57,15 +57,17 @@ class LineTest {
     @DisplayName("노선의 중간에 구간을 추가할 때 추가구간의 하행선이 기존에 포함되면 오류가 발생한다.")
     @Test
     void addSection_middle_duplicate() {
-        assertThatExceptionOfType(ResponseStatusException.class)
-                .isThrownBy(() -> 이호선.addSection(역삼역, 삼성역, 10));
+        assertThatThrownBy(() -> { 이호선.addSection(역삼역, 삼성역, 10); })
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("이미 등록되어 있는 지하철역 입니다.");
     }
 
     @DisplayName("노선의 중간에 구간을 추가할 때 기존구간의 길이보다 추가되는 길이가 같거나 크면 오류가 발생한다.")
     @Test
     void addSection_middle_invalid_distance() {
-        assertThatExceptionOfType(ResponseStatusException.class)
-                .isThrownBy(() -> 이호선.addSection(역삼역, 선릉역, 10));
+        assertThatThrownBy(() -> { 이호선.addSection(역삼역, 선릉역, 10); })
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("중간에 추가되는 길이가 상행역의 길이보다 크거나 같을 수 없습니다.");
     }
 
     @DisplayName("노선의 끝에 구간을 추가한다.")
@@ -79,15 +81,17 @@ class LineTest {
     @DisplayName("노선에 끝에 구간을 추가할 때, 추가구간의 하행선이 기존에 포함되면 오류가 발생한다.")
     @Test
     void addSection_last_duplicate() {
-        assertThatExceptionOfType(ResponseStatusException.class)
-                .isThrownBy(() -> 이호선.addSection(삼성역, 역삼역, 10));
+        assertThatThrownBy(() -> { 이호선.addSection(삼성역, 역삼역, 10); })
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("이미 등록되어 있는 지하철역 입니다.");
     }
 
     @DisplayName("노선에 구간을 추가할 때, 추가하는 구간의 길이가 1미만 일 수 없다.")
     @Test
     void addSection_distance_min() {
-        assertThatExceptionOfType(ResponseStatusException.class)
-                .isThrownBy(() -> 이호선.addSection(역삼역, 선릉역, 0));
+        assertThatThrownBy(() -> { 이호선.addSection(역삼역, 선릉역, 0); })
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("거리는 1 이하 일 수 없습니다.");
     }
 
     @DisplayName("노선에 포함된 지하철역을 조회한다.")
