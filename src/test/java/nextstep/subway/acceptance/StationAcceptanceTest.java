@@ -17,8 +17,7 @@ import static nextstep.subway.utils.AcceptanceMethods.makeStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest{
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다

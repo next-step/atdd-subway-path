@@ -36,6 +36,11 @@ public class Section {
         this.distance = distance;
     }
 
+    public void separateFrom(Section newSection) {
+        this.upStation = newSection.downStation;
+        this.distance = this.distance - newSection.distance;
+    }
+
     public List<Station> stations() {
         return List.of(upStation, downStation);
     }
@@ -68,5 +73,9 @@ public class Section {
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
+    }
+
+    public boolean matchStations(Section section) {
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }
 }
