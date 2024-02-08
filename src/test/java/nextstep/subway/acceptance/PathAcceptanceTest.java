@@ -58,4 +58,23 @@ public class PathAcceptanceTest {
         int distance = response.jsonPath().getInt("distance");
         assertThat(distance).isEqualTo(5);
     }
+
+    /**
+     * Given: 출발역과 도착역 모두 교대역으로 설정하고
+     * When : 최소 경로를 조회하면
+     * Then : 실패한다.
+     */
+    @DisplayName("최단 경로 조회 실패")
+    @Test
+    void findShortestPathFail() {
+        // given
+        Long gyodaeId = 1L;
+
+        // when
+        ExtractableResponse<Response> response = PathFactory.findShortestPath(gyodaeId, gyodaeId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).contains("출발역과 도착역이 동일합니다.");
+    }
 }
