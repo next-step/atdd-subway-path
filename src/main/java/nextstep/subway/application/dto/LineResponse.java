@@ -1,17 +1,17 @@
 package nextstep.subway.application.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private final List<StationResponse> stations = new ArrayList<>();
+    private int distance;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
@@ -20,13 +20,10 @@ public class LineResponse {
         this.id = savedLine.getId();
         this.name = savedLine.getName();
         this.color = savedLine.getColor();
-
-        final List<Section> sections = savedLine.getSections();
-        this.stations.add(createStationResponse(sections.get(0).getUpStation()));
-
-        for (Section section : savedLine.getSections()) {
-            this.stations.add(createStationResponse(section.getDownStation()));
-        }
+        this.distance = savedLine.totalDistance();
+        this.stations =  savedLine.getStations().stream()
+                .map(this::createStationResponse)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -43,6 +40,10 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     private StationResponse createStationResponse(Station station) {

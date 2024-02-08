@@ -17,8 +17,6 @@ public class Line {
     private String name;
     @Column(length = 20, nullable = false)
     private String color;
-    private Long upStationId;
-    private Long downStationId;
 
     protected Line() {
     }
@@ -26,8 +24,6 @@ public class Line {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStation.getId();
-        this.downStationId = downStation.getId();
 
         Section section = new Section(upStation, downStation, distance, this);
         this.sections.add(section);
@@ -37,8 +33,6 @@ public class Line {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStationId = upStation.getId();
-        this.downStationId = downStation.getId();
 
         Section section = new Section(upStation, downStation, distance, this);
         this.sections.add(section);
@@ -56,8 +50,8 @@ public class Line {
         return color;
     }
 
-    public List<Section> getSections() {
-        return this.sections.getSections();
+    public int totalDistance() {
+        return this.sections.totalDistance();
     }
 
     public void changeName(final String name) {
@@ -69,41 +63,15 @@ public class Line {
     }
 
     public void addSection(final Station upStation, final Station downStation, final int distance) {
-        registerValidate(upStation, downStation);
-        changeDownStation(downStation);
-
-        this.sections.add(new Section(upStation, downStation, distance, this));
-    }
-
-    private void registerValidate(final Station upStation, final Station downStation) {
-        checkEqualsLineDownStation(upStation);
-
-        this.sections.checkLineStationsDuplicate(downStation);
-    }
-
-    private void checkEqualsLineDownStation(final Station upStation) {
-        if (!this.downStationId.equals(upStation.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "노선의 하행종점역과 등록하려는 구간의 상행역이 다릅니다.");
+        if (distance < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "거리는 1 이하 일 수 없습니다.");
         }
-    }
 
-    private void changeDownStation(final Station station) {
-        this.downStationId = station.getId();
+        this.sections.addSection(upStation, downStation, distance, this);
     }
 
     public void removeSection(final Long stationId) {
-        deleteValidate(stationId);
         this.sections.removeSection(stationId);
-    }
-
-    private void deleteValidate(final Long stationId) {
-        if (!this.downStationId.equals(stationId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제할 수 없는 지하철 역 입니다.");
-        }
-
-        if (this.sections.count() < 2) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제할 수 없는 지하철 역 입니다.");
-        }
     }
 
     public List<Station> getStations() {

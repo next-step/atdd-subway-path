@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SectionSteps {
+
+    public static final String SECTIONS_URL = "/lines/%s/sections";
+
     private SectionSteps() {
     }
 
@@ -16,7 +19,7 @@ public class SectionSteps {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .queryParam("stationId", stationId)
-                .when().delete("/lines/" + lineId + "/sections")
+                .when().delete(String.format(SECTIONS_URL, lineId))
                 .then().log().all()
                 .extract();
     }
@@ -27,7 +30,7 @@ public class SectionSteps {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + lineId + "/sections")
+                .when().post(String.format(SECTIONS_URL, lineId))
                 .then().log().all()
                 .extract();
     }

@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,16 +36,8 @@ public class Section {
         this.line = line;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public int getDistance() {
         return distance;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -56,10 +48,33 @@ public class Section {
         return downStation;
     }
 
-    public void checkEqualsUpStation(final Station downStation) {
-        if (this.upStation.isSame(downStation)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 등록되어 있는 지하철역 입니다.");
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void reduceDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "중간에 추가되는 길이가 상행역의 길이보다 크거나 같을 수 없습니다.");
         }
+
+        this.distance = this.distance - distance;
+    }
+
+    public Station[] getStations() {
+        return new Station[]{this.upStation, this.downStation};
+    }
+
+    public boolean isNotSameDownStationId(final Long stationId) {
+        return !this.downStation.isSameId(stationId);
+    }
+
+    @Override
+    public int compareTo(Section otherSection) {
+        return Objects.equals(this.downStation.getId(), otherSection.getUpStation().getId()) ? -1 : 1;
     }
 
     @Override
