@@ -40,8 +40,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 노선이 생성되어 있다.
-     * 노선에 이미 등록되어 있는 역을 등록한다.
-     * Then 예외가 발생한다.
+     * And 노선에 이미 등록되어 있는 역을 등록한다.
+     * Then 실패 코드가 리턴된다.
      */
     @DisplayName("노선에 구간을 등록 할 때, 노선에 이미 등록되어 있는 역을 등록하면 오류가 발생한다.")
     @Test
@@ -55,7 +55,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 노선이 생성되어 있다.
-     * 노선의 끝에 구간을 등록한다.
+     * And 노선의 끝에 구간을 등록한다.
      * Then 정상 응답 처리된다.
      * And 노선을 조회하면 강남역 - 역삼역 - 선릉역이 조회된다.
      */
@@ -108,27 +108,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 노선이 생성되어 있다.
-     * 구간이 등록되어 있다.
-     * 마지막 구간이 아닌 구간을 제거한다.
-     * Then 예외가 발생한다.
-     */
-    @DisplayName("노선의 구간을 제거할 때 마지막구간이 아니면 오류가 발생한다.")
-    @Test
-    public void 구간제거_마지막구간이_아닐때() {
-        final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
-
-        구간을_등록한다(lineId, 역삼역Id, 선릉역Id, 10);
-
-        final ExtractableResponse<Response> response = 구간을_제거한다(lineId, 1L);
-
-        예외가_발생한다(response, HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * When 노선이 생성되어 있다.
-     * 구간이 하나인 노선의 구간을 제거한다.
-     * Then 예외가 발생한다.
+     * Given 노선이 생성되어 있다.
+     * When 구간이 하나인 노선의 구간을 제거한다.
+     * Then 실패코드가 리턴된다.
      */
     @DisplayName("노선의 구간을 제거할 때 구간이 1개인 경우 오류가 발생한다.")
     @Test
@@ -141,14 +123,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 노선이 생성되어 있다.
-     * 구간이 등록되어 있다.
-     * 구간을 제거한다.
+     * Given 노선이 생성되어 있다.
+     * And 구간이 등록되어 있다.
+     * When 노선의 끝에 구간을 제거한다.
      * Then 정상 응답 처리된다.
+     * And 노선을 조회하면 강남역 - 선릉역이 조회된다.
      */
-    @DisplayName("노선의 구간을 제거한다.")
+    @DisplayName("노선의 끝의 구간을 제거한다.")
     @Test
-    public void 구간제거_정상() {
+    public void 노선의끝_구간제거_정상() {
         final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
 
         구간을_등록한다(lineId, 역삼역Id, 선릉역Id, 10);
@@ -156,6 +139,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = 구간을_제거한다(lineId, 선릉역Id);
 
         구간이_정상_제거된다(response, HttpStatus.NO_CONTENT);
+
+        노선을_조회하여_지하철역과_길이를_확인한다(lineId, Arrays.asList(강남역, 역삼역), 10);
     }
 
     public Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {

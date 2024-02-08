@@ -17,6 +17,7 @@ class LineTest {
     private Station 강남역;
     private Station 선릉역;
     private Station 삼성역;
+    private Station 봉은사역;
     private Line 이호선;
 
     @BeforeEach
@@ -25,6 +26,7 @@ class LineTest {
         역삼역 = new Station(2L, "역삼역");
         선릉역 = new Station(3L, "선릉역");
         삼성역 = new Station(4L, "삼성역");
+        봉은사역 = new Station(5L, "봉은사역");
         이호선 = new Line(1L, "노선", "red", 역삼역, 삼성역, 10);
     }
 
@@ -102,21 +104,21 @@ class LineTest {
         assertThat(stations).containsExactlyElementsOf(Arrays.asList(역삼역, 삼성역));
     }
 
-    @DisplayName("노선의 구간을 제거한다.")
-    @Test
-    void removeSection() {
-        이호선.addSection(삼성역, 선릉역, 10);
-
-        이호선.removeSection(선릉역.getId());
-
-        assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(역삼역, 삼성역));
-    }
-
     @DisplayName("노선의 구간이 하나일 때, 노선을 제거하면 오류가 발생한다.")
     @Test
     void removeSection_line_invalid_size() {
         assertThatExceptionOfType(ResponseStatusException.class)
                 .isThrownBy(() -> 이호선.removeSection(삼성역.getId()));
+    }
+
+    @DisplayName("노선의 끝의 구간을 제거한다.")
+    @Test
+    void removeSection_last() {
+        이호선.addSection(삼성역, 봉은사역, 10);
+
+        이호선.removeSection(봉은사역.getId());
+
+        assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(역삼역, 삼성역));
     }
 
 }
