@@ -1,22 +1,24 @@
 package nextstep.subway.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import lombok.EqualsAndHashCode;
+
+import javax.persistence.*;
 
 @Entity
+@EqualsAndHashCode(of = "id")
 public class Station {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 20, nullable = false)
     private String name;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {
-        this.name = name;
+        this(0L, name);
     }
 
     public Station(Long id, String name) {

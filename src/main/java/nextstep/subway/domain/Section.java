@@ -1,39 +1,41 @@
 package nextstep.subway.domain;
 
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
+@EqualsAndHashCode(of = "id")
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "line_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id", nullable = false)
     private Line line;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "up_station_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "down_station_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    private int distance;
+    @Column(nullable = false)
+    private Long distance;
 
-    public Section() {
-
+    protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    public Section(Line line, Station upStation, Station downStation, Long distance) {
+        this(0L, line, upStation, downStation, distance);
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, int distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, Long distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
@@ -41,33 +43,50 @@ public class Section {
         this.distance = distance;
     }
 
-    public Long getId() {
+    public boolean isSameLine(Line line) {
+        return this.line.equals(line);
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public List<Station> stations() {
+        return List.of(upStation, downStation);
+    }
+
+    public boolean isSameId(Long id) {
+        return this.id.equals(id);
+    }
+
+    public void changeUpStation(Station station, Long distance) {
+        this.upStation = station;
+        this.distance -= distance;
+    }
+
+    public void changeDownStation(Station station, Long distance) {
+        this.downStation = station;
+        this.distance -= distance;
+    }
+
+    public Long id() {
         return id;
     }
 
-    public Line getLine() {
-        return line;
-    }
-
-    public Station getUpStation() {
+    public Station upStation() {
         return upStation;
     }
 
-    public Station getDownStation() {
+    public Station downStation() {
         return downStation;
     }
 
-    public int getDistance() {
+    public Long distance() {
         return distance;
     }
 
-    public void setLine(Line line) {
-        if(this.line != null){
-            this.line.sections().remove(this);
-        }
-        this.line = line;
-        if(!line.sections().contains(this)){
-            line.sections().add(this);
-        }
-    }
 }

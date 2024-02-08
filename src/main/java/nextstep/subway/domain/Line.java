@@ -1,27 +1,31 @@
 package nextstep.subway.domain;
 
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Entity
+@EqualsAndHashCode(of = "id")
 public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 20, nullable = false)
     private String name;
+
+    @Column(length = 20, nullable = false)
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    protected Line() {
+    }
 
-    public Line() {
+    public Line(Long id) {
+        this.id = id;
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this(0L, name, color);
     }
 
     public Line(Long id, String name, String color) {
@@ -30,46 +34,22 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
-        if(section.getLine() != this){
-            section.setLine(this);
-        }
-    }
-
-    public int sectionsSize() {
-        return sections.size();
-    }
-
-    public void removeSection(Section section) {
-        sections.remove(section);
-    }
-
-    public Long id() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String name() {
-        return name;
-    }
-
-    public void setName(String name) {
+    public void update(String name, String color){
         this.name = name;
-    }
-
-    public String color() {
-        return color;
-    }
-
-    public void setColor(String color) {
         this.color = color;
     }
 
-    public List<Section> sections() {
-        return sections;
+    public Long getId() {
+        return id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
 }
+
