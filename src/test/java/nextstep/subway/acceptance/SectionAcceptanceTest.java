@@ -44,7 +44,7 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionSuccess() {
         // given
-        ExtractableResponse<Response> response = SectionFactory.createSection(1L, 2L, 3L);
+        ExtractableResponse<Response> response = SectionFactory.createSection(1L, 2L, 3L, 10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
@@ -67,7 +67,7 @@ public class SectionAcceptanceTest {
         // given
         Long newUpstationId = 3L;
         Long oldUpstationId = 1L;
-        SectionFactory.createSection(1L, newUpstationId, oldUpstationId);
+        SectionFactory.createSection(1L, newUpstationId, oldUpstationId, 10);
 
         // when
         ExtractableResponse<Response> response = LineFactory.getLines();
@@ -88,7 +88,7 @@ public class SectionAcceptanceTest {
         // given
         Long upstationId = 1L;
         Long middleStationId = 3L;
-        SectionFactory.createSection(1L, upstationId, middleStationId);
+        SectionFactory.createSection(1L, upstationId, middleStationId, 10);
 
         // when
         ExtractableResponse<Response> response = LineFactory.getLines();
@@ -111,7 +111,7 @@ public class SectionAcceptanceTest {
         Long existingStationId = 1L;
 
         // when
-        ExtractableResponse<Response> response = SectionFactory.createSection(1L, upstationId, existingStationId);
+        ExtractableResponse<Response> response = SectionFactory.createSection(1L, upstationId, existingStationId, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -128,7 +128,7 @@ public class SectionAcceptanceTest {
     @Test
     void firstSectionDeleteSuccess() {
         // given
-        SectionFactory.createSection(1L, 2L, 3L);
+        SectionFactory.createSection(1L, 2L, 3L, 10);
 
         // when
         ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 1L);
@@ -150,7 +150,7 @@ public class SectionAcceptanceTest {
     @Test
     void removeSectionDeleteSuccess() {
         // given
-        SectionFactory.createSection(1L, 2L, 3L);
+        SectionFactory.createSection(1L, 2L, 3L, 10);
 
         // when
         ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 2L);
@@ -172,7 +172,7 @@ public class SectionAcceptanceTest {
     @Test
     void LastSectionDeleteSuccess() {
         // given
-        SectionFactory.createSection(1L, 2L, 3L);
+        SectionFactory.createSection(1L, 2L, 3L, 10);
 
         // when
         ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 3L);
