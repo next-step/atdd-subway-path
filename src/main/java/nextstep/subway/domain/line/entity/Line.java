@@ -8,6 +8,7 @@ import nextstep.subway.common.exception.ErrorMessage;
 
 import javax.persistence.*;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,6 +100,13 @@ public class Line {
 
     public boolean contains(Station station) {
         return this.sections.stream().anyMatch(section -> section.getUpStation().equals(station));
+    }
+
+    public List<Station> getStations () {
+        List<Station> stations = new ArrayList<>();
+        stations.add(this.getUpStation());
+        this.sections.forEach(section -> stations.add(section.getDownStation()));
+        return stations;
     }
 
 }
