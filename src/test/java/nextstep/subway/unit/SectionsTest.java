@@ -40,6 +40,15 @@ public class SectionsTest {
         assertThat(sections.allStations()).containsExactly(강남역, 역삼역, 선릉역);
     }
 
+    @DisplayName("처음 구간 추가")
+    @Test
+    void addSection_first() {
+        Sections sections = new Sections();
+        sections.addSection(역삼_선릉);
+        sections.addSection(강남_역삼);
+        assertThat(sections.allStations()).containsExactly(강남역, 역삼역, 선릉역);
+    }
+
     @DisplayName("에러_중복된 구간 추가")
     @Test
     void addSection_error_duplicatedSection() {

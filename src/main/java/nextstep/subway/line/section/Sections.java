@@ -8,6 +8,7 @@ import nextstep.subway.station.Station;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OrderColumn(name = "position")
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {

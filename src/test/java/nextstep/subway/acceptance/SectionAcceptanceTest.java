@@ -10,6 +10,7 @@ import nextstep.subway.line.LineSectionResponse;
 import nextstep.subway.line.section.SectionRequest;
 import nextstep.subway.line.section.SectionResponse;
 import nextstep.subway.utils.DatabaseCleanup;
+import nextstep.subway.utils.StationFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,20 +56,43 @@ public class SectionAcceptanceTest extends AcceptanceTest{
      * when A-B 구간을 추가하면
      * then 2개의 구간을 가진 노선 정보를 응답받을 수 있다.
      */
-    @DisplayName("노선 구간 중간 역 등록")
+    @DisplayName("노선 중간 구간 추가")
     @Test
     void addSection_middle() {
         // given
         List<Long> stationIds = stationFixtures(3);
-        Long lineId = makeLine(new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10L)).jsonPath().getLong("id");
+        Long lineId = makeLine(new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(2), 10L)).jsonPath().getLong("id");
 
         // when
-        makeSection(lineId, new SectionRequest(stationIds.get(0), stationIds.get(2), 7L));
+        makeSection(lineId, new SectionRequest(stationIds.get(0), stationIds.get(1), 7L));
 
         // then
         ExtractableResponse<Response> response = getLineSections(lineId);
         assertThat(response.as(LineSectionResponse.class).getSections()).hasSize(2);
+        assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("강남역", "역삼역");
         assertThat(response.jsonPath().getList("sections.distance", Long.class)).contains(7L, 3L);
+    }
+
+    /**
+     * given B-C 구간을 보유한 노선을 생성하고
+     * when A-B 구간을 추가하면
+     * then A, B, C 3개의 역을 가진 노선 정보를 응답받을 수 있다.
+     */
+    @DisplayName("노선 처음 구간 추가")
+    @Test
+    void addSection_first() {
+        // given
+        List<Long> stationIds = stationFixtures(3);
+        Long lineId = makeLine(new LineRequest("신분당선", "bg-red-600", stationIds.get(1), stationIds.get(2), 10L)).jsonPath().getLong("id");
+
+        // when
+        makeSection(lineId, new SectionRequest(stationIds.get(0), stationIds.get(1), 7L));
+
+        // then
+        ExtractableResponse<Response> response = getLineSections(lineId);
+        assertThat(response.as(LineSectionResponse.class).getSections()).hasSize(2);
+        assertThat(response.jsonPath().getList("sections.upStation.name", String.class)).containsExactly("강남역", "역삼역");
+        assertThat(response.jsonPath().getList("sections.distance", Long.class)).contains(7L, 10L);
     }
 
     /**
