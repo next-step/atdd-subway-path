@@ -11,6 +11,12 @@ public class SectionFixture {
         );
     }
 
+    public static SectionCreateRequestBody 추가구간_생성_바디(Long upStationId, Long downStationId, int distance) {
+        return new SectionCreateRequestBody(
+                upStationId, downStationId, distance
+        );
+    }
+
     public static Section 추가구간_엔티티(Station upStation, Station downStation) {
         return Section.createWithId(2L, upStation, downStation, 10);
     }
