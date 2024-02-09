@@ -70,8 +70,8 @@ public class Line {
         this.sections.addSection(upStation, downStation, distance, this);
     }
 
-    public void removeSection(final Long stationId) {
-        this.sections.removeSection(stationId);
+    public void removeSection(final Station station) {
+        this.sections.removeSection(station);
     }
 
     public List<Station> getStations() {

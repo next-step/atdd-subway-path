@@ -82,6 +82,8 @@ public class LineService {
         final Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, EMPTY_LINE_MSG));
 
-        line.removeSection(stationId);
+        final Station deleteStation = stationService.findStationById(stationId);
+
+        line.removeSection(deleteStation);
     }
 }

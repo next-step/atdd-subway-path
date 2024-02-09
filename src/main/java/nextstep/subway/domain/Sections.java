@@ -22,15 +22,24 @@ public class Sections {
     public Sections() {
     }
 
-    public void removeSection(final Long stationId) {
+    public void removeSection(final Station deleteStation) {
         checkSectionSizeTwoUnder();
 
-        final Section lineLastSection = getSections().get(this.sections.size() - 1);
-        if (lineLastSection.isNotSameDownStationId(stationId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제할 수 없는 지하철 역 입니다.");
+        final List<Section> sortedSections = getSections();
+        Section lineUpSection = sortedSections.get(0);
+        Section lineDownSection = sortedSections.get(sortedSections.size() - 1);
+
+        if (lineUpSection.isSameUpStation(deleteStation)) {
+            lineUpSection.removeLine();
+            this.sections.remove(lineUpSection);
+            return;
         }
 
-        this.sections.remove(lineLastSection);
+        if (lineDownSection.isSameDownStation(deleteStation)) {
+            lineDownSection.removeLine();
+            this.sections.remove(lineDownSection);
+            return;
+        }
     }
 
     private void checkSectionSizeTwoUnder() {

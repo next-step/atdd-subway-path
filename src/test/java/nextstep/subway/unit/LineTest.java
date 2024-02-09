@@ -107,8 +107,9 @@ class LineTest {
     @DisplayName("노선의 구간이 하나일 때, 노선을 제거하면 오류가 발생한다.")
     @Test
     void removeSection_line_invalid_size() {
-        assertThatExceptionOfType(ResponseStatusException.class)
-                .isThrownBy(() -> 이호선.removeSection(삼성역.getId()));
+        assertThatThrownBy(() -> { 이호선.removeSection(삼성역); })
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("삭제할 수 없는 지하철 역 입니다.");
     }
 
     @DisplayName("노선의 끝의 구간을 제거한다.")
@@ -116,9 +117,19 @@ class LineTest {
     void removeSection_last() {
         이호선.addSection(삼성역, 봉은사역, 10);
 
-        이호선.removeSection(봉은사역.getId());
+        이호선.removeSection(봉은사역);
 
         assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(역삼역, 삼성역));
+    }
+
+    @DisplayName("노선의 맨 앞의 구간을 제거한다.")
+    @Test
+    void removeSection_first() {
+        이호선.addSection(삼성역, 봉은사역, 10);
+
+        이호선.removeSection(역삼역);
+
+        assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(삼성역, 봉은사역));
     }
 
 }
