@@ -10,8 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.exception.ExceptionMessage.NO_EXISTS_SAME_DOWNSTATION_SECTION;
-import static nextstep.subway.exception.ExceptionMessage.NO_EXISTS_SAME_UPSTATION_SECTION;
+import static nextstep.subway.exception.ExceptionMessage.*;
 
 @Embeddable
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -20,9 +19,18 @@ public class Sections {
     List<Section> sections = new ArrayList<>();
 
     public void addSection(Section newSection) {
+        // 추가하려는 구간의 상행역 하행역이 같으면
+        if (newSection.getUpStation().equals(newSection.getDownStation())) {
+            throw new ApplicationException(NEW_SECTION_VALIDATION_EXCEPTION.getMessage());
+        }
+
         if (this.sections.isEmpty()) {
             this.sections.add(newSection);
             return;
+        }
+        // 이미 등록된 구간인지
+        if (isRegisteredSection(newSection)) {
+            throw new ApplicationException(ALREADY_REGISTERED_SECTION_EXCEPTION.getMessage());
         }
 
         // 새로운 구간과 동일한 상행역이 있는지
@@ -41,6 +49,7 @@ public class Sections {
     }
 
     private void insertSection(Section newSection, Section basedSection) {
+        checkValidation(newSection, basedSection);
         int newDistance = basedSection.getDistance() - newSection.getDistance();
 
         this.sections.remove(basedSection);
@@ -54,6 +63,13 @@ public class Sections {
         // 하행역이 같다면
         if (basedSection.isSameAsDwonStation(newSection.getDownStation())){
             this.sections.add(new Section(basedSection.getUpStation(), newSection.getUpStation(), newDistance));
+        }
+    }
+
+    private void checkValidation(Section newSection, Section basedSection) {
+        // 기존 구간보다 거리가 길거나 같은 노선인지
+        if (newSection.getDistance() >= basedSection.getDistance()) {
+            throw new ApplicationException(LONGER_DISTANCE_SECTION_EXCEPTION.getMessage());
         }
     }
 
@@ -75,10 +91,10 @@ public class Sections {
     }
 
     public Section getLastSection() {
-        if (this.sections.isEmpty()) {
-            return null;
-        }
-        return this.sections.get(this.sections.size() - 1);
+        return this.sections.stream()
+                .filter(this::isLastSection)
+                .findFirst()
+                .orElseThrow(() -> new ApplicationException(NO_EXISTS_LAST_SECTION_EXCEIPTION.getMessage()));
     }
 
     public int getSize() {
@@ -116,4 +132,16 @@ public class Sections {
         }
         return sumOfDistance;
     }
+
+    public boolean isRegisteredSection(Section section) {
+        boolean isExistUpStation = this.getStations().stream()
+                .anyMatch(station -> station.equals(section.getUpStation()));
+
+        boolean isExistDownStation = this.getStations().stream()
+                .anyMatch(station -> station.equals(section.getDownStation()));
+
+        return isExistUpStation && isExistDownStation;
+    }
+
+
 }

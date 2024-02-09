@@ -3,11 +3,9 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.request.LineRequest;
 import nextstep.subway.domain.response.LineResponse;
-import nextstep.subway.domain.response.SectionResponse;
-import nextstep.subway.exception.ExceptionMessage;
 import nextstep.subway.exception.ExceptionResponse;
 import nextstep.subway.utils.StationTestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.exception.ExceptionMessage.*;
 import static nextstep.subway.utils.LineTestUtil.createSubwayLine;
 import static nextstep.subway.utils.LineTestUtil.getLine;
 import static nextstep.subway.utils.SectionTestUtil.addSection;
@@ -65,15 +63,13 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSection(params, lineId);
 
         // ERROR
-        SectionResponse sectionResponse = response.as(SectionResponse.class);
+        LineResponse lineResponse = response.as(LineResponse.class);
 
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(sectionResponse.getLine().getId()).isEqualTo(lineId),
-                () -> assertThat(sectionResponse.getUpStation().getId()).isEqualTo(stationId2),
-                () -> assertThat(sectionResponse.getDownStation().getId()).isEqualTo(stationId3),
-                () -> assertThat(sectionResponse.getDistance()).isEqualTo(distance)
+                () -> assertThat(lineResponse.getId()).isEqualTo(lineId),
+                () -> assertThat(lineResponse.getStations().stream().map(Station::getId)).contains(stationId2, stationId3)
         );
     }
 
@@ -128,7 +124,7 @@ public class SectionAcceptanceTest {
      * 새로운 구간의 상행역과 하행역은 같을 수 없다.
      */
     @DisplayName("새로운 구간의 상행역과 하행역은 같을 수 없다.")
-//    @Test
+    @Test
     void addSectionExceptionTest3() {
         //given
 
@@ -140,7 +136,7 @@ public class SectionAcceptanceTest {
         String exceptionMessage = addSection(params, lineId).as(ExceptionResponse.class).getMessage();
 
         //then
-        assertThat(exceptionMessage).isEqualTo(ExceptionMessage.NEW_SECTION_VALIDATION_EXCEPTION.getMessage());
+        assertThat(exceptionMessage).isEqualTo(NEW_SECTION_VALIDATION_EXCEPTION.getMessage());
     }
 
     /**
@@ -184,7 +180,7 @@ public class SectionAcceptanceTest {
         String message = deleteSection(lineId, stationId2).as(ExceptionResponse.class).getMessage();
 
         //then
-        assertThat(message).isEqualTo(ExceptionMessage.DELETE_LAST_SECTION_EXCEPTION.getMessage());
+        assertThat(message).isEqualTo(DELETE_LAST_SECTION_EXCEPTION.getMessage());
     }
 
     /**
@@ -200,7 +196,7 @@ public class SectionAcceptanceTest {
         String message = deleteSection(lineId, stationId2).as(ExceptionResponse.class).getMessage();
 
         //then
-        assertThat(message).isEqualTo(ExceptionMessage.DELETE_ONLY_ONE_SECTION_EXCEPTION.getMessage());
+        assertThat(message).isEqualTo(DELETE_ONLY_ONE_SECTION_EXCEPTION.getMessage());
     }
 
     /**
@@ -263,7 +259,7 @@ public class SectionAcceptanceTest {
         // A-C-B 가 된다.
         assertAll(
                 () -> assertThat(response.getStations()).hasSize(3),
-                () -> assertThat(response.getStations().stream().map(station -> station.getName())).contains("A", "B", "C")
+                () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C")
         );
     }
 
@@ -288,7 +284,59 @@ public class SectionAcceptanceTest {
         // C-A-B 가 된다.
         assertAll(
                 () -> assertThat(response.getStations()).hasSize(3),
-                () -> assertThat(response.getStations().stream().map(station -> station.getName())).contains("A", "B", "C")
+                () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C")
         );
+    }
+
+    /**
+     * 이미 등록되어있는 구간은 노선에 등록될 수 없다.
+     */
+    @DisplayName("이미 등록되어있는 구간은 노선에 등록될 수 없다.")
+    @Test
+    void addRegisteredStation() {
+        // given
+        // 노선 A-B-C
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", stationId2);
+        param.put("downStationId", stationId3);
+        param.put("distance", 4);
+        addSection(param, lineId).as(LineResponse.class);
+
+        // when
+        // C-A를 추가하면
+        Map<String, Object> param2 = new HashMap<>();
+        param2.put("upStationId", stationId3);
+        param2.put("downStationId", stationId1);
+        param2.put("distance", 4);
+        ExtractableResponse<Response> response = addSection(param2, lineId);
+
+        // then
+        // 에러 발생
+        String message = response.as(ExceptionResponse.class).getMessage();
+        assertThat(message).isEqualTo(ALREADY_REGISTERED_SECTION_EXCEPTION.getMessage());
+    }
+
+    /**
+     * 노선의 중간에 추가할 경우
+     * 추가 구간의 거리가 기존 노선의 거리보다 크다면 추가할 수 없다.
+     */
+    @DisplayName("기존 구간보다 거리가 큰 구간은 추가할 수 없다.")
+    @Test
+    void addLongerDistanceSection() {
+        // given
+        // 노선 A-B, 거리 10
+
+        // when
+        // A-C, 거리 11 을 추가하면
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", stationId1);
+        param.put("downStationId", stationId3);
+        param.put("distance", 11);
+        ExtractableResponse<Response> response = addSection(param, lineId);
+
+        // then
+        // 에러 발생
+        String message = response.as(ExceptionResponse.class).getMessage();
+        assertThat(message).isEqualTo(LONGER_DISTANCE_SECTION_EXCEPTION.getMessage());
     }
 }

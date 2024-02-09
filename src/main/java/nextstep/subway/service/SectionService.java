@@ -4,7 +4,6 @@ import nextstep.subway.domain.entity.Line;
 import nextstep.subway.domain.entity.Section;
 import nextstep.subway.domain.entity.Sections;
 import nextstep.subway.domain.entity.Station;
-import nextstep.subway.domain.request.SectionRequest;
 import nextstep.subway.domain.response.SectionResponse;
 import nextstep.subway.exception.ApplicationException;
 import nextstep.subway.exception.ExceptionMessage;
@@ -12,11 +11,8 @@ import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.util.List;
-
-import static nextstep.subway.exception.ExceptionMessage.ALREADY_REGISTERED_SECTION_EXCEPTION;
 
 
 @Service
@@ -35,29 +31,6 @@ public class SectionService {
 
 
 
-    private void sectionValidation(Line line, Station upStation, Station downStation) {
-        Sections sections = line.getSections();
-
-        if (sections.getSections().isEmpty()) {
-            return;
-        }
-
-//        Section section = sections.getLastSection();
-//        if (!section.getDownStation().equals(upStation)) {
-//            throw new ApplicationException(ExceptionMessage.UPSTATION_VALIDATION_EXCEPTION.getMessage());
-//        }
-
-        // 새로운 구간의 하행역이 노선에 등록되어있는 역과 같으면 에러
-//        if (isRegisteredStation(sections.getSections(), downStation)) {
-//            throw new ApplicationException(ExceptionMessage.DOWNSTATION_VALIDATION_EXCEPTION.getMessage());
-//        }
-
-        // 새로운 구간의 상행역과 하행역이 같으면 에러
-        if (upStation.equals(downStation)) {
-            throw new ApplicationException(ExceptionMessage.NEW_SECTION_VALIDATION_EXCEPTION.getMessage());
-        }
-    }
-
     private boolean isRegisteredStation(List<Section> sections, Station station) {
         for (Section section : sections) {
             if(section.getUpStation().equals(station)){
@@ -70,11 +43,12 @@ public class SectionService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).get();
+        Station station = stationService.findById(stationId);
         Sections sections = line.getSections();
         Section lastSection = sections.getLastSection(); // 마지막 구간
 
         // stationId 는 마지막 하행 종착역 이어야 한다.
-        if (!stationId.equals(lastSection.getDownStation().getId())) {
+        if (!station.equals(lastSection.getDownStation())) {
             throw new ApplicationException(ExceptionMessage.DELETE_LAST_SECTION_EXCEPTION.getMessage());
         }
 
