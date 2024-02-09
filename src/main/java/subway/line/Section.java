@@ -1,6 +1,5 @@
 package subway.line;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,15 +17,15 @@ public class Section {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne(targetEntity = Line.class, cascade = CascadeType.PERSIST)
+	@ManyToOne(targetEntity = Line.class)
 	@JoinColumn(name = "line_id", nullable = false)
 	private Line line;
 
-	@ManyToOne(targetEntity = Station.class, cascade = CascadeType.PERSIST)
+	@ManyToOne(targetEntity = Station.class)
 	@JoinColumn(name = "up_station_id", nullable = false)
 	private Station upStation;
 
-	@ManyToOne(targetEntity = Station.class, cascade = CascadeType.PERSIST)
+	@ManyToOne(targetEntity = Station.class)
 	@JoinColumn(name = "down_station_id", nullable = false)
 	private Station downStation;
 

@@ -35,11 +35,11 @@ public class LineService {
 	}
 
 	@Transactional
-	public LineResponse save(Line line, Station upStation, Station downStation, Integer distance) {
+	public Line save(Line line, Station upStation, Station downStation, Integer distance) {
 		Line savedLine = lineRepository.save(line);
 		savedLine.addSection(upStation, downStation, distance);
 
-		return LineResponse.of(savedLine);
+		return savedLine;
 	}
 
 	@Transactional
@@ -54,13 +54,13 @@ public class LineService {
 	}
 
 	@Transactional
-	public LineResponse addSection(Line line, Station upStation, Station downStation, Integer distance) {
+	public Line addSection(Line line, Station upStation, Station downStation, Integer distance) {
 		line.addSection(upStation, downStation, distance);
-		return LineResponse.of(line);
+		return line;
 	}
 
 	@Transactional
 	public void deleteSection(Line line, Station deleteTargetStation) {
-		line.removeStation(deleteTargetStation);
+		line.removeFinalStation(deleteTargetStation);
 	}
 }

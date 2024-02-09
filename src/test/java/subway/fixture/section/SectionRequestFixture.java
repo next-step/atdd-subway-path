@@ -1,4 +1,4 @@
-package subway.fixture;
+package subway.fixture.section;
 
 import subway.dto.section.SectionRequest;
 

@@ -20,11 +20,10 @@ import subway.AcceptanceTest;
 import subway.dto.line.LineResponse;
 import subway.dto.line.LineUpdateRequest;
 import subway.dto.section.SectionRequest;
-import subway.dto.station.StationDTO;
 import subway.dto.station.StationResponse;
-import subway.fixture.LineFixture;
-import subway.fixture.SectionRequestFixture;
-import subway.fixture.StationFixture;
+import subway.fixture.line.LineAssuredFixture;
+import subway.fixture.section.SectionRequestFixture;
+import subway.fixture.station.StationAssuredFixture;
 import subway.utils.rest.Rest;
 
 class LineAcceptanceTest extends AcceptanceTest {
@@ -37,7 +36,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void saveLine() {
 		// when
-		ExtractableResponse<Response> savedLine = LineFixture.builder()
+		ExtractableResponse<Response> savedLine = LineAssuredFixture.builder()
 			.build()
 			.create();
 		LineResponse actualResponse = savedLine.as(LineResponse.class);
@@ -58,10 +57,13 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineAndRetrieveLines() {
 		// given
-		LineFixture lineFixture1 = LineFixture.builder().build();
-		LineFixture lineFixture2 = LineFixture.builder().upStationName("남강역").downStationName("재양역").build();
-		LineResponse expectedLineResponse1 = lineFixture1.actionReturnLineResponse();
-		LineResponse expectedLineResponse2 = lineFixture2.actionReturnLineResponse();
+		LineAssuredFixture lineAssuredFixture1 = LineAssuredFixture.builder().build();
+		LineAssuredFixture lineAssuredFixture2 = LineAssuredFixture.builder()
+			.upStationName("남강역")
+			.downStationName("재양역")
+			.build();
+		LineResponse expectedLineResponse1 = lineAssuredFixture1.actionReturnLineResponse();
+		LineResponse expectedLineResponse2 = lineAssuredFixture2.actionReturnLineResponse();
 
 		// when
 		List<LineResponse> actualResponse = Rest.builder()
@@ -83,7 +85,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createLineAndRetrieveLine() {
 		// given
-		LineResponse expectedResponse = LineFixture.builder()
+		LineResponse expectedResponse = LineAssuredFixture.builder()
 			.build()
 			.actionReturnLineResponse();
 
@@ -107,7 +109,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 		// given
 		String expectedName = "변경된 이름";
 		String expectedColor = "변경된 색깔";
-		LineResponse lineResponse = LineFixture.builder()
+		LineResponse lineResponse = LineAssuredFixture.builder()
 			.build()
 			.actionReturnLineResponse();
 
@@ -132,7 +134,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteLine() {
 		// given
-		LineResponse lineResponse = LineFixture.builder()
+		LineResponse lineResponse = LineAssuredFixture.builder()
 			.build()
 			.actionReturnLineResponse();
 
@@ -158,11 +160,11 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@TestFactory
 	Stream<DynamicTest> addSection() {
 		// given
-		LineResponse givenLineResponse = LineFixture.builder()
+		LineResponse givenLineResponse = LineAssuredFixture.builder()
 			.build()
 			.actionReturnLineResponse();
 
-		long addedStationId = StationFixture.builder()
+		long addedStationId = StationAssuredFixture.builder()
 			.stationName("추가된 정류장")
 			.build()
 			.create()
@@ -239,7 +241,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 				}),
 			dynamicTest("추가할려는 상행역이 마지막 정류장이 아닐 경우 Exception 테스트",
 				() -> {
-					long addedExceptionStationId = StationFixture.builder()
+					long addedExceptionStationId = StationAssuredFixture.builder()
 						.stationName("비정상 테스트 정류장")
 						.build()
 						.create()
@@ -270,7 +272,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	@TestFactory
 	Stream<DynamicTest> deleteSection() {
 		// given
-		LineResponse givenLineResponse = LineFixture.builder()
+		LineResponse givenLineResponse = LineAssuredFixture.builder()
 			.build()
 			.actionReturnLineResponse();
 
@@ -279,7 +281,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 			.get(linesGetUri)
 			.as(LineResponse.class);
 
-		long addedStationId = StationFixture.builder()
+		long addedStationId = StationAssuredFixture.builder()
 			.stationName("추가된 정류장")
 			.build()
 			.create()
@@ -325,7 +327,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 			dynamicTest("삭제 할려는 정류장이 마지막 정류장이 아닌 경우 Exception", () -> {
 				Long firstStationId = initLine.getStations()
 					.stream()
-					.map(StationDTO::getId)
+					.map(StationResponse::getId)
 					.findFirst()
 					.orElse(1L);
 

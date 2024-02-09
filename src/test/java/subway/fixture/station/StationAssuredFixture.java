@@ -1,16 +1,16 @@
-package subway.fixture;
+package subway.fixture.station;
 
 import static subway.utils.enums.Location.*;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import subway.utils.rest.Rest;
 import subway.dto.station.StationRequest;
+import subway.utils.rest.Rest;
 
-public class StationFixture {
+public class StationAssuredFixture {
 	private final String stationName;
 
-	private StationFixture(String stationName) {
+	private StationAssuredFixture(String stationName) {
 		this.stationName = stationName;
 	}
 
@@ -38,8 +38,8 @@ public class StationFixture {
 			return this;
 		}
 
-		public StationFixture build() {
-			return new StationFixture(stationName);
+		public StationAssuredFixture build() {
+			return new StationAssuredFixture(stationName);
 		}
 	}
 }

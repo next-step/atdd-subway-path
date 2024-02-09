@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import subway.AcceptanceTest;
-import subway.fixture.StationFixture;
+import subway.fixture.station.StationAssuredFixture;
 import subway.utils.rest.Rest;
 
 @DisplayName("지하철역 관련 기능")
@@ -26,7 +26,7 @@ class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void createStation() {
 		// when
-		String expectedStationName = StationFixture.builder()
+		String expectedStationName = StationAssuredFixture.builder()
 			.build()
 			.create()
 			.jsonPath()
@@ -62,7 +62,7 @@ class StationAcceptanceTest extends AcceptanceTest {
 	}
 
 	private ExtractableResponse<Response> createStation(String stationName) {
-		return StationFixture.builder()
+		return StationAssuredFixture.builder()
 			.stationName(stationName)
 			.build()
 			.create();
@@ -77,7 +77,7 @@ class StationAcceptanceTest extends AcceptanceTest {
 	@Test
 	void deleteStation() {
 		// given
-		Long stationId = StationFixture.builder().build()
+		Long stationId = StationAssuredFixture.builder().build()
 			.create()
 			.jsonPath()
 			.getLong("id");

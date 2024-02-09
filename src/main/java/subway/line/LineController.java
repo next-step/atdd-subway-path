@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import subway.dto.line.LineResponse;
-import subway.dto.section.SectionRequest;
 import subway.dto.line.LineCreateRequest;
+import subway.dto.line.LineResponse;
 import subway.dto.line.LineUpdateRequest;
+import subway.dto.section.SectionRequest;
 import subway.station.Station;
 import subway.station.StationService;
 
@@ -52,9 +52,9 @@ public class LineController {
 		Station upStation = stationService.findStationById(request.getUpStationId());
 		Station downStation = stationService.findStationById(request.getDownStationId());
 
-		LineResponse response = lineService.save(request.toEntity(), upStation, downStation, request.getDistance());
+		Line line = lineService.save(request.toEntity(), upStation, downStation, request.getDistance());
 
-		return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
+		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.of(line));
 	}
 
 	@PutMapping("/{id}")
@@ -76,9 +76,9 @@ public class LineController {
 		Station upStation = stationService.findStationById(request.getUpStationId());
 		Station downStation = stationService.findStationById(request.getDownStationId());
 
-		LineResponse lineResponse = lineService.addSection(line, upStation, downStation, request.getDistance());
+		Line addedSectionLine = lineService.addSection(line, upStation, downStation, request.getDistance());
 
-		return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
+		return ResponseEntity.created(URI.create("/lines/" + id)).body(LineResponse.of(addedSectionLine));
 	}
 
 	@DeleteMapping("/{id}/sections")

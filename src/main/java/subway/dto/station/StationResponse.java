@@ -1,19 +1,25 @@
 package subway.dto.station;
 
+import subway.station.Station;
+
 public class StationResponse {
-    private final Long id;
-    private final String name;
+	private final Long id;
+	private final String name;
 
-    public StationResponse(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+	private StationResponse(Long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public static StationResponse of(Station station) {
+		return new StationResponse(station.getId(), station.getName());
+	}
 
-    public String getName() {
-        return name;
-    }
+	public Long getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
 }

@@ -1,4 +1,4 @@
-package subway.fixture;
+package subway.fixture.line;
 
 import static subway.utils.enums.Location.*;
 
@@ -6,13 +6,14 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import subway.dto.line.LineCreateRequest;
 import subway.dto.line.LineResponse;
+import subway.fixture.station.StationAssuredFixture;
 import subway.utils.rest.Rest;
 
-public class LineFixture {
+public class LineAssuredFixture {
 	private final String upStationName;
 	private final String downStationName;
 
-	private LineFixture(String upStationName, String downStationName) {
+	private LineAssuredFixture(String upStationName, String downStationName) {
 		this.upStationName = upStationName;
 		this.downStationName = downStationName;
 	}
@@ -34,7 +35,7 @@ public class LineFixture {
 		Long upStationId = generateStationId(upStationName);
 		Long downStationId = generateStationId(downStationName);
 
-		LineCreateRequest lineCreateRequest = LineRequestFixture.builder()
+		LineCreateRequest lineCreateRequest = LineRequestFixture.createBuilder()
 			.upStationId(upStationId)
 			.downStationId(downStationId)
 			.build();
@@ -43,7 +44,7 @@ public class LineFixture {
 	}
 
 	private Long generateStationId(String stationName) {
-		return StationFixture.builder()
+		return StationAssuredFixture.builder()
 			.stationName(stationName)
 			.build()
 			.create()
@@ -72,8 +73,8 @@ public class LineFixture {
 			return this;
 		}
 
-		public LineFixture build() {
-			return new LineFixture(upStationName, downStationName);
+		public LineAssuredFixture build() {
+			return new LineAssuredFixture(upStationName, downStationName);
 		}
 	}
 }
