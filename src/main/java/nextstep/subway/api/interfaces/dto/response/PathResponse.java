@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import nextstep.subway.api.domain.dto.outport.StationInfo;
+import nextstep.subway.api.domain.model.vo.Path;
+import nextstep.subway.common.mapper.ModelMapperBasedObjectMapper;
 
 /**
  * @author : Rene Choi
@@ -17,8 +18,12 @@ import nextstep.subway.api.domain.dto.outport.StationInfo;
 @Setter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of")
 public class PathResponse {
-	private List<StationInfo> stations;
+	private List<StationResponse> stations;
 	private Long distance;
+
+	public static PathResponse from(Path path) {
+		return ModelMapperBasedObjectMapper.convert(path, PathResponse.class);
+	}
 }

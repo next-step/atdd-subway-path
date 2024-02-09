@@ -1,5 +1,6 @@
 package nextstep.subway.api.domain.model.entity;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -60,13 +61,17 @@ public class Sections implements Iterable<Section> {
 		return sections.iterator();
 	}
 
-
 	public List<Station> parseStations() {
 		return this.sections.stream()
 			.flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
 			.distinct()
 			.collect(Collectors.toList());
 	}
+
+	public List<Section> parseSections() {
+		return new ArrayList<>(this.sections);
+	}
+
 
 	public void addSection(Section section) {
 		this.sections.add(section);
@@ -80,15 +85,15 @@ public class Sections implements Iterable<Section> {
 		}
 	}
 
-
 	/**
-	 *  해당하는 stationId가
-	 * 	1) sections의 최상단 section의 상행역일 경우 -> 해당 Section을 삭제
-	 *  2) secions의 최하단 section의 하행역일 경우 -> 해당 Section을 삭제
-	 *  3) 나머지 경우 -> 중간 케이스 이므로 해당 역이 속한 Section에 대해 합쳐주어야 함
-	 *  A-B, B-C, C-D, D-E
-	 *  B인 경우 -> A-B, B-C -> 둘 다 삭제 -> A-C
-	 *  C인 경우 -> B-C, C-D -> 둘 다 삭제 -> B-D
+	 * 해당하는 stationId가
+	 * 1) sections의 최상단 section의 상행역일 경우 -> 해당 Section을 삭제
+	 * 2) secions의 최하단 section의 하행역일 경우 -> 해당 Section을 삭제
+	 * 3) 나머지 경우 -> 중간 케이스 이므로 해당 역이 속한 Section에 대해 합쳐주어야 함
+	 * A-B, B-C, C-D, D-E
+	 * B인 경우 -> A-B, B-C -> 둘 다 삭제 -> A-C
+	 * C인 경우 -> B-C, C-D -> 둘 다 삭제 -> B-D
+	 *
 	 * @param stationId
 	 */
 	public void removeStation(Long stationId) {
@@ -160,6 +165,7 @@ public class Sections implements Iterable<Section> {
 	 * Stream으로 전부 구현시 컬렉션을 순회하면서 컬렉션을 수정하는데, 이때 ConcurrentModificationException 예외 발생
 	 * Java의 컬렉션 프레임워크는 구조적 변경이 발생할 때 fail-fast 동작을 하도록 설계되어 있어, 순회 중인 컬렉션에 대한 수정이 감지되면 이 예외가 발생.
 	 * 이 문제를 해결하기 위해, 순회 전에 필터링을 완료하여 일치하는 섹션들의 목록을 먼저 수집하고 이후 필요한 변경에 대한 연산을 수행 하도록 아래와 같이 변경하였다.
+	 *
 	 * @param newSection
 	 * @return
 	 */

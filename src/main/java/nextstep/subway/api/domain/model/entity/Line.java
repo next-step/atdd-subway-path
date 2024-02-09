@@ -56,6 +56,15 @@ public class Line {
 		return sectionCollection.isContainsAnyStation(stationId);
 	}
 
+	public boolean isContainsAnyStation(Long... stationIds) {
+		for (Long stationId : stationIds) {
+			if (sectionCollection.isContainsAnyStation(stationId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void addSection(Section section) {
 		this.sectionCollection.addSection(section);
 	}
@@ -78,6 +87,10 @@ public class Line {
 
 	public List<Station> parseStations() {
 		return this.sectionCollection.parseStations();
+	}
+
+	public List<Section> parseSections() {
+		return this.sectionCollection.parseSections();
 	}
 
 	public void insertSection(Section newSection) {

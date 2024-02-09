@@ -26,6 +26,7 @@ public class SimpleLineResolver implements LineResolver {
 
 	@Override
 	public Optional<Line> fetchOptional(Long id) {
-		 return lineRepository.findById(id);
+		return lineRepository.findById(id);
 	}
+
 }

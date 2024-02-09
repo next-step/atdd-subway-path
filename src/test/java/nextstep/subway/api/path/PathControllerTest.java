@@ -74,7 +74,7 @@ public class PathControllerTest extends CommonAcceptanceTest {
 	 * }
 	 */
 	@Test
-	@DisplayName("최단 경로 조회 - 성공 케이스 1")
+	@DisplayName("교대역에서 양재역까지의 최단 경로 조회: 지하철 노선에 교대역, 강남역, 남부터미널역, 양재역이 연결되어 있을 때, 교대역에서 양재역까지의 최단 경로와 거리가 정확하게 반환되는지 검증")
 	void findShortestPath_success1() {
 
 		// given
@@ -157,7 +157,7 @@ public class PathControllerTest extends CommonAcceptanceTest {
 	 * }
 	 */
 	@Test
-	@DisplayName("최단 경로 조회 - 성공 케이스 2")
+	@DisplayName("서울역에서 공덕역까지의 최단 경로 조회: 지하철 노선에 서울역, 시청역, 홍대입구역, 이대역, 디지털미디어시티역, 공덕역이 복잡하게 연결되어 있을 때, 서울역에서 공덕역까지의 최단 경로와 거리가 정확하게 반환되는지 검증")
 	void findShortestPath_success2() {
 
 		// given
@@ -171,7 +171,7 @@ public class PathControllerTest extends CommonAcceptanceTest {
 		long lineId1 = parseId(executeCreateLineRequest(createLineCreateRequest("1호선", stationId1, stationId2, 10L)));
 
 		long lineId2 = parseId(executeCreateLineRequest(createLineCreateRequest("2호선", stationId2, stationId4, 15L)));
-		executeCreateSectionRequest(lineId2, SectionCreateRequest.builder().upStationId(stationId2).downStationId(stationId6).distance(20L).build());
+		executeCreateSectionRequest(lineId2, SectionCreateRequest.builder().upStationId(stationId4).downStationId(stationId6).distance(20L).build());
 
 		long lineId3 = parseId(executeCreateLineRequest(createLineCreateRequest("경의중앙선", stationId1, stationId3, 5L)));
 		executeCreateSectionRequest(lineId3, SectionCreateRequest.builder().upStationId(stationId3).downStationId(stationId4).distance(20L).build());
