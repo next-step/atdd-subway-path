@@ -51,23 +51,23 @@ public class Sections {
         return this.sectionList.size() - 1;
     }
 
-    public ApplyType add(Section section) {
+    public ApplyDistance add(Section section) {
         if (isAlreadyAdded(section)) {
             throw new IllegalArgumentException("이미 추가된 구간입니다.");
         }
 
         if (canAddFirst(section)) {
             this.sectionList.add(FIRST_INDEX, section);
-            return ApplyType.FIRST;
+            return ApplyDistance.applyAddFirst(section.distance());
         }
 
         if (canAddLast(section)) {
             this.sectionList.add(section);
-            return ApplyType.LAST;
+            return ApplyDistance.applyAddLast(section.distance());
         }
 
         addMiddle(section);
-        return ApplyType.MIDDLE;
+        return ApplyDistance.applyAddMiddle(section.distance());
     }
 
     private boolean isAlreadyAdded(Section section) {
@@ -103,16 +103,16 @@ public class Sections {
         if (canDeleteFirst(station)) {
             targetSection = firstSection();
             this.sectionList.remove(targetSection);
-            return ApplyDistance.applyFirst(targetSection.distance());
+            return ApplyDistance.applyDeleteFirst(targetSection.distance());
         }
 
         if (canDeleteLast(station)) {
             targetSection = lastSection();
             this.sectionList.remove(targetSection);
-            return ApplyDistance.applyLast(targetSection.distance());
+            return ApplyDistance.applyDeleteLast(targetSection.distance());
         }
 
-        return ApplyDistance.applyMiddle(deleteMiddle(station).distance());
+        return ApplyDistance.applyDeleteMiddle(deleteMiddle(station).distance());
     }
 
     private Section deleteMiddle(Station station) {
