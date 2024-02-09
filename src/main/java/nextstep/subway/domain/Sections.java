@@ -4,6 +4,7 @@ import nextstep.subway.exception.ApplicationException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Sections {
@@ -51,9 +52,9 @@ public class Sections {
         matchingSection.changeDownStation(upStation, distance);
     }
 
-    public Section findMatchingSection(Station upStation) {
+    public Section findMatchingSection(Station station) {
         return sections.stream()
-                .filter(section -> section.isUpStation(upStation))
+                .filter(section -> section.isUpStation(station))
                 .findFirst()
                 .orElseGet(this::findLastSection);
     }
@@ -68,9 +69,8 @@ public class Sections {
         return firstSection.isUpStation(downStation) || lastSection.isDownStation(upStation);
     }
 
-    public void validateDeleteSection(Long stationId) {
+    public void validateDeleteSection() {
         validateSectionCount();
-        validateLastSection(stationId);
     }
 
     private void validateSectionCount() {
@@ -79,11 +79,41 @@ public class Sections {
         }
     }
 
-    private void validateLastSection(Long stationId) {
+
+    public Optional<Section> findDeleteSectionAtTerminal(Station station) {
+        Section firstSection = findFirstSection();
         Section lastSection = findLastSection();
-        if (!lastSection.isSameId(stationId)) {
-            throw new ApplicationException("마지막 구간이 아닐 경우 구간을 제거할 수 없습니다.");
+
+        if (firstSection.isUpStation(station)) {
+            return Optional.of(firstSection);
         }
+
+        if (lastSection.isDownStation(station)) {
+            return Optional.of(lastSection);
+        }
+        return Optional.empty();
+    }
+
+    public Section findDeleteStationPrevSection(Station station) {
+        return findMatchingSectionEqualsDownStation(station);
+    }
+
+    public Section findDeleteStationNextSection(Station station) {
+        return findMatchingSectionEqualsUpStation(station);
+    }
+
+    private Section findMatchingSectionEqualsUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new ApplicationException("상행역이 존재하는 구간을 찾을 수 없습니다."));
+    }
+
+    private Section findMatchingSectionEqualsDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new ApplicationException("하행역이 존재하는 구간을 찾을 수 없습니다."));
     }
 
     private Section findLastSection() {

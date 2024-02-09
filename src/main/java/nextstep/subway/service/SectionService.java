@@ -1,6 +1,7 @@
 package nextstep.subway.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.controller.dto.SectionCreateRequest;
@@ -8,6 +9,8 @@ import nextstep.subway.domain.*;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.SectionRepository;
 import nextstep.subway.repository.StationRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +42,30 @@ public class SectionService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineBy(lineId);
         Sections sections = findSectionsBy(line);
-        sections.validateDeleteSection(stationId);
-        sectionRepository.deleteById(stationId);
+        Station deleteTargetStation = stationRepository.findById(stationId)
+                .orElseThrow(() -> new ApplicationContextException("제거할 역이 존재하지 않습니다."));
+        sections.validateDeleteSection();
+        sections.findDeleteSectionAtTerminal(deleteTargetStation)
+                .ifPresentOrElse(
+                        sectionRepository::delete,
+                        () -> {
+                            Section prevSection = sections.findDeleteStationPrevSection(deleteTargetStation);
+                            Section nextSection = sections.findDeleteStationNextSection(deleteTargetStation);
+                            sectionRepository.deleteAll(List.of(prevSection, nextSection));
+                            addSectionAfterDeleteSections(line, prevSection, nextSection);
+                        }
+                );
+    }
+
+    private void addSectionAfterDeleteSections(Line line, Section prevSection, Section nextSection) {
+        sectionRepository.save(
+                new Section(
+                        line,
+                        prevSection.upStation(),
+                        nextSection.downStation(),
+                        prevSection.distance() + nextSection.distance()
+                )
+        );
     }
 
     private Line findLineBy(Long lineId) {

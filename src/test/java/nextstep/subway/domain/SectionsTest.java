@@ -3,11 +3,10 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.ApplicationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static nextstep.subway.fixture.LineFixture.SHINBUNDANG_LINE;
 import static nextstep.subway.fixture.StationFixture.*;
@@ -91,20 +90,41 @@ class SectionsTest {
     }
 
     @Test
-    void 실패_구간_제거시_구간이_한개만_있을경우_구간을_제거할_수_없다() {
-        assertThatThrownBy(() -> new Sections(List.of(강남역_선릉역_구간)).validateDeleteSection(3L))
-                .isInstanceOf(ApplicationException.class)
-                .hasMessage("구간이 한개만 있을 경우 구간을 제거할 수 없습니다.");
+    void 성공_노선의_구간에서_제거_대상인_지하철역의_직전_구간을_찾는다() {
+        Section matchingSection = 구간.findDeleteStationPrevSection(선릉역);
+        assertThat(matchingSection).isEqualTo(강남역_선릉역_구간);
     }
 
-    @ParameterizedTest
-    @ValueSource(longs = {1L, 2L})
-    void 실패_구간_제거시_마지막_구간이_아닐경우_구간을_제거할_수_없다(long sectionId) {
-        Sections 구간 = 구간_3개_등록();
+    @Test
+    void 성공_노선의_구간에서_제거_대상인_지하철역의_직후_구간을_찾는다() {
+        Section matchingSection = 구간.findDeleteStationNextSection(선릉역);
+        assertThat(matchingSection).isEqualTo(선릉역_양재역_구간);
+    }
 
-        assertThatThrownBy(() -> 구간.validateDeleteSection(sectionId))
+    // --
+    @Test
+    void 성공_노선의_구간에서_제거_대상인_지하철역이_상행_종점역인_구간을_찾는다() {
+        Section UpTerminalSection = 구간.findDeleteSectionAtTerminal(강남역).get();
+        assertThat(UpTerminalSection).isEqualTo(강남역_선릉역_구간);
+    }
+
+    @Test
+    void 성공_노선의_구간에서_제거_대상인_지하철역이_하행_종점역인_구간을_찾는다() {
+        Section DownTerminalSection = 구간.findDeleteSectionAtTerminal(양재역).get();
+        assertThat(DownTerminalSection).isEqualTo(선릉역_양재역_구간);
+    }
+
+    @Test
+    void 성공_노선의_구간에서_제거_대상인_지하철역이_상행_종점역_혹은_하행_종점역이_아닐경우_빈값을_반환한다() {
+        Optional<Section> nonSection = 구간.findDeleteSectionAtTerminal(선릉역);
+        assertThat(nonSection.isEmpty()).isTrue();
+    }
+
+    @Test
+    void 실패_구간_제거시_구간이_한개만_있을경우_구간을_제거할_수_없다() {
+        assertThatThrownBy(() -> new Sections(List.of(강남역_선릉역_구간)).validateDeleteSection())
                 .isInstanceOf(ApplicationException.class)
-                .hasMessage("마지막 구간이 아닐 경우 구간을 제거할 수 없습니다.");
+                .hasMessage("구간이 한개만 있을 경우 구간을 제거할 수 없습니다.");
     }
 
     private Sections 구간_3개_등록() {
