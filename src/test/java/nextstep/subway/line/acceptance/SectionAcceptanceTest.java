@@ -212,7 +212,7 @@ public class SectionAcceptanceTest {
          * When 가운데 지하철 구간을 제거하면
          * Then 지하철 노선 조회시 해당 구간 정보가 제외되고 조회된다.
          */
-        @DisplayName("마지막 구간 제거 성공")
+        @DisplayName("가운데 구간 제거 성공")
         @Test
         void 가운데_구간_제거_테스트() {
             // given
@@ -253,20 +253,13 @@ public class SectionAcceptanceTest {
             final ExtractableResponse<Response> response = 구간_제거_요청(신분당선_Id, 또다른지하철역_Id);
 
             // then
-            지하철_구간이_삭제되지_않는다(response);
+            지하철_구간이_변경되지않는다(response);
         }
 
         private void 지하철_구간이_변경되지않는다(final ExtractableResponse<Response> response) {
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                     SectionAcceptanceTest.this::assertSectionsNotChanged
-            );
-        }
-
-        private void 지하철_구간이_삭제되지_않는다(final ExtractableResponse<Response> response) {
-            assertAll(
-                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                    SectionAcceptanceTest.this::assertSectionAddedAtLast
             );
         }
 
@@ -335,7 +328,7 @@ public class SectionAcceptanceTest {
     private void assertSectionRemovedAtMiddle() {
         assertSoftly(softly -> {
             final LineResponse lineResponse = LineApiHelper.fetchLineById(신분당선_Id).as(LineResponse.class);
-            softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance - 구간_distance);
+            softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance + 구간_distance);
             softly.assertThat(lineResponse.getStations())
                     .extracting("id").containsExactly(지하철역_Id, 또다른지하철역_Id);
         });
