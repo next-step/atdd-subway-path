@@ -49,6 +49,10 @@ public class Sections implements Iterable<Section> {
             this.sections.add(section);
             return;
         }
+        if (isConnectToFirstSection(section)) {
+            this.sections.add(0, section);
+            return;
+        }
         connectMiddle(section);
     }
 
@@ -71,8 +75,7 @@ public class Sections implements Iterable<Section> {
         final Section upSection = findSectionByUpStation(section.getUpStation());
         upSection.reconnect(section);
 
-        final int targetUpStationIndex = sections.indexOf(upSection);
-        this.sections.add(targetUpStationIndex, section);
+        this.sections.add(sections.indexOf(upSection), section);
     }
 
     private void validateLastSectionDisconnection(final Station station) {
@@ -90,14 +93,14 @@ public class Sections implements Iterable<Section> {
             return;
         }
 
-        if (containsStation(section.getDownStation())) {
-            throw new SectionConnectException("생성할 구간 하행역이 해당 노선에 이미 등록되어 있습니다.");
+        final boolean containsDownStation = containsStation(section.getDownStation());
+        final boolean containsUpStation = containsStation(section.getUpStation());
+        if (containsDownStation && containsUpStation) {
+            throw new SectionConnectException("생성할 구간이 이미 해당 노선에 포함되어 있습니다.");
         }
-
-        if (!containsStation(section.getUpStation())) {
-            throw new SectionConnectException("생성할 구간 상행역이 해당 노선에 포함되어 있지 않습니다.");
+        if (!containsDownStation && !containsUpStation) {
+            throw new SectionConnectException("생성할 구간과 연결 가능한 구간이 존재하지 않습니다.");
         }
-
     }
 
     private boolean containsStation(final Station station) {
@@ -110,6 +113,12 @@ public class Sections implements Iterable<Section> {
                 .orElse(true);
     }
 
+    private boolean isConnectToFirstSection(final Section section) {
+        return getFirstUpStation()
+                .map(station -> station.equals(section.getDownStation()))
+                .orElse(true);
+    }
+
     private boolean isNotDownStationOfLastSection(final Station targetStation) {
         return getLastDownStation().stream().noneMatch(station -> station.equals(targetStation));
     }
@@ -118,11 +127,22 @@ public class Sections implements Iterable<Section> {
         return getLastSection().map(Section::getDownStation);
     }
 
+    private Optional<Station> getFirstUpStation() {
+        return getFirstSection().map(Section::getUpStation);
+    }
+
     private Optional<Section> getLastSection() {
         if (sections.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(sections.get(sections.size() - 1));
+    }
+
+    private Optional<Section> getFirstSection() {
+        if (sections.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(sections.get(0));
     }
 
     private Section findSectionByUpStation(final Station upStation) {
