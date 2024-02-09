@@ -62,10 +62,21 @@ public class Sections implements Iterable<Section> {
                 .orElse(0);
     }
 
-    public void disconnectLastSection(final Station station) {
-        validateLastSectionDisconnection(station);
-        this.sections.remove(sections.size() - 1);
+    public void disconnect(final Station station) {
+        validateSectionDisconnection(station);
+        if (isDisconnectLastStation(station)) {
+            this.sections.remove(sections.size() - 1);
+            return;
+        }
+
+        final Section upSection = findSectionByDownStation(station);
+        final Section downSection = findSectionByUpStation(station);
+        downSection.extend(upSection);
+
+        this.sections.remove(upSection);
     }
+
+
 
     private void connectMiddle(final Section section) {
         if (getDistance() <= section.getDistance()) {
@@ -73,18 +84,18 @@ public class Sections implements Iterable<Section> {
         }
 
         final Section upSection = findSectionByUpStation(section.getUpStation());
-        upSection.reconnect(section);
+        upSection.shorten(section);
 
         this.sections.add(sections.indexOf(upSection), section);
     }
 
-    private void validateLastSectionDisconnection(final Station station) {
+    private void validateSectionDisconnection(final Station station) {
         if (sections.size() <= MINIMUM_SECTION_COUNT) {
             throw new SectionDisconnectException("더이상 구간을 제거할 수 없습니다.");
         }
 
-        if (isNotDownStationOfLastSection(station)) {
-            throw new SectionDisconnectException("마지막 구간만 제거할 수 있습니다.");
+        if (!containsStation(station)) {
+            throw new SectionDisconnectException("제거할 역이 존재하지 않습니다.");
         }
     }
 
@@ -119,8 +130,10 @@ public class Sections implements Iterable<Section> {
                 .orElse(true);
     }
 
-    private boolean isNotDownStationOfLastSection(final Station targetStation) {
-        return getLastDownStation().stream().noneMatch(station -> station.equals(targetStation));
+    private boolean isDisconnectLastStation(final Station targetStation) {
+        return getLastDownStation()
+                .map(station -> station.equals(targetStation))
+                .orElse(true);
     }
 
     private Optional<Station> getLastDownStation() {
@@ -150,5 +163,12 @@ public class Sections implements Iterable<Section> {
                 .filter(s -> s.getUpStation().equals(upStation))
                 .findFirst()
                 .orElseThrow(() -> new SectionConnectException("해당 상행역을 가진 구간을 찾을 수 없습니다."));
+    }
+
+    private Section findSectionByDownStation(final Station downStation) {
+        return sections.stream()
+                .filter(s -> s.getDownStation().equals(downStation))
+                .findFirst()
+                .orElseThrow(() -> new SectionConnectException("해당 하행역을 가진 구간을 찾을 수 없습니다."));
     }
 }
