@@ -8,6 +8,8 @@ import nextstep.subway.testhelper.StationFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 
@@ -202,10 +204,11 @@ class LineTest {
         assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(4L, StationFixture.서초역)));
     }
 
-    @Test
-    @DisplayName("생성된 라인의 마지막 구간이 2개면 삭제가 안된다")
-    void deleteSection5() {
-        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
+    @ParameterizedTest
+    @DisplayName("생성된 라인의 구간이 하나일 때 시작역과 끝역은 삭제 할 수 없다")
+    @CsvSource(value = {"1, 강남역", "2, 선릉역"})
+    void deleteSection5(Long id, String name) {
+        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(id, name)));
     }
 
 }
