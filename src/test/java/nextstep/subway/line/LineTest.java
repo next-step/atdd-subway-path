@@ -8,6 +8,8 @@ import nextstep.subway.testhelper.StationFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 
@@ -143,8 +145,26 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("생성된 라인의 구간을 삭제 할 수 있다.")
+    @DisplayName("등록되어 있는 구간 중 가장 처음 시작 되는 상행역을 삭제하는 경우 할 수 있다.")
     void deleteSection1() {
+        line.addSection(inputSection);
+        line.deleteSection(new Station(1L, StationFixture.강남역));
+
+        Sections actual = line.getSections();
+        Sections expected = Sections.from(
+                List.of(new Section(new Station(2L, StationFixture.선릉역),
+                        new Station(3L, StationFixture.교대역),
+                        5L)));
+        assertThat(actual).isEqualTo(expected);
+
+        Long actualDistance = line.getDistance();
+        Long expectedDistance = 5L;
+        assertThat(actualDistance).isEqualTo(expectedDistance);
+    }
+
+    @Test
+    @DisplayName("등록되어 있는 구간 중 가장 마지막 하행 되는 역을 삭제 할 수 있다.")
+    void deleteSection2() {
         line.addSection(inputSection);
         line.deleteSection(new Station(3L, StationFixture.교대역));
 
@@ -161,16 +181,34 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("생성된 라인의 마지막 구간이 아니면 삭제가 안된다")
-    void deleteSection2() {
+    @DisplayName("등록되어 있는 구간 중 중간에 등록되어 있는 역을 삭제 할 수 있다.")
+    void deleteSection3() {
         line.addSection(inputSection);
-        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
+        line.deleteSection(new Station(2L, StationFixture.선릉역));
+
+        Sections actual = line.getSections();
+        Sections expected = Sections.from(
+                List.of(new Section(new Station(1L, StationFixture.강남역),
+                        new Station(3L, StationFixture.교대역),
+                        15L)));
+        assertThat(actual).isEqualTo(expected);
+
+        Long actualDistance = line.getDistance();
+        Long expectedDistance = 15L;
+        assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 
     @Test
-    @DisplayName("생성된 라인의 마지막 구간이 2개면 삭제가 안된다")
-    void deleteSection3() {
-        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
+    @DisplayName("삭제 되는 역을 찾지 못하는 경우")
+    void deleteSection4() {
+        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(4L, StationFixture.서초역)));
+    }
+
+    @ParameterizedTest
+    @DisplayName("생성된 라인의 구간이 하나일 때 시작역과 끝역은 삭제 할 수 없다")
+    @CsvSource(value = {"1, 강남역", "2, 선릉역"})
+    void deleteSection5(Long id, String name) {
+        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(id, name)));
     }
 
 }

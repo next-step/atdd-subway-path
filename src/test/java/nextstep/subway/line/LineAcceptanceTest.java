@@ -278,13 +278,36 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * GIVEN 지하철 노선을 생성하고 노선을 수정 후
-     * WHEN 지하철 마지막 구간을 제거하면
-     * THEN 마지막 구간이 제거된다
+     * GIVEN 지하철 노선을 생성하고 구간을 추가 후
+     * WHEN 시작역을 삭제 하면
+     * THEN 수정된 구간을 조회 할 수 있다
      */
-    @DisplayName("지하철 구간을 제거한다.")
+    @DisplayName("지하철 구간의 시작 역을 제거한다.")
     @Test
     void deleteSections() {
+        // given
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
+        String location = response.header("location");
+        LineApiCaller.지하철_노선에_구간_추가(삼성역_부터_선릉역_구간, location);
+
+        // when
+        LineApiCaller.지하철_노선_구간_삭제(location, 강남역_ID.toString());
+
+        // then
+        response = LineApiCaller.지하철_노선_조회(location);
+        List<Long> actual = JsonPathHelper.getAll(response, "stations.id", Long.class);
+        Long[] expected = {삼성역_ID, 선릉역_ID};
+        assertThat(actual).containsExactly(expected);
+    }
+
+    /**
+     * GIVEN 지하철 노선을 생성하고 구간을 추가 후
+     * WHEN 마지막 역을 삭제 하면
+     * THEN 수정된 구간을 조회 할 수 있다
+     */
+    @DisplayName("지하철 구간의 마지막 역을 제거한다.")
+    @Test
+    void deleteSections2() {
         // given
         ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
@@ -301,22 +324,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * GIVEN 지하철 노선을 생성하고 노선을 수정 후
-     * WHEN 마지막 구간이 아닌 지하철 구간을 제거하면
-     * THEN 에러 처리와 함께 '마지막 구간의 역이 아닙니다.' 라는 메세지가 출력된다.
+     * GIVEN GIVEN 지하철 노선을 생성하고 구간을 추가 후
+     * WHEN 중간 역을 삭제 하면
+     * THEN 수정된 구간을 조회 할 수 있다
      */
-    @DisplayName("마지막 구간이 아닌 지하철 구간을 제거하면 에러 처리된다.")
+    @DisplayName("지하철 구간의 중간 역을 제거한다.")
     @Test
-    void deleteSections2() {
+    void deleteSections3() {
         // given
         ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");
         LineApiCaller.지하철_노선에_구간_추가(삼성역_부터_선릉역_구간, location);
 
         // when
+        LineApiCaller.지하철_노선_구간_삭제(location, 삼성역_ID.toString());
+
+        // then
+        response = LineApiCaller.지하철_노선_조회(location);
+        List<Long> actual = JsonPathHelper.getAll(response, "stations.id", Long.class);
+        Long[] expected = {강남역_ID, 선릉역_ID};
+        assertThat(actual).containsExactly(expected);
+    }
+
+    /**
+     * GIVEN 지하철 노선을 시작과 끝만 생성하고
+     * WHEN 시작 지하철 역 제거를 시도하면
+     * THEN 에러 처리와 함께 '구간이 하나 일 때는 삭제를 할 수 없습니다.' 라는 메세지가 출력된다.
+     */
+    @DisplayName("지하철 노선을 시작과 끝만 생성하고 시작 지하철 역을 제거하면 에러 처리된다.")
+    @Test
+    void deleteSections4() {
+        // given
+        ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
+        String location = response.header("location");
+
+        // when
         response = given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .queryParam("stationId", 삼성역_ID.toString())
+                .queryParam("stationId", 강남역_ID.toString())
                 .when().delete(location + "/sections")
                 .then().log().all()
                 .extract();
@@ -327,18 +372,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(actual).isEqualTo(expected);
 
         String actualBody = response.asString();
-        String expectedBody = "마지막 구간의 역이 아닙니다.";
+        String expectedBody = "구간이 하나 일 때는 삭제를 할 수 없습니다.";
         assertThat(actualBody).isEqualTo(expectedBody);
     }
 
     /**
      * GIVEN 지하철 노선을 시작과 끝만 생성하고
-     * WHEN 지하철 마지막 구간을 제거를 시도하면
-     * THEN 에러 처리와 함께 '구간이 하나 일 때는 삭제를 할 수 없습니다' 라는 메세지가 출력된다.
+     * WHEN 마지막 지하철 역 제거를 시도하면
+     * THEN 에러 처리와 함께 '구간이 하나 일 때는 삭제를 할 수 없습니다.' 라는 메세지가 출력된다.
      */
-    @DisplayName("지하철 노선을 시작과 끝만 생성하고 지하철 마지막 구간을 제거하면 에러 처리된다.")
+    @DisplayName("지하철 노선을 시작과 끝만 생성하고 마지막 지하철 역을 제거하면 에러 처리된다.")
     @Test
-    void deleteSections3() {
+    void deleteSections5() {
         // given
         ExtractableResponse<Response> response = LineApiCaller.지하철_노선_생성(신분당선_강남역_부터_삼성역);
         String location = response.header("location");

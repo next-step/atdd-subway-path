@@ -37,9 +37,9 @@ public class Section {
         return downStation;
     }
 
-    public Long calculateAddDistance(AddType addType,
+    public Long calculateAddDistance(ApplyType applyType,
                                      Long distance) {
-        if (!addType.isAddMiddle()) {
+        if (!applyType.isApplyMiddle()) {
             return distance + this.distance;
         }
 
@@ -51,6 +51,10 @@ public class Section {
 
     public Long calculateSubDistance(Long distance) {
         return Math.abs(distance - this.distance);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
     public boolean isSameDownStation(Station station) {
@@ -73,23 +77,36 @@ public class Section {
         return this.downStation.equals(section.upStation);
     }
 
-    public void changeSectionFromToInput(AddingPosition addingPosition,
+    public void changeSectionFromToInput(ApplyPosition applyPosition,
                                          Section section) {
         this.distance = calculateSubDistance(section.distance);
-        changeSection(addingPosition, section);
+        changeSection(applyPosition, section);
     }
 
-    private void changeSection(AddingPosition addingPosition,
+    private void changeSection(ApplyPosition applyPosition,
                                Section section) {
-        if (addingPosition.addingStart()) {
+        if (applyPosition.addingFirst()) {
             this.upStation = section.downStation;
             return;
         }
         this.downStation = section.upStation;
     }
 
+    public void changeDownStationFromToInputDownStation(Section section) {
+        this.distance += section.distance;
+        this.downStation = section.downStation;
+    }
+
     public boolean anyMatchUpStationAndDownStation(Section section) {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
+    }
+
+    public boolean anyMatchUpStationAndDownStation(Station station) {
+        return this.upStation.equals(station) && this.downStation.equals(station);
+    }
+
+    public Long distance() {
+        return this.distance;
     }
 
     @Override
@@ -104,5 +121,4 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance);
     }
-
 }

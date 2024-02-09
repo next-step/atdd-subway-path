@@ -50,23 +50,26 @@ public class Sections {
         return this.sectionList.size() - 1;
     }
 
-    public AddType add(Section section) {
+    public ApplyDistance add(Section section) {
         if (isAlreadyAdded(section)) {
             throw new IllegalArgumentException("이미 추가된 구간입니다.");
         }
+        return addTarget(section);
+    }
 
+    private ApplyDistance addTarget(Section section) {
         if (canAddFirst(section)) {
             this.sectionList.add(FIRST_INDEX, section);
-            return AddType.FIRST;
+            return ApplyDistance.applyAddFirst(section.distance());
         }
 
         if (canAddLast(section)) {
             this.sectionList.add(section);
-            return AddType.LAST;
+            return ApplyDistance.applyAddLast(section.distance());
         }
 
         addMiddle(section);
-        return AddType.MIDDLE;
+        return ApplyDistance.applyAddMiddle(section.distance());
     }
 
     private boolean isAlreadyAdded(Section section) {
@@ -75,10 +78,10 @@ public class Sections {
     }
 
     private void addMiddle(Section section) {
-        AddingPosition addingPosition = AddingPosition.of(this.sectionList, section);
-        Section existing = this.sectionList.get(addingPosition.findingIndex());
-        existing.changeSectionFromToInput(addingPosition, section);
-        this.sectionList.add(addingPosition.addingIndex(), section);
+        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, section);
+        Section existing = this.sectionList.get(applyPosition.findingIndex());
+        existing.changeSectionFromToInput(applyPosition, section);
+        this.sectionList.add(applyPosition.applyIndex(), section);
     }
 
     private boolean canAddFirst(Section section) {
@@ -89,22 +92,52 @@ public class Sections {
         return lastSection().isSameDownStationInputUpStation(section);
     }
 
-    public Section delete(Station station) {
-        if (this.sectionList.size() == 1) {
+    public ApplyDistance delete(Station station) {
+        if (this.sectionList.size() == 1 || existStation(station)) {
             throw new IllegalArgumentException("구간이 하나 일 때는 삭제를 할 수 없습니다.");
         }
+        return deleteTarget(station);
+    }
 
-        Section findSection = this.sectionList.stream()
-                .filter(section -> section.isSameDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("삭제할 역을 찾지 못하였습니다."));
+    private boolean existStation(Station station) {
+        return this.sectionList
+                .stream()
+                .anyMatch(section -> section.anyMatchUpStationAndDownStation(station));
+    }
 
-        if (!lastSection().equals(findSection)) {
-            throw new IllegalArgumentException("마지막 구간의 역이 아닙니다.");
+    private ApplyDistance deleteTarget(Station station) {
+        Section targetSection;
+
+        if (canDeleteFirst(station)) {
+            targetSection = firstSection();
+            this.sectionList.remove(targetSection);
+            return ApplyDistance.applyDeleteFirst(targetSection.distance());
         }
 
-        this.sectionList.remove(findSection);
-        return findSection;
+        if (canDeleteLast(station)) {
+            targetSection = lastSection();
+            this.sectionList.remove(targetSection);
+            return ApplyDistance.applyDeleteLast(targetSection.distance());
+        }
+
+        return ApplyDistance.applyDeleteMiddle(deleteMiddle(station).distance());
+    }
+
+    private Section deleteMiddle(Station station) {
+        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, station);
+        Section section = this.sectionList.get(applyPosition.findingIndex());
+        Section targetSection = this.sectionList.get(applyPosition.applyIndex());
+        section.changeDownStationFromToInputDownStation(targetSection);
+        this.sectionList.remove(targetSection);
+        return targetSection;
+    }
+
+    private boolean canDeleteFirst(Station station) {
+        return firstSection().isSameUpStation(station);
+    }
+
+    private boolean canDeleteLast(Station station) {
+        return lastSection().isSameDownStation(station);
     }
 
     @Override
