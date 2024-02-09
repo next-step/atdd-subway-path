@@ -68,15 +68,12 @@ public class Sections implements Iterable<Section> {
             this.sections.remove(sections.size() - 1);
             return;
         }
-
-        final Section upSection = findSectionByDownStation(station);
-        final Section downSection = findSectionByUpStation(station);
-        downSection.extend(upSection);
-
-        this.sections.remove(upSection);
+        if (isDisconnectFirstStation(station)) {
+            this.sections.remove(0);
+            return;
+        }
+        disconnectMiddle(station);
     }
-
-
 
     private void connectMiddle(final Section section) {
         if (getDistance() <= section.getDistance()) {
@@ -87,6 +84,14 @@ public class Sections implements Iterable<Section> {
         upSection.shorten(section);
 
         this.sections.add(sections.indexOf(upSection), section);
+    }
+
+    private void disconnectMiddle(final Station station) {
+        final Section upSection = findSectionByDownStation(station);
+        final Section downSection = findSectionByUpStation(station);
+        downSection.extend(upSection);
+
+        this.sections.remove(upSection);
     }
 
     private void validateSectionDisconnection(final Station station) {
@@ -132,6 +137,12 @@ public class Sections implements Iterable<Section> {
 
     private boolean isDisconnectLastStation(final Station targetStation) {
         return getLastDownStation()
+                .map(station -> station.equals(targetStation))
+                .orElse(true);
+    }
+
+    private boolean isDisconnectFirstStation(final Station targetStation) {
+        return getFirstUpStation()
                 .map(station -> station.equals(targetStation))
                 .orElse(true);
     }
