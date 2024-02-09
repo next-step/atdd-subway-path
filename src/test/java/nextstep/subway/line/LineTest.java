@@ -152,7 +152,7 @@ class LineTest {
         Sections expected = Sections.from(
                 List.of(new Section(new Station(2L, StationFixture.선릉역),
                         new Station(3L, StationFixture.교대역),
-                        10L)));
+                        5L)));
         assertThat(actual).isEqualTo(expected);
 
         Long actualDistance = line.getDistance();

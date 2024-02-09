@@ -94,17 +94,15 @@ public class Sections {
             throw new IllegalArgumentException("구간이 하나 일 때는 삭제를 할 수 없습니다.");
         }
 
-        Section findSection = this.sectionList.stream()
-                .filter(section -> section.isSameDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("삭제할 역을 찾지 못하였습니다."));
-
-        if (!lastSection().equals(findSection)) {
-            throw new IllegalArgumentException("마지막 구간의 역이 아닙니다.");
+        if (canDeleteFirst(station)) {
+            this.sectionList.remove(firstSection());
         }
 
-        this.sectionList.remove(findSection);
-        return findSection;
+        return firstSection();
+    }
+
+    private boolean canDeleteFirst(Station station) {
+        return firstSection().isSameUpStation(station);
     }
 
     @Override

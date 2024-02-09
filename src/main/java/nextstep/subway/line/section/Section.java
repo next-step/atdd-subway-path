@@ -53,6 +53,10 @@ public class Section {
         return Math.abs(distance - this.distance);
     }
 
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
     public boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
     }
@@ -104,5 +108,4 @@ public class Section {
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, distance);
     }
-
 }
