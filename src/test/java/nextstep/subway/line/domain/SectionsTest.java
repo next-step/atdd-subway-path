@@ -69,23 +69,32 @@ class SectionsTest {
         }
 
         @Test
-        @DisplayName("추가할 Section 의 하행역이 이미 등록되어있으면 SectionConnectException 이 던져진다.")
+        @DisplayName("Section 을 처음에 추가할 수 있다.")
+        void canConnectSectionAtFirst() {
+            final Section 교대역_강남역_구간 = SectionFactory.createSection(3L, 교대역, 강남역, 10);
+            sections.connect(교대역_강남역_구간);
+
+            assertThat(sections).containsExactly(교대역_강남역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+        }
+
+        @Test
+        @DisplayName("추가할 Section 의 상행역, 하행역 모두 이미 등록되어있으면 SectionConnectException 이 던져진다.")
         void connectFailsWhenSectionsAlreadyHasDownStation() {
             final Section 역삼역_강남역_구간 = SectionFactory.createSection(3L, 역삼역, 강남역, 10);
 
             assertThatThrownBy(() -> sections.connect(역삼역_강남역_구간))
                     .isInstanceOf(SectionConnectException.class)
-                    .hasMessageContaining("생성할 구간 하행역이 해당 노선에 이미 등록되어 있습니다.");
+                    .hasMessageContaining("생성할 구간이 이미 해당 노선에 포함되어 있습니다.");
         }
 
         @Test
-        @DisplayName("추가할 Section 의 상행역이 현재 Sections 에 포함되어 있지 않다면 SectionConnectException 이 던져진다.")
+        @DisplayName("추가할 Section 의 상행역, 하행역 모두 현재 Sections 에 포함되어 있지 않다면 SectionConnectException 이 던져진다.")
         void connectFailsWhenSectionsNotContainsUpStationOfSection() {
             final Section 교대역_잠실역_구간 = SectionFactory.createSection(3L, 교대역, 잠실역, 10);
 
             assertThatThrownBy(() -> sections.connect(교대역_잠실역_구간))
                     .isInstanceOf(SectionConnectException.class)
-                    .hasMessageContaining("생성할 구간 상행역이 해당 노선에 포함되어 있지 않습니다.");
+                    .hasMessageContaining("생성할 구간과 연결 가능한 구간이 존재하지 않습니다.");
         }
 
         @Test
