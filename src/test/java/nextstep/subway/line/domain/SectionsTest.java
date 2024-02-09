@@ -156,6 +156,17 @@ class SectionsTest {
         }
 
         @Test
+        @DisplayName("첫번째 역을 제거할 수 있다.")
+        void canDisconnectFirstStation() {
+            sections.disconnect(강남역);
+
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(선릉역_역삼역_구간_길이);
+            });
+        }
+
+        @Test
         @DisplayName("Sections 의 길이가 1 이하일때는 SectionDisconnectException 이 던져진다.")
         void disconnectLastSectionFailsWhenLengthIsLoeToOne() {
             sections.disconnect(역삼역);
