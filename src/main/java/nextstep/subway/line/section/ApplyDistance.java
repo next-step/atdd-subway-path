@@ -35,15 +35,15 @@ public class ApplyDistance {
     }
 
     public Long applyValue() {
-        if(this.applyType.isApplyMiddle()) {
+        if (this.applyType.isApplyMiddle()) {
             return 0L;
         }
         return this.distance;
     }
 
     public void validAdd(Long distance) {
-        if(this.applyType.isApplyMiddle() && (distance <= this.distance)) {
-                throw new IllegalArgumentException("중간에 추가되는 구간은 라인보다 길수 없습니다.");
+        if (this.applyType.isApplyMiddle() && (distance <= this.distance)) {
+            throw new IllegalArgumentException("중간에 추가되는 구간은 라인보다 길수 없습니다.");
         }
     }
 }

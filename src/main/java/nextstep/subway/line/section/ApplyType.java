@@ -18,7 +18,9 @@ public enum ApplyType {
         this.operation = operation;
     }
 
-    public boolean apply(List<Section> sections, Integer integer, Object o) {
+    public boolean apply(List<Section> sections,
+                         Integer integer,
+                         Object o) {
         return this.operation.apply(sections, integer, o);
     }
 
