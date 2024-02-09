@@ -319,7 +319,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         response = LineApiCaller.지하철_노선_조회(location);
         List<Long> actual = JsonPathHelper.getAll(response, "stations.id", Long.class);
-        Long[] expected = {삼성역_ID, 선릉역_ID};
+        Long[] expected = {강남역_ID, 삼성역_ID};
         assertThat(actual).containsExactly(expected);
     }
 
