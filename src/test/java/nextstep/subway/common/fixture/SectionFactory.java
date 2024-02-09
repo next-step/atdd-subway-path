@@ -1,7 +1,7 @@
 package nextstep.subway.common.fixture;
 
-import nextstep.subway.line.repository.domain.Section;
-import nextstep.subway.station.repository.domain.Station;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
 import nextstep.util.ReflectionUtils;
 
 public class SectionFactory {

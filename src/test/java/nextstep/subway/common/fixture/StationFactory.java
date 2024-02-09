@@ -1,6 +1,6 @@
 package nextstep.subway.common.fixture;
 
-import nextstep.subway.station.repository.domain.Station;
+import nextstep.subway.station.domain.Station;
 import nextstep.util.ReflectionUtils;
 
 public class StationFactory {

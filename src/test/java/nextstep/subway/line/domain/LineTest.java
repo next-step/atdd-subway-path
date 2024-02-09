@@ -1,9 +1,9 @@
-package nextstep.subway.line.repository.domain;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.fixture.LineFactory;
 import nextstep.subway.common.fixture.SectionFactory;
 import nextstep.subway.common.fixture.StationFactory;
-import nextstep.subway.station.repository.domain.Station;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class LineTest {
     void setUp() {
         강남역 = StationFactory.createStation(1L, "강남역");
         선릉역 = StationFactory.createStation(2L, "선릉역");
-        역삼역 = StationFactory.createStation(3L, "선릉역");
+        역삼역 = StationFactory.createStation(3L, "역삼역");
         강남역_선릉역_구간 = SectionFactory.createSection(1L, 강남역, 선릉역, 10);
         선릉역_역삼역_구간 = SectionFactory.createSection(2L, 선릉역, 역삼역, 20);
         line = LineFactory.createLine(LINE_ID, LINE_NAME, LINE_COLOR, 강남역_선릉역_구간);

@@ -1,7 +1,7 @@
-package nextstep.subway.line.repository.domain;
+package nextstep.subway.line.domain;
 
 
-import nextstep.subway.station.repository.domain.Station;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.Collections;
@@ -21,9 +21,6 @@ public class Line {
 
     @Embedded
     private Sections sections = new Sections();
-
-    @Column(nullable = false)
-    private int distance;
 
     protected Line() {
     }
@@ -51,7 +48,7 @@ public class Line {
     }
 
     public int getDistance() {
-        return distance;
+        return sections.getDistance();
     }
 
     public void changeName(final String name) {
@@ -64,11 +61,9 @@ public class Line {
 
     public void addSection(final Section section) {
         sections.connect(section);
-        distance += section.getDistance();
     }
+
     public void removeSectionByStation(final Station station) {
-        final int lastSectionDistance = sections.getLastSectionDistance();
-        distance -= lastSectionDistance;
         sections.disconnectLastSection(station);
     }
 }
