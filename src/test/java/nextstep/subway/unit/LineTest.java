@@ -1,5 +1,8 @@
 package nextstep.subway.unit;
 
+import nextstep.config.fixtures.LineFixture;
+import nextstep.config.fixtures.SectionFixture;
+import nextstep.config.fixtures.StationFixture;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
@@ -19,11 +22,8 @@ class LineTest {
     @Test
     void addSection() {
         // given
-        Station 강남 = new Station("강남");
-        Station 양재 = new Station("양재");
-
-        Line 이호선 = new Line("이호선", "그린", 10);
-        Section 강남_양재_구간 = new Section(강남, 양재, 10);
+        Line 이호선 = LineFixture.이호선;
+        Section 강남_양재_구간 = SectionFixture.강남_양재_구간;
 
         // when
         이호선.addSection(강남_양재_구간);
@@ -40,11 +40,8 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        Station 삼성 = new Station("삼성");
-        Station 선릉 = new Station("선릉");
-
-        Line 이호선 = new Line("이호선", "그린", 10);
-        Section 삼성_선릉_구간 = new Section(삼성, 선릉, 10);
+        Line 이호선 = LineFixture.이호선;
+        Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
 
         이호선.addSection(삼성_선릉_구간);
 
@@ -52,7 +49,9 @@ class LineTest {
         List<Station> 이호선_모든_역 = 이호선.getStations();
 
         // then
-        assertThat(이호선_모든_역).containsOnly(삼성, 선릉);
+        assertThat(이호선_모든_역).containsOnly(
+                삼성_선릉_구간.getUpStation(),
+                삼성_선릉_구간.getDownStation());
     }
 
     /**
@@ -63,16 +62,13 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        Station 삼성 = new Station("삼성");
-        Station 선릉 = new Station("선릉");
-
-        Line 이호선 = new Line("이호선", "그린", 10);
-        Section 삼성_선릉_구간 = new Section(삼성, 선릉, 10);
+        Line 이호선 = LineFixture.이호선;
+        Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
 
         이호선.addSection(삼성_선릉_구간);
 
         // when
-        이호선.deleteSection(선릉);
+        이호선.deleteSection(삼성_선릉_구간.getDownStation());
 
         // then
         assertThat(이호선.getSections().getSections()).doesNotContain(삼성_선릉_구간);
