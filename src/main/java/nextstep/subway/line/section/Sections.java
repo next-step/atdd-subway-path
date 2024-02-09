@@ -94,15 +94,26 @@ public class Sections {
             throw new IllegalArgumentException("구간이 하나 일 때는 삭제를 할 수 없습니다.");
         }
 
+        Section targetSection = null;
+
         if (canDeleteFirst(station)) {
-            this.sectionList.remove(firstSection());
+            targetSection = firstSection();
         }
 
-        return firstSection();
+        if (canDeleteLast(station)) {
+            targetSection = lastSection();
+        }
+
+        this.sectionList.remove(targetSection);
+        return targetSection;
     }
 
     private boolean canDeleteFirst(Station station) {
         return firstSection().isSameUpStation(station);
+    }
+
+    private boolean canDeleteLast(Station station) {
+        return lastSection().isSameDownStation(station);
     }
 
     @Override

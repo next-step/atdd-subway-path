@@ -156,7 +156,7 @@ class LineTest {
         assertThat(actual).isEqualTo(expected);
 
         Long actualDistance = line.getDistance();
-        Long expectedDistance = 10L;
+        Long expectedDistance = 5L;
         assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 
