@@ -226,6 +226,24 @@ public class SectionAcceptanceTest {
         }
 
         /**
+         * Given 지하철 구간을 생성하고
+         * When 상행종점역(첫번째역) 을 제거하면
+         * Then 지하철 노선 조회시 해당 첫번째 역 정보가 제외되고 조회된다.
+         */
+        @DisplayName("상행종점역(첫번째역) 구간 제거 성공")
+        @Test
+        void 상행종점역_구간_제거_테스트() {
+            // given
+            구간_생성_요청(신분당선_Id, 새로운지하철역_Id, 또다른지하철역_Id, 구간_distance);
+
+            // when
+            final ExtractableResponse<Response> response = 구간_제거_요청(신분당선_Id, 지하철역_Id);
+
+            // then
+            지하철_노선_조회시_상행종점역_구간_정보가_제외되어_조회된다(response);
+        }
+
+        /**
          * When 지하철 구간을 제거하는데
          * When 해당 지하철 구간이 한개만 남아 있다면
          * Then 에러가 난다.
@@ -281,6 +299,13 @@ public class SectionAcceptanceTest {
             );
         }
 
+        private void 지하철_노선_조회시_상행종점역_구간_정보가_제외되어_조회된다(final ExtractableResponse<Response> response) {
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                    SectionAcceptanceTest.this::assertSectionRemovedAtFirst
+            );
+        }
+
 
     }
 
@@ -331,6 +356,15 @@ public class SectionAcceptanceTest {
             softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance + 구간_distance);
             softly.assertThat(lineResponse.getStations())
                     .extracting("id").containsExactly(지하철역_Id, 또다른지하철역_Id);
+        });
+    }
+
+    private void assertSectionRemovedAtFirst() {
+        assertSoftly(softly -> {
+            final LineResponse lineResponse = LineApiHelper.fetchLineById(신분당선_Id).as(LineResponse.class);
+            softly.assertThat(lineResponse.getDistance()).isEqualTo(구간_distance);
+            softly.assertThat(lineResponse.getStations())
+                    .extracting("id").containsExactly(새로운지하철역_Id, 또다른지하철역_Id);
         });
     }
 
