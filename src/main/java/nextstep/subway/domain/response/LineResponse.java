@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Sections;
 
 import java.util.List;
 
@@ -15,7 +16,6 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-//    private List<Station> stations;
     private int distance;
-    private List<Section> sections;
+    private Sections sections;
 }

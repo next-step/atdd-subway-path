@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.entity.Section;
 import nextstep.subway.domain.request.LineRequest;
+import nextstep.subway.domain.response.LineResponse;
 import nextstep.subway.domain.response.SectionResponse;
 import nextstep.subway.exception.ExceptionMessage;
 import nextstep.subway.exception.ExceptionResponse;
@@ -38,9 +39,9 @@ public class SectionAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        stationId1 = StationTestUtil.createStation("지하철역").jsonPath().getLong("id");
-        stationId2 = StationTestUtil.createStation("새로운지하철역").jsonPath().getLong("id");
-        stationId3 = StationTestUtil.createStation("또다른지하철역").jsonPath().getLong("id");
+        stationId1 = StationTestUtil.createStation("A").jsonPath().getLong("id");
+        stationId2 = StationTestUtil.createStation("B").jsonPath().getLong("id");
+        stationId3 = StationTestUtil.createStation("C").jsonPath().getLong("id");
 
         lineId = createSubwayLine(new LineRequest("2호선", "green", stationId1, stationId2, distance)).jsonPath().getLong("id");
     }
@@ -232,8 +233,6 @@ public class SectionAcceptanceTest {
         long downStationId = response.jsonPath().getLong("downStation.id");
         int sectionDistance = response.jsonPath().getInt("distance");
 
-        // QUESTION
-        // SectionResponse section = response.as(SectionResponse.class);
         assertAll(
                 () -> assertThat(id).isEqualTo(1L),
                 () -> assertThat(lineId).isEqualTo(1L),
@@ -242,4 +241,41 @@ public class SectionAcceptanceTest {
                 () -> assertThat(sectionDistance).isEqualTo(distance)
         );
     }
+
+    /** 노선에 역 추가시 노선 가운데 추가 할 수 있다.
+     노선에 역 추가시 노선 처음에 추가 할 수 있다.
+     이미 등록되어있는 역은 노선에 등록될 수 없다.
+    **/
+    @DisplayName("노선 가운데 역 추가")
+    @Test
+    void addStationInSection() {
+        // given
+        // 노선 A-B
+
+        // when
+        // A-C를 추가하면
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", stationId1);
+        params.put("downStationId", stationId3);
+        params.put("distance", 4);
+
+        addSection(params, lineId);
+
+        // then
+        // A-C-B 가 된다.
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+        LineResponse lineResponse = response.as(LineResponse.class);
+
+        assertAll(
+                () -> assertThat(lineResponse.getSections().getSections()).hasSize(2),
+                () -> assertThat(lineResponse.getSections().getSections().stream().map(section -> section.getUpStation().getName()))
+        );
+
+    }
+
+
+
 }

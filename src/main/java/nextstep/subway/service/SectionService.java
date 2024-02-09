@@ -2,6 +2,7 @@ package nextstep.subway.service;
 
 import nextstep.subway.domain.entity.Line;
 import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Sections;
 import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.request.SectionRequest;
 import nextstep.subway.domain.response.SectionResponse;
@@ -44,19 +45,19 @@ public class SectionService {
     }
 
     private void sectionValidation(Line line, Station upStation, Station downStation) {
-        List<Section> sections = line.getSections();
+        Sections sections = line.getSections();
 
-        if (sections.isEmpty()) {
+        if (sections.getSections().isEmpty()) {
             return;
         }
 
-        Section section = sections.get(sections.size() - 1);
+        Section section = sections.getLastSection();
         if (!section.getDownStation().equals(upStation)) {
             throw new ApplicationException(ExceptionMessage.UPSTATION_VALIDATION_EXCEPTION.getMessage());
         }
 
         // 새로운 구간의 하행역이 노선에 등록되어있는 역과 같으면 에러
-        if (isRegisteredStation(sections, downStation)) {
+        if (isRegisteredStation(sections.getSections(), downStation)) {
             throw new ApplicationException(ExceptionMessage.DOWNSTATION_VALIDATION_EXCEPTION.getMessage());
         }
 
@@ -78,7 +79,7 @@ public class SectionService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).get();
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getSections().getSections();
         Section section = sections.get(sections.size() - 1); // 마지막 구간
 
         // stationId 는 마지막 하행 종착역 이어야 한다.

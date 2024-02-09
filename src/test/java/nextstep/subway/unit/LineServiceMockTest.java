@@ -66,9 +66,9 @@ public class LineServiceMockTest {
         LineResponse response = lineService.findLineById(LINE_ID_1);
         assertAll(
                 () -> assertThat(response).isNotNull(),
-                () -> assertThat(response.getSections()).hasSize(1),
-                () -> assertThat(response.getSections().stream().map(section -> section.getUpStation().getName())).contains("강남역"),
-                () -> assertThat(response.getSections().stream().map(section -> section.getDownStation().getName())).contains("역삼역")
+                () -> assertThat(response.getSections().getSections()).hasSize(1),
+                () -> assertThat(response.getSections().getSections().stream().map(section -> section.getUpStation().getName())).contains("강남역"),
+                () -> assertThat(response.getSections().getSections().stream().map(section -> section.getDownStation().getName())).contains("역삼역")
         );
     }
 }

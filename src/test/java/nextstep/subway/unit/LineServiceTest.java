@@ -54,7 +54,7 @@ class LineServiceTest {
         sectionService.addSection(line.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 10));
 
         // then
-        assertThat(line.getSections()).hasSize(2);
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -66,7 +66,7 @@ class LineServiceTest {
         sectionService.deleteSection(line.getId(), 선릉역.getId());
 
         // then
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getSections().getSections()).hasSize(1);
     }
 
     @Test

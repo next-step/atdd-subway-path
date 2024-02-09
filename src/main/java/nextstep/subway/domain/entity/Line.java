@@ -24,9 +24,8 @@ public class Line {
     @Column(nullable = false)
     private int distance;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
@@ -34,22 +33,13 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section);
+        sections.addSection(section);
         this.distance += section.getDistance();
     }
 
     public void deleteSection(Section section) {
-        this.sections.remove(section);
+        sections.deleteSection(section);
         this.distance -= section.getDistance();
-    }
-
-    public List<Station> getStations() {
-        List<Station> stations = this.sections.stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-
-        stations.add(sections.get(sections.size() - 1).getDownStation()); //종착역 추가
-        return stations;
     }
 
     public void updateNameAndColor(String name, String color) {

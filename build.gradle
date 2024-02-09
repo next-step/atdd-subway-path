@@ -26,8 +26,8 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.28'
     implementation 'org.projectlombok:lombok:1.18.28'
 
-//    compileOnly 'org.projectlombok:lombok:1.18.20'
-//    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.rest-assured:rest-assured:4.5.1'
