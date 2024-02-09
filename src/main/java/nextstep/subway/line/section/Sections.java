@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -55,7 +54,10 @@ public class Sections {
         if (isAlreadyAdded(section)) {
             throw new IllegalArgumentException("이미 추가된 구간입니다.");
         }
+        return addTarget(section);
+    }
 
+    private ApplyDistance addTarget(Section section) {
         if (canAddFirst(section)) {
             this.sectionList.add(FIRST_INDEX, section);
             return ApplyDistance.applyAddFirst(section.distance());
@@ -76,10 +78,10 @@ public class Sections {
     }
 
     private void addMiddle(Section section) {
-        AddingPosition addingPosition = AddingPosition.of(this.sectionList, section);
-        Section existing = this.sectionList.get(addingPosition.findingIndex());
-        existing.changeSectionFromToInput(addingPosition, section);
-        this.sectionList.add(addingPosition.addingIndex(), section);
+        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, section);
+        Section existing = this.sectionList.get(applyPosition.findingIndex());
+        existing.changeSectionFromToInput(applyPosition, section);
+        this.sectionList.add(applyPosition.applyIndex(), section);
     }
 
     private boolean canAddFirst(Section section) {
@@ -116,19 +118,12 @@ public class Sections {
     }
 
     private Section deleteMiddle(Station station) {
-        int index = findMiddleIndex(station);
-        Section section = this.sectionList.get(index);
-        Section targetSection = this.sectionList.get(index + 1);
+        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, station);
+        Section section = this.sectionList.get(applyPosition.findingIndex());
+        Section targetSection = this.sectionList.get(applyPosition.applyIndex());
         section.changeDownStationFromToInputDownStation(targetSection);
         this.sectionList.remove(targetSection);
         return targetSection;
-    }
-
-    private int findMiddleIndex(Station station) {
-        return IntStream.range(0, this.sectionList.size() - 1)
-                .filter(i -> this.sectionList.get(i).isSameDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("삭제하려는 역을 찾지 못했습니다."));
     }
 
     private boolean canDeleteFirst(Station station) {

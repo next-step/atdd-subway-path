@@ -77,15 +77,15 @@ public class Section {
         return this.downStation.equals(section.upStation);
     }
 
-    public void changeSectionFromToInput(AddingPosition addingPosition,
+    public void changeSectionFromToInput(ApplyPosition applyPosition,
                                          Section section) {
         this.distance = calculateSubDistance(section.distance);
-        changeSection(addingPosition, section);
+        changeSection(applyPosition, section);
     }
 
-    private void changeSection(AddingPosition addingPosition,
+    private void changeSection(ApplyPosition applyPosition,
                                Section section) {
-        if (addingPosition.addingStart()) {
+        if (applyPosition.addingFirst()) {
             this.upStation = section.downStation;
             return;
         }
