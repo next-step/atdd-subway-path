@@ -3,6 +3,7 @@ package nextstep.subway.line.section;
 import nextstep.subway.station.Station;
 
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 public class ApplyPosition {
@@ -17,28 +18,43 @@ public class ApplyPosition {
 
     public static ApplyPosition of(List<Section> sectionList,
                                    Section section) {
-
-        ApplyPosition applyPosition = addFirst(IntStream.range(0, sectionList.size())
-                .filter(i -> sectionList.get(i).isSameUpStationInputUpStation(section))
-                .findFirst()
-                .orElse(-1));
-
-        if (applyPosition.isNotDefine()) {
-            applyPosition = addLast(IntStream.range(0, sectionList.size())
-                    .filter(i -> sectionList.get(i).isSameDownStationInputDownStation(section))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("추가 할 구간을 찾지 못했습니다.")));
-        }
-
-        return applyPosition;
+        return createApplyPosition(
+                sectionList,
+                List.of(ApplyType.ADD_FIRST, ApplyType.ADD_LAST),
+                section);
     }
 
     public static ApplyPosition of(List<Section> sectionList,
                                    Station station) {
-        return deleteMiddle(IntStream.range(0, sectionList.size() - 1)
-                .filter(i -> sectionList.get(i).isSameDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("삭제하려는 역을 찾지 못했습니다.")));
+        return createApplyPosition(
+                sectionList,
+                List.of(ApplyType.DELETE_MIDDLE),
+                station
+        );
+    }
+
+    private static ApplyPosition createApplyPosition(
+            List<Section> sectionList,
+            List<ApplyType> applyTypes,
+            Object o) {
+
+        for (ApplyType type : applyTypes) {
+            OptionalInt maybeIndex = findIndex(sectionList.size(), sectionList, o, type);
+            if (maybeIndex.isPresent()) {
+                return new ApplyPosition(type, maybeIndex.getAsInt());
+            }
+        }
+
+        throw new IllegalArgumentException("적절한 구간을 찾지 못했습니다.");
+    }
+
+    private static OptionalInt findIndex(int size,
+                                         List<Section> sectionList,
+                                         Object input,
+                                         ApplyType applyType) {
+        return IntStream.range(0, size)
+                .filter(i -> applyType.apply(sectionList, i, input))
+                .findFirst();
     }
 
     private static ApplyPosition addFirst(int index) {
