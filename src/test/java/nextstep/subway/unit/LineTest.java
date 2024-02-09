@@ -120,6 +120,7 @@ class LineTest {
         이호선.removeSection(봉은사역);
 
         assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(역삼역, 삼성역));
+        assertThat(이호선.totalDistance()).isEqualTo(10);
     }
 
     @DisplayName("노선의 맨 앞의 구간을 제거한다.")
@@ -130,6 +131,26 @@ class LineTest {
         이호선.removeSection(역삼역);
 
         assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(삼성역, 봉은사역));
+        assertThat(이호선.totalDistance()).isEqualTo(10);
     }
 
+    @DisplayName("노선의 중간 구간을 제거한다.")
+    @Test
+    void removeSection_middle() {
+        이호선.addSection(삼성역, 봉은사역, 10);
+
+        이호선.removeSection(삼성역);
+
+        assertThat(이호선.getStations()).containsExactlyElementsOf(Arrays.asList(역삼역, 봉은사역));
+        assertThat(이호선.totalDistance()).isEqualTo(20);
+    }
+
+    @DisplayName("노선의 중간 구간을 제거 할 때, 지하철역이 노선에 포함되어 있지 않으면 오류가 발생한다.")
+    @Test
+    void removeSection_middle_invalid() {
+        이호선.addSection(삼성역, 봉은사역, 10);
+        assertThatThrownBy(() -> { 이호선.removeSection(강남역); })
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("지하철역이 존재 하지 않습니다.");
+    }
 }

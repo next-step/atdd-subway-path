@@ -171,7 +171,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * Then 정상 응답 처리된다.
      * And 노선을 조회하면 역삼역 - 선릉역이 조회된다.
      */
-    @DisplayName("노선의 끝의 구간을 제거한다.")
+    @DisplayName("노선의 중간 구간을 제거한다.")
     @Test
     public void 노선의_중간_구간제거_정상() {
         final Long lineId = 노선이_생성되어_있다("신분당선", "bg-red-600", 강남역Id, 역삼역Id, 10);
@@ -182,7 +182,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         구간이_정상_제거된다(response, HttpStatus.NO_CONTENT);
 
-        노선을_조회하여_지하철역과_길이를_확인한다(lineId, Arrays.asList(강남역, 선릉역), 10);
+        노선을_조회하여_지하철역과_길이를_확인한다(lineId, Arrays.asList(강남역, 선릉역), 20);
     }
 
     public Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId, final int distance) {

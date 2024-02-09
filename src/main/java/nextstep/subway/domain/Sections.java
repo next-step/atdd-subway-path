@@ -30,16 +30,34 @@ public class Sections {
         Section lineDownSection = sortedSections.get(sortedSections.size() - 1);
 
         if (lineUpSection.isSameUpStation(deleteStation)) {
-            lineUpSection.removeLine();
-            this.sections.remove(lineUpSection);
-            return;
+            removeSection(lineUpSection);
+        } else if (lineDownSection.isSameDownStation(deleteStation)) {
+            removeSection(lineDownSection);
+        } else {
+            removeMiddle(sortedSections, deleteStation);
         }
+    }
 
-        if (lineDownSection.isSameDownStation(deleteStation)) {
-            lineDownSection.removeLine();
-            this.sections.remove(lineDownSection);
-            return;
-        }
+    private void removeMiddle(final List<Section> sortedSections, final Station deleteStation) {
+        final Section upSection = sortedSections
+                .stream()
+                .filter(s -> s.isSameDownStation(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "지하철역이 존재 하지 않습니다."));
+        final Section downSection = sortedSections
+                .stream()
+                .filter(s -> s.isSameUpStation(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "지하철역이 존재 하지 않습니다."));
+
+        downSection.plusDistance(upSection.getDistance());
+        downSection.changeUpStation(upSection.getUpStation());
+        removeSection(upSection);
+    }
+
+    private void removeSection(final Section section) {
+        section.removeLine();
+        this.sections.remove(section);
     }
 
     private void checkSectionSizeTwoUnder() {

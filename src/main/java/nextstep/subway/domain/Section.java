@@ -68,8 +68,16 @@ public class Section implements Comparable<Section> {
         this.distance = this.distance - distance;
     }
 
+    public void plusDistance(int distance) {
+        this.distance = this.distance + distance;
+    }
+
     public Station[] getStations() {
         return new Station[]{this.upStation, this.downStation};
+    }
+
+    public void removeLine() {
+        this.line = null;
     }
 
     @Override
@@ -94,9 +102,4 @@ public class Section implements Comparable<Section> {
     public String toString() {
         return "Section{" + "id=" + id + ", line=" + line + ", upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + '}';
     }
-
-    public void removeLine() {
-        this.line = null;
-    }
-
 }
