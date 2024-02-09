@@ -81,13 +81,30 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * WHEN 새로운 지하철 구간이 기존 구간과 같다면
+     * WHEN 새로운 지하철 구간이 기존 구간의 상행역과 하행역이 일치하면
      * Then 새로운 구간을 생성할 수 없다
      */
     @Test
-    void 실패_새로운_구간_생성시_기존_구간과_같다면_구간을_생성할_수_없다() {
+    void 실패_새로운_구간_생성시_기존_구간의_상행역과_하행역이_일치하면_구간을_생성할_수_없다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(강남역_ID, 선릉역_ID, 10);
+
+        // when
+        String message = 구간_생성_요청(request, OK.value())
+                .as(ExceptionResponse.class).getMessage();
+
+        // then
+        assertThat(message).isEqualTo("신규 구간이 기존 구간과 일치하여 구간을 생성할 수 없습니다.");
+    }
+
+    /**
+     * WHEN 새로운 지하철 구간이 기존 구간의 상행역과 하행역을 포함하면
+     * Then 새로운 구간을 생성할 수 없다
+     */
+    @Test
+    void 실패_새로운_구간_생성시_기존_구간의_상행역과_하행역을_포함하면_구간을_생성할_수_없다() {
+        // given
+        SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 강남역_ID, 10);
 
         // when
         String message = 구간_생성_요청(request, OK.value())

@@ -32,7 +32,8 @@ public class Sections {
     }
 
     private boolean isSameSection(Station upStation, Station downStation, Section section) {
-        return section.isUpStation(upStation) && section.isDownStation(downStation);
+        return (section.isUpStation(upStation) && section.isDownStation(downStation)) ||
+                (section.isUpStation(downStation) && section.isDownStation(upStation));
     }
 
     public void addSectionInMiddle(Station upStation, Station downStation, long distance) {

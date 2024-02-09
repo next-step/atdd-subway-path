@@ -19,11 +19,11 @@ public class SectionService {
 
     @Transactional
     public Long createSection(Long lineId, SectionCreateRequest request) {
-        Line line = findBy(lineId);
-        Sections sections = findBy(line);
+        Line line = findLineBy(lineId);
+        Sections sections = findSectionsBy(line);
         Stations stations = new Stations(stationRepository.findByIdIn(request.stationIds()));
-        Station upStation = stations.findBy(request.getUpStationId());
-        Station downStation = stations.findBy(request.getDownStationId());
+        Station upStation = stations.findStationBy(request.getUpStationId());
+        Station downStation = stations.findStationBy(request.getDownStationId());
 
         sections.validateRegisterStationBy(upStation, downStation);
 
@@ -37,18 +37,18 @@ public class SectionService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = findBy(lineId);
-        Sections sections = findBy(line);
+        Line line = findLineBy(lineId);
+        Sections sections = findSectionsBy(line);
         sections.validateDeleteSection(stationId);
         sectionRepository.deleteById(stationId);
     }
 
-    private Line findBy(Long lineId) {
+    private Line findLineBy(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
     }
 
-    private Sections findBy(Line line) {
+    private Sections findSectionsBy(Line line) {
         return new Sections(sectionRepository.findByLine(line));
     }
 }

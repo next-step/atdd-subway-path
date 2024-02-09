@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionTest {
 
-    private static Section 일구간;
+    private static Section 강남역_선릉역_구간;
     private static Station 강남역;
     private static Station 선릉역;
     private static Station 양재역;
@@ -30,7 +30,7 @@ public class SectionTest {
         양재역 = YANGJAE_STATION.toStation(3L);
         신분당선 = SHINBUNDANG_LINE.toLine(1L);
         분당선 = BUNDANG_LINE.toLine(2L);
-        일구간 = new Section(
+        강남역_선릉역_구간 = new Section(
                 신분당선,
                 강남역,
                 선릉역,
@@ -41,7 +41,7 @@ public class SectionTest {
     @ParameterizedTest
     @MethodSource("provideLine")
     void 구간이_속해있는_노선을_검사한다(Line line, boolean expected) {
-        boolean result = 일구간.isSameLine(line);
+        boolean result = 강남역_선릉역_구간.isSameLine(line);
         assertThat(result).isEqualTo(expected);
     }
 
@@ -55,7 +55,7 @@ public class SectionTest {
     @ParameterizedTest
     @MethodSource("provideUpStation")
     void 구간이_속해있는_상행역을_검사한다(Station station, boolean expected) {
-        boolean result = 일구간.isUpStation(station);
+        boolean result = 강남역_선릉역_구간.isUpStation(station);
         assertThat(result).isEqualTo(expected);
     }
 
@@ -69,7 +69,7 @@ public class SectionTest {
     @ParameterizedTest
     @MethodSource("provideDownStation")
     void 구간이_속해있는_하행역을_검사한다(Station station, boolean expected) {
-        boolean result = 일구간.isDownStation(station);
+        boolean result = 강남역_선릉역_구간.isDownStation(station);
         assertThat(result).isEqualTo(expected);
     }
 
@@ -82,7 +82,7 @@ public class SectionTest {
 
     @Test
     void 구간이_속해있는_상행역과_하행역을_조회한다() {
-        assertThat(일구간.stations()).hasSize(2)
+        assertThat(강남역_선릉역_구간.stations()).hasSize(2)
                 .containsExactly(강남역, 선릉역);
     }
 
