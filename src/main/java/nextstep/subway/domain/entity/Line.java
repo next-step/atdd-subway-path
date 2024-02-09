@@ -1,16 +1,15 @@
 package nextstep.subway.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
@@ -24,6 +23,7 @@ public class Line {
     @Column(nullable = false)
     private int distance;
 
+    @JsonIgnore
     @Embedded
     private Sections sections = new Sections();
 

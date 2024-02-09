@@ -1,5 +1,6 @@
 package nextstep.subway.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 @Embeddable
 public class Sections {
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
 
