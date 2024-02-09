@@ -48,6 +48,14 @@ public class Section {
         return new Section(null, line, upStation, downStation, distance);
     }
 
+    public void changeUpStation(Station newUpStation) {
+        this.upStation = newUpStation;
+    }
+
+    public void subtractDistance(int amount) {
+        this.distance = this.distance - amount;
+    }
+
     public Long getId() {
         return id;
     }

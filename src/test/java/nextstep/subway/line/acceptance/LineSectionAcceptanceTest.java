@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 
 import static nextstep.helper.JsonPathUtils.getListPath;
 import static nextstep.helper.JsonPathUtils.getLongPath;
+import static nextstep.subway.line.acceptance.SectionApiRequester.addSectionToLine;
+import static nextstep.subway.line.acceptance.SectionApiRequester.addSectionToLineSuccess;
 import static nextstep.subway.station.acceptance.StationApiRequester.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,7 +26,7 @@ public class LineSectionAcceptanceTest {
     @Nested
     class 지하철_노선_구간_등록_테스트 {
 
-        @DisplayName("유효한 구간정보가 주어지면")
+        @DisplayName("유효한 구간 등록 정보가 주어지면")
         @Nested
         class Context_with_valid_section_data {
 
@@ -52,11 +54,11 @@ public class LineSectionAcceptanceTest {
              * When 지하철 노선의 구간을 등록하면
              * Then 지하철 노선 조회 시 등록한 구간을 조회할 수 있다
              */
-            @DisplayName("구간이 등록되고, 노선 조회 시 등록된 구간을 조회할 수 있다")
+            @DisplayName("구간 등록에 성공한다")
             @Test
             void addSection() {
                 // when
-                ExtractableResponse<Response> response = SectionApiRequester.addSectionToLineSuccess(
+                ExtractableResponse<Response> response = addSectionToLineSuccess(
                     lineId,
                     new SectionAddRequest(downStationId, newDownStationId, 3)
                 );
@@ -72,55 +74,232 @@ public class LineSectionAcceptanceTest {
             }
         }
 
-        @DisplayName("주어진 상행역이 기존 노선의 하행종점역이 아니면")
+        @DisplayName("주어진 상행역이 기존 노선에 존재하고")
         @Nested
-        class Context_up_station_id_is_not_before_down_station_id {
+        class Context_with_existing_up_station_id {
 
-            long lineId;
-            long notDownStationId;
-            long downStationId;
-            long newDownStationId;
+            @DisplayName("주어진 하행역이 노선에 등록되어 있지 않다면")
+            @Nested
+            class Context_with_not_existing_down_station_id {
 
-            @BeforeEach
-            void setup() {
-                long upStationId = getLongPath(createStation("수원역").body(), "id");
-                downStationId = getLongPath(createStation("고색역").body(), "id");
-                newDownStationId = getLongPath(createStation("오목천역").body(), "id");
+                long lineId;
+                long upStationId;
+                long downStationId;
+                long newDownStationId;
 
-                ExtractableResponse<Response> response = LineApiRequester.createLine(
-                    new LineCreateRequest(
-                        "수인분당선", "bg-yellow-600", upStationId, downStationId, 10
-                    )
-                );
+                @BeforeEach
+                void setup() {
+                    upStationId = getLongPath(createStation("수원역").body(), "id");
+                    downStationId = getLongPath(createStation("오목천역").body(), "id");
 
-                notDownStationId = upStationId;
-                lineId = getLongPath(response.body(), "id");
+                    newDownStationId = getLongPath(createStation("고색역").body(), "id");
+
+                    ExtractableResponse<Response> response = LineApiRequester.createLine(
+                        new LineCreateRequest(
+                            "수인분당선", "bg-yellow-600", upStationId, downStationId, 10
+                        )
+                    );
+
+                    lineId = getLongPath(response.body(), "id");
+                }
+
+                @DisplayName("구간 등록에 성공한다")
+                @Test
+                void add_section_in_middle() {
+                    ExtractableResponse<Response> response = addSectionToLineSuccess(
+                        lineId,
+                        new SectionAddRequest(upStationId, newDownStationId, 3)
+                    );
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+                    ExtractableResponse<Response> lineResponse = LineApiRequester.getLineById(lineId);
+
+                    assertThat(
+                        getListPath(lineResponse.body(), "stations.id", Long.class)
+                    ).contains(upStationId, downStationId, newDownStationId);
+                }
             }
 
-            @DisplayName("400 상태코드와 함께 에러를 응답한다")
-            @Test
-            void will_return_400_status_code() {
-                // when
-                ExtractableResponse<Response> response = SectionApiRequester.addSectionToLine(
-                    lineId,
-                    new SectionAddRequest(notDownStationId, newDownStationId, 3)
-                );
+            @DisplayName("주어진 하행역이 노선에 이미 등록되어 있다면")
+            @Nested
+            class Context_with_existing_down_station_id {
 
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                long lineId;
+                long upStationId;
+                long existStationId;
+
+                @BeforeEach
+                void setup() {
+                    upStationId = getLongPath(createStation("수원역").body(), "id");
+                    long downStationId = getLongPath(createStation("고색역").body(), "id");
+                    existStationId = downStationId;
+
+                    // 수원역 - 고색역 구간생성
+                    ExtractableResponse<Response> response = LineApiRequester.createLine(
+                        new LineCreateRequest(
+                            "수인분당선", "bg-yellow-600", upStationId, downStationId, 10
+                        )
+                    );
+                    lineId = getLongPath(response.body(), "id");
+
+                    long newDownStationId = getLongPath(createStation("오목천역").body(), "id");
+
+                    // 고색역 - 오목천역 구간생성
+                    addSectionToLineSuccess(
+                        lineId,
+                        new SectionAddRequest(downStationId, newDownStationId, 3)
+                    );
+                }
+
+                @DisplayName("구간 등록에 실패한다")
+                @Test
+                void will_return_400_status_code() {
+                    // 수원역 - 오목천역 구간을 생성하려고 하면
+                    ExtractableResponse<Response> response = addSectionToLine(
+                        lineId,
+                        new SectionAddRequest(upStationId, existStationId, 3)
+                    );
+
+                    // 오목천역은 이미 있어서 예외 던져야 함
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }
             }
         }
 
-        @DisplayName("주어진 하행역이 기존 노선에 이미 등록된 역이면")
+        @DisplayName("노선 처음에 역을 추가하려고 할 때")
         @Nested
-        class Context_down_station_id_is_already_exist {
+        class Context_up_station_id_is_not_before_down_station_id {
+
+            @DisplayName("주어진 하행역이 기존 노선의 첫 역이면")
+            @Nested
+            class Context_with_down_station_id_is_first_up_station_id {
+
+                long lineId;
+
+                long newUpStationId;
+                long newDownStationId;
+
+                @BeforeEach
+                void setup() {
+                    newDownStationId = getLongPath(createStation("고색역").body(), "id");
+                    long downStationId = getLongPath(createStation("오목천역").body(), "id");
+
+                    newUpStationId = getLongPath(createStation("수원역").body(), "id");
+
+                    ExtractableResponse<Response> response = LineApiRequester.createLine(
+                        new LineCreateRequest(
+                            "수인분당선", "bg-yellow-600", newDownStationId, downStationId, 10
+                        )
+                    );
+
+                    lineId = getLongPath(response.body(), "id");
+                }
+
+                @DisplayName("구간 등록에 성공한다")
+                @Test
+                void will_return_201_created_status() {
+                    ExtractableResponse<Response> response = addSectionToLineSuccess(
+                        lineId,
+                        new SectionAddRequest(newUpStationId, newDownStationId, 3)
+                    );
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                }
+            }
+
+            @DisplayName("주어진 하행역이 기존 노선에 존재하지 않으면")
+            @Nested
+            class Context_with_down_station_id_is_not_exist_in_sections {
+
+                long lineId;
+
+                long newUpStationId;
+                long notExistStationId;
+
+                @BeforeEach
+                void setup() {
+                    long upStationId = getLongPath(createStation("고색역").body(), "id");
+                    long downStationId = getLongPath(createStation("오목천역").body(), "id");
+
+                    newUpStationId = getLongPath(createStation("수원역").body(), "id");
+                    notExistStationId = getLongPath(createStation("망포역").body(), "id");
+
+                    ExtractableResponse<Response> response = LineApiRequester.createLine(
+                        new LineCreateRequest(
+                            "수인분당선", "bg-yellow-600", upStationId, downStationId, 10
+                        )
+                    );
+
+                    lineId = getLongPath(response.body(), "id");
+                }
+
+                @DisplayName("구간 등록에 실패한다")
+                @Test
+                void will_return_400_status_code() {
+                    // when
+                    ExtractableResponse<Response> response = SectionApiRequester.addSectionToLine(
+                        lineId,
+                        new SectionAddRequest(newUpStationId, notExistStationId, 3)
+                    );
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }
+            }
+        }
+
+        @DisplayName("노선 마지막에 역을 추가하려고 할 때")
+        @Nested
+        class Context_up_station_id_equals_last_sections_down_station_id {
+
+            @DisplayName("주어진 하행역이 기존 노선에 이미 등록되어 있다면")
+            @Nested
+            class Context_down_station_id_is_already_exist {
+
+                long lineId;
+                long alreadyExistStationId;
+                long downStationId;
+
+                @BeforeEach
+                void setup() {
+                    long upStationId = getLongPath(createStation("수원역").body(), "id");
+                    downStationId = getLongPath(createStation("고색역").body(), "id");
+
+                    ExtractableResponse<Response> response = LineApiRequester.createLine(
+                        new LineCreateRequest(
+                            "수인분당선", "bg-yellow-600", upStationId, downStationId, 10
+                        )
+                    );
+
+                    alreadyExistStationId = upStationId;
+                    lineId = getLongPath(response.body(), "id");
+                }
+
+                @DisplayName("구간 등록에 실패한다")
+                @Test
+                void will_return_400_status_code() {
+                    // when
+                    ExtractableResponse<Response> response = SectionApiRequester.addSectionToLine(
+                        lineId,
+                        new SectionAddRequest(downStationId, alreadyExistStationId, 3)
+                    );
+
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }
+            }
+        }
+
+        @DisplayName("이미 존재하는 구간이 주어지면")
+        @Nested
+        class Context_with_already_exist_section {
 
             long lineId;
-            long alreadyExistStationId;
+            long upStationId;
             long downStationId;
 
             @BeforeEach
             void setup() {
-                long upStationId = getLongPath(createStation("수원역").body(), "id");
+                upStationId = getLongPath(createStation("수원역").body(), "id");
                 downStationId = getLongPath(createStation("고색역").body(), "id");
 
                 ExtractableResponse<Response> response = LineApiRequester.createLine(
@@ -129,17 +308,16 @@ public class LineSectionAcceptanceTest {
                     )
                 );
 
-                alreadyExistStationId = upStationId;
                 lineId = getLongPath(response.body(), "id");
             }
 
-            @DisplayName("400 상태코드와 함께 에러를 응답한다")
+            @DisplayName("구간 등록에 실패한다")
             @Test
             void will_return_400_status_code() {
                 // when
                 ExtractableResponse<Response> response = SectionApiRequester.addSectionToLine(
                     lineId,
-                    new SectionAddRequest(downStationId, alreadyExistStationId, 3)
+                    new SectionAddRequest(upStationId, downStationId, 3)
                 );
 
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -173,7 +351,7 @@ public class LineSectionAcceptanceTest {
 
                 lineId = getLongPath(response.body(), "id");
 
-                SectionApiRequester.addSectionToLineSuccess(
+                addSectionToLineSuccess(
                     lineId,
                     new SectionAddRequest(downStationId, deleteStationId, 3)
                 );
@@ -218,7 +396,7 @@ public class LineSectionAcceptanceTest {
 
                 lineId = getLongPath(response.body(), "id");
 
-                SectionApiRequester.addSectionToLineSuccess(
+                addSectionToLineSuccess(
                     lineId,
                     new SectionAddRequest(downStationId, newDownStationId, 3)
                 );

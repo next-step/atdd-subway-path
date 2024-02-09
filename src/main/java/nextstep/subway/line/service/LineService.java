@@ -49,7 +49,7 @@ public class LineService {
             createRequest.getColor()
         );
 
-        line.addSection(upStation, downStation, createRequest.getDistance());
+        addSection(line, upStation, downStation, createRequest.getDistance());
 
         return LineResponse.of(lineRepository.save(line));
     }
@@ -115,8 +115,9 @@ public class LineService {
         Station upStation = findStationById(request.getUpStationId());
         Station downStation = findStationById(request.getDownStationId());
 
-        line.addSection(upStation, downStation, request.getDistance());
+        addSection(line, upStation, downStation, request.getDistance());
     }
+
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
@@ -126,6 +127,10 @@ public class LineService {
             .orElseThrow(EntityNotFoundException::new);
 
         line.removeSection(section);
+    }
+
+    private void addSection(Line line, Station upStation, Station downStation, int distance) {
+        line.addSection(upStation, downStation, distance);
     }
 
     /** 주어진 지하철 노선 식별자로 찾은 노선정보 엔티티 반환. 찾지못하면 예외 던짐 */
