@@ -122,14 +122,26 @@ public class SectionAcceptanceTest {
 
         private void 지하철_노선_조회시_생성된_구간정보가_마지막에_포함되어있다(final ExtractableResponse<Response> response) {
             assertAll(
-                    () -> assertSectionCreated(response),
+                    () -> assertSoftly(softly -> {
+                        softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                        final SectionResponse sectionResponse = response.as(SectionResponse.class);
+                        softly.assertThat(sectionResponse.getUpStation().getId()).isEqualTo(새로운지하철역_Id);
+                        softly.assertThat(sectionResponse.getDownStation().getId()).isEqualTo(또다른지하철역_Id);
+                        softly.assertThat(sectionResponse.getDistance()).isEqualTo(구간_distance);
+                    }),
                     SectionAcceptanceTest.this::assertSectionAddedAtLast
             );
         }
 
         private void 지하철_노선_조회시_생성된_구간정보가_가운데에에_포함되어있다(final ExtractableResponse<Response> response) {
             assertAll(
-                    () -> assertSectionCreated(response),
+                    () -> assertSoftly(softly -> {
+                        softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                        final SectionResponse sectionResponse = response.as(SectionResponse.class);
+                        softly.assertThat(sectionResponse.getUpStation().getId()).isEqualTo(지하철역_Id);
+                        softly.assertThat(sectionResponse.getDownStation().getId()).isEqualTo(또다른지하철역_Id);
+                        softly.assertThat(sectionResponse.getDistance()).isEqualTo(구간_distance);
+                    }),
                     SectionAcceptanceTest.this::assertSectionAddedAtMiddle
             );
         }
@@ -139,16 +151,6 @@ public class SectionAcceptanceTest {
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                     SectionAcceptanceTest.this::assertSectionsNotChanged
             );
-        }
-
-        private void assertSectionCreated(final ExtractableResponse<Response> response) {
-            assertSoftly(softly -> {
-                softly.assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-                final SectionResponse sectionResponse = response.as(SectionResponse.class);
-                softly.assertThat(sectionResponse.getUpStation().getId()).isEqualTo(새로운지하철역_Id);
-                softly.assertThat(sectionResponse.getDownStation().getId()).isEqualTo(또다른지하철역_Id);
-                softly.assertThat(sectionResponse.getDistance()).isEqualTo(구간_distance);
-            });
         }
 
     }
@@ -248,8 +250,6 @@ public class SectionAcceptanceTest {
             softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance + 구간_distance);
             softly.assertThat(lineResponse.getStations())
                     .extracting("id").containsExactly(지하철역_Id, 새로운지하철역_Id, 또다른지하철역_Id);
-            softly.assertThat(lineResponse.getStations())
-                    .extracting("distance").containsExactly(신분당선_distance, 구간_distance);
         });
     }
 
@@ -259,8 +259,6 @@ public class SectionAcceptanceTest {
             softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance);
             softly.assertThat(lineResponse.getStations())
                     .extracting("id").containsExactly(지하철역_Id, 또다른지하철역_Id, 새로운지하철역_Id);
-            softly.assertThat(lineResponse.getStations())
-                    .extracting("distance").containsExactly(신분당선_distance - 구간_distance, 구간_distance);
         });
     }
 

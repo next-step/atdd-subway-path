@@ -25,7 +25,7 @@ class LineTest {
     void setUp() {
         강남역 = StationFactory.createStation(1L, "강남역");
         선릉역 = StationFactory.createStation(2L, "선릉역");
-        역삼역 = StationFactory.createStation(3L, "선릉역");
+        역삼역 = StationFactory.createStation(3L, "역삼역");
         강남역_선릉역_구간 = SectionFactory.createSection(1L, 강남역, 선릉역, 10);
         선릉역_역삼역_구간 = SectionFactory.createSection(2L, 선릉역, 역삼역, 20);
         line = LineFactory.createLine(LINE_ID, LINE_NAME, LINE_COLOR, 강남역_선릉역_구간);
