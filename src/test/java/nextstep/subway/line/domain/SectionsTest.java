@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class SectionsTest {
 
@@ -62,7 +63,10 @@ class SectionsTest {
         @Test
         @DisplayName("Section 을 마지막에 추가할 수 있다.")
         void canConnectSectionAtLast() {
-            assertThat(sections).containsExactly(강남역_선릉역_구간, 선릉역_역삼역_구간);
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(강남역_선릉역_구간, 선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간.getDistance() + 선릉역_역삼역_구간.getDistance());
+            });
         }
 
         @Test
@@ -71,7 +75,10 @@ class SectionsTest {
             final Section 강남역_교대역_구간 = SectionFactory.createSection(3L, 강남역, 교대역, 10);
             sections.connect(강남역_교대역_구간);
 
-            assertThat(sections).containsExactly(강남역_교대역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(강남역_교대역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간.getDistance() + 선릉역_역삼역_구간.getDistance() + 강남역_교대역_구간.getDistance());
+            });
         }
 
         @Test
@@ -80,7 +87,10 @@ class SectionsTest {
             final Section 교대역_강남역_구간 = SectionFactory.createSection(3L, 교대역, 강남역, 10);
             sections.connect(교대역_강남역_구간);
 
-            assertThat(sections).containsExactly(교대역_강남역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(교대역_강남역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간.getDistance() + 선릉역_역삼역_구간.getDistance() + 교대역_강남역_구간.getDistance());
+            });
         }
 
         @Test
