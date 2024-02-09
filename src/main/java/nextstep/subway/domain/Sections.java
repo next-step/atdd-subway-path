@@ -22,15 +22,42 @@ public class Sections {
     public Sections() {
     }
 
-    public void removeSection(final Long stationId) {
+    public void removeSection(final Station deleteStation) {
         checkSectionSizeTwoUnder();
 
-        final Section lineLastSection = getSections().get(this.sections.size() - 1);
-        if (lineLastSection.isNotSameDownStationId(stationId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제할 수 없는 지하철 역 입니다.");
-        }
+        final List<Section> sortedSections = getSections();
+        Section lineUpSection = sortedSections.get(0);
+        Section lineDownSection = sortedSections.get(sortedSections.size() - 1);
 
-        this.sections.remove(lineLastSection);
+        if (lineUpSection.isSameUpStation(deleteStation)) {
+            removeSection(lineUpSection);
+        } else if (lineDownSection.isSameDownStation(deleteStation)) {
+            removeSection(lineDownSection);
+        } else {
+            removeMiddle(sortedSections, deleteStation);
+        }
+    }
+
+    private void removeMiddle(final List<Section> sortedSections, final Station deleteStation) {
+        final Section upSection = sortedSections
+                .stream()
+                .filter(s -> s.isSameDownStation(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "지하철역이 존재 하지 않습니다."));
+        final Section downSection = sortedSections
+                .stream()
+                .filter(s -> s.isSameUpStation(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "지하철역이 존재 하지 않습니다."));
+
+        downSection.plusDistance(upSection.getDistance());
+        downSection.changeUpStation(upSection.getUpStation());
+        removeSection(upSection);
+    }
+
+    private void removeSection(final Section section) {
+        section.removeLine();
+        this.sections.remove(section);
     }
 
     private void checkSectionSizeTwoUnder() {

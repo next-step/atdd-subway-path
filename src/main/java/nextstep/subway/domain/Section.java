@@ -52,6 +52,10 @@ public class Section implements Comparable<Section> {
         return this.upStation.equals(station);
     }
 
+    public boolean isSameDownStation(final Station station) {
+        return this.downStation.equals(station);
+    }
+
     public void changeUpStation(Station station) {
         this.upStation = station;
     }
@@ -64,12 +68,16 @@ public class Section implements Comparable<Section> {
         this.distance = this.distance - distance;
     }
 
+    public void plusDistance(int distance) {
+        this.distance = this.distance + distance;
+    }
+
     public Station[] getStations() {
         return new Station[]{this.upStation, this.downStation};
     }
 
-    public boolean isNotSameDownStationId(final Long stationId) {
-        return !this.downStation.isSameId(stationId);
+    public void removeLine() {
+        this.line = null;
     }
 
     @Override
