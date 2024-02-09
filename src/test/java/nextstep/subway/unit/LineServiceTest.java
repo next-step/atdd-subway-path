@@ -2,11 +2,9 @@ package nextstep.subway.unit;
 
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineRepository;
-import nextstep.subway.line.LineSectionResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.SectionRequest;
-import nextstep.subway.line.section.SectionResponse;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +31,7 @@ public class LineServiceTest {
     private final Station 강남역 = new Station("강남역");
     private final Station 역삼역 = new Station("역삼역");
     private final Station 선릉역 = new Station("선릉역");
-    private final Line 강남선 = new Line("강남선", "red");
+    private final Line 강남선 = new Line("강남선", "red", 강남역, 역삼역, 10L);
 
     @BeforeEach
     public void setUp() {
@@ -49,21 +47,18 @@ public class LineServiceTest {
 
         // when
         // lineService.addSection 호출
-        SectionResponse response = lineService.addSection(강남선.getId(), new SectionRequest(강남역.getId(), 역삼역.getId(), 10L));
-        System.out.println(response.toString());
+        lineService.addSection(강남선.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 10L));
 
         // then
         // line.getSections 메서드를 통해 검증
-        assertThat(강남선.getSections().get()).hasSize(1);
+        assertThat(강남선.getSections().get()).hasSize(2);
     }
 
     @DisplayName("마지막 구간 1개 제거")
     @Test
     void deleteSection() {
         // given
-        Section 강남_삼성 = new Section(강남선, 강남역, 역삼역, 10L);
         Section 삼성_선릉 = new Section(강남선, 역삼역, 선릉역, 10L);
-        강남선.addSection(강남_삼성);
         강남선.addSection(삼성_선릉);
 
         // when

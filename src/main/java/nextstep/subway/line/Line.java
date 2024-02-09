@@ -3,6 +3,7 @@ package nextstep.subway.line;
 
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.Sections;
+import nextstep.subway.station.Station;
 
 import javax.persistence.*;
 
@@ -21,14 +22,15 @@ public class Line {
     public Line() {
     }
 
-    public Line(String name, String color) {
-        this(null, name, color);
+    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
+        this(null, name, color, upStation, downStation, distance);
     }
 
-    public Line(Long id, String name, String color) {
+    public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
         this.id = id;
         this.name = name;
         this.color = color;
+        addSection(new Section(this, upStation, downStation, distance));
     }
 
     public Long getId() {

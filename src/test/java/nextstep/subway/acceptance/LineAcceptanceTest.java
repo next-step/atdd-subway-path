@@ -18,11 +18,8 @@ import java.util.Map;
 import static nextstep.subway.utils.AcceptanceMethods.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql(value = "/table_truncate.sql")
 @DisplayName("지하철 노선 테스트")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class LineAcceptanceTest {
-
+public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      * when 지하철 노선을 생성하면

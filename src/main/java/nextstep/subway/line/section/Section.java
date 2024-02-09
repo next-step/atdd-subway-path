@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 public class Section {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "lineId")
@@ -34,6 +34,11 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void separateFrom(Section newSection) {
+        this.upStation = newSection.downStation;
+        this.distance = this.distance - newSection.distance;
     }
 
     public List<Station> stations() {
@@ -68,5 +73,9 @@ public class Section {
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
+    }
+
+    public boolean matchStations(Section section) {
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }
 }
