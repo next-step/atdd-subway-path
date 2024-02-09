@@ -1,7 +1,6 @@
 package nextstep.subway.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -10,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
 @Embeddable
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -34,8 +33,18 @@ public class Sections {
         return stations;
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public Section getLastSection() {
-        int lastIndex = this.sections.size() - 1;
-        return this.sections.get(lastIndex);
+        if (this.sections.isEmpty()) {
+            return null;
+        }
+        return this.sections.get(this.sections.size() - 1);
+    }
+
+    public int getSize() {
+        return this.sections.size();
     }
 }

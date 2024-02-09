@@ -161,9 +161,8 @@ public class SectionAcceptanceTest {
 
         //then
         //section 수 = 1
-        ExtractableResponse<Response> response = getLine(lineId);
-        List<Section> sections = response.jsonPath().getList("sections");
-        assertThat(sections).hasSize(1);
+        LineResponse lineResponse = getLine(lineId).as(LineResponse.class);
+        assertThat(lineResponse.getSections().getSize()).isEqualTo(1);
     }
 
     /**

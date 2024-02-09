@@ -79,20 +79,20 @@ public class SectionService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).get();
-        List<Section> sections = line.getSections().getSections();
-        Section section = sections.get(sections.size() - 1); // 마지막 구간
+        Sections sections = line.getSections();
+        Section lastSection = sections.getLastSection(); // 마지막 구간
 
         // stationId 는 마지막 하행 종착역 이어야 한다.
-        if (!stationId.equals(section.getDownStation().getId())) {
+        if (!stationId.equals(lastSection.getDownStation().getId())) {
             throw new ApplicationException(ExceptionMessage.DELETE_LAST_SECTION_EXCEPTION.getMessage());
         }
 
         // 구간이 1개인 경우 삭제할 수 없다.
-        if (sections.size() == 1) {
+        if (sections.getSize() == 1) {
             throw new ApplicationException(ExceptionMessage.DELETE_ONLY_ONE_SECTION_EXCEPTION.getMessage());
         }
 
-        line.deleteSection(section);
+        line.deleteSection(lastSection);
     }
 
     public SectionResponse findSectionByLineIdAndId(Long lineId, Long sectionId) {
