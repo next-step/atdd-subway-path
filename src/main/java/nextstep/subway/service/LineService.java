@@ -2,8 +2,10 @@ package nextstep.subway.service;
 
 import nextstep.subway.domain.entity.Line;
 import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Sections;
 import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.request.LineRequest;
+import nextstep.subway.domain.request.SectionRequest;
 import nextstep.subway.domain.response.LineResponse;
 import nextstep.subway.domain.response.SectionResponse;
 import nextstep.subway.repository.LineRepository;
@@ -74,13 +76,26 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                line.getDistance(),
-                line.getSections()
+                line.getSections().getStations()
         );
     }
 
     public SectionResponse findSection(Long id, Long sectionId) {
         Section section = sectionRepository.findByLineIdAndId(id, sectionId);
         return sectionService.createSectionResponse(section);
+    }
+
+    @Transactional
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId).get();
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+
+        // 중간에 구간 추가
+//        sectionValidation(line, upStation, downStation);
+        Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
+        line.getSections().addSection(newSection);
+//        newSection = sectionRepository.save(newSection);
+        return createLineResponse(line);
     }
 }

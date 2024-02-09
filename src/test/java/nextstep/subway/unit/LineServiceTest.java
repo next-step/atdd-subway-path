@@ -4,6 +4,7 @@ import nextstep.subway.domain.entity.Line;
 import nextstep.subway.domain.entity.Section;
 import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.request.SectionRequest;
+import nextstep.subway.domain.response.LineResponse;
 import nextstep.subway.domain.response.SectionResponse;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
@@ -51,7 +52,7 @@ class LineServiceTest {
 
         // when
         // line.addSection() 호출
-        sectionService.addSection(line.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 10));
+        lineService.addSection(line.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 10));
 
         // then
         assertThat(line.getSections().getSections()).hasSize(2);
@@ -60,7 +61,7 @@ class LineServiceTest {
     @Test
     void deleteSection() {
         // given
-        sectionService.addSection(line.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 10));
+        lineService.addSection(line.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), 10));
 
         // when
         sectionService.deleteSection(line.getId(), 선릉역.getId());
@@ -73,17 +74,15 @@ class LineServiceTest {
     void getSection() {
         // given
         int distance = 10;
-        SectionResponse sectionResponse = sectionService.addSection(line.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), distance));
+        LineResponse lineResponse = lineService.addSection(line.getId(), new SectionRequest(역삼역.getId(), 선릉역.getId(), distance));
 
         // when
-        SectionResponse response = lineService.findSection(line.getId(), sectionResponse.getId());
+        lineResponse.getStations();
 
         // then
         assertAll(
-                () -> assertThat(response.getLine()).isEqualTo(line),
-                () -> assertThat(response.getUpStation()).isEqualTo(역삼역),
-                () -> assertThat(response.getDownStation()).isEqualTo(선릉역),
-                () -> assertThat(response.getDistance()).isEqualTo(distance)
+                () -> assertThat(lineResponse.getId()).isEqualTo(line.getId()),
+                () -> assertThat(lineResponse.getStations().stream().map(station -> station.getId())).contains(역삼역.getId(), 선릉역.getId())
         );
     }
 }

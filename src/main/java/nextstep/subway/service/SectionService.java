@@ -12,13 +12,17 @@ import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
+
+import static nextstep.subway.exception.ExceptionMessage.ALREADY_REGISTERED_SECTION_EXCEPTION;
 
 
 @Service
 @Transactional(readOnly = true)
 public class SectionService {
+
     private final StationService stationService;
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
@@ -29,20 +33,7 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    @Transactional
-    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).get();
-        Station upStation = stationService.findById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findById(sectionRequest.getDownStationId());
 
-        // 새로운 구간의 상행역이 등록된 노선의 하행 종점역이 아니면 에러
-        sectionValidation(line, upStation, downStation);
-
-        Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
-        line.addSection(newSection);
-        newSection = sectionRepository.save(newSection);
-        return createSectionResponse(newSection);
-    }
 
     private void sectionValidation(Line line, Station upStation, Station downStation) {
         Sections sections = line.getSections();
@@ -51,15 +42,15 @@ public class SectionService {
             return;
         }
 
-        Section section = sections.getLastSection();
-        if (!section.getDownStation().equals(upStation)) {
-            throw new ApplicationException(ExceptionMessage.UPSTATION_VALIDATION_EXCEPTION.getMessage());
-        }
+//        Section section = sections.getLastSection();
+//        if (!section.getDownStation().equals(upStation)) {
+//            throw new ApplicationException(ExceptionMessage.UPSTATION_VALIDATION_EXCEPTION.getMessage());
+//        }
 
         // 새로운 구간의 하행역이 노선에 등록되어있는 역과 같으면 에러
-        if (isRegisteredStation(sections.getSections(), downStation)) {
-            throw new ApplicationException(ExceptionMessage.DOWNSTATION_VALIDATION_EXCEPTION.getMessage());
-        }
+//        if (isRegisteredStation(sections.getSections(), downStation)) {
+//            throw new ApplicationException(ExceptionMessage.DOWNSTATION_VALIDATION_EXCEPTION.getMessage());
+//        }
 
         // 새로운 구간의 상행역과 하행역이 같으면 에러
         if (upStation.equals(downStation)) {

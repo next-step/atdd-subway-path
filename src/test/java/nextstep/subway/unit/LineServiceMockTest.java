@@ -59,16 +59,15 @@ public class LineServiceMockTest {
 
         // when
         // lineService.addSection 호출
-        sectionService.addSection(LINE_ID_1, new SectionRequest(STATION_ID_1, STATION_ID_2, 10));
+        lineService.addSection(LINE_ID_1, new SectionRequest(STATION_ID_1, STATION_ID_2, 10));
 
         // then
         // lineService.findLineById 메서드를 통해 검증
         LineResponse response = lineService.findLineById(LINE_ID_1);
         assertAll(
                 () -> assertThat(response).isNotNull(),
-                () -> assertThat(response.getSections().getSections()).hasSize(1),
-                () -> assertThat(response.getSections().getSections().stream().map(section -> section.getUpStation().getName())).contains("강남역"),
-                () -> assertThat(response.getSections().getSections().stream().map(section -> section.getDownStation().getName())).contains("역삼역")
+                () -> assertThat(response.getStations()).hasSize(2),
+                () -> assertThat(response.getStations().stream().map(station -> station.getName())).contains("강남역", "역삼역")
         );
     }
 }

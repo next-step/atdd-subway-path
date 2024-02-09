@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -36,5 +39,45 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        stations.add(this.getUpStation());
+        stations.add(this.getDownStation());
+        return stations;
+    }
+
+    public boolean isSameAsUpStation(Station station) {
+        return this.getUpStation().equals(station);
+    }
+
+    public boolean isSameAsDwonStation(Station station) {
+        return this.getDownStation().equals(station);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation())
+                && getDistance() == section.getDistance();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUpStation(), getDownStation(), getDistance());
     }
 }
