@@ -57,22 +57,6 @@ public class ApplyPosition {
                 .findFirst();
     }
 
-    private static ApplyPosition addFirst(int index) {
-        return new ApplyPosition(ApplyType.ADD_FIRST, index);
-    }
-
-    private static ApplyPosition addLast(int index) {
-        return new ApplyPosition(ApplyType.ADD_LAST, index);
-    }
-
-    private static ApplyPosition deleteMiddle(int index) {
-        return new ApplyPosition(ApplyType.DELETE_MIDDLE, index);
-    }
-
-    public boolean isNotDefine() {
-        return index < 0;
-    }
-
     public boolean addingFirst() {
         return this.applyType.isAppyStart();
     }
