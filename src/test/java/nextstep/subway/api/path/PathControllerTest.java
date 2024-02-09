@@ -78,25 +78,17 @@ public class PathControllerTest extends CommonAcceptanceTest {
 	void findShortestPath_success1() {
 
 		// given
-		ExtractableResponse<Response> createStationResponse1 = executeCreateStationRequest("교대역");
-		long stationId1 = parseId(createStationResponse1);
-		ExtractableResponse<Response> createStationResponse2 = executeCreateStationRequest("강남역");
-		long stationId2 = parseId(createStationResponse2);
-		ExtractableResponse<Response> createStationResponse3 = executeCreateStationRequest("양재역");
-		long stationId3 = parseId(createStationResponse3);
-		ExtractableResponse<Response> createStationResponse4 = executeCreateStationRequest("남부터미널역");
-		long stationId4 = parseId(createStationResponse4);
+		long stationId1 = parseId(executeCreateStationRequest("교대역"));
+		long stationId2 = parseId(executeCreateStationRequest("강남역"));
+		long stationId3 = parseId(executeCreateStationRequest("양재역"));
+		long stationId4 = parseId(executeCreateStationRequest("남부터미널역"));
 
-		ExtractableResponse<Response> createLineResponse1 = executeCreateLineRequest(createLineCreateRequest("2호선", stationId1, stationId2, 10L));
-		long lineId1 = parseId(createLineResponse1);
+		long lineId1 = parseId(executeCreateLineRequest(createLineCreateRequest("2호선", stationId1, stationId2, 10L)));
 
-		ExtractableResponse<Response> createLineResponse2 = executeCreateLineRequest(createLineCreateRequest("3호선", stationId1, stationId3, 5L));
-		long lineId2 = parseId(createLineResponse2);
-		SectionCreateRequest sectionCreateRequest = SectionCreateRequest.builder().upStationId(stationId1).downStationId(stationId4).distance(2L).build();
-		ExtractableResponse<Response> response = executeCreateSectionRequest(lineId2, sectionCreateRequest);
+		long lineId2 = parseId(executeCreateLineRequest(createLineCreateRequest("3호선", stationId1, stationId3, 5L)));
+		executeCreateSectionRequest(lineId2, SectionCreateRequest.builder().upStationId(stationId1).downStationId(stationId4).distance(2L).build());
 
-		ExtractableResponse<Response> createLineResponse3 = executeCreateLineRequest(createLineCreateRequest("신분당선", stationId2, stationId3, 10L));
-		long lineId3 = parseId(createLineResponse3);
+		long lineId3 = parseId(executeCreateLineRequest(createLineCreateRequest("신분당선", stationId2, stationId3, 10L)));
 
 		// when
 		ExtractableResponse<Response> findPathResponse = executeFindPathRequest(stationId1, stationId3);
@@ -169,32 +161,22 @@ public class PathControllerTest extends CommonAcceptanceTest {
 	void findShortestPath_success2() {
 
 		// given
-		ExtractableResponse<Response> createStationResponse1 = executeCreateStationRequest("서울역");
-		long stationId1 = parseId(createStationResponse1);
-		ExtractableResponse<Response> createStationResponse2 = executeCreateStationRequest("시청역");
-		long stationId2 = parseId(createStationResponse2);
-		ExtractableResponse<Response> createStationResponse3 = executeCreateStationRequest("홍대입구역");
-		long stationId3 = parseId(createStationResponse3);
-		ExtractableResponse<Response> createStationResponse4 = executeCreateStationRequest("이대역");
-		long stationId4 = parseId(createStationResponse4);
-		ExtractableResponse<Response> createStationResponse5 = executeCreateStationRequest("디지털미디어시티역");
-		long stationId5 = parseId(createStationResponse5);
-		ExtractableResponse<Response> createStationResponse6 = executeCreateStationRequest("공덕역");
-		long stationId6 = parseId(createStationResponse6);
+		long stationId1 = parseId(executeCreateStationRequest("서울역"));
+		long stationId2 = parseId(executeCreateStationRequest("시청역"));
+		long stationId3 = parseId(executeCreateStationRequest("홍대입구역"));
+		long stationId4 = parseId(executeCreateStationRequest("이대역"));
+		long stationId5 = parseId(executeCreateStationRequest("디지털미디어시티역"));
+		long stationId6 = parseId(executeCreateStationRequest("공덕역"));
 
-		ExtractableResponse<Response> createLineResponse1 = executeCreateLineRequest(createLineCreateRequest("1호선", stationId1, stationId2, 10L));
-		long lineId1 = parseId(createLineResponse1);
+		long lineId1 = parseId(executeCreateLineRequest(createLineCreateRequest("1호선", stationId1, stationId2, 10L)));
 
-		ExtractableResponse<Response> createLineResponse2 = executeCreateLineRequest(createLineCreateRequest("2호선", stationId2, stationId4, 15L));
-		long lineId2 = parseId(createLineResponse2);
+		long lineId2 = parseId(executeCreateLineRequest(createLineCreateRequest("2호선", stationId2, stationId4, 15L)));
 		executeCreateSectionRequest(lineId2, SectionCreateRequest.builder().upStationId(stationId2).downStationId(stationId6).distance(20L).build());
 
-		ExtractableResponse<Response> createLineResponse3 = executeCreateLineRequest(createLineCreateRequest("경의중앙선", stationId1, stationId3, 5L));
-		long lineId3 = parseId(createLineResponse3);
+		long lineId3 = parseId(executeCreateLineRequest(createLineCreateRequest("경의중앙선", stationId1, stationId3, 5L)));
 		executeCreateSectionRequest(lineId3, SectionCreateRequest.builder().upStationId(stationId3).downStationId(stationId4).distance(20L).build());
 
-		ExtractableResponse<Response> createLineResponse4 = executeCreateLineRequest(createLineCreateRequest("공항철도", stationId3, stationId6, 5L));
-		long lineId4 = parseId(createLineResponse4);
+		long lineId4 = parseId(executeCreateLineRequest(createLineCreateRequest("공항철도", stationId3, stationId6, 5L)));
 		executeCreateSectionRequest(lineId4, SectionCreateRequest.builder().upStationId(stationId3).downStationId(stationId5).distance(2L).build());
 
 		// when
