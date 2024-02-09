@@ -13,6 +13,7 @@ import java.util.List;
 import static nextstep.subway.acceptance.StationSteps.지하철역_삭제;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_조회;
+import static nextstep.subway.utils.HTTPResponseCode.응답의_STATUS_검증;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -30,7 +31,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        응답의_STATUS_검증(response, HttpStatus.CREATED);
 
         // then
         List<String> stationNames =
