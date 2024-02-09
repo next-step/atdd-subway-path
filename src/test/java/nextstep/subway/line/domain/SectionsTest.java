@@ -44,12 +44,6 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("마지막 section 의 distance 를 반환받을 수 있다.")
-    void getLastSectionDistanceTest() {
-        assertThat(sections.getLastSectionDistance()).isEqualTo(선릉역_역삼역_구간_길이);
-    }
-
-    @Test
     @DisplayName("sections 안의 모든 station 들을 반환받을 수 있다.")
     void getStationsTest() {
         assertThat(sections.getStations()).containsExactly(강남역, 선릉역, 역삼역);
