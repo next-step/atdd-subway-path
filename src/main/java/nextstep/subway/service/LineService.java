@@ -95,7 +95,6 @@ public class LineService {
 //        sectionValidation(line, upStation, downStation);
         Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
         line.getSections().addSection(newSection);
-//        newSection = sectionRepository.save(newSection);
         return createLineResponse(line);
     }
 }

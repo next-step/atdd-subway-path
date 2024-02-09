@@ -35,7 +35,9 @@ public class Sections {
         Station downStation = newSection.getDownStation();
         if (sections.stream().anyMatch(section -> section.getDownStation().equals(downStation))) {
             insertSection(newSection, getSameDownStationSection(downStation));
+            return;
         }
+        sections.add(newSection);
     }
 
     private void insertSection(Section newSection, Section basedSection) {
@@ -97,4 +99,21 @@ public class Sections {
                 .orElseThrow(() -> new ApplicationException(NO_EXISTS_SAME_DOWNSTATION_SECTION.getMessage()));
     }
 
+    private boolean isFirstSection(Section basedSection) {
+        return sections.stream()
+                .noneMatch(section -> section.getDownStation().equals(basedSection.getUpStation()));
+    }
+
+    private boolean isLastSection(Section basedSection) {
+        return sections.stream()
+                .noneMatch(section -> section.getUpStation().equals(basedSection.getDownStation()));
+    }
+
+    public int getDistance() {
+        int sumOfDistance = 0;
+        for (Section section : this.sections) {
+            sumOfDistance += section.getDistance();
+        }
+        return sumOfDistance;
+    }
 }

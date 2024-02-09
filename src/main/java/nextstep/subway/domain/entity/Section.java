@@ -14,7 +14,6 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -35,7 +35,7 @@ public class Line {
 
     public void addSection(Section section) {
         sections.addSection(section);
-        this.distance += section.getDistance();
+        this.distance = sections.getDistance();
     }
 
     public void deleteSection(Section section) {

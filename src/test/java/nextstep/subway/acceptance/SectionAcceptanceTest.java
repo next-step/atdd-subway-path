@@ -242,31 +242,50 @@ public class SectionAcceptanceTest {
         );
     }
 
-    /** 노선에 역 추가시 노선 가운데 추가 할 수 있다.
-     노선에 역 추가시 노선 처음에 추가 할 수 있다.
-     이미 등록되어있는 역은 노선에 등록될 수 없다.
-    **/
+    /**
+     * 노선에 역 추가시 노선 가운데 추가 할 수 있다.
+     **/
     @DisplayName("노선 가운데 역 추가")
     @Test
     void insertSection() {
         // given
         // 노선 A-B
-        Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", stationId1);
-        params.put("downStationId", stationId2);
-        params.put("distance", 10);
-        addSection(params, lineId);
 
         // when
         // A-C를 추가하면
-        Map<String, Object> params2 = new HashMap<>();
-        params2.put("upStationId", stationId1);
-        params2.put("downStationId", stationId3);
-        params2.put("distance", 4);
-        LineResponse response = addSection(params2, lineId).as(LineResponse.class);
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", stationId1);
+        param.put("downStationId", stationId3);
+        param.put("distance", 4);
+        LineResponse response = addSection(param, lineId).as(LineResponse.class);
 
         // then
         // A-C-B 가 된다.
+        assertAll(
+                () -> assertThat(response.getStations()).hasSize(3),
+                () -> assertThat(response.getStations().stream().map(station -> station.getName())).contains("A", "B", "C")
+        );
+    }
+
+    /**
+     * 노선에 역 추가시 노선 처음에 추가 할 수 있다.
+     **/
+    @DisplayName("노선 처음에 역 추가")
+    @Test
+    void insertSectionToFirst() {
+        // given
+        // 노선 A-B
+
+        // when
+        // C-A를 추가하면
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", stationId3);
+        param.put("downStationId", stationId1);
+        param.put("distance", 4);
+        LineResponse response = addSection(param, lineId).as(LineResponse.class);
+
+        // then
+        // C-A-B 가 된다.
         assertAll(
                 () -> assertThat(response.getStations()).hasSize(3),
                 () -> assertThat(response.getStations().stream().map(station -> station.getName())).contains("A", "B", "C")
