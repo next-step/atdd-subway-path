@@ -197,6 +197,12 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("삭제 되는 역을 찾지 못하는 경우")
+    void deleteSection4() {
+        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(4L, StationFixture.서초역)));
+    }
+
+    @Test
     @DisplayName("생성된 라인의 마지막 구간이 2개면 삭제가 안된다")
     void deleteSection5() {
         assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));

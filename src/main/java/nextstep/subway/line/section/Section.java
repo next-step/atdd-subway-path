@@ -101,6 +101,10 @@ public class Section {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
     }
 
+    public boolean anyMatchUpStationAndDownStation(Station station) {
+        return this.upStation.equals(station) && this.downStation.equals(station);
+    }
+
     public Long distance() {
         return this.distance;
     }
