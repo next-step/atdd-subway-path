@@ -37,9 +37,8 @@ public class SectionService {
         if (!existStation(section)) {
             throw new IllegalArgumentException("요청한 역은 존재하지 않습니다.");
         }
-        if (!line.canSectionSave(section)) {
-            throw new IllegalArgumentException("요청한 구간을 저장할 수 없습니다.");
-        }
+        
+        line.addSection(section);
         return convertToResponse(section.setLine(line));
     }
 

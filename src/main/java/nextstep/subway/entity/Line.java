@@ -34,22 +34,12 @@ public class Line {
         return this;
     }
 
-    public boolean canSectionSave(Section toSaveSection) {
-        if(toSaveSection.areStationsSame()) {
-            return false;
-        }
-        if(!sections.isConnectToLastStation(toSaveSection)) {
-            return false;
-        }
-        return hasNoConnectingDownStation(toSaveSection);
-    }
-
-    private boolean hasNoConnectingDownStation(Section toSaveSection) {
-        return sections.areAllUpStationsDifferentFrom(toSaveSection);
+    private boolean hasExistingStation(Section toSaveSection) {
+        return sections.hasExistingStation(toSaveSection);
     }
 
     public boolean canSectionDelete(Long stationId) {
-        if(!sections.findLastStation().getId().equals(stationId)) {
+        if (!sections.findLastStation().getId().equals(stationId)) {
             return false;
         }
         return sections.isDeletionAllowed();
@@ -57,11 +47,29 @@ public class Line {
 
 
     public void addSection(Section createdSection) {
-        sections.addSection(createdSection);
+        if (canSectionSave(createdSection)) {
+            sections.addSection(createdSection);
+        }
     }
 
     public void deleteSection(Station stationToDelete) {
         this.sections.deleteSection(stationToDelete);
+    }
+
+    private boolean canSectionSave(Section toSaveSection) {
+        if (toSaveSection.areStationsSame()) {
+            throw new IllegalArgumentException("추가할 구간의 상행역과 하행역은 동일할 수 없습니다.");
+        }
+        if (sections.hasNoSections()) {
+            return true;
+        }
+        if (!sections.isConnectToLastStation(toSaveSection)) {
+            throw new IllegalArgumentException("추가할 구간의 상행역이 기존 노선의 하행역과 동일하지 않습니다.");
+        }
+        if (hasExistingStation(toSaveSection)) {
+            throw new IllegalArgumentException("이미 노선에 추가된 구간을 추가할 수 없습니다.");
+        }
+        return true;
     }
 
     public Long getId() {

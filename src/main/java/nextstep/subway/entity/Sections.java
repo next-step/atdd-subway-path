@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -28,10 +27,15 @@ public class Sections {
         return sections.get(0).getUpStation();
     }
 
-    public boolean areAllUpStationsDifferentFrom(Section newSection) {
+    public boolean hasExistingStation(Section newSection) {
         return sections.stream()
-                .noneMatch(existSection -> existSection.isUpStationSame(newSection.getDownStation()));
+                .limit(sections.size() - 1)
+                .anyMatch(section ->
+                        section.getUpStation().equals(newSection.getUpStation()) ||
+                        section.getDownStation().equals(newSection.getUpStation())
+                );
     }
+
 
     public boolean isDeletionAllowed() {
         return sections.size() > MIN_DELETE_REQUIRED_SECTIONS_SIZE;
@@ -68,6 +72,10 @@ public class Sections {
 
     public boolean isConnectToLastStation(Section toSaveSection) {
         return findLastStation().equals(toSaveSection.getUpStation());
+    }
+
+    public boolean hasNoSections() {
+        return sections.isEmpty();
     }
 
     public List<Section> getSections() {
