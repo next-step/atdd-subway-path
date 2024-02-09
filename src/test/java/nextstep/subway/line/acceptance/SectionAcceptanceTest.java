@@ -295,7 +295,7 @@ public class SectionAcceptanceTest {
     private void assertSectionAddedAtFirst() {
         assertSoftly(softly -> {
             final LineResponse lineResponse = LineApiHelper.fetchLineById(신분당선_Id).as(LineResponse.class);
-            softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance);
+            softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance + 구간_distance);
             softly.assertThat(lineResponse.getStations())
                     .extracting("id").containsExactly(또다른지하철역_Id, 지하철역_Id, 새로운지하철역_Id);
         });
