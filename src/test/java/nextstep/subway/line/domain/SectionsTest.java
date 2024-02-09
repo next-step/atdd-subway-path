@@ -50,6 +50,12 @@ class SectionsTest {
         assertThat(sections.getStations()).containsExactly(강남역, 선릉역, 역삼역);
     }
 
+    @Test
+    @DisplayName("sections 의 총 길이를 반환받을 수 있다.")
+    void getDistanceTest() {
+        assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간.getDistance() + 선릉역_역삼역_구간.getDistance());
+    }
+
     @Nested
     @DisplayName("Sections connect 테스트")
     class ConnectTest {
