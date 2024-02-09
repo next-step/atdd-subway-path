@@ -219,26 +219,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * GIVEN 구간을 생성하고
-     * WHEN 지하철 구간 제거시 마지막 구간이 아닐 경우
-     * Then 구간을 제거할 수 없다
-     */
-    @Test
-    void 실패_지하철_구간_제거시_마지막_구간이_아닐경우_구간을_제거할_수_없다() {
-        // given
-        SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
-        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선);
-
-        // when
-        String message = 구간_제거_요청(OK.value(), Map.of("stationId", "1"))
-                .as(ExceptionResponse.class).getMessage();
-
-        // then
-        assertThat(message).isEqualTo("마지막 구간이 아닐 경우 구간을 제거할 수 없습니다.");
-    }
-
-
-    /**
      * WHEN 지하철 구간 제거시 구간이 한개만 있는 경우
      * Then 구간을 제거할 수 없다
      */
@@ -254,17 +234,65 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * GIVEN 구간을 생성하고
-     * WHEN 지하철 구간 제거시
-     * Then 구간을 제거한다
+     * WHEN 노선의 중간역을 제거하면
+     * Then 노선에서 제거할 수 있다
      */
     @Test
-    void 성공_지하철_구간_제거시_구간의_제거에_성공한다() {
+    void 성공_지하철_노선의_중간역을_노선에서_제거할_수_있다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
         post("/lines/{lineId}/sections", request, CREATED.value(), 이호선);
 
         // when
         구간_제거_요청(NO_CONTENT.value(), Map.of("stationId", "2"));
+
+        // then
+        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        assertThat(response.getStations()).hasSize(2)
+                .extracting("id", "name")
+                .containsExactly(
+                        tuple(1L, "강남역"),
+                        tuple(3L, "양재역")
+                );
+    }
+
+    /**
+     * GIVEN 구간을 생성하고
+     * WHEN 노선의 상행 종점역을 제거하면
+     * Then 노선에서 제거할 수 있다
+     */
+    @Test
+    void 성공_지하철_노선의_상행_종점역을_노선에서_제거할_수_있다() {
+        // given
+        SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
+        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선);
+
+        // when
+        구간_제거_요청(NO_CONTENT.value(), Map.of("stationId", "1"));
+
+        // then
+        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        assertThat(response.getStations()).hasSize(2)
+                .extracting("id", "name")
+                .containsExactly(
+                        tuple(2L, "선릉역"),
+                        tuple(3L, "양재역")
+                );
+    }
+
+    /**
+     * GIVEN 구간을 생성하고
+     * WHEN 노선의 상행 종점역을 제거하면
+     * Then 노선에서 제거할 수 있다
+     */
+    @Test
+    void 성공_지하철_노선의_하행_종점역을_노선에서_제거할_수_있다() {
+        // given
+        SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
+        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선);
+
+        // when
+        구간_제거_요청(NO_CONTENT.value(), Map.of("stationId", "3"));
 
         // then
         LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
