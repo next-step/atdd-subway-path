@@ -4,7 +4,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -54,11 +57,20 @@ public class Sections {
         return sections.get(0).getUpStation();
     }
 
-    public List<Section> getSections() {
-        return sections;
+    public List<Station> getAllStations() {
+        Set<Station> allStations = new HashSet<>();
+        sections.forEach(section -> {
+            allStations.add(section.getUpStation());
+            allStations.add(section.getDownStation());
+        });
+        return new ArrayList<>(allStations);
     }
 
     public boolean isConnectToLastStation(Section toSaveSection) {
         return findLastStation().equals(toSaveSection.getUpStation());
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
