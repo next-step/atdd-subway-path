@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class AddingPosition {
-    private boolean addingStart;
-    private int index;
+    private final boolean addingStart;
+    private final int index;
 
     public AddingPosition(boolean addingStart,
                           int index) {

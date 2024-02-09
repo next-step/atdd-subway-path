@@ -1,9 +1,9 @@
 package nextstep.subway.line.section;
 
-public enum AddType {
+public enum ApplyType {
     FIRST, LAST, MIDDLE;
 
-    public boolean isAddMiddle() {
+    public boolean isApplyMiddle() {
         return this == MIDDLE;
     }
 }

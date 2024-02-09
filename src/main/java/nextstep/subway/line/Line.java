@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
-import nextstep.subway.line.section.AddType;
+import nextstep.subway.line.section.ApplyDistance;
+import nextstep.subway.line.section.ApplyType;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.Sections;
 import nextstep.subway.station.Station;
@@ -79,13 +80,13 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        AddType addType = this.sections.add(section);
-        this.distance = section.calculateAddDistance(addType, this.distance);
+        ApplyType applyType = this.sections.add(section);
+        this.distance = section.calculateAddDistance(applyType, this.distance);
     }
 
     public void deleteSection(Station station) {
-        Section removedSection = this.sections.delete(station);
-        this.distance = removedSection.calculateSubDistance(this.distance);
+        ApplyDistance applyDistance = this.sections.delete(station);
+        this.distance -= applyDistance.applyValue();
     }
 
     @Override

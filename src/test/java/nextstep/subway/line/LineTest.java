@@ -179,15 +179,26 @@ class LineTest {
     }
 
     @Test
-    @DisplayName("생성된 라인의 마지막 구간이 아니면 삭제가 안된다")
+    @DisplayName("등록되어 있는 구간 중 중간에 등록되어 있는 역을 삭제 할 수 있다.")
     void deleteSection3() {
         line.addSection(inputSection);
-        assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
+        line.deleteSection(new Station(2L, StationFixture.선릉역));
+
+        Sections actual = line.getSections();
+        Sections expected = Sections.from(
+                List.of(new Section(new Station(1L, StationFixture.강남역),
+                        new Station(3L, StationFixture.교대역),
+                        15L)));
+        assertThat(actual).isEqualTo(expected);
+
+        Long actualDistance = line.getDistance();
+        Long expectedDistance = 15L;
+        assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 
     @Test
     @DisplayName("생성된 라인의 마지막 구간이 2개면 삭제가 안된다")
-    void deleteSection4() {
+    void deleteSection5() {
         assertThrows(IllegalArgumentException.class, () -> line.deleteSection(new Station(2L, StationFixture.선릉역)));
     }
 

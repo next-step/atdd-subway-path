@@ -37,9 +37,9 @@ public class Section {
         return downStation;
     }
 
-    public Long calculateAddDistance(AddType addType,
+    public Long calculateAddDistance(ApplyType applyType,
                                      Long distance) {
-        if (!addType.isAddMiddle()) {
+        if (!applyType.isApplyMiddle()) {
             return distance + this.distance;
         }
 
@@ -92,8 +92,17 @@ public class Section {
         this.downStation = section.upStation;
     }
 
+    public void changeDownStationFromToInputDownStation(Section section) {
+        this.distance += section.distance;
+        this.downStation = section.downStation;
+    }
+
     public boolean anyMatchUpStationAndDownStation(Section section) {
         return this.upStation.equals(section.upStation) && this.downStation.equals(section.downStation);
+    }
+
+    public Long distance() {
+        return this.distance;
     }
 
     @Override
