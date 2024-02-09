@@ -1,4 +1,4 @@
-package subway.line;
+package subway.unit.line;
 
 import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
@@ -21,6 +21,9 @@ import subway.fixture.line.LineEntityFixture;
 import subway.fixture.line.LineRequestFixture;
 import subway.fixture.section.SectionEntityFixture;
 import subway.fixture.station.StationEntityFixture;
+import subway.line.Line;
+import subway.line.LineRepository;
+import subway.line.LineService;
 import subway.station.Station;
 
 @ExtendWith(MockitoExtension.class)

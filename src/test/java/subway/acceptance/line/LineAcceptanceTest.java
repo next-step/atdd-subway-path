@@ -1,4 +1,4 @@
-package subway.line;
+package subway.acceptance.line;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.DynamicTest.*;
@@ -16,7 +16,7 @@ import org.springframework.http.HttpMethod;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import subway.AcceptanceTest;
+import subway.acceptance.AcceptanceTest;
 import subway.dto.line.LineResponse;
 import subway.dto.line.LineUpdateRequest;
 import subway.dto.section.SectionRequest;

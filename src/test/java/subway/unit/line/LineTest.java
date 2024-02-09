@@ -1,4 +1,4 @@
-package subway.line;
+package subway.unit.line;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import subway.fixture.line.LineEntityFixture;
 import subway.fixture.section.SectionEntityFixture;
 import subway.fixture.station.StationEntityFixture;
+import subway.line.Line;
 import subway.station.Station;
 
 @DisplayName("Line 도메인 테스트")

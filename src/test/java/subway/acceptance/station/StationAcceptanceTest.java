@@ -1,4 +1,4 @@
-package subway.station;
+package subway.acceptance.station;
 
 import static org.assertj.core.api.Assertions.*;
 import static subway.utils.enums.Location.*;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import subway.AcceptanceTest;
+import subway.acceptance.AcceptanceTest;
 import subway.fixture.station.StationAssuredFixture;
 import subway.utils.rest.Rest;
 

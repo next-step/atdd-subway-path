@@ -1,4 +1,4 @@
-package subway;
+package subway.acceptance;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
