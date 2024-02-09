@@ -76,10 +76,6 @@ public class Section implements Comparable<Section> {
         return new Station[]{this.upStation, this.downStation};
     }
 
-    public void removeLine() {
-        this.line = null;
-    }
-
     @Override
     public int compareTo(Section otherSection) {
         return Objects.equals(this.downStation.getId(), otherSection.getUpStation().getId()) ? -1 : 1;

@@ -56,7 +56,6 @@ public class Sections {
     }
 
     private void removeSection(final Section section) {
-        section.removeLine();
         this.sections.remove(section);
     }
 
