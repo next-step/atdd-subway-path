@@ -121,11 +121,11 @@ public class Line {
         }
 
         if (sectionWithUpStation.isPresent()) {
-            filterSection(sectionWithUpStation.get());
+            removeSection(sectionWithUpStation.get());
         }
 
         if (sectionWithDownStation.isPresent()) {
-            filterSection(sectionWithDownStation.get());
+            removeSection(sectionWithDownStation.get());
         }
 
         if(sectionWithUpStation.isPresent() && sectionWithDownStation.isPresent()) {
@@ -137,7 +137,7 @@ public class Line {
         }
     }
 
-    private void filterSection(Section sectionToFilter) {
+    private void removeSection(Section sectionToFilter) {
         sections = sections.stream()
             .filter(section -> section != sectionToFilter)
             .collect(Collectors.toList());
