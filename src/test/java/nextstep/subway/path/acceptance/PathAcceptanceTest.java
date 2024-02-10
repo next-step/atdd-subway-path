@@ -98,7 +98,7 @@ public class PathAcceptanceTest {
         final ExtractableResponse<Response> response = 경로_조회_요청(사당역_Id, 남부터미널역_Id);
 
         // then
-        요청에_실패_한다(response);
+        경로찾기에_실패_한다(response);
     }
 
     /**
@@ -113,7 +113,7 @@ public class PathAcceptanceTest {
         final ExtractableResponse<Response> response = 경로_조회_요청(교대역_Id, 서울역_Id);
 
         // then
-        요청에_실패_한다(response);
+        경로찾기에_실패_한다(response);
     }
 
     private void 경로가_반환된다(final ExtractableResponse<Response> response, final int distance, final Long... stationIds) {
@@ -127,6 +127,10 @@ public class PathAcceptanceTest {
 
     private ExtractableResponse<Response> 경로_조회_요청(final Long startStationId, final Long endStationId) {
         return PathApiHelper.findPath(startStationId, endStationId);
+    }
+
+    private void 경로찾기에_실패_한다(final ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     private void 요청에_실패_한다(final ExtractableResponse<Response> response) {

@@ -25,6 +25,14 @@ public class PathSearchRequest {
         return target;
     }
 
+    public void setSource(final Long source) {
+        this.source = source;
+    }
+
+    public void setTarget(final Long target) {
+        this.target = target;
+    }
+
     public void validate() {
         if(Objects.isNull(source)) {
             throw new PathSearchNotValidException("source can not be null");
