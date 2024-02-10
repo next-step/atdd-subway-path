@@ -30,7 +30,7 @@ class LineTest {
         이호선.generateSection(10, 잠실역, 성수역);
 
         //then
-        assertThat(이호선.getSections().getSections()).hasSize(1);
+        assertThat(이호선.getSectionList()).hasSize(1);
     }
 
     @DisplayName("노선에 등록된 역들을 조회한다.")
@@ -60,6 +60,6 @@ class LineTest {
         이호선.deleteSection(건대입구역);
 
         //then
-        assertThat(이호선.getSections().getSections()).hasSize(1);
+        assertThat(이호선.getSectionList()).hasSize(1);
     }
 }

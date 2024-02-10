@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -40,6 +41,10 @@ public class Line {
 
     public Sections getSections() {
         return sections;
+    }
+
+    public List<Section> getSectionList() {
+        return sections.getSections();
     }
 
     public void updateLine(String name, String color) {

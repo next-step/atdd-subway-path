@@ -42,6 +42,6 @@ public class LineSectionServiceTest {
         lineSectionService.saveSection(이호선.getId(), request);
 
         // then
-        assertThat(이호선.getSections().getSections()).hasSize(1);
+        assertThat(이호선.getSectionList()).hasSize(1);
     }
 }
