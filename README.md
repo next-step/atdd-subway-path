@@ -95,3 +95,79 @@
   > Given 지하철 노선을 생성하고<br>
   > When 해당 노선에 존재하지 않는 역을 제거하면<br>
   > Then 에러가 난다.
+
+
+## 3단계 - 경로 조회 기능
+### 요구사항
+- 경로 조회 기능 구현
+  - Request
+  ```shell
+    HTTP/1.1 200
+    Request method:	GET
+    Request URI:	http://localhost:55494/paths?source={출발역_id}&target={도착역_id}
+    Headers: 	Accept=application/json
+    Content-Type=application/json; charset=UTF-8
+  ```
+  - Response
+  ```shell
+  HTTP/1.1 200 
+  Content-Type: application/json
+  Transfer-Encoding: chunked
+  Date: Sat, 09 May 2020 14:54:11 GMT
+  Keep-Alive: timeout=60
+  Connection: keep-alive
+  
+  {
+    "stations": [
+        {
+          "id": 1,
+          "name": "교대역"
+        },
+        {
+          "id": 4,
+          "name": "남부터미널역"
+        },
+        {
+          "id": 3,
+          "name": "양재역"
+        }
+      ],
+    "distance": 5
+  }
+  ```
+### 인수테스트 시나리오
+#### 경로 조회 기능
+- 성공 시나리오
+  > Given <br>
+  (교대역--5--강남역) - 2호선 <br>
+  (강남역--10--양재역) - 신분당선 <br>
+  (교대역--2--남부터미널역--3--양재역) - 3호선 <br>
+  > 을 생성하고<br>
+  > When 출발역(강남역)과 도착역(남부터미널)을 통해 경로를 조회하면<br>
+  > Then 최단거리인 강남역, 교대역, 남부터미널역의 정보와 총 거리인 7가 반환된다.
+- 실패 시나리오
+  > Given <br>
+  (교대역--5--강남역) - 2호선 <br>
+  (강남역--10--양재역) - 신분당선 <br>
+  (교대역--2--남부터미널역--3--양재역) - 3호선 <br>
+  > 을 생성하고<br>
+  > When 출발역과 도착역이 같은 역을 통해 경로를 조회하면<br>
+  > Then 에러가 난다.
+
+  > Given <br>
+  (교대역--5--강남역) - 2호선 <br>
+  (강남역--10--양재역) - 신분당선 <br>
+  (교대역--2--남부터미널역--3--양재역) - 3호선 <br>
+  > 을 생성하고<br>
+  > When 존재하지 않는 출발역이나 도착역을 통해 경로를 조회하면<br>
+  > Then 에러가 난다.
+
+  > Given <br>
+  (교대역--5--강남역) - 2호선 <br>
+  (강남역--10--양재역) - 신분당선 <br>
+  (교대역--2--남부터미널역--3--양재역) - 3호선 <br>
+  (사당역--5--서울역) - 4호선 <br>
+  > 을 생성하고<br>
+  > When 연결되지 않은 출발역(교대역)과 도착역(서울역)을 통해 경로를 조회하면<br>
+  > Then 에러가 난다.
+
