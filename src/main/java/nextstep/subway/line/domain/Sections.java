@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.LineException;
 import nextstep.subway.line.exception.SectionAddFailureException;
 import nextstep.subway.line.exception.SectionDeleteFailureException;
 import nextstep.subway.station.domain.Station;
@@ -85,8 +86,9 @@ public class Sections {
     /** 마지막 구간 반환 */
     public Section getLastSection() {
         if (sections.isEmpty()) {
-            return null;
+            throw new LineException("구간 정보가 존재하지 않습니다.");
         }
+
         return getSections().get(sections.size() - 1);
     }
 
@@ -177,7 +179,7 @@ public class Sections {
         return sections.stream()
             .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
             .findAny()
-            .orElseThrow(() -> new SectionAddFailureException("구간 추가에 실패했습니다."));
+            .orElseThrow(() -> new SectionAddFailureException("추가하려는 구간의 다음 구간을 찾을 수 없습니다."));
     }
 
     /** 하나의 구간만 가지고 있으면 true, 아니면 false 반환 */
