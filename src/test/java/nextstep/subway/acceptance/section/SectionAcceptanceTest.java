@@ -115,6 +115,23 @@ public class SectionAcceptanceTest {
     }
 
     /**
+     * When 가운데 노선을 등록했을때 계산한 거리가 1보다 작은 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("가운데 노선을 등록했을때 계산한 거리가 1보다 작은 경우 예외가 발생한다")
+    @Test
+    void generateMiddleSectionException() {
+        //when
+        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 건대입구역id, 50);
+
+        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asPrettyString()).isEqualTo("거리가 1보다 작을 수 없습니다.");
+    }
+
+    /**
      * Given 지하철 구간을 등록하고
      * When 구간이 2개인 노선의 구간중 1개를 삭제하면
      * Then 삭제한 1개의 구간이 삭제된다
