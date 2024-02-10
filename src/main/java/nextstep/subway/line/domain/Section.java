@@ -75,8 +75,13 @@ public class Section implements Comparable<Section> {
         return 1;
     }
 
-    public void reconnect(final Section section) {
+    public void shorten(final Section section) {
         this.upStation = section.downStation;
         this.distance -= section.distance;
+    }
+
+    public void extend(final Section section) {
+        this.upStation = section.upStation;
+        this.distance += section.distance;
     }
 }

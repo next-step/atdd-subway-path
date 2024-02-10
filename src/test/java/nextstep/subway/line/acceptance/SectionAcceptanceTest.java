@@ -191,12 +191,12 @@ public class SectionAcceptanceTest {
 
         /**
          * Given 지하철 구간을 생성하고
-         * When 지하철 구간을 제거하면
+         * When 마지막 지하철 구간을 제거하면
          * Then 지하철 노선 조회시 해당 구간 정보가 제외되고 조회된다.
          */
-        @DisplayName("성공")
+        @DisplayName("마지막 구간 제거 성공")
         @Test
-        void 구간_제거_테스트() {
+        void 마지막_구간_제거_테스트() {
             // given
             구간_생성_요청(신분당선_Id, 새로운지하철역_Id, 또다른지하철역_Id, 구간_distance);
 
@@ -204,7 +204,43 @@ public class SectionAcceptanceTest {
             final ExtractableResponse<Response> response = 구간_제거_요청(신분당선_Id, 또다른지하철역_Id);
 
             // then
-            지하철_노선_조회시_해당_구간_정보가_제외되어_조회된다(response);
+            지하철_노선_조회시_마지막_구간_정보가_제외되어_조회된다(response);
+        }
+        
+        /**
+         * Given 지하철 구간을 생성하고
+         * When 가운데 지하철 구간을 제거하면
+         * Then 지하철 노선 조회시 해당 구간 정보가 제외되고 조회된다.
+         */
+        @DisplayName("가운데 구간 제거 성공")
+        @Test
+        void 가운데_구간_제거_테스트() {
+            // given
+            구간_생성_요청(신분당선_Id, 새로운지하철역_Id, 또다른지하철역_Id, 구간_distance);
+
+            // when
+            final ExtractableResponse<Response> response = 구간_제거_요청(신분당선_Id, 새로운지하철역_Id);
+
+            // then
+            지하철_노선_조회시_가운데_구간_정보가_제외되어_조회된다(response);
+        }
+
+        /**
+         * Given 지하철 구간을 생성하고
+         * When 상행종점역(첫번째역) 을 제거하면
+         * Then 지하철 노선 조회시 해당 첫번째 역 정보가 제외되고 조회된다.
+         */
+        @DisplayName("상행종점역(첫번째역) 구간 제거 성공")
+        @Test
+        void 상행종점역_구간_제거_테스트() {
+            // given
+            구간_생성_요청(신분당선_Id, 새로운지하철역_Id, 또다른지하철역_Id, 구간_distance);
+
+            // when
+            final ExtractableResponse<Response> response = 구간_제거_요청(신분당선_Id, 지하철역_Id);
+
+            // then
+            지하철_노선_조회시_상행종점역_구간_정보가_제외되어_조회된다(response);
         }
 
         /**
@@ -225,20 +261,17 @@ public class SectionAcceptanceTest {
         /**
          * Given 지하철 구간을 생성하고
          * When 지하철 구간을 제거하는데
-         * When 해당 지하철 구간이 마지막 구간이 아니면
+         * When 해당 지하철 구간이 지하철 노선에 포함되어 있지 않는다면
          * Then 에러가 난다.
          */
-        @DisplayName("실패 - 삭제 구간이 해당 지하철 노선 구간의 마지막 구간이 아니면 실패한다.")
+        @DisplayName("실패 - 삭제 구간이 해당 지하철 노선에 존재하지 않는다면 실패한다.")
         @Test
         void createSectionFail_TargetSectionIsNotLastSectionTest() {
-            // given
-            구간_생성_요청(신분당선_Id, 새로운지하철역_Id, 또다른지하철역_Id, 구간_distance);
-
             // when
-            final ExtractableResponse<Response> response = 구간_제거_요청(신분당선_Id, 새로운지하철역_Id);
+            final ExtractableResponse<Response> response = 구간_제거_요청(신분당선_Id, 또다른지하철역_Id);
 
             // then
-            지하철_구간이_삭제되지_않는다(response);
+            지하철_구간이_변경되지않는다(response);
         }
 
         private void 지하철_구간이_변경되지않는다(final ExtractableResponse<Response> response) {
@@ -248,21 +281,28 @@ public class SectionAcceptanceTest {
             );
         }
 
-        private void 지하철_구간이_삭제되지_않는다(final ExtractableResponse<Response> response) {
-            assertAll(
-                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                    SectionAcceptanceTest.this::assertSectionAddedAtLast
-            );
-        }
-
         private ExtractableResponse<Response> 구간_제거_요청(final Long 신분당선_id, final Long 또다른지하철역_id) {
             return SectionApiHelper.removeSection(신분당선_id, 또다른지하철역_id);
         }
 
-        private void 지하철_노선_조회시_해당_구간_정보가_제외되어_조회된다(final ExtractableResponse<Response> response) {
+        private void 지하철_노선_조회시_마지막_구간_정보가_제외되어_조회된다(final ExtractableResponse<Response> response) {
             assertAll(
                     () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                     SectionAcceptanceTest.this::assertSectionsNotChanged
+            );
+        }
+
+        private void 지하철_노선_조회시_가운데_구간_정보가_제외되어_조회된다(final ExtractableResponse<Response> response) {
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                    SectionAcceptanceTest.this::assertSectionRemovedAtMiddle
+            );
+        }
+
+        private void 지하철_노선_조회시_상행종점역_구간_정보가_제외되어_조회된다(final ExtractableResponse<Response> response) {
+            assertAll(
+                    () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                    SectionAcceptanceTest.this::assertSectionRemovedAtFirst
             );
         }
 
@@ -307,6 +347,24 @@ public class SectionAcceptanceTest {
             softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance);
             softly.assertThat(lineResponse.getStations())
                     .extracting("id").containsExactly(지하철역_Id, 새로운지하철역_Id);
+        });
+    }
+
+    private void assertSectionRemovedAtMiddle() {
+        assertSoftly(softly -> {
+            final LineResponse lineResponse = LineApiHelper.fetchLineById(신분당선_Id).as(LineResponse.class);
+            softly.assertThat(lineResponse.getDistance()).isEqualTo(신분당선_distance + 구간_distance);
+            softly.assertThat(lineResponse.getStations())
+                    .extracting("id").containsExactly(지하철역_Id, 또다른지하철역_Id);
+        });
+    }
+
+    private void assertSectionRemovedAtFirst() {
+        assertSoftly(softly -> {
+            final LineResponse lineResponse = LineApiHelper.fetchLineById(신분당선_Id).as(LineResponse.class);
+            softly.assertThat(lineResponse.getDistance()).isEqualTo(구간_distance);
+            softly.assertThat(lineResponse.getStations())
+                    .extracting("id").containsExactly(새로운지하철역_Id, 또다른지하철역_Id);
         });
     }
 

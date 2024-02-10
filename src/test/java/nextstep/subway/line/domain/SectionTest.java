@@ -59,14 +59,26 @@ class SectionTest {
     }
 
     @Test
-    @DisplayName("Section 의 reconnect 메서드를 통해 upStation 과 distance 를 수정할 수 있다.")
-    void reconnectTest() {
+    @DisplayName("Section 의 shorten 메서드를 통해 upStation 과 distance 를 수정할 수 있다.")
+    void shortenTest() {
         final Section 강남역_역삼역_구간 = SectionFactory.createSection(SECTION_ID, 강남역, 역삼역, 5);
-        강남역_선릉역_구간.reconnect(강남역_역삼역_구간);
+        강남역_선릉역_구간.shorten(강남역_역삼역_구간);
 
         assertSoftly(softly -> {
             softly.assertThat(강남역_선릉역_구간.getUpStation()).isEqualTo(역삼역);
             softly.assertThat(강남역_선릉역_구간.getDistance()).isEqualTo(강남역_선릉역_구간_길이 - 강남역_역삼역_구간.getDistance());
+        });
+    }
+
+    @Test
+    @DisplayName("Section 의 extend 메서드를 통해 upStation 과 distance 를 수정할 수 있다.")
+    void extendTest() {
+        final Section 강남역_역삼역_구간 = SectionFactory.createSection(SECTION_ID, 강남역, 역삼역, 5);
+        강남역_선릉역_구간.extend(강남역_역삼역_구간);
+
+        assertSoftly(softly -> {
+            softly.assertThat(강남역_선릉역_구간.getUpStation()).isEqualTo(강남역);
+            softly.assertThat(강남역_선릉역_구간.getDistance()).isEqualTo(강남역_선릉역_구간_길이 + 강남역_역삼역_구간.getDistance());
         });
     }
 }

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 class SectionsTest {
 
@@ -20,6 +21,8 @@ class SectionsTest {
     private Station 역삼역;
     private Station 교대역;
     private Station 잠실역;
+    int 강남역_선릉역_구간_길이;
+    int 선릉역_역삼역_구간_길이;
     private Section 강남역_선릉역_구간;
     private Section 선릉역_역삼역_구간;
     private Sections sections;
@@ -31,17 +34,13 @@ class SectionsTest {
         역삼역 = StationFactory.createStation(3L, "역삼역");
         교대역 = StationFactory.createStation(4L, "교대역");
         잠실역 = StationFactory.createStation(5L, "잠실역");
-        강남역_선릉역_구간 = SectionFactory.createSection(1L, 강남역, 선릉역, 10);
-        선릉역_역삼역_구간 = SectionFactory.createSection(2L, 선릉역, 역삼역, 20);
+        강남역_선릉역_구간_길이 = 10;
+        선릉역_역삼역_구간_길이 = 20;
+        강남역_선릉역_구간 = SectionFactory.createSection(1L, 강남역, 선릉역, 강남역_선릉역_구간_길이);
+        선릉역_역삼역_구간 = SectionFactory.createSection(2L, 선릉역, 역삼역, 선릉역_역삼역_구간_길이);
         sections = new Sections();
         sections.connect(강남역_선릉역_구간);
         sections.connect(선릉역_역삼역_구간);
-    }
-
-    @Test
-    @DisplayName("마지막 section 의 distance 를 반환받을 수 있다.")
-    void getLastSectionDistanceTest() {
-        assertThat(sections.getLastSectionDistance()).isEqualTo(선릉역_역삼역_구간.getDistance());
     }
 
     @Test
@@ -53,7 +52,7 @@ class SectionsTest {
     @Test
     @DisplayName("sections 의 총 길이를 반환받을 수 있다.")
     void getDistanceTest() {
-        assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간.getDistance() + 선릉역_역삼역_구간.getDistance());
+        assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간_길이 + 선릉역_역삼역_구간_길이);
     }
 
     @Nested
@@ -62,7 +61,10 @@ class SectionsTest {
         @Test
         @DisplayName("Section 을 마지막에 추가할 수 있다.")
         void canConnectSectionAtLast() {
-            assertThat(sections).containsExactly(강남역_선릉역_구간, 선릉역_역삼역_구간);
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(강남역_선릉역_구간, 선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간_길이 + 선릉역_역삼역_구간_길이);
+            });
         }
 
         @Test
@@ -71,7 +73,10 @@ class SectionsTest {
             final Section 강남역_교대역_구간 = SectionFactory.createSection(3L, 강남역, 교대역, 10);
             sections.connect(강남역_교대역_구간);
 
-            assertThat(sections).containsExactly(강남역_교대역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(강남역_교대역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간_길이 + 선릉역_역삼역_구간_길이);
+            });
         }
 
         @Test
@@ -80,7 +85,10 @@ class SectionsTest {
             final Section 교대역_강남역_구간 = SectionFactory.createSection(3L, 교대역, 강남역, 10);
             sections.connect(교대역_강남역_구간);
 
-            assertThat(sections).containsExactly(교대역_강남역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(교대역_강남역_구간, 강남역_선릉역_구간, 선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간_길이 + 선릉역_역삼역_구간_길이 + 교대역_강남역_구간.getDistance());
+            });
         }
 
         @Test
@@ -106,7 +114,7 @@ class SectionsTest {
         @Test
         @DisplayName("추가할 Section 이 Sections 가운데인데, 길이가 현재 Sections 의 총 길이보다 길거나 길다면 SectionConnectException 이 던져진다.")
         void connectFailsWhenSectionsDistanceLoeThanNewMiddleSection() {
-            final Section 강남역_교대역_구간 = SectionFactory.createSection(3L, 강남역, 교대역, 강남역_선릉역_구간.getDistance() + 선릉역_역삼역_구간.getDistance());
+            final Section 강남역_교대역_구간 = SectionFactory.createSection(3L, 강남역, 교대역, 강남역_선릉역_구간_길이 + 선릉역_역삼역_구간_길이);
 
             assertThatThrownBy(() -> sections.connect(강남역_교대역_구간))
                     .isInstanceOf(SectionConnectException.class)
@@ -115,33 +123,59 @@ class SectionsTest {
     }
 
     @Nested
-    @DisplayName("Sections disconnectLastSection 테스트")
+    @DisplayName("Sections disconnect 테스트")
     class disconnectTest {
 
         @Test
         @DisplayName("마지막 역을 제거할 수 있다.")
         void canDisconnectLastStation() {
-            sections.disconnectLastSection(역삼역);
+            sections.disconnect(역삼역);
 
-            assertThat(sections).containsExactly(강남역_선릉역_구간);
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(강남역_선릉역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간_길이);
+            });
+
+        }
+
+        @Test
+        @DisplayName("가운데 역을 제거할 수 있다.")
+        void canDisconnectMiddleStation() {
+            sections.disconnect(선릉역);
+
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_구간_길이 + 선릉역_역삼역_구간_길이);
+            });
+        }
+
+        @Test
+        @DisplayName("첫번째 역을 제거할 수 있다.")
+        void canDisconnectFirstStation() {
+            sections.disconnect(강남역);
+
+            assertSoftly(softly -> {
+                softly.assertThat(sections).containsExactly(선릉역_역삼역_구간);
+                softly.assertThat(sections.getDistance()).isEqualTo(선릉역_역삼역_구간_길이);
+            });
         }
 
         @Test
         @DisplayName("Sections 의 길이가 1 이하일때는 SectionDisconnectException 이 던져진다.")
         void disconnectLastSectionFailsWhenLengthIsLoeToOne() {
-            sections.disconnectLastSection(역삼역);
+            sections.disconnect(역삼역);
 
-            assertThatThrownBy(() -> sections.disconnectLastSection(선릉역))
+            assertThatThrownBy(() -> sections.disconnect(선릉역))
                     .isInstanceOf(SectionDisconnectException.class)
                     .hasMessageContaining("더이상 구간을 제거할 수 없습니다.");
         }
 
         @Test
-        @DisplayName("마지막 구간이 아닌 Station 을 disconnectLastSection 시 SectionDisconnectException 이 던져진다.")
+        @DisplayName("Sections 에 포함되지 않은 역을 disconnect 할 시 SectionDisconnectException 이 던져진다.")
         void disconnectingStationIsNotDownStationOfLastSection() {
-            assertThatThrownBy(() -> sections.disconnectLastSection(선릉역))
+            assertThatThrownBy(() -> sections.disconnect(잠실역))
                     .isInstanceOf(SectionDisconnectException.class)
-                    .hasMessageContaining("마지막 구간만 제거할 수 있습니다.");
+                    .hasMessageContaining("제거할 역이 존재하지 않습니다.");
         }
 
     }
