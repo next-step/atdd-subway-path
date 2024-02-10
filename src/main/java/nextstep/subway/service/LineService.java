@@ -35,8 +35,8 @@ public class LineService {
         ));
         Stations stations = new Stations(stationRepository.findByIdIn(request.stationIds()));
 
-        Station upStation = stations.findBy(request.getUpStationId());
-        Station downStation = stations.findBy(request.getDownStationId());
+        Station upStation = stations.findStationBy(request.getUpStationId());
+        Station downStation = stations.findStationBy(request.getDownStationId());
 
         sectionRepository.save(new Section(
                 line,

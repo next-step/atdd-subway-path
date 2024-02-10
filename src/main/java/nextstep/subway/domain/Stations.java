@@ -20,7 +20,7 @@ public class Stations {
         }
     }
 
-    public Station findBy(Long stationId) {
+    public Station findStationBy(Long stationId) {
         return stations.stream()
                 .filter(station -> station.getId().equals(stationId))
                 .findFirst()

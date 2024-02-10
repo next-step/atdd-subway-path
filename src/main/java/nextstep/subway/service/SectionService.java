@@ -1,6 +1,7 @@
 package nextstep.subway.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.controller.dto.SectionCreateRequest;
@@ -8,6 +9,8 @@ import nextstep.subway.domain.*;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.SectionRepository;
 import nextstep.subway.repository.StationRepository;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +22,11 @@ public class SectionService {
 
     @Transactional
     public Long createSection(Long lineId, SectionCreateRequest request) {
-        Line line = findBy(lineId);
-        Sections sections = findBy(line);
+        Line line = findLineBy(lineId);
+        Sections sections = findSectionsBy(line);
         Stations stations = new Stations(stationRepository.findByIdIn(request.stationIds()));
-        Station upStation = stations.findBy(request.getUpStationId());
-        Station downStation = stations.findBy(request.getDownStationId());
+        Station upStation = stations.findStationBy(request.getUpStationId());
+        Station downStation = stations.findStationBy(request.getDownStationId());
 
         sections.validateRegisterStationBy(upStation, downStation);
 
@@ -37,18 +40,40 @@ public class SectionService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Line line = findBy(lineId);
-        Sections sections = findBy(line);
-        sections.validateDeleteSection(stationId);
-        sectionRepository.deleteById(stationId);
+        Line line = findLineBy(lineId);
+        Sections sections = findSectionsBy(line);
+        Station deleteTargetStation = stationRepository.findById(stationId)
+                .orElseThrow(() -> new ApplicationContextException("제거할 역이 존재하지 않습니다."));
+        sections.validateDeleteSection();
+        sections.findDeleteSectionAtTerminal(deleteTargetStation)
+                .ifPresentOrElse(
+                        sectionRepository::delete,
+                        () -> {
+                            Section prevSection = sections.findDeleteStationPrevSection(deleteTargetStation);
+                            Section nextSection = sections.findDeleteStationNextSection(deleteTargetStation);
+                            sectionRepository.deleteAll(List.of(prevSection, nextSection));
+                            addSectionAfterDeleteSections(line, prevSection, nextSection);
+                        }
+                );
     }
 
-    private Line findBy(Long lineId) {
+    private void addSectionAfterDeleteSections(Line line, Section prevSection, Section nextSection) {
+        sectionRepository.save(
+                new Section(
+                        line,
+                        prevSection.upStation(),
+                        nextSection.downStation(),
+                        prevSection.distance() + nextSection.distance()
+                )
+        );
+    }
+
+    private Line findLineBy(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
     }
 
-    private Sections findBy(Line line) {
+    private Sections findSectionsBy(Line line) {
         return new Sections(sectionRepository.findByLine(line));
     }
 }
