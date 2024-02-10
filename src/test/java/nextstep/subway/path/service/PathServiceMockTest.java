@@ -5,6 +5,7 @@ import nextstep.subway.common.fixture.SectionFactory;
 import nextstep.subway.common.fixture.StationFactory;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.service.LineProvider;
 import nextstep.subway.path.service.dto.PathResponse;
 import nextstep.subway.path.service.dto.PathSearchRequest;
 import nextstep.subway.station.domain.Station;
@@ -40,7 +41,7 @@ class PathServiceMockTest {
     @DisplayName("findPath 를 통해 최단경로를 반환받을 수 있다.")
     void findPathTest() {
         final PathService pathService = new PathService(lineProvider);
-        final PathSearchRequest searchRequest = new PathSearchRequest(2L, 4L);
+        final PathSearchRequest searchRequest = new PathSearchRequest(강남역_Id, 남부터미널역_Id);
         given(lineProvider.getAllLines()).willReturn(createLines());
 
         final PathResponse response = pathService.findPath(searchRequest);
