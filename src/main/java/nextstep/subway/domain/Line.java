@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -108,6 +109,37 @@ public class Line {
 
         sections = sections.stream()
             .filter(isNotTheSectionToDelete)
+            .collect(Collectors.toList());
+    }
+
+    public void removeStation(Station stationToDelete) {
+        final Optional<Section> sectionWithUpStation = sections.stream().filter(section -> section.getUpStation() == stationToDelete).findAny();
+        final Optional<Section> sectionWithDownStation = sections.stream().filter(section -> section.getDownStation() == stationToDelete).findAny();
+
+        if (sectionWithUpStation.isEmpty() && sectionWithDownStation.isEmpty()) {
+            throw new EntityNotFoundException();
+        }
+
+        if (sectionWithUpStation.isPresent()) {
+            filterSection(sectionWithUpStation.get());
+        }
+
+        if (sectionWithDownStation.isPresent()) {
+            filterSection(sectionWithDownStation.get());
+        }
+
+        if(sectionWithUpStation.isPresent() && sectionWithDownStation.isPresent()) {
+            addSection(
+                sectionWithDownStation.get().getUpStation(),
+                sectionWithUpStation.get().getDownStation(),
+                sectionWithUpStation.get().getDistance() + sectionWithDownStation.get().getDistance()
+            );
+        }
+    }
+
+    private void filterSection(Section sectionToFilter) {
+        sections = sections.stream()
+            .filter(section -> section != sectionToFilter)
             .collect(Collectors.toList());
     }
 }

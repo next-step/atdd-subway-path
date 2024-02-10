@@ -30,8 +30,6 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineCreateRequest request) {
-        final Station upStation = stationService.findById(request.getUpStationId());
-        final Station downStation = stationService.findById(request.getDownStationId());
         final Line line = lineRepository.save(
             new Line(
                 request.getName(),
@@ -40,6 +38,8 @@ public class LineService {
         );
 
         if (request.getUpStationId() != null && request.getDownStationId() != null && request.getDistance() > 0) {
+            final Station upStation = stationService.findById(request.getUpStationId());
+            final Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(upStation, downStation, request.getDistance());
         }
 
