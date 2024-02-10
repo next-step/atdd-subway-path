@@ -110,4 +110,10 @@ public class Line {
             .filter(isNotTheSectionToDelete)
             .collect(Collectors.toList());
     }
+
+    public void removeStation(Station stationToDelete) {
+        sections = sections.stream()
+            .filter(section -> section.getUpStation() != stationToDelete)
+            .collect(Collectors.toList());
+    }
 }
