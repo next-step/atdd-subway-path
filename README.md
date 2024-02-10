@@ -50,3 +50,9 @@
     - Then Section은 2개가 된다.
     - Then Station은 3개가 된다.
     - Then Stations 응답에 삭제한 역은 존재하지 않는다.
+- 노선에서 마지막에 있는 역을 삭제할 수 있다.
+    - Given 4개의 역을 가진 노선이 주어진다.
+    - When 마지막에 있는 역을 삭제한다.
+    - Then Section은 2개가 된다.
+    - Then Station은 3개가 된다. 
+    - Then Stations 응답에 삭제한 역은 존재하지 않는다.
