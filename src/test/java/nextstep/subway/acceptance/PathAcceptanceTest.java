@@ -4,6 +4,7 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.application.dto.LineResponse;
+import nextstep.subway.application.dto.PathResponse;
 import nextstep.subway.application.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static nextstep.subway.acceptance.PathSteps.경로_조회를_요청한다;
 import static nextstep.subway.acceptance.SectionSteps.구간을_등록한다;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 탐색")
 public class PathAcceptanceTest extends AcceptanceTest {
@@ -64,12 +66,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
         최단거리_가중치를_리턴한다(response, 5);
     }
 
-    private void 최단거리_지하철역을_리턴한다(final ExtractableResponse<Response> response, final List<Long> list) {
-        throw new UnsupportedOperationException("Unsupported 지하철역을_리턴한다");
+    private void 최단거리_지하철역을_리턴한다(final ExtractableResponse<Response> response, final List<Long> stationList) {
+        final List<Long> ids = response.jsonPath().getList("stations.id");
+        assertThat(ids).containsExactlyElementsOf(stationList);
     }
 
-    private void 최단거리_가중치를_리턴한다(final ExtractableResponse<Response> response, final int distance) {
-        throw new UnsupportedOperationException("Unsupported 지하철역을_리턴한다");
+    private void 최단거리_가중치를_리턴한다(final ExtractableResponse<Response> response, final int expectedDistance) {
+        final int actualDistance = response.as(PathResponse.class).getDistance();
+        assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 
     private static Long 지하철역_생성_요청(final String name) {
