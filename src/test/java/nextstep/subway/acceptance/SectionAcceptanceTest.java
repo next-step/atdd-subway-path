@@ -3,10 +3,9 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.request.LineRequest;
-import nextstep.subway.domain.response.SectionResponse;
-import nextstep.subway.exception.ExceptionMessage;
+import nextstep.subway.domain.response.LineResponse;
 import nextstep.subway.exception.ExceptionResponse;
 import nextstep.subway.utils.StationTestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,9 +16,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.exception.ExceptionMessage.*;
 import static nextstep.subway.utils.LineTestUtil.createSubwayLine;
 import static nextstep.subway.utils.LineTestUtil.getLine;
 import static nextstep.subway.utils.SectionTestUtil.addSection;
@@ -38,10 +37,11 @@ public class SectionAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        stationId1 = StationTestUtil.createStation("지하철역").jsonPath().getLong("id");
-        stationId2 = StationTestUtil.createStation("새로운지하철역").jsonPath().getLong("id");
-        stationId3 = StationTestUtil.createStation("또다른지하철역").jsonPath().getLong("id");
+        stationId1 = StationTestUtil.createStation("A").jsonPath().getLong("id");
+        stationId2 = StationTestUtil.createStation("B").jsonPath().getLong("id");
+        stationId3 = StationTestUtil.createStation("C").jsonPath().getLong("id");
 
+        distance = 10;
         lineId = createSubwayLine(new LineRequest("2호선", "green", stationId1, stationId2, distance)).jsonPath().getLong("id");
     }
 
@@ -63,15 +63,13 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSection(params, lineId);
 
         // ERROR
-        SectionResponse sectionResponse = response.as(SectionResponse.class);
+        LineResponse lineResponse = response.as(LineResponse.class);
 
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(sectionResponse.getLine().getId()).isEqualTo(lineId),
-                () -> assertThat(sectionResponse.getUpStation().getId()).isEqualTo(stationId2),
-                () -> assertThat(sectionResponse.getDownStation().getId()).isEqualTo(stationId3),
-                () -> assertThat(sectionResponse.getDistance()).isEqualTo(distance)
+                () -> assertThat(lineResponse.getId()).isEqualTo(lineId),
+                () -> assertThat(lineResponse.getStations().stream().map(Station::getId)).contains(stationId2, stationId3)
         );
     }
 
@@ -81,7 +79,7 @@ public class SectionAcceptanceTest {
      * 구간을 등록할 수 없다.
      */
     @DisplayName("새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다.")
-    @Test
+//    @Test
     void addSectionExceptionTest1() {
         //given
 
@@ -94,7 +92,7 @@ public class SectionAcceptanceTest {
         String exceptionMessage = addSection(params, lineId).as(ExceptionResponse.class).getMessage();
 
         //then
-        assertThat(exceptionMessage).isEqualTo(ExceptionMessage.UPSTATION_VALIDATION_EXCEPTION.getMessage());
+//        assertThat(exceptionMessage).isEqualTo(ExceptionMessage.UPSTATION_VALIDATION_EXCEPTION.getMessage());
     }
 
     /**
@@ -102,7 +100,7 @@ public class SectionAcceptanceTest {
      * 이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다.
      */
     @DisplayName("이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다.")
-    @Test
+//    @Test
     void addSectionExceptionTest2() {
         //given
         Map<String, Object> params = new HashMap<>();
@@ -119,7 +117,7 @@ public class SectionAcceptanceTest {
         String exceptionMessage = addSection(params3, lineId).as(ExceptionResponse.class).getMessage();
 
         //then
-        assertThat(exceptionMessage).isEqualTo(ExceptionMessage.DOWNSTATION_VALIDATION_EXCEPTION.getMessage());
+//        assertThat(exceptionMessage).isEqualTo(ExceptionMessage.DOWNSTATION_VALIDATION_EXCEPTION.getMessage());
     }
 
     /**
@@ -138,7 +136,7 @@ public class SectionAcceptanceTest {
         String exceptionMessage = addSection(params, lineId).as(ExceptionResponse.class).getMessage();
 
         //then
-        assertThat(exceptionMessage).isEqualTo(ExceptionMessage.NEW_SECTION_VALIDATION_EXCEPTION.getMessage());
+        assertThat(exceptionMessage).isEqualTo(NEW_SECTION_VALIDATION_EXCEPTION.getMessage());
     }
 
     /**
@@ -160,9 +158,8 @@ public class SectionAcceptanceTest {
 
         //then
         //section 수 = 1
-        ExtractableResponse<Response> response = getLine(lineId);
-        List<Section> sections = response.jsonPath().getList("sections");
-        assertThat(sections).hasSize(1);
+        LineResponse lineResponse = getLine(lineId).as(LineResponse.class);
+        assertThat(lineResponse.getStations()).hasSize(2);
     }
 
     /**
@@ -183,7 +180,7 @@ public class SectionAcceptanceTest {
         String message = deleteSection(lineId, stationId2).as(ExceptionResponse.class).getMessage();
 
         //then
-        assertThat(message).isEqualTo(ExceptionMessage.DELETE_LAST_SECTION_EXCEPTION.getMessage());
+        assertThat(message).isEqualTo(DELETE_LAST_SECTION_EXCEPTION.getMessage());
     }
 
     /**
@@ -199,7 +196,7 @@ public class SectionAcceptanceTest {
         String message = deleteSection(lineId, stationId2).as(ExceptionResponse.class).getMessage();
 
         //then
-        assertThat(message).isEqualTo(ExceptionMessage.DELETE_ONLY_ONE_SECTION_EXCEPTION.getMessage());
+        assertThat(message).isEqualTo(DELETE_ONLY_ONE_SECTION_EXCEPTION.getMessage());
     }
 
     /**
@@ -232,8 +229,6 @@ public class SectionAcceptanceTest {
         long downStationId = response.jsonPath().getLong("downStation.id");
         int sectionDistance = response.jsonPath().getInt("distance");
 
-        // QUESTION
-        // SectionResponse section = response.as(SectionResponse.class);
         assertAll(
                 () -> assertThat(id).isEqualTo(1L),
                 () -> assertThat(lineId).isEqualTo(1L),
@@ -241,5 +236,107 @@ public class SectionAcceptanceTest {
                 () -> assertThat(downStationId).isEqualTo(stationId2),
                 () -> assertThat(sectionDistance).isEqualTo(distance)
         );
+    }
+
+    /**
+     * 노선에 역 추가시 노선 가운데 추가 할 수 있다.
+     **/
+    @DisplayName("노선 가운데 역 추가")
+    @Test
+    void insertSection() {
+        // given
+        // 노선 A-B
+
+        // when
+        // A-C를 추가하면
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", stationId1);
+        param.put("downStationId", stationId3);
+        param.put("distance", 4);
+        LineResponse response = addSection(param, lineId).as(LineResponse.class);
+
+        // then
+        // A-C-B 가 된다.
+        assertAll(
+                () -> assertThat(response.getStations()).hasSize(3),
+                () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C")
+        );
+    }
+
+    /**
+     * 노선에 역 추가시 노선 처음에 추가 할 수 있다.
+     **/
+    @DisplayName("노선 처음에 역 추가")
+    @Test
+    void insertSectionToFirst() {
+        // given
+        // 노선 A-B
+
+        // when
+        // C-A를 추가하면
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", stationId3);
+        param.put("downStationId", stationId1);
+        param.put("distance", 4);
+        LineResponse response = addSection(param, lineId).as(LineResponse.class);
+
+        // then
+        // C-A-B 가 된다.
+        assertAll(
+                () -> assertThat(response.getStations()).hasSize(3),
+                () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C")
+        );
+    }
+
+    /**
+     * 이미 등록되어있는 구간은 노선에 등록될 수 없다.
+     */
+    @DisplayName("이미 등록되어있는 구간은 노선에 등록될 수 없다.")
+    @Test
+    void addRegisteredStation() {
+        // given
+        // 노선 A-B-C
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", stationId2);
+        param.put("downStationId", stationId3);
+        param.put("distance", 4);
+        addSection(param, lineId).as(LineResponse.class);
+
+        // when
+        // C-A를 추가하면
+        Map<String, Object> param2 = new HashMap<>();
+        param2.put("upStationId", stationId3);
+        param2.put("downStationId", stationId1);
+        param2.put("distance", 4);
+        ExtractableResponse<Response> response = addSection(param2, lineId);
+
+        // then
+        // 에러 발생
+        String message = response.as(ExceptionResponse.class).getMessage();
+        assertThat(message).isEqualTo(ALREADY_REGISTERED_SECTION_EXCEPTION.getMessage());
+    }
+
+    /**
+     * 노선의 중간에 추가할 경우
+     * 추가 구간의 거리가 기존 노선의 거리보다 크다면 추가할 수 없다.
+     */
+    @DisplayName("기존 구간보다 거리가 큰 구간은 추가할 수 없다.")
+    @Test
+    void addLongerDistanceSection() {
+        // given
+        // 노선 A-B, 거리 10
+
+        // when
+        // A-C, 거리 11 을 추가하면
+        Map<String, Object> param = new HashMap<>();
+        param.put("upStationId", stationId1);
+        param.put("downStationId", stationId3);
+        param.put("distance", 11);
+        ExtractableResponse<Response> response = addSection(param, lineId);
+
+        // then
+        // 에러 발생
+        String message = response.as(ExceptionResponse.class).getMessage();
+        assertThat(message).isEqualTo(LONGER_DISTANCE_SECTION_EXCEPTION.getMessage());
     }
 }

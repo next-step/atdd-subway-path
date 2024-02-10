@@ -2,8 +2,10 @@ package nextstep.subway.service;
 
 import nextstep.subway.domain.entity.Line;
 import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Sections;
 import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.request.LineRequest;
+import nextstep.subway.domain.request.SectionRequest;
 import nextstep.subway.domain.response.LineResponse;
 import nextstep.subway.domain.response.SectionResponse;
 import nextstep.subway.repository.LineRepository;
@@ -37,7 +39,7 @@ public class LineService {
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
         Section section = new Section(line, upStation, downStation, request.getDistance());
         line.addSection(section);
-        sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
+        sectionRepository.save(section);
         return createLineResponse(line);
     }
 
@@ -55,10 +57,8 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(Long id, LineRequest request) {
         Line line = lineRepository.findById(id).get();
-
-        Line newLine = new Line(line.getId(), request.getName(), request.getColor(), line.getDistance(), line.getSections());
-
-        Line updatedLine = lineRepository.save(newLine);
+        line.updateNameAndColor(request.getName(), request.getColor());
+        Line updatedLine = lineRepository.save(line);
         return createLineResponse(updatedLine);
     }
 
@@ -72,21 +72,29 @@ public class LineService {
     }
 
     private LineResponse createLineResponse(Line line) {
-//        Station upStation = findStationById(line.getUpStation().getId());
-//        Station downStation = findStationById(line.getDownStation().getId());
-
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-//                List.of(upStation, downStation),
-                line.getDistance(),
-                line.getSections()
+                line.getSections().getStations()
         );
     }
 
     public SectionResponse findSection(Long id, Long sectionId) {
         Section section = sectionRepository.findByLineIdAndId(id, sectionId);
         return sectionService.createSectionResponse(section);
+    }
+
+    @Transactional
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId).get();
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+
+        // 중간에 구간 추가
+//        sectionValidation(line, upStation, downStation);
+        Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
+        line.getSections().addSection(newSection);
+        return createLineResponse(line);
     }
 }
