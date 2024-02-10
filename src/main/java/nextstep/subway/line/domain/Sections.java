@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.line.exception.LineException;
+import nextstep.subway.line.exception.SectionException;
 import nextstep.subway.station.Station;
 
 import javax.persistence.CascadeType;
@@ -20,44 +21,53 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.stream()
+                .sorted((s1, s2) -> {
+                    if (s1.getDownStation().equals(s2.getUpStation())) {
+                        return -1;
+                    }
+                    return 0;
+                })
+                .collect(Collectors.toList());
     }
 
     public List<Station> getStations() {
-        List<Station> stations = sections.stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> stations = getSections().stream().map(Section::getUpStation).collect(Collectors.toList());
+
         stations.add(getDownFinalStation());
+
         return stations;
     }
 
-    public Station getDownFinalStation() {
-        return sections.get(sections.size() - 1).getDownStation();
+    private Station getDownFinalStation() {
+        return getSections().get(sections.size() - 1).getDownStation();
     }
 
     public void addSection(Section section) {
         if (sections.size() > 0) {
-            verifyDownStation(section);
-
             verifyAlreadyStation(section);
         }
+
+        sortSections(section);
+
         sections.add(section);
-    }
-
-    private void verifyDownStation(Section section) {
-        boolean isNotLineDownStation = !getDownFinalStation().equals(section.getUpStation());
-
-        if (isNotLineDownStation) {
-            throw new LineException("등록할 구간의 상행역이 노선에 등록되어있는 하행종점역이 아닌 경우 구간 등록이 불가능합니다.");
-        }
     }
 
     private void verifyAlreadyStation(Section section) {
         boolean isAlreadyStation = sections.stream().anyMatch(s ->
-                s.getUpStation().equals(section.getDownStation()) ||
+                s.getUpStation().equals(section.getUpStation()) &&
                         s.getDownStation().equals(section.getDownStation()));
 
         if (isAlreadyStation) {
             throw new LineException("이미 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
         }
+    }
+
+    private void sortSections(Section section) {
+        sections.stream()
+                .filter(s -> s.getUpStation() == section.getUpStation())
+                .findFirst()
+                .ifPresent(s -> s.changeUpStation(section.getDownStation(), section.getDistance()));
     }
 
     public void removeSection(Station station) {

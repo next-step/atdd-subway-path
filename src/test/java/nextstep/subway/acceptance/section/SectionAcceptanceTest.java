@@ -75,7 +75,7 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
-        assertThat(getStationIds(이호선)).containsExactly(잠실역id, 용산역id, 건대입구역id);
+        assertThat(getStationIds(이호선)).containsExactly(잠실역id, 건대입구역id, 용산역id);
     }
 
     /**
@@ -86,7 +86,7 @@ public class SectionAcceptanceTest {
     @Test
     void generateFirstSection() {
         //when
-        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 건대입구역id, 4);
+        SectionCreateRequest request = new SectionCreateRequest(성수역id, 잠실역id, 4);
 
         ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
 
@@ -94,7 +94,7 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
-        assertThat(getStationIds(이호선)).containsExactly(잠실역id, 용산역id, 건대입구역id);
+        assertThat(getStationIds(이호선)).containsExactly(성수역id, 잠실역id, 용산역id);
     }
 
     /**
@@ -104,23 +104,6 @@ public class SectionAcceptanceTest {
     @DisplayName("이미 해당 노선에 등록되어있는 역은 등록할 수 없다")
     @Test
     void generateAlreadySection() {
-        //when
-        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 용산역id, 5);
-
-        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asPrettyString()).isEqualTo("이미 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
-    }
-
-    /**
-     * When 노선 처음에 등록하는게 아닌경우 등록할 구간의 상행역이 이미 등록되어있는 구간의 하행역이 아닌 구간을 등록하면
-     * Then 예외가 발생한다
-     */
-    @DisplayName("노선 처음에 등록하는게 아닌경우 등록할 구간의 상행역이 이미 등록되어있는 구간의 하행역이 아닌 구간은 등록할 수 없다")
-    @Test
-    void generateAlreadySectiㅇon() {
         //when
         SectionCreateRequest request = new SectionCreateRequest(잠실역id, 용산역id, 5);
 

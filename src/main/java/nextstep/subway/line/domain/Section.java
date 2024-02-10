@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.SectionException;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
@@ -53,5 +54,17 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    public void changeUpStation(Station upStation, int distance) {
+        this.upStation = upStation;
+        renewDistance(this.distance - distance);
+    }
+
+    private void renewDistance(int distance) {
+        if (distance < 1) {
+            throw new SectionException("거리가 1보다 작을 수 없습니다.");
+        }
+        this.distance = distance;
     }
 }
