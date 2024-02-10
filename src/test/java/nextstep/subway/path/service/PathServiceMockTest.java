@@ -22,8 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,9 +61,11 @@ class PathServiceMockTest {
 
         final PathResponse response = pathService.findShortestPath(searchRequest);
 
-        assertThat(response.getDistance()).isEqualTo(교대역_강남역_distance + 교대역_남부터미널_distance);
-        assertThat(response.getStations()).extracting("id")
-                .containsExactly(강남역_Id, 교대역_Id, 남부터미널역_Id);
+        assertSoftly(softly->{
+            softly.assertThat(response.getDistance()).isEqualTo(교대역_강남역_distance + 교대역_남부터미널_distance);
+            softly.assertThat(response.getStations()).extracting("id")
+                    .containsExactly(강남역_Id, 교대역_Id, 남부터미널역_Id);
+        });
     }
 
     @Test
@@ -84,10 +86,12 @@ class PathServiceMockTest {
 
         given(lineProvider.getAllLines()).willReturn(createLines());
 
-        assertThatThrownBy(() -> pathService.findShortestPath(notExistSourceRequest))
-                .isInstanceOf(StationNotExistException.class);
-        assertThatThrownBy(() -> pathService.findShortestPath(notExistTargetRequest))
-                .isInstanceOf(StationNotExistException.class);
+        assertSoftly(softly->{
+            softly.assertThatThrownBy(() -> pathService.findShortestPath(notExistSourceRequest))
+                    .isInstanceOf(StationNotExistException.class);
+            softly.assertThatThrownBy(() -> pathService.findShortestPath(notExistTargetRequest))
+                    .isInstanceOf(StationNotExistException.class);
+        });
     }
 
     @Test
