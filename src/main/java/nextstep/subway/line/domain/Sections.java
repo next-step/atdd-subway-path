@@ -69,8 +69,6 @@ public class Sections {
         removeAtMiddle(station);
     }
 
-
-
     private void remove(Section section) {
         this.sections.remove(section);
     }
@@ -129,7 +127,8 @@ public class Sections {
     }
 
     private void addToMiddle(Section section) {
-        Section nextSection = findNextSectionForAdd(section);
+        // 추가하려는 구간의 상행역과 이어지는 구간을 찾음
+        Section nextSection = findSectionByUpStation(section.getUpStation());
 
         nextSection.changeUpStation(section.getDownStation());
         nextSection.subtractDistance(section.getDistance());
@@ -147,7 +146,8 @@ public class Sections {
 
     private void removeAtMiddle(Station targetStation) {
         Section targetSection = findSectionByDownStation(targetStation);
-        Section nextSection = findNextSectionForRemove(targetSection);
+        // 삭제하려는 구간의 하행역과 이어지는 구간을 찾음
+        Section nextSection = findSectionByUpStation(targetSection.getDownStation());
 
         nextSection.changeUpStation(targetSection.getUpStation());
         nextSection.addDistance(targetSection.getDistance());
@@ -186,12 +186,16 @@ public class Sections {
 
     /** 구간을 삭제할 수 있는지 검증 */
     private void verifyDeletableStation(Station station) {
+        if (sections.isEmpty()) {
+            throw new SectionDeleteFailureException("노선의 구간 정보가 존재하지 않습니다.");
+        }
+
         if (hasOnlyOneSection()) {
             throw new SectionDeleteFailureException("노선의 구간은 최소 한 개 이상 존재해야 합니다.");
         }
 
-        if (!hasStation(station)) {
-            throw new SectionDeleteFailureException("구간 정보를 찾을 수 없습니다.");
+        if (!isAlreadyExistStation(station)) {
+            throw new SectionDeleteFailureException("삭제하려는 역이 해당 노선에 존재하지 않습니다.");
         }
     }
 
@@ -210,20 +214,12 @@ public class Sections {
         );
     }
 
-    /** 추가하려는 구간의 다음 구간을 반환 */
-    private Section findNextSectionForAdd(Section newSection) {
+    /** 주어진 역이 구간의 상행역과 동일한 구간을 반환 */
+    private Section findSectionByUpStation(Station station) {
         return sections.stream()
-            .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+            .filter(section -> section.getUpStation().equals(station))
             .findAny()
             .orElseThrow(() -> new SectionAddFailureException("추가하려는 구간의 다음 구간을 찾을 수 없습니다."));
-    }
-
-    /** 삭제하려는 구간의 다음 구간을 반환 */
-    private Section findNextSectionForRemove(Section newSection) {
-        return sections.stream()
-            .filter(section -> section.getUpStation().equals(newSection.getDownStation()))
-            .findAny()
-            .orElseThrow(() -> new SectionDeleteFailureException("삭제하려는 구간의 다음 구간을 찾을 수 없습니다."));
     }
 
     /** 주어진 역이 구간의 하행역과 동일한 구간을 반환 */
@@ -237,11 +233,5 @@ public class Sections {
     /** 하나의 구간만 가지고 있으면 true, 아니면 false 반환 */
     private boolean hasOnlyOneSection() {
         return sections.size() == 1;
-    }
-
-    /** 주어진 역을 가지고 있으면 true, 아니면 false 반환 */
-    private boolean hasStation(Station station) {
-        return sections.stream()
-            .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 }
