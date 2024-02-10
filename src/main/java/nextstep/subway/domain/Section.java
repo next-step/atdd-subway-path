@@ -36,6 +36,14 @@ public class Section implements Comparable<Section> {
         this.line = line;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
     public int getDistance() {
         return distance;
     }

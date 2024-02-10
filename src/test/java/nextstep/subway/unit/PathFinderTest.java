@@ -69,6 +69,6 @@ class PathFinderTest {
         final PathFinder pathFinder = new PathFinder();
         assertThatThrownBy(() -> { pathFinder.findPath(Arrays.asList(이호선, 신분당선, 삼호선), 교대역, 부천역); })
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("graph must contain the sink vertex");
+                .hasMessageContaining("그래프에 존재하지 않는 정점입니다.");
     }
 }

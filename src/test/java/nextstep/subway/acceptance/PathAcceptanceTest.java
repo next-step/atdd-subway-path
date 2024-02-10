@@ -9,6 +9,7 @@ import nextstep.subway.application.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +18,8 @@ import static nextstep.subway.acceptance.PathSteps.경로_조회를_요청한다
 import static nextstep.subway.acceptance.SectionSteps.구간을_등록한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철 경로 탐색")
+@DisplayName("지하철 경로 조회")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PathAcceptanceTest extends AcceptanceTest {
     private Long 교대역;
     private Long 강남역;
@@ -35,13 +37,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * 남부터미널역  --- *3호선* ---   양재
      */
     @BeforeEach
-    public void setUp() {
-        super.setUp();
-
+    void init() {
         교대역 = 지하철역_생성_요청("교대역");
         강남역 = 지하철역_생성_요청("강남역");
         양재역 = 지하철역_생성_요청("양재역");
-        남부터미널역 = 지하철역_생성_요청("남부터미널역");
+        남부터미널역= 지하철역_생성_요청("남부터미널역");
 
         이호선 = 노선이_생성되어_있다("2호선", "green", 교대역, 강남역, 10);
         신분당선 = 노선이_생성되어_있다("신분당선", "red", 강남역, 양재역, 10);
@@ -57,7 +57,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("최단거리 경로를 조회한다.")
     @Test
-    void pathFind() {
+    public void pathFind() {
         // When
         final ExtractableResponse<Response> response = 경로_조회를_요청한다(교대역, 양재역);
 
@@ -77,7 +77,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     private static Long 지하철역_생성_요청(final String name) {
-        return StationSteps.지하철역_생성_요청(name).as(StationResponse.class).getId();
+        return StationSteps.지하철역_생성_요청(name).jsonPath().getLong("id");
     }
 
     private static Long 노선이_생성되어_있다(final String name, final String color, final Long upStationId, final Long downStationId,
