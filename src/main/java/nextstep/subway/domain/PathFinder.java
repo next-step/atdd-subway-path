@@ -7,7 +7,7 @@ import java.util.List;
 
 @Component
 public class PathFinder {
-    public PathResponse findPath(final List<Line> lines, final Long source, final Long target) {
+    public PathResponse findPath(final List<Line> lines, final Station sourceStation, final Station targetStation) {
         throw new UnsupportedOperationException("Unsupported findPath");
     }
 }
