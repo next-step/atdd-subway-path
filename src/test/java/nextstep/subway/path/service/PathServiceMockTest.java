@@ -38,13 +38,13 @@ class PathServiceMockTest {
     private LineProvider lineProvider;
 
     @Test
-    @DisplayName("findPath 를 통해 최단경로를 반환받을 수 있다.")
-    void findPathTest() {
+    @DisplayName("findShortestPath 를 통해 최단경로를 반환받을 수 있다.")
+    void findShortestPathTest() {
         final PathService pathService = new PathService(lineProvider);
         final PathSearchRequest searchRequest = new PathSearchRequest(강남역_Id, 남부터미널역_Id);
         given(lineProvider.getAllLines()).willReturn(createLines());
 
-        final PathResponse response = pathService.findPath(searchRequest);
+        final PathResponse response = pathService.findShortestPath(searchRequest);
 
         assertThat(response.getDistance()).isEqualTo(교대역_강남역_distance + 교대역_남부터미널_distance);
         assertThat(response.getStations()).extracting("id")

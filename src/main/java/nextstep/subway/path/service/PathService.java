@@ -29,7 +29,7 @@ public class PathService {
         this.lineProvider = lineProvider;
     }
 
-    public PathResponse findPath(final PathSearchRequest searchRequest) {
+    public PathResponse findShortestPath(final PathSearchRequest searchRequest) {
         final List<Line> allLines = lineProvider.getAllLines();
         final Map<Long, Station> stationMap = createStationMapFrom(allLines);
         final Station sourceStation = stationMap.computeIfAbsent(searchRequest.getSource(), throwStationNowFoundException());
