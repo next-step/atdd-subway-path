@@ -1,20 +1,26 @@
 package nextstep.subway.unit;
 
 
+import nextstep.subway.application.LineService;
 import nextstep.subway.application.PathService;
 import nextstep.subway.application.dto.PathResponse;
+import nextstep.subway.application.dto.StationResponse;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.PathFinder;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.acceptance.SectionSteps.구간을_등록한다;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class PathServiceMockTest {
@@ -25,6 +31,12 @@ public class PathServiceMockTest {
     private Line 이호선;
     private Line 신분당선;
     private Line 삼호선;
+
+    @Mock
+    private LineService lineService;
+
+    @Mock
+    private PathFinder pathFinder;
 
     @BeforeEach
     public void setUp() {
@@ -42,13 +54,19 @@ public class PathServiceMockTest {
     @Test
     void findPath() {
         // Given
+        final Long source = 교대역.getId();
+        final Long target = 양재역.getId();
+        final List<Line> lines = Arrays.asList(이호선, 신분당선, 삼호선);
+        when(lineService.findAllLine()).thenReturn(lines);
+        when(pathFinder.findPath(lines, source, target))
+                .thenReturn(new PathResponse(Arrays.asList(new StationResponse(교대역), new StationResponse(남부터미널역), new StationResponse(양재역)), 5));
+        final PathService pathService = new PathService(lineService, pathFinder);
 
         // When
-        final PathService pathService = new PathService();
-        final PathResponse pathResponse = pathService.findPath(교대역.getId(), 양재역.getId());
+        final PathResponse pathResponse = pathService.findPath(source, target);
 
         // Then
-        final List<Station> stations = pathResponse.getStations();
+        final List<StationResponse> stations = pathResponse.getStations();
         assertThat(stations.get(0).getName()).isEqualTo("교대역");
         assertThat(stations.get(1).getName()).isEqualTo("남부터미널역");
         assertThat(stations.get(2).getName()).isEqualTo("양재역");
