@@ -77,4 +77,8 @@ public class Line {
     public List<Station> getStations() {
         return this.sections.getStations();
     }
+
+    public List<Section> getSections() {
+        return this.sections.getSections();
+    }
 }

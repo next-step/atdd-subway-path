@@ -65,7 +65,7 @@ public class Sections {
         }
     }
 
-    private List<Section> getSections() {
+    public List<Section> getSections() {
         return this.sections.stream()
                 .sorted()
                 .distinct()

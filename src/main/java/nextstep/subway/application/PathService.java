@@ -23,13 +23,9 @@ public class PathService {
     }
 
     public PathResponse findPath(final Long source, final Long target) {
-        if (source.equals(target)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "출발역과 도착역이 같습니다.");
-        }
-
-        final List<Line> lines = lineService.findAllLine();
         final Station sourceStation = stationService.findStationById(source);
         final Station targetStation = stationService.findStationById(target);
+        final List<Line> lines = lineService.findAllLine();
 
         return pathFinder.findPath(lines, sourceStation, targetStation);
     }

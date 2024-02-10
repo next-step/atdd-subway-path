@@ -71,8 +71,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(ids).containsExactlyElementsOf(stationList);
     }
 
-    private void 최단거리_가중치를_리턴한다(final ExtractableResponse<Response> response, final int expectedDistance) {
-        final int actualDistance = response.as(PathResponse.class).getDistance();
+    private void 최단거리_가중치를_리턴한다(final ExtractableResponse<Response> response, final double expectedDistance) {
+        final double actualDistance = response.as(PathResponse.class).getDistance();
         assertThat(actualDistance).isEqualTo(expectedDistance);
     }
 

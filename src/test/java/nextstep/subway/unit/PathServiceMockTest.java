@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 
-import static nextstep.subway.acceptance.SectionSteps.구간을_등록한다;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -60,8 +59,7 @@ public class PathServiceMockTest {
         final List<Line> lines = Arrays.asList(이호선, 신분당선, 삼호선);
         when(lineService.findAllLine()).thenReturn(lines);
         when(pathFinder.findPath(lines, 교대역, 양재역))
-                .thenReturn(new PathResponse(Arrays.asList(new StationResponse(교대역),
-                        new StationResponse(남부터미널역), new StationResponse(양재역)), 5));
+                .thenReturn(new PathResponse(Arrays.asList(교대역, 남부터미널역, 양재역), 5));
         when(stationService.findStationById(source)).thenReturn(교대역);
         when(stationService.findStationById(target)).thenReturn(양재역);
 

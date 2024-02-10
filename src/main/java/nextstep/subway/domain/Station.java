@@ -35,10 +35,6 @@ public class Station {
         return this.equals(station);
     }
 
-    public boolean isSameId(final Long stationId) {
-        return this.id.equals(stationId);
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
