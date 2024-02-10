@@ -3,6 +3,7 @@ package nextstep.subway.path.service;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.service.LineProvider;
+import nextstep.subway.path.exception.PathNotFoundException;
 import nextstep.subway.path.service.dto.PathResponse;
 import nextstep.subway.path.service.dto.PathSearchRequest;
 import nextstep.subway.station.domain.Station;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,15 +32,19 @@ public class PathService {
     }
 
     public PathResponse findShortestPath(final PathSearchRequest searchRequest) {
+        searchRequest.validate();
+
         final List<Line> allLines = lineProvider.getAllLines();
         final Map<Long, Station> stationMap = createStationMapFrom(allLines);
         final Station sourceStation = stationMap.computeIfAbsent(searchRequest.getSource(), throwStationNowFoundException());
         final Station targetStation = stationMap.computeIfAbsent(searchRequest.getTarget(), throwStationNowFoundException());
 
-        final WeightedMultigraph<Station, DefaultWeightedEdge> graph = buildGraph(allLines);
-        final GraphPath<Station, DefaultWeightedEdge> path = new DijkstraShortestPath<>(graph).getPath(sourceStation, targetStation);
+        final DijkstraShortestPath<Station, DefaultWeightedEdge> path = new DijkstraShortestPath<>(buildGraph(allLines));
+        final GraphPath<Station, DefaultWeightedEdge> shortestPath =
+                Optional.ofNullable(path.getPath(sourceStation, targetStation))
+                        .orElseThrow(PathNotFoundException::new);
 
-        return PathResponse.of(path.getVertexList(), (int) path.getWeight());
+        return PathResponse.of(shortestPath.getVertexList(), (int) shortestPath.getWeight());
     }
 
     private Map<Long, Station> createStationMapFrom(final List<Line> allLines) {
