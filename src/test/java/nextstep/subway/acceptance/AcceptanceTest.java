@@ -13,7 +13,7 @@ public class AcceptanceTest {
     private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
-    public void setUp() {
+    public void cleanUp() {
         databaseCleanup.execute();
     }
 }
