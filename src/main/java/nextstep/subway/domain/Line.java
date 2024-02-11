@@ -1,18 +1,27 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Line {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST,
+        CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Line() {
@@ -55,5 +64,22 @@ public class Line {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+    }
+
+    public Set<Station> getStations() {
+        Set<Station> stations = new HashSet<>();
+        for (Section section : sections) {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
+        }
+        return stations;
+    }
+
+    public void removeSection(Section section) {
+        this.sections.remove(section);
     }
 }
