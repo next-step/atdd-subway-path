@@ -214,6 +214,7 @@ public class SectionAcceptanceTest {
                 () -> assertThat(response.getStations()).hasSize(3),
                 () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C"),
                 () -> assertThat(response.getDistance()).isEqualTo(10)
+                // TODO 구간의 distance 검증
 //                () -> assertThat(response.getSections().findSectionByUpStationName("A").getDistance()).isEqualTo(4),
 //                () -> assertThat(response.getSections().findSectionByUpStationName("C").getDistance()).isEqualTo(6)
         );
