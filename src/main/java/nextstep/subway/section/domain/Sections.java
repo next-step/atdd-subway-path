@@ -3,10 +3,16 @@ package nextstep.subway.section.domain;
 import nextstep.subway.exception.AlreadyExistDownStationException;
 import nextstep.subway.exception.DeleteSectionException;
 import nextstep.subway.exception.IsNotLastStationException;
+import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.station.domain.Station;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 @Embeddable
 public class Sections {
@@ -43,6 +49,9 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
+        if (!getStations().contains(station)) {
+            throw new NotFoundStationException();
+        }
         if (!isLastStation(station)) {
             throw new IsNotLastStationException();
         }

@@ -28,7 +28,8 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections = new Sections();;
+    private Sections sections = new Sections();
+    ;
 
 
     @Column
