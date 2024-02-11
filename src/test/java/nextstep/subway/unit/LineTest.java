@@ -28,7 +28,7 @@ class LineTest {
         line.addSection(new Section(line, downStation, newStation, distance));
 
         assertAll(
-                () -> assertThat(line.getSections().getSections()).hasSize(2),
+                () -> assertThat(line.getSectionList()).hasSize(2),
                 () -> assertThat(line.getDistance()).isEqualTo(20)
         );
 
@@ -49,7 +49,7 @@ class LineTest {
         line.addSection(new Section(line, downStation, newStation, distance));
 
         // getStations 를 호출했을 때
-        List<Station> stations = line.getSections().getStations();
+        List<Station> stations = line.getStations();
         List<String> stationNames = stations.stream()
                 .map(Station::getName)
                 .collect(Collectors.toList());

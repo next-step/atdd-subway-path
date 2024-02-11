@@ -1,22 +1,22 @@
 package nextstep.subway.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonValue;
 import nextstep.subway.exception.ApplicationException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.ExceptionMessage.*;
 
 @Embeddable
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Sections {
+    @JsonValue
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public void addSection(Section newSection) {
         // 추가하려는 구간의 상행역 하행역이 같으면
@@ -61,7 +61,7 @@ public class Sections {
             return;
         }
         // 하행역이 같다면
-        if (basedSection.isSameAsDwonStation(newSection.getDownStation())){
+        if (basedSection.isSameAsDwonStation(newSection.getDownStation())) {
             this.sections.add(new Section(basedSection.getUpStation(), newSection.getUpStation(), newDistance));
         }
     }
@@ -78,16 +78,24 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            stations.addAll(section.getStations());
-        }
+        // TODO flatMap
+        List<List<Station>> list = sections.stream().map(section -> section.getStations()).collect(Collectors.toList());
 
-        return stations.stream().distinct().collect(Collectors.toList());
+        return list.stream()
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+
+//        List<Station> stations = new ArrayList<>();
+//        for (Section section : sections) {
+//            stations.addAll(section.getStations());
+//        }
+//
+//        return stations.stream().distinct().collect(Collectors.toList());
     }
 
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
     public Section getLastSection() {
@@ -143,5 +151,11 @@ public class Sections {
         return isExistUpStation && isExistDownStation;
     }
 
+    public Section findSectionByUpStationName(String name) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().getName().equals(name))
+                .findFirst()
+                .get();
+    }
 
 }

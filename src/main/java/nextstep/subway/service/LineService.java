@@ -76,7 +76,9 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                line.getSections().getStations()
+//                line.getSections(),
+                line.getStations(),
+                line.getDistance()
         );
     }
 
@@ -94,7 +96,7 @@ public class LineService {
         // 중간에 구간 추가
 //        sectionValidation(line, upStation, downStation);
         Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
-        line.getSections().addSection(newSection);
+        line.addSection(newSection);
         return createLineResponse(line);
     }
 }

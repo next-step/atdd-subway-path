@@ -259,7 +259,10 @@ public class SectionAcceptanceTest {
         // A-C-B 가 된다.
         assertAll(
                 () -> assertThat(response.getStations()).hasSize(3),
-                () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C")
+                () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C"),
+                () -> assertThat(response.getDistance()).isEqualTo(10)
+//                () -> assertThat(response.getSections().findSectionByUpStationName("A").getDistance()).isEqualTo(4),
+//                () -> assertThat(response.getSections().findSectionByUpStationName("C").getDistance()).isEqualTo(6)
         );
     }
 
