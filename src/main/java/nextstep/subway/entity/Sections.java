@@ -2,6 +2,7 @@ package nextstep.subway.entity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,7 +14,7 @@ public class Sections {
 
     public static final int MIN_DELETE_REQUIRED_SECTIONS_SIZE = 1;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.EAGER)
     private final List<Section> sections = new ArrayList<>();
 
     protected Sections() {
