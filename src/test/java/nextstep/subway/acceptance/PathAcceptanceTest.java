@@ -12,6 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -76,5 +79,58 @@ public class PathAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.body().asString()).contains("출발역과 도착역이 동일합니다.");
+    }
+
+    /**
+     * Given: 3호선 (교대역 - 2 - 남부터미널역 - 3 - 양재역)
+     * When : (남부터미널역 - 1 - 가락시장역) 구간 추가
+     *        (남부터미널역) 구간 삭제
+     *        를 동시에 하면
+     * Then : 교대역부터 양재역까지의 경로를 조회했을 때
+     *        (교대역 - 3 - 가락시장역 - 2 - 양재역)이 되어야 하고 거리는 5가 되어야 한다.
+     */
+    @DisplayName("동시성 테스트")
+    @Test
+    void concurrentSectionAddAndRemove() throws InterruptedException {
+        // given
+        Long line3Id = 3L;
+        Long gyodaeId = 1L;
+        Long yangjaeId = 3L;
+        Long nambooterminalId = 4L;
+        Long garakmarketId = 5L;
+        StationFactory.createStation("가락시장역");
+
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        Runnable addSectionTask = () -> {
+            try {
+                SectionFactory.createSection(line3Id, nambooterminalId, garakmarketId, 1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+
+        Runnable removeSectionTask = () -> {
+            try {
+                SectionFactory.deleteSection(line3Id, nambooterminalId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        };
+
+        // when
+        executor.submit(addSectionTask);
+        executor.submit(removeSectionTask);
+        executor.shutdown();
+        executor.awaitTermination(1, TimeUnit.MINUTES);
+
+        // then
+        ExtractableResponse<Response> response = PathFactory.findShortestPath(gyodaeId, yangjaeId);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> stations = response.jsonPath().getList("stations.name", String.class);
+        assertThat(stations).containsExactly("교대역", "가락시장역", "양재역");
+        int distance = response.jsonPath().getInt("distance");
+        assertThat(distance).isEqualTo(5);
+
     }
 }

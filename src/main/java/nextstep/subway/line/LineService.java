@@ -7,6 +7,7 @@ import nextstep.subway.section.SectionAddRequest;
 import nextstep.subway.section.SectionResponse;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import org.jgrapht.alg.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class LineService {
 
         lineRepository.save(line);
         Section section = line.initSection(upstation, downstation, request.getDistance());
-        pathFinder.apply(true, section);
+        pathFinder.addPath(false, section, line.getSections());
 
         return LineResponse.from(line);
     }
@@ -78,8 +79,8 @@ public class LineService {
                 .distance(request.getDistance())
                 .build();
 
-        line.addSection(newSection);
-        pathFinder.apply(true, newSection);
+        boolean isMiddle = line.addSection(newSection);
+        pathFinder.addPath(isMiddle, newSection, line.getSections());
 
         return SectionResponse.from(newSection);
     }
@@ -89,7 +90,10 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
         Station deleteStation = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
 
-        Section removedSection = line.removeSection(deleteStation);
-        pathFinder.apply(false, removedSection);
+        Pair<Boolean, Section> pair = line.removeSection(deleteStation);
+        boolean isMiddle = pair.getFirst();
+        Section removedSection = pair.getSecond();
+        pathFinder.removePath(isMiddle, deleteStation, removedSection, line.getSections());
+
     }
 }

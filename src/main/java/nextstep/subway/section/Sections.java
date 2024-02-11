@@ -62,6 +62,19 @@ public class Sections implements Iterable<Section> {
         return sections.get(sections.size() - 1).getDownstation();
     }
 
+    public Section getNextSection(Section currentSection) {
+        boolean next = false;
+        for (Section section : sections) {
+            if (next) {
+                return section;
+            }
+            if (section.equals(currentSection)) {
+                next = true;
+            }
+        }
+        return null;
+    }
+
     public void addFirstSection(Section newSection) {
         if (sections.stream().anyMatch(section ->
                 section.isInSection(newSection))) {
@@ -89,21 +102,33 @@ public class Sections implements Iterable<Section> {
         }
 
         if (upstationExists) {
-            for (int i = 0; i < sections.size(); i++) {
+            int size = sections.size();
+            for (int i = 0; i < size; i++) {
                 Section currentSection = sections.get(i);
                 if (currentSection.isUpstation(newSection.getUpstation())) {
+                    int newDistance = currentSection.getDistance() - newSection.getDistance();
+                    if (newDistance <= 0) {
+                        throw new InvalidInputException("유효하지 않은 거리입니다.");
+                    }
+
                     currentSection.setUpstation(newSection.getDownstation());
-                    currentSection.setDistance(currentSection.getDistance() - newSection.getDistance());
+                    currentSection.setDistance(newDistance);
                     sections.add(i, newSection);
                     return;
                 }
             }
         } else {
-            for (int i = 0; i < sections.size(); i++) {
+            int size = sections.size();
+            for (int i = 0; i < size; i++) {
                 Section currentSection = sections.get(i);
                 if (currentSection.isDownstation(newSection.getDownstation())) {
+                    int newDistance = currentSection.getDistance() - newSection.getDistance();
+                    if (newDistance <= 0) {
+                        throw new InvalidInputException("유효하지 않은 거리입니다.");
+                    }
+
                     currentSection.setDownstation(newSection.getUpstation());
-                    currentSection.setDistance(currentSection.getDistance() - newSection.getDistance());
+                    currentSection.setDistance(newDistance);
                     sections.add(i + 1, newSection);
                     return;
                 }

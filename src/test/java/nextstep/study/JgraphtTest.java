@@ -33,11 +33,6 @@ class JgraphtTest {
     }
 
     @Test
-    void test1() {
-
-    }
-
-    @Test
     void getKShortestPaths() {
         String source = "v3";
         String target = "v1";

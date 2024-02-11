@@ -5,6 +5,7 @@ import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Builder
@@ -51,5 +52,23 @@ public class Section {
 
     public boolean isDownstation(Station station) {
         return downstation.equals(station);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Section)) return false;
+        Section section = (Section) o;
+        if (id != null && section.id != null) {
+            return Objects.equals(id, section.id);
+        } else {
+            return Objects.equals(upstation, section.upstation) &&
+                    Objects.equals(downstation, section.downstation);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id != null ? id : upstation, downstation);
     }
 }
