@@ -56,20 +56,15 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = findBy(id);
+        Line line = lineRepository.getBy((id));
         List<Section> sections = sectionRepository.findByLine(line);
         return LineResponse.ofWithSections(line, sections);
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest request) {
-        Line line = findBy(id);
+        Line line = lineRepository.getBy((id));
         line.update(request.getName(), request.getColor());
-    }
-
-    private Line findBy(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
     }
 
     @Transactional

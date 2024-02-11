@@ -1,7 +1,6 @@
 package nextstep.subway.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContextException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.controller.dto.SectionCreateRequest;
@@ -42,8 +41,7 @@ public class SectionService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineBy(lineId);
         Sections sections = findSectionsBy(line);
-        Station deleteTargetStation = stationRepository.findById(stationId)
-                .orElseThrow(() -> new ApplicationContextException("제거할 역이 존재하지 않습니다."));
+        Station deleteTargetStation = stationRepository.getBy(stationId);
         sections.validateDeleteSection();
         sections.findDeleteSectionAtTerminal(deleteTargetStation)
                 .ifPresentOrElse(
@@ -69,8 +67,7 @@ public class SectionService {
     }
 
     private Line findLineBy(Long lineId) {
-        return lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+        return lineRepository.getBy(lineId);
     }
 
     private Sections findSectionsBy(Line line) {

@@ -53,6 +53,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * WHEN 새로운 지하철 구간 생성시 상행 지하철역과 하행 지하철역을 생성하지 않으면
      * Then 새로운 구간을 생성할 수 없다
      */
@@ -81,6 +85,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * WHEN 새로운 지하철 구간이 기존 구간의 상행역과 하행역이 일치하면
      * Then 새로운 구간을 생성할 수 없다
      */
@@ -98,6 +106,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * WHEN 새로운 지하철 구간이 기존 구간의 상행역과 하행역을 포함하면
      * Then 새로운 구간을 생성할 수 없다
      */
@@ -115,6 +127,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * WHEN 새로운 지하철 구간 생성시 노선의 처음에 생성하면
      * Then 새로운 구간이 생성된다
      */
@@ -138,6 +154,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * WHEN 새로운 지하철 구간 생성시 상행역을 기준으로 노선의 가운데에 생성하면
      * Then 새로운 구간이 생성된다
      */
@@ -161,6 +181,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * WHEN 새로운 지하철 구간 생성시 하행역을 기준으로 노선의 가운데에 생성하면
      * Then 새로운 구간이 생성된다
      */
@@ -184,6 +208,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * WHEN 새로운 지하철 구간 생성시 노선의 마지막에 생성하면
      * Then 새로운 구간이 생성된다
      */
@@ -219,6 +247,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * WHEN 지하철 구간 제거시 구간이 한개만 있는 경우
      * Then 구간을 제거할 수 없다
      */
@@ -233,6 +265,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * GIVEN 구간을 생성하고
      * WHEN 노선의 중간역을 제거하면
      * Then 노선에서 제거할 수 있다
@@ -257,6 +293,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * GIVEN 구간을 생성하고
      * WHEN 노선의 상행 종점역을 제거하면
      * Then 노선에서 제거할 수 있다
@@ -281,6 +321,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 이호선: 강남 - 선릉 (10)
+     * total distance: 10
+     * <p>
      * GIVEN 구간을 생성하고
      * WHEN 노선의 상행 종점역을 제거하면
      * Then 노선에서 제거할 수 있다

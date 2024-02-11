@@ -59,10 +59,6 @@ public class Section {
         return List.of(upStation, downStation);
     }
 
-    public boolean isSameId(Long id) {
-        return this.id.equals(id);
-    }
-
     public void changeUpStation(Station station, Long distance) {
         this.upStation = station;
         this.distance -= distance;
@@ -83,6 +79,11 @@ public class Section {
 
     public Station downStation() {
         return downStation;
+    }
+
+    public boolean isSame(Station upStation, Station downStation) {
+        return (this.isUpStation(upStation) && this.isDownStation(downStation)) ||
+                (this.isUpStation(downStation) && this.isDownStation(upStation));
     }
 
     public Long distance() {

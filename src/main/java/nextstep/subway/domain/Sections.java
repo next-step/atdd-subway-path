@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 public class Sections {
 
-    private static final long NON_SECTION_DISTANCE = 0;
-
     private final List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -33,8 +31,7 @@ public class Sections {
     }
 
     private boolean isSameSection(Station upStation, Station downStation, Section section) {
-        return (section.isUpStation(upStation) && section.isDownStation(downStation)) ||
-                (section.isUpStation(downStation) && section.isDownStation(upStation));
+        return section.isSame(upStation, downStation);
     }
 
     public void addSectionInMiddle(Station upStation, Station downStation, long distance) {
