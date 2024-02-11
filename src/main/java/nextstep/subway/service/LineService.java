@@ -2,7 +2,6 @@ package nextstep.subway.service;
 
 import nextstep.subway.domain.entity.Line;
 import nextstep.subway.domain.entity.Section;
-import nextstep.subway.domain.entity.Sections;
 import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.request.LineRequest;
 import nextstep.subway.domain.request.SectionRequest;

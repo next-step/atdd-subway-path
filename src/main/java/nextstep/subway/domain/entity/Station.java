@@ -1,7 +1,6 @@
 package nextstep.subway.domain.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

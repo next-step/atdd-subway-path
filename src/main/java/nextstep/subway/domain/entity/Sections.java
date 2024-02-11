@@ -79,7 +79,7 @@ public class Sections {
 
     public List<Station> getStations() {
         // TODO flatMap
-        List<List<Station>> list = sections.stream().map(section -> section.getStations()).collect(Collectors.toList());
+        List<List<Station>> list = sections.stream().map(Section::getStations).collect(Collectors.toList());
 
         return list.stream()
                 .flatMap(Collection::stream)
