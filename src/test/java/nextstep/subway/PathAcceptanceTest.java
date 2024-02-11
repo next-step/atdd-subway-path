@@ -129,7 +129,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .as(ExceptionResponse.class).getMessage();
 
         // then
-        assertThat(message).isEqualTo("출발역이 존재하지 않습니다.");
+        assertThat(message).isEqualTo("지하철역이 존재하지 않습니다. id=99");
     }
 
     /**
@@ -152,7 +152,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .as(ExceptionResponse.class).getMessage();
 
         // then
-        assertThat(message).isEqualTo("도착역이 존재하지 않습니다.");
+        assertThat(message).isEqualTo("지하철역이 존재하지 않습니다. id=99");
     }
 
     /**
