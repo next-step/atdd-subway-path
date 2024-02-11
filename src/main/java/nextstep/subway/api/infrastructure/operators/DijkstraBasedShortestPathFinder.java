@@ -1,6 +1,7 @@
 package nextstep.subway.api.infrastructure.operators;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -14,6 +15,7 @@ import nextstep.subway.api.domain.model.entity.Section;
 import nextstep.subway.api.domain.model.entity.Station;
 import nextstep.subway.api.domain.model.vo.Path;
 import nextstep.subway.api.domain.operators.PathFinder;
+import nextstep.subway.common.exception.PathNotValidException;
 
 /**
  * @author : Rene Choi
@@ -27,9 +29,18 @@ public class DijkstraBasedShortestPathFinder implements PathFinder {
 	public Path findShortestPath(Station sourceStation, Station targetStation, List<Section> sections) {
 		Graph<Station, DefaultWeightedEdge> graph = createGraph(sections);
 
-		GraphPath<Station, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(graph).getPath(sourceStation, targetStation);
+		GraphPath<Station, DefaultWeightedEdge> shortestPath = calculateShortestPath(sourceStation, targetStation, graph).orElseThrow(
+			() -> new PathNotValidException("No path exists between the source and target stations."));
 
 		return Path.of(fetchStationsInPath(shortestPath), calculateTotalDistance(graph, shortestPath));
+	}
+
+	private static Optional<GraphPath<Station, DefaultWeightedEdge>> calculateShortestPath(Station sourceStation, Station targetStation, Graph<Station, DefaultWeightedEdge> graph) {
+		try {
+			return Optional.ofNullable(new DijkstraShortestPath<>(graph).getPath(sourceStation, targetStation));
+		} catch (Exception e) {
+			throw new PathNotValidException("Shortest Path finding algorithm not supported");
+		}
 	}
 
 	private Graph<Station, DefaultWeightedEdge> createGraph(List<Section> sections) {

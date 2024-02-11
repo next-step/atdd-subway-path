@@ -21,8 +21,4 @@ public class Path {
 		return stations.size();
 	}
 
-	public Station getStationAt(int index) {
-		return stations.get(index);
-	}
-
 }

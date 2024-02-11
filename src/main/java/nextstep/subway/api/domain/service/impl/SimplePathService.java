@@ -1,6 +1,5 @@
 package nextstep.subway.api.domain.service.impl;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +15,7 @@ import nextstep.subway.api.domain.operators.PathFinder;
 import nextstep.subway.api.domain.operators.StationResolver;
 import nextstep.subway.api.domain.service.PathService;
 import nextstep.subway.api.interfaces.dto.response.PathResponse;
-import nextstep.subway.common.exception.StationNotFoundException;
+import nextstep.subway.common.exception.PathNotValidException;
 
 /**
  * @author : Rene Choi
@@ -47,8 +46,12 @@ public class SimplePathService implements PathService {
 	 */
 	@Override
 	public PathResponse findShortestPath(Long source, Long target) {
-		Station sourceStation = stationResolver.fetchOptional(source).orElseThrow(StationNotFoundException::new);
-		Station targetStation = stationResolver.fetchOptional(target).orElseThrow(StationNotFoundException::new);
+		if (source.equals(target)) {
+			throw new PathNotValidException("Source and target stations cannot be the same.");
+		}
+
+		Station sourceStation = stationResolver.fetchOptional(source).orElseThrow(PathNotValidException::new);
+		Station targetStation = stationResolver.fetchOptional(target).orElseThrow(PathNotValidException::new);
 
 		List<Line> lines = lineResolver.fetchAll();
 

@@ -111,4 +111,112 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
 		assertThat(parseDistance(findPathResponse)).isEqualTo(10);
 	}
 
+	@Test
+	@DisplayName("출발역과 도착역이 같을 때의 예외 상황 처리 검증 1")
+	void findPath_Fail_When_SourceAndTargetAreTheSame_1() {
+		// given
+		long sameStationId = createStation("같은역");
+
+		// when
+		ExtractableResponse<Response> response = executeFindPathRequest(sameStationId, sameStationId);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("출발역과 도착역이 같을 때의 예외 상황 처리 검증 2")
+	void findPath_Fail_When_SourceAndTargetAreTheSame_2() {
+		// given
+		long stationId1 = createStation("교대역");
+		long stationId2 = createStation("강남역");
+		long stationId3 = createStation("남부터미널역");
+		createLine("2호선", stationId1, stationId2, 10L);
+		createLine("3호선", stationId2, stationId3, 5L);
+
+		// when
+		ExtractableResponse<Response> response = executeFindPathRequest(stationId1, stationId1);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("출발역과 도착역이 연결되어 있지 않은 경우에 대한 예외 처리 검증 1 - 시청역과 용산역이 연결되어 있지 않음 ")
+	void findPath_Fail_When_StationsAreNotConnected_1() {
+		// given
+		long stationId1 = createStation("서울역");
+		long stationId2 = createStation("시청역");
+		long stationId3 = createStation("용산역");
+		createLine("1호선", stationId1, stationId2, 10L);
+
+		// when
+		ExtractableResponse<Response> response = executeFindPathRequest(stationId2, stationId3);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("출발역과 도착역이 연결되어 있지 않은 경우에 대한 예외 처리 검증 2 - 보다 복잡한 노선 구조에서 서울역과 이대역이 연결되어 있지 않음")
+	void findPath_Fail_When_StationsAreNotConnected_2() {
+		// given
+		long stationId1 = createStation("서울역");
+		long stationId2 = createStation("시청역");
+		long stationId3 = createStation("홍대입구역");
+		long stationId4 = createStation("신촌역");
+		long stationId5 = createStation("이대역");
+		createLine("1호선", stationId1, stationId2, 10L);
+		createLine("2호선", stationId3, stationId4, 5L);
+		createLine("경의중앙선", stationId4, stationId5, 3L);
+
+		// when
+		ExtractableResponse<Response> response = executeFindPathRequest(stationId1, stationId5);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 출발역 또는 도착역 조회 시 예외 처리 검증 1 - 두 역 모두 존재하지 않는 경우 ")
+	void findPath_Fail_When_StationDoesNotExist_1() {
+		// given
+		long nonExistentStationId1 = 99999L; // 존재하지 않는 역 ID
+		long nonExistentStationId2 = 99998L; // 또 다른 존재하지 않는 역 ID
+
+		// when
+		ExtractableResponse<Response> responseWithNonExistentSource = executeFindPathRequest(nonExistentStationId1, nonExistentStationId2);
+
+		// then
+		assertThat(responseWithNonExistentSource.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 출발역 또는 도착역 조회 시 예외 처리 검증 2 - 출발역만 존재하는 경우")
+	void findPath_Fail_When_StationDoesNotExist_2() {
+		// given
+		long existentStationId = createStation("서울역");
+		long nonExistentStationId = 99999L; // 존재하지 않는 역 ID
+
+		// when
+		ExtractableResponse<Response> response = executeFindPathRequest(existentStationId, nonExistentStationId);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 출발역 또는 도착역 조회 시 예외 처리 검증 3 - 도착역만 존재하는 경우")
+	void findPath_Fail_When_StationDoesNotExist_3() {
+		// given
+		long nonExistentStationId = 99997L; // 존재하지 않는 역 ID
+		long existentStationId = createStation("강남역");
+
+		// when
+		ExtractableResponse<Response> response = executeFindPathRequest(nonExistentStationId, existentStationId);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
 }
