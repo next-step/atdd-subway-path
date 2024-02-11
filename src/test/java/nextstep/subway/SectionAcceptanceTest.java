@@ -30,7 +30,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private Long 선릉역_ID;
     private Long 양재역_ID;
 
-    private Long 이호선;
+    private Long 이호선_ID;
 
     /**
      * GIVEN 지하철 역을 생성하고
@@ -48,7 +48,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 .as(StationResponse.class).getId();
 
         LineCreateRequest request = SHINBUNDANG_LINE.toCreateRequest(강남역_ID, 선릉역_ID);
-        이호선 = 노선_생성_요청(request, CREATED.value())
+        이호선_ID = 노선_생성_요청(request, CREATED.value())
                 .as(LineResponse.class).getId();
     }
 
@@ -64,7 +64,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @MethodSource("provideBlankSectionCreateRequest")
     void 실패_새로운_지하철_구간_생성시_필수값을_모두_입력하지_않으면_예외가_발생한다(SectionCreateRequest request) {
         // when
-        ExtractableResponse<Response> response = post("/lines/{lineId}/sections", request, BAD_REQUEST.value(), 이호선);
+        ExtractableResponse<Response> response = post("/lines/{lineId}/sections", request, BAD_REQUEST.value(), 이호선_ID);
 
         // then
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
@@ -143,7 +143,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_생성_요청(request, CREATED.value());
 
         // then
-        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
                 .containsExactlyInAnyOrder(
@@ -170,7 +170,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_생성_요청(request, CREATED.value());
 
         // then
-        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
                 .containsExactlyInAnyOrder(
@@ -197,7 +197,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_생성_요청(request, CREATED.value());
 
         // then
-        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
                 .containsExactlyInAnyOrder(
@@ -224,7 +224,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_생성_요청(request, CREATED.value());
 
         // then
-        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
                 .containsExactlyInAnyOrder(
@@ -243,7 +243,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 구간_생성_요청(SectionCreateRequest request, int statusCode) {
-        return post("/lines/{lineId}/sections", request, statusCode, 이호선);
+        return post("/lines/{lineId}/sections", request, statusCode, 이호선_ID);
     }
 
     /**
@@ -277,13 +277,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 성공_지하철_노선의_중간역을_노선에서_제거할_수_있다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
-        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선);
+        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선_ID);
 
         // when
         구간_제거_요청(NO_CONTENT.value(), Map.of("stationId", "2"));
 
         // then
-        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(2)
                 .extracting("id", "name")
                 .containsExactly(
@@ -305,13 +305,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 성공_지하철_노선의_상행_종점역을_노선에서_제거할_수_있다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
-        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선);
+        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선_ID);
 
         // when
         구간_제거_요청(NO_CONTENT.value(), Map.of("stationId", "1"));
 
         // then
-        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(2)
                 .extracting("id", "name")
                 .containsExactly(
@@ -333,13 +333,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void 성공_지하철_노선의_하행_종점역을_노선에서_제거할_수_있다() {
         // given
         SectionCreateRequest request = sectionCreateRequest(선릉역_ID, 양재역_ID, 13);
-        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선);
+        post("/lines/{lineId}/sections", request, CREATED.value(), 이호선_ID);
 
         // when
         구간_제거_요청(NO_CONTENT.value(), Map.of("stationId", "3"));
 
         // then
-        LineResponse response = 노선_조회_요청(이호선, OK.value()).as(LineResponse.class);
+        LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(2)
                 .extracting("id", "name")
                 .containsExactly(
@@ -349,7 +349,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 구간_제거_요청(int statusCode, Map<String, String> params) {
-        return delete("/lines/{lineId}/sections", statusCode, params, 이호선);
+        return delete("/lines/{lineId}/sections", statusCode, params, 이호선_ID);
     }
 
 }

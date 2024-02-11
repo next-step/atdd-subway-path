@@ -81,7 +81,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철역_조회_요청(int statusCode) {
-        return get("/stations/all", statusCode);
+        return get("/stations/all", OK.value(), new HashMap<>());
     }
 
     private ExtractableResponse<Response> 지하철역_삭제_요청(Long id, int statusCode) {

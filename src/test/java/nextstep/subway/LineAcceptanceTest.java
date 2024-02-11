@@ -180,7 +180,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> 노선_조회_요청(int statusCode) {
-        return get("/lines", statusCode);
+        return get("/lines", statusCode, new HashMap<>());
     }
 
     private ExtractableResponse<Response> 노선_수정_요청(Long id, LineUpdateRequest request, int statusCode) {

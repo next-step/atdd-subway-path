@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import nextstep.subway.controller.dto.LineCreateRequest;
 import nextstep.subway.controller.dto.StationCreateRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.UNDEFINED_PORT;
@@ -44,11 +45,17 @@ public class AcceptanceTest {
     }
 
     protected ExtractableResponse<Response> 노선_조회_요청(Long id, int statusCode) {
-        return get("/lines/{id}", statusCode, id);
+        return get("/lines/{id}", statusCode, new HashMap<>(), id);
     }
 
-    protected ExtractableResponse<Response> get(String path, int statusCode, Object... pathParams) {
-        return RestAssured.given().log().all()
+    protected ExtractableResponse<Response> get(String path, int statusCode, Map<String, ?> queryParams, Object... pathParams) {
+        RequestSpecification requestSpecification = RestAssured.given().log().all();
+
+        if (queryParams != null && !queryParams.isEmpty()) {
+            queryParams.forEach(requestSpecification::queryParam);
+        }
+
+        return requestSpecification
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get(path, pathParams)
                 .then().log().all()
