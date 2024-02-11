@@ -12,18 +12,21 @@ public class StationFixture {
     public static final Station 선릉역 = new Station(4L, "선릉역");
     public static final Station 교대역 = new Station(5L, "교대역");
     public static final Station 서초역 = new Station(6L, "서초역");
+    public static final Station 오이도역 = new Station(7L, "오이도역");
     private Map<String, String> 잠실역_params;
     private Map<String, String> 강남역_params;
     private Map<String, String> 삼성역_params;
     private Map<String, String> 선릉역_params;
     private Map<String, String> 교대역_params;
     private Map<String, String> 서초역_params;
+    private Map<String, String> 오이도역_params;
     private Long 잠실역_ID;
     private Long 강남역_ID;
     private Long 삼성역_ID;
     private Long 선릉역_ID;
     private Long 교대역_ID;
     private Long 서초역_ID;
+    private Long 오이도역_ID;
 
     public StationFixture() {
         Map<String, String> params = new HashMap<>();
@@ -50,6 +53,10 @@ public class StationFixture {
         params.put("name", 서초역.getName());
         서초역_params = params;
         서초역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(서초역_params), "id", Long.class);
+
+        params.put("name", 오이도역.getName());
+        오이도역_params = params;
+        오이도역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(오이도역_params), "id", Long.class);
     }
 
     public Map<String, String> get잠실역_params() {
@@ -76,6 +83,10 @@ public class StationFixture {
         return 서초역_params;
     }
 
+    public Map<String, String> get오이도역_params() {
+        return 오이도역_params;
+    }
+
     public Long get잠실역_ID() {
         return 잠실역_ID;
     }
@@ -98,5 +109,9 @@ public class StationFixture {
 
     public Long get서초역_ID() {
         return 서초역_ID;
+    }
+
+    public Long get오이도역_ID() {
+        return 오이도역_ID;
     }
 }

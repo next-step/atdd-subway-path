@@ -1,6 +1,7 @@
 package nextstep.subway.path;
 
 import nextstep.subway.line.LineRepository;
+import nextstep.subway.line.section.Lines;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponseFactory;
@@ -23,7 +24,9 @@ public class PathService {
     }
 
     public PathResponse findShortCut(PathRequest pathRequest) {
-        Path path = pathFinder.shortcut(lineRepository.findAllFetchJoin(), getStation(pathRequest.getSource()), getStation(pathRequest.getTarget()));
+        Path path = pathFinder.shortcut(Lines.from(lineRepository.findAllFetchJoin()),
+                getStation(pathRequest.getSource()),
+                getStation(pathRequest.getTarget()));
         return new PathResponse(StationResponseFactory.createStationResponses(path.getStations()), path.getDistance());
     }
 

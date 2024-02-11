@@ -141,7 +141,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
     void findPath4() {
         // given
         // when
-        PathRequest pathRequest = new PathRequest(stationFixture.get교대역_ID(), stationFixture.get서초역_ID());
+        PathRequest pathRequest = new PathRequest(stationFixture.get강남역_ID(), stationFixture.get오이도역_ID());
         ExtractableResponse<Response> response = given().log().all()
                 .queryParam("source", pathRequest.getSource())
                 .queryParam("target", pathRequest.getTarget())

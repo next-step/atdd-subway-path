@@ -89,6 +89,10 @@ public class Line {
         this.distance -= applyDistance.applyValue();
     }
 
+    public boolean existStation(Station station) {
+        return sections.existStation(station);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -101,4 +105,5 @@ public class Line {
     public int hashCode() {
         return Objects.hash(id, name, color, sections, distance);
     }
+
 }

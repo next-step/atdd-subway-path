@@ -102,7 +102,7 @@ public class Section {
     }
 
     public boolean anyMatchUpStationAndDownStation(Station station) {
-        return this.upStation.equals(station) && this.downStation.equals(station);
+        return this.upStation.equals(station) || this.downStation.equals(station);
     }
 
     public Long distance() {

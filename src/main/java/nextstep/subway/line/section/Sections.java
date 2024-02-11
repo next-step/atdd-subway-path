@@ -94,15 +94,14 @@ public class Sections {
     }
 
     public ApplyDistance delete(Station station) {
-        if (this.sectionList.size() == 1 || existStation(station)) {
+        if (this.sectionList.size() == 1) {
             throw new IllegalArgumentException("구간이 하나 일 때는 삭제를 할 수 없습니다.");
         }
         return deleteTarget(station);
     }
 
-    private boolean existStation(Station station) {
-        return this.sectionList
-                .stream()
+    public boolean existStation(Station station) {
+        return this.sectionList.stream()
                 .anyMatch(section -> section.anyMatchUpStationAndDownStation(station));
     }
 
