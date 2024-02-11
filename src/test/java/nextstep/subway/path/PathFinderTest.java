@@ -4,8 +4,6 @@ import nextstep.subway.line.Line;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.station.Station;
 import nextstep.subway.testhelper.StationFixture;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +28,7 @@ class PathFinderTest {
                 StationFixture.삼성역,
                 3L);
         삼호선.addSection(addSection);
-        pathFinder = new PathFinder(new WeightedMultigraph(DefaultWeightedEdge.class), List.of(일호선, 이호선, 삼호선));
+        pathFinder = new JGraphPathFinder(List.of(일호선, 이호선, 삼호선));
     }
 
     @Test
