@@ -36,7 +36,6 @@ public class PathFinder {
     private static WeightedMultigraph<Station, DefaultWeightedEdge> createGraph(final List<Line> lines) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
-        graph.addVertex(new Station(4L, "남부터미널역"));
         lines.stream()
                 .flatMap(l -> l.getSections().stream())
                 .distinct()
