@@ -1,8 +1,8 @@
 package nextstep.subway.acceptance.line;
 
 import io.restassured.path.json.JsonPath;
-import nextstep.subway.acceptance.common.CommonAcceptanceTest;
-import nextstep.subway.acceptance.common.Constant;
+import nextstep.subway.acceptance.util.CommonAcceptanceTest;
+import nextstep.subway.common.Constant;
 import nextstep.subway.line.presentation.request.CreateLineRequest;
 import nextstep.subway.line.presentation.request.UpdateLineRequest;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
@@ -106,7 +106,7 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
         Long 신분당선_ID = createLine(신분당선_생성_정보).jsonPath().getLong("lineId");
 
         // when
-        UpdateLineRequest 신분당선_수정_정보 = UpdateLineRequest.of(파란색, 기본_역_간격);
+        UpdateLineRequest 신분당선_수정_정보 = UpdateLineRequest.of(파란색);
         updateLine(신분당선_ID, 신분당선_수정_정보);
 
         // then

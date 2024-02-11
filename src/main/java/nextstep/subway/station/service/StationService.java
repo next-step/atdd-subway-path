@@ -21,7 +21,7 @@ public class StationService {
 
     @Transactional
     public CreateStationResponse saveStation(CreateStationRequest createStationRequest) {
-        Station station = stationRepository.save(new Station(createStationRequest.getName()));
+        Station station = stationRepository.save(Station.from(createStationRequest.getName()));
         return CreateStationResponse.from(station);
     }
 

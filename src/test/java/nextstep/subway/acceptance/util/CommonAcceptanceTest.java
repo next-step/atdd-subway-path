@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance.common;
+package nextstep.subway.acceptance.util;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;

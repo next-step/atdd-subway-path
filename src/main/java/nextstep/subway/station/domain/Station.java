@@ -26,8 +26,12 @@ public class Station {
     protected Station() {
     }
 
-    public Station(String name) {
+    private Station(String name) {
         this.name = name;
+    }
+
+    public static Station from(String name) {
+        return new Station(name);
     }
 
     public Long getStationId() {
@@ -42,12 +46,12 @@ public class Station {
     public boolean equals(Object o) {
         if (this == o) return true;
         Station station = (Station) o;
-        return Objects.equals(stationId, station.getStationId());
+        return Objects.equals(stationId, station.getStationId()) && Objects.equals(name, station.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(stationId);
+        return Objects.hash(stationId, name);
     }
 
 }

@@ -1,7 +1,6 @@
-package nextstep.subway.acceptance.common;
+package nextstep.subway.acceptance.util;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

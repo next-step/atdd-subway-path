@@ -16,17 +16,14 @@ public class LineDto {
 
     private List<StationDto> stations;
 
-    private Integer distance;
-
     private LineDto() {
     }
 
-    private LineDto(Long lineId, String name, String color, List<StationDto> stations, Integer distance) {
+    private LineDto(Long lineId, String name, String color, List<StationDto> stations) {
         this.lineId = lineId;
         this.name = name;
         this.color = color;
         this.stations = stations;
-        this.distance = distance;
     }
 
     public static LineDto from(Line line) {
@@ -37,8 +34,7 @@ public class LineDto {
                 line.getStations().stream()
                         .distinct()
                         .map(StationDto::from)
-                        .collect(Collectors.toList()),
-                line.getDistance()
+                        .collect(Collectors.toList())
         );
     }
 
@@ -56,10 +52,6 @@ public class LineDto {
 
     public List<StationDto> getStations() {
         return stations;
-    }
-
-    public Integer getDistance() {
-        return distance;
     }
 
 }

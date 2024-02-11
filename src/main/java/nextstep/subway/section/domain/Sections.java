@@ -69,6 +69,10 @@ public class Sections {
                 );
     }
 
+    public boolean hasSection(Section section) {
+        return this.sections.contains(section);
+    }
+
     public int size() {
         return this.sections.size();
     }

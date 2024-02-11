@@ -16,17 +16,14 @@ public class CreateLineResponse {
 
     private List<StationDto> stations;
 
-    private Integer distance;
-
     private CreateLineResponse() {
     }
 
-    private CreateLineResponse(Long lineId, String name, String color, List<StationDto> stations, Integer distance) {
+    private CreateLineResponse(Long lineId, String name, String color, List<StationDto> stations) {
         this.lineId = lineId;
         this.name = name;
         this.color = color;
         this.stations = stations;
-        this.distance = distance;
     }
 
     public static CreateLineResponse from(Line line) {
@@ -37,8 +34,7 @@ public class CreateLineResponse {
                 line.getStations().stream()
                         .distinct()
                         .map(StationDto::from)
-                        .collect(Collectors.toList()),
-                line.getDistance()
+                        .collect(Collectors.toList())
         );
     }
 
@@ -56,10 +52,6 @@ public class CreateLineResponse {
 
     public List<StationDto> getStations() {
         return stations;
-    }
-
-    public Integer getDistance() {
-        return distance;
     }
 
 }

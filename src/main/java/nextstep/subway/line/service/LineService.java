@@ -40,8 +40,8 @@ public class LineService {
         Section section = sectionRepository.save(Section.of(upStation, downStation, createLineRequest.getDistance()));
 
         Line line = lineRepository.save(
-                Line.from(
-                        createLineRequest.getName(), createLineRequest.getColor(), createLineRequest.getDistance()
+                Line.of(
+                        createLineRequest.getName(), createLineRequest.getColor()
                 )
         );
 
@@ -68,7 +68,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new NotFoundLineException());
 
-        line.updateLine(updateLineRequest.getColor(), updateLineRequest.getDistance());
+        line.updateLine(updateLineRequest.getColor());
 
         return UpdateLineResponse.from(line);
     }

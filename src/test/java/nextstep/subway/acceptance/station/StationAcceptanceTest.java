@@ -1,6 +1,6 @@
 package nextstep.subway.acceptance.station;
 
-import nextstep.subway.acceptance.common.CommonAcceptanceTest;
+import nextstep.subway.acceptance.util.CommonAcceptanceTest;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

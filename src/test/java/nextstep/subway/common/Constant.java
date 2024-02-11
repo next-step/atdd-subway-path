@@ -1,4 +1,4 @@
-package nextstep.subway.acceptance.common;
+package nextstep.subway.common;
 
 public class Constant {
 

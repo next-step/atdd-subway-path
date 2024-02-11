@@ -1,7 +1,7 @@
 package nextstep.subway.acceptance.section;
 
-import nextstep.subway.acceptance.common.CommonAcceptanceTest;
-import nextstep.subway.acceptance.common.Constant;
+import nextstep.subway.acceptance.util.CommonAcceptanceTest;
+import nextstep.subway.common.Constant;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
 import nextstep.subway.line.presentation.request.CreateLineRequest;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
@@ -48,7 +48,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      */
     @DisplayName("새로운 구간의 상행역이 해당 노선에 등록되어있는 하행 종점역이 아니면 지하철 구간이 등록되지 않는다.")
     @Test
-    void 하행_종점역이_아닌_상행역의_지하철_구간을_등록() {
+    void 노선의_하행_종점역이_아닌_상행역의_지하철_구간을_등록() {
         // given
         CreateLineRequest 신분당선_생성_정보 = CreateLineRequest.of(신분당선, 빨간색, 논현역_ID, 신논현역_ID, 기본_역_간격);
         Long 신분당선_ID = createLine(신분당선_생성_정보).jsonPath().getLong("lineId");
@@ -64,9 +64,9 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      * When 이미 해당 노선에 등록되어 있는 역이 새로운 구간의 하행역이면
      * Then 구간이 등록되지 않는다.
      */
-    @DisplayName("이미 해당 노선에 등록되어 있는 역이 새로운 구간의 하행역이면 구간이 등록되지 않는다.")
+    @DisplayName("등록할 역이 이미 있는 지하철 노선에는 구간이 등록되지 않는다.")
     @Test
-    void 이미_등록된_역이_하행역인_지하철_구간을_등록() {
+    void 등록할_역이_이미_있는_지하철_노선에_구간을_등록() {
         // given
         CreateLineRequest 신분당선_생성_정보 = CreateLineRequest.of(신분당선, 빨간색, 논현역_ID, 신논현역_ID, 기본_역_간격);
         Long 신분당선_ID = createLine(신분당선_생성_정보).jsonPath().getLong("lineId");
@@ -95,8 +95,8 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         assertThat(addSection(구간_생성_정보, 신분당선_ID).statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> responseLineName = selectLine(신분당선_ID).jsonPath().get("stations.name");
-        assertThat(responseLineName).contains(논현역, 신논현역, 강남역);
+        List<Long> responseLineName = selectLine(신분당선_ID).jsonPath().getList("stations.stationId", Long.class);
+        assertThat(responseLineName).contains(논현역_ID, 신논현역_ID, 강남역_ID);
     }
 
     /**

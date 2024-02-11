@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-//@Embeddable
 @Where(clause = "deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE section SET deleted_at = CURRENT_TIMESTAMP where section_id = ?")
 public class Section {
@@ -84,13 +83,14 @@ public class Section {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(sectionId, section.getSectionId());
+        return Objects.equals(sectionId, section.getSectionId()) && Objects.equals(line, section.getLine()) && Objects.equals(upStation, section.getUpStation()) && Objects.equals(downStation, section.getDownStation()) && Objects.equals(distance, section.getDistance());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionId);
+        return Objects.hash(sectionId, line, upStation, downStation, distance, deleted_at);
     }
 
 }

@@ -30,8 +30,6 @@ public class Line {
     @Embedded
     private Sections sections = new Sections();;
 
-    @Column
-    private Integer distance;
 
     @Column
     private LocalDateTime deleted_at;
@@ -39,19 +37,17 @@ public class Line {
     protected Line() {
     }
 
-    private Line(String name, String color, Integer distance) {
+    private Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
-    public static Line from(String name, String color, Integer distance) {
-        return new Line(name, color, distance);
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
-    public void updateLine(String color, Integer distance) {
+    public void updateLine(String color) {
         this.color = color;
-        this.distance = distance;
     }
 
     public List<Station> getStations() {
@@ -67,6 +63,10 @@ public class Line {
         sections.deleteSection(deletedStation);
     }
 
+    public boolean hasSection(Section Section) {
+        return sections.hasSection(Section);
+    }
+
     public Long getLineId() {
         return lineId;
     }
@@ -79,10 +79,6 @@ public class Line {
         return color;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
     public Sections getSections() {
         return sections;
     }
@@ -90,13 +86,14 @@ public class Line {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(lineId, line.getLineId());
+        return Objects.equals(lineId, line.getLineId()) && Objects.equals(name, line.getName()) && Objects.equals(color, line.getColor()) && Objects.equals(sections, line.getSections());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineId);
+        return Objects.hash(lineId, name, color, sections);
     }
 
 }

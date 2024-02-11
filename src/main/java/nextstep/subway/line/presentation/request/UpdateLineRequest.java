@@ -4,26 +4,19 @@ public class UpdateLineRequest {
 
     private String color;
 
-    private Integer distance;
-
     private UpdateLineRequest() {
     }
 
-    private UpdateLineRequest(String color, Integer distance) {
+    private UpdateLineRequest(String color) {
         this.color = color;
-        this.distance = distance;
     }
 
-    public static UpdateLineRequest of(String color, Integer distance) {
-        return new UpdateLineRequest(color, distance);
+    public static UpdateLineRequest of(String color) {
+        return new UpdateLineRequest(color);
     }
 
     public String getColor() {
         return color;
-    }
-
-    public Integer getDistance() {
-        return distance;
     }
 
 }
