@@ -39,10 +39,11 @@ public class PathServiceTest {
         final Line line = lineRepository.save(new Line("2호선", "green", 강남역, 역삼역, 10));
         line.addSection(역삼역, 선릉역, 10);
 
-        final PathResponse response = pathService.getPath(new PathRequest(강남역.getId(), 선릉역.getId()));
+        final PathResponse response = pathService.getPath(
+            new PathRequest(강남역.getId(), 선릉역.getId()));
 
         assertThat(response.getDistance()).isEqualTo(20);
-        assertThat(response.getStations())
-        .containsAll(Stream.of(강남역, 역삼역).map(StationResponse::new).collect(Collectors.toList()));
+        assertThat(response.getStations().stream().map(StationResponse::getId).collect(Collectors.toList()))
+            .contains(강남역.getId(), 역삼역.getId());
     }
 }

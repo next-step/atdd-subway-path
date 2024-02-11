@@ -28,13 +28,13 @@ public class Sections {
             return;
         }
 
-        if (isFirstStation(section.getDownStation())) {
-            sections.add(0, section);
+        if (isLastStation(section.getUpStation())) {
+            sections.add(section);
             return;
         }
 
-        if (isLastStation(section.getUpStation())) {
-            sections.add(section);
+        if (isFirstStation(section.getDownStation())) {
+            sections.add(0, section);
             return;
         }
 

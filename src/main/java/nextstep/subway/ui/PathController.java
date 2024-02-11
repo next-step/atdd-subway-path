@@ -16,7 +16,7 @@ public class PathController {
         this.pathService = pathService;
     }
 
-    @GetMapping("paths")
+    @GetMapping("/paths")
     public ResponseEntity<PathResponse> getPath(@RequestParam PathRequest request) {
         return ResponseEntity.ok().body(pathService.getPath(request));
     }
