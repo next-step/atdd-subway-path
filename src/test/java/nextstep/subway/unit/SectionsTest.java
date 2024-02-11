@@ -40,6 +40,18 @@ public class SectionsTest {
         assertThat(sections.allStations()).containsExactly(강남역, 역삼역, 선릉역);
     }
 
+    @DisplayName("에러_중간 구간 추가_이미 존재하는 역")
+    @Test
+    void addSection_middle_error() {
+        Sections sections = new Sections();
+        sections.addSection(강남_선릉);
+        sections.addSection(강남_역삼);
+
+        assertThatThrownBy(() -> sections.addSection(new Section(new Line(), 역삼역, 강남역, 5L)))
+                .isInstanceOf(LineException.class)
+                .hasMessage("추가할 역이 이미 존재합니다.");
+    }
+
     @DisplayName("처음 구간 추가")
     @Test
     void addSection_first() {

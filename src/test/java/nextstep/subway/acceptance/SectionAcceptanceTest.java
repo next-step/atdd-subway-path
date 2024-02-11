@@ -5,21 +5,12 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.LineRequest;
-import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineSectionResponse;
 import nextstep.subway.line.section.SectionRequest;
-import nextstep.subway.line.section.SectionResponse;
-import nextstep.subway.utils.DatabaseCleanup;
-import nextstep.subway.utils.StationFixtures;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
@@ -28,7 +19,7 @@ import static nextstep.subway.utils.StationFixtures.stationFixtures;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 테스트")
-public class SectionAcceptanceTest extends AcceptanceTest{
+public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * given 1개의 지하철 노선을 등록하고

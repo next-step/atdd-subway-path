@@ -52,17 +52,17 @@ public class Sections {
             throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "이미 등록된 구간입니다.");
         }
 
-        if (isMiddleSection(newSection)) {
+        if (isMiddleAdded(newSection)) {
             addMiddleSection(newSection);
             return;
         }
 
-        if (isFirstSection(newSection)) {
+        if (isFirstAdded(newSection)) {
             addFirstSection(newSection);
             return;
         }
 
-        if (isLastSection(newSection)) {
+        if (isLastAdded(newSection)) {
             addLastSection(newSection);
             return;
         }
@@ -74,14 +74,30 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.matchStations(newSection));
     }
 
+    private boolean isMiddleAdded(Section newSection) {
+        return sections.stream().anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
+    }
+
+    private boolean isFirstAdded(Section section) {
+        return firstSection().getUpStation().equals(section.getDownStation());
+    }
+
+    private boolean isLastAdded(Section section) {
+        return lastSection().getDownStation().equals(section.getUpStation());
+    }
+
     private void addMiddleSection(Section newSection) {
+        if (isDuplicatedDownStation(newSection.getDownStation())) {
+            throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
+        }
+
         Section originalSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst()
                 .orElseThrow();
 
         int index = sections.indexOf(originalSection);
-        sections.add(index - 1 == -1 ? 0 : index - 1, newSection);
+        sections.add(index == 0 ? 0 : index - 1, newSection);
         originalSection.separateFrom(newSection);
     }
 
@@ -107,17 +123,6 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.getUpStation().equals(downStation));
     }
 
-    private boolean isMiddleSection(Section newSection) {
-        return sections.stream().anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
-    }
-
-    private boolean isFirstSection(Section section) {
-        return firstSection().getUpStation().equals(section.getDownStation());
-    }
-
-    private boolean isLastSection(Section section) {
-        return lastSection().getDownStation().equals(section.getUpStation());
-    }
 
     public void deleteSection(Long stationId) {
         if (sections.size() == 1)
