@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -49,5 +50,11 @@ public class PathServiceTest {
         assertThat(response.getDistance()).isEqualTo(20);
         assertThat(response.getStations().stream().map(StationResponse::getId).collect(Collectors.toList()))
             .contains(강남역.getId(), 역삼역.getId());
+    }
+
+    @Test
+    void 출발지와_도착지가_같으면_익셉션을_던진다() {
+        assertThatThrownBy(() -> pathService.getPath(new PathRequest(강남역.getId(), 강남역.getId())))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }
