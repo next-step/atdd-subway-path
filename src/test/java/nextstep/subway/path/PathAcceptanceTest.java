@@ -15,7 +15,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 검색")
-public class PathFinderAcceptanceTest extends AcceptanceTest {
+public class PathAcceptanceTest extends AcceptanceTest {
 
     private StationFixture stationFixture;
     private Long 잠실역_ID;
