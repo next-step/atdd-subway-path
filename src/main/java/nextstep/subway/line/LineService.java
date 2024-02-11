@@ -62,7 +62,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveSection(Long id, SectionRequest sectionRequest) {
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
                 .orElseThrow(EntityNotFoundException::new);
