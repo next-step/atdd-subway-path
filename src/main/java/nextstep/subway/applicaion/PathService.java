@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.PathRequest;
 import nextstep.subway.applicaion.dto.PathResponse;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -28,10 +29,11 @@ public class PathService {
     }
 
     public PathResponse getPath(PathRequest request) {
-        validateRequest(request);
+        List<Line> lines = lineRepository.findAll();
 
-        final Set<Section> sections = getAllSectionsInLines();
+        validateRequest(request, lines);
 
+        final Set<Section> sections = getAllSectionsInLines(lines);
         final WeightedMultigraph<String, DefaultWeightedEdge> sectionGraph = getWightedGraphWithSection(sections);
 
         final DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(sectionGraph);
@@ -41,11 +43,22 @@ public class PathService {
         return getPathResponse(sections, graphPath.getVertexList(), (int) graphPath.getWeight());
     }
 
-    private void validateRequest(PathRequest request) {
+    private void validateRequest(PathRequest request, List<Line> lines) {
         if (request.getSource().equals(request.getTarget())) {
             throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
         }
+
+        final List<Station> stations = getAllStationsInLines(lines);
+
+        if (stations.stream().noneMatch(it -> it.getId().equals(request.getSource()))) {
+            throw new IllegalArgumentException("출발역이 존재하지 않습니다.");
+        }
+
+        if(stations.stream().noneMatch(it -> it.getId().equals(request.getTarget()))) {
+            throw new IllegalArgumentException("도착역이 존재하지 않습니다.");
+        }
     }
+
 
     private PathResponse getPathResponse(Set<Section> sections, List<String> stationPath, int distance) {
         final Map<String, Station> stationMap = getIdToStationMap(sections);
@@ -86,10 +99,14 @@ public class PathService {
         return graph;
     }
 
-    private Set<Section> getAllSectionsInLines() {
-        return lineRepository
-            .findAll().stream().flatMap(line -> line.getSections().stream())
+    private Set<Section> getAllSectionsInLines(List<Line> lines) {
+        return lines.stream().flatMap(line -> line.getSections().stream())
             .collect(Collectors.toSet());
     }
 
+    private static List<Station> getAllStationsInLines(List<Line> lines) {
+        return lines.stream()
+            .flatMap(it -> it.getStations().stream())
+            .collect(Collectors.toList());
+    }
 }
