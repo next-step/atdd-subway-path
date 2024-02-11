@@ -78,26 +78,21 @@ public class Line {
 			throw new IllegalArgumentException("등록 구간의 역들이 모두 노선에 존재하지 않습니다.");
 		}
 
-		if(hasStation(section.getDownStationId())) {
+		if(isStartStation(section.getDownStationId())) {
 			this.startStationId = section.getUpStationId();
-			this.distance = this.distance + section.getDistance();
-			this.sections.addSection(section);
-		} else {
-			if(isEndStation(section.getUpStationId())) {
-				this.endStationId = section.getDownStationId();
-				this.distance = this.distance + section.getDistance();
-				this.sections.addSection(section);
-			} else {
-				Section upSection = sections.getSectionByUpStationId(section.getUpStationId());
-				if(upSection.getDistance() <= section.getDistance()) {
-					throw new IllegalArgumentException("등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없습니다.");
-				}
-				sections.addSection(section);
-				sections.addSection(new Section(this, section.getDownStationId(), upSection.getDownStationId(), upSection.getDistance() - section.getDistance()));
-				sections.removeSection(upSection);
-			}
+			addStartOrEndSection(section);
 
+			return;
 		}
+
+		if(isEndStation(section.getUpStationId())) {
+			this.endStationId = section.getDownStationId();
+			addStartOrEndSection(section);
+
+			return;
+		}
+
+		addMidSection(section);
 	}
 
 	public void deleteSection(Long stationId) {
@@ -127,5 +122,20 @@ public class Line {
 
 	public boolean hasStation(Long downStationId) {
 		return sections.hasStation(downStationId);
+	}
+
+	private void addStartOrEndSection(Section section) {
+		this.distance += section.getDistance();
+		this.sections.addSection(section);
+	}
+
+	private void addMidSection(Section section) {
+		Section upSection = sections.getSectionByUpStationId(section.getUpStationId());
+		if(upSection.getDistance() <= section.getDistance()) {
+			throw new IllegalArgumentException("등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없습니다.");
+		}
+		sections.addSection(section);
+		sections.addSection(new Section(this, section.getDownStationId(), upSection.getDownStationId(), upSection.getDistance() - section.getDistance()));
+		sections.removeSection(upSection);
 	}
 }

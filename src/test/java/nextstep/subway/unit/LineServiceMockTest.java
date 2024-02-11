@@ -74,7 +74,7 @@ public class LineServiceMockTest {
         lineService.addSection(노선_id, new SectionRequest(세번째_역_id, 두번째_역_id, 1));
 
         // when
-        // lineService.deleteSection(노선_id, 세번째_역_id);
+        lineService.deleteSection(노선_id, 세번째_역_id);
 
         // then
         LineResponse lineResponse = lineService.findLineById(노선_id);
