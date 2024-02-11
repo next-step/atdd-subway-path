@@ -6,13 +6,23 @@ import nextstep.config.fixtures.StationFixture;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("지하철 구간 엔티티")
 class LineTest {
+
+    Line 이호선;
+
+    @BeforeEach
+    void 초기_지하철_노선() {
+        이호선 = LineFixture.이호선_생성();
+    }
 
     /**
      * Given 지하철 노선이 생성되고
@@ -22,7 +32,6 @@ class LineTest {
     @Test
     void addSection() {
         // given
-        Line 이호선 = LineFixture.이호선;
         Section 강남_양재_구간 = SectionFixture.강남_양재_구간;
 
         // when
@@ -40,7 +49,6 @@ class LineTest {
     @Test
     void getStations() {
         // given
-        Line 이호선 = LineFixture.이호선;
         Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
 
         이호선.addSection(삼성_선릉_구간);
@@ -62,7 +70,6 @@ class LineTest {
     @Test
     void removeSection() {
         // given
-        Line 이호선 = LineFixture.이호선;
         Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
 
         이호선.addSection(삼성_선릉_구간);
