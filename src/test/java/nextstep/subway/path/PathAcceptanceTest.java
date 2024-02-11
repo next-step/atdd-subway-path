@@ -83,7 +83,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = given().log().all()
                 .queryParam("source", pathRequest.getSource())
                 .queryParam("target", pathRequest.getTarget())
-                .when().get("/path")
+                .when().get("/paths")
                 .then().log().all()
                 .extract();
 
@@ -111,7 +111,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = given().log().all()
                 .queryParam("source", pathRequest.getSource())
                 .queryParam("target", pathRequest.getTarget())
-                .when().get("/path")
+                .when().get("/paths")
                 .then().log().all()
                 .extract();
 
@@ -139,7 +139,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = given().log().all()
                 .queryParam("source", pathRequest.getSource())
                 .queryParam("target", pathRequest.getTarget())
-                .when().get("/path")
+                .when().get("/paths")
                 .then().log().all()
                 .extract();
 

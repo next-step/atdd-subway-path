@@ -18,6 +18,10 @@ public class JGraphPathFinder implements PathFinder {
     public Path shortcut(List<Line> lines,
                          Station source,
                          Station target) {
+        if(source.equals(target)) {
+            throw new IllegalArgumentException("출발역과 도착역은 같을 수 없습니다.");
+        }
+
         DijkstraShortestPath dijkstraShortestPath = createShortestPath(lines);
         List<Station> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
         Double shorestDistance = dijkstraShortestPath.getPath(source, target).getWeight();

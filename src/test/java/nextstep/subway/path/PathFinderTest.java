@@ -52,4 +52,5 @@ class PathFinderTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> pathFinder.shortcut(List.of(일호선, 이호선, 삼호선),
                 StationFixture.잠실역, StationFixture.잠실역));
     }
+
 }
