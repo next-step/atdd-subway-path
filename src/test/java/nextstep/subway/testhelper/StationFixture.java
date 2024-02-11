@@ -1,15 +1,17 @@
 package nextstep.subway.testhelper;
 
+import nextstep.subway.station.Station;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class StationFixture {
-    public static final String 잠실역 = "잠실역";
-    public static final String 강남역 = "강남역";
-    public static final String 삼성역 = "삼성역";
-    public static final String 선릉역 = "선릉역";
-    public static final String 교대역 = "교대역";
-    public static final String 서초역 = "서초역";
+    public static final Station 잠실역 = new Station(1L, "잠실역");
+    public static final Station 강남역 = new Station(2L, "강남역");
+    public static final Station 삼성역 = new Station(3L, "삼성역");
+    public static final Station 선릉역 = new Station(4L, "선릉역");
+    public static final Station 교대역 = new Station(5L, "교대역");
+    public static final Station 서초역 = new Station(6L, "서초역");
     private Map<String, String> 잠실역_params;
     private Map<String, String> 강남역_params;
     private Map<String, String> 삼성역_params;
@@ -25,27 +27,27 @@ public class StationFixture {
 
     public StationFixture() {
         Map<String, String> params = new HashMap<>();
-        params.put("name", 잠실역);
+        params.put("name", 잠실역.getName());
         잠실역_params = params;
         잠실역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(잠실역_params), "id", Long.class);
 
-        params.put("name", 강남역);
+        params.put("name", 강남역.getName());
         강남역_params = params;
         강남역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(강남역_params), "id", Long.class);
 
-        params.put("name", 삼성역);
+        params.put("name", 삼성역.getName());
         삼성역_params = params;
         삼성역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(삼성역_params), "id", Long.class);
 
-        params.put("name", 선릉역);
+        params.put("name", 선릉역.getName());
         선릉역_params = params;
         선릉역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(선릉역_params), "id", Long.class);
 
-        params.put("name", 교대역);
+        params.put("name", 교대역.getName());
         교대역_params = params;
         교대역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(교대역_params), "id", Long.class);
 
-        params.put("name", 서초역);
+        params.put("name", 서초역.getName());
         서초역_params = params;
         서초역_ID = JsonPathHelper.getObject(StationApiCaller.지하철_역_생성(서초역_params), "id", Long.class);
     }
