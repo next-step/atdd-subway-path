@@ -19,16 +19,21 @@ public class Station {
         this.name = name;
     }
 
+    public boolean isSame(Station station) {
+        return this.equals(station);
+    }
+
+    public Station updateId(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public Long getId() {
         return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public boolean isSame(Station station) {
-        return this.equals(station);
     }
 
     @Override

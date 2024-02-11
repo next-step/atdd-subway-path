@@ -54,7 +54,7 @@ public class Section {
 
     public Section setLine(Line line) {
         this.line = line;
-        line.getSections().addSection(this);
+        line.addSection(this);
 
         return this;
     }

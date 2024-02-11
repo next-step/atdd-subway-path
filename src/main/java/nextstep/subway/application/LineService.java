@@ -57,7 +57,6 @@ public class LineService {
             throw new IllegalArgumentException("요청한 역은 존재하지 않습니다.");
         }
 
-        line.addSection(section);
         return convertToSectionResponse(section.setLine(line));
     }
 
@@ -80,7 +79,7 @@ public class LineService {
         return convertToLineResponse(findLineById(lineId));
     }
 
-    private Line findLineById(Long lineId) {
+    public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
     }
 

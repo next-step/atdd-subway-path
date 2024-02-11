@@ -21,7 +21,7 @@ public class SectionController {
     public ResponseEntity<SectionResponse> createLine(@PathVariable Long lineId,
                                                       @RequestBody SectionRequest request) {
         SectionResponse sectionResponse =
-                lineService.createSection(SectionRequest.mergeForCreateLine(lineId, request));
+                lineService.addSection(SectionRequest.mergeForCreateLine(lineId, request));
         return ResponseEntity.created(
                 URI.create(String.format("/lines/%d/sections", lineId))).body(sectionResponse);
     }
