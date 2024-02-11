@@ -21,20 +21,20 @@ class PathFinderTest {
     @BeforeEach
     void setUp() {
         일호선 = new Line("일호선", "blue", StationFixture.잠실역, StationFixture.강남역, 10L);
-        이호선 = new Line("일호선", "blue", StationFixture.강남역, StationFixture.삼성역, 10L);
-        삼호선 = new Line("일호선", "blue", StationFixture.잠실역, StationFixture.선릉역, 2L);
+        이호선 = new Line("이호선", "blue", StationFixture.강남역, StationFixture.삼성역, 10L);
+        삼호선 = new Line("삼호선", "blue", StationFixture.잠실역, StationFixture.선릉역, 2L);
         Section addSection = new Section(
                 StationFixture.선릉역,
                 StationFixture.삼성역,
                 3L);
         삼호선.addSection(addSection);
-        pathFinder = new JGraphPathFinder(List.of(일호선, 이호선, 삼호선));
+        pathFinder = new JGraphPathFinder();
     }
 
     @Test
     @DisplayName("Path에서 최단거리의 구간을 찾을 수 있다.")
     void findPath() {
-        Path path = pathFinder.shortcut(StationFixture.잠실역, StationFixture.삼성역);
+        Path path = pathFinder.shortcut(List.of(일호선, 이호선, 삼호선), StationFixture.잠실역, StationFixture.삼성역);
 
         List<Station> actualSections = path.getStations();
         List<Station> expectedSections = List.of(StationFixture.잠실역, StationFixture.선릉역, StationFixture.삼성역);

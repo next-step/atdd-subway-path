@@ -11,16 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class PathService {
     private final PathFinder pathFinder;
+    private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
-    public PathService(LineRepository lineRepository,
+    public PathService(PathFinder pathFinder,
+                       LineRepository lineRepository,
                        StationRepository stationRepository) {
-        this.pathFinder = new JGraphPathFinder(lineRepository.findAll());
+        this.pathFinder = pathFinder;
+        this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }
 
-    public PathResponse findShortCut(Long source, Long target) {
-        Path path = pathFinder.shortcut(getStation(source), getStation(target));
+    public PathResponse findShortCut(PathRequest pathRequest) {
+        Path path = pathFinder.shortcut(lineRepository.findAllFetchJoin(), getStation(pathRequest.getSource()), getStation(pathRequest.getTarget()));
         return new PathResponse(StationResponseFactory.createStationResponses(path.getStations()), path.getDistance());
     }
 

@@ -41,7 +41,7 @@ public class SectionFixture {
         선릉역_부터_삼성역_구간_params = new HashMap<>();
         선릉역_부터_삼성역_구간_params.put("upStationId", stationFixture.get선릉역_ID().toString());
         선릉역_부터_삼성역_구간_params.put("downStationId", stationFixture.get삼성역_ID().toString());
-        선릉역_부터_삼성역_구간_params.put("distance", "2");
+        선릉역_부터_삼성역_구간_params.put("distance", "3");
     }
 
     public Map<String, String> get잠실역_부터_강남역_구간_params() {
