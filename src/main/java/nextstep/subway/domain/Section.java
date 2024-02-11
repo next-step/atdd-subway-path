@@ -81,6 +81,10 @@ public class Section {
         return downStation;
     }
 
+    public Line line() {
+        return line;
+    }
+
     public boolean isSame(Station upStation, Station downStation) {
         return (this.isUpStation(upStation) && this.isDownStation(downStation)) ||
                 (this.isUpStation(downStation) && this.isDownStation(upStation));

@@ -45,11 +45,6 @@ class SectionsTest {
         구간 = new Sections(List.of(강남역_선릉역_구간, 선릉역_양재역_구간));
     }
 
-    /**
-     * 지하철역: 강남역, 선릉역, 양재역, 역삼역
-     * 노선: 강남 - 선릉 (10), 선릉 - 양재 (10)
-     * total distance: 20
-     */
     @Test
     void 실패_구간_정보가_없을경우_구간을_등록할_수_없다() {
         assertThatThrownBy(() -> new Sections(new ArrayList<>()))
@@ -186,7 +181,7 @@ class SectionsTest {
      * total distance: 30
      */
     @Test
-    void 성공_노선에_추가된_구간의_순서에_맞게_정렬된_지하철역을_조회한다() {
+    void 성공_노선의_구간_순서에_따라_정렬된_지하철역을_조회한다() {
         Sections sections = 구간_순서_랜덤_노선();
         List<Station> stations = sections.sortedStations();
         assertThat(stations).hasSize(4)

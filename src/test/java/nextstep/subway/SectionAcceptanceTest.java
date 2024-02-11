@@ -146,10 +146,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
+                        tuple(3L, "양재역"),
                         tuple(1L, "강남역"),
-                        tuple(2L, "선릉역"),
-                        tuple(3L, "양재역")
+                        tuple(2L, "선릉역")
                 );
     }
 
@@ -173,10 +173,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         tuple(1L, "강남역"),
-                        tuple(2L, "선릉역"),
-                        tuple(3L, "양재역")
+                        tuple(3L, "양재역"),
+                        tuple(2L, "선릉역")
                 );
     }
 
@@ -200,10 +200,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         tuple(1L, "강남역"),
-                        tuple(2L, "선릉역"),
-                        tuple(3L, "양재역")
+                        tuple(3L, "양재역"),
+                        tuple(2L, "선릉역")
                 );
     }
 
@@ -227,7 +227,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         LineResponse response = 노선_조회_요청(이호선_ID, OK.value()).as(LineResponse.class);
         assertThat(response.getStations()).hasSize(3)
                 .extracting("id", "name")
-                .containsExactlyInAnyOrder(
+                .containsExactly(
                         tuple(1L, "강남역"),
                         tuple(2L, "선릉역"),
                         tuple(3L, "양재역")

@@ -25,9 +25,6 @@ class StationsTest {
         지하철역 = new Stations(List.of(강남역, 선릉역, 양재역));
     }
 
-    /**
-     * 지하철역: 강남역, 선릉역, 양재역
-     */
     @Test
     void 실패_지하철역_정보가_없을경우_예외가_발생한다() {
         assertThatThrownBy(() -> new Stations(new ArrayList<>()))
