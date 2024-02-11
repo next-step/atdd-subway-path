@@ -46,6 +46,13 @@ public class PathTest {
     }
 
     @Test
+    void 실패_출발역이나_도착역이_노선에_쫀재하지_않을_경우_경로를_조회할_수_없다() {
+        assertThatThrownBy(() -> path.validatePath(강남역, 신대방역))
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage("노선에 존재하지 않는 지하철역입니다.");
+    }
+
+    @Test
     void 성공_출발역과_도착역이_연결되어_있을_경우_최단_경로에_속하는_지하철역을_조회할_수_있다() {
         List<Station> stations = path.findShortenStations();
         assertThat(path.calculateShortenDistance()).isEqualTo(0);

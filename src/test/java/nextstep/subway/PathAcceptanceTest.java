@@ -120,7 +120,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      * Then 경로 조회를 할 수 없다
      */
     @Test
-    void 실패_경로_조회시_존재하지_않는_출발역으로_조회할_경우_경로를_조회할_수_없다() {
+    void 실패_경로_조회시_노선에_존재하지_않는_출발역이나_도착역일_경우_경로를_조회할_수_없다() {
         // given
         Map<String, String> params = Map.of("source", "99", "target", 강남역_ID.toString());
 
@@ -129,30 +129,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .as(ExceptionResponse.class).getMessage();
 
         // then
-        assertThat(message).isEqualTo("지하철역이 존재하지 않습니다. id=99");
-    }
-
-    /**
-     * 역삼역    --- *1호선*(10) ---   양재역
-     * |                        |
-     * *2호선*(10)                   *분당선*(10)
-     * |                        |
-     * 강남역    --- *신분당호선*(10) ---    선릉역
-     * <p>
-     * WHEN 경로 조회시 존재하지 않는 도착역일 경우
-     * Then 경로 조회를 할 수 없다
-     */
-    @Test
-    void 실패_경로_조회시_존재하지_않는_도착역으로_조회할_경우_경로를_조회할_수_없다() {
-        // given
-        Map<String, String> params = Map.of("source", 강남역_ID.toString(), "target", "99");
-
-        // when
-        String message = get("/paths", OK.value(), params)
-                .as(ExceptionResponse.class).getMessage();
-
-        // then
-        assertThat(message).isEqualTo("지하철역이 존재하지 않습니다. id=99");
+        assertThat(message).isEqualTo("노선에 존재하지 않는 지하철역입니다.");
     }
 
     /**
