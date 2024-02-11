@@ -139,12 +139,13 @@ class LineTest {
             void 삭제할_역이_기존_노선의_마지막_구간의_하행역과_동일할_경우_삭제_성공() {
                 // given
                 이호선.addSection(SectionFixture.삼성_선릉_구간);
+                이호선.addSection(SectionFixture.선릉_역삼_구간);
 
                 // when
-                이호선.deleteSection(StationFixture.선릉);
+                이호선.deleteSection(StationFixture.역삼);
 
                 // then
-                assertThat(이호선.getSections().getSections()).doesNotContain(삼성_선릉_구간);
+                assertThat(이호선.getStations()).containsAnyOf(StationFixture.삼성, StationFixture.선릉);
             }
         }
         @Nested
@@ -171,6 +172,7 @@ class LineTest {
             void 삭제할_역이_기존_노선_마지막_구간의_하행역과_동일하지_않을_경우_삭제_실패() {
                 // given
                 이호선.addSection(SectionFixture.삼성_선릉_구간);
+                이호선.addSection(SectionFixture.선릉_역삼_구간);
 
                 // when, then
                 assertThatExceptionOfType(IllegalArgumentException.class)

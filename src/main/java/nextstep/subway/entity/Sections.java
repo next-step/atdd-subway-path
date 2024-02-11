@@ -37,15 +37,20 @@ public class Sections {
         return sections.size() > MIN_DELETE_REQUIRED_SECTIONS_SIZE;
     }
 
-    public void deleteSection(Station stationToDelete) {
+    public boolean canSectionDelete(Station stationToDelete) {
         if(sections.isEmpty()) {
            throw new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다.");
         }
-
+        if(!isDeletionAllowed()) {
+            throw new IllegalArgumentException("해당 노선에 구간이 최소 2개 이상일 경우 삭제가 가능합니다.");
+        }
         if(!findLastStation().isSame(stationToDelete)) {
             throw new IllegalArgumentException("마지막 구간의 하행역과 동일하지 않습니다.");
         }
+        return true;
+    }
 
+    public void deleteLastSection() {
         sections.remove(sections.size() - 1);
     }
 

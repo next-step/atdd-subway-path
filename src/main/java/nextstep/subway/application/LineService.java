@@ -49,6 +49,15 @@ public class LineService {
     }
 
     @Transactional
+    public void deleteLine(Long lineId) {
+        lineRepository.deleteById(lineId);
+    }
+
+    public LineResponse findLineWithConvertResponse(Long lineId) {
+        return convertToLineResponse(findLineById(lineId));
+    }
+
+    @Transactional
     public SectionResponse addSection(SectionRequest request) {
         Line line = findLineById(request.getLineId());
         Section section = convertSectionRequestToEntity(request, line);
@@ -63,20 +72,7 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationIdToDelete) {
         Line line = findLineById(lineId);
-
-        if (!line.canSectionDelete(stationIdToDelete)) {
-            throw new IllegalArgumentException("요청한 구간(혹은 역)을 삭제할 수 없습니다.");
-        }
         line.deleteSection(findStation(stationIdToDelete));
-    }
-
-    @Transactional
-    public void deleteLine(Long lineId) {
-        lineRepository.deleteById(lineId);
-    }
-
-    public LineResponse findLineWithConvertResponse(Long lineId) {
-        return convertToLineResponse(findLineById(lineId));
     }
 
     public Line findLineById(Long lineId) {

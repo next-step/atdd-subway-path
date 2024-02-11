@@ -38,14 +38,6 @@ public class Line {
         return sections.hasExistingStationExceptLast(toSaveSection);
     }
 
-    public boolean canSectionDelete(Long stationId) {
-        if (!sections.findLastStation().getId().equals(stationId)) {
-            return false;
-        }
-        return sections.isDeletionAllowed();
-    }
-
-
     public void addSection(Section createdSection) {
         if (canSectionSave(createdSection)) {
             sections.addSection(createdSection);
@@ -53,7 +45,9 @@ public class Line {
     }
 
     public void deleteSection(Station stationToDelete) {
-        this.sections.deleteSection(stationToDelete);
+        if(sections.canSectionDelete(stationToDelete)) {
+            sections.deleteLastSection();
+        }
     }
 
     private boolean canSectionSave(Section toSaveSection) {
