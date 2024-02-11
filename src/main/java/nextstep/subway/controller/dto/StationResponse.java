@@ -19,8 +19,12 @@ public class StationResponse {
 
     public static List<StationResponse> listOf(List<Station> stations) {
         return stations.stream()
-                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public static StationResponse of(Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 
     public Long getId() {
