@@ -58,7 +58,7 @@ public class ApplyPosition {
     }
 
     public boolean addingFirst() {
-        return this.applyType.isAppyStart();
+        return this.applyType.isApplyStart();
     }
 
     public int findingIndex() {
@@ -66,7 +66,7 @@ public class ApplyPosition {
     }
 
     public int applyIndex() {
-        if (this.applyType.isAppyStart()) {
+        if (this.applyType.isApplyStart()) {
             return this.index;
         }
         return this.index + 1;

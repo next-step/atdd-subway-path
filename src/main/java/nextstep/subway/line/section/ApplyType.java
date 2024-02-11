@@ -28,7 +28,7 @@ public enum ApplyType {
         return this == ApplyType.ADD_MIDDLE || this == ApplyType.DELETE_MIDDLE;
     }
 
-    public boolean isAppyStart() {
+    public boolean isApplyStart() {
         return this == ApplyType.ADD_FIRST || this == ApplyType.DELETE_FIRST;
     }
 }
