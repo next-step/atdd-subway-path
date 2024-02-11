@@ -19,6 +19,10 @@ public class Sections {
     public Sections() {
     }
 
+    public int size() {
+        return sections.size();
+    }
+
     public void addSection(Section section) {
         if (sections.size() > 0) {
             validateNextSection(section);
@@ -28,7 +32,7 @@ public class Sections {
     }
 
     private void validateNextSection(Section section) {
-        if (!getEndStation().isEquals(section.getUpStation())) {
+        if (!getEndStation().equals(section.getUpStation())) {
             throw new SubwayException("구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이 아닙니다.");
         }
     }
@@ -43,12 +47,12 @@ public class Sections {
         return this.sections.stream().anyMatch(section -> section.getUpStation().equals(station));
     }
 
-    public void removeSection(Long stationId) {
+    public void removeSection(Station station) {
         validateLastSection();
-        validateEndSection(stationId);
+        validateEndSection(station);
 
         Section deleteSection = this.sections.stream()
-                .filter(section -> section.getDownStation().isEquals(stationId))
+                .filter(section -> section.getDownStation().equals(station))
                 .findFirst()
                 .orElseThrow(() -> new SubwayException("역을 찾을 수 없습니다."));
 
@@ -61,8 +65,8 @@ public class Sections {
         }
     }
 
-    private void validateEndSection(Long stationId) {
-        if (!getEndStation().isEquals(stationId)) {
+    private void validateEndSection(Station station) {
+        if (!getEndStation().equals(station)) {
             throw new SubwayException("마지막 구간만 제거할 수 있습니다.");
         }
     }
