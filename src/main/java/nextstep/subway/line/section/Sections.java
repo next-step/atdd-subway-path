@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -138,6 +139,16 @@ public class Sections {
 
     private boolean canDeleteLast(Station station) {
         return lastSection().isSameDownStation(station);
+    }
+
+    public List<Station> stations() {
+        return this.sectionList.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Section> getAll() {
+        return this.sectionList;
     }
 
     @Override

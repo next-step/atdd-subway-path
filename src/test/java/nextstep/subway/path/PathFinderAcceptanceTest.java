@@ -23,7 +23,7 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
     private Long 삼성역_ID;
     private Long 선릉역_ID;
     private Long 일호선_잠실역_부터_강남역_ID;
-    private Long 이호선_잠실역_부터_삼성역_ID;
+    private Long 이호선_강남역_부터_삼성역_ID;
     private Long 삼호선_강남역_부터_선릉역_ID;
 
     @BeforeEach
@@ -37,8 +37,8 @@ public class PathFinderAcceptanceTest extends AcceptanceTest {
 
         LineFixture lineFixture = new LineFixture(stationFixture);
         일호선_잠실역_부터_강남역_ID = JsonPathHelper.getObject(LineApiCaller.지하철_노선_생성(lineFixture.get일호선_잠실역_부터_강남역_params()), "id", Long.class);
-        이호선_잠실역_부터_삼성역_ID = JsonPathHelper.getObject(LineApiCaller.지하철_노선_생성(lineFixture.get이호선_잠실역_부터_삼성역_params()), "id", Long.class);
-        삼호선_강남역_부터_선릉역_ID = JsonPathHelper.getObject(LineApiCaller.지하철_노선_생성(lineFixture.get삼호선_강남역_부터_선릉역_params()), "id", Long.class);
+        이호선_강남역_부터_삼성역_ID = JsonPathHelper.getObject(LineApiCaller.지하철_노선_생성(lineFixture.get이호선_강남역_부터_삼성역_params()), "id", Long.class);
+        삼호선_강남역_부터_선릉역_ID = JsonPathHelper.getObject(LineApiCaller.지하철_노선_생성(lineFixture.get삼호선_잠실역_부터_선릉역_params()), "id", Long.class);
 
         SectionFixture sectionFixture = new SectionFixture(stationFixture);
         LineApiCaller.지하철_노선에_구간_추가(sectionFixture.get선릉역_부터_삼성역_구간_params(), "/lines/" + 삼호선_강남역_부터_선릉역_ID.toString());

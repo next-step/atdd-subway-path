@@ -1,19 +1,26 @@
 package nextstep.subway.path;
 
-import nextstep.subway.line.section.Sections;
+import nextstep.subway.station.Station;
+
+import java.util.List;
 
 public class Path {
-    private final Sections sections;
+    private final List<Station> stations;
     private final Long distance;
 
-    public Path(Sections sections,
+    public Path(List<Station> stations,
                 Long distance) {
-        this.sections = sections;
+        this.stations = stations;
         this.distance = distance;
     }
 
-    public Sections getSections() {
-        return sections;
+    public Path(List<Station> stations,
+                Double distance) {
+        this(stations, Math.round(distance));
+    }
+
+    public List<Station> getStations() {
+        return stations;
     }
 
     public Long getDistance() {
