@@ -80,7 +80,7 @@ public class Sections {
     }
 
     private void addMiddle(Section section) {
-        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, section);
+        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, section, PositionType.ADD_MIDDLE);
         Section existing = this.sectionList.get(applyPosition.findingIndex());
         existing.changeSectionFromToInput(applyPosition, section);
         this.sectionList.add(applyPosition.applyIndex(), section);
@@ -125,7 +125,7 @@ public class Sections {
     }
 
     private Section deleteMiddle(Station station) {
-        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, station);
+        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, station, PositionType.DELETE_MEDDLE);
         Section section = this.sectionList.get(applyPosition.findingIndex());
         Section targetSection = this.sectionList.get(applyPosition.applyIndex());
         section.changeDownStationFromToInputDownStation(targetSection);
