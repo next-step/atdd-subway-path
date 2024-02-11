@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LineRepository extends JpaRepository<Line, Long> {
-    @Query("SELECT distinct l FROM Line l join fetch l.sections")
+    @Query("SELECT distinct l FROM Line l join fetch l.sections.sections")
     public List<Line> findAllFetchJoin();
 
-    @Query("SELECT distinct l FROM Line l join fetch l.sections where l.id = :id")
+    @Query("SELECT distinct l FROM Line l join fetch l.sections.sections where l.id = :id")
     public Optional<Line> findByIdFetchJoin(Long id);
 }
