@@ -70,18 +70,34 @@ public class Line {
 	}
 
 	public void addSection(Section section) {
-		if(!isEndStation(section.getUpStationId())) {
-			throw new IllegalArgumentException("노선의 하행 종점역과 구간의 상행역은 같아야 합니다.");
+		if(hasStation(section.getDownStationId()) && hasStation(section.getUpStationId())) {
+			throw new IllegalArgumentException("해당 노선에 등록할 역들이 이미 존재합니다.");
+		}
+
+		if(!hasStation(section.getDownStationId()) && !hasStation(section.getUpStationId())) {
+			throw new IllegalArgumentException("등록 구간의 역들이 모두 노선에 존재하지 않습니다.");
 		}
 
 		if(hasStation(section.getDownStationId())) {
-			throw new IllegalArgumentException("해당 노선에 " + section.getDownStationId() + "역이 이미 존재합니다.");
+			this.startStationId = section.getUpStationId();
+			this.distance = this.distance + section.getDistance();
+			this.sections.addSection(section);
+		} else {
+			if(isEndStation(section.getUpStationId())) {
+				this.endStationId = section.getDownStationId();
+				this.distance = this.distance + section.getDistance();
+				this.sections.addSection(section);
+			} else {
+				Section upSection = sections.getSectionByUpStationId(section.getUpStationId());
+				if(upSection.getDistance() <= section.getDistance()) {
+					throw new IllegalArgumentException("등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없습니다.");
+				}
+				sections.addSection(section);
+				sections.addSection(new Section(this, section.getDownStationId(), upSection.getDownStationId(), upSection.getDistance() - section.getDistance()));
+				sections.removeSection(upSection);
+			}
+
 		}
-
-
-		this.endStationId = section.getDownStationId();
-		this.distance = this.distance + section.getDistance();
-		this.sections.addSection(section);
 	}
 
 	public void deleteSection(Long stationId) {

@@ -48,6 +48,13 @@ public class Sections {
 				.orElseThrow(EntityNotFoundException::new);
 	}
 
+	public Section getSectionByUpStationId(Long upStationId) {
+		return sections.stream()
+				.filter(x-> upStationId.equals(x.getUpStationId()))
+				.findAny()
+				.orElseThrow(EntityNotFoundException::new);
+	}
+
 	public int getSize() {
 		return sections.size();
 	}
