@@ -1,16 +1,13 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.exception.AlreadyExistDownStationException;
-import nextstep.subway.exception.DeleteSectionException;
-import nextstep.subway.exception.IsNotLastStationException;
 import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,14 +27,14 @@ public class Line {
     @Column(length = 20)
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();;
 
     @Column
     private Integer distance;
 
     @Column
-    private Timestamp deleted_at;
+    private LocalDateTime deleted_at;
 
     protected Line() {
     }
@@ -58,56 +55,16 @@ public class Line {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-
-        for (Section section : this.sections) {
-            stations.add(section.getUpStation());
-        }
-
-        stations.add(this.sections.get(this.sections.size() - 1).getDownStation());
-
-        return stations;
+        return this.sections.getStations();
     }
 
-    public void registerSection(Section section) {
-        this.sections.add(section);
+    public void addSection(Section section) {
+        this.sections.addSection(section);
         section.setLine(this);
     }
 
-    public void addSection(Section addedSection) {
-        if (isLastStation(addedSection.getUpStation())) {
-            throw new IsNotLastStationException();
-        }
-        if (isExistDownStation(addedSection)) {
-            throw new AlreadyExistDownStationException();
-        }
-        registerSection(addedSection);
-    }
-
     public void deleteSection(Station deletedStation) {
-        if (isLastStation(deletedStation)) {
-            throw new IsNotLastStationException();
-        }
-        if (sections.size() == 1) {
-            throw new DeleteSectionException();
-        }
-        this.sections.get(getLastSectionIndex()).delete();
-        this.sections.remove(getLastSectionIndex());
-    }
-
-    private boolean isExistDownStation(Section section) {
-        return getStations().stream()
-                .anyMatch(comparedStation ->
-                        comparedStation.equals(section.getDownStation())
-                );
-    }
-
-    private boolean isLastStation(Station station) {
-        return !this.sections.get(getLastSectionIndex()).equalsLastStation(station);
-    }
-
-    private int getLastSectionIndex() {
-        return this.sections.size() - 1;
+        sections.deleteSection(deletedStation);
     }
 
     public Long getLineId() {
@@ -126,7 +83,7 @@ public class Line {
         return distance;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 

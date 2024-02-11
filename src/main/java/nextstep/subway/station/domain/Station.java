@@ -4,7 +4,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -21,7 +21,7 @@ public class Station {
     private String name;
 
     @Column
-    private Timestamp deleted_at;
+    private LocalDateTime deleted_at;
 
     protected Station() {
     }

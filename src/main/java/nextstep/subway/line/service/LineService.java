@@ -45,7 +45,7 @@ public class LineService {
                 )
         );
 
-        line.registerSection(section);
+        line.addSection(section);
 
         return CreateLineResponse.from(line);
     }
