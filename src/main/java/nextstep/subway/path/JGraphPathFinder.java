@@ -20,11 +20,11 @@ public class JGraphPathFinder implements PathFinder {
     public Path shortcut(Lines lines,
                          Station source,
                          Station target) {
-        if(source.equals(target)) {
+        if (source.equals(target)) {
             throw new IllegalArgumentException("출발역과 도착역은 같을 수 없습니다.");
         }
 
-        if(!lines.existStation(source) || !lines.existStation(target))  {
+        if (!lines.existStation(source) || !lines.existStation(target)) {
             throw new IllegalArgumentException("입력한 역을 찾을 수 없습니다.");
         }
 
