@@ -74,53 +74,6 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * 구간 등록 실패 테스트
-     * 새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이 아닐 경우
-     * 구간을 등록할 수 없다.
-     */
-    @DisplayName("새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다.")
-//    @Test
-    void addSectionExceptionTest1() {
-        //given
-
-        //when
-        Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", stationId1);
-        params.put("downStationId", stationId3);
-        params.put("distance", 10);
-
-        String exceptionMessage = addSection(params, lineId).as(ExceptionResponse.class).getMessage();
-
-        //then
-//        assertThat(exceptionMessage).isEqualTo(ExceptionMessage.UPSTATION_VALIDATION_EXCEPTION.getMessage());
-    }
-
-    /**
-     * 구간 등록 실패 테스트
-     * 이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다.
-     */
-    @DisplayName("이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다.")
-//    @Test
-    void addSectionExceptionTest2() {
-        //given
-        Map<String, Object> params = new HashMap<>();
-        params.put("upStationId", stationId2);
-        params.put("downStationId", stationId3);
-        params.put("distance", 11);
-        addSection(params, lineId);
-
-        //when
-        Map<String, Object> params3 = new HashMap<>();
-        params3.put("upStationId", stationId3);
-        params3.put("downStationId", stationId2);
-        params3.put("distance", 13);
-        String exceptionMessage = addSection(params3, lineId).as(ExceptionResponse.class).getMessage();
-
-        //then
-//        assertThat(exceptionMessage).isEqualTo(ExceptionMessage.DOWNSTATION_VALIDATION_EXCEPTION.getMessage());
-    }
-
-    /**
      * 새로운 구간의 상행역과 하행역은 같을 수 없다.
      */
     @DisplayName("새로운 구간의 상행역과 하행역은 같을 수 없다.")
