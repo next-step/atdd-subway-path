@@ -46,7 +46,7 @@ public class LineServiceMockTest {
     }
 
     @BeforeEach
-    void 스텁_설정() {
+    void 사전_스텁_설정() {
         이호선_아이디 = 1L;
         선릉역_번호 = 1L;
         삼성역_번호 = 2L;
@@ -69,12 +69,11 @@ public class LineServiceMockTest {
     @Test
     void 지하철_구간_추가() {
         // given
-        SectionRequest 선릉_삼성_구간_요청 = SectionRequest.mergeForCreateLine(
-                        이호선_아이디,
-                        SectionFixture.지하철_구간(선릉역_번호, 삼성역_번호, 10));
+        SectionRequest 선릉_삼성_구간 = SectionRequest.mergeForCreateLine(
+                        이호선_아이디, SectionFixture.지하철_구간(선릉역_번호, 삼성역_번호, 10));
 
         // when
-        lineService.addSection(선릉_삼성_구간_요청);
+        lineService.addSection(선릉_삼성_구간);
 
         // then
         assertThat(lineService.findLineById(이호선_아이디).getStations())
@@ -89,17 +88,15 @@ public class LineServiceMockTest {
     @Test
     void 지하철_구간_삭제() {
         // given
-        SectionRequest 선릉_삼성_구간_요청 = SectionRequest.mergeForCreateLine(
-                이호선_아이디,
-                SectionFixture.지하철_구간(선릉역_번호, 삼성역_번호, 10));
-        SectionRequest 삼성_신천_구간_요청 = SectionRequest.mergeForCreateLine(
-                이호선_아이디,
-                SectionFixture.지하철_구간(삼성역_번호, 신천역_번호, 10));
+        SectionRequest 선릉_삼성_구간 = SectionRequest.mergeForCreateLine(
+                이호선_아이디, SectionFixture.지하철_구간(선릉역_번호, 삼성역_번호, 10));
+        SectionRequest 삼성_신천_구간 = SectionRequest.mergeForCreateLine(
+                이호선_아이디, SectionFixture.지하철_구간(삼성역_번호, 신천역_번호, 10));
 
         when(stationRepository.findById(신천역_번호)).thenReturn(Optional.of(신천역));
 
-        lineService.addSection(선릉_삼성_구간_요청);
-        lineService.addSection(삼성_신천_구간_요청);
+        lineService.addSection(선릉_삼성_구간);
+        lineService.addSection(삼성_신천_구간);
 
         // when
         lineService.deleteSection(이호선_아이디, 신천역_번호);

@@ -37,21 +37,16 @@ public class LineServiceTest {
     private LineService lineService;
 
     @BeforeEach
-    void 사전_역과_노선_추가() {
+    void 사전_설정_역과_노선_추가() {
         선릉역 = StationFixture.선릉;
         삼성역 = StationFixture.삼성;
         신천역 = StationFixture.신천;
 
-        Station 선릉역 = stationRepository.save(this.선릉역);
-        Station 삼성역 = stationRepository.save(this.삼성역);
-        Station 신천역 = stationRepository.save(this.신천역);
+        선릉역_번호 = stationRepository.save(this.선릉역).getId();
+        삼성역_번호 = stationRepository.save(this.삼성역).getId();
+        신천역_번호 = stationRepository.save(this.신천역).getId();
 
-        선릉역_번호 = 선릉역.getId();
-        삼성역_번호 = 삼성역.getId();
-        신천역_번호 = 신천역.getId();
-
-        Line 저장된_이호선 = lineRepository.save(new Line("이호선", "그린", 10));
-        이호선_아이디 = 저장된_이호선.getId();
+        이호선_아이디 = lineRepository.save(new Line("이호선", "그린", 10)).getId();
     }
 
     /**
