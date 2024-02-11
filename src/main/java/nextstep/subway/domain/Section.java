@@ -94,11 +94,11 @@ public class Section implements Comparable<Section> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+        return distance == section.distance && Objects.equals(upStation.getId(), section.upStation.getId()) && Objects.equals(downStation.getId(), section.downStation.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance);
+        return Objects.hash(upStation.getId(), downStation.getId(), distance);
     }
 }

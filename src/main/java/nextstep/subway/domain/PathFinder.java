@@ -33,8 +33,8 @@ public class PathFinder {
         return new PathResponse(path.getVertexList(), path.getWeight());
     }
 
-    private static WeightedMultigraph<Station, DefaultWeightedEdge> createGraph(final List<Line> lines) {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+    private WeightedMultigraph<Station, DefaultWeightedEdge> createGraph(final List<Line> lines) {
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
         lines.stream()
                 .flatMap(l -> l.getSections().stream())

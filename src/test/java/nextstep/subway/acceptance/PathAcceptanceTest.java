@@ -61,13 +61,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = 경로_조회를_요청한다(교대역, 양재역);
 
         // Then
-        최단거리_지하철역을_리턴한다(response, Arrays.asList(교대역, 남부터미널역, 양재역));
+        최단거리_지하철역을_리턴한다(response, Arrays.asList( 교대역.intValue(), 남부터미널역.intValue(), 양재역.intValue()));
         최단거리_가중치를_리턴한다(response, 5);
     }
 
-    private void 최단거리_지하철역을_리턴한다(final ExtractableResponse<Response> response, final List<Long> stationList) {
-        final List<Long> ids = response.jsonPath().getList("stations.id");
-        assertThat(ids).containsExactlyElementsOf(stationList);
+    private void 최단거리_지하철역을_리턴한다(final ExtractableResponse<Response> response, final List<Integer> stationList) {
+        final List<Integer> ids = response.jsonPath().getList("stations.id");
+        assertThat(stationList).containsExactlyElementsOf(ids);
     }
 
     private void 최단거리_가중치를_리턴한다(final ExtractableResponse<Response> response, final double expectedDistance) {
