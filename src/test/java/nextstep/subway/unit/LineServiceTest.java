@@ -50,7 +50,8 @@ public class LineServiceTest {
         SectionRequest sectionRequest = new SectionRequest(역삼역.getId(), 선릉역.getId(), 10L);
         lineService.addSection(이호선.getId(), sectionRequest);
 
-        assertThat(이호선.getSections().size()).isEqualTo(2);
+        LineResponse lineResponse = lineService.findLineById(이호선.getId());
+        assertThat(lineResponse.getStations()).hasSize(3);
     }
 
     @Test
@@ -72,6 +73,7 @@ public class LineServiceTest {
         lineService.addSection(이호선.getId(), sectionRequest);
         lineService.deleteSection(이호선.getId(), 선릉역.getId());
 
-        assertThat(이호선.getSections().size()).isEqualTo(1);
+        LineResponse lineResponse = lineService.findLineById(이호선.getId());
+        assertThat(lineResponse.getStations()).hasSize(2);
     }
 }

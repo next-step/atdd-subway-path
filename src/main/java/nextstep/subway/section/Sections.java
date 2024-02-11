@@ -19,10 +19,6 @@ public class Sections {
     public Sections() {
     }
 
-    public int size() {
-        return sections.size();
-    }
-
     public void addSection(Section section) {
         if (sections.size() > 0) {
             validateNextSection(section);

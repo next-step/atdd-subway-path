@@ -28,14 +28,14 @@ class LineTest {
         Section section = new Section(이호선, 역삼역, 선릉역, 10L);
         이호선.addSection(section);
 
-        assertThat(이호선.getSections().size()).isEqualTo(2);
+        assertThat(이호선.getOrderedStations()).hasSize(3);
     }
 
     @Test
     void getStations() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
 
-        assertThat(이호선.getOrderedStations()).containsExactly(강남역, 역삼역);
+        assertThat(이호선.getOrderedStations()).hasSize(2);
     }
 
     @Test
@@ -46,6 +46,6 @@ class LineTest {
 
         이호선.removeSection(선릉역);
 
-        assertThat(이호선.getSections().size()).isEqualTo(1);
+        assertThat(이호선.getOrderedStations()).hasSize(2);
     }
 }

@@ -63,7 +63,4 @@ public class Line {
         return sections.getOrderedStations();
     }
 
-    public Sections getSections() {
-        return sections;
-    }
 }
