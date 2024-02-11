@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.applicaion.dto.StationResponse;
@@ -13,7 +12,7 @@ import java.util.List;
 import static nextstep.subway.acceptance.StationSteps.지하철역_삭제;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_조회;
-import static nextstep.subway.utils.HTTPResponseCode.응답의_STATUS_검증;
+import static nextstep.subway.utils.ResponseUtils.응답의_STATUS_검증;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
