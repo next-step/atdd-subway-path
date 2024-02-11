@@ -8,7 +8,9 @@ public enum StationFixture {
     SEOLLEUNG_STATION("선릉역"),
     YANGJAE_STATION("양재역"),
     YEOKSAM_STATION("역삼역"),
-    SINDAEBANG_STATION("신대방역");
+    SINDAEBANG_STATION("신대방역"),
+    SILLIM_STATION("신림역"),
+    BONGCHEON_STATION("봉천역");
 
     private final String name;
 
