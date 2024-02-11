@@ -97,6 +97,19 @@ public class SectionsTest {
         assertThat(sections.get().get(0).getDistance()).isEqualTo(역삼_선릉.getDistance());
     }
 
+    @DisplayName("하행 종점역 삭제")
+    @Test
+    void deleteSection_lastDownStation() {
+        Sections sections = new Sections();
+        sections.addSection(강남_역삼);
+        sections.addSection(역삼_선릉);
+
+        sections.deleteSection(선릉역.getId());
+
+        assertThat(sections.allStations()).hasSize(2);
+        assertThat(sections.get().get(0).getDistance()).isEqualTo(강남_역삼.getDistance());
+    }
+
     @DisplayName("3개 역 존재")
     @Test
     void getStations() {
