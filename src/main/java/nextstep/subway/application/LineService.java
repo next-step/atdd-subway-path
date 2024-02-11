@@ -1,8 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.*;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Sections;
@@ -43,11 +41,6 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLineById(Long lineId) {
-        return convertToLineResponse(lineRepository.findById(lineId)
-                .orElseThrow(EntityNotFoundException::new));
-    }
-
     @Transactional
     public void updateLine(Long lineId, LineRequest request) {
         Line line = lineRepository.findById(lineId)
@@ -56,8 +49,45 @@ public class LineService {
     }
 
     @Transactional
+    public SectionResponse addSection(SectionRequest request) {
+        Line line = findLineById(request.getLineId());
+        Section section = convertSectionRequestToEntity(request, line);
+
+        if (!existStation(section)) {
+            throw new IllegalArgumentException("요청한 역은 존재하지 않습니다.");
+        }
+
+        line.addSection(section);
+        return convertToSectionResponse(section.setLine(line));
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationIdToDelete) {
+        Line line = findLineById(lineId);
+
+        if (!line.canSectionDelete(stationIdToDelete)) {
+            throw new IllegalArgumentException("요청한 구간(혹은 역)을 삭제할 수 없습니다.");
+        }
+        line.deleteSection(findStation(stationIdToDelete));
+    }
+
+    @Transactional
     public void deleteLine(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    public LineResponse findLineWithConvertResponse(Long lineId) {
+        return convertToLineResponse(findLineById(lineId));
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    private boolean existStation(Section section) {
+        boolean upStationExists = stationRepository.findById(section.getUpStation().getId()).isPresent();
+        boolean downStationExists = stationRepository.findById(section.getDownStation().getId()).isPresent();
+        return upStationExists && downStationExists;
     }
 
     private Station findStation(Long stationId) {
@@ -108,6 +138,24 @@ public class LineService {
         return new StationResponse(
                 station.getId(),
                 station.getName()
+        );
+    }
+
+    private SectionResponse convertToSectionResponse(Section section) {
+        return new SectionResponse(
+                section.getId(),
+                section.getUpStation().getId(),
+                section.getDownStation().getId(),
+                section.getDistance()
+        );
+    }
+
+    private Section convertSectionRequestToEntity(SectionRequest request, Line line) {
+        return new Section(
+                findStation(request.getUpStationId()),
+                findStation(request.getDownStationId()),
+                request.getDistance(),
+                line
         );
     }
 }

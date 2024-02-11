@@ -1,6 +1,6 @@
 package nextstep.subway.presentation;
 
-import nextstep.subway.application.SectionService;
+import nextstep.subway.application.LineService;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +11,9 @@ import java.net.URI;
 @RestController
 public class SectionController {
 
-    private final SectionService lineService;
+    private final LineService lineService;
 
-    public SectionController(SectionService lineService) {
+    public SectionController(LineService lineService) {
         this.lineService = lineService;
     }
 
