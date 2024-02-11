@@ -123,10 +123,8 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
 
-        Section section = sectionRepository.findByLineIdAndDownStationId(lineId, stationId)
-            .orElseThrow(EntityNotFoundException::new);
-
-        line.removeSection(section);
+        Station station = findStationById(stationId);
+        line.removeSectionByStation(station);
     }
 
     private void addSection(Line line, Station upStation, Station downStation, int distance) {

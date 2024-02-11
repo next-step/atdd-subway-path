@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.exception.SectionException;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Table(name = "section")
 @Entity
@@ -53,7 +55,14 @@ public class Section {
     }
 
     public void subtractDistance(int amount) {
+        if (amount > distance) {
+            throw new SectionException("구간의 길이는 1보다 작을 수 없습니다.");
+        }
         this.distance = this.distance - amount;
+    }
+
+    public void addDistance(int amount) {
+        this.distance = this.distance + amount;
     }
 
     public Long getId() {
@@ -74,5 +83,18 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }

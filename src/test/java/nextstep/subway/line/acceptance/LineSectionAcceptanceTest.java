@@ -357,7 +357,7 @@ public class LineSectionAcceptanceTest {
                 );
             }
 
-            @DisplayName("구간이 삭제되어 노선조회 시 해당 역을 조회할 수 없다")
+            @DisplayName("노선의 맨 마지막 구간이 제거된다")
             @Test
             void delete_station() {
                 // when
@@ -375,22 +375,22 @@ public class LineSectionAcceptanceTest {
             }
         }
 
-        @DisplayName("주어진 역 ID가 해당 노선의 하행종점역이 아니면")
+        @DisplayName("해당 노선의 상행 종점역 ID가 주어지면")
         @Nested
-        class Context_with_not_down_station_id {
+        class Context_with_up_station_id {
 
             long lineId;
-            long notDownStationId;
+            long 맨_앞_역_ID;
 
             @BeforeEach
             void setup() {
-                long upStationId = getLongPath(createStation("수원역").body(), "id");
-                long downStationId = getLongPath(createStation("고색역").body(), "id");
-                long newDownStationId = getLongPath(createStation("오목천역").body(), "id");
+                long 수원역 = getLongPath(createStation("수원역").body(), "id");
+                long 고색역 = getLongPath(createStation("고색역").body(), "id");
+                long 오목천역 = getLongPath(createStation("오목천역").body(), "id");
 
                 ExtractableResponse<Response> response = LineApiRequester.createLine(
                     new LineCreateRequest(
-                        "수인분당선", "bg-yellow-600", upStationId, downStationId, 10
+                        "수인분당선", "bg-yellow-600", 수원역, 고색역, 10
                     )
                 );
 
@@ -398,24 +398,76 @@ public class LineSectionAcceptanceTest {
 
                 addSectionToLineSuccess(
                     lineId,
-                    new SectionAddRequest(downStationId, newDownStationId, 3)
+                    new SectionAddRequest(고색역, 오목천역, 3)
                 );
 
-                notDownStationId = downStationId;
+                맨_앞_역_ID = 수원역;
             }
 
-            @DisplayName("구간 제거에 실패한다")
+            @DisplayName("노선의 맨 앞 구간이 제거된다")
             @Test
-            void will_return_400_status_code() {
-                // when
-                ExtractableResponse<Response> response = SectionApiRequester.deleteSection(lineId, notDownStationId);
+            void delete_up_station() {
+                ExtractableResponse<Response> response = SectionApiRequester.deleteSection(lineId, 맨_앞_역_ID);
 
-                //then
-                assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+                ExtractableResponse<Response> lineResponse = LineApiRequester.getLineById(lineId);
+
+                assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+                assertThat(
+                    getListPath(lineResponse.body(), "stations.id", Long.class)
+                ).noneMatch(id -> id.equals(맨_앞_역_ID));
             }
         }
 
-        @DisplayName("해당 노선에 상행 종점역과 하행 종점역만 있으면")
+        @DisplayName("주어진 역 ID가 해당 노선 가운데 있으면")
+        @Nested
+        class Context_with_not_down_station_id {
+
+            long lineId;
+            long 중간_역_ID;
+
+            @BeforeEach
+            void setup() {
+                long 수원역 = getLongPath(createStation("수원역").body(), "id");
+                long 고색역 = getLongPath(createStation("고색역").body(), "id");
+                long 오목천역 = getLongPath(createStation("오목천역").body(), "id");
+
+                // 수원 - 고색
+                ExtractableResponse<Response> response = LineApiRequester.createLine(
+                    new LineCreateRequest(
+                        "수인분당선", "bg-yellow-600", 수원역, 고색역, 10
+                    )
+                );
+
+                lineId = getLongPath(response.body(), "id");
+
+                // 고색 - 오목천
+                addSectionToLineSuccess(
+                    lineId,
+                    new SectionAddRequest(고색역, 오목천역, 3)
+                );
+
+                중간_역_ID = 고색역;
+            }
+
+            @DisplayName("중간 구간이 제거된다")
+            @Test
+            void will_return_204_no_content() {
+                ExtractableResponse<Response> response = SectionApiRequester.deleteSection(lineId, 중간_역_ID);
+
+                assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+                ExtractableResponse<Response> lineResponse = LineApiRequester.getLineById(lineId);
+
+                assertThat(lineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+                assertThat(
+                    getListPath(lineResponse.body(), "stations.id", Long.class)
+                ).noneMatch(id -> id.equals(중간_역_ID));
+            }
+        }
+
+        @DisplayName("해당 노선에 하나의 구간만 있으면")
         @Nested
         class Context_line_has_only_up_station_and_down_station {
 

@@ -74,7 +74,6 @@ class LineTest {
         assertThat(line.getStations().stream().map(Station::getName)).contains("수원역", "고색역");
     }
 
-
     @DisplayName("주어진 구간을 제거할 수 있다")
     @Test
     void removeSection() {
@@ -82,10 +81,10 @@ class LineTest {
         line.addSection(new Station("수원역"), downStation, 10);
         line.addSection(downStation, new Station("오목천역"), 10);
 
-        line.removeSection(line.getSections().getLastSection());
+        line.removeSectionByStation(downStation);
 
         assertThat(line.getStations().isEmpty()).isFalse();
         assertThat(line.getAllSections().size()).isEqualTo(1);
-        assertThat(line.getStations().stream().map(Station::getName)).isNotIn("오목천역");
+        assertThat(line.getStations().stream().map(Station::getName)).isNotIn("고색역");
     }
 }
