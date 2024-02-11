@@ -28,6 +28,8 @@ public class PathService {
     }
 
     public PathResponse getPath(PathRequest request) {
+        validateRequest(request);
+
         final Set<Section> sections = getAllSectionsInLines();
 
         final WeightedMultigraph<String, DefaultWeightedEdge> sectionGraph = getWightedGraphWithSection(sections);
@@ -37,6 +39,12 @@ public class PathService {
         final GraphPath<String, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(request.getSource().toString(), request.getTarget().toString());
 
         return getPathResponse(sections, graphPath.getVertexList(), (int) graphPath.getWeight());
+    }
+
+    private void validateRequest(PathRequest request) {
+        if (request.getSource().equals(request.getTarget())) {
+            throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
+        }
     }
 
     private PathResponse getPathResponse(Set<Section> sections, List<String> stationPath, int distance) {
