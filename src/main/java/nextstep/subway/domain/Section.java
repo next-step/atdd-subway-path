@@ -65,4 +65,14 @@ public class Section {
             distance -= section.getDistance();
         }
     }
+
+    public void shorten(Section section) {
+        upStation = section.downStation;
+        distance -= section.distance;
+    }
+
+    public void extend(Section section) {
+        upStation = section.upStation;
+        distance += section.distance;
+    }
 }
