@@ -90,6 +90,31 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(distance).isEqualTo(교대_남부터미널_거리 + 남부터미널_양재_거리);
     }
 
+    /**
+     *
+     *     - Given 공통으로 1개 씩의 역을 가진 3개 노선이 주어진다.
+     *     - When 세개 노선에 걸친 역의 경로를 조회하면,
+     *     - Then 경로가 조회 된다.
+     */
+    @Test
+    void 세_노선에_걸친_역_간의_경로를_찾을_수_있다() {
+        // given
+        final int 강남_선릉_거리 = 20;
+        final Long 선릉역 = 응답에서_id_조회(지하철역_생성_요청("선릉역"));
+
+        응답에서_id_조회(지하철_노선_생성_요청("4호선", "cyan", 강남역, 선릉역, 강남_선릉_거리));
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_경로_조회(남부터미널역, 선릉역);
+
+        // then
+        final List<Station> stations = response.jsonPath().getList("stations", Station.class);
+        final int distance = response.jsonPath().getInt("distance");
+
+        assertThat(stations.stream().mapToLong(Station::getId)).containsAll(List.of(교대역, 남부터미널역, 강남역, 선릉역));
+        assertThat(distance).isEqualTo(교대_남부터미널_거리 + 교대_강남_거리 + 강남_선릉_거리);
+    }
+
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         final Map<String, String> params = new HashMap<>();
 
