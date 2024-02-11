@@ -52,30 +52,21 @@ public class Sections {
             throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "이미 등록된 구간입니다.");
         }
 
-        if (isMiddleAdded(newSection)) {
-            addMiddleSection(newSection);
-            return;
-        }
-
         if (isFirstAdded(newSection)) {
-            addFirstSection(newSection);
+            addInFirst(newSection);
             return;
         }
 
         if (isLastAdded(newSection)) {
-            addLastSection(newSection);
+            addInLast(newSection);
             return;
         }
 
-        throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "등록할 수 없는 구간입니다.");
+        addInMiddle(newSection);
     }
 
     private boolean isDuplicatedSection(Section newSection) {
         return sections.stream().anyMatch(section -> section.matchStations(newSection));
-    }
-
-    private boolean isMiddleAdded(Section newSection) {
-        return sections.stream().anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
     }
 
     private boolean isFirstAdded(Section section) {
@@ -86,22 +77,7 @@ public class Sections {
         return lastSection().getDownStation().equals(section.getUpStation());
     }
 
-    private void addMiddleSection(Section newSection) {
-        if (isDuplicatedDownStation(newSection.getDownStation())) {
-            throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
-        }
-
-        Section originalSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-                .findFirst()
-                .orElseThrow();
-
-        int index = sections.indexOf(originalSection);
-        sections.add(index == 0 ? 0 : index - 1, newSection);
-        originalSection.separateFrom(newSection);
-    }
-
-    private void addFirstSection(Section newSection) {
+    private void addInFirst(Section newSection) {
         if (isDuplicatedUpStation(newSection.getUpStation())) {
             throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
         }
@@ -112,11 +88,26 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.getDownStation().equals(upStation));
     }
 
-    private void addLastSection(Section newSection) {
+    private void addInLast(Section newSection) {
         if (isDuplicatedDownStation(newSection.getDownStation())) {
             throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
         }
         sections.add(newSection);
+    }
+
+    private void addInMiddle(Section newSection) {
+        if (isDuplicatedDownStation(newSection.getDownStation())) {
+            throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
+        }
+
+        Section targetSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 구간 정보를 찾을 수 없습니다ㅏ."));
+
+        int index = sections.indexOf(targetSection);
+        sections.add(index == 0 ? 0 : index - 1, newSection);
+        targetSection.moveBackFrom(newSection);
     }
 
     private boolean isDuplicatedDownStation(Station downStation) {
@@ -139,7 +130,7 @@ public class Sections {
             return;
         }
 
-        throw new LineException(ErrorCode.CANNOT_DELETE_SECTION, "삭제를 수행할 수 없는 역 정보입니다");
+        deleteMiddleSection(stationId);
     }
 
     private boolean isFirstUpStation(Long stationId) {
@@ -148,6 +139,19 @@ public class Sections {
 
     private boolean isLastDownStation(Long stationId) {
         return lastSection().getDownStation().match(stationId);
+    }
+
+    private void deleteMiddleSection(Long stationId) {
+        Section targetSection = sections.stream()
+                .filter(section -> section.getDownStation().match(stationId))
+                .findFirst()
+                .orElseThrow(() -> new LineException(ErrorCode.CANNOT_DELETE_SECTION, "삭제할 역 정보를 찾을 수 없습니다."));
+
+        int targetIndex = sections.indexOf(targetSection);
+        Section nextSection = sections.get(targetIndex + 1);
+
+        targetSection.mergeWith(nextSection);
+        sections.remove(nextSection);
     }
 
     @Override

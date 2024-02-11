@@ -36,13 +36,22 @@ public class Section {
         this.distance = distance;
     }
 
-    public void separateFrom(Section newSection) {
-        this.upStation = newSection.downStation;
-        this.distance = this.distance - newSection.distance;
-    }
-
     public List<Station> stations() {
         return List.of(upStation, downStation);
+    }
+
+    public boolean matchStations(Section section) {
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
+    }
+
+    public void moveBackFrom(Section prevSection) {
+        this.upStation = prevSection.downStation;
+        this.distance = this.distance - prevSection.distance;
+    }
+
+    public void mergeWith(Section nextSection) {
+        this.downStation = nextSection.downStation;
+        this.distance = distance + nextSection.distance;
     }
 
     public Long getId() {
@@ -73,9 +82,5 @@ public class Section {
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
-    }
-
-    public boolean matchStations(Section section) {
-        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
     }
 }

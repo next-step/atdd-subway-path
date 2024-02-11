@@ -255,4 +255,29 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("sections.downStation.id", Long.class)).containsExactly(stationIds.get(1));
         assertThat(response.jsonPath().getList("sections.distance", Long.class)).containsExactly(10L);
     }
+
+    /**
+     * given A-B-C 구간을 보유한 노선을 생성하고
+     * when B 역을 삭제하면
+     * then A-C 1개의 구간을 가진 노선 정보를 응답받을 수 있다.
+     */
+    @DisplayName("중간 역 삭제")
+    @Test
+    void deleteSection_middleStation() {
+        //given
+        List<Long> stationIds = stationFixtures(4);
+        Long lineId = makeLine(new LineRequest("신분당선", "red", stationIds.get(0), stationIds.get(1), 10L)).jsonPath().getLong("id");
+        makeSection(lineId, new SectionRequest(stationIds.get(1), stationIds.get(2), 4L));
+        makeSection(lineId, new SectionRequest(stationIds.get(2), stationIds.get(3), 6L));
+
+        // when
+        removeSection(stationIds.get(1), lineId);
+
+        // then
+        ExtractableResponse<Response> response = getLineSections(lineId);
+
+        assertThat(response.jsonPath().getList("sections.upStation.id", Long.class)).containsExactly(stationIds.get(0), stationIds.get(2));
+        assertThat(response.jsonPath().getList("sections.downStation.id", Long.class)).containsExactly(stationIds.get(2), stationIds.get(3));
+        assertThat(response.jsonPath().getList("sections.distance", Long.class)).containsExactly(14L, 6L);
+    }
 }
