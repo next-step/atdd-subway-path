@@ -35,7 +35,7 @@ public class Line {
     }
 
     private boolean hasExistingStation(Section toSaveSection) {
-        return sections.hasExistingStation(toSaveSection);
+        return sections.hasExistingStationExceptLast(toSaveSection);
     }
 
     public boolean canSectionDelete(Long stationId) {

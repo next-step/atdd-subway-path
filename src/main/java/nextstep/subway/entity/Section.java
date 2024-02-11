@@ -59,8 +59,16 @@ public class Section {
         return this;
     }
 
+    public boolean isLeastOneSameStation(Section newSection) {
+        Station newUpStation = newSection.getUpStation();
+        Station newDownStation = newSection.getDownStation();
+
+        return (upStation.isSame(newUpStation) || upStation.isSame(newDownStation) ||
+                downStation.isSame(newUpStation) || downStation.isSame(newDownStation));
+    }
+
     private int validateDistance(Integer distance) {
-        if(distance == null || distance < MIN_DISTANCE_VALUE) {
+        if (distance == null || distance < MIN_DISTANCE_VALUE) {
             throw new IllegalArgumentException("거리는 0보다 커야합니다.");
         }
         return distance;
@@ -82,3 +90,4 @@ public class Section {
         return distance;
     }
 }
+

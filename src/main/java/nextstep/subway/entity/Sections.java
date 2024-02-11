@@ -27,15 +27,11 @@ public class Sections {
         return sections.get(0).getUpStation();
     }
 
-    public boolean hasExistingStation(Section newSection) {
+    public boolean hasExistingStationExceptLast(Section newSection) {
         return sections.stream()
                 .limit(sections.size() - 1)
-                .anyMatch(section ->
-                        section.getUpStation().equals(newSection.getUpStation()) ||
-                        section.getDownStation().equals(newSection.getUpStation())
-                );
+                .anyMatch(section ->section.isLeastOneSameStation(newSection));
     }
-
 
     public boolean isDeletionAllowed() {
         return sections.size() > MIN_DELETE_REQUIRED_SECTIONS_SIZE;
