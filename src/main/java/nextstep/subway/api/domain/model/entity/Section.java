@@ -98,14 +98,6 @@ public class Section implements Comparable<Section> {
 		return this.downStation.getName();
 	}
 
-	public boolean isDownEndStation(String stationName) {
-		return this.fetchDownStationName().equals(stationName);
-	}
-
-	public boolean isUpEndStation(String stationName) {
-		return this.fetchUpStationName().equals(stationName);
-	}
-
 	public boolean isDownEndStation(Long stationId) {
 		return this.fetchDownStationId().equals(stationId);
 	}
@@ -128,6 +120,14 @@ public class Section implements Comparable<Section> {
 
 	public boolean isSameDownStation(Station downStation) {
 		return this.downStation.equals(downStation);
+	}
+
+	public boolean isUpStationMatches(Station station) {
+		return this.upStation.equals(station);
+	}
+
+	public boolean isDownStationMatches(Station station) {
+		return this.downStation.equals(station);
 	}
 
 	public void validateInsertion(Section other) {

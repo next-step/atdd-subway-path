@@ -20,7 +20,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.api.CommonAcceptanceTest;
 import nextstep.subway.api.domain.dto.outport.StationInfo;
-import nextstep.subway.api.interfaces.dto.request.LineCreateRequest;
 import nextstep.subway.api.interfaces.dto.request.SectionCreateRequest;
 import nextstep.subway.api.interfaces.dto.response.LineResponse;
 
@@ -43,21 +42,16 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("구간 등록 - 성공 케이스")
 	void createSection_Success() {
 		// given
-		ExtractableResponse<Response> stationCreateResponse1 = executeCreateStationRequest("상행 종점역");
-		long stationId1 = parseId(stationCreateResponse1);
-		ExtractableResponse<Response> stationCreateResponse2 = executeCreateStationRequest("하행 종점역");
-		long stationId2 = parseId(stationCreateResponse2);
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선 이름", stationId1, stationId2);
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
+		long stationId1 = parseId(executeCreateStationRequest("상행 종점역"));
+		long stationId2 = parseId(executeCreateStationRequest("하행 종점역"));
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선 이름", stationId1, stationId2)));
 
 		ExtractableResponse<Response> newStationCreateResponse = executeCreateStationRequest("새로운 역");
 		long stationId3 = parseId(newStationCreateResponse);
 
 		// When & then
 		// 성공 케이스 -> 상행역은 해당 노선에 등록되어 있는 하행 종점역이어야 한다 & 새로운 역이어야 한다 조건을 만족하도록 request 구성
-		SectionCreateRequest sectionCreateRequest = SectionCreateRequest.builder().upStationId(stationId2).downStationId(stationId3).distance(10L).build();
-		ExtractableResponse<Response> response = executeCreateSectionRequest(lineId, sectionCreateRequest);
+		ExtractableResponse<Response> response = executeCreateSectionRequest(lineId, SectionCreateRequest.builder().upStationId(stationId2).downStationId(stationId3).distance(10L).build());
 
 		assertEquals(HttpStatus.CREATED.value(), response.statusCode());
 	}
@@ -73,21 +67,16 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("구간 등록 - 예외 케이스 1 -> 새로운 구간은 상행역은 해당 노선에 등록되어 있는 하행 종점역이어야 한다는 조건을 불만족")
 	void createSection_Failure_1() {
 		// Given
-		ExtractableResponse<Response> stationCreateResponse1 = executeCreateStationRequest("상행 종점역");
-		long stationId1 = parseId(stationCreateResponse1);
-		ExtractableResponse<Response> stationCreateResponse2 = executeCreateStationRequest("하행 종점역");
-		long stationId2 = parseId(stationCreateResponse2);
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선 이름", stationId1, stationId2);
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
+		long stationId1 = parseId(executeCreateStationRequest("상행 종점역"));
+		long stationId2 = parseId(executeCreateStationRequest("하행 종점역"));
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선 이름", stationId1, stationId2)));
 
 		ExtractableResponse<Response> newStationCreateResponse = executeCreateStationRequest("새로운 역");
 		long stationId3 = parseId(newStationCreateResponse);
 
 		// When
 		// 새로운 구간의 상행역은 해당 노선에 등록되어 있는 하행 종점역이어야 한다는 조건을 불만족
-		SectionCreateRequest invalidSectionRequest = SectionCreateRequest.builder().upStationId(stationId1).downStationId(stationId3).distance(10L).build();
-		ExtractableResponse<Response> response = executeCreateSectionRequest(lineId, invalidSectionRequest);
+		ExtractableResponse<Response> response = executeCreateSectionRequest(lineId, SectionCreateRequest.builder().upStationId(stationId1).downStationId(stationId3).distance(10L).build());
 
 		// Then
 		assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
@@ -104,18 +93,13 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("구간 등록 - 예외 케이스 2 -> 이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다는 조건을 불만족")
 	void createSection_Failure_2() {
 		// Given
-		ExtractableResponse<Response> stationCreateResponse1 = executeCreateStationRequest("상행 종점역");
-		long stationId1 = parseId(stationCreateResponse1);
-		ExtractableResponse<Response> stationCreateResponse2 = executeCreateStationRequest("하행 종점역");
-		long stationId2 = parseId(stationCreateResponse2);
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선 이름", stationId1, stationId2);
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
+		long stationId1 = parseId(executeCreateStationRequest("상행 종점역"));
+		long stationId2 = parseId(executeCreateStationRequest("하행 종점역"));
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선 이름", stationId1, stationId2)));
 
 		// When
 		// 이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다는 조건을 불만족
-		SectionCreateRequest invalidSectionRequest = SectionCreateRequest.builder().upStationId(stationId2).downStationId(stationId1).distance(10L).build();
-		ExtractableResponse<Response> response = executeCreateSectionRequest(lineId, invalidSectionRequest);
+		ExtractableResponse<Response> response = executeCreateSectionRequest(lineId, SectionCreateRequest.builder().upStationId(stationId2).downStationId(stationId1).distance(10L).build());
 
 		// Then
 		assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
@@ -133,18 +117,11 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("구간 제거 - 성공 케이스")
 	void deleteDownEndSection_Success() {
 		// Given
-		ExtractableResponse<Response> stationCreateResponse1 = executeCreateStationRequest("상행 종점역");
-		long stationId1 = parseId(stationCreateResponse1);
-		ExtractableResponse<Response> stationCreateResponse2 = executeCreateStationRequest("하행 종점역");
-		long stationId2 = parseId(stationCreateResponse2);
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선", stationId1, stationId2);
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
-
-		ExtractableResponse<Response> newStationCreateResponse = executeCreateStationRequest("새로운 역");
-		long stationId3 = parseId(newStationCreateResponse);
-		SectionCreateRequest sectionCreateRequest = SectionCreateRequest.builder().upStationId(stationId2).downStationId(stationId3).distance(10L).build();
-		executeCreateSectionRequest(lineId, sectionCreateRequest);
+		long stationId1 = parseId(executeCreateStationRequest("상행 종점역"));
+		long stationId2 = parseId(executeCreateStationRequest("하행 종점역"));
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선", stationId1, stationId2)));
+		long stationId3 = parseId(executeCreateStationRequest("새로운 역"));
+		executeCreateSectionRequest(lineId, SectionCreateRequest.builder().upStationId(stationId2).downStationId(stationId3).distance(10L).build());
 
 		// When
 		ExtractableResponse<Response> deleteResponse = executeDeleteSectionRequest(lineId, stationId3);
@@ -164,16 +141,11 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("구간 제거 - 예외 케이스 -> 마지막 구간이 아닌 구간을 제외할 때 예외 발생")
 	void deleteNotDownEndSection_Failure_1() {
 		// Given
-		ExtractableResponse<Response> stationCreateResponse1 = executeCreateStationRequest("Station A");
-		long stationId1 = parseId(stationCreateResponse1);
-		ExtractableResponse<Response> stationCreateResponse2 = executeCreateStationRequest("Station B");
-		long stationId2 = parseId(stationCreateResponse2);
-		ExtractableResponse<Response> stationCreateResponse3 = executeCreateStationRequest("Station C");
-		long stationId3 = parseId(stationCreateResponse3);
+		long stationId1 = parseId(executeCreateStationRequest("Station A"));
+		long stationId2 = parseId(executeCreateStationRequest("Station B"));
+		long stationId3 = parseId(executeCreateStationRequest("Station C"));
 
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선", stationId1, stationId2);
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선", stationId1, stationId2)));
 
 		SectionCreateRequest newSectionRequest = SectionCreateRequest.builder()
 			.upStationId(stationId2)
@@ -200,13 +172,9 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("구간 제거 - 예외 케이스 -> 상행 종점역과 하행 종점역이 각 1개만 있는 경우 해당 역을 삭제하는 경우 최소 개수 조건을 유지해야 한다는 조건을 불만족하여 예외")
 	void deleteSectionWhenMinimumRequiredStationCountNotSatisfied_Failure_2() {
 		// Given
-		ExtractableResponse<Response> stationCreateResponse1 = executeCreateStationRequest("상행 종점역");
-		long stationId1 = parseId(stationCreateResponse1);
-		ExtractableResponse<Response> stationCreateResponse2 = executeCreateStationRequest("하행 종점역");
-		long stationId2 = parseId(stationCreateResponse2);
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선", stationId1, stationId2);
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
+		long stationId1 = parseId(executeCreateStationRequest("상행 종점역"));
+		long stationId2 = parseId(executeCreateStationRequest("하행 종점역"));
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선", stationId1, stationId2)));
 
 		// When
 		ExtractableResponse<Response> deleteResponse = executeDeleteSectionRequest(lineId, stationId2);
@@ -226,16 +194,11 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("노선 가운데 역 추가 - 성공 케이스")
 	void addStationBetweenStations_Success() {
 		// given
-		ExtractableResponse<Response> stationCreateResponseA = executeCreateStationRequest("A역");
-		long stationAId = parseId(stationCreateResponseA); // 1
-		ExtractableResponse<Response> stationCreateResponseC = executeCreateStationRequest("C역");
-		long stationCId = parseId(stationCreateResponseC); // 2
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선", stationAId, stationCId, 7L);  // A - C 노선
-		ExtractableResponse<Response> lineACCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineACCreateResponse);
+		long stationAId = parseId(executeCreateStationRequest("A역")); // 1
+		long stationCId = parseId(executeCreateStationRequest("C역")); // 2
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선", stationAId, stationCId, 7L))); // A - C 노선
 
-		ExtractableResponse<Response> newStationBCreateResponse = executeCreateStationRequest("B역");
-		long stationBId = parseId(newStationBCreateResponse); // 3
+		long stationBId = parseId(executeCreateStationRequest("B역")); // 3
 
 		// when
 		SectionCreateRequest sectionCreateRequestAB = createSectionCreateRequestWithUpAndDownAndDistance(stationAId, stationBId, 4L);
@@ -246,18 +209,10 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 		assertEquals(HttpStatus.CREATED.value(), sectionABCreateResponse.statusCode());
 
 		// 2) 역 조회 검증
-		ExtractableResponse<Response> lineDetails = executeGetSpecificStationLineRequest(lineId);
-		LineResponse lineResponse = lineDetails.as(LineResponse.class);
-		List<String> stationNames = lineResponse.getStations().stream().map(StationInfo::getName).collect(Collectors.toList());
+		List<String> stationNames = executeGetSpecificStationLineRequest(lineId).as(LineResponse.class).getStations().stream().map(StationInfo::getName).collect(Collectors.toList());
 		assertTrue(stationNames.contains("A역"));
 		assertTrue(stationNames.contains("B역"));
 		assertTrue(stationNames.contains("C역"));
-
-		// 3) 거리 재설정 검증
-
-		// assertEquals(4, line.calculateDistances("A역", "B역"));
-		// assertEquals(3, line.calculateDistances("B역", "C역"));
-		// assertEquals(7, line.calculateDistances("A역", "C역"));
 	}
 
 	/**
@@ -269,16 +224,10 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("노선 처음에 역 추가 - 성공 케이스")
 	void addStationAtTheBeginning_Success() {
 		// given
-		ExtractableResponse<Response> stationCreateResponseY = executeCreateStationRequest("Y역");
-		long stationYId = parseId(stationCreateResponseY); // 1
-		ExtractableResponse<Response> stationCreateResponseZ = executeCreateStationRequest("Z역");
-		long stationZId = parseId(stationCreateResponseZ); // 2
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선", stationYId, stationZId, 4L);  // Y - Z 노선
-		ExtractableResponse<Response> lineYZCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineYZCreateResponse);
-
-		ExtractableResponse<Response> newStationXCreateResponse = executeCreateStationRequest("X역");
-		long stationXId = parseId(newStationXCreateResponse); // 3
+		long stationYId = parseId(executeCreateStationRequest("Y역")); // 1
+		long stationZId = parseId(executeCreateStationRequest("Z역")); // 2
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선", stationYId, stationZId, 4L)));// Y - Z 노선
+		long stationXId = parseId(executeCreateStationRequest("X역")); // 3
 
 		// when
 		SectionCreateRequest sectionCreateRequestXY = createSectionCreateRequestWithUpAndDownAndDistance(stationXId, stationYId, 3L);
@@ -289,69 +238,11 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 		assertEquals(HttpStatus.CREATED.value(), sectionXYCreateResponse.statusCode());
 
 		// 2) 역 조회 검증
-		ExtractableResponse<Response> lineDetails = executeGetSpecificStationLineRequest(lineId);
-		LineResponse lineResponse = lineDetails.as(LineResponse.class);
+		LineResponse lineResponse = executeGetSpecificStationLineRequest(lineId).as(LineResponse.class);
 		List<String> stationNames = lineResponse.getStations().stream().map(StationInfo::getName).collect(Collectors.toList());
 		assertTrue(stationNames.contains("X역"));
 		assertTrue(stationNames.contains("Y역"));
 		assertTrue(stationNames.contains("Z역"));
-
-		// 3) 거리 재설정 검증
-		// Line line = lineDetails.as(Line.class);
-		// assertEquals(4, line.calculateDistances("Y역", "Z역"));
-		// assertEquals(3, line.calculateDistances("X역", "Y역"));
-		// assertEquals(7, line.calculateDistances("X역", "Z역"));
-	}
-
-	/**
-	 * given - 지하철 노선에 A역과 C역이 등록되어 있을 때
-	 * when - 등록된 구간 외의 위치에 새 역 추가 시도
-	 * then -  에러 반환
-	 */
-	@Test
-	@DisplayName("노선 가운데 역 추가 - 예외 케이스")
-	void addStationBetweenStations_Failure() {
-
-	}
-
-	/**
-	 * given - 지하철 노선에 A역과 C역이 등록되어 있을 때
-	 * when -  이미 등록된 A역을 다시 추가 시도
-	 * then - 에러 반환
-	 */
-	@Test
-	@DisplayName("노선에 이미 등록된 역 추가 - 예외 케이스")
-	void addExistingStation_Failure() {
-	}
-
-	/**
-	 * given - 노선에 A역과 C역이 등록되어 있을 때
-	 * when - A와 C 사이에 이미 등록된 B역을 다시 추가하는 요청
-	 * then - 에러 반환
-	 */
-	@Test
-	@DisplayName("노선 가운데에 이미 등록된 역 추가 - 예외 케이스")
-	void addStationBetweenStationsWithExistingStation_Failure() {
-	}
-
-	/**
-	 * given - 노선에 A역, B역, C역이 순서대로 등록되어 있을 때
-	 * when - D역을 A와 B 사이에 추가하려고 할 때 새로운 길이가 기존 A-B 길이보다 큰 경우
-	 * then - 에러 반환
-	 */
-	@Test
-	@DisplayName("노선 가운데 역 추가 시 새로운 길이가 기존 길이보다 큰 경우 - 예외 케이스")
-	void addStationBetweenStationsWithInvalidDistance_Failure() {
-	}
-
-	/**
-	 * given - 노선의 시작점에 A역이 등록되어 있을 때
-	 * when - 이미 등록된 A역을 노선의 시작점에 다시 추가 시도
-	 * then - 에러 반환
-	 */
-	@Test
-	@DisplayName("노선의 시작점에 이미 등록된 역 추가 - 예외 케이스")
-	void addStationAtTheBeginningWithExistingStation_Failure() {
 	}
 
 	///////////// 삭제 추가 요구 사항
@@ -367,16 +258,10 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("노선의 중간 역 제거 - 성공 케이스")
 	void removeMiddleStation_Success() {
 		// Given: 지하철 노선에 A, B, C 세 역이 순서대로 등록되어 있을 때
-		ExtractableResponse<Response> stationCreateResponseA = executeCreateStationRequest("A역");
-		long stationAId = parseId(stationCreateResponseA);
-		ExtractableResponse<Response> stationCreateResponseB = executeCreateStationRequest("B역");
-		long stationBId = parseId(stationCreateResponseB);
-		ExtractableResponse<Response> stationCreateResponseC = executeCreateStationRequest("C역");
-		long stationCId = parseId(stationCreateResponseC);
-
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선", stationAId, stationCId, 7L); // A - C
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
+		long stationAId = parseId(executeCreateStationRequest("A역"));
+		long stationBId = parseId(executeCreateStationRequest("B역"));
+		long stationCId = parseId(executeCreateStationRequest("C역"));
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선", stationAId, stationCId, 7L)));  // A - C
 
 		SectionCreateRequest sectionCreateRequestAB = createSectionCreateRequestWithUpAndDownAndDistance(stationAId, stationBId, 3L); // A - B
 		executeCreateSectionRequest(lineId, sectionCreateRequestAB);
@@ -400,19 +285,12 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("노선의 상행 종점역 제거 - 성공 케이스")
 	void removeUpEndStation_Success() {
 		// given
-		ExtractableResponse<Response> stationCreateResponseA = executeCreateStationRequest("A역");
-		long stationAId = parseId(stationCreateResponseA);
-		ExtractableResponse<Response> stationCreateResponseB = executeCreateStationRequest("B역");
-		long stationBId = parseId(stationCreateResponseB);
-		ExtractableResponse<Response> stationCreateResponseC = executeCreateStationRequest("C역");
-		long stationCId = parseId(stationCreateResponseC);
+		long stationAId = parseId(executeCreateStationRequest("A역"));
+		long stationBId = parseId(executeCreateStationRequest("B역"));
+		long stationCId = parseId(executeCreateStationRequest("C역"));
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선", stationAId, stationCId, 10L)));
 
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선", stationAId, stationCId, 10L);
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
-
-		SectionCreateRequest sectionCreateRequestAB = createSectionCreateRequestWithUpAndDownAndDistance(stationAId, stationBId, 5L);
-		executeCreateSectionRequest(lineId, sectionCreateRequestAB);
+		executeCreateSectionRequest(lineId, createSectionCreateRequestWithUpAndDownAndDistance(stationAId, stationBId, 5L));
 
 		// when
 		ExtractableResponse<Response> deleteResponse = executeDeleteSectionRequest(lineId, stationAId);
@@ -421,8 +299,7 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 		assertEquals(HttpStatus.NO_CONTENT.value(), deleteResponse.statusCode());
 
 		// 상행 종점역 A가 제거된 후의 노선 정보 확인
-		ExtractableResponse<Response> lineDetailsResponse = executeGetSpecificStationLineRequest(lineId);
-		List<Long> stationIds = parseStationIds(lineDetailsResponse);
+		List<Long> stationIds = parseStationIds(executeGetSpecificStationLineRequest(lineId));
 		assertFalse(stationIds.contains(stationAId)); // A역이 제거되었는지 확인
 		assertTrue(stationIds.contains(stationBId)); // B역이 상행 종점역이 되었는지 확인
 	}
@@ -438,19 +315,11 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 	@DisplayName("노선의 최하단 종점역 제거 - 성공 케이스")
 	void removeDownEndStation_Success() {
 		// given: 지하철 노선에 A, B, C 세 역이 순서대로 등록되어 있을 때
-		ExtractableResponse<Response> stationCreateResponseA = executeCreateStationRequest("A역");
-		long stationAId = parseId(stationCreateResponseA);
-		ExtractableResponse<Response> stationCreateResponseB = executeCreateStationRequest("B역");
-		long stationBId = parseId(stationCreateResponseB);
-		ExtractableResponse<Response> stationCreateResponseC = executeCreateStationRequest("C역");
-		long stationCId = parseId(stationCreateResponseC);
-
-		LineCreateRequest lineCreateRequest = createLineCreateRequest("노선", stationAId, stationCId, 10L);
-		ExtractableResponse<Response> lineCreateResponse = executeCreateLineRequest(lineCreateRequest);
-		long lineId = parseId(lineCreateResponse);
-
-		SectionCreateRequest sectionCreateRequestAB = createSectionCreateRequestWithUpAndDownAndDistance(stationAId, stationBId, 5L);
-		executeCreateSectionRequest(lineId, sectionCreateRequestAB);
+		long stationAId = parseId(executeCreateStationRequest("A역"));
+		long stationBId = parseId(executeCreateStationRequest("B역"));
+		long stationCId = parseId(executeCreateStationRequest("C역"));
+		long lineId = parseId(executeCreateLineRequest(createLineCreateRequest("노선", stationAId, stationCId, 10L)));
+		executeCreateSectionRequest(lineId, createSectionCreateRequestWithUpAndDownAndDistance(stationAId, stationBId, 5L));
 
 		// when: C 역(최하단 종점역)을 제거하는 요청을 보냈을 때
 		ExtractableResponse<Response> deleteResponse = executeDeleteSectionRequest(lineId, stationCId);
@@ -459,43 +328,9 @@ public class SectionManagementTest extends CommonAcceptanceTest {
 		assertEquals(HttpStatus.NO_CONTENT.value(), deleteResponse.statusCode());
 
 		// 노선 상세 정보를 조회하여 C역이 제거되었는지 검증
-		ExtractableResponse<Response> lineDetailsResponse = executeGetSpecificStationLineRequest(lineId);
-		List<Long> stationIds = parseStationIds(lineDetailsResponse);
+		List<Long> stationIds = parseStationIds(executeGetSpecificStationLineRequest(lineId));
 		assertFalse(stationIds.contains(stationCId)); // C역이 제거되었는지 확인
 		assertTrue(stationIds.contains(stationAId) && stationIds.contains(stationBId)); // A역과 B역이 여전히 노선에 존재하는지 확인
-	}
-
-	/**
-	 * 구간 제거 - 예외 케이스
-	 * - Given 지하철 노선이 존재하고, 해당 노선에 역이 단 2개만 등록되어 있을 때
-	 * - When 노선의 중간에 위치한 역을 제거하려고 할 때 (사실상 중간 역이 없는 경우)
-	 * - Then 에러를 반환한다.
-	 */
-	@Test
-	@DisplayName("노선의 중간 역 제거 - 예외 케이스 (역이 2개만 있는 경우)")
-	void removeMiddleStation_Failure_WhenOnlyTwoStations() {
-	}
-
-	/**
-	 * given - 노선에 A역만 등록되어 있을 때
-	 * when - A역을 제거하는 요청
-	 * then - 에러 반환 (노선에 최소 한 개 이상의 역이 존재해야 함)
-	 */
-	@Test
-	@DisplayName("노선에서 유일한 역 제거 시도 - 예외 케이스")
-	void removeOnlyStation_Failure() {
-		// 구현 예정
-	}
-
-	/**
-	 * given - 노선에 등록된 역이 없을 때
-	 * when - 임의의 역을 제거하려는 요청
-	 * then - 에러 반환 (노선에 역이 없음)
-	 */
-	@Test
-	@DisplayName("노선에서 역 제거 시도 시 노선에 역이 없는 경우 - 예외 케이스")
-	void removeStationFromEmptyLine_Failure() {
-		// 구현 예정
 	}
 
 }

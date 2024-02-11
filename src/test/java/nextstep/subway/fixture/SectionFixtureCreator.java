@@ -1,5 +1,9 @@
 package nextstep.subway.fixture;
 
+import java.util.Random;
+
+import nextstep.subway.api.domain.model.entity.Section;
+import nextstep.subway.api.domain.model.entity.Station;
 import nextstep.subway.api.interfaces.dto.request.SectionCreateRequest;
 
 /**
@@ -22,4 +26,9 @@ public class SectionFixtureCreator {
 			.distance(distance)
 			.build();
 	}
+
+	public static Section createSectionWithIdRandom(Station upStation, Station downStation, Long distance) {
+		return new Section(Math.abs(new Random().nextLong()), upStation, downStation, distance);
+	}
+
 }

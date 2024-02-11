@@ -13,4 +13,5 @@ public interface LineResolver {
 	List<Line> fetchAll();
 
 	Optional<Line> fetchOptional(Long id);
+
 }

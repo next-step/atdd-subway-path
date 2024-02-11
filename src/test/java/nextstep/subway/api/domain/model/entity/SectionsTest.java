@@ -21,7 +21,7 @@ import nextstep.subway.common.exception.SectionInsertionNotValidException;
 class SectionsTest {
 
 	@Test
-	@DisplayName("구간 추가 - 성공 케이스")
+	@DisplayName("구간 추가 - 강남역에서 역삼역까지의 구간을 성공적으로 추가한다")
 	void addSection_Success() {
 		// given
 		Station upStation = new Station(1L, "강남역");
@@ -37,7 +37,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("마지막 구간 제거 - 성공 케이스")
+	@DisplayName("마지막 구간 제거 - 강남역에서 역삼역까지의 구간을 성공적으로 제거한다")
 	void removeLastSection_Success() {
 		// given
 		Station upStation = new Station(1L, "강남역");
@@ -54,7 +54,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("구간 추가 - 성공 케이스")
+	@DisplayName("구간 추가 - 강남역에서 선릉역, 서초역에서 잠실역으로의 중간 구간을 성공적으로 추가한다")
 	void addMiddleSection_Success() {
 		// given
 		Station station1 = new Station(1L, "강남역");
@@ -75,7 +75,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("구간 내 역 검색 - 성공 케이스")
+	@DisplayName("구간 내 역 검색 - 역삼역을 포함하는 구간을 성공적으로 찾는다")
 	void findStationInSection_Success() {
 		// given
 		Station upStation = new Station(1L, "강남역");
@@ -92,7 +92,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("구간으로부터 역 목록 파싱 - 성공 케이스")
+	@DisplayName("구간으로부터 역 목록 파싱 - 강남역과 역삼역이 포함된 목록을 성공적으로 파싱한다")
 	void parseStationsFromSections_Success() {
 		// given
 		Station upStation = new Station(1L, "강남역");
@@ -131,7 +131,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("역 목록에서 특정 역을 제외한 목록 반환 - 성공 케이스")
+	@DisplayName("구간 목록에서 특정 역을 포함하는 모든 구간 찾기 - 선릉역을 포함하는 모든 구간을 성공적으로 찾는다")
 	void excludeStationFromList_Success() {
 		// given
 		Station upStation = new Station(1L, "강남역");
@@ -153,7 +153,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("섹션 중복 검증 - 성공 케이스")
+	@DisplayName("역 목록에서 특정 역을 제외한 목록 반환 - 선릉역을 제외한 역 목록을 성공적으로 반환한다")
 	void validateSectionDuplication_success() {
 		// Given
 		Station upStation = new Station(1L, "상행역");
@@ -167,7 +167,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("구간 내 역 순서 변경 - 성공 케이스")
+	@DisplayName("구간 재정렬 - 구간 목록의 역 순서를 올바르게 재정렬할 수 있다")
 	void reorderStationsInSection_success() {
 		// Given
 		Station upStation = new Station(1L, "상행역1");
@@ -189,7 +189,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("중간 구간 제거 - 성공 케이스")
+	@DisplayName("구간 제거 - 중간 구간을 성공적으로 제거하여 연결된 역들이 올바르게 연결됨")
 	void removeMiddleSection_Success() {
 		// given
 
@@ -210,7 +210,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("구간 추가 - 상행 종점 앞에 새로운 구간 추가 - 성공 케이스")
+	@DisplayName("구간 추가 - 기존 상행 종점 앞에 새로운 구간을 성공적으로 추가하여 역 목록을 업데이트함")
 	void addSectionAtTheBeginning_Success() {
 		// given
 		Station newUpStation = new Station(0L, "신규 상행역");
@@ -229,7 +229,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("구간 추가 - 하행 종점 뒤에 새로운 구간 추가 - 성공 케이스")
+	@DisplayName("구간 추가 - 기존 하행 종점 뒤에 새로운 구간을 성공적으로 추가하여 역 목록을 업데이트함")
 	void addSectionAtTheEnd_Success() {
 		// given
 		Station upStation = new Station(1L, "상행역");
@@ -248,7 +248,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("상행 종점 기준 구간 제거 - 성공 케이스")
+	@DisplayName("구간 제거 - 상행 종점 기준으로 구간을 성공적으로 제거하여 역 목록을 업데이트함")
 	void removeSectionByUpStation_Success() {
 		// given
 		Station upStation = new Station(1L, "강남역");
@@ -266,7 +266,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("하행 종점 기준 구간 제거 - 성공 케이스")
+	@DisplayName("구간 제거 - 하행 종점 기준으로 구간을 성공적으로 제거하여 역 목록을 업데이트함")
 	void removeSectionByDownStation_Success() {
 		// given
 		Station upStation = new Station(1L, "강남역");
@@ -284,7 +284,7 @@ class SectionsTest {
 	}
 
 	@Test
-	@DisplayName("특정 역 기준으로 구간 업데이트 - 성공 케이스")
+	@DisplayName("구간 업데이트 - 특정 역 기준으로 구간을 성공적으로 업데이트하여 역 목록을 정확히 조정함")
 	void updateSectionByStation_Success() {
 		// given
 		Station upStation = new Station(1L, "강남역");

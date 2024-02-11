@@ -31,15 +31,22 @@ public class EnhancedSectionService implements SectionService {
 	private final StationResolver stationResolver;
 
 
-	// 존재하는 섹션들 중에
-	// 0) empty인 경우 -> 그냥 생성
-	// 1) 상행과 상행이 같은 경우 -> 중간 삽입 케이스
-	// 2) 하행과 하행이 같은 경우 -> 중간 삽입 케이스
-	// 3) command의 하행과 존재하는 최상단 구간의 상행이 같은 경우 -> 최상단 추가 케이스
-	// 4) command의 상행과 존재하는 최하단 구간의 하행이 같은 경우 -> 최하단 추가 케이스
-	// 5) 상행 하행이 모두 같은 경우 -> 예외
-	// 6) 아무 것도 같지 않은 경우 -> 예외
-	// 이미 등록되어 있는 역은 노선에 등록될 수 없음 !!!
+
+
+	/**
+	 * 	존재하는 섹션들 중에
+	 * 	0) empty인 경우 -> 그냥 생성
+	 * 	1) 상행과 상행이 같은 경우 -> 중간 삽입 케이스
+	 *  2) 하행과 하행이 같은 경우 -> 중간 삽입 케이스
+	 * 	3) command의 하행과 존재하는 최상단 구간의 상행이 같은 경우 -> 최상단 추가 케이스
+	 * 	4) command의 상행과 존재하는 최하단 구간의 하행이 같은 경우 -> 최하단 추가 케이스
+	 *  5) 상행 하행이 모두 같은 경우 -> 예외
+	 * 	6) 아무 것도 같지 않은 경우 -> 예외
+	 *  이미 등록되어 있는 역은 노선에 등록될 수 없음 !!!
+	 * @param lineId
+	 * @param createCommand
+	 * @return
+	 */
 	@Override
 	@Transactional
 	public SectionInfo addSection(Long lineId, SectionCreateCommand createCommand) {
@@ -64,13 +71,5 @@ public class EnhancedSectionService implements SectionService {
 		Line line = lineResolver.fetchOptional(lineId).orElseThrow(() -> new LineNotFoundException(BAD_REQUEST));
 
 		line.removeStation(stationId);
-
-
-
-
-		// if (line.isNotDownEndStation(stationId) || line.isSectionCountBelowThreshold(1)) {
-		// 	throw new SectionDeletionNotValidException();
-		// }
-
 	}
 }
