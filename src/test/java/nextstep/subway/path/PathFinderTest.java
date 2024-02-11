@@ -4,6 +4,7 @@ import nextstep.subway.line.Line;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.station.Station;
 import nextstep.subway.testhelper.StationFixture;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class PathFinderTest {
 
     @Test
     @DisplayName("Path에서 최단거리의 구간을 찾을 수 있다.")
-    void findPath() {
+    void findPath1() {
         Path path = pathFinder.shortcut(List.of(일호선, 이호선, 삼호선), StationFixture.잠실역, StationFixture.삼성역);
 
         List<Station> actualSections = path.getStations();
@@ -43,5 +44,12 @@ class PathFinderTest {
         Long actualDistance = path.getDistance();
         Long expectedDistance = 5L;
         assertThat(actualDistance).isEqualTo(expectedDistance);
+    }
+
+    @Test
+    @DisplayName("Path에서 시작역과 도착역이 같을 수 없다")
+    void findPath2() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> pathFinder.shortcut(List.of(일호선, 이호선, 삼호선),
+                StationFixture.잠실역, StationFixture.잠실역));
     }
 }
