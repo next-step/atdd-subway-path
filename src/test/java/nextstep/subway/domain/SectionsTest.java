@@ -10,8 +10,7 @@ import java.util.Optional;
 
 import static nextstep.subway.fixture.LineFixture.SHINBUNDANG_LINE;
 import static nextstep.subway.fixture.StationFixture.*;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 class SectionsTest {
 
@@ -174,16 +173,54 @@ class SectionsTest {
         assertThat(nonSection.isEmpty()).isTrue();
     }
 
-    /**
-     * 지하철역: 강남역, 선릉역, 양재역, 역삼역
-     * 노선: 강남 - 선릉 (10), 선릉 - 양재 (10)
-     * total distance: 20
-     */
     @Test
     void 실패_구간_제거시_구간이_한개만_있을경우_구간을_제거할_수_없다() {
         assertThatThrownBy(() -> new Sections(List.of(강남역_선릉역_구간)).validateDeleteSection())
                 .isInstanceOf(ApplicationException.class)
                 .hasMessage("구간이 한개만 있을 경우 구간을 제거할 수 없습니다.");
+    }
+
+    /**
+     * 지하철역: 강남역, 선릉역, 양재역, 역삼역
+     * 노선: 강남 - 선릉 (10), 선릉 - 양재 (10) - 역삼 (10)
+     * total distance: 30
+     */
+    @Test
+    void 성공_노선에_추가된_구간의_순서에_맞게_정렬된_지하철역을_조회한다() {
+        Sections sections = 구간_순서_랜덤_노선();
+        List<Station> stations = sections.sortedStations();
+        assertThat(stations).hasSize(4)
+                .extracting("id", "name")
+                .containsExactly(
+                        tuple(1L, "강남역"),
+                        tuple(2L, "선릉역"),
+                        tuple(3L, "양재역"),
+                        tuple(4L, "역삼역")
+                );
+    }
+
+    private Sections 구간_순서_랜덤_노선() {
+        return new Sections(List.of(
+                new Section(
+                        신분당선,
+                        양재역,
+                        역삼역,
+                        10L
+                ),
+                new Section(
+                        신분당선,
+                        선릉역,
+                        양재역,
+                        10L
+                ),
+                new Section(
+                        신분당선,
+                        강남역,
+                        선릉역,
+                        10L
+                )
+        )
+        );
     }
 
     private Sections 구간_3개_등록() {

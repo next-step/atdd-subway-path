@@ -2,10 +2,11 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.ApplicationException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 public class Sections {
 
@@ -167,6 +168,28 @@ public class Sections {
         return sections.stream()
                 .map(Section::downStation)
                 .collect(Collectors.toList());
+    }
+
+    public List<Station> sortedStations() {
+        return Stream.concat(Stream.of(findFirstSection().upStation()), createSortedStation().stream())
+                .collect(toUnmodifiableList());
+    }
+
+    private List<Station> createSortedStation() {
+        List<Station> sortedStations = new ArrayList<>();
+        Map<Station, Station> nextStation = createStationMapping();
+
+        Station currentStation = findFirstSection().upStation();
+        while (nextStation.containsKey(currentStation)) {
+            currentStation = nextStation.get(currentStation);
+            sortedStations.add(currentStation);
+        }
+        return sortedStations;
+    }
+
+    private Map<Station, Station> createStationMapping() {
+        return sections.stream()
+                .collect(Collectors.toMap(Section::upStation, Section::downStation));
     }
 
 }
