@@ -58,7 +58,7 @@ public class SectionAcceptanceTest {
 
 		LineResponse line = 노선_단건_조회_요청(노선).as(LineResponse.class);
 		assertTrue(line.getStaions().stream()
-				.anyMatch(station -> station.getId() == 서울역));
+				.anyMatch(station -> 서울역.equals(station.getId())));
 		assertThat(line.getDistance()).isEqualTo(종로3가역_시청역_길이 + 10);
 	}
 
@@ -108,7 +108,7 @@ public class SectionAcceptanceTest {
 
 		LineResponse line = 노선_단건_조회_요청(노선).as(LineResponse.class);
 		assertTrue(line.getStaions().stream()
-				.anyMatch(station -> station.getId() == 종로5가역));
+				.anyMatch(station -> 종로5가역.equals(station.getId())));
 		assertThat(line.getDistance()).isEqualTo(종로3가역_시청역_길이 + 1);
 	}
 
