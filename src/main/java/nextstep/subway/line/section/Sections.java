@@ -125,12 +125,25 @@ public class Sections {
 
 
     public void deleteSection(Long stationId) {
-        if (sections.size() == 1)
+        if (sections.size() == 1) {
             throw new LineException(ErrorCode.CANNOT_DELETE_SECTION, "구간이 한개인 경우 삭제할 수 없습니다.");
-        if (!isLastDownStation(stationId)) {
-            throw new LineException(ErrorCode.CANNOT_DELETE_SECTION, "삭제 역이 하행 종점역이 아닙니다.");
         }
-        sections.remove(lastSection());
+
+        if (isFirstUpStation(stationId)) {
+            sections.remove(0);
+            return;
+        }
+
+        if (isLastDownStation(stationId)) {
+            sections.remove(lastSection());
+            return;
+        }
+
+        throw new LineException(ErrorCode.CANNOT_DELETE_SECTION, "삭제를 수행할 수 없는 역 정보입니다");
+    }
+
+    private boolean isFirstUpStation(Long stationId) {
+        return firstSection().getUpStation().match(stationId);
     }
 
     private boolean isLastDownStation(Long stationId) {
