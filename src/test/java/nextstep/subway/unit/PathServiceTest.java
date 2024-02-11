@@ -57,4 +57,16 @@ public class PathServiceTest {
         assertThatThrownBy(() -> pathService.getPath(new PathRequest(강남역.getId(), 강남역.getId())))
             .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    void 출발지_역이_없으면_익셉션을_던진다() {
+        assertThatThrownBy(() -> pathService.getPath(new PathRequest(4L, 선릉역.getId())))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 도착지_역이_없으면_익셉션을_던진다() {
+        assertThatThrownBy(() -> pathService.getPath(new PathRequest(강남역.getId(), 4L)))
+            .isInstanceOf(IllegalArgumentException.class);
+    }
 }
