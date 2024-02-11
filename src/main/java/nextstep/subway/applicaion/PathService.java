@@ -28,20 +28,45 @@ public class PathService {
     }
 
     public PathResponse getPath(PathRequest request) {
-
-        final WeightedMultigraph<String, DefaultWeightedEdge> graph
-            = new WeightedMultigraph(DefaultWeightedEdge.class);
-
         final Set<Section> sections = getAllSectionsInLines();
 
-        final Map<String, Station> stationSet = new HashMap<>();
+        final WeightedMultigraph<String, DefaultWeightedEdge> sectionGraph = getWightedGraphWithSection(sections);
+
+        final DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(sectionGraph);
+
+        final GraphPath<String, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(request.getSource().toString(), request.getTarget().toString());
+
+        return getPathResponse(sections, graphPath.getVertexList(), (int) graphPath.getWeight());
+    }
+
+    private PathResponse getPathResponse(Set<Section> sections, List<String> stationPath, int distance) {
+        final Map<String, Station> stationMap = getIdToStationMap(sections);
+
+        return new PathResponse(
+            stationPath.stream().map(stationMap::get).collect(Collectors.toList())
+            , distance
+        );
+    }
+
+    private Map<String, Station> getIdToStationMap(Set<Section> sections) {
+        final Map<String, Station> stationMap = new HashMap<>();
+
+        sections.forEach(section -> {
+            stationMap.put(section.getUpStation().getId().toString(), section.getUpStation());
+            stationMap.put(section.getDownStation().getId().toString(), section.getDownStation());
+        });
+
+        return stationMap;
+    }
+
+    private static WeightedMultigraph<String, DefaultWeightedEdge> getWightedGraphWithSection(
+        Set<Section> sections) {
+        final WeightedMultigraph<String, DefaultWeightedEdge> graph
+            = new WeightedMultigraph(DefaultWeightedEdge.class);
 
         sections.forEach(section -> {
             final String upStationId = section.getUpStation().getId().toString();
             final String downStationId = section.getDownStation().getId().toString();
-
-            stationSet.put(upStationId, section.getUpStation());
-            stationSet.put(downStationId, section.getDownStation());
 
             graph.addVertex(upStationId);
             graph.addVertex(downStationId);
@@ -50,13 +75,7 @@ public class PathService {
             graph.setEdgeWeight(edge, section.getDistance());
         });
 
-        final DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-
-        final GraphPath path = dijkstraShortestPath.getPath(request.getSource().toString(), request.getTarget().toString());
-        int distance = (int) path.getWeight();
-        List<String> stationPath = path.getVertexList();
-
-        return new PathResponse(stationPath.stream().map(stationSet::get).collect(Collectors.toList()), distance);
+        return graph;
     }
 
     private Set<Section> getAllSectionsInLines() {
