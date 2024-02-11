@@ -81,7 +81,7 @@ public class Line {
 
     public void addSection(Section section) {
         ApplyDistance applyDistance = this.sections.add(section);
-        applyDistance.validAdd(this.distance);
+        applyDistance.validAdd(this.distance, section.distance());
         this.distance += applyDistance.applyValue();
     }
 

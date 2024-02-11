@@ -71,7 +71,7 @@ public class Sections {
         }
 
         addMiddle(section);
-        return ApplyDistance.applyAddMiddle(section.distance());
+        return ApplyDistance.applyAddMiddle();
     }
 
     private boolean isAlreadyAdded(Section section) {
@@ -121,7 +121,8 @@ public class Sections {
             return ApplyDistance.applyDeleteLast(targetSection.distance());
         }
 
-        return ApplyDistance.applyDeleteMiddle(deleteMiddle(station).distance());
+        deleteMiddle(station);
+        return ApplyDistance.applyDeleteMiddle();
     }
 
     private Section deleteMiddle(Station station) {
