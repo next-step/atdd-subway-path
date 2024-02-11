@@ -4,6 +4,7 @@ import nextstep.subway.line.section.ApplyDistance;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.Sections;
 import nextstep.subway.station.Station;
+import nextstep.subway.station.Stations;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -91,6 +92,10 @@ public class Line {
 
     public boolean existStation(Station station) {
         return sections.existStation(station);
+    }
+
+    public Stations getStations() {
+        return this.sections.stations();
     }
 
     @Override

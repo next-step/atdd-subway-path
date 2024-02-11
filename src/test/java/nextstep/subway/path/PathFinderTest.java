@@ -1,7 +1,7 @@
 package nextstep.subway.path;
 
 import nextstep.subway.line.Line;
-import nextstep.subway.line.section.Lines;
+import nextstep.subway.line.Lines;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.station.Station;
 import nextstep.subway.testhelper.StationFixture;

@@ -1,6 +1,5 @@
-package nextstep.subway.line.section;
+package nextstep.subway.line;
 
-import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
 import java.util.List;

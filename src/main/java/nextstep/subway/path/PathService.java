@@ -1,7 +1,7 @@
 package nextstep.subway.path;
 
 import nextstep.subway.line.LineRepository;
-import nextstep.subway.line.section.Lines;
+import nextstep.subway.line.Lines;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponseFactory;

@@ -1,9 +1,10 @@
 package nextstep.subway.path;
 
-import nextstep.subway.line.section.Lines;
+import nextstep.subway.line.Lines;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.Sections;
 import nextstep.subway.station.Station;
+import nextstep.subway.station.Stations;
 import org.jgrapht.GraphPath;
 import org.jgrapht.WeightedGraph;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -37,13 +38,13 @@ public class JGraphPathFinder implements PathFinder {
 
     private DijkstraShortestPath<Station, DefaultWeightedEdge> createShortestPath(Lines lines) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        lines.forEach(line -> createPath(graph, line.getSections(), line.getSections().stations()));
+        lines.forEach(line -> createPath(graph, line.getSections(), line.getStations()));
         return new DijkstraShortestPath<>(graph);
     }
 
     private void createPath(WeightedGraph graph,
                             Sections sections,
-                            List<Station> stations) {
+                            Stations stations) {
         stations.forEach(graph::addVertex);
         sections.getAll().forEach(section -> setEdge(graph, section));
     }

@@ -1,6 +1,7 @@
 package nextstep.subway.line.section;
 
 import nextstep.subway.station.Station;
+import nextstep.subway.station.Stations;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -140,10 +141,10 @@ public class Sections {
         return lastSection().isSameDownStation(station);
     }
 
-    public List<Station> stations() {
-        return this.sectionList.stream()
+    public Stations stations() {
+        return Stations.from(this.sectionList.stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     public List<Section> getAll() {
