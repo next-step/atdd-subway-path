@@ -38,12 +38,15 @@ public class Sections {
     }
 
     public void deleteSection(Station stationToDelete) {
-        Section sectionToDelete = sections.stream()
-                .filter(section -> section.getDownStation().equals(stationToDelete))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
+        if(sections.isEmpty()) {
+           throw new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다.");
+        }
 
-        sections.remove(sectionToDelete);
+        if(!findLastStation().isSame(stationToDelete)) {
+            throw new IllegalArgumentException("마지막 구간의 하행역과 동일하지 않습니다.");
+        }
+
+        sections.remove(sections.size() - 1);
     }
 
     public Station findLastStation() {

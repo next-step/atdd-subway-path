@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.config.fixtures.LineFixture;
 import nextstep.config.fixtures.SectionFixture;
+import nextstep.config.fixtures.StationFixture;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
@@ -57,12 +58,12 @@ class LineTest {
             @Test
             void 상행역과_하행역이_동일한_구간은_추가_실패() {
                 // given
-                Section 강남_강남_구간 = SectionFixture.잘못된_강남_강남_구간;
+                Section 잘못된_강남_강남_구간 = SectionFixture.잘못된_강남_강남_구간;
 
                 // when, then
                 assertThatExceptionOfType(IllegalArgumentException.class)
                         .isThrownBy(() -> {
-                            이호선.addSection(강남_강남_구간);
+                            이호선.addSection(잘못된_강남_강남_구간);
                         })
                         .withMessageMatching("추가할 구간의 상행역과 하행역은 동일할 수 없습니다.");
             }
@@ -110,7 +111,7 @@ class LineTest {
      * Then  모든 지하철 역이 조회된다.
      */
     @Test
-    void getStations() {
+    void 지하철_모든_구간의_역_조회() {
         // given
         Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
 
@@ -125,22 +126,59 @@ class LineTest {
                 삼성_선릉_구간.getDownStation());
     }
 
-    /**
-     * Given 지하철 노선이 생성되고, 지하철 구간을 추가한다.
-     * When  지하철 노선에 포함된 특정 역을 삭제할 경우
-     * Then  특정 역이 하행역으로 추가된 구간이 삭제된다.
-     */
-    @Test
-    void removeSection() {
-        // given
-        Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
+    @Nested
+    class 지하철_구간_제거 {
+        @Nested
+        class 성공 {
+            /**
+             * Given 지하철 노선이 생성되고, 지하철 구간을 추가한다.
+             * When  지하철 역을 삭제할 때, 삭제할 역이 기존 노선의 마지막 구간의 하행역과 동일할 경우
+             * Then  특정 역이 하행역으로 추가된 구간이 삭제된다.
+             */
+            @Test
+            void 삭제할_역이_기존_노선의_마지막_구간의_하행역과_동일할_경우_삭제_성공() {
+                // given
+                이호선.addSection(SectionFixture.삼성_선릉_구간);
 
-        이호선.addSection(삼성_선릉_구간);
+                // when
+                이호선.deleteSection(StationFixture.선릉);
 
-        // when
-        이호선.deleteSection(삼성_선릉_구간.getDownStation());
+                // then
+                assertThat(이호선.getSections().getSections()).doesNotContain(삼성_선릉_구간);
+            }
+        }
+        @Nested
+        class 실패 {
+            /**
+             * Given 지하철 노선이 생성되고, 지하철 구간을 추가한다.
+             * When  지하철 특정 역을 삭제할 때, 삭제할 역이 기존 노선 마지막 구간의 하행역과 동일하지 않을 경우
+             * Then  특정 역이 하행역으로 추가된 구간이 삭제되지 않는다.
+             */
+            @Test
+            void 기존_노선_구간_목록에_구간이_존재하지_않을_경우_삭제_실패() {
+                assertThatExceptionOfType(IllegalArgumentException.class)
+                        .isThrownBy(() -> {
+                            이호선.deleteSection(StationFixture.삼성);
+                        })
+                        .withMessageMatching("해당 노선에 구간이 존재하지 않습니다.");
+            }
+            /**
+             * Given 지하철 노선이 생성되고, 지하철 구간을 추가한다.
+             * When  지하철 특정 역을 삭제할 때, 삭제할 역이 기존 노선 마지막 구간의 하행역과 동일하지 않을 경우
+             * Then  특정 역이 하행역으로 추가된 구간이 삭제되지 않는다.
+             */
+            @Test
+            void 삭제할_역이_기존_노선_마지막_구간의_하행역과_동일하지_않을_경우_삭제_실패() {
+                // given
+                이호선.addSection(SectionFixture.삼성_선릉_구간);
 
-        // then
-        assertThat(이호선.getSections().getSections()).doesNotContain(삼성_선릉_구간);
+                // when, then
+                assertThatExceptionOfType(IllegalArgumentException.class)
+                        .isThrownBy(() -> {
+                            이호선.deleteSection(StationFixture.삼성);
+                        })
+                        .withMessageMatching("마지막 구간의 하행역과 동일하지 않습니다.");
+            }
+        }
     }
 }
