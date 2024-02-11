@@ -18,6 +18,14 @@ public class RestAssuredHelper {
                 .then().extract();
     }
 
+    public static ExtractableResponse<Response> get(final String path, final Map<String, ?> parametersMap) {
+        return RestAssured
+                .given()
+                .given().queryParams(parametersMap)
+                .when().get(path)
+                .then().extract();
+    }
+
     public static ExtractableResponse<Response> getById(final String path, final Long id) {
         return RestAssured
                 .given().pathParam("id", id)

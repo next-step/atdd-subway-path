@@ -66,4 +66,8 @@ public class Line {
     public void removeSectionByStation(final Station station) {
         sections.disconnect(station);
     }
+
+    public Sections getSections() {
+        return sections;
+    }
 }

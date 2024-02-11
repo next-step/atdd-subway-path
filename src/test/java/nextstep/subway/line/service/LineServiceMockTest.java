@@ -63,7 +63,7 @@ public class LineServiceMockTest {
         선릉역_역삼역_구간 = SectionFactory.createSection(두번째구간_ID, 선릉역, 역삼역, 두번째구간_길이);
         line = LineFactory.createLine(LINE_ID, LINE_NAME, LINE_COLOR, 강남역_선릉역_구간);
 
-        lineService = new LineService(lineRepository, sectionRepository, stationProvider);
+        lineService = new LineServiceImpl(lineRepository, sectionRepository, stationProvider);
     }
 
     @Nested
