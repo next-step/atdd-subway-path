@@ -1,7 +1,6 @@
 package nextstep.subway.strategy;
 
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.ShortestPathType;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.ApplicationException;
 import org.jgrapht.GraphPath;
@@ -13,18 +12,16 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
-import static nextstep.subway.domain.ShortestPathType.DIJKSTRA;
-
 @Component
 public class Dijkstra implements ShortestPathStrategy {
 
     private final DijkstraShortestPath dijkstraShortestPath;
 
     public Dijkstra(List<Section> sections) {
-        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         addVertexes(sections, graph);
         addEdges(sections, graph);
-        dijkstraShortestPath = new DijkstraShortestPath(graph);
+        dijkstraShortestPath = new DijkstraShortestPath<>(graph);
     }
 
     private void addVertexes(List<Section> sections, WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
@@ -41,14 +38,14 @@ public class Dijkstra implements ShortestPathStrategy {
     }
 
     @Override
-    public List<Station> findShortestStationPath(Station source, Station target) {
+    public List<Station> findShortestPath(Station source, Station target) {
         GraphPath shortestPath = getPath(source, target);
         validateExistPath(shortestPath);
         return shortestPath.getVertexList();
     }
 
     @Override
-    public int totalPathDistance(Station source, Station target) {
+    public int findShortestDistance(Station source, Station target) {
         GraphPath shortestPath = getPath(source, target);
         validateExistPath(shortestPath);
         return (int) shortestPath.getWeight();
@@ -66,10 +63,5 @@ public class Dijkstra implements ShortestPathStrategy {
         if (Objects.isNull(shortestPath)) {
             throw new ApplicationException("출발역과 도착역이 연결되어 있지 않습니다.");
         }
-    }
-
-    @Override
-    public boolean support(ShortestPathType shortestPathType) {
-        return shortestPathType == DIJKSTRA;
     }
 }
