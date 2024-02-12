@@ -5,6 +5,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import nextstep.subway.repository.LineRepository;
+import nextstep.subway.service.StationService;
+
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
     @Mock
