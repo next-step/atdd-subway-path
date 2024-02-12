@@ -58,6 +58,10 @@ public class Sections {
     }
 
     private void ensureRemovableSection(final Long stationId) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException();
+        }
+
         if (!this.isLastStation(stationId)) {
             throw new IllegalArgumentException();
         }

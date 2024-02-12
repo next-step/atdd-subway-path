@@ -165,4 +165,56 @@ public class LineTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("노선에 구간을 제거한다.")
+    @Test
+    void 지하철_노선_구간_제거() {
+        // given
+        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+
+        final Station newDownStation = mock(Station.class);
+        when(section.getDownStation()).thenReturn(newDownStation);
+        when(section.getDownStation().getId()).thenReturn(2L);
+
+        newLine.addSection(section);
+
+        // when
+        assertThat(newLine.getSections().getSections().size()).isEqualTo(2);
+        newLine.removeSection(newDownStation);
+
+        // then
+        assertThat(newLine.getSections().getSections().size()).isEqualTo(1);
+    }
+
+    @DisplayName("노선에 구간을 제거 시 마지막 구간이 아니라면 오류가 발생한다.")
+    @Test
+    void 지하철_노선_구간_제거_시_마지막_구간이_아니라면_제거_불가() {
+        // given
+        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+
+        final Station newDownStation = mock(Station.class);
+        when(section.getDownStation()).thenReturn(newDownStation);
+        when(section.getDownStation().getId()).thenReturn(2L);
+        newLine.addSection(section);
+
+        final Station deleteTargetStation = mock(Station.class);
+        when(deleteTargetStation.getId()).thenReturn(1L);
+
+        // then
+        assertThatThrownBy(() -> newLine.removeSection(deleteTargetStation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선에 구간을 제거 시 구간이 1개라면 오류가 발생한다.")
+    @Test
+    void 지하철_노선_구간_제거_시_구간이_1개라면_제거_불가() {
+        // given
+        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+
+        assertThat(newLine.getSections().getSections().size()).isEqualTo(1);
+
+        // then
+        assertThatThrownBy(() -> newLine.removeSection(downStation))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 }
