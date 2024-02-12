@@ -40,16 +40,8 @@ public class Section {
         this.line = line;
     }
 
-    public boolean isConnectToLastUpStation(Station station) {
-        return this.upStation.equals(station);
-    }
-
     public boolean areStationsSame() {
         return upStation.equals(downStation);
-    }
-
-    public boolean isUpStationSame(Station station) {
-        return this.upStation.equals(station);
     }
 
     public Section setLine(Line line) {

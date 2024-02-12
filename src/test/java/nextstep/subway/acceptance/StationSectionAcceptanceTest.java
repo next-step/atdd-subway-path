@@ -16,7 +16,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.config.fixtures.LineFixture.호남선_생성;
+import static nextstep.config.fixtures.LineFixture.호남선;
 import static nextstep.config.fixtures.SectionFixture.지하철_구간;
 import static nextstep.config.fixtures.StationFixture.역_10개;
 import static nextstep.subway.steps.StationLineSteps.지하철_노선_생성_요청_검증_포함;
@@ -47,7 +47,7 @@ public class StationSectionAcceptanceTest {
         void 상행역이_존재하지_않는_역일_경우(Long upStationId) {
             // given
             ExtractableResponse<Response> response =
-                    지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                    지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
 
             // when
             ExtractableResponse<Response> 실패하는_생성요청_응답 =
@@ -67,7 +67,7 @@ public class StationSectionAcceptanceTest {
         void 하행역이_존재하지_않는_역일_경우(Long downStationId) {
             // given
             ExtractableResponse<Response> response =
-                    지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                    지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
 
             // when
             ExtractableResponse<Response> 실패하는_생성요청_응답 =
@@ -88,7 +88,7 @@ public class StationSectionAcceptanceTest {
         void 거리가_1보다_작은_숫자일_경우(int distance) {
             // given
             ExtractableResponse<Response> response =
-                    지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                    지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
 
             // when
             ExtractableResponse<Response> 실패하는_생성요청_응답 =
@@ -116,7 +116,7 @@ public class StationSectionAcceptanceTest {
             void 상행역이_하행_종점역으로_등록되어_있고_하행역이_구간으로_등록되지_않은_역일_경우_등록_성공() {
                 // given
                 ExtractableResponse<Response> response =
-                        지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                        지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
 
                 // when
                 ExtractableResponse<Response> 성공하는_생성요청_응답 =
@@ -140,7 +140,7 @@ public class StationSectionAcceptanceTest {
             void 상행역이_하행_종점역으로_등록되어_있지_않을_경우_등록_실패() {
                 // given
                 ExtractableResponse<Response> response =
-                        지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 4L));
+                        지하철_노선_생성_요청_검증_포함(호남선(1L, 4L));
 
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
                         지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(5L, 10L, 10));
@@ -159,7 +159,7 @@ public class StationSectionAcceptanceTest {
             void 상행역이_역_등록되어_있지_않은_경우_등록_실패() {
                 // given
                 ExtractableResponse<Response> response =
-                        지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 10L));
+                        지하철_노선_생성_요청_검증_포함(호남선(1L, 10L));
 
                 // when, 최초 10개의 역 생성(@BeforeEach)
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
@@ -179,7 +179,7 @@ public class StationSectionAcceptanceTest {
             void 상행역이_이미_구간에_등록되어_있는_경우_등록_실패() {
                 // given
                 ExtractableResponse<Response> response =
-                        지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                        지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
                 지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(2L, 3L, 10));
 
                 // when
@@ -204,7 +204,7 @@ public class StationSectionAcceptanceTest {
             void 하행역이_이미_하행_종점역으로_등록되어_있는_경우_등록_실패() {
                 // given
                 ExtractableResponse<Response> response =
-                        지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 4L));
+                        지하철_노선_생성_요청_검증_포함(호남선(1L, 4L));
 
                 // when
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
@@ -224,7 +224,7 @@ public class StationSectionAcceptanceTest {
             void 하행역이_역으로_등록되어_있지_않은_경우_등록_실패() {
                 // given
                 ExtractableResponse<Response> response =
-                        지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 10L));
+                        지하철_노선_생성_요청_검증_포함(호남선(1L, 10L));
 
                 // when, 최초 10개의 역 생성(@BeforeEach)
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
@@ -244,7 +244,7 @@ public class StationSectionAcceptanceTest {
             void 하행역이_이미_구간에_등록되어_있는_경우_등록_실패() {
                 // given
                 ExtractableResponse<Response> response =
-                        지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                        지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
                 지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(2L, 3L, 10));
 
                 // when
@@ -270,7 +270,7 @@ public class StationSectionAcceptanceTest {
         void 구간이_한개_이상_존재하고_하행_종점역이_포함된_구간을_삭제하는_경우_삭제_성공() {
             // given
             ExtractableResponse<Response> response =
-                    지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                    지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
             SectionRequest 생성할_지하철_구간 = 지하철_구간(2L, 4L, 10);
             지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);
 
@@ -294,7 +294,7 @@ public class StationSectionAcceptanceTest {
         @Test
         void 한개의_구간만_존재할_경우_삭제_실패() {
             // given
-            LineRequest 호남선 = 호남선_생성(1L, 2L);
+            LineRequest 호남선 = 호남선(1L, 2L);
             ExtractableResponse<Response> response = 지하철_노선_생성_요청_검증_포함(호남선);
 
             // then
@@ -317,7 +317,7 @@ public class StationSectionAcceptanceTest {
         void 하행_종점역을_제거하는_것이_아닌_경우_삭제_실패() {
             // given
             ExtractableResponse<Response> response =
-                    지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                    지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
             SectionRequest 생성할_지하철_구간 = 지하철_구간(2L, 4L, 10);
             지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);
 
@@ -341,7 +341,7 @@ public class StationSectionAcceptanceTest {
         void 존재하지_않는_역을_제거하는_경우_삭제_실패() {
             // given
             ExtractableResponse<Response> response =
-                    지하철_노선_생성_요청_검증_포함(호남선_생성(1L, 2L));
+                    지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
 
             SectionRequest 생성할_지하철_구간 = 지하철_구간(2L, 4L, 10);
             지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);

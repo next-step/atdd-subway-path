@@ -46,7 +46,7 @@ public class StationLineAcceptanceTest {
     @Test
     void createStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선;
+        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
 
         // when
         지하철_노선_생성_요청_검증_포함(신분당선);
@@ -66,8 +66,8 @@ public class StationLineAcceptanceTest {
     @Test
     void findAllStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선;
-        LineRequest 분당선 = LineFixture.분당선;
+        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
+        LineRequest 분당선 = LineFixture.신분당선(2L, 4L);
 
         지하철_노선_생성_요청_검증_포함(신분당선);
         지하철_노선_생성_요청_검증_포함(분당선);
@@ -87,7 +87,7 @@ public class StationLineAcceptanceTest {
     @Test
     void findStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선;
+        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
         ExtractableResponse<Response> response = 지하철_노선_생성_요청_검증_포함(신분당선);
 
         // when, then
@@ -105,8 +105,8 @@ public class StationLineAcceptanceTest {
     @Test
     void updateStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선;
-        LineRequest 수정된_신분당선 = LineFixture.수정된_신분당선;
+        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
+        LineRequest 수정된_신분당선 = LineFixture.수정된_신분당선(1L, 2L);
 
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청_검증_포함(신분당선);
 
@@ -128,9 +128,9 @@ public class StationLineAcceptanceTest {
     @Test
     void deleteStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선;
-        LineRequest 분당선 = LineFixture.분당선;
-        LineRequest 신림선 = LineFixture.신림선;
+        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
+        LineRequest 분당선 = LineFixture.분당선(2L, 4L);
+        LineRequest 신림선 = LineFixture.신림선(6L, 10L);;
 
         ExtractableResponse<Response> 신분당선_생성요청_응답 = 지하철_노선_생성_요청_검증_포함(신분당선);
         ExtractableResponse<Response> 분당선_생성요청_응답 = 지하철_노선_생성_요청_검증_포함(분당선);

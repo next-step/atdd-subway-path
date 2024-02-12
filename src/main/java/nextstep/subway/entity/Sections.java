@@ -86,4 +86,8 @@ public class Sections {
     public List<Section> getSections() {
         return sections;
     }
+
+    public List<Section> getAllSections() {
+        return sections;
+    }
 }

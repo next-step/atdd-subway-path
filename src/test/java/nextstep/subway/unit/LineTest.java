@@ -45,7 +45,7 @@ class LineTest {
                 이호선.addSection(강남_양재_구간);
 
                 // then
-                assertThat(이호선.getSections().getSections()).containsAnyOf(강남_양재_구간);
+                assertThat(이호선.getAllSections()).containsAnyOf(강남_양재_구간);
             }
         }
         @Nested

@@ -39,7 +39,7 @@ public class Line {
     }
 
     public void addSection(Section createdSection) {
-        if (canSectionSave(createdSection)) {
+        if (canSectionAdd(createdSection)) {
             sections.addSection(createdSection);
         }
     }
@@ -50,7 +50,7 @@ public class Line {
         }
     }
 
-    private boolean canSectionSave(Section toSaveSection) {
+    private boolean canSectionAdd(Section toSaveSection) {
         if (toSaveSection.areStationsSame()) {
             throw new IllegalArgumentException("추가할 구간의 상행역과 하행역은 동일할 수 없습니다.");
         }
@@ -88,5 +88,9 @@ public class Line {
 
     public List<Station> getStations() {
         return sections.getAllStations();
+    }
+
+    public List<Section> getAllSections() {
+        return sections.getAllSections();
     }
 }
