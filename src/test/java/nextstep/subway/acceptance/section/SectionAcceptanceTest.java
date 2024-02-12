@@ -115,10 +115,10 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * When 가운데 노선을 등록했을때 계산한 거리가 1보다 작은 경우
+     * When 기존 구간의 거리보다 등록할 구간의 거리가 긴 경우
      * Then 예외가 발생한다
      */
-    @DisplayName("가운데 노선을 등록했을때 계산한 거리가 1보다 작은 경우 예외가 발생한다")
+    @DisplayName("기존 구간의 거리보다 등록할 구간의 거리가 긴 경우 예외가 발생한다")
     @Test
     void generateMiddleSectionException() {
         //when
@@ -128,7 +128,7 @@ public class SectionAcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asPrettyString()).isEqualTo("거리가 1보다 작을 수 없습니다.");
+        assertThat(response.asPrettyString()).isEqualTo("기존구간의 거리보다 더 길수 없습니다.");
     }
 
     /**

@@ -1,6 +1,5 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.line.exception.LineException;
 import nextstep.subway.line.exception.SectionException;
 import nextstep.subway.station.Station;
 
@@ -32,7 +31,10 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = getSections().stream().map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> stations = getSections()
+                .stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
 
         stations.add(getDownFinalStation());
 
@@ -48,26 +50,29 @@ public class Sections {
             verifyAlreadyStation(section);
         }
 
-        sortSections(section);
+        middleSectionAddForPreviousUpStationChange(section);
 
         sections.add(section);
     }
 
     private void verifyAlreadyStation(Section section) {
-        boolean isAlreadyStation = sections.stream().anyMatch(s ->
-                s.getUpStation().equals(section.getUpStation()) &&
+        boolean isAlreadyStation = sections
+                .stream()
+                .anyMatch(s -> s.getUpStation().equals(section.getUpStation()) &&
                         s.getDownStation().equals(section.getDownStation()));
 
         if (isAlreadyStation) {
-            throw new LineException("이미 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
+            throw new SectionException("이미 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
         }
     }
 
-    private void sortSections(Section section) {
+    //middleSection
+    //중간에 역 추가했을때 기존에 있는 상행역 바꾸는거 바꾸는거
+    private void middleSectionAddForPreviousUpStationChange(Section section) {
         sections.stream()
-                .filter(s -> s.getUpStation() == section.getUpStation())
+                .filter(s -> s.getUpStation().equals(section.getUpStation()))
                 .findFirst()
-                .ifPresent(s -> s.changeUpStation(section.getDownStation(), section.getDistance()));
+                .ifPresent(previousStation -> previousStation.changeUpStation(section.getDownStation(), section.getDistance()));
     }
 
     public void removeSection(Station station) {
@@ -80,16 +85,19 @@ public class Sections {
 
     private void verifySectionCount() {
         if (sections.size() <= 1) {
-            throw new LineException("구간이 1개인 노선의 구간은 삭제할 수 없습니다.");
+            throw new SectionException("구간이 1개인 노선의 구간은 삭제할 수 없습니다.");
         }
     }
 
     private Section verifyDeleteDownStation(Station downStation) {
-        Section deleteSection = sections.stream().filter(s -> s.getDownStation().equals(downStation)).findFirst()
+        Section deleteSection = sections
+                .stream()
+                .filter(s -> s.getDownStation().equals(downStation))
+                .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("존재하지않는 구간입니다."));
 
         if (!deleteSection.getDownStation().equals(getDownFinalStation())) {
-            throw new LineException("노선의 하행종점역만 제거할 수 있습니다.");
+            throw new SectionException("노선의 하행종점역만 제거할 수 있습니다.");
         }
         return deleteSection;
     }

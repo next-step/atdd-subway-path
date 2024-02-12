@@ -47,6 +47,10 @@ public class Line {
         return sections.getSections();
     }
 
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
     public void updateLine(String name, String color) {
         this.name = name;
         this.color = color;

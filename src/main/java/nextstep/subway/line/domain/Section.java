@@ -63,7 +63,7 @@ public class Section {
 
     private void renewDistance(int distance) {
         if (distance < 1) {
-            throw new SectionException("거리가 1보다 작을 수 없습니다.");
+            throw new SectionException("기존구간의 거리보다 더 길수 없습니다.");
         }
         this.distance = distance;
     }
