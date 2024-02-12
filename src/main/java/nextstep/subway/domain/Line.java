@@ -17,8 +17,8 @@ public class Line {
     private String name;
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
@@ -26,7 +26,7 @@ public class Line {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public Line(String name, String color) {
@@ -59,87 +59,23 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        final Section sectionToAdd = new Section(this, upStation, downStation, distance);
-        validateSectionToAdd(sectionToAdd);
-
-        final Predicate<Section> isTheSectionToSplit =
-            section ->
-                section.getUpStation().equals(upStation)
-                || section.getDownStation().equals(downStation);
-
-        sections.stream()
-            .filter(isTheSectionToSplit)
-            .findAny()
-            .ifPresent(section -> section.splitTheSectionWith(sectionToAdd));
-
-        sections.add(sectionToAdd);
+        sections.add(new Section(this, upStation, downStation, distance));
     }
 
-    private void validateSectionToAdd(Section sectionToAdd) {
-        final Set<Station> stationSet = new HashSet<>(getStations());
-
-        if(stationSet.containsAll(List.of(sectionToAdd.getUpStation(), sectionToAdd.getDownStation()))) {
-            throw new IllegalArgumentException("이미 등록된 구간입니다.");
-        }
-
-        if(!stationSet.isEmpty() && !stationSet.contains(sectionToAdd.getUpStation()) && !stationSet.contains(sectionToAdd.getDownStation())) {
-            throw new IllegalArgumentException("연결할 수 없는 구간입니다.");
-        }
-    }
 
     public List<Station> getStations() {
-        final Set<Station> stationSet = new HashSet<>();
-        sections.forEach(section -> {
-            stationSet.add(section.getUpStation());
-            stationSet.add(section.getDownStation());
-        });
-
-        return List.copyOf(stationSet);
+        return sections.getStations();
     }
 
     public void removeSection(Station upStation, Station downStation) {
-        final Predicate<Section> isNotTheSectionToDelete =
-            section ->
-                section.getUpStation() != upStation
-                && section.getDownStation() != downStation;
-
-        sections = sections.stream()
-            .filter(isNotTheSectionToDelete)
-            .collect(Collectors.toList());
+        sections.remove(upStation, downStation);
     }
 
     public void removeStation(Station stationToDelete) {
-        final Optional<Section> sectionWithUpStation = sections.stream().filter(section -> section.getUpStation() == stationToDelete).findAny();
-        final Optional<Section> sectionWithDownStation = sections.stream().filter(section -> section.getDownStation() == stationToDelete).findAny();
-
-        if (sectionWithUpStation.isEmpty() && sectionWithDownStation.isEmpty()) {
-            throw new EntityNotFoundException();
-        }
-
-        if (sectionWithUpStation.isPresent()) {
-            filterSection(sectionWithUpStation.get());
-        }
-
-        if (sectionWithDownStation.isPresent()) {
-            filterSection(sectionWithDownStation.get());
-        }
-
-        if(sectionWithUpStation.isPresent() && sectionWithDownStation.isPresent()) {
-            addSection(
-                sectionWithDownStation.get().getUpStation(),
-                sectionWithUpStation.get().getDownStation(),
-                sectionWithUpStation.get().getDistance() + sectionWithDownStation.get().getDistance()
-            );
-        }
-    }
-
-    private void filterSection(Section sectionToFilter) {
-        sections = sections.stream()
-            .filter(section -> section != sectionToFilter)
-            .collect(Collectors.toList());
+      sections.removeStation(stationToDelete);
     }
 }
