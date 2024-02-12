@@ -78,20 +78,20 @@ public class Line {
 		}
 
 		if (isStartStation(section.getDownStationId())) {
-			this.startStationId = section.getUpStationId();
-			addStartOrEndSection(section);
+			updateStartStation(section.getUpStationId(), section.getDistance());
+			sections.addSection(section);
 
 			return;
 		}
 
 		if (isEndStation(section.getUpStationId())) {
-			this.endStationId = section.getDownStationId();
-			addStartOrEndSection(section);
+			updateEndStation(section.getDownStationId(), section.getDistance());
+			sections.addSection(section);
 
 			return;
 		}
 
-		addMidSection(section);
+		sections.addMidSection(this, section);
 	}
 
 	public void deleteSection(Long stationId) {
@@ -101,14 +101,9 @@ public class Line {
 
 		Section section = sections.getSectionByDownStationId(stationId);
 
-		if (isStartStation(section.getUpStationId())) {
-			throw new IllegalArgumentException("상행 종점역과 하행 종점역만 있는 노선입니다.");
-		}
+		updateEndStation(section.getUpStationId(), -section.getDistance());
 
-		this.endStationId = section.getUpStationId();
-		this.distance = this.distance - section.getDistance();
-
-		sections.removeSection(section);
+		sections.deleteSection(section);
 	}
 
 	public boolean isEndStation(Long stationId) {
@@ -119,22 +114,17 @@ public class Line {
 		return startStationId.equals(stationId);
 	}
 
-	public boolean hasStation(Long downStationId) {
-		return sections.hasStation(downStationId);
+	public boolean hasStation(Long stationId) {
+		return sections.hasStation(stationId);
 	}
 
-	private void addStartOrEndSection(Section section) {
-		this.distance += section.getDistance();
-		this.sections.addSection(section);
+	private void updateStartStation(Long stationId, int distance) {
+		this.startStationId = stationId;
+		this.distance += distance;
 	}
 
-	private void addMidSection(Section section) {
-		Section upSection = sections.getSectionByUpStationId(section.getUpStationId());
-		if (upSection.getDistance() <= section.getDistance()) {
-			throw new IllegalArgumentException("등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없습니다.");
-		}
-		sections.addSection(section);
-		sections.addSection(new Section(this, section.getDownStationId(), upSection.getDownStationId(), upSection.getDistance() - section.getDistance()));
-		sections.removeSection(upSection);
+	private void updateEndStation(Long stationId, int distance) {
+		this.endStationId = stationId;
+		this.distance += distance;
 	}
 }

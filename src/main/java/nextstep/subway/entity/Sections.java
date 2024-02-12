@@ -23,7 +23,22 @@ public class Sections {
 		this.sections.add(section);
 	}
 
-	public void removeSection(Section section) {
+	public void addMidSection(Line line, Section section) {
+		Section upSection = getSectionByUpStationId(section.getUpStationId());
+
+		if (upSection.getDistance() <= section.getDistance()) {
+			throw new IllegalArgumentException("등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없습니다.");
+		}
+
+		addSection(section);
+		addSection(new Section(line, section.getDownStationId(), upSection.getDownStationId(), upSection.getDistance() - section.getDistance()));
+		deleteSection(upSection);
+	}
+
+	public void deleteSection(Section section) {
+		if(getSize() <= 1) {
+			throw new IllegalArgumentException("상행 종점역과 하행 종점역만 있는 노선입니다.");
+		}
 		this.sections.remove(section);
 	}
 
@@ -64,4 +79,5 @@ public class Sections {
 				.map(SectionResponse::new)
 				.collect(Collectors.toList());
 	}
+
 }
