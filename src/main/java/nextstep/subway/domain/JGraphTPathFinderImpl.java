@@ -22,6 +22,10 @@ public class JGraphTPathFinderImpl extends PathFinder {
 
         final GraphPath<String, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(pathRequest.getSource().toString(), pathRequest.getTarget().toString());
 
+        if (graphPath == null) {
+            throw new IllegalArgumentException("경로가 존재하지 않습니다.");
+        }
+
         return getPathResponse(sections, graphPath.getVertexList(), (int) graphPath.getWeight());
     }
 

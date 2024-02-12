@@ -11,4 +11,10 @@ public class ControllerExceptionHandler {
     public ResponseEntity<DataIntegrityViolationException> handleIllegalArgsException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().body(e);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<IllegalArgumentException> extraIllegalArgsException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().body(e);
+    }
 }
+
