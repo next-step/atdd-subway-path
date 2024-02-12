@@ -18,8 +18,8 @@ public class ApplyDistance {
         return new ApplyDistance(ApplyType.ADD_LAST, distance);
     }
 
-    public static ApplyDistance applyAddMiddle(Long distance) {
-        return new ApplyDistance(ApplyType.ADD_MIDDLE, distance);
+    public static ApplyDistance applyAddMiddle() {
+        return new ApplyDistance(ApplyType.ADD_MIDDLE, 0L);
     }
 
     public static ApplyDistance applyDeleteFirst(Long distance) {
@@ -30,8 +30,8 @@ public class ApplyDistance {
         return new ApplyDistance(ApplyType.DELETE_LAST, distance);
     }
 
-    public static ApplyDistance applyDeleteMiddle(Long distance) {
-        return new ApplyDistance(ApplyType.DELETE_MIDDLE, distance);
+    public static ApplyDistance applyDeleteMiddle() {
+        return new ApplyDistance(ApplyType.DELETE_MIDDLE, 0L);
     }
 
     public Long applyValue() {
@@ -41,8 +41,9 @@ public class ApplyDistance {
         return this.distance;
     }
 
-    public void validAdd(Long distance) {
-        if (this.applyType.isApplyMiddle() && (distance <= this.distance)) {
+    public void validAdd(Long distance,
+                         Long addDistance) {
+        if (this.applyType.isApplyMiddle() && (distance <= addDistance)) {
             throw new IllegalArgumentException("중간에 추가되는 구간은 라인보다 길수 없습니다.");
         }
     }

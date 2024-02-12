@@ -1,12 +1,14 @@
 package nextstep.subway.line.section;
 
 import nextstep.subway.station.Station;
+import nextstep.subway.station.Stations;
 
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -69,7 +71,7 @@ public class Sections {
         }
 
         addMiddle(section);
-        return ApplyDistance.applyAddMiddle(section.distance());
+        return ApplyDistance.applyAddMiddle();
     }
 
     private boolean isAlreadyAdded(Section section) {
@@ -78,7 +80,7 @@ public class Sections {
     }
 
     private void addMiddle(Section section) {
-        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, section);
+        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, section, PositionType.ADD_MIDDLE);
         Section existing = this.sectionList.get(applyPosition.findingIndex());
         existing.changeSectionFromToInput(applyPosition, section);
         this.sectionList.add(applyPosition.applyIndex(), section);
@@ -93,15 +95,14 @@ public class Sections {
     }
 
     public ApplyDistance delete(Station station) {
-        if (this.sectionList.size() == 1 || existStation(station)) {
+        if (this.sectionList.size() == 1) {
             throw new IllegalArgumentException("구간이 하나 일 때는 삭제를 할 수 없습니다.");
         }
         return deleteTarget(station);
     }
 
-    private boolean existStation(Station station) {
-        return this.sectionList
-                .stream()
+    public boolean existStation(Station station) {
+        return this.sectionList.stream()
                 .anyMatch(section -> section.anyMatchUpStationAndDownStation(station));
     }
 
@@ -120,11 +121,12 @@ public class Sections {
             return ApplyDistance.applyDeleteLast(targetSection.distance());
         }
 
-        return ApplyDistance.applyDeleteMiddle(deleteMiddle(station).distance());
+        deleteMiddle(station);
+        return ApplyDistance.applyDeleteMiddle();
     }
 
     private Section deleteMiddle(Station station) {
-        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, station);
+        ApplyPosition applyPosition = ApplyPosition.of(this.sectionList, station, PositionType.DELETE_MEDDLE);
         Section section = this.sectionList.get(applyPosition.findingIndex());
         Section targetSection = this.sectionList.get(applyPosition.applyIndex());
         section.changeDownStationFromToInputDownStation(targetSection);
@@ -138,6 +140,16 @@ public class Sections {
 
     private boolean canDeleteLast(Station station) {
         return lastSection().isSameDownStation(station);
+    }
+
+    public Stations stations() {
+        return Stations.from(this.sectionList.stream()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .collect(Collectors.toList()));
+    }
+
+    public List<Section> getAll() {
+        return this.sectionList;
     }
 
     @Override

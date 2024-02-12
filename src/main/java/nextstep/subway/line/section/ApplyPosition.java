@@ -1,7 +1,5 @@
 package nextstep.subway.line.section;
 
-import nextstep.subway.station.Station;
-
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.stream.IntStream;
@@ -17,20 +15,12 @@ public class ApplyPosition {
     }
 
     public static ApplyPosition of(List<Section> sectionList,
-                                   Section section) {
+                                   Object o,
+                                   PositionType positionType) {
         return createApplyPosition(
                 sectionList,
-                List.of(ApplyType.ADD_FIRST, ApplyType.ADD_LAST),
-                section);
-    }
-
-    public static ApplyPosition of(List<Section> sectionList,
-                                   Station station) {
-        return createApplyPosition(
-                sectionList,
-                List.of(ApplyType.DELETE_MIDDLE),
-                station
-        );
+                positionType.applyTypes(),
+                o);
     }
 
     private static ApplyPosition createApplyPosition(
@@ -58,7 +48,7 @@ public class ApplyPosition {
     }
 
     public boolean addingFirst() {
-        return this.applyType.isAppyStart();
+        return this.applyType.isApplyStart();
     }
 
     public int findingIndex() {
@@ -66,7 +56,7 @@ public class ApplyPosition {
     }
 
     public int applyIndex() {
-        if (this.applyType.isAppyStart()) {
+        if (this.applyType.isApplyStart()) {
             return this.index;
         }
         return this.index + 1;
