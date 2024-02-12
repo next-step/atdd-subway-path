@@ -16,6 +16,7 @@ import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 
 @DisplayName("지하철 경로 조회 기능")
@@ -91,7 +92,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     *
      *     - Given 공통으로 1개 씩의 역을 가진 3개 노선이 주어진다.
      *     - When 세개 노선에 걸친 역의 경로를 조회하면,
      *     - Then 경로가 조회 된다.
@@ -113,6 +113,27 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         assertThat(stations.stream().mapToLong(Station::getId)).containsAll(List.of(교대역, 남부터미널역, 강남역, 선릉역));
         assertThat(distance).isEqualTo(교대_남부터미널_거리 + 교대_강남_거리 + 강남_선릉_거리);
+    }
+
+
+    /**
+     * Given 연결되지 않은 새로운 노선이 주어진다.
+     * When 기존 노선의 역을 출발지로, 새로운 노선의 역을 도착지로 경로 조회하면,
+     * Then 경로가 조회가 실패한다.
+     */
+    @Test
+    void 출발지와_도착지가_연결되어_있지_않으면_실패한다() {
+        // given
+        final Long 가상의역_1 = 응답에서_id_조회(지하철역_생성_요청("가상의역_1"));
+        final Long 가상의역_2 = 응답에서_id_조회(지하철역_생성_요청("가상의역_2"));
+
+        응답에서_id_조회(지하철_노선_생성_요청("가상선", "yellow", 가상의역_1, 가상의역_2, 10));
+
+        // when
+        final ExtractableResponse<Response> response = 지하철_경로_조회(교대역, 가상의역_2);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
