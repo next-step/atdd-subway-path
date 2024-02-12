@@ -82,4 +82,46 @@ public class LineTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("노선명과 색상을 변경한다.")
+    @Test
+    void 지하철_노선_노선명과_색상_변경() {
+        // given
+        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+
+        // when
+        newLine.updateDetails("지하철노선", "색상");
+
+        // then
+        assertThat(newLine.getName()).isEqualTo("지하철노선");
+        assertThat(newLine.getColor()).isEqualTo("색상");
+    }
+
+    @DisplayName("노선명과 색상을 변경 시 노선명이 null 혹은 공백이라면 오류가 발생한다.")
+    @Test
+    void 지하철_노선_노선명_변경_시_노선명이_null_혹은_공백이라면_변경_불가() {
+        // given
+        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+
+        // then
+        assertThatThrownBy(() -> newLine.updateDetails(null, "색상"))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThatThrownBy(() -> newLine.updateDetails("", "색상"))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선명과 색상을 변경 시 색상이 null 혹은 공백이라면 오류가 발생한다.")
+    @Test
+    void 지하철_노선_노선명_변경_시_색상이_null_혹은_공백이라면_변경_불가() {
+        // given
+        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+
+        // then
+        assertThatThrownBy(() -> newLine.updateDetails("지하철노선", null))
+                .isInstanceOf(IllegalArgumentException.class);
+
+        assertThatThrownBy(() -> newLine.updateDetails("지하철노선", ""))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
 }

@@ -43,6 +43,9 @@ public class Line {
     }
 
     public void updateDetails(final String name, final String color) {
+        Assert.hasText(name);
+        Assert.hasText(color);
+
         this.name = name;
         this.color = color;
     }
