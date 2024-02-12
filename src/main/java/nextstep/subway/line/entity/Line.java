@@ -1,6 +1,7 @@
 package nextstep.subway.line.entity;
 
 import nextstep.subway.station.entity.Station;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -27,6 +28,14 @@ public class Line {
     }
 
     public Line(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
+        Assert.notNull(name);
+        Assert.hasText(name);
+        Assert.notNull(color);
+        Assert.hasText(color);
+        Assert.notNull(upStation);
+        Assert.notNull(downStation);
+        Assert.isTrue(distance > 0);
+
         this.name = name;
         this.color = color;
 
