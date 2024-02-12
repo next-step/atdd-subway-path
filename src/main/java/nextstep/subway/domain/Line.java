@@ -69,9 +69,9 @@ public class Line {
             Collectors.toList());
     }
 
-    public void addSection(Section section) {
+    public void addSection(Station upStation, Station downStation, int distance) {
         // 모든 구간을 돌면서 하행선인지를 판단하여 있으면 넣고 없으면 에러를 띄워야한다.
-        this.sections.add(section);
+        this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public Set<Station> getStations() {
@@ -90,4 +90,5 @@ public class Line {
     public void removeSection(int index) {
         this.sections.remove(index);
     }
+
 }

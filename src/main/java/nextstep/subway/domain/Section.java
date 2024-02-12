@@ -1,12 +1,23 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Section {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
+    private int orderNo;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "line_id")
@@ -51,5 +62,9 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public int getOrderNo() {
+        return orderNo;
     }
 }

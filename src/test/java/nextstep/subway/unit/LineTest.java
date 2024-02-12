@@ -4,10 +4,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import java.util.Set;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.unit.Fixtures.LineFixture;
-import nextstep.subway.unit.Fixtures.SectionFixture;
 import nextstep.subway.unit.Fixtures.StationFixture;
 import org.junit.jupiter.api.Test;
 
@@ -26,10 +24,8 @@ class LineTest {
         Line line = LineFixture.line(1L, "2호선", "green");
         Station upStation = StationFixture.station(1L, "강남역");
         Station downStation = StationFixture.station(2L, "양재역");
-        Section section = SectionFixture.section(line, upStation, downStation, 10);
-
         // when
-        line.addSection(section);
+        line.addSection(upStation, downStation, 10);
         // then
         assertThat(line.getSections()).isNotEmpty();
     }
@@ -49,8 +45,7 @@ class LineTest {
         Line line = LineFixture.line(1L, "2호선", "green");
         Station upStation = StationFixture.station(1L, "강남역");
         Station downStation = StationFixture.station(2L, "양재역");
-        Section section = SectionFixture.section(line, upStation, downStation, 10);
-        line.addSection(section);
+        line.addSection(upStation, downStation, 10);
 
         // when
         Set<Station> stations = line.getStations();
@@ -74,11 +69,10 @@ class LineTest {
         Line line = LineFixture.line(1L, "2호선", "green");
         Station upStation = StationFixture.station(1L, "강남역");
         Station downStation = StationFixture.station(2L, "양재역");
-        Section section = SectionFixture.section(line, upStation, downStation, 10);
-        line.addSection(section);
+        line.addSection(upStation, downStation, 10);
 
         // when
-        line.removeSection(section);
+        line.removeSection(line.getSections().size() - 1);
         // then
         assertThat(line.getSections()).isEmpty();
     }
