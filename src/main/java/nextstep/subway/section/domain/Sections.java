@@ -1,9 +1,6 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.exception.AlreadyExistDownStationException;
-import nextstep.subway.exception.DeleteSectionException;
-import nextstep.subway.exception.IsNotLastStationException;
-import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.*;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -35,11 +32,11 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        if (size() == 0) {
+        if (this.sections.isEmpty()) {
             this.sections.add(section);
             return;
         }
-        if (!isLastStation(section.getUpStation())) {
+        if (isNotLastStation(section.getUpStation())) {
             throw new IsNotLastStationException();
         }
         if (isExistDownStation(section)) {
@@ -52,22 +49,27 @@ public class Sections {
         if (!getStations().contains(station)) {
             throw new NotFoundStationException();
         }
-        if (!isLastStation(station)) {
+        if (isNotLastStation(station)) {
             throw new IsNotLastStationException();
         }
         if (size() == 1) {
             throw new DeleteSectionException();
         }
 
-        getLastSection().delete();
-        this.sections.remove(getLastSection());
+        Section lastSection = getLastSection();
+
+        lastSection.delete();
+        this.sections.remove(lastSection);
     }
 
-    private boolean isLastStation(Station station) {
-        return getLastSection().isDownStation(station);
+    private boolean isNotLastStation(Station station) {
+        return !getLastSection().isDownStation(station);
     }
 
     private Section getLastSection() {
+        if (this.sections.isEmpty()) {
+            throw new EmptySectionException();
+        }
         return this.sections.get(size() - 1);
     }
 

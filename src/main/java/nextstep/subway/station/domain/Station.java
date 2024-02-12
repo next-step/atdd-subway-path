@@ -21,7 +21,7 @@ public class Station {
     private String name;
 
     @Column
-    private LocalDateTime deleted_at;
+    private LocalDateTime deletedAt;
 
     protected Station() {
     }

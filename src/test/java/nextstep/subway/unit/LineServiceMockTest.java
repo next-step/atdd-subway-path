@@ -22,7 +22,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-// @SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
 

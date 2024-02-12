@@ -33,7 +33,7 @@ public class Section {
     private Integer distance;
 
     @Column
-    private LocalDateTime deleted_at;
+    private LocalDateTime deletedAt;
 
     protected Section() {
     }
@@ -57,7 +57,7 @@ public class Section {
     }
 
     public void delete() {
-        deleted_at = LocalDateTime.now();
+        deletedAt = LocalDateTime.now();
     }
 
     public Long getSectionId() {
@@ -94,7 +94,7 @@ public class Section {
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionId, line, upStation, downStation, distance, deleted_at);
+        return Objects.hash(sectionId, line, upStation, downStation, distance, deletedAt);
     }
 
 }

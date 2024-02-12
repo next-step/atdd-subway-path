@@ -29,11 +29,9 @@ public class Line {
 
     @Embedded
     private Sections sections = new Sections();
-    ;
-
 
     @Column
-    private LocalDateTime deleted_at;
+    private LocalDateTime deletedAt;
 
     protected Line() {
     }
