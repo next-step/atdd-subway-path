@@ -8,11 +8,14 @@ public class ShowAllStationsResponse {
 
     private List<StationDto> stations;
 
+    private ShowAllStationsResponse(){
+    }
+
     private ShowAllStationsResponse(List<StationDto> stationDtos) {
         this.stations = stationDtos;
     }
 
-    public static ShowAllStationsResponse of(List<StationDto> stationDtos) {
+    public static ShowAllStationsResponse from(List<StationDto> stationDtos) {
         return new ShowAllStationsResponse(stationDtos);
     }
 

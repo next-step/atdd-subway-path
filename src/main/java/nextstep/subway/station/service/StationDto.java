@@ -9,6 +9,9 @@ public class StationDto {
     private Long stationId;
     private String name;
 
+    private StationDto(){
+    }
+
     public StationDto(Long stationId, String name) {
         this.stationId = stationId;
         this.name = name;

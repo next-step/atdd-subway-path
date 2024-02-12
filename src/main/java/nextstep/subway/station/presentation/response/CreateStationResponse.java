@@ -7,7 +7,10 @@ public class CreateStationResponse {
     private Long stationId;
     private String name;
 
-    public CreateStationResponse(Long stationId, String name) {
+    private CreateStationResponse(){
+    }
+
+    private CreateStationResponse(Long stationId, String name) {
         this.stationId = stationId;
         this.name = name;
     }

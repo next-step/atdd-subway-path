@@ -53,6 +53,10 @@ public class Line {
         return this.sections.getStations();
     }
 
+    public List<Section> getSections() {
+        return this.sections.getSections();
+    }
+
     public void addSection(Section section) {
         this.sections.addSection(section);
         section.setLine(this);
@@ -78,16 +82,12 @@ public class Line {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(lineId, line.getLineId()) && Objects.equals(name, line.getName()) && Objects.equals(color, line.getColor()) && Objects.equals(sections, line.getSections());
+        return Objects.equals(lineId, line.getLineId()) && Objects.equals(name, line.getName()) && Objects.equals(color, line.getColor()) && Objects.equals(getSections(), line.getSections());
     }
 
     @Override

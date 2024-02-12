@@ -8,6 +8,9 @@ public class ShowAllLinesResponse {
 
     private List<LineDto> lines;
 
+    private ShowAllLinesResponse() {
+    }
+
     private ShowAllLinesResponse(List<LineDto> lineDtos) {
         this.lines = lineDtos;
     }

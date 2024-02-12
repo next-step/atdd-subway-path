@@ -88,4 +88,8 @@ public class Sections {
         return this.sections.size();
     }
 
+    public List<Section> getSections() {
+        return this.sections;
+    }
+
 }
