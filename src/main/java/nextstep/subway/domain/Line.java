@@ -1,9 +1,11 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -63,10 +65,12 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.stream().sorted(Comparator.comparing(Section::getOrderNo)).collect(
+            Collectors.toList());
     }
 
     public void addSection(Section section) {
+        // 모든 구간을 돌면서 하행선인지를 판단하여 있으면 넣고 없으면 에러를 띄워야한다.
         this.sections.add(section);
     }
 
@@ -81,5 +85,9 @@ public class Line {
 
     public void removeSection(Section section) {
         this.sections.remove(section);
+    }
+
+    public void removeSection(int index) {
+        this.sections.remove(index);
     }
 }
