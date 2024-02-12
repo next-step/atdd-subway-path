@@ -65,18 +65,12 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addLineSectionInMiddle() {
         // given
-        // 강남역, 양재역
         Long 정자역 = 지하철역_생성_요청("정자역").jsonPath().getLong("id");
         Long 판교역 = 지하철역_생성_요청("판교역").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역));
-        // 양재역, 정자역
-        // 강남역, 양재역, 정자역
 
         // when
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 판교역));
-        // 강남역, 양재역, 정자역
-        // 강남역, 양재역, 판교역, 정자역
-        // 강남역, 양재역, 정자역, 판교역
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 판교역, 6));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -122,7 +116,20 @@ class LineSectionAcceptanceTest extends AcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
         params.put("downStationId", downStationId + "");
-        params.put("distance", 6 + "");
+        params.put("distance", 10 + "");
         return params;
     }
+
+    private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId,
+        Integer distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId + "");
+        params.put("downStationId", downStationId + "");
+        if (distance == null) {
+            distance = 10;
+        }
+        params.put("distance", distance + "");
+        return params;
+    }
+
 }
