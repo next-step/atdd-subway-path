@@ -34,9 +34,9 @@ public class LineTest {
         assertThat(newLine.getSections().getSections().get(0).getDistance()).isEqualTo(10);
     }
 
-    @DisplayName("Line 엔티티 생성 시 이름이 null이라면 오류가 발생한다.")
+    @DisplayName("Line 엔티티 생성 시 이름이 null 혹은 공백이라면 오류가 발생한다.")
     @Test
-    void 지하철_노선_엔티티_생성_시_이름이_null이라면_생성_불가() {
+    void 지하철_노선_엔티티_생성_시_이름이_null_혹은_공백이라면_생성_불가() {
         // given
         final Station upStation = mock(Station.class);
         final Station downStation = mock(Station.class);
@@ -44,23 +44,14 @@ public class LineTest {
         // then
         assertThatThrownBy(() -> new Line(null, "bg-red-600", upStation, downStation, 10))
                 .isInstanceOf(IllegalArgumentException.class);
-    }
 
-    @DisplayName("Line 엔티티 생성 시 이름이 공백이라면 오류가 발생한다.")
-    @Test
-    void 지하철_노선_엔티티_생성_시_이름이_공백이라면_생성_불가() {
-        // given
-        final Station upStation = mock(Station.class);
-        final Station downStation = mock(Station.class);
-
-        // then
         assertThatThrownBy(() -> new Line("", "bg-red-600", upStation, downStation, 10))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("Line 엔티티 생성 시 색상이 null이라면 오류가 발생한다.")
+    @DisplayName("Line 엔티티 생성 시 색상이 null 혹은 공백이라면 오류가 발생한다.")
     @Test
-    void 지하철_노선_엔티티_생성_시_색상이_null이라면_생성_불가() {
+    void 지하철_노선_엔티티_생성_시_색상이_null_혹은_공백이라면_생성_불가() {
         // given
         final Station upStation = mock(Station.class);
         final Station downStation = mock(Station.class);
@@ -68,16 +59,7 @@ public class LineTest {
         // then
         assertThatThrownBy(() -> new Line("신분당선", null, upStation, downStation, 10))
                 .isInstanceOf(IllegalArgumentException.class);
-    }
 
-    @DisplayName("Line 엔티티 생성 시 색상이 공백이라면 오류가 발생한다.")
-    @Test
-    void 지하철_노선_엔티티_생성_시_색상이_공백이라면_생성_불가() {
-        // given
-        final Station upStation = mock(Station.class);
-        final Station downStation = mock(Station.class);
-
-        // then
         assertThatThrownBy(() -> new Line("신분당선", "", upStation, downStation, 10))
                 .isInstanceOf(IllegalArgumentException.class);
     }

@@ -28,9 +28,7 @@ public class Line {
     }
 
     public Line(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
-        Assert.notNull(name);
         Assert.hasText(name);
-        Assert.notNull(color);
         Assert.hasText(color);
         Assert.notNull(upStation);
         Assert.notNull(downStation);
