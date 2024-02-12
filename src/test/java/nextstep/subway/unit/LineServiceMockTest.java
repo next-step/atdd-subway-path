@@ -1,26 +1,64 @@
 package nextstep.subway.unit;
 
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+
+import java.lang.reflect.Field;
+import java.util.Optional;
+import nextstep.subway.line.Line;
+import nextstep.subway.line.LineRepository;
+import nextstep.subway.line.LineRequest;
+import nextstep.subway.line.LineResponse;
+import nextstep.subway.line.LineService;
+import nextstep.subway.section.Section;
+import nextstep.subway.station.Station;
+import nextstep.subway.station.StationService;
+import nextstep.subway.utils.line.StationLineManager;
+import nextstep.subway.utils.station.StationManager;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
+    @InjectMocks
+    private LineService lineService;
     @Mock
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
 
     @Test
-    void addSection() {
+    void addSection() throws NoSuchFieldException, IllegalAccessException {
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
+        // 리플렉션
+        Field idField = Station.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        Station upStation = new Station("상행역");
+        idField.set(upStation, 1L);
+        Station downStation = new Station("하행역");
+        idField.set(downStation, 2L);
+
+        // stub
+        when(lineRepository.findById(any(Long.class))).thenReturn(Optional.of(new Line()));
+        when(stationService.findById(1L)).thenReturn(upStation);
+        when(stationService.findById(2L)).thenReturn(downStation);
 
         // when
-        // lineService.addSection 호출
+        Line expectedLine = lineService.findLineById(1L);
+        Station findUpStation = stationService.findById(1L);
+        Station findDownStation = stationService.findById(2L);
+        Section section = new Section(expectedLine, findUpStation, findDownStation, 10L);
+        lineService.addSection(expectedLine, section);
+
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
+        Line line = lineService.findLineById(1L);
+        Assertions.assertThat(line.getSections()).hasSize(1);
     }
 }
