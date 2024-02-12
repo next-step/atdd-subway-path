@@ -1,11 +1,13 @@
 package nextstep.subway.line;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.path.PathFinder;
 import nextstep.subway.section.Section;
 import nextstep.subway.section.SectionAddRequest;
 import nextstep.subway.section.SectionResponse;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import org.jgrapht.alg.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+
+    private final PathFinder pathFinder;
 
     @Transactional
     public LineResponse create(LineCreateRequest request) {
@@ -85,5 +89,6 @@ public class LineService {
         Station deleteStation = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
 
         line.removeSection(deleteStation);
+
     }
 }

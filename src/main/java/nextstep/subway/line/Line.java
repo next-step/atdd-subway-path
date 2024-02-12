@@ -8,6 +8,7 @@ import nextstep.subway.exception.InvalidInputException;
 import nextstep.subway.section.Section;
 import nextstep.subway.section.Sections;
 import nextstep.subway.station.Station;
+import org.jgrapht.alg.util.Pair;
 
 import javax.persistence.*;
 
@@ -30,7 +31,6 @@ public class Line {
     @Embedded
     private Sections sections = new Sections();
 
-
     public void updateName(String name) {
         this.name = name;
     }
@@ -43,9 +43,10 @@ public class Line {
         return sections.getTotalDistance();
     }
 
-    public void initSection(Station upstation, Station downstation, int distance) {
+    public Section initSection(Station upstation, Station downstation, int distance) {
         Section section = Section.initSection(this, upstation, downstation, distance);
         sections.initSection(section);
+        return section;
     }
 
     public void addSection(Section newSection) {
@@ -75,6 +76,7 @@ public class Line {
         } else {
             sections.addSection(newSection);
         }
+
     }
 
     public void removeSection(Station station) {

@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.line.LineService;
+import nextstep.subway.path.PathFinder;
 import nextstep.subway.section.SectionAddRequest;
 import nextstep.subway.station.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,11 +25,14 @@ public class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
 
+    @Mock
+    private PathFinder pathFinder;
+
     private LineService lineService;
 
     @BeforeEach
     void setup() {
-        lineService = new LineService(lineRepository, stationRepository);
+        lineService = new LineService(lineRepository, stationRepository, pathFinder);
     }
 
     @Test

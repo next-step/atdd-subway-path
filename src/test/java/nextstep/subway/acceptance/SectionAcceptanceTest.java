@@ -22,13 +22,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class SectionAcceptanceTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
     void setUp() {
+        databaseCleanup.execute();
         StationFactory.createStation("banghwa");
         StationFactory.createStation("gangdong");
         StationFactory.createStation("macheon");
@@ -44,7 +44,7 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionSuccess() {
         // given
-        ExtractableResponse<Response> response = SectionFactory.createSection(1L, 2L, 3L);
+        ExtractableResponse<Response> response = SectionFactory.createSection(1L, 2L, 3L, 10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
@@ -67,7 +67,7 @@ public class SectionAcceptanceTest {
         // given
         Long newUpstationId = 3L;
         Long oldUpstationId = 1L;
-        SectionFactory.createSection(1L, newUpstationId, oldUpstationId);
+        SectionFactory.createSection(1L, newUpstationId, oldUpstationId, 10);
 
         // when
         ExtractableResponse<Response> response = LineFactory.getLines();
@@ -88,7 +88,7 @@ public class SectionAcceptanceTest {
         // given
         Long upstationId = 1L;
         Long middleStationId = 3L;
-        SectionFactory.createSection(1L, upstationId, middleStationId);
+        SectionFactory.createSection(1L, upstationId, middleStationId, 10);
 
         // when
         ExtractableResponse<Response> response = LineFactory.getLines();
@@ -96,8 +96,6 @@ public class SectionAcceptanceTest {
         // then
         List<String> stationNames = response.jsonPath().getList("[0].stations.name", String.class);
         assertThat(stationNames).containsExactly("banghwa", "macheon", "gangdong");
-
-
     }
 
     /**
@@ -113,7 +111,7 @@ public class SectionAcceptanceTest {
         Long existingStationId = 1L;
 
         // when
-        ExtractableResponse<Response> response = SectionFactory.createSection(1L, upstationId, existingStationId);
+        ExtractableResponse<Response> response = SectionFactory.createSection(1L, upstationId, existingStationId, 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -130,7 +128,7 @@ public class SectionAcceptanceTest {
     @Test
     void firstSectionDeleteSuccess() {
         // given
-        SectionFactory.createSection(1L, 2L, 3L);
+        SectionFactory.createSection(1L, 2L, 3L, 10);
 
         // when
         ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 1L);
@@ -152,7 +150,7 @@ public class SectionAcceptanceTest {
     @Test
     void removeSectionDeleteSuccess() {
         // given
-        SectionFactory.createSection(1L, 2L, 3L);
+        SectionFactory.createSection(1L, 2L, 3L, 10);
 
         // when
         ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 2L);
@@ -174,7 +172,7 @@ public class SectionAcceptanceTest {
     @Test
     void LastSectionDeleteSuccess() {
         // given
-        SectionFactory.createSection(1L, 2L, 3L);
+        SectionFactory.createSection(1L, 2L, 3L, 10);
 
         // when
         ExtractableResponse<Response> response = SectionFactory.deleteSection(1L, 3L);

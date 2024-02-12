@@ -9,10 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SectionFactory {
-    public static ExtractableResponse<Response> createSection(Long lineId, Long upstationId, Long downstationId) {
+    public static ExtractableResponse<Response> createSection(Long lineId, Long upstationId, Long downstationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upstationId", upstationId.toString());
         params.put("downstationId", downstationId.toString());
+        params.put("distance", Integer.toString(distance));
 
         return RestAssured.given().log().all()
                 .pathParam("id", lineId)
