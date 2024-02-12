@@ -67,4 +67,15 @@ public class Section {
     public boolean isMatchDownStation(Station station) {
         return this.downStation == station;
     }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+//                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
+    }
 }

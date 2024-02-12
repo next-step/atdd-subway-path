@@ -65,12 +65,12 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public void registerSection(Line line, Section section) {
+    public void addSection(Line line, Section section) {
         line.addSection(section);
     }
 
-    public void deleteSection(Line line, Station station) {
-        line.deleteSection(station);
+    public void removeSection(Line line, Station station) {
+        line.removeSection(station);
     }
 
     public boolean isExistSection(Line line, Section section) {

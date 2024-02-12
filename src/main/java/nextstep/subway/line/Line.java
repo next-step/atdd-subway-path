@@ -71,7 +71,7 @@ public class Line {
         sections.add(section);
     }
 
-    public void deleteSection(Station station) {
+    public void removeSection(Station station) {
         Section lastSection = getLastSection();
         if (lastSection.getDownStation() != station) {
             throw new IllegalArgumentException("삭제할 구간이 올바르지 않습니다.");
@@ -121,5 +121,16 @@ public class Line {
         if (!isRemoveFinalSection(station)) {
             throw new IllegalArgumentException("삭제할 구간이 올바르지 않습니다.");
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                ", distance=" + distance +
+                '}';
     }
 }

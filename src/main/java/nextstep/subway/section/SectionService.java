@@ -28,7 +28,7 @@ public class SectionService {
 
         line.validateSaveSection(stationSection);
 
-        lineService.registerSection(line, stationSection);
+        lineService.addSection(line, stationSection);
         return line;
     }
 
@@ -39,6 +39,6 @@ public class SectionService {
 
         line.validateDeleteSection(station);
 
-        lineService.deleteSection(line, station);
+        lineService.removeSection(line, station);
     }
 }
