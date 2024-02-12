@@ -20,8 +20,8 @@ public class LineFixture {
         return new LineRequest("수정된_신분당선", "bg-blue-100", upStationId, downStationId, 10);
     }
 
-    public static LineRequest 호남선(Long upStationId, Long downStationId) {
-        return new LineRequest("호남선", "bg-blue-100", upStationId, downStationId, 10);
+    public static LineRequest 호남선(Long upStationId, Long downStationId, Integer distance) {
+        return new LineRequest("호남선", "bg-blue-100", upStationId, downStationId, distance);
     }
 
     public static Line 이호선_생성() {
