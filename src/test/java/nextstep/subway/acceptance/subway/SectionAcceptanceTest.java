@@ -42,8 +42,8 @@ public class SectionAcceptanceTest {
 
 	/**
 	 * Given 지하철 노선을 생성한다.
-	 * When 생성한 지하철 노선의 하행 종점역부터 새로운 구간의 하행역을 등록하면
-	 * Then 지하철 노선 조회 시, 새로운 하행 종점역을 확인할 수 있다.
+	 * When 생성한 지하철 노선의 하행 종점역(시청역)부터 새로운 구간의 하행역(서울역)을 등록하면
+	 * Then 지하철 노선 조회 시, 새로운 하행 종점역(서울역)을 확인할 수 있다.
 	 * Then 노선 전체 길이가 등록한 구간의 길이만큼 늘어난다.
 	 */
 	@DisplayName("지하철 노선에 하행 종점역이 포함된 구간을 등록한다.")
@@ -57,9 +57,7 @@ public class SectionAcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		LineResponse line = 노선_단건_조회_요청(노선).as(LineResponse.class);
-		assertTrue(line.getStaions().stream()
-				.anyMatch(station -> 서울역.equals(station.getId())));
-		assertThat(line.getDistance()).isEqualTo(종로3가역_시청역_길이 + 10);
+		상하행_종점역_구간_동록_성공_검증(line, 종로3가역, 서울역, 종로3가역_시청역_길이 + 10);
 	}
 
 	/**
@@ -83,10 +81,8 @@ public class SectionAcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		List<SectionResponse> sections = 구간_조회_요청(노선).jsonPath().getList("", SectionResponse.class);
-		assertTrue(sections.stream()
-				.anyMatch(section -> 종로3가역.equals(section.getUpStationId()) && 종각역.equals(section.getDownStationId())));
-		assertTrue(sections.stream()
-				.anyMatch(section -> 종각역.equals(section.getUpStationId()) && 시청역.equals(section.getDownStationId()) && section.getDistance() == 2));
+		중간역_구간_등록_성공_검증(sections, 종로3가역, 종각역, 4);
+		중간역_구간_등록_성공_검증(sections, 종각역, 시청역, 2);
 	}
 
 	/**
@@ -107,16 +103,14 @@ public class SectionAcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		LineResponse line = 노선_단건_조회_요청(노선).as(LineResponse.class);
-		assertTrue(line.getStaions().stream()
-				.anyMatch(station -> 종로5가역.equals(station.getId())));
-		assertThat(line.getDistance()).isEqualTo(종로3가역_시청역_길이 + 1);
+		상하행_종점역_구간_동록_성공_검증(line, 종로5가역, 시청역,종로3가역_시청역_길이 + 1);
 	}
 
 	/**
 	 * Given 지하철 노선을 생성한다.
 	 * Given 생성한 지하철 노선에 구간을 등록한다.
 	 * When 등록한 구간과 같은 구간을 등록하면
-	 * Then 등록되지 않고 코드값 400 (Bad Request) 을 반환한다.
+	 * Then 등록되지 않고 코드값 "해당 노선에 등록할 역들이 이미 존재합니다."라는 메시지오 반환한다.
 	 */
 	@DisplayName("지하철 노선에 등록되어 있는 역을 등록하면 실패한다.")
 	@DirtiesContext
@@ -135,7 +129,7 @@ public class SectionAcceptanceTest {
 	/**
 	 * Given 종로3가역, 시청역 구간이 등록된 지하철 노선을 생성하고
 	 * When 생성한 지하철 노선에 상행역이 동대문역, 하행역이 종로5가역으로 명시된 구간을 등록하면
-	 * Then 등록되지 않고 코드값 400 (Bad Request) 을 반환한다.
+	 * Then 등록되지 않고 코드값 "등록 구간의 역들이 모두 노선에 존재하지 않습니다."라는 메시지를 반환한다.
 	 */
 	@DisplayName("모든 역들이 존재하지 않는 구간을 등록하면 실패한다.")
 	@DirtiesContext
@@ -154,7 +148,7 @@ public class SectionAcceptanceTest {
 	 * 		상행역 : 종로3가역 / 하행역 : 시청역 / 길이 : 6 인 구간이 존재한다.
 	 * When 생성한 지하철 노선에
 	 * 		상행역 : 종로3가역 / 하행역 : 종각역 / 길이가 6 이상인 구간을 등록하면
-	 * Then 등록되지 않고 코드값 400 (Bad Request) 을 반환한다.
+	 * Then 등록되지 않고 코드값 "등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없습니다."라는 메시지를 반환한다.
 	 */
 	@DisplayName("등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없다.")
 	@DirtiesContext
@@ -193,7 +187,7 @@ public class SectionAcceptanceTest {
 	 * Given 지하철 노선을 생성한다.
 	 * Given 지하철 노선에 구간을 생성한다.
 	 * When 해당 노선의 하행 종점역이 아닌 구간을 삭제하면
-	 * Then 삭제되지 않고 코드값 400 (Bad Request) 을 반환한다.
+	 * Then 삭제되지 않고 코드값 "노선의 하행 종점역만 제거할 수 있습니다."라는 메시지를 반환한다.
 	 */
 	@DisplayName("지하철 노선의 하행 종점역이 아닌 구간을 제거하면 실패한다.")
 	@DirtiesContext
@@ -212,7 +206,7 @@ public class SectionAcceptanceTest {
 	/**
 	 * Given 지하철 노선을 생성한다.
 	 * When 해당 노선에 상행 종점역과 하행 종점역만 있는 경우 해당 구간을 삭제하면
-	 * Then 삭제되지 않고 코드값 400 (Bad Request) 을 반환한다.
+	 * Then 삭제되지 않고 코드값 "노선의 하행 종점역만 제거할 수 있습니다."라는 메시지를 반환한다.
 	 */
 	@DisplayName("상행 종점역과 하행 종점역만 있는 지하철 노선의 구간을 제거하면 실패한다.")
 	@DirtiesContext
@@ -223,6 +217,21 @@ public class SectionAcceptanceTest {
 
 		// then
 		실패시_코드값_메시지_검증(response, HttpStatus.BAD_REQUEST.value(),"상행 종점역과 하행 종점역만 있는 노선입니다.");
+	}
+
+	private void 상하행_종점역_구간_동록_성공_검증(LineResponse line, Long startStationId, Long endStationId, int distance) {
+		assertTrue(line.getStaions().stream()
+				.anyMatch(station -> startStationId.equals(station.getId())));
+		assertTrue(line.getStaions().stream()
+				.anyMatch(station -> endStationId.equals(station.getId())));
+		assertThat(line.getDistance()).isEqualTo(distance);
+	}
+
+	private void 중간역_구간_등록_성공_검증(List<SectionResponse> sections, Long upStationId, Long downStationId, int distance) {
+		assertTrue(sections.stream()
+				.anyMatch(section -> upStationId.equals(section.getUpStationId())
+						&& downStationId.equals(section.getDownStationId())
+						&& distance == section.getDistance()));
 	}
 
 	private void 실패시_코드값_메시지_검증(ExtractableResponse<Response> response, int statusCode, String message) {
