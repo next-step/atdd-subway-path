@@ -52,40 +52,32 @@ public class Sections {
             throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "이미 등록된 구간입니다.");
         }
 
-        if (isMiddleSection(newSection)) {
-            addMiddleSection(newSection);
+        if (isFirstAdded(newSection)) {
+            addInFirst(newSection);
             return;
         }
 
-        if (isFirstSection(newSection)) {
-            addFirstSection(newSection);
+        if (isLastAdded(newSection)) {
+            addInLast(newSection);
             return;
         }
 
-        if (isLastSection(newSection)) {
-            addLastSection(newSection);
-            return;
-        }
-
-        throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "등록할 수 없는 구간입니다.");
+        addInMiddle(newSection);
     }
 
     private boolean isDuplicatedSection(Section newSection) {
         return sections.stream().anyMatch(section -> section.matchStations(newSection));
     }
 
-    private void addMiddleSection(Section newSection) {
-        Section originalSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-                .findFirst()
-                .orElseThrow();
-
-        int index = sections.indexOf(originalSection);
-        sections.add(index - 1 == -1 ? 0 : index - 1, newSection);
-        originalSection.separateFrom(newSection);
+    private boolean isFirstAdded(Section section) {
+        return firstSection().getUpStation().equals(section.getDownStation());
     }
 
-    private void addFirstSection(Section newSection) {
+    private boolean isLastAdded(Section section) {
+        return lastSection().getDownStation().equals(section.getUpStation());
+    }
+
+    private void addInFirst(Section newSection) {
         if (isDuplicatedUpStation(newSection.getUpStation())) {
             throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
         }
@@ -96,40 +88,70 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.getDownStation().equals(upStation));
     }
 
-    private void addLastSection(Section newSection) {
+    private void addInLast(Section newSection) {
         if (isDuplicatedDownStation(newSection.getDownStation())) {
             throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
         }
         sections.add(newSection);
     }
 
+    private void addInMiddle(Section newSection) {
+        if (isDuplicatedDownStation(newSection.getDownStation())) {
+            throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
+        }
+
+        Section targetSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 구간 정보를 찾을 수 없습니다ㅏ."));
+
+        int index = sections.indexOf(targetSection);
+        sections.add(index == 0 ? 0 : index - 1, newSection);
+        targetSection.moveBackFrom(newSection);
+    }
+
     private boolean isDuplicatedDownStation(Station downStation) {
         return sections.stream().anyMatch(section -> section.getUpStation().equals(downStation));
     }
 
-    private boolean isMiddleSection(Section newSection) {
-        return sections.stream().anyMatch(section -> section.getUpStation().equals(newSection.getUpStation()));
-    }
-
-    private boolean isFirstSection(Section section) {
-        return firstSection().getUpStation().equals(section.getDownStation());
-    }
-
-    private boolean isLastSection(Section section) {
-        return lastSection().getDownStation().equals(section.getUpStation());
-    }
 
     public void deleteSection(Long stationId) {
-        if (sections.size() == 1)
+        if (sections.size() == 1) {
             throw new LineException(ErrorCode.CANNOT_DELETE_SECTION, "구간이 한개인 경우 삭제할 수 없습니다.");
-        if (!isLastDownStation(stationId)) {
-            throw new LineException(ErrorCode.CANNOT_DELETE_SECTION, "삭제 역이 하행 종점역이 아닙니다.");
         }
-        sections.remove(lastSection());
+
+        if (isFirstUpStation(stationId)) {
+            sections.remove(0);
+            return;
+        }
+
+        if (isLastDownStation(stationId)) {
+            sections.remove(lastSection());
+            return;
+        }
+
+        deleteMiddleSection(stationId);
+    }
+
+    private boolean isFirstUpStation(Long stationId) {
+        return firstSection().getUpStation().match(stationId);
     }
 
     private boolean isLastDownStation(Long stationId) {
         return lastSection().getDownStation().match(stationId);
+    }
+
+    private void deleteMiddleSection(Long stationId) {
+        Section targetSection = sections.stream()
+                .filter(section -> section.getDownStation().match(stationId))
+                .findFirst()
+                .orElseThrow(() -> new LineException(ErrorCode.CANNOT_DELETE_SECTION, "삭제할 역 정보를 찾을 수 없습니다."));
+
+        int targetIndex = sections.indexOf(targetSection);
+        Section nextSection = sections.get(targetIndex + 1);
+
+        targetSection.mergeWith(nextSection);
+        sections.remove(nextSection);
     }
 
     @Override

@@ -5,21 +5,12 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.LineRequest;
-import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineSectionResponse;
 import nextstep.subway.line.section.SectionRequest;
-import nextstep.subway.line.section.SectionResponse;
-import nextstep.subway.utils.DatabaseCleanup;
-import nextstep.subway.utils.StationFixtures;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
@@ -28,7 +19,7 @@ import static nextstep.subway.utils.StationFixtures.stationFixtures;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 테스트")
-public class SectionAcceptanceTest extends AcceptanceTest{
+public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * given 1개의 지하철 노선을 등록하고
@@ -171,14 +162,14 @@ public class SectionAcceptanceTest extends AcceptanceTest{
 
     /**
      * 2개의 지하철 구간을 등록하고
-     * 하행 종점역이 아닌 역을 제거하면
+     * 노선에 존재하지 않는 역을 제거하면
      * 구간 제거 에러가 발생한다.
      */
-    @DisplayName("에러_지하철 노선 제거_하행 종점역이 아닌 역 제거")
+    @DisplayName("에러_지하철 노선 제거_등록되지 않은 역 제거")
     @Test
     void deleteSectionError_isNotCurrentDownStation() {
         // given
-        List<Long> stationIds = stationFixtures(3);
+        List<Long> stationIds = stationFixtures(4);
         Long lineId = makeLine(new LineRequest("신분당선", "bg-red-600", stationIds.get(0), stationIds.get(1), 10L)).jsonPath().getLong("id");
         makeSection(lineId, new SectionRequest(stationIds.get(1), stationIds.get(2), 13L));
 
@@ -186,7 +177,7 @@ public class SectionAcceptanceTest extends AcceptanceTest{
         // then
         RestAssured
                 .given()
-                .param("stationId", stationIds.get(1))
+                .param("stationId", stationIds.get(3))
                 .when()
                 .delete("/lines/" + lineId + "/sections")
                 .then().log().all()
@@ -214,5 +205,79 @@ public class SectionAcceptanceTest extends AcceptanceTest{
                 .delete("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * given A-B-C 구간을 보유한 노선을 생성하고
+     * when A 역을 삭제하면
+     * then B-C 1개의 구간을 가진 노선 정보를 응답받을 수 있다.
+     */
+    @DisplayName("상행 종점역 삭제")
+    @Test
+    void deleteSection_firstUpStation() {
+        // given
+        List<Long> stationIds = stationFixtures(3);
+        Long lineId = makeLine(new LineRequest("신분당선", "red", stationIds.get(0), stationIds.get(1), 10L)).jsonPath().getLong("id");
+        makeSection(lineId, new SectionRequest(stationIds.get(1), stationIds.get(2), 4L));
+
+        // when
+        removeSection(stationIds.get(0), lineId);
+
+        // then
+        ExtractableResponse<Response> response = getLineSections(lineId);
+
+        assertThat(response.jsonPath().getList("sections.upStation.id", Long.class)).containsExactly(stationIds.get(1));
+        assertThat(response.jsonPath().getList("sections.downStation.id", Long.class)).containsExactly(stationIds.get(2));
+        assertThat(response.jsonPath().getList("sections.distance", Long.class)).containsExactly(4L);
+
+    }
+
+    /**
+     * given A-B-C 구간을 보유한 노선을 생성하고
+     * when C 역을 삭제하면
+     * then A-B 1개의 구간을 가진 노선 정보를 응답받을 수 있다.
+     */
+    @DisplayName("하행 종점역 삭제")
+    @Test
+    void deleteSection_lastDownStation() {
+        // given
+        List<Long> stationIds = stationFixtures(3);
+        Long lineId = makeLine(new LineRequest("신분당선", "red", stationIds.get(0), stationIds.get(1), 10L)).jsonPath().getLong("id");
+        makeSection(lineId, new SectionRequest(stationIds.get(1), stationIds.get(2), 4L));
+
+        // when
+        removeSection(stationIds.get(2), lineId);
+
+        // then
+        ExtractableResponse<Response> response = getLineSections(lineId);
+
+        assertThat(response.jsonPath().getList("sections.upStation.id", Long.class)).containsExactly(stationIds.get(0));
+        assertThat(response.jsonPath().getList("sections.downStation.id", Long.class)).containsExactly(stationIds.get(1));
+        assertThat(response.jsonPath().getList("sections.distance", Long.class)).containsExactly(10L);
+    }
+
+    /**
+     * given A-B-C 구간을 보유한 노선을 생성하고
+     * when B 역을 삭제하면
+     * then A-C 1개의 구간을 가진 노선 정보를 응답받을 수 있다.
+     */
+    @DisplayName("중간 역 삭제")
+    @Test
+    void deleteSection_middleStation() {
+        //given
+        List<Long> stationIds = stationFixtures(4);
+        Long lineId = makeLine(new LineRequest("신분당선", "red", stationIds.get(0), stationIds.get(1), 10L)).jsonPath().getLong("id");
+        makeSection(lineId, new SectionRequest(stationIds.get(1), stationIds.get(2), 4L));
+        makeSection(lineId, new SectionRequest(stationIds.get(2), stationIds.get(3), 6L));
+
+        // when
+        removeSection(stationIds.get(1), lineId);
+
+        // then
+        ExtractableResponse<Response> response = getLineSections(lineId);
+
+        assertThat(response.jsonPath().getList("sections.upStation.id", Long.class)).containsExactly(stationIds.get(0), stationIds.get(2));
+        assertThat(response.jsonPath().getList("sections.downStation.id", Long.class)).containsExactly(stationIds.get(2), stationIds.get(3));
+        assertThat(response.jsonPath().getList("sections.distance", Long.class)).containsExactly(14L, 6L);
     }
 }

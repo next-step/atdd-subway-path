@@ -40,6 +40,18 @@ public class SectionsTest {
         assertThat(sections.allStations()).containsExactly(강남역, 역삼역, 선릉역);
     }
 
+    @DisplayName("에러_중간 구간 추가_이미 존재하는 역")
+    @Test
+    void addSection_middle_error() {
+        Sections sections = new Sections();
+        sections.addSection(강남_선릉);
+        sections.addSection(강남_역삼);
+
+        assertThatThrownBy(() -> sections.addSection(new Section(new Line(), 역삼역, 강남역, 5L)))
+                .isInstanceOf(LineException.class)
+                .hasMessage("추가할 역이 이미 존재합니다.");
+    }
+
     @DisplayName("처음 구간 추가")
     @Test
     void addSection_first() {
@@ -70,6 +82,47 @@ public class SectionsTest {
         sections.deleteSection(3L);
 
         assertThat(sections.get()).hasSize(1);
+    }
+
+    @DisplayName("상행 종점역 삭제")
+    @Test
+    void deleteSection_firstUpStation() {
+        Sections sections = new Sections();
+        sections.addSection(강남_역삼);
+        sections.addSection(역삼_선릉);
+
+        sections.deleteSection(강남역.getId());
+
+        assertThat(sections.allStations()).hasSize(2);
+        assertThat(sections.get().get(0).getDistance()).isEqualTo(역삼_선릉.getDistance());
+    }
+
+    @DisplayName("하행 종점역 삭제")
+    @Test
+    void deleteSection_lastDownStation() {
+        Sections sections = new Sections();
+        sections.addSection(강남_역삼);
+        sections.addSection(역삼_선릉);
+
+        sections.deleteSection(선릉역.getId());
+
+        assertThat(sections.allStations()).hasSize(2);
+        assertThat(sections.get().get(0).getDistance()).isEqualTo(강남_역삼.getDistance());
+    }
+
+    @DisplayName("중간 역 삭제")
+    @Test
+    void deleteSection_middleStation() {
+        Sections sections = new Sections();
+        sections.addSection(강남_역삼);
+        sections.addSection(역삼_선릉);
+
+        sections.deleteSection(역삼역.getId());
+
+        assertThat(sections.allStations()).hasSize(2);
+        System.out.println(강남_역삼.getDistance());
+        System.out.println(역삼_선릉.getDistance());
+        assertThat(sections.get().get(0).getDistance()).isEqualTo(13L);
     }
 
     @DisplayName("3개 역 존재")
