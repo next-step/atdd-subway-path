@@ -53,4 +53,8 @@ public class Line {
         this.name = name;
         this.color = color;
     }
+
+    public void deleteStation(Station station) {
+        sections.deleteStation(station);
+    }
 }

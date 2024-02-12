@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import static nextstep.subway.exception.ExceptionMessage.*;
 
 @Embeddable
-//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Sections {
     @JsonValue
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -142,4 +141,17 @@ public class Sections {
     }
 
 
+    public void deleteStation(Station station) {
+        // 삭제할 역을 하행역으로 가진 구간 찾기
+        Section section1 = getSameDownStationSection(station);
+        // 삭제할 역을 상행역으로 가진 구간 찾기
+        Section section2 = getSameUpStationSection(station);
+
+        // 삭제할 역을 포함한 구간의 상행역 - 하행역 구간 추가
+        Section newSection = new Section(section1.getLine(), section1.getUpStation(), section2.getDownStation(), section1.getDistance() + section2.getDistance());
+        sections.add(newSection);
+        // 삭제할 역을 포함한 구간 제거
+        sections.remove(section1);
+        sections.remove(section2);
+    }
 }
