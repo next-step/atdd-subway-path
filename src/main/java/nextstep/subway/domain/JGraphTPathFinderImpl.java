@@ -12,11 +12,9 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
-public class JGraphTPathFinderImpl implements PathFinder {
+public class JGraphTPathFinderImpl extends PathFinder {
     @Override
-    public PathResponse findPath(PathRequest pathRequest, List<Line> lines) {
-        validateRequest(pathRequest, lines);
-
+    protected PathResponse getPath(PathRequest pathRequest, List<Line> lines) {
         final Set<Section> sections = getAllSectionsInLines(lines);
         final WeightedMultigraph<String, DefaultWeightedEdge> sectionGraph = getWightedGraphWithSection(sections);
 
@@ -25,23 +23,6 @@ public class JGraphTPathFinderImpl implements PathFinder {
         final GraphPath<String, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(pathRequest.getSource().toString(), pathRequest.getTarget().toString());
 
         return getPathResponse(sections, graphPath.getVertexList(), (int) graphPath.getWeight());
-    }
-
-    @Override
-    public void validateRequest(PathRequest request, List<Line> lines) {
-        if (request.getSource().equals(request.getTarget())) {
-            throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
-        }
-
-        final List<Station> stations = getAllStationsInLines(lines);
-
-        if (stations.stream().noneMatch(it -> it.getId().equals(request.getSource()))) {
-            throw new IllegalArgumentException("출발역이 존재하지 않습니다.");
-        }
-
-        if(stations.stream().noneMatch(it -> it.getId().equals(request.getTarget()))) {
-            throw new IllegalArgumentException("도착역이 존재하지 않습니다.");
-        }
     }
 
     private PathResponse getPathResponse(Set<Section> sections, List<String> stationPath, int distance) {
@@ -84,11 +65,5 @@ public class JGraphTPathFinderImpl implements PathFinder {
     private Set<Section> getAllSectionsInLines(List<Line> lines) {
         return lines.stream().flatMap(line -> line.getSections().stream())
             .collect(Collectors.toSet());
-    }
-
-    private static List<Station> getAllStationsInLines(List<Line> lines) {
-        return lines.stream()
-            .flatMap(it -> it.getStations().stream())
-            .collect(Collectors.toList());
     }
 }
