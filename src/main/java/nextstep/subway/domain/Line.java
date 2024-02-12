@@ -5,6 +5,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Line {
@@ -76,5 +77,32 @@ public class Line {
 
     public List<Station> getStations() {
         return this.sections.getStations();
+    }
+
+    public List<Section> getSections() {
+        return this.sections.getSections();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final Line line = (Line) o;
+        return Objects.equals(sections, line.sections) && Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sections, id, name, color);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "sections=" + sections +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                '}';
     }
 }

@@ -14,12 +14,12 @@ public class Station {
     public Station() {
     }
 
-    public Station(String name) {
+    public Station(final Long id, final String name) {
+        this.id = id;
         this.name = name;
     }
 
-    public Station(final long id, final String name) {
-        this.id = id;
+    public Station(String name) {
         this.name = name;
     }
 
@@ -35,21 +35,17 @@ public class Station {
         return this.equals(station);
     }
 
-    public boolean isSameId(final Long stationId) {
-        return this.id.equals(stationId);
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Station station = (Station) o;
-        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+        return this.id.equals(station.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(this.id);
     }
 
     @Override

@@ -56,7 +56,6 @@ public class Sections {
     }
 
     private void removeSection(final Section section) {
-        section.removeLine();
         this.sections.remove(section);
     }
 
@@ -66,7 +65,7 @@ public class Sections {
         }
     }
 
-    private List<Section> getSections() {
+    public List<Section> getSections() {
         return this.sections.stream()
                 .sorted()
                 .distinct()

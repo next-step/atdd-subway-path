@@ -28,7 +28,9 @@ class JgraphtTest {
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         List<String> shortestPath = dijkstraShortestPath.getPath(source, target).getVertexList();
+        final double distance = dijkstraShortestPath.getPathWeight(source, target);
 
+        assertThat(distance).isEqualTo(4);
         assertThat(shortestPath.size()).isEqualTo(3);
     }
 

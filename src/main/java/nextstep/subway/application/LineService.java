@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,10 +37,14 @@ public class LineService {
         return new LineResponse(savedLine);
     }
 
-    public List<LineResponse> findAllLines() {
+    public List<LineResponse> findAllLineResponses() {
         return lineRepository.findAllFetchJoin().stream()
                 .map(LineResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    public List<Line> findAllLine() {
+        return new ArrayList<>(lineRepository.findAllFetchJoin());
     }
 
     public LineResponse findLineById(final Long id) {

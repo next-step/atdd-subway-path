@@ -36,6 +36,14 @@ public class Section implements Comparable<Section> {
         this.line = line;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
     public int getDistance() {
         return distance;
     }
@@ -76,10 +84,6 @@ public class Section implements Comparable<Section> {
         return new Station[]{this.upStation, this.downStation};
     }
 
-    public void removeLine() {
-        this.line = null;
-    }
-
     @Override
     public int compareTo(Section otherSection) {
         return Objects.equals(this.downStation.getId(), otherSection.getUpStation().getId()) ? -1 : 1;
@@ -90,16 +94,11 @@ public class Section implements Comparable<Section> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation);
+        return distance == section.distance && Objects.equals(upStation.getId(), section.upStation.getId()) && Objects.equals(downStation.getId(), section.downStation.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" + "id=" + id + ", line=" + line + ", upStation=" + upStation + ", downStation=" + downStation + ", distance=" + distance + '}';
+        return Objects.hash(upStation.getId(), downStation.getId(), distance);
     }
 }
