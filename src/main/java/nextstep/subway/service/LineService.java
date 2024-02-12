@@ -75,8 +75,8 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-//                line.getSections(),
-                line.getStations(),
+                line.getSectionList().stream().map(section -> sectionService.createSectionResponse(section)).collect(Collectors.toList()),
+                line.getStations().stream().map(station -> stationService.createStationResponse(station)).collect(Collectors.toList()),
                 line.getDistance()
         );
     }
@@ -93,7 +93,6 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
 
         // 중간에 구간 추가
-//        sectionValidation(line, upStation, downStation);
         Section newSection = new Section(line, upStation, downStation, sectionRequest.getDistance());
         line.addSection(newSection);
         return createLineResponse(line);

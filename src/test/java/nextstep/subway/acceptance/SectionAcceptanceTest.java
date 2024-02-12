@@ -3,7 +3,6 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.request.LineRequest;
 import nextstep.subway.domain.response.LineResponse;
 import nextstep.subway.exception.ExceptionResponse;
@@ -69,7 +68,7 @@ public class SectionAcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(lineResponse.getId()).isEqualTo(lineId),
-                () -> assertThat(lineResponse.getStations().stream().map(Station::getId)).contains(stationId2, stationId3)
+                () -> assertThat(lineResponse.getStations().stream().map(station -> station.getId())).contains(stationId2, stationId3)
         );
     }
 
@@ -177,14 +176,12 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         //then
         long id = response.jsonPath().getLong("id");
-        long lineId = response.jsonPath().getLong("line.id");
         long upStationId = response.jsonPath().getLong("upStation.id");
         long downStationId = response.jsonPath().getLong("downStation.id");
         int sectionDistance = response.jsonPath().getInt("distance");
 
         assertAll(
                 () -> assertThat(id).isEqualTo(1L),
-                () -> assertThat(lineId).isEqualTo(1L),
                 () -> assertThat(upStationId).isEqualTo(stationId1),
                 () -> assertThat(downStationId).isEqualTo(stationId2),
                 () -> assertThat(sectionDistance).isEqualTo(distance)
@@ -212,11 +209,10 @@ public class SectionAcceptanceTest {
         // A-C-B 가 된다.
         assertAll(
                 () -> assertThat(response.getStations()).hasSize(3),
-                () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C"),
-                () -> assertThat(response.getDistance()).isEqualTo(10)
-                // TODO 구간의 distance 검증
-//                () -> assertThat(response.getSections().findSectionByUpStationName("A").getDistance()).isEqualTo(4),
-//                () -> assertThat(response.getSections().findSectionByUpStationName("C").getDistance()).isEqualTo(6)
+                () -> assertThat(response.getStations().stream().map(station -> station.getName())).contains("A", "B", "C"),
+                () -> assertThat(response.getDistance()).isEqualTo(10),
+                () -> assertThat(response.findSectionByUpStationName("A").getDistance()).isEqualTo(4),
+                () -> assertThat(response.findSectionByUpStationName("C").getDistance()).isEqualTo(6)
         );
     }
 
@@ -241,7 +237,7 @@ public class SectionAcceptanceTest {
         // C-A-B 가 된다.
         assertAll(
                 () -> assertThat(response.getStations()).hasSize(3),
-                () -> assertThat(response.getStations().stream().map(Station::getName)).contains("A", "B", "C")
+                () -> assertThat(response.getStations().stream().map(station -> station.getName())).contains("A", "B", "C")
         );
     }
 
@@ -296,4 +292,6 @@ public class SectionAcceptanceTest {
         String message = response.as(ExceptionResponse.class).getMessage();
         assertThat(message).isEqualTo(LONGER_DISTANCE_SECTION_EXCEPTION.getMessage());
     }
+
+
 }

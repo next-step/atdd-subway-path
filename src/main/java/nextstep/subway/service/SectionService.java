@@ -68,7 +68,6 @@ public class SectionService {
     public SectionResponse createSectionResponse(Section section) {
         return new SectionResponse(
                 section.getId(),
-                section.getLine(),
                 section.getUpStation(),
                 section.getDownStation(),
                 section.getDistance()

@@ -78,20 +78,10 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        // TODO flatMap
-        List<List<Station>> list = sections.stream().map(Section::getStations).collect(Collectors.toList());
-
-        return list.stream()
-                .flatMap(Collection::stream)
+        return sections.stream()
+                .flatMap(section -> section.getStations().stream())
                 .distinct()
-                .collect(Collectors.toList());
-
-//        List<Station> stations = new ArrayList<>();
-//        for (Section section : sections) {
-//            stations.addAll(section.getStations());
-//        }
-//
-//        return stations.stream().distinct().collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<Section> getSections() {
@@ -151,11 +141,5 @@ public class Sections {
         return isExistUpStation && isExistDownStation;
     }
 
-    public Section findSectionByUpStationName(String name) {
-        return this.sections.stream()
-                .filter(section -> section.getUpStation().getName().equals(name))
-                .findFirst()
-                .get();
-    }
 
 }
