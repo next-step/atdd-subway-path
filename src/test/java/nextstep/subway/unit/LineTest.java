@@ -35,8 +35,8 @@ class LineTest {
         양재역 = Station.from(Constant.양재역);
     }
 
-    @Test
     @DisplayName("노선에 구간을 등록")
+    @Test
     void 노선에_구간을_등록() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
@@ -48,8 +48,8 @@ class LineTest {
         assertThat(신분당선.hasSection(신논현역_강남역_구간)).isTrue();
     }
 
-    @Test
     @DisplayName("노선의 하행 종점역이 아닌 상행역을 가진 지하철 구간을 등록하면 예외 발생")
+    @Test
     void 노선의_하행_종점역이_아닌_상행역을_가진_지하철_구간을_등록하면_예외_발생() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
@@ -61,8 +61,8 @@ class LineTest {
                 .isInstanceOf(IsNotLastStationException.class);
     }
 
-    @Test
     @DisplayName("등록할 역이 이미 있는 지하철 노선에 구간을 등록하면 예외 발생")
+    @Test
     void 등록할_역이_이미_있는_지하철_노선에_구간을_등록하면_예외_발생() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
@@ -74,8 +74,8 @@ class LineTest {
                 .isInstanceOf(AlreadyExistDownStationException.class);
     }
 
-    @Test
     @DisplayName("등록한 역을 조회")
+    @Test
     void 등록한_역을_조회() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
@@ -93,8 +93,8 @@ class LineTest {
         );
     }
 
-    @Test
     @DisplayName("구간을 삭제")
+    @Test
     void 구간을_삭제() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
@@ -112,8 +112,8 @@ class LineTest {
         );
     }
 
-    @Test
     @DisplayName("노선에 등록되지 않은 역을 삭제하면 예외 발생")
+    @Test
     void 노선에_등록되지_않은_역을_삭제하면_예외_발생() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
@@ -126,8 +126,8 @@ class LineTest {
                 .isInstanceOf(NotFoundStationException.class);
     }
 
-    @Test
     @DisplayName("노선의 하행역이 아닌 역을 삭제하면 예외 발생")
+    @Test
     void 노선의_하행역이_아닌_역을_삭제하면_예외_발생() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
@@ -140,8 +140,8 @@ class LineTest {
                 .isInstanceOf(IsNotLastStationException.class);
     }
 
-    @Test
     @DisplayName("남은 구간이 한개인 노선의 역을 삭제하면 예외 발생")
+    @Test
     void 남은_구간이_한개인_노선의_역을_삭제하면_예외_발생() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);

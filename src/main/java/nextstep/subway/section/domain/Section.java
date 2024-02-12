@@ -44,6 +44,10 @@ public class Section {
         this.distance = distance;
     }
 
+    public static Section init() {
+        return new Section();
+    }
+
     public static Section of(Station upStation, Station downStation, Integer distance) {
         return new Section(upStation, downStation, distance);
     }

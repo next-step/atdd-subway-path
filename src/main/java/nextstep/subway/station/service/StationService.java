@@ -1,5 +1,6 @@
 package nextstep.subway.station.service;
 
+import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
@@ -13,10 +14,16 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class StationService {
+
     private StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
+    }
+
+    public Station findById(Long StationId) {
+        return stationRepository.findById(StationId)
+                .orElseThrow(() -> new NotFoundLineException());
     }
 
     @Transactional
