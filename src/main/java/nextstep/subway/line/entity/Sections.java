@@ -50,12 +50,6 @@ public class Sections {
         return lastSection.getDownStation().getId().equals(stationId);
     }
 
-    private void ensureRemovableSection(final Long stationId) {
-        if (!this.isLastStation(stationId)) {
-            throw new IllegalArgumentException();
-        }
-    }
-
     public boolean isSectionRegistered(final long upStationId, final long downStationId) {
         return this.getSections().stream()
                 .anyMatch(section ->
@@ -63,14 +57,20 @@ public class Sections {
                 );
     }
 
-    public void ensureNoDuplicateDownStation(final Section newSection) {
+    private void ensureRemovableSection(final Long stationId) {
+        if (!this.isLastStation(stationId)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void ensureNoDuplicateDownStation(final Section newSection) {
         final boolean hasDuplicateDownStation = this.getSections().stream()
                 .anyMatch(section -> newSection.getDownStation().getId().equals(section.getUpStation().getId()));
 
         if (hasDuplicateDownStation) throw new IllegalArgumentException();
     }
 
-    public Section findSectionByDownStation(final Station station) {
+    private Section findSectionByDownStation(final Station station) {
         final Section targetSection = this.getSections().stream()
                 .filter(section -> section.getDownStation().getId().equals(station.getId()))
                 .findFirst().orElseThrow(() -> new IllegalArgumentException());
