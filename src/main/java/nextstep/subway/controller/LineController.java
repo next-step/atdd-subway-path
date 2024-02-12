@@ -3,6 +3,7 @@ package nextstep.subway.controller;
 import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.line.LineUpdateRequest;
+import nextstep.subway.dto.section.SectionRequest;
 import nextstep.subway.service.LineService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,5 +66,26 @@ public class LineController {
         return ResponseEntity
                     .noContent()
                     .build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Long> createSection(
+        @PathVariable("id") Long lineId,
+        @RequestBody SectionRequest sectionRequest
+    ) {
+        Long sectionId = lineService.createSection(lineId, sectionRequest);
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(sectionId);
+    }
+
+    @DeleteMapping("/{id}/sections")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteSection(
+        @PathVariable("id") Long lineId,
+        @RequestParam Long stationId
+    ) {
+        lineService.deleteSection(lineId, stationId);
     }
 }

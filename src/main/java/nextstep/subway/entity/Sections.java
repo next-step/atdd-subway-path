@@ -30,13 +30,11 @@ public class Sections {
         return stations;
     }
 
-    public void createSection(Section section) {
-        this.sections.add(section);
-    }
-
     public void addSection(Section section) {
-        verifyUpStation(section.getUpStation());
-        verifyDuplicateDownStation(section.getDownStation());
+        if(!sections.isEmpty()) {
+            verifyUpStation(section.getUpStation());
+            verifyDuplicateDownStation(section.getDownStation());
+        }
 
         this.sections.add(section);
     }

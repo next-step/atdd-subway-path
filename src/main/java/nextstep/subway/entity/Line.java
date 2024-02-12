@@ -57,14 +57,8 @@ public class Line {
         this.color = color;
     }
 
-    public void createSection(Section section) {
-        this.sections.createSection(section);
-    }
-
     public void addSection(Section section) {
         this.sections.addSection(section);
-        this.downStation = section.getUpStation();
-        this.distance = section.getDistance();
     }
 
     public void removeSection(Station station) {

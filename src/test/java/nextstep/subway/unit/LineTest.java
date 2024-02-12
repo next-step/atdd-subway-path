@@ -26,31 +26,26 @@ class LineTest {
 
     @Test
     void addSection() {
-        // given
-        이호선.createSection(구간);
-
-        Section 신규구간 = new Section(이호선, 선릉역, 이호선.getDownStation(), 15);
-
         // when
-        이호선.addSection(신규구간);
+        이호선.addSection(구간);
 
         // then
-        assertThat(이호선.getSections().getSections()).hasSize(2);
+        assertThat(이호선.getSections().getSections()).hasSize(1);
     }
 
     @Test
     void getStations() {
         // when
-        이호선.createSection(구간);
+        이호선.addSection(구간);
 
         // then
-        assertThat(이호선.getSections().getStations()).containsExactly(이호선.getUpStation(), 이호선.getDownStation());
+        assertThat(이호선.getSections().getStations()).containsExactly(구간.getUpStation(), 구간.getDownStation());
     }
 
     @Test
     void removeSection() {
         // given
-        이호선.createSection(구간);
+        이호선.addSection(구간);
 
         Section 신규구간 = new Section(이호선, 선릉역, 이호선.getDownStation(), 15);
         이호선.addSection(신규구간);
