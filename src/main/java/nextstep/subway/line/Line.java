@@ -49,7 +49,7 @@ public class Line {
         return section;
     }
 
-    public boolean addSection(Section newSection) {
+    public void addSection(Section newSection) {
         /*
          * newSection의 upstation이 line의 하행종점역이면
          * addLastSection() 호출
@@ -69,37 +69,28 @@ public class Line {
             throw new InvalidInputException("새로운 구간의 상행역과 하행역 둘 다 이미 노선에 등록되어 있습니다.");
         }
 
-        boolean isMiddle = false;
-
         if (sections.isFirstUpstation(newSection.getDownstation())) {
             sections.addFirstSection(newSection);
         } else if(sections.isLastDownstation(newSection.getUpstation())) {
             sections.addLastSection(newSection);
         } else {
             sections.addSection(newSection);
-            isMiddle = true;
         }
 
-        return isMiddle;
     }
 
-    public Pair<Boolean, Section> removeSection(Station station) {
+    public void removeSection(Station station) {
         if (sections.size() == 1) {
             throw new InvalidInputException("노선에 상행 종점역과 하행 종점역만 있는 경우에는 제거할 수 없습니다.");
         }
 
-        Section removedSection;
-        boolean isMiddle = false;
-
         if (sections.isFirstUpstation(station)) {
-            removedSection = sections.removeFirstSection();
+            sections.removeFirstSection();
         } else if (sections.isLastDownstation(station)) {
-            removedSection = sections.removeLastSection();
+            sections.removeLastSection();
         } else {
-            removedSection = sections.removeSection(station);
-            isMiddle = true;
+            sections.removeSection(station);
         }
-        return Pair.of(isMiddle, removedSection);
     }
 
     @Builder

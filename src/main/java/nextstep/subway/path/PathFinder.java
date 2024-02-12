@@ -22,11 +22,9 @@ import java.util.List;
 public class PathFinder {
     private final LineRepository lineRepository;
 
-    private WeightedMultigraph<String, DefaultWeightedEdge> graph
-            = new WeightedMultigraph(DefaultWeightedEdge.class);
-
-    @PostConstruct
-    public void init() {
+    private WeightedMultigraph<String, DefaultWeightedEdge> init() {
+        WeightedMultigraph<String, DefaultWeightedEdge> graph
+                = new WeightedMultigraph(DefaultWeightedEdge.class);
         lineRepository.findAll().forEach(line -> {
             line.getSections().forEach(section -> {
                 String upStationName = Long.toString(section.getUpstation().getId());
@@ -43,87 +41,12 @@ public class PathFinder {
 
             });
         });
-    }
 
-    public synchronized void addPath(boolean isMiddle, Section addedSection, Sections sections) {
-        String upstationId = Long.toString(addedSection.getUpstation().getId());
-        String downstationId = Long.toString(addedSection.getDownstation().getId());
-
-        if (isMiddle) {
-            String firstStationId = upstationId;
-            String secondStationId = downstationId;
-
-            Section nextSection = sections.getNextSection(addedSection);
-            String thirdStationId = Long.toString(nextSection.getDownstation().getId());
-
-            DefaultWeightedEdge edgeToRemove = graph.getEdge(firstStationId, thirdStationId);
-            if (edgeToRemove != null) {
-                graph.removeEdge(edgeToRemove);
-            }
-
-            // 그리고 first와 second, second와 third 연결하고 싶음
-            graph.addVertex(secondStationId);
-
-            DefaultWeightedEdge edgeToAdd = graph.addEdge(firstStationId, secondStationId);
-            if (edgeToAdd != null) {
-                graph.setEdgeWeight(edgeToAdd, addedSection.getDistance());
-            }
-
-            edgeToAdd = graph.addEdge(secondStationId, thirdStationId);
-            if (edgeToAdd != null) {
-                graph.setEdgeWeight(edgeToAdd, nextSection.getDistance());
-            }
-            return;
-        }
-
-        graph.addVertex(upstationId);
-        graph.addVertex(downstationId);
-
-        DefaultWeightedEdge edge = graph.addEdge(upstationId, downstationId);
-
-        if (edge != null) {
-            graph.setEdgeWeight(edge, addedSection.getDistance());
-        }
-    }
-
-    public synchronized void removePath(boolean isMiddle, Station removedStation, Section removedSection, Sections sections) {
-        String removedStationId = Long.toString(removedStation.getId());
-
-        graph.removeVertex(removedStationId);
-
-        if (isMiddle) {
-            Station remainingStation = removedSection.getDownstation();
-            String remainingStationId = Long.toString(remainingStation.getId());
-            DefaultWeightedEdge edgeToRemove = graph.getEdge(remainingStationId, removedStationId);
-            if (edgeToRemove != null) {
-                graph.removeEdge(edgeToRemove);
-            }
-
-            Iterator<Section> sectionIterator = sections.iterator();
-            while (sectionIterator.hasNext()) {
-                Section section = sectionIterator.next();
-                if (section.isDownstation(remainingStation)) {
-                    String oppositeStationId = Long.toString(section.getUpstation().getId());
-
-                    DefaultWeightedEdge newEdge = graph.addEdge(remainingStationId, oppositeStationId);
-                    if (newEdge != null) {
-                        graph.setEdgeWeight(newEdge, section.getDistance());
-                    }
-                }
-            }
-            return;
-        }
-
-        Station remainingStation = (removedSection.isUpstation(removedStation) ? removedSection.getDownstation() : removedSection.getUpstation());
-        String remainingStationId = Long.toString(remainingStation.getId());
-        DefaultWeightedEdge edgeToRemove = graph.getEdge(remainingStationId, removedStationId);
-        if (edgeToRemove != null) {
-            graph.removeEdge(edgeToRemove);
-        }
-
+        return graph;
     }
 
     public Pair<List<String>, Integer> findShortestPath(String sourceId, String targetId) {
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = init();
         DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
         GraphPath<String, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceId, targetId);
 

@@ -31,8 +31,7 @@ public class LineService {
         Line line = LineCreateRequest.toEntity(request);
 
         lineRepository.save(line);
-        Section section = line.initSection(upstation, downstation, request.getDistance());
-        pathFinder.addPath(false, section, line.getSections());
+        line.initSection(upstation, downstation, request.getDistance());
 
         return LineResponse.from(line);
     }
@@ -79,8 +78,7 @@ public class LineService {
                 .distance(request.getDistance())
                 .build();
 
-        boolean isMiddle = line.addSection(newSection);
-        pathFinder.addPath(isMiddle, newSection, line.getSections());
+        line.addSection(newSection);
 
         return SectionResponse.from(newSection);
     }
@@ -90,10 +88,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
         Station deleteStation = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
 
-        Pair<Boolean, Section> pair = line.removeSection(deleteStation);
-        boolean isMiddle = pair.getFirst();
-        Section removedSection = pair.getSecond();
-        pathFinder.removePath(isMiddle, deleteStation, removedSection, line.getSections());
+        line.removeSection(deleteStation);
 
     }
 }
