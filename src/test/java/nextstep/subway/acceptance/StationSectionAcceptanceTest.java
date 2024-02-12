@@ -39,8 +39,8 @@ public class StationSectionAcceptanceTest {
     class 공통_실패 {
         /**
          * Given 지하철 노선이 생성되고
-         * When  지하철 구간을 생성할 때, 상행역이 존재하지 않는 역일 경우
-         * Then  지하철 구간 생성에 실패한다.
+         * When  지하철 구간을 등록할 때, 상행역이 존재하지 않는 역일 경우
+         * Then  지하철 구간 등록에 실패한다.
          */
         @ParameterizedTest
         @ValueSource(longs = {-100L, -1L, 0L})
@@ -51,7 +51,7 @@ public class StationSectionAcceptanceTest {
 
             // when
             ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                    지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(upStationId, 2L, 10));
+                    지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(upStationId, 2L, 10));
 
             // then
             assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -59,8 +59,8 @@ public class StationSectionAcceptanceTest {
 
         /**
          * Given 지하철 노선이 생성되고
-         * When  지하철 구간을 생성할 때, 하행역 존재하지 않는 역일 경우
-         * Then  지하철 구간 생성에 실패한다.
+         * When  지하철 구간을 등록할 때, 하행역 존재하지 않는 역일 경우
+         * Then  지하철 구간 등록에 실패한다.
          */
         @ParameterizedTest
         @ValueSource(longs = {-100L, -1L, 0L})
@@ -71,7 +71,7 @@ public class StationSectionAcceptanceTest {
 
             // when
             ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                    지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, downStationId, 10));
+                    지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, downStationId, 10));
 
             // then
             assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -80,8 +80,8 @@ public class StationSectionAcceptanceTest {
 
         /**
          * Given 지하철 노선이 생성되고
-         * When  지하철 구간을 생성할 때, 거리를 1보다 작은 숫자로 요청하면
-         * Then  지하철 구간 생성에 실패한다.
+         * When  지하철 구간을 등록할 때, 거리를 1보다 작은 숫자로 요청하면
+         * Then  지하철 구간 등록에 실패한다.
          */
         @ParameterizedTest
         @ValueSource(ints = {-100, -1, 0})
@@ -92,7 +92,7 @@ public class StationSectionAcceptanceTest {
 
             // when
             ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                    지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, 3L, distance));
+                    지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, 3L, distance));
 
             // then
             assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -100,30 +100,82 @@ public class StationSectionAcceptanceTest {
     }
 
     @Nested
-    class 구간_생성 {
+    class 구간_등록 {
 
         @Nested
         class 성공 {
 
-            /**
-             * Given 지하철 노선이 생성되고
-             * When  지하철 구간을 생성할 때,
-             * When  요청한 상행역이 하행 종점역으로 등록되어 있으면서
-             * When  요청한 하행역이 구간으로 등록되어 있지 않을 경우
-             * Then  지하철 구간 등록에 성공한다.
-             */
-            @Test
-            void 상행역이_하행_종점역으로_등록되어_있고_하행역이_구간으로_등록되지_않은_역일_경우_등록_성공() {
-                // given
-                ExtractableResponse<Response> response =
-                        지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
+            @Nested
+            class 위치는_노선_처음 {
 
-                // when
-                ExtractableResponse<Response> 성공하는_생성요청_응답 =
-                        지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, 4L, 10));
+                /**
+                 * Given 지하철 노선이 생성되고, 구간을 추가한다.
+                 * When  지하철 구간을 노선 처음에 등록할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있으면서
+                 * When  요청한 구간의 하행역이 기존 노선의 역으로 등록되어 있지 않을 경우
+                 * Then  지하철 구간 등록에 성공한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
+                    // given
+                    ExtractableResponse<Response> response =
+                            지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
 
-                // then
-                assertThat(성공하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                    // when
+                    ExtractableResponse<Response> 성공하는_생성요청_응답 =
+                            지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, 4L, 10));
+
+                    // then
+                    assertThat(성공하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                }
+            }
+
+            @Nested
+            class 위치는_노선_중간 {
+                /**
+                 * Given 지하철 노선이 생성되고
+                 * When  지하철 구간을 노선 중간에 등록할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있으면서
+                 * When  요청한 구간의 하행역이 기존 노선의 역으로 등록되어 있지 않을 경우
+                 * Then  지하철 구간 등록에 성공한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
+                    // given
+                    ExtractableResponse<Response> response =
+                            지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
+
+                    // when
+                    ExtractableResponse<Response> 성공하는_생성요청_응답 =
+                            지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, 4L, 10));
+
+                    // then
+                    assertThat(성공하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                }
+            }
+
+            @Nested
+            class 위치는_노선_끝 {
+                /**
+                 * Given 지하철 노선이 생성되고
+                 * When  지하철 구간을 노선 끝에 등록할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있으면서
+                 * When  요청한 구간의 하행역이 기존 노선의 역으로 등록되어 있지 않을 경우
+                 * Then  지하철 구간 등록에 성공한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
+                    // given
+                    ExtractableResponse<Response> response =
+                            지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
+
+                    // when
+                    ExtractableResponse<Response> 성공하는_생성요청_응답 =
+                            지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, 4L, 10));
+
+                    // then
+                    assertThat(성공하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                }
             }
         }
 
@@ -132,7 +184,7 @@ public class StationSectionAcceptanceTest {
 
             /**
              * Given 지하철 노선이 생성되고
-             * When  지하철 구간을 생성할 때,
+             * When  지하철 구간을 등록할 때,
              * When  요청한 상행역이 하행 종점역으로 등록되어 있지 않을 경우
              * Then  지하철 구간 등록에 실패한다.
              */
@@ -143,7 +195,7 @@ public class StationSectionAcceptanceTest {
                         지하철_노선_생성_요청_검증_포함(호남선(1L, 4L));
 
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                        지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(5L, 10L, 10));
+                        지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(5L, 10L, 10));
 
                 // then
                 assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -151,7 +203,7 @@ public class StationSectionAcceptanceTest {
 
             /**
              * Given 지하철 노선이 생성되고
-             * When  지하철 구간을 생성할 때,
+             * When  지하철 구간을 등록할 때,
              * When  요청한 상행역이 역으로 등록되어 있지 않을 경우
              * Then  지하철 구간 등록에 실패한다.
              */
@@ -163,7 +215,7 @@ public class StationSectionAcceptanceTest {
 
                 // when, 최초 10개의 역 생성(@BeforeEach)
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                        지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(11L, 3L, 10));
+                        지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(11L, 3L, 10));
 
                 // then
                 assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -171,7 +223,7 @@ public class StationSectionAcceptanceTest {
 
             /**
              * Given 지하철 노선이 생성되고
-             * When  지하철 구간을 생성할 때,
+             * When  지하철 구간을 등록할 때,
              * When  요청한 상행역이 이미 구간으로 등록되어 있는 경우
              * Then  지하철 구간 등록에 실패한다.
              */
@@ -180,11 +232,11 @@ public class StationSectionAcceptanceTest {
                 // given
                 ExtractableResponse<Response> response =
                         지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
-                지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(2L, 3L, 10));
+                지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(2L, 3L, 10));
 
                 // when
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                        지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, 4L, 10));
+                        지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(2L, 4L, 10));
 
                 // then
                 assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -196,7 +248,7 @@ public class StationSectionAcceptanceTest {
 
             /**
              * Given 지하철 노선이 생성되고
-             * When  지하철 구간을 생성할 때,
+             * When  지하철 구간을 등록할 때,
              * When  요청한 하행역이 이미 하행 종점역으로 등록되어 있는 경우
              * Then  지하철 구간 등록에 실패한다.
              */
@@ -208,7 +260,7 @@ public class StationSectionAcceptanceTest {
 
                 // when
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                        지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(4L, 4L, 10));
+                        지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(4L, 4L, 10));
 
                 // then
                 assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -216,7 +268,7 @@ public class StationSectionAcceptanceTest {
 
             /**
              * Given 지하철 노선이 생성되고
-             * When  지하철 구간을 생성할 때,
+             * When  지하철 구간을 등록할 때,
              * When  요청한 하행역이 역으로 등록되어 있지 않은 경우
              * Then  지하철 구간 등록에 실패한다.
              */
@@ -228,7 +280,7 @@ public class StationSectionAcceptanceTest {
 
                 // when, 최초 10개의 역 생성(@BeforeEach)
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                        지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(10L, 11L, 10));
+                        지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(10L, 11L, 10));
 
                 // then
                 assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -236,7 +288,7 @@ public class StationSectionAcceptanceTest {
 
             /**
              * Given 지하철 노선이 생성되고
-             * When  지하철 구간을 생성할 때,
+             * When  지하철 구간을 등록할 때,
              * When  요청한 하행역이 이미 구간으로 등록되어 있는 경우
              * Then  지하철 구간 등록에 실패한다.
              */
@@ -245,11 +297,11 @@ public class StationSectionAcceptanceTest {
                 // given
                 ExtractableResponse<Response> response =
                         지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
-                지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(2L, 3L, 10));
+                지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(2L, 3L, 10));
 
                 // when
                 ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                        지하철_구간_생성요청_검증_생략(getCreatedLocationId(response), 지하철_구간(3L, 2L, 10));
+                        지하철_구간_추가요청_검증_생략(getCreatedLocationId(response), 지하철_구간(3L, 2L, 10));
 
                 // then
                 assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -272,7 +324,7 @@ public class StationSectionAcceptanceTest {
             ExtractableResponse<Response> response =
                     지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
             SectionRequest 생성할_지하철_구간 = 지하철_구간(2L, 4L, 10);
-            지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);
+            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);
 
             // then
             ExtractableResponse<Response> 성공하는_삭제요청_응답 =
@@ -319,7 +371,7 @@ public class StationSectionAcceptanceTest {
             ExtractableResponse<Response> response =
                     지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
             SectionRequest 생성할_지하철_구간 = 지하철_구간(2L, 4L, 10);
-            지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);
+            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);
 
             // then
             ExtractableResponse<Response> 성공하는_삭제요청_응답 =
@@ -344,7 +396,7 @@ public class StationSectionAcceptanceTest {
                     지하철_노선_생성_요청_검증_포함(호남선(1L, 2L));
 
             SectionRequest 생성할_지하철_구간 = 지하철_구간(2L, 4L, 10);
-            지하철_구간_생성요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);
+            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 생성할_지하철_구간);
 
             // then
             ExtractableResponse<Response> 성공하는_삭제요청_응답 =
