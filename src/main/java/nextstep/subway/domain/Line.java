@@ -65,13 +65,71 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections.stream().sorted(Comparator.comparing(Section::getOrderNo)).collect(
-            Collectors.toList());
+        return sections.stream().sorted(Comparator.comparing(Section::getOrderNo))
+            .collect(Collectors.toList());
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        // 모든 구간을 돌면서 하행선인지를 판단하여 있으면 넣고 없으면 에러를 띄워야한다.
-        this.sections.add(new Section(this, upStation, downStation, distance));
+        // 중간에 끼워 넣는 경우, 맨 끝에 넣는 경우
+        if (sections.isEmpty()) {
+            Section newSection = Section.createFirstSection(this, upStation, downStation, distance);
+            this.sections.add(newSection);
+            return;
+        }
+        Section tempSection = Section.createTempSection(this, upStation, downStation, distance);
+        if (isLastSectionAndNewSectionConnectionValid(tempSection)) {
+            addTailSection(tempSection);
+            return;
+        }
+        addMiddleSection(tempSection);
+    }
+
+    private void addTailSection(Section tempSection) {
+        Section newSection = new Section(this, tempSection.getUpStation(),
+            tempSection.getDownStation(), tempSection.getDistance(),
+            getLastSection().getOrderNo() + 1);
+        this.sections.add(newSection);
+    }
+
+    private boolean isLastSectionAndNewSectionConnectionValid(Section tempSection) {
+        // 마지막 지하철 구간의 하행역과 추가할 구간의 상행역이 같고, 추가할 구간의 하행역이 없을 때
+        if (getLastSection().getDownStation().equals(tempSection.getUpStation())
+            && getSections().stream().noneMatch(section ->
+            section.getDownStation().equals(tempSection.getDownStation()))) {
+            return true;
+        }
+        return false;
+    }
+
+    private void addMiddleSection(Section tempSection) {
+        Section foundSection = getSections().stream()
+            .filter(section -> section.getUpStation().equals(tempSection.getUpStation()))
+            .findFirst()
+            .orElseThrow(IllegalArgumentException::new);
+        validateMiddleSectionAndNewSectionConnectionValid(tempSection);
+        foundSection.changeUpStation(tempSection.getDownStation());
+        // 거리는 기존 FoundSection 거리 - 새로운 Section 거리의 나머지
+        foundSection.changeDistance(foundSection.getDistance() - tempSection.getDistance());
+        Section newSection = Section.createMiddleSection(this, tempSection.getUpStation(),
+            tempSection.getDownStation(), tempSection.getDistance(), foundSection.getOrderNo());
+        this.sections.add(foundSection.getOrderNo() - 1, newSection);
+        for (int i = foundSection.getOrderNo(); i < getSections().size(); i++) {
+            getSections().get(i).changeOrderNo(getSections().get(i).getOrderNo() + 1);
+        }
+    }
+
+    private void validateMiddleSectionAndNewSectionConnectionValid(Section tempSection) {
+        // 같은 하행역이 하나도 없는지 확인
+        if (getSections().stream()
+            .anyMatch(section -> section.getDownStation().equals(tempSection.getDownStation()))) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    // 맨 끝에 넣는 경우
+
+    private Section getLastSection() {
+        return getSections().get(getSections().size() - 1);
     }
 
     public Set<Station> getStations() {

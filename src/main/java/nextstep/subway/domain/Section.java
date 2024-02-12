@@ -16,8 +16,8 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private int orderNo;
+    @Column(nullable = false)
+    private Integer orderNo;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "line_id")
@@ -37,11 +37,18 @@ public class Section {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance,
+        Integer orderNo) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.orderNo = orderNo;
+    }
+
+    public static Section createMiddleSection(Line line, Station upStation, Station downStation,
+        int distance, int orderNo) {
+        return new Section(line, upStation, downStation, distance, orderNo);
     }
 
     public Long getId() {
@@ -66,5 +73,30 @@ public class Section {
 
     public int getOrderNo() {
         return orderNo;
+    }
+
+    public static Section createFirstSection(Line line, Station upStation, Station downStation,
+        int distance) {
+        return new Section(line, upStation, downStation, distance, 1);
+    }
+
+    public static Section createTempSection(Line line, Station upStation, Station downStation,
+        int distance) {
+        return new Section(line, upStation, downStation, distance, null);
+    }
+
+    public void changeUpStation(Station downStation) {
+        this.upStation = downStation;
+    }
+
+    public void changeOrderNo(int orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public void changeDistance(int distance) {
+        if (distance == 0) {
+            throw new IllegalArgumentException();
+        }
+        this.distance = distance;
     }
 }
