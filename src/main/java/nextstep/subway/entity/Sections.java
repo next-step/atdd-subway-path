@@ -29,11 +29,11 @@ public class Sections {
 
 	public boolean hasStation(Long stationId) {
 		for(Section section : sections) {
-			if(stationId.equals(section.getDownStationId())) {
+			if (stationId.equals(section.getDownStationId())) {
 				return true;
 			}
 
-			if(stationId.equals(section.getUpStationId())) {
+			if (stationId.equals(section.getUpStationId())) {
 				return true;
 			}
 		}

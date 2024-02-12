@@ -69,22 +69,22 @@ public class Line {
 	}
 
 	public void addSection(Section section) {
-		if(hasStation(section.getDownStationId()) && hasStation(section.getUpStationId())) {
+		if (hasStation(section.getDownStationId()) && hasStation(section.getUpStationId())) {
 			throw new IllegalArgumentException("해당 노선에 등록할 역들이 이미 존재합니다.");
 		}
 
-		if(!hasStation(section.getDownStationId()) && !hasStation(section.getUpStationId())) {
+		if (!hasStation(section.getDownStationId()) && !hasStation(section.getUpStationId())) {
 			throw new IllegalArgumentException("등록 구간의 역들이 모두 노선에 존재하지 않습니다.");
 		}
 
-		if(isStartStation(section.getDownStationId())) {
+		if (isStartStation(section.getDownStationId())) {
 			this.startStationId = section.getUpStationId();
 			addStartOrEndSection(section);
 
 			return;
 		}
 
-		if(isEndStation(section.getUpStationId())) {
+		if (isEndStation(section.getUpStationId())) {
 			this.endStationId = section.getDownStationId();
 			addStartOrEndSection(section);
 
@@ -95,13 +95,13 @@ public class Line {
 	}
 
 	public void deleteSection(Long stationId) {
-		if(!isEndStation(stationId)) {
+		if (!isEndStation(stationId)) {
 			throw new IllegalArgumentException("노선의 하행 종점역만 제거할 수 있습니다.");
 		}
 
 		Section section = sections.getSectionByDownStationId(stationId);
 
-		if(isStartStation(section.getUpStationId())) {
+		if (isStartStation(section.getUpStationId())) {
 			throw new IllegalArgumentException("상행 종점역과 하행 종점역만 있는 노선입니다.");
 		}
 
@@ -130,7 +130,7 @@ public class Line {
 
 	private void addMidSection(Section section) {
 		Section upSection = sections.getSectionByUpStationId(section.getUpStationId());
-		if(upSection.getDistance() <= section.getDistance()) {
+		if (upSection.getDistance() <= section.getDistance()) {
 			throw new IllegalArgumentException("등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없습니다.");
 		}
 		sections.addSection(section);
