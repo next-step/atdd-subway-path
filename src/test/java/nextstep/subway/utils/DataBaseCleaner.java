@@ -1,8 +1,9 @@
 package nextstep.subway.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Entity;
@@ -12,18 +13,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Profile("test")
-@Service
-public class DatabaseCleanup implements InitializingBean {
+@Component
+public class DataBaseCleaner implements InitializingBean {
+
     @PersistenceContext
     private EntityManager entityManager;
 
     private List<String> tableNames;
 
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() throws Exception {
         tableNames = entityManager.getMetamodel().getEntities().stream()
-                .filter(entity -> entity.getJavaType().getAnnotation(Entity.class) != null)
-                .map(entity -> entity.getName())
+                .filter(entityType -> entityType.getJavaType().getAnnotation(Entity.class) != null)
+                .map(entityType -> this.convertCamelToUnderScore(entityType.getName()))
                 .collect(Collectors.toList());
     }
 
@@ -32,9 +34,16 @@ public class DatabaseCleanup implements InitializingBean {
         entityManager.flush();
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
         for (String tableName : tableNames) {
-            entityManager.createNativeQuery("TRUNCATE TABLE " + tableName).executeUpdate();
-            entityManager.createNativeQuery("ALTER TABLE " + tableName + " ALTER COLUMN ID RESTART WITH 1").executeUpdate();
+            entityManager.createNativeQuery("TRUNCATE TABLE " + tableName + " RESTART IDENTITY").executeUpdate();
         }
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();
     }
+
+    private String convertCamelToUnderScore(String entityName) {
+        String result = entityName.replaceAll("([A-Z][a-z]+)", "_$1");
+        result = StringUtils.removeStart(result, "_");
+
+        return result.toUpperCase();
+    }
+
 }

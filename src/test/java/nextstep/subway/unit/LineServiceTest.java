@@ -1,5 +1,8 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.line.service.LineService;
+import nextstep.subway.station.repository.StationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
