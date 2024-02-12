@@ -35,7 +35,7 @@ public class Section {
 		return distance;
 	}
 
-	public Section() {
+	protected Section() {
 	}
 
 	public Section(Line line, Long upStationId, Long downStationId, int distance) {
@@ -52,7 +52,7 @@ public class Section {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof Section) {
+		if (obj instanceof Section) {
 			Section section = (Section) obj;
 			return Objects.equals(id, section.getId()) &&
 					Objects.equals(upStationId, section.getUpStationId()) &&

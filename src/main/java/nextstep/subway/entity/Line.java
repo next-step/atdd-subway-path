@@ -1,7 +1,6 @@
 package nextstep.subway.entity;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Line {
@@ -22,7 +21,7 @@ public class Line {
 	@Embedded
 	private Sections sections;
 
-	public Line() {
+	protected Line() {
 
 	}
 
@@ -70,35 +69,41 @@ public class Line {
 	}
 
 	public void addSection(Section section) {
-		if(!isEndStation(section.getUpStationId())) {
-			throw new IllegalArgumentException("노선의 하행 종점역과 구간의 상행역은 같아야 합니다.");
+		if (hasStation(section.getDownStationId()) && hasStation(section.getUpStationId())) {
+			throw new IllegalArgumentException("해당 노선에 등록할 역들이 이미 존재합니다.");
 		}
 
-		if(hasStation(section.getDownStationId())) {
-			throw new IllegalArgumentException("해당 노선에 " + section.getDownStationId() + "역이 이미 존재합니다.");
+		if (!hasStation(section.getDownStationId()) && !hasStation(section.getUpStationId())) {
+			throw new IllegalArgumentException("등록 구간의 역들이 모두 노선에 존재하지 않습니다.");
 		}
 
+		if (isStartStation(section.getDownStationId())) {
+			updateStartStation(section.getUpStationId(), section.getDistance());
+			sections.addSection(section);
 
-		this.endStationId = section.getDownStationId();
-		this.distance = this.distance + section.getDistance();
-		this.sections.addSection(section);
+			return;
+		}
+
+		if (isEndStation(section.getUpStationId())) {
+			updateEndStation(section.getDownStationId(), section.getDistance());
+			sections.addSection(section);
+
+			return;
+		}
+
+		sections.addMidSection(this, section);
 	}
 
 	public void deleteSection(Long stationId) {
-		if(!isEndStation(stationId)) {
+		if (!isEndStation(stationId)) {
 			throw new IllegalArgumentException("노선의 하행 종점역만 제거할 수 있습니다.");
 		}
 
 		Section section = sections.getSectionByDownStationId(stationId);
 
-		if(isStartStation(section.getUpStationId())) {
-			throw new IllegalArgumentException("상행 종점역과 하행 종점역만 있는 노선입니다.");
-		}
+		updateEndStation(section.getUpStationId(), -section.getDistance());
 
-		this.endStationId = section.getUpStationId();
-		this.distance = this.distance - section.getDistance();
-
-		sections.removeSection(section);
+		sections.deleteSection(section);
 	}
 
 	public boolean isEndStation(Long stationId) {
@@ -109,7 +114,17 @@ public class Line {
 		return startStationId.equals(stationId);
 	}
 
-	public boolean hasStation(Long downStationId) {
-		return sections.hasStation(downStationId);
+	public boolean hasStation(Long stationId) {
+		return sections.hasStation(stationId);
+	}
+
+	private void updateStartStation(Long stationId, int distance) {
+		this.startStationId = stationId;
+		this.distance += distance;
+	}
+
+	private void updateEndStation(Long stationId, int distance) {
+		this.endStationId = stationId;
+		this.distance += distance;
 	}
 }

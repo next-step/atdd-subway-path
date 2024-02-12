@@ -39,11 +39,11 @@ public class LineController {
 
 	@PutMapping("/lines/{id}")
 	ResponseEntity<ExceptionResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-		if(lineRequest.getName().isEmpty()) {
+		if (lineRequest.getName().isEmpty()) {
 			return ResponseEntity.badRequest().body(new ExceptionResponse("이름 값이 빈 값일 수 없습니다."));
 		}
 
-		if(lineRequest.getColor().isEmpty()) {
+		if (lineRequest.getColor().isEmpty()) {
 			return ResponseEntity.badRequest().body(new ExceptionResponse("색상 값이 빈 값일 수 없습니다."));
 		}
 

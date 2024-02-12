@@ -39,7 +39,6 @@ public class LineServiceMockTest {
         노선 = new Line("노선", "빨강", 첫번째_역_id, 두번째_역_id, 1);
 
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         given(lineRepository.findById(노선_id))
                 .willReturn(Optional.ofNullable(노선));
         given(stationService.findStationById(첫번째_역_id))
@@ -49,14 +48,14 @@ public class LineServiceMockTest {
     @Test
     @DisplayName("지하철 노선의 구간을 등록한다.")
     void addSection() {
+        // given
         given(stationService.findStationById(세번째_역_id))
                 .willReturn(new StationResponse(세번째_역_id, "세번째_역"));
+
         // when
-        // lineService.addSection 호출
         lineService.addSection(노선_id, new SectionRequest(세번째_역_id, 두번째_역_id, 1));
 
         // then
-        // lineService.findLineById, findSectionsByLine 메서드를 통해 검증
         LineResponse lineResponse = lineService.findLineById(노선_id);
         assertThat(lineResponse.getDistance()).isEqualTo(2);
 
@@ -70,17 +69,14 @@ public class LineServiceMockTest {
     @DisplayName("지하철 노선의 구간을 제거한다.")
     void deleteSection() {
         // given
-        // lineService.addSection 호출을 통해 삭제할 section 등록
         given(stationService.findStationById(두번째_역_id))
                 .willReturn(new StationResponse(두번째_역_id, "두번째_역"));
         lineService.addSection(노선_id, new SectionRequest(세번째_역_id, 두번째_역_id, 1));
 
         // when
-        // lineService.deleteSection 호출
         lineService.deleteSection(노선_id, 세번째_역_id);
 
         // then
-        // lineService.findLineById, findSectionsByLine 메서드를 통해 검증
         LineResponse lineResponse = lineService.findLineById(노선_id);
         assertThat(lineResponse.getDistance()).isEqualTo(1);
 
