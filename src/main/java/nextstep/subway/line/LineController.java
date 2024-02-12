@@ -69,5 +69,12 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-
+    @PostMapping("/{lineId}/stations")
+    public ResponseEntity<LineResponse> addStationInLine(
+            @PathVariable Long lineId,
+            @RequestBody StationInLineRequest request) {
+        Line line = sectionService.addStationInLine(lineId, request);
+        LineResponse response = LineResponse.of(line);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
+    }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.line.section;
 
+import nextstep.subway.line.StationInLineRequest;
 import nextstep.subway.station.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,4 +60,12 @@ public class SectionService {
         line.deleteSection(section);
     }
 
+    @Transactional
+    public Line addStationInLine(Long lineId, StationInLineRequest request) {
+        Line line = getLine(lineId);
+        Station newStation = getStation(request.getStationId());
+        Station nextStation = getStation(request.getNextStationId());
+        line.addStation(newStation, nextStation, request.getDistance());
+        return line;
+    }
 }

@@ -2,20 +2,15 @@ package nextstep.subway.unit;
 
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineRepository;
-import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.line.section.*;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
-import nextstep.subway.station.StationResponse;
-import nextstep.subway.station.StationService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 
 import java.util.Optional;
 
@@ -39,12 +34,14 @@ public class LineServiceMockTest {
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        Line lineMock = new Line("2호선", "green");
+        Station startStation = new Station("강남역");
+        Station endStation = new Station("교대역");
+        Line lineMock = new Line("2호선", "green", startStation, endStation);
         lineMock.setId(1L);
         when(lineRepository.findById(1L)).thenReturn(Optional.of(lineMock));
 
-        when(stationRepository.findById(1L)).thenReturn(Optional.of(new Station("강남역")));
-        when(stationRepository.findById(2L)).thenReturn(Optional.of(new Station("역삼역")));
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(startStation));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(endStation));
 
         // when
         // lineService.addSection 호출

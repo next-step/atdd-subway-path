@@ -1,6 +1,10 @@
 package nextstep.subway.station;
 
+import nextstep.subway.line.Line;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Station {

@@ -3,11 +3,13 @@ package nextstep.subway.line;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.exception.HttpBadRequestException;
 import nextstep.subway.line.section.Section;
+import nextstep.subway.station.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line {
@@ -22,6 +24,13 @@ public class Line {
     @Column(length = 20, nullable = false)
     private String color;
 
+    @ManyToOne
+    @JoinColumn(name = "start_station_id", nullable = false)
+    private Station startStation;
+
+    @ManyToOne
+    @JoinColumn(name = "end_station_id", nullable = false)
+    private Station endStation;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -30,9 +39,11 @@ public class Line {
     public Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, Station startStation, Station endStation) {
         this.name = name;
         this.color = color;
+        this.startStation = startStation;
+        this.endStation = endStation;
     }
 
     public void setId(Long id) {
@@ -82,5 +93,44 @@ public class Line {
 
     public void removeSection(Section section) {
         this.getSections().remove(section);
+    }
+
+    public Station getStartStation() {
+        return startStation;
+    }
+
+    public Station getEndStation() {
+        return endStation;
+    }
+
+    public void addStation(Station newStation, Station nextStation, int distance) {
+        mustHaveMoreThanOneSection();
+        alreadyHaveStation(newStation);
+
+        //새로운 구간 추가
+        Section newSection = new Section(newStation, nextStation, distance, this);
+
+        //기존 구간 수정
+        Optional<Section> beforeSection = sections.stream().findFirst().filter(s -> s.getDownStation().equals(nextStation));
+        if(beforeSection.isPresent()){
+            Section section = beforeSection.get();
+            section.setDownStation(newStation);
+            section.setDistance(section.getDistance() - distance);
+        }else{
+            this.startStation = newStation;
+        }
+
+    }
+
+    private void alreadyHaveStation(Station newStation) {
+        if (sections.stream().anyMatch(section -> section.contains(newStation))) {
+            throw new HttpBadRequestException("이미 등록된 역입니다.");
+        }
+    }
+
+    private void mustHaveMoreThanOneSection() {
+        if (sections.isEmpty()) {
+            throw new HttpBadRequestException("노선에는 최소 한 개의 구간이 존재해야 합니다.");
+        }
     }
 }

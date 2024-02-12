@@ -51,12 +51,14 @@ public class Section {
         if(upStation.equals(downStation)){
             throw new HttpBadRequestException(String.format("상행역과 하행역은 같을 수 없습니다."));
         }
-        if (!line.getSections().isEmpty() && line.getSections().stream().anyMatch(section -> section.contains(downStation))) {
-            throw new HttpBadRequestException("이미 등록된 구간입니다.");
-        }
-        if (!line.getSections().isEmpty() && !Objects.equals(line.getSections().get(line.getSections().size() - 1).getDownStation(), upStation)) {
-            throw new HttpBadRequestException(String.format("상행역은 현재 종점역(%s)이어야 합니다.", downStation.getName()));
-        }
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     public Station getUpStation() {
@@ -83,4 +85,7 @@ public class Section {
         return this.upStation.equals(downStation) || this.downStation.equals(downStation);
     }
 
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
 }
