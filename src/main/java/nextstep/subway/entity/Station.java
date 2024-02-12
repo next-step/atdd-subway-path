@@ -23,11 +23,6 @@ public class Station {
         return this.equals(station);
     }
 
-    public Station updateId(Long id) {
-        this.id = id;
-        return this;
-    }
-
     public Long getId() {
         return id;
     }
