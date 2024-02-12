@@ -32,6 +32,7 @@ public class LineService {
             Station downStation = stationService.findById(request.getDownStationId());
             line.addSection(upStation, downStation, request.getDistance());
         }
+        System.out.println("로그:: " + request);
         return createLineResponse(line);
     }
 
