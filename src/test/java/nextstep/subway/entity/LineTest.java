@@ -1,6 +1,7 @@
 package nextstep.subway.entity;
 
 import nextstep.subway.line.entity.Line;
+import nextstep.subway.line.entity.Section;
 import nextstep.subway.station.entity.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class LineTest {
@@ -19,6 +22,9 @@ public class LineTest {
 
     @Mock
     private Station downStation;
+
+    @Mock
+    private Section section;
 
     @DisplayName("Line 엔티티를 생성한다.")
     @Test
@@ -121,6 +127,41 @@ public class LineTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
         assertThatThrownBy(() -> newLine.updateDetails("지하철노선", ""))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선에 구간을 추가한다.")
+    @Test
+    void 지하철_노선_구간_추가() {
+        // given
+        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+
+        final Station newDownStation = mock(Station.class);
+        when(section.getDownStation()).thenReturn(newDownStation);
+        when(section.getDownStation().getId()).thenReturn(2L);
+
+        // when
+        assertThat(newLine.getSections().getSections().size()).isEqualTo(1);
+        newLine.addSection(section);
+
+        // then
+        assertThat(newLine.getSections().getSections().size()).isEqualTo(2);
+        assertThat(newLine.getSections().getSections()).contains(section);
+    }
+
+    @DisplayName("노선에 구간을 추가 시 등록되어있는 역이 새로운 구간의 하행역이 된다면 오류가 발생한다.")
+    @Test
+    void 지하철_노선_구간_추가_시_이미_등록되어있는_역이라면_새로운_구간의_하행역으로_등록_불가() {
+        // given
+        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+        when(upStation.getId()).thenReturn(2L);
+
+        final Station newDownStation = mock(Station.class);
+        when(section.getDownStation()).thenReturn(newDownStation);
+        when(section.getDownStation().getId()).thenReturn(2L);
+
+        // when
+        assertThatThrownBy(() -> newLine.addSection(section))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
