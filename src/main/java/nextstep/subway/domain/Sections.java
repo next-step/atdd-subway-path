@@ -2,14 +2,13 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.ApplicationException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toUnmodifiableList;
 
 public class Sections {
-
-    private static final long NON_SECTION_DISTANCE = 0;
 
     private final List<Section> sections;
 
@@ -33,8 +32,7 @@ public class Sections {
     }
 
     private boolean isSameSection(Station upStation, Station downStation, Section section) {
-        return (section.isUpStation(upStation) && section.isDownStation(downStation)) ||
-                (section.isUpStation(downStation) && section.isDownStation(upStation));
+        return section.isSame(upStation, downStation);
     }
 
     public void addSectionInMiddle(Station upStation, Station downStation, long distance) {
@@ -170,6 +168,28 @@ public class Sections {
         return sections.stream()
                 .map(Section::downStation)
                 .collect(Collectors.toList());
+    }
+
+    public List<Station> sortedStations() {
+        return Stream.concat(Stream.of(findFirstSection().upStation()), createSortedStation().stream())
+                .collect(toUnmodifiableList());
+    }
+
+    private List<Station> createSortedStation() {
+        List<Station> sortedStations = new ArrayList<>();
+        Map<Station, Station> nextStation = createStationMapping();
+
+        Station currentStation = findFirstSection().upStation();
+        while (nextStation.containsKey(currentStation)) {
+            currentStation = nextStation.get(currentStation);
+            sortedStations.add(currentStation);
+        }
+        return sortedStations;
+    }
+
+    private Map<Station, Station> createStationMapping() {
+        return sections.stream()
+                .collect(Collectors.toMap(Section::upStation, Section::downStation));
     }
 
 }

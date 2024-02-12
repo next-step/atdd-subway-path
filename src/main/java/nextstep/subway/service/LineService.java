@@ -1,19 +1,19 @@
 package nextstep.subway.service;
 
+import nextstep.subway.controller.dto.StationResponse;
+import nextstep.subway.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.controller.dto.LineCreateRequest;
 import nextstep.subway.controller.dto.LineResponse;
 import nextstep.subway.controller.dto.LineUpdateRequest;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.Stations;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.SectionRepository;
 import nextstep.subway.repository.StationRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class LineService {
@@ -50,26 +50,36 @@ public class LineService {
     @Transactional(readOnly = true)
     public List<LineResponse> findLines() {
         List<Line> lines = lineRepository.findAll();
-        List<Section> sections = sectionRepository.findAllByLineIn(lines);
-        return LineResponse.listOf(lines, sections);
+        Map<Line, List<Section>> sections = groupSectionsByLine(lines);
+        return convertToLineResponses(sections);
+    }
+
+    private Map<Line, List<Section>> groupSectionsByLine(List<Line> lines) {
+        return sectionRepository.findAllByLineIn(lines).stream()
+                .collect(Collectors.groupingBy(Section::line));
+    }
+
+    private List<LineResponse> convertToLineResponses(Map<Line, List<Section>> sections) {
+        return sections.entrySet().stream()
+                .map(entry -> {
+                    List<Station> stations = new Sections(entry.getValue()).sortedStations();
+                    return LineResponse.ofWithSections(entry.getKey(), StationResponse.listOf(stations));
+                })
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line = findBy(id);
+        Line line = lineRepository.getBy((id));
         List<Section> sections = sectionRepository.findByLine(line);
-        return LineResponse.ofWithSections(line, sections);
+        List<Station> sortedStations = new Sections(sections).sortedStations();
+        return LineResponse.ofWithSections(line, StationResponse.listOf(sortedStations));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest request) {
-        Line line = findBy(id);
+        Line line = lineRepository.getBy((id));
         line.update(request.getName(), request.getColor());
-    }
-
-    private Line findBy(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
     }
 
     @Transactional

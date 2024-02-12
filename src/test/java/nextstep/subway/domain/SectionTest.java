@@ -38,6 +38,12 @@ public class SectionTest {
         );
     }
 
+    /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 신분당선: 강남 - 선릉 (10)
+     * total distance: 20
+     * 분당선: X
+     */
     @ParameterizedTest
     @MethodSource("provideLine")
     void 구간이_속해있는_노선을_검사한다(Line line, boolean expected) {
@@ -52,6 +58,12 @@ public class SectionTest {
         );
     }
 
+    /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 신분당선: 강남 - 선릉 (10)
+     * total distance: 20
+     * 분당선: X
+     */
     @ParameterizedTest
     @MethodSource("provideUpStation")
     void 구간이_속해있는_상행역을_검사한다(Station station, boolean expected) {
@@ -66,6 +78,12 @@ public class SectionTest {
         );
     }
 
+    /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 신분당선: 강남 - 선릉 (10)
+     * total distance: 20
+     * 분당선: X
+     */
     @ParameterizedTest
     @MethodSource("provideDownStation")
     void 구간이_속해있는_하행역을_검사한다(Station station, boolean expected) {
@@ -80,12 +98,24 @@ public class SectionTest {
         );
     }
 
+    /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 신분당선: 강남 - 선릉 (10)
+     * total distance: 20
+     * 분당선: X
+     */
     @Test
     void 구간이_속해있는_상행역과_하행역을_조회한다() {
         assertThat(강남역_선릉역_구간.stations()).hasSize(2)
                 .containsExactly(강남역, 선릉역);
     }
 
+    /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 신분당선: 강남 - 선릉 (10)
+     * total distance: 20
+     * 분당선: X
+     */
     @Test
     void 구간의_상행역과_노선의_거리를_변경한다() {
         Section 구간 = new Section(
@@ -101,6 +131,12 @@ public class SectionTest {
         );
     }
 
+    /**
+     * 지하철역: 강남역, 선릉역, 양재역
+     * 신분당선: 강남 - 선릉 (10)
+     * total distance: 20
+     * 분당선: X
+     */
     @Test
     void 구간의_하행역과_노선의_거리를_변경한다() {
         Section 구간 = new Section(
