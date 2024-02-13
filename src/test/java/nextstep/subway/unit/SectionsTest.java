@@ -120,8 +120,6 @@ public class SectionsTest {
         sections.deleteSection(역삼역.getId());
 
         assertThat(sections.allStations()).hasSize(2);
-        System.out.println(강남_역삼.getDistance());
-        System.out.println(역삼_선릉.getDistance());
         assertThat(sections.get().get(0).getDistance()).isEqualTo(13L);
     }
 
