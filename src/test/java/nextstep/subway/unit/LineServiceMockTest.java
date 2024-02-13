@@ -14,9 +14,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +55,19 @@ public class LineServiceMockTest {
         verify(lineRepository).save(any(Line.class));
         verify(stationRepository).findById(lineRequest.getUpStationId());
         verify(stationRepository).findById(lineRequest.getDownStationId());
+    }
+
+    @DisplayName("지하철 노선 생성 시 존재하지 않는 역으로 조회할 경우 오류가 발생한다.")
+    @Test
+    void 지하철_노선_생성_시_존재하지_않는_역으로_조회_불가() {
+        // given
+        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+
+        when(stationRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // then
+        assertThatThrownBy(() -> lineService.createSubwayLine(lineRequest))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
 }
