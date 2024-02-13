@@ -75,4 +75,5 @@ public class SectionService {
         Station station = getStation(stationId);
         line.removeStation(station);
     }
+
 }

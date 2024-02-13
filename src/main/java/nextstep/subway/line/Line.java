@@ -1,11 +1,11 @@
 package nextstep.subway.line;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.Sections;
 import nextstep.subway.station.Station;
-
 import javax.persistence.*;
+import java.util.Optional;
+
 
 @Entity
 public class Line {
@@ -30,6 +30,7 @@ public class Line {
 
     @Embedded
     private final Sections sections = new Sections();
+
 
 
     public Line() {
@@ -63,14 +64,6 @@ public class Line {
         this.color = color;
     }
 
-    public Station getStartStation() {
-        return startStation;
-    }
-
-    public Station getEndStation() {
-        return endStation;
-    }
-
     public Sections getSections() {
         return sections;
     }
@@ -102,4 +95,13 @@ public class Line {
     public void removeStation(Station newStation) {
         getSections().removeStation(newStation, this);
     }
+
+    public Station getStartStation() {
+        return startStation;
+    }
+
+    public Station getEndStation() {
+        return endStation;
+    }
+
 }

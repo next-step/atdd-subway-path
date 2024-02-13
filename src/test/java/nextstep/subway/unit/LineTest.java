@@ -87,5 +87,6 @@ class LineTest {
         assertThat(line.getSections().contains(newStation)).isFalse();
         assertThat(line.getStartStation()).isEqualTo(upStation);
         assertThat(line.getEndStation()).isEqualTo(downStation);
+
     }
 }

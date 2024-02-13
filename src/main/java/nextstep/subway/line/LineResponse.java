@@ -28,6 +28,7 @@ public class LineResponse {
     }
 
     private LineResponse(Long id, String name, String color, Sections sections, Station startStation, Station endStation) {
+
         this.id = id;
         this.name = name;
         this.color = color;
