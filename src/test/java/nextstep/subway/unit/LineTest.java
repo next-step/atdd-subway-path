@@ -11,9 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
 
-    private Line line = new Line("2호선", "green");;
     private Station upStation = new Station("강남역");;
     private Station downStation = new Station("역삼역");;
+    private Line line = new Line("2호선", "green", upStation, downStation);;
     private Section section = new Section(upStation, downStation, 10, line);;
 
     @BeforeEach
@@ -24,20 +24,20 @@ class LineTest {
 
     @Test
     void addSection() {
-        line.getSections().add(section);
-        assertThat(line.getSections()).contains(section);
+        line.addSection(section);
+        assertThat(line.contains(section)).isTrue();
     }
 
     @Test
     void getStations() {
-        line.getSections().add(section);
-        assertThat(line.getSections()).contains(section);
+        line.addSection(section);
+        assertThat(line.contains(section)).isTrue();
     }
 
     @Test
     void removeSection() {
-        line.getSections().add(section);
+        line.addSection(section);
         line.removeSection(section);
-        assertThat(line.getSections()).hasSize(0);
+        assertThat(line.contains(section)).isFalse();
     }
 }

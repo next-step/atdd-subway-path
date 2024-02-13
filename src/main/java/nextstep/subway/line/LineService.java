@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.station.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.station.StationRepository;
@@ -20,7 +21,9 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line line = this.lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        Station startStation = this.stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("상행역이 존재하지 않습니다."));
+        Station endStation = this.stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("하행역이 존재하지 않습니다."));
+        Line line = this.lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), startStation, endStation));
         return LineResponse.of(line);
     }
 

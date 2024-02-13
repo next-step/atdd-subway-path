@@ -1,5 +1,6 @@
 package nextstep.subway.line.section;
 
+import nextstep.subway.line.StationInLineRequest;
 import nextstep.subway.station.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +14,11 @@ import java.util.List;
 @Service
 public class SectionService {
 
-    private final StationService stationService;
     private final LineRepository lineRepository;
     private final SectionRepository sectionRepository;
     private final StationRepository stationRepository;
 
-    public SectionService(StationService stationService, LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
-        this.stationService = stationService;
+    public SectionService(LineRepository lineRepository, SectionRepository sectionRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
@@ -28,8 +27,8 @@ public class SectionService {
     @Transactional
     public Section addSection(long lineId, SectionRequest request) {
         Line line = getLine(lineId);
-        Station upStation = stationService.findStationById(request.getUpStationId());
-        Station downStation = stationService.findStationById(request.getDownStationId());
+        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
+        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 역입니다."));
         return this.sectionRepository.save(new Section(upStation, downStation, request.getDistance(), line));
     }
 
@@ -61,4 +60,12 @@ public class SectionService {
         line.deleteSection(section);
     }
 
+    @Transactional
+    public Line addStationInLine(Long lineId, StationInLineRequest request) {
+        Line line = getLine(lineId);
+        Station newStation = getStation(request.getStationId());
+        Station nextStation = getStation(request.getNextStationId());
+        line.addStation(newStation, nextStation, request.getDistance());
+        return line;
+    }
 }
