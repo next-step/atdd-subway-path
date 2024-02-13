@@ -20,4 +20,8 @@ public class SectionFixture {
     public static Section 추가구간_엔티티(Station upStation, Station downStation) {
         return Section.createWithId(2L, upStation, downStation, 10);
     }
+
+    public static Section 추가구간_엔티티(Station upStation, Station downStation, int distance) {
+        return Section.createWithId(2L, upStation, downStation, distance);
+    }
 }
