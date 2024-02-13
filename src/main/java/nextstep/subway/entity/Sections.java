@@ -42,6 +42,15 @@ public class Sections {
 		this.sections.remove(section);
 	}
 
+	public void deleteMidSection(Line line, Long stationId) {
+		Section upSection = getSectionByUpStationId(stationId);
+		Section downSection = getSectionByDownStationId(stationId);
+
+		addSection(new Section(line, downSection.getUpStationId(), upSection.getDownStationId(), upSection.getDistance() + downSection.getDistance()));
+		this.sections.remove(upSection);
+		this.sections.remove(downSection);
+	}
+
 	public boolean hasStation(Long stationId) {
 		for(Section section : sections) {
 			if (stationId.equals(section.getDownStationId())) {
@@ -79,5 +88,4 @@ public class Sections {
 				.map(SectionResponse::new)
 				.collect(Collectors.toList());
 	}
-
 }

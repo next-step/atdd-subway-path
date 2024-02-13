@@ -95,15 +95,23 @@ public class Line {
 	}
 
 	public void deleteSection(Long stationId) {
-		if (!isEndStation(stationId)) {
-			throw new IllegalArgumentException("노선의 하행 종점역만 제거할 수 있습니다.");
+		if (isStartStation(stationId)) {
+			Section section = sections.getSectionByUpStationId(stationId);
+			updateStartStation(section.getDownStationId(), -section.getDistance());
+			sections.deleteSection(section);
+
+			return;
 		}
 
-		Section section = sections.getSectionByDownStationId(stationId);
+		if (isEndStation(stationId)) {
+			Section section = sections.getSectionByDownStationId(stationId);
+			updateEndStation(section.getUpStationId(), -section.getDistance());
+			sections.deleteSection(section);
 
-		updateEndStation(section.getUpStationId(), -section.getDistance());
+			return;
+		}
 
-		sections.deleteSection(section);
+		sections.deleteMidSection(this, stationId);
 	}
 
 	public boolean isEndStation(Long stationId) {
