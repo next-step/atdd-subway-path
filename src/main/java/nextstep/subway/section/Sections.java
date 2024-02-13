@@ -80,7 +80,7 @@ public class Sections {
                 .filter(section -> section.getDownStation().equals(deleteStation))
                 .findAny().get();
 
-        sections.removeIf(s -> s.getId().equals(deleteSection.getId()));
+        sections.removeIf(s -> s.equals(deleteSection));
 
         return deleteSection.getId();
     }
