@@ -189,6 +189,33 @@ public class StationSectionAcceptanceTest {
         class 실패 {
 
             @Nested
+            class 공통 {
+
+                /**
+                 * Given 지하철 노선이 생성되고, 구간을 추가한다.
+                 * When  지하철 구간을 등록할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있지 않은 경우
+                 * Then  지하철 구간 등록에 실패한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_기존_노선에_등록되지_않았을_경우() {
+                    // given
+                    ExtractableResponse<Response> 호남선_생성_응답 = 지하철_노선_생성_요청_검증_포함(호남선(1L, 2L, 10));
+                    지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(2L, 4L, 10));
+                    지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(4L, 10L, 10));
+                    지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(10L, 5L, 10));
+
+                    // when, 최초 10개의 역 생성(@BeforeEach)
+                    ExtractableResponse<Response> 실패하는_생성요청_응답 =
+                            지하철_구간_추가요청_검증_생략(getCreatedLocationId(호남선_생성_응답), 지하철_구간(20L, 6L, 3));
+
+                    // then
+                    assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+                }
+
+            }
+
+            @Nested
             class 노선_처음에_추가 {
 
                 // TODO: 노선에 초기 등록을 제외하고, 요청한 구간의 상행역이 노선에 등록되어 있지 않은 역일 경우

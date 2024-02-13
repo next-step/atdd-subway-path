@@ -203,7 +203,7 @@ class LineTest {
                             .isThrownBy(() -> {
                                 이호선.addSection(양재_사성_구간);
                             })
-                            .withMessageMatching("노선에 등록되지 않은 상행역입니다.");
+                            .withMessageMatching("추가할 구간의 상행역이 노선에 존재하지 않습니다.");
                 }
 
                 /**
@@ -268,7 +268,7 @@ class LineTest {
                             .isThrownBy(() -> {
                                 이호선.addSection(삼성_강남_구간);
                             })
-                            .withMessageMatching("이미 노선에 추가된 구간을 추가할 수 없습니다.");
+                            .withMessageMatching("이미 노선에 추가된 하행역입니다.");
                 }
 
                 /**
@@ -332,7 +332,7 @@ class LineTest {
                             .isThrownBy(() -> {
                                 이호선.addSection(역삼_서초_구간);
                             })
-                            .withMessageMatching("이미 노선에 추가된 구간을 추가할 수 없습니다.");
+                            .withMessageMatching("이미 노선에 추가된 하행역입니다.");
                 }
 
                 /**
@@ -396,7 +396,7 @@ class LineTest {
                             .isThrownBy(() -> {
                                 이호선.addSection(서초_삼성_구간);
                             })
-                            .withMessageMatching("이미 노선에 추가된 구간을 추가할 수 없습니다.");
+                            .withMessageMatching("이미 노선에 추가된 하행역입니다.");
                 }
             }
         }
