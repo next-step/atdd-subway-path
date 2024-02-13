@@ -6,29 +6,31 @@ import nextstep.subway.acceptance.util.CommonAcceptanceTest;
 import nextstep.subway.common.Constant;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
 import nextstep.subway.line.presentation.request.CreateLineRequest;
+import nextstep.subway.line.presentation.response.AddSectionResponse;
+import nextstep.subway.line.presentation.response.CreateLineResponse;
+import nextstep.subway.line.presentation.response.ShowLineResponse;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.List;
-
 import static nextstep.subway.acceptance.line.LineApiExtractableResponse.지하철_노선_생성;
 import static nextstep.subway.acceptance.line.LineApiExtractableResponse.지하철_노선_조회;
-import static nextstep.subway.acceptance.section.SectionApiExtractableResponse.addSection;
-import static nextstep.subway.acceptance.section.SectionApiExtractableResponse.deleteSection;
+import static nextstep.subway.acceptance.section.SectionApiExtractableResponse.지하철_구간_삭제;
+import static nextstep.subway.acceptance.section.SectionApiExtractableResponse.지하철_구간_추가;
 import static nextstep.subway.acceptance.station.StationApiExtractableResponse.지하철_역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends CommonAcceptanceTest {
 
-    CreateLineRequest 신분당선_생성_정보;
     Long 논현역_ID;
     Long 신논현역_ID;
     Long 강남역_ID;
     Long 양재역_ID;
+    CreateLineRequest 신분당선_생성_요청;
 
     @BeforeEach
     protected void setUp() {
@@ -36,7 +38,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         신논현역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신논현역)).jsonPath().getLong("stationId");
         강남역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.강남역)).jsonPath().getLong("stationId");
         양재역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.양재역)).jsonPath().getLong("stationId");
-        신분당선_생성_정보 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 논현역_ID, 신논현역_ID, Constant.기본_역_간격);
+        신분당선_생성_요청 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 논현역_ID, 신논현역_ID, Constant.기본_역_간격);
     }
 
     /**
@@ -47,13 +49,15 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 노선의_하행_종점역이_아닌_상행역의_지하철_구간을_등록() {
         // given
-        Long 신분당선_ID = 지하철_노선_생성(신분당선_생성_정보).jsonPath().getLong("lineId");
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
         // when
-        AddSectionRequest 구간_생성_정보 = AddSectionRequest.of(양재역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionRequest 양재_강남_구간_생성_요청 = AddSectionRequest.of(양재역_ID, 강남역_ID, Constant.기본_역_간격);
 
         // then
-        assertThat(addSection(구간_생성_정보, 신분당선_ID).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(양재_강남_구간_생성_요청, 신분당선_ID);
+        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
     }
 
     /**
@@ -64,14 +68,17 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 등록할_역이_이미_있는_지하철_노선에_구간을_등록() {
         // given
-        Long 신분당선_ID = 지하철_노선_생성(신분당선_생성_정보).jsonPath().getLong("lineId");
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
         // when
-        AddSectionRequest 구간_생성_정보 = AddSectionRequest.of(신논현역_ID, 논현역_ID, Constant.기본_역_간격);
+        AddSectionRequest 신논현_논현_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 논현역_ID, Constant.기본_역_간격);
 
         // then
-        assertThat(addSection(구간_생성_정보, 신분당선_ID).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(신논현_논현_구간_생성_요청, 신분당선_ID);
+        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
     }
+
 
     /**
      * Given 지하철 구간을 등록하고
@@ -82,23 +89,17 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 지하철_구간을_등록() {
         // given
-        Long 신분당선_ID = 지하철_노선_생성(신분당선_생성_정보).jsonPath().getLong("lineId");
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionResponse 신논현_강남_구간_생성_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
         // when
-        AddSectionRequest 구간_생성_정보 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
-        assertThat(addSection(구간_생성_정보, 신분당선_ID).statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ShowLineResponse 신분당선_조회_응답 = 지하철_노선_조회(신분당선_ID).as(ShowLineResponse.class);
 
         // then
-        ExtractableResponse<Response> 신분당선_조회_결과 = 지하철_노선_조회(신분당선_ID);
-        List<Long> 구간_상행역_목록 = 신분당선_조회_결과.jsonPath().getList("sections.upStation.stationId", Long.class);
-        assertThat(구간_상행역_목록).containsOnly(논현역_ID, 신논현역_ID);
-        List<Long> 구간_하행역_목록 = 신분당선_조회_결과.jsonPath().getList("sections.downStation.stationId", Long.class);
-        assertThat(구간_하행역_목록).containsOnly(신논현역_ID, 강남역_ID);
+        지하철_구간_등록_검증(신논현_강남_구간_생성_응답, 신분당선_조회_응답);
     }
-
-//    private List<Long> 신분당선_역_목록(Long Id {
-//
-//    }
 
     /**
      * When 지하철 노선에 등록된 역(하행 종점역)이 아닌 역을 삭제하면
@@ -108,13 +109,16 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 등록되지_않은_하행역을_삭제() {
         // given
-        Long 신분당선_ID = 지하철_노선_생성(신분당선_생성_정보).jsonPath().getLong("lineId");
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
-        AddSectionRequest 구간_생성_정보 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
-        addSection(구간_생성_정보, 신분당선_ID);
+        // when
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID);
 
-        // when & then
-        assertThat(deleteSection(신분당선_ID, 논현역_ID).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        // then
+        ExtractableResponse<Response> 지하철_노선_삭제_응답 = 지하철_구간_삭제(신분당선_ID, 논현역_ID);
+        지하철_구간_삭제_예외발생_검증(지하철_노선_삭제_응답);
     }
 
     /**
@@ -125,10 +129,12 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 남은_구간이_한개인_노선의_역_삭제() {
         // given
-        Long 신분당선_ID = 지하철_노선_생성(신분당선_생성_정보).jsonPath().getLong("lineId");
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
         // when & then
-        assertThat(deleteSection(신분당선_ID, 신논현역_ID).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        ExtractableResponse<Response> 지하철_노선_삭제_응답 = 지하철_구간_삭제(신분당선_ID, 신논현역_ID);
+        지하철_구간_삭제_예외발생_검증(지하철_노선_삭제_응답);
     }
 
     /**
@@ -140,21 +146,40 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 지하철_구간을_삭제() {
         // given
-        Long 신분당선_ID = 지하철_노선_생성(신분당선_생성_정보).jsonPath().getLong("lineId");
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
-        AddSectionRequest 구간_생성_정보 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
-        addSection(구간_생성_정보, 신분당선_ID);
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionResponse 신논현_강남_노선_등록_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
         // when
-        deleteSection(신분당선_ID, 강남역_ID);
+        지하철_구간_삭제(신분당선_ID, 강남역_ID);
+        ShowLineResponse 신분당선_조회_응답 = 지하철_노선_조회(신분당선_ID).as(ShowLineResponse.class);
 
         // then
-        ExtractableResponse<Response> 신분당선_조회_결과 = 지하철_노선_조회(신분당선_ID);
-        List<Long> 구간_상행역_목록 = 신분당선_조회_결과.jsonPath().getList("sections.upStation.stationId", Long.class);
-        assertThat(구간_상행역_목록).doesNotContain(강남역_ID);
-        List<Long> 구간_하행역_목록 = 신분당선_조회_결과.jsonPath().getList("sections.downStation.stationId", Long.class);
-        assertThat(구간_하행역_목록).doesNotContain(강남역_ID);
+        지하철_구간_삭제_검증(강남역_ID, 신분당선_조회_응답);
     }
+
+    void 지하철_구간_등록_검증(AddSectionResponse addSectionResponse, ShowLineResponse showLineResponse) {
+        assertTrue(showLineResponse.getSections().stream()
+                .anyMatch(sectionDto -> sectionDto.getUpStation().equals(addSectionResponse.getUpStation())));
+        assertTrue(showLineResponse.getSections().stream()
+                .anyMatch(sectionDto -> sectionDto.getDownStation().equals(addSectionResponse.getDownStation())));
+    }
+
+    void 지하철_구간_등록_예외발생_검증(ExtractableResponse<Response> extractableResponse) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    void 지하철_구간_삭제_검증(Long stationId, ShowLineResponse showLineResponse) {
+        assertTrue(showLineResponse.getSections().stream()
+                .noneMatch(sectionDto -> sectionDto.getDownStation().equals(stationId)));
+    }
+
+    void 지하철_구간_삭제_예외발생_검증(ExtractableResponse<Response> extractableResponse) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
 //    /**
 //     * Given 지하철 노선을 생성하고

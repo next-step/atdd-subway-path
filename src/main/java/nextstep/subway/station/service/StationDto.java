@@ -9,7 +9,7 @@ public class StationDto {
     private Long stationId;
     private String name;
 
-    private StationDto(){
+    private StationDto() {
     }
 
     public StationDto(Long stationId, String name) {

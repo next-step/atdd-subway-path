@@ -1,9 +1,7 @@
 package nextstep.subway.line.presentation.response;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.service.SectionDto;
-import nextstep.subway.station.service.StationDto;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -8,7 +8,7 @@ public class ShowAllStationsResponse {
 
     private List<StationDto> stations;
 
-    private ShowAllStationsResponse(){
+    private ShowAllStationsResponse() {
     }
 
     private ShowAllStationsResponse(List<StationDto> stationDtos) {

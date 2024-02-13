@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 
 public class SectionApiExtractableResponse {
 
-    public static ExtractableResponse<Response> addSection(AddSectionRequest addSectionRequest, Long lineId) {
+    public static ExtractableResponse<Response> 지하철_구간_추가(AddSectionRequest addSectionRequest, Long lineId) {
         return RestAssured
                 .given().log().all()
                 .body(addSectionRequest)
@@ -19,7 +19,7 @@ public class SectionApiExtractableResponse {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
+    public static ExtractableResponse<Response> 지하철_구간_삭제(Long lineId, Long stationId) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
