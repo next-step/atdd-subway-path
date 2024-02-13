@@ -14,16 +14,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관리 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
+    private Long 강남역;
+    private Long 역삼역;
+    private Long 선릉역;
+    private Long 이호선;
+
     /**
      * Given 지하철 노선을 생성하고
      */
     @BeforeEach
     void setUp() {
-        StationSteps.createStation("강남역");
-        StationSteps.createStation("역삼역");
-        StationSteps.createStation("선릉역");
-        StationSteps.createStation("삼성역");
-        LineSteps.createLine("2호선", "green", 1L, 2L, 10L);
+        강남역 = createStation("강남역");
+        역삼역 = createStation("역삼역");
+        선릉역 = createStation("선릉역");
+        이호선 = createLine("2호선", "green", 강남역, 역삼역, 10L);
     }
 
     /**
@@ -34,12 +38,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         // when
-        ExtractableResponse<Response> response = SectionSteps.createSection(1L, 2L, 3L, 10L);
+        ExtractableResponse<Response> response = SectionSteps.createSection(이호선, 역삼역, 선릉역, 10L);
         String locationHeader = response.header("Location");
 
         // then
         List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
-        assertThat(lineStationIds).contains(2L, 3L);
+        assertThat(lineStationIds).contains(역삼역, 선릉역);
     }
 
     /**
@@ -50,7 +54,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void validateDuplicateStation() {
         // when
-        ExtractableResponse<Response> response = SectionSteps.createSection(1L, 2L, 1L, 10L);
+        ExtractableResponse<Response> response = SectionSteps.createSection(이호선, 역삼역, 강남역, 10L);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -66,15 +70,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection() {
         // given
-        ExtractableResponse<Response> response = SectionSteps.createSection(1L, 2L, 3L, 10L);
+        ExtractableResponse<Response> response = SectionSteps.createSection(이호선, 역삼역, 선릉역, 10L);
         String locationHeader = response.header("Location");
 
         // when
-        SectionSteps.deleteSection(1L, 3L);
+        SectionSteps.deleteSection(이호선, 선릉역);
 
         // then
         List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
-        assertThat(lineStationIds).doesNotContain(3L);
+        assertThat(lineStationIds).doesNotContain(선릉역);
     }
 
     /**
@@ -86,10 +90,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void validateEndSection() {
         // given
-        SectionSteps.createSection(1L, 2L, 3L, 10L);
+        SectionSteps.createSection(이호선, 역삼역, 선릉역, 10L);
 
         // when
-        ExtractableResponse<Response> response = SectionSteps.deleteSection(1L, 2L);
+        ExtractableResponse<Response> response = SectionSteps.deleteSection(이호선, 역삼역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -104,10 +108,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void validateLastSection() {
         // when
-        ExtractableResponse<Response> response = SectionSteps.deleteSection(1L, 2L);
+        ExtractableResponse<Response> response = SectionSteps.deleteSection(이호선, 역삼역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.jsonPath().getString("message")).isEqualTo("구간이 1개인 경우 역을 삭제할 수 없습니다.");
+    }
+
+    private static Long createStation(String name) {
+        return StationSteps.createStation(name).jsonPath().getLong("id");
+    }
+
+    private static Long createLine(String name, String color, Long upStation, Long downStation, Long distance) {
+        return LineSteps.createLine(name, color, upStation, downStation, distance).jsonPath().getLong("id");
     }
 }
