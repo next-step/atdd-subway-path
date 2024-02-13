@@ -48,6 +48,6 @@ public class LineSectionServiceMockTest {
         lineSectionService.saveSection(1L, request);
 
         // then
-        assertThat(이호선.getSections().getSections()).hasSize(1);
+        assertThat(이호선.getSectionList()).hasSize(1);
     }
 }

@@ -60,37 +60,75 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * When 등록할 구간의 상행역이 노선에 등록되어있는 하행종점역이 아닌 구간을 등록하면
-     * Then 예외가 발생한다
+     * When 노선의 가운데 구간을 등록하면
+     * Then 노선을 조회 했을때 등록한 구간이 조회된다
      */
-    @DisplayName("등록할 구간의 상행역이 노선에 등록되어있는 하행종점역이 아닌 경우 구간을 등록할 수 없다")
+    @DisplayName("노선의 가운데 구간 등록")
     @Test
-    void generateSectionException() {
+    void generateMiddleSection() {
         //when
-        SectionCreateRequest request = new SectionCreateRequest(건대입구역id, 성수역id, 5);
+        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 건대입구역id, 4);
 
         ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asPrettyString()).isEqualTo("등록할 구간의 상행역이 노선에 등록되어있는 하행종점역이 아닌 경우 구간 등록이 불가능합니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
+        assertThat(getStationIds(이호선)).containsExactly(잠실역id, 건대입구역id, 용산역id);
     }
 
     /**
-     * When 등록할 구간의 하행역이 이미 해당 노선에 등록되어있으면
+     * When 노선의 처음부분에 구간을 등록하면
+     * Then 노선을 조회 했을때 등록한 구간이 조회된다
+     */
+    @DisplayName("노선의 첫 구간 등록")
+    @Test
+    void generateFirstSection() {
+        //when
+        SectionCreateRequest request = new SectionCreateRequest(성수역id, 잠실역id, 4);
+
+        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
+        assertThat(getStationIds(이호선)).containsExactly(성수역id, 잠실역id, 용산역id);
+    }
+
+    /**
+     * When 등록할 구간의 역이 이미 해당 노선에 등록되어있으면
      * Then 예외가 발생한다
      */
-    @DisplayName("이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다.")
+    @DisplayName("이미 해당 노선에 등록되어있는 역은 등록할 수 없다")
     @Test
     void generateAlreadySection() {
         //when
-        SectionCreateRequest request = new SectionCreateRequest(용산역id, 잠실역id, 5);
+        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 용산역id, 5);
 
         ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.asPrettyString()).isEqualTo("이미 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
+    }
+
+    /**
+     * When 기존 구간의 거리보다 등록할 구간의 거리가 긴 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("기존 구간의 거리보다 등록할 구간의 거리가 긴 경우 예외가 발생한다")
+    @Test
+    void generateMiddleSectionException() {
+        //when
+        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 건대입구역id, 50);
+
+        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asPrettyString()).isEqualTo("기존구간의 거리보다 더 길수 없습니다.");
     }
 
     /**
