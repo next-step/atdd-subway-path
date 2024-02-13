@@ -51,6 +51,6 @@ public class LineServiceMockTest {
         verify(lineRepository).findById(1L);
         verify(stationService).findById(upStationId);
         verify(stationService).findById(downStationId);
-        assertThat(lineService.findLineById(1L)).isNotNull();
+        assertThat(lineService.findById(1L)).isNotNull();
     }
 }

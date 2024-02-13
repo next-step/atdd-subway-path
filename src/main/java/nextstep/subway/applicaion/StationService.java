@@ -2,6 +2,7 @@ package nextstep.subway.applicaion;
 
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.applicaion.exception.BadRequestException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,6 @@ public class StationService {
     }
 
     public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return stationRepository.findById(id).orElseThrow(() -> new BadRequestException(BadRequestException.STATION_NOT_FOUND));
     }
 }
