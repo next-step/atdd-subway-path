@@ -95,11 +95,80 @@ class LineTest {
 
             @Nested
             class 위치_노선_중간 {
+                /**
+                 * Given 지하철 노선이 생성되고, 구간을 추가한다.
+                 * When  지하철 구간을 노선 중간에 등록할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있으면서
+                 * When  요청한 구간의 하행역이 기존 노선의 역으로 등록되어 있지 않을 경우
+                 * Then  지하철 구간 등록에 성공한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
+                    // given
+                    Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
+                    이호선.addSection(삼성_선릉_구간);
+
+                    Section 선릉_역삼_구간 = SectionFixture.선릉_역삼_구간;
+                    이호선.addSection(선릉_역삼_구간);
+
+                    Section 역삼_강남_구간 = SectionFixture.역삼_강남_구간;
+                    이호선.addSection(역삼_강남_구간);
+
+                    Section 강남_서초_구간 = SectionFixture.강남_서초_구간;
+                    이호선.addSection(강남_서초_구간);
+
+                    // when
+                    Section 역삼_사성_구간 = new Section(역삼, 사성, 5);
+                    Section 사성_강남_구간 = new Section(사성, 강남, 5);
+
+                    이호선.addSection(역삼_사성_구간);
+
+                    // then
+                    assertThat(이호선.getStations())
+                            .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
+
+                    assertThat(이호선.getAllSections())
+                            .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_사성_구간, 사성_강남_구간, 강남_서초_구간);
+                }
 
             }
 
             @Nested
             class 위치_노선_끝 {
+                /**
+                 * Given 지하철 노선이 생성되고, 구간을 추가한다.
+                 * When  지하철 구간을 노선 끝에 등록할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있으면서
+                 * When  요청한 구간의 하행역이 기존 노선의 역으로 등록되어 있지 않을 경우
+                 * Then  지하철 구간 등록에 성공한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
+                    // given
+                    Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
+                    이호선.addSection(삼성_선릉_구간);
+
+                    Section 선릉_역삼_구간 = SectionFixture.선릉_역삼_구간;
+                    이호선.addSection(선릉_역삼_구간);
+
+                    Section 역삼_강남_구간 = SectionFixture.역삼_강남_구간;
+                    이호선.addSection(역삼_강남_구간);
+
+                    Section 강남_서초_구간 = SectionFixture.강남_서초_구간;
+                    이호선.addSection(강남_서초_구간);
+
+                    // when
+                    Section 서초_사성_구간 = new Section(서초, 사성, 5);
+
+                    이호선.addSection(서초_사성_구간);
+
+                    // then
+                    assertThat(이호선.getStations())
+                            .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
+
+                    assertThat(이호선.getAllSections())
+                            .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간, 서초_사성_구간);
+                }
 
             }
         }
