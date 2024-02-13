@@ -22,16 +22,9 @@ public class Sections {
 
     public void addSection(Section section) {
         if (sections.size() > 0) {
-            validateNextSection(section);
             validateDuplicateStation(section);
         }
         this.sections.add(section);
-    }
-
-    private void validateNextSection(Section section) {
-        if (!getEndStation().equals(section.getUpStation())) {
-            throw new SubwayException("구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이 아닙니다.");
-        }
     }
 
     private void validateDuplicateStation(Section section) {

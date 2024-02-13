@@ -14,6 +14,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관리 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
 
+    /**
+     * Given 지하철 노선을 생성하고
+     */
     @BeforeEach
     void setUp() {
         StationSteps.createStation("강남역");
@@ -29,7 +32,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철 노선에 구간을 등록한다.")
     @Test
-    void createSection() {
+    void addSection() {
         // when
         ExtractableResponse<Response> response = SectionSteps.createSection(1L, 2L, 3L, 10L);
         String locationHeader = response.header("Location");
@@ -37,21 +40,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
         assertThat(lineStationIds).contains(2L, 3L);
-    }
-
-    /**
-     * When 새로운 구간의 상행역이 해당 노선에 등록되어있는 하행 종점역이 아닌 구간을 등록하면
-     * Then 에러를 반환한다.
-     */
-    @DisplayName("새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이 아니면 에러를 반환한다.")
-    @Test
-    void validateNextSection() {
-        // when
-        ExtractableResponse<Response> response = SectionSteps.createSection(1L, 3L, 4L, 10L);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo("구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이 아닙니다.");
     }
 
     /**
