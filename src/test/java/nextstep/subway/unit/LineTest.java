@@ -116,7 +116,7 @@ class LineTest {
             // When
             신분당선.addSection(추가구간_엔티티(역삼역_엔티티, StationFixture.선릉역_엔티티));
             // Then
-            Station station = 신분당선.getTheMostDownStation();
+            Station station = 신분당선.getLastStation();
             assertEquals(station.getName(), "선릉역");
         }
 
