@@ -35,46 +35,6 @@ public class Sections {
         }
     }
 
-    private boolean isAddFirstSection(Section section) {
-        return sections.isEmpty();
-    }
-
-    private void insertSection(Section sectionToAdd) {
-        int insertionIndex = findInsertionIndex(sectionToAdd);
-
-        // 직후 역 만들기 ...
-        Section existNextSection = sections.get(insertionIndex);
-        Station nextStation = existNextSection.getDownStation();
-
-        // 직후 구간 만들기 ...
-        Section nextSection = new Section(sectionToAdd.getDownStation(), nextStation,
-                existNextSection.getDistance() - sectionToAdd.getDistance());
-
-        // 삽입
-        sections.set(insertionIndex, sectionToAdd);
-        sections.add(insertionIndex + 1, nextSection);
-    }
-
-    private int findInsertionIndex(Section sectionToAdd) {
-        return IntStream.range(0, sections.size())
-                .filter(i -> sections.get(i).isUpStationSame(sectionToAdd))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-    }
-
-    private boolean isInsertSection(Section section) {
-        return sections.stream()
-                .anyMatch(exists -> exists.getUpStation().equals(section.getUpStation()));
-    }
-
-    private boolean isAddLastSection(Section section) {
-        return findLastStation().equals(section.getUpStation());
-    }
-
-    public Station findFirstUpStation() {
-        return sections.get(0).getUpStation();
-    }
-
     public boolean isDeletionAllowed() {
         return sections.size() > MIN_DELETE_REQUIRED_SECTIONS_SIZE;
     }
@@ -116,18 +76,48 @@ public class Sections {
         return new ArrayList<>(allStations);
     }
 
-    public boolean hasExistingDownStation(Station downStation) {
+    public boolean hasExistingStation(Station station) {
         return sections.stream()
-                .anyMatch(section -> section.isLeastOneSameStation(downStation));
-    }
-
-    public boolean hasExistingStation(Station upStation) {
-        return sections.stream()
-                .anyMatch(section -> section.isLeastOneSameStation(upStation));
+                .anyMatch(section -> section.isLeastOneSameStation(station));
     }
 
     public boolean hasNoSections() {
         return sections.isEmpty();
+    }
+
+    private boolean isAddFirstSection(Section section) {
+        return sections.isEmpty();
+    }
+
+    private void insertSection(Section sectionToAdd) {
+        int insertionIndex = findInsertionIndex(sectionToAdd);
+        Section currentSection = sections.get(insertionIndex);
+
+        sections.set(insertionIndex, sectionToAdd);
+        sections.add(insertionIndex + 1, createNextSection(sectionToAdd, currentSection));
+    }
+
+    private Section createNextSection(Section sectionToAdd, Section sectionOfIndex) {
+        return new Section(
+                sectionToAdd.getDownStation(),
+                sectionOfIndex.getDownStation(),
+                sectionOfIndex.getDistance() - sectionToAdd.getDistance());
+    }
+
+    private int findInsertionIndex(Section sectionToAdd) {
+        return IntStream.range(0, sections.size())
+                .filter(i -> sections.get(i).isUpStationSame(sectionToAdd))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean isInsertSection(Section section) {
+        return sections.stream()
+                .anyMatch(exists -> exists.getUpStation().equals(section.getUpStation()));
+    }
+
+    private boolean isAddLastSection(Section section) {
+        return findLastStation().equals(section.getUpStation());
     }
 
     public List<Section> getSections() {

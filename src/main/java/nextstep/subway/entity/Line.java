@@ -54,7 +54,7 @@ public class Line {
         if (sections.hasNoSections()) {
             return true;
         }
-        if (hasExistingDownStation(sectionToAdd.getDownStation())) {
+        if (hasExistingStation(sectionToAdd.getDownStation())) {
             throw new IllegalArgumentException("이미 노선에 추가된 하행역입니다.");
         }
         if (!hasExistingStation(sectionToAdd.getUpStation())) {
@@ -63,12 +63,8 @@ public class Line {
         return true;
     }
 
-    private boolean hasExistingStation(Station upStation) {
-        return sections.hasExistingStation(upStation);
-    }
-
-    private boolean hasExistingDownStation(Station downStation) {
-        return sections.hasExistingDownStation(downStation);
+    private boolean hasExistingStation(Station station) {
+        return sections.hasExistingStation(station);
     }
 
     public Long getId() {
