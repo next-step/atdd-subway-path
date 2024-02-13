@@ -11,6 +11,7 @@ public class Constant {
     public static final String 양재역 = "양재역";
     public static final String 압구정로데오역 = "압구정로데오역";
     public static final String 강남구청역 = "강남구청역";
+    public static final String 신사역 = "신사역";
 
     public static final String 빨간색 = "bg-red-600";
     public static final String 파란색 = "bg-bule-600";

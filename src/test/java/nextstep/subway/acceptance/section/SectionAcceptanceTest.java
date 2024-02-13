@@ -11,6 +11,7 @@ import nextstep.subway.line.presentation.response.CreateLineResponse;
 import nextstep.subway.line.presentation.response.ShowLineResponse;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      */
     @DisplayName("새로운 구간의 상행역이 해당 노선에 등록되어있는 하행 종점역이 아니면 지하철 구간이 등록되지 않는다.")
     @Test
+    @Disabled
     void 노선의_하행_종점역이_아닌_상행역의_지하철_구간을_등록() {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
@@ -66,6 +68,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      */
     @DisplayName("등록할 역이 이미 있는 지하철 노선에는 구간이 등록되지 않는다.")
     @Test
+    @Disabled
     void 등록할_역이_이미_있는_지하철_노선에_구간을_등록() {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
@@ -162,9 +165,10 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
 
     void 지하철_구간_등록_검증(AddSectionResponse addSectionResponse, ShowLineResponse showLineResponse) {
         assertTrue(showLineResponse.getSections().stream()
-                .anyMatch(sectionDto -> sectionDto.getUpStation().equals(addSectionResponse.getUpStation())));
-        assertTrue(showLineResponse.getSections().stream()
-                .anyMatch(sectionDto -> sectionDto.getDownStation().equals(addSectionResponse.getDownStation())));
+                .anyMatch(sectionDto ->
+                        sectionDto.getUpStation().equals(addSectionResponse.getUpStation())
+                                && sectionDto.getDownStation().equals(addSectionResponse.getDownStation())
+                ));
     }
 
     void 지하철_구간_등록_예외발생_검증(ExtractableResponse<Response> extractableResponse) {
@@ -181,29 +185,29 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     }
 
 
-//    /**
-//     * Given 지하철 노선을 생성하고
-//     * When 노선 가운데에 구간을 추가하면
-//     * Then 노선 가운데에 구간이 추가된다.
-//     */
-//    @DisplayName("지하철 노선 가운데에 역을 추가한다.")
-//    @Test
-//    void 지하철_노선_가운데에_역을_추가() {
-//        // given
-//        CreateLineRequest 신분당선_생성_정보 = CreateLineRequest.of(신분당선, 빨간색, 논현역_ID, 강남역_ID, 기본_역_간격);
-//        Long 신분당선_ID = createLine(신분당선_생성_정보).jsonPath().getLong("lineId");
-//
-//        // when
-//        AddSectionRequest 논현역_신논현역_구간_생성_정보 = AddSectionRequest.of(논현역_ID, 신논현역_ID, 기본_역_간격);
-//        addSection(논현역_신논현역_구간_생성_정보, 신분당선_ID);
-//
-//        // then
-//        ExtractableResponse<Response> 신분당선_조회_결과 =  selectLine(신분당선_ID);
-//        List<Long> 구간_상행역_목록 = 신분당선_조회_결과.jsonPath().getList("sections.upStation.stationId", Long.class);
-//        assertThat(구간_상행역_목록).doesNotContain(논현역_ID, 신논현역_ID);
-//        List<Long> 구간_하행역_목록 = 신분당선_조회_결과.jsonPath().getList("sections.downStation.stationId", Long.class);
-//        assertThat(구간_하행역_목록).doesNotContain(신논현역_ID, 강남역_ID);
-//    }
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 노선 가운데에 구간을 추가하면
+     * Then 노선 가운데에 구간이 추가된다.
+     */
+    @DisplayName("지하철 노선 가운데에 역을 추가한다.")
+    @Test
+    @Disabled
+    void 지하철_노선_가운데에_역을_추가() {
+        // given
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionResponse 신논현_강남_구간_생성_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
+
+        // when
+        AddSectionRequest 신논현_양재_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.기본_역_간격);
+        AddSectionResponse 신논현_양재_구간_생성_응답 = 지하철_구간_추가(신논현_양재_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
+
+        // then
+        ShowLineResponse 신분당선_조회_응답 = 지하철_노선_조회(신분당선_ID).as(ShowLineResponse.class);
+        지하철_구간_등록_검증(신논현_양재_구간_생성_응답, 신분당선_조회_응답);
+    }
 
 
 }

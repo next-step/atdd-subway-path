@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.NotMatchUpStationAndDownStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.SQLDelete;
@@ -44,16 +45,30 @@ public class Section {
         this.distance = distance;
     }
 
-    public static Section init() {
-        return new Section();
-    }
-
     public static Section of(Station upStation, Station downStation, Integer distance) {
         return new Section(upStation, downStation, distance);
     }
 
     public boolean isDownStation(Station station) {
         return this.downStation.equals(station);
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public void updateDownStation(Station downStation) {
+        if (this.upStation.equals(downStation)) {
+            throw new NotMatchUpStationAndDownStationException();
+        }
+        this.downStation = downStation;
+    }
+
+    public void updateUpStation(Station upStation) {
+        if (this.downStation.equals(upStation)) {
+            throw new NotMatchUpStationAndDownStationException();
+        }
+        this.upStation = upStation;
     }
 
     public void delete() {

@@ -3,6 +3,8 @@ package nextstep.subway.section.service;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.service.StationDto;
 
+import java.util.Objects;
+
 public class SectionDto {
 
     private Long sectionId;
@@ -43,6 +45,19 @@ public class SectionDto {
 
     public Integer getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SectionDto that = (SectionDto) o;
+        return Objects.equals(sectionId, that.sectionId) && Objects.equals(upStation, that.upStation) && Objects.equals(downStation, that.downStation) && Objects.equals(distance, that.distance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sectionId, upStation, downStation, distance);
     }
 
 }

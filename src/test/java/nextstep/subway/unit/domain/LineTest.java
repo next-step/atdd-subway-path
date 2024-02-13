@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.domain;
 
 import nextstep.subway.common.Constant;
 import nextstep.subway.exception.AlreadyExistDownStationException;
