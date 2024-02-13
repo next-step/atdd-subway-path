@@ -8,7 +8,6 @@ import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.entity.Section;
 import nextstep.subway.line.entity.Sections;
 import nextstep.subway.line.repository.LineRepository;
-import nextstep.subway.line.repository.SectionRepository;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
@@ -24,12 +23,10 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public LineService(final LineRepository lineRepository, final StationRepository stationRepository, final SectionRepository sectionRepository) {
+    public LineService(final LineRepository lineRepository, final StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
