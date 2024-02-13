@@ -91,4 +91,15 @@ public class LineServiceMockTest {
         verify(lineRepository).findById(line.getId());
     }
 
+    @DisplayName("지하철 노선 조회 시 존재하지 않는 역으로 조회할 경우 오류가 발생한다.")
+    @Test
+    void 지하철_노선_조회_시_존재하지_않는_역으로_조회_불가() {
+        // given
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // then
+        assertThatThrownBy(() -> lineService.getSubwayLine(1L))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
+
 }
