@@ -66,8 +66,6 @@ public class Sections {
         }
     }
 
-    //middleSection
-    //중간에 역 추가했을때 기존에 있는 상행역 바꾸는거 바꾸는거
     private void middleSectionAddForPreviousUpStationChange(Section section) {
         sections.stream()
                 .filter(s -> s.getUpStation().equals(section.getUpStation()))
