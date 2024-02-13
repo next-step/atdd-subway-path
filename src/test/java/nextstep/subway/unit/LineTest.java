@@ -43,7 +43,7 @@ class LineTest {
                 @Test
                 void 지하철_구간_추가_성공() {
                     // given
-                    Section 강남_양재_구간 = SectionFixture.강남_양재_구간;
+                    Section 강남_양재_구간 = SectionFixture.강남_양재_구간(10);
 
                     // when
                     이호선.addSection(강남_양재_구간);
@@ -62,10 +62,10 @@ class LineTest {
 
                 @BeforeEach
                 void 초기_노선에_구간_추가() {
-                    삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
-                    선릉_역삼_구간 = SectionFixture.선릉_역삼_구간;
-                    역삼_강남_구간 = SectionFixture.역삼_강남_구간;
-                    강남_서초_구간 = SectionFixture.강남_서초_구간;
+                    삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10);
+                    선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10);
+                    역삼_강남_구간 = SectionFixture.역삼_강남_구간(10);
+                    강남_서초_구간 = SectionFixture.강남_서초_구간(10);
 
                     이호선.addSection(삼성_선릉_구간);
                     이호선.addSection(선릉_역삼_구간);
@@ -166,10 +166,10 @@ class LineTest {
 
             @BeforeEach
             void 초기_노선에_구간_추가() {
-                삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
-                선릉_역삼_구간 = SectionFixture.선릉_역삼_구간;
-                역삼_강남_구간 = SectionFixture.역삼_강남_구간;
-                강남_서초_구간 = SectionFixture.강남_서초_구간;
+                삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10);
+                선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10);
+                역삼_강남_구간 = SectionFixture.역삼_강남_구간(10);
+                강남_서초_구간 = SectionFixture.강남_서초_구간(10);
 
                 이호선.addSection(삼성_선릉_구간);
                 이호선.addSection(선릉_역삼_구간);
@@ -323,7 +323,7 @@ class LineTest {
     @Test
     void 지하철_모든_구간의_역_조회() {
         // given
-        Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간;
+        Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10);;
 
         이호선.addSection(삼성_선릉_구간);
 
@@ -348,8 +348,8 @@ class LineTest {
             @Test
             void 삭제할_역이_기존_노선의_마지막_구간의_하행역과_동일할_경우_삭제_성공() {
                 // given
-                이호선.addSection(SectionFixture.삼성_선릉_구간);
-                이호선.addSection(SectionFixture.선릉_역삼_구간);
+                이호선.addSection(SectionFixture.삼성_선릉_구간(10));
+                이호선.addSection(SectionFixture.선릉_역삼_구간(10));
 
                 // when
                 이호선.deleteSection(StationFixture.역삼);
@@ -383,8 +383,8 @@ class LineTest {
             @Test
             void 삭제할_역이_기존_노선_마지막_구간의_하행역과_동일하지_않을_경우_삭제_실패() {
                 // given
-                이호선.addSection(SectionFixture.삼성_선릉_구간);
-                이호선.addSection(SectionFixture.선릉_역삼_구간);
+                이호선.addSection(SectionFixture.삼성_선릉_구간(10));
+                이호선.addSection(SectionFixture.선릉_역삼_구간(10));
 
                 // when, then
                 assertThatExceptionOfType(IllegalArgumentException.class)
