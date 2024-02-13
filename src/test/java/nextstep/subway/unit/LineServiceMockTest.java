@@ -7,6 +7,7 @@ import nextstep.subway.line.LineService;
 import nextstep.subway.section.SectionRequest;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,6 +34,7 @@ public class LineServiceMockTest {
     @InjectMocks
     private LineService lineService;
 
+    @DisplayName("지하철 노선에 구간을 등록한다.")
     @Test
     void addSection() {
         // given

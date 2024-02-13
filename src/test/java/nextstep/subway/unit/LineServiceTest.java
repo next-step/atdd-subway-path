@@ -8,6 +8,7 @@ import nextstep.subway.section.SectionRequest;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -42,6 +43,7 @@ public class LineServiceTest {
         stationRepository.saveAll(List.of(강남역, 역삼역, 선릉역));
     }
 
+    @DisplayName("지하철 노선에 구간을 등록한다.")
     @Test
     void addSection() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
@@ -54,6 +56,7 @@ public class LineServiceTest {
         assertThat(lineResponse.getStations()).hasSize(3);
     }
 
+    @DisplayName("지하철 노선의 지하철역 목록을 조회한다.")
     @Test
     void getStations() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
@@ -64,6 +67,7 @@ public class LineServiceTest {
         assertThat(lineResponse.getStations()).hasSize(2);
     }
 
+    @DisplayName("지하철 노선에 구간을 삭제한다.")
     @Test
     void removeSection() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);

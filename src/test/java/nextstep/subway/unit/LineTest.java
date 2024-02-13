@@ -4,6 +4,7 @@ import nextstep.subway.line.Line;
 import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -21,6 +22,7 @@ class LineTest {
         선릉역 = new Station("선릉역");
     }
 
+    @DisplayName("지하철 노선에 구간을 등록한다.")
     @Test
     void addSection() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
@@ -31,6 +33,7 @@ class LineTest {
         assertThat(이호선.getOrderedStations()).hasSize(3);
     }
 
+    @DisplayName("지하철 노선의 지하철역 목록을 조회한다.")
     @Test
     void getStations() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
@@ -38,6 +41,7 @@ class LineTest {
         assertThat(이호선.getOrderedStations()).hasSize(2);
     }
 
+    @DisplayName("지하철 노선에 구간을 삭제한다.")
     @Test
     void removeSection() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
