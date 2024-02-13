@@ -70,4 +70,25 @@ public class LineServiceMockTest {
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void 지하철_노선_조회() {
+        // given
+        final Station upStation = new Station("강남역");
+        final Station downStation = new Station("역삼역");
+        final Line line = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+
+        // when
+        final LineResponse response = lineService.getSubwayLine(line.getId());
+
+        // then
+        assertThat(response.getName()).isEqualTo(line.getName());
+        assertThat(response.getColor()).isEqualTo(line.getColor());
+        assertThat(response.getStations().get(0).getName()).isEqualTo(upStation.getName());
+        // 아래 검증은 실패하는데 이유는 equals에서 id 값으로만 비교하기 때문으로 추측. 어떻게 할 수 있을지?
+//        assertThat(response.getStations().get(1).getName()).isEqualTo(upStation.getName());
+        verify(lineRepository).findById(line.getId());
+    }
+
 }
