@@ -10,14 +10,11 @@ import java.util.Map;
 
 public class LineRestAssuredCRUD {
 
-    public static ExtractableResponse<Response> createLine(String lineName, String lineColor, Long upStationId, Long downStationId, int distance) {
+    public static ExtractableResponse<Response> createLine(String lineName, String lineColor) {
 
         Map<String, Object> param = new HashMap<>();
         param.put("name", lineName);
         param.put("color", lineColor);
-        param.put("upStationId", upStationId);
-        param.put("downStationId", downStationId);
-        param.put("distance", distance);
 
         return RestAssured
                 .given().log().all()

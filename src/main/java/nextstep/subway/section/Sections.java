@@ -6,6 +6,7 @@ import nextstep.subway.station.Station;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,18 +23,28 @@ public class Sections {
         return sections;
     }
 
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+
+        for(Section section : sections) {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
+        }
+
+        stations = new ArrayList<>(new HashSet<>(stations));
+
+        return stations;
+    }
+
     private Section lastSection() {
         return sections.get(sections.size()-1);
     }
 
-    public void addSection(Section newSection) {
-        if(isExistStation(newSection.getDownStation())){
-            throw new BadRequestException("새로운 구간의 하행역이 이미 노선에 등록된 역입니다.");
+    private boolean isStationMatched(Section section) {
+        if(sections.size() > 0){
+            return section.getUpStation().equals(lastSection().getDownStation());
         }
-
-        if(!newSection.getUpStation().equals(lastSection().getDownStation())) {
-            throw new BadRequestException("새로운 구간의 상행역과 노선의 하행역이 일치하지 않습니다.");
-        }
+        return true;
     }
 
     private boolean isExistStation(Station newStation) {
@@ -43,6 +54,16 @@ public class Sections {
             }
         }
         return false;
+    }
+
+    public void addSection(Section newSection) {
+        if(isExistStation(newSection.getDownStation())){
+            throw new BadRequestException("새로운 구간의 하행역이 이미 노선에 등록된 역입니다.");
+        }
+
+        if(!isStationMatched(newSection)){
+            throw new BadRequestException("새로운 구간의 상행역과 노선의 하행역이 일치하지 않습니다.");
+        }
     }
 
     public Long deleteStation(Station deleteStation) {

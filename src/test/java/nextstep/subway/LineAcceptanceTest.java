@@ -43,7 +43,7 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
 
         //when
         String 신분당선 = "신분당선";
-        ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(신분당선, "bg-red-600", 강남역Id, 양재역Id, 10);
+        ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(신분당선, "bg-red-600");
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
@@ -68,8 +68,8 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
         //given
         Long 서현역Id = extractResponseId(StationRestAssuredCRUD.createStation(서현역));
 
-        LineRestAssuredCRUD.createLine(신분당선, "bg-red-600", 강남역Id, 양재역Id, 10);
-        LineRestAssuredCRUD.createLine(수인분당선, "bg-yellow-600", 강남역Id, 서현역Id, 10);
+        LineRestAssuredCRUD.createLine(신분당선, "bg-red-600");
+        LineRestAssuredCRUD.createLine(수인분당선, "bg-yellow-600");
 
         //when
         List<String> names = extractResponseNames(LineRestAssuredCRUD.showLineList());
@@ -89,7 +89,7 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
 
         //given
         String 신분당선 = "신분당선";
-        ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(신분당선, "bg-red-600", 강남역Id, 양재역Id, 10);
+        ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(신분당선, "bg-red-600");
 
         Long createdId = extractResponseId(createResponse);
 
@@ -111,7 +111,7 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
 
         //given
         String createStationName = "신분당선";
-        ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(createStationName, "bg-red-600", 강남역Id, 양재역Id, 10);
+        ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(createStationName, "bg-red-600");
 
         Long createdId = extractResponseId(createResponse);
 
@@ -137,7 +137,7 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
 
         //given
         String 신분당선 = "신분당선";
-        ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine("신분당선", "bg-red-600", 강남역Id, 양재역Id, 10);
+        ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine("신분당선", "bg-red-600");
 
         Long createdId = extractResponseId(createResponse);
 
