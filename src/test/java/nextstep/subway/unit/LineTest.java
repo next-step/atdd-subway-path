@@ -85,10 +85,11 @@ class LineTest {
                      */
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
-                        // when
+                        // given
                         Section 삼성_사성_구간 = new Section(삼성, 사성, 5);
                         Section 사성_선릉_구간 = new Section(사성, 선릉, 5);
 
+                        // when
                         이호선.addSection(삼성_사성_구간);
 
                         // then
@@ -103,6 +104,7 @@ class LineTest {
 
                 @Nested
                 class 노선_중간에_추가 {
+
                     /**
                      * Given 지하철 노선이 생성되고, 구간을 추가한다.
                      * When  지하철 구간을 노선 중간에 등록할 때
@@ -112,10 +114,11 @@ class LineTest {
                      */
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
-                        // when
+                        // given
                         Section 역삼_사성_구간 = new Section(역삼, 사성, 5);
                         Section 사성_강남_구간 = new Section(사성, 강남, 5);
 
+                        // when
                         이호선.addSection(역삼_사성_구간);
 
                         // then
@@ -130,6 +133,7 @@ class LineTest {
 
                 @Nested
                 class 노선_끝에_추가 {
+
                     /**
                      * Given 지하철 노선이 생성되고, 구간을 추가한다.
                      * When  지하철 구간을 노선 끝에 등록할 때
@@ -139,9 +143,10 @@ class LineTest {
                      */
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
-                        // when
+                        // given
                         Section 서초_사성_구간 = new Section(서초, 사성, 5);
 
+                        // when
                         이호선.addSection(서초_사성_구간);
 
                         // then
@@ -187,9 +192,10 @@ class LineTest {
                  */
                 @Test
                 void 추가할_구간의_상행역이_기존_노선에_등록되지_않았을_경우() {
-                    // when, then
+                    // given
                     Section 양재_사성_구간 = new Section(양재, 사성, 5);
 
+                    // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
                             .isThrownBy(() -> {
                                 이호선.addSection(양재_사성_구간);
@@ -204,7 +210,7 @@ class LineTest {
                  */
                 @Test
                 void 상행역과_하행역이_동일한_구간일_경우() {
-                    // when, then
+                    // given
                     Section 역삼_역삼_구간 = new Section(역삼, 역삼, 5);
 
                     // when, then
@@ -225,10 +231,11 @@ class LineTest {
                  * Then  지하철 노선에 구간이 추가되지 않는다.
                  */
                 @Test
-                void 추가할_구간의_하행역과_기존_모든_구간의_역_중_하나라도_같은_역이_존재할_경우() {
-                    // when, then
+                void 추가할_구간의_하행역과_기존_모든_구간의_역중_하나라도_같은_역이_존재할_경우() {
+                    // given
                     Section 삼성_강남_구간 = new Section(삼성, 강남, 5);
 
+                    // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
                             .isThrownBy(() -> {
                                 이호선.addSection(삼성_강남_구간);
@@ -243,9 +250,10 @@ class LineTest {
                  */
                 @Test
                 void 추가할_구간의_하행역을_기준으로_직후_역과의_거리가_1보다_작은_경우() {
-                    // when, then
+                    // given
                     Section 삼성_사성_구간 = new Section(삼성, 사성, 10);
 
+                    // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
                             .isThrownBy(() -> {
                                 이호선.addSection(삼성_사성_구간);
@@ -263,10 +271,11 @@ class LineTest {
                  * Then  지하철 노선에 구간이 추가되지 않는다.
                  */
                 @Test
-                void 추가할_구간의_하행역과_기존_모든_구간의_역_중_하나라도_같은_역이_존재할_경우() {
-                    // when, then
+                void 추가할_구간의_하행역과_기존_모든_구간의_역중_하나라도_같은_역이_존재할_경우() {
+                    // given
                     Section 역삼_서초_구간 = new Section(역삼, 서초, 5);
 
+                    // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
                             .isThrownBy(() -> {
                                 이호선.addSection(역삼_서초_구간);
@@ -281,9 +290,10 @@ class LineTest {
                  */
                 @Test
                 void 추가할_구간의_하행역을_기준으로_직후_역과의_거리가_1보다_작은_경우() {
-                    // when, then
+                    // given
                     Section 역삼_사성_구간 = new Section(역삼, 사성, 10);
 
+                    // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
                             .isThrownBy(() -> {
                                 이호선.addSection(역삼_사성_구간);
@@ -301,7 +311,7 @@ class LineTest {
                  * Then  지하철 노선에 구간이 추가되지 않는다.
                  */
                 @Test
-                void 추가할_구간의_하행역과_기존_모든_구간의_역_중_하나라도_같은_역이_존재할_경우() {
+                void 추가할_구간의_하행역과_기존_모든_구간의_역중_하나라도_같은_역이_존재할_경우() {
                     // when, then
                     Section 서초_삼성_구간 = new Section(서초, 삼성, 5);
 
