@@ -57,12 +57,6 @@ public class Line {
         if (sections.hasNoSections()) {
             return true;
         }
-        if (!sections.isConnectToLastStation(toSaveSection)) {
-            throw new IllegalArgumentException("추가할 구간의 상행역이 기존 노선의 하행역과 동일하지 않습니다.");
-        }
-        if (hasExistingStation(toSaveSection)) {
-            throw new IllegalArgumentException("이미 노선에 추가된 구간을 추가할 수 없습니다.");
-        }
         return true;
     }
 

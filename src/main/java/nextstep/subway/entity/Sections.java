@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -21,7 +22,50 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        sections.add(section);
+        if(isAddFirstSection(section)) {
+            sections.add(section);
+            return;
+        }
+        if(isAddIntermediateSection(section)) {
+            addIntermediateSection(section);
+            return;
+        }
+        if(isAddLastSection(section)) {
+            sections.add(section);
+        }
+    }
+
+    private boolean isAddFirstSection(Section section) {
+        return sections.isEmpty();
+    }
+
+    private void addIntermediateSection(Section section) {
+        // 삽입 지점 찾기
+        int indexToIntermediate = IntStream.range(0, sections.size())
+                .filter(i -> sections.get(i).getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+        
+        // 직후 역 만들기 ...
+        Section existNextSection = sections.get(indexToIntermediate);
+        Station nextStation = existNextSection.getDownStation();
+
+        // 직후 구간 만들기 ...
+        Section nextSection = new Section(section.getDownStation(), nextStation,
+                existNextSection.getDistance() - section.getDistance());
+
+        // 삽입
+        sections.set(indexToIntermediate, section);
+        sections.add(indexToIntermediate + 1, nextSection);
+    }
+
+    private boolean isAddIntermediateSection(Section section) {
+        return sections.stream()
+                .anyMatch(exists -> exists.getUpStation().equals(section.getUpStation()));
+    }
+
+    private boolean isAddLastSection(Section section) {
+        return findLastStation().equals(section.getUpStation());
     }
 
     public Station findFirstUpStation() {
