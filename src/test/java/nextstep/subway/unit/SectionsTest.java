@@ -52,6 +52,16 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("중간역이 포함된 구간을을 제거한다.")
+    void 중간_구간_제거() {
+        Section section = new Section(노선, 시청역, 서울역, 1);
+        구간리스트.addSection(section);
+        구간리스트.deleteMidSection(노선, 시청역);
+
+        assertFalse(구간리스트.hasStation(시청역));
+    }
+
+    @Test
     @DisplayName("구간 제거 시, 구간이 1개 밖에 없으면 삭제에 실패한다.")
     void 구간이_1개인_경우_제거_실패() {
         assertThrows(IllegalArgumentException.class,

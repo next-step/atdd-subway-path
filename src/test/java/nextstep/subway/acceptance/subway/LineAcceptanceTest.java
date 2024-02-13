@@ -7,12 +7,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
 
+import static nextstep.subway.utils.subway.LineSteps.노선_생성_요청;
+import static nextstep.subway.utils.subway.StationFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql(value = "/db/subwayTest.sql")
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class LineAcceptanceTest {
@@ -29,7 +28,7 @@ public class LineAcceptanceTest {
 	@Test
 	void createLineTest() {
 		// when
-		ExtractableResponse<Response> response = LineSteps.노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 1L, 2L, 10);
+		ExtractableResponse<Response> response = 노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 종로3가역, 시청역, 10);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -42,12 +41,11 @@ public class LineAcceptanceTest {
 	 * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
 	 */
 	@DisplayName("지하철 노선 목록을 조회한다.")
-	@DirtiesContext
 	@Test
 	void getLinesTest() {
 		// given
-		LineSteps.노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 1L, 2L, 10);
-		LineSteps.노선_생성_요청(TEST_LINE_NAME_2, TEST_LINE_COLOR_2, 2L, 4L, 15);
+		노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 종로3가역, 시청역, 10);
+		노선_생성_요청(TEST_LINE_NAME_2, TEST_LINE_COLOR_2, 동대문역, 종로5가역, 10);
 
 		// when
 		ExtractableResponse<Response> response = LineSteps.노선_전체_조회_요청();
@@ -63,14 +61,13 @@ public class LineAcceptanceTest {
 	 * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
 	 */
 	@DisplayName("지하철 노선을 조회한다.")
-	@DirtiesContext
 	@Test
 	void getLineTest() {
 		// given
-		LineSteps.노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 1L, 2L, 10);
+		Long id = 노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 종로3가역, 시청역, 10).jsonPath().getLong("id");
 
 		// when
-		ExtractableResponse<Response> response = LineSteps.노선_단건_조회_요청(1L);
+		ExtractableResponse<Response> response = LineSteps.노선_단건_조회_요청(id);
 
 		// then
 		assertThat(response.jsonPath().getString("name")).isEqualTo(TEST_LINE_NAME_1);
@@ -82,15 +79,14 @@ public class LineAcceptanceTest {
 	 * Then 해당 지하철 노선 정보는 수정된다
 	 */
 	@DisplayName("지하철 노선을 수정한다.")
-	@DirtiesContext
 	@Test
 	void updateLineTest() {
 		// given
-		LineSteps.노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 1L, 2L, 10);
+		Long id = 노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 종로3가역, 시청역, 10).jsonPath().getLong("id");
 
 		// when
-		ExtractableResponse<Response> response = LineSteps.노선_수정_요청(TEST_LINE_NAME_2, TEST_LINE_COLOR_2, 1L);
-		ExtractableResponse<Response> getResponse = LineSteps.노선_단건_조회_요청(1L);
+		ExtractableResponse<Response> response = LineSteps.노선_수정_요청(TEST_LINE_NAME_2, TEST_LINE_COLOR_2, id);
+		ExtractableResponse<Response> getResponse = LineSteps.노선_단건_조회_요청(id);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -104,14 +100,13 @@ public class LineAcceptanceTest {
 	 * Then 해당 지하철 노선 정보는 수정되지 않고 Bad Request (400) 을 반환한다.
 	 */
 	@DisplayName("지하철 노선을 수정한다.")
-	@DirtiesContext
 	@Test
 	void updateLineWithNullThenFailTest() {
 		// given
-		LineSteps.노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 1L, 2L, 10);
+		Long id = 노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 종로3가역, 시청역, 10).jsonPath().getLong("id");
 
 		// when
-		ExtractableResponse<Response> response = LineSteps.노선_수정_요청(TEST_LINE_NAME_2, "", 1L);
+		ExtractableResponse<Response> response = LineSteps.노선_수정_요청(TEST_LINE_NAME_2, "", id);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -123,17 +118,16 @@ public class LineAcceptanceTest {
 	 * Then 해당 지하철 노선 정보는 삭제된다
 	 */
 	@DisplayName("지하철 노선을 삭제한다.")
-	@DirtiesContext
 	@Test
 	void deleteLineTest() {
 		// given
-		LineSteps.노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 1L, 2L, 10);
+		Long id = 노선_생성_요청(TEST_LINE_NAME_1, TEST_LINE_COLOR_1, 종로3가역, 시청역, 10).jsonPath().getLong("id");
 
 		// when
-		ExtractableResponse<Response> response = LineSteps.노선_삭제_요청(1L);
+		ExtractableResponse<Response> response = LineSteps.노선_삭제_요청(id);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-		assertThat(LineSteps.노선_전체_조회_요청().jsonPath().getString("name")).doesNotContain(TEST_LINE_NAME_1);
+		assertThat(LineSteps.노선_전체_조회_요청().jsonPath().getList("id")).doesNotContain(id);
 	}
 }

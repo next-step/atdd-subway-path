@@ -12,12 +12,6 @@ public class Line {
 
 	private String color;
 
-	private Long startStationId;
-
-	private Long endStationId;
-
-	private int distance;
-
 	@Embedded
 	private Sections sections;
 
@@ -28,10 +22,7 @@ public class Line {
 	public Line(String name, String color, Long startStationId, Long endStationId, int distance) {
 		this.name = name;
 		this.color = color;
-		this.startStationId = startStationId;
-		this.endStationId = endStationId;
-		this.distance = distance;
-		this.sections = new Sections();
+		this.sections = new Sections(startStationId, endStationId, distance);
 		sections.addSection(new Section(this, startStationId, endStationId, distance));
 	}
 
@@ -48,15 +39,15 @@ public class Line {
 	}
 
 	public Long getStartStationId() {
-		return startStationId;
+		return sections.getStartStationId();
 	}
 
 	public Long getEndStationId() {
-		return endStationId;
+		return sections.getEndStationId();
 	}
 
 	public int getDistance() {
-		return distance;
+		return sections.getDistance();
 	}
 
 	public Sections getSections() {
@@ -69,62 +60,14 @@ public class Line {
 	}
 
 	public void addSection(Section section) {
-		if (hasStation(section.getDownStationId()) && hasStation(section.getUpStationId())) {
-			throw new IllegalArgumentException("해당 노선에 등록할 역들이 이미 존재합니다.");
-		}
-
-		if (!hasStation(section.getDownStationId()) && !hasStation(section.getUpStationId())) {
-			throw new IllegalArgumentException("등록 구간의 역들이 모두 노선에 존재하지 않습니다.");
-		}
-
-		if (isStartStation(section.getDownStationId())) {
-			updateStartStation(section.getUpStationId(), section.getDistance());
-			sections.addSection(section);
-
-			return;
-		}
-
-		if (isEndStation(section.getUpStationId())) {
-			updateEndStation(section.getDownStationId(), section.getDistance());
-			sections.addSection(section);
-
-			return;
-		}
-
-		sections.addMidSection(this, section);
+		sections.addSection(this, section);
 	}
 
 	public void deleteSection(Long stationId) {
-		if (!isEndStation(stationId)) {
-			throw new IllegalArgumentException("노선의 하행 종점역만 제거할 수 있습니다.");
-		}
-
-		Section section = sections.getSectionByDownStationId(stationId);
-
-		updateEndStation(section.getUpStationId(), -section.getDistance());
-
-		sections.deleteSection(section);
-	}
-
-	public boolean isEndStation(Long stationId) {
-		return endStationId.equals(stationId);
-	}
-
-	public boolean isStartStation(Long stationId) {
-		return startStationId.equals(stationId);
+		sections.deleteSection(this, stationId);
 	}
 
 	public boolean hasStation(Long stationId) {
 		return sections.hasStation(stationId);
-	}
-
-	private void updateStartStation(Long stationId, int distance) {
-		this.startStationId = stationId;
-		this.distance += distance;
-	}
-
-	private void updateEndStation(Long stationId, int distance) {
-		this.endStationId = stationId;
-		this.distance += distance;
 	}
 }
