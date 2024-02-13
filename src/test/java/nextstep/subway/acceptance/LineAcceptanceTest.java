@@ -60,7 +60,7 @@ public class LineAcceptanceTest extends AcceptanceTest{
                 .when().post("/lines/{lineId}/stations", 이호선_아이디)
                 .then().log().all().extract();
 
-        List<Long> sections = extract.jsonPath().getList("sections.id", Long.class);
+        List<Long> sections = extract.jsonPath().getList("sections.sections.id", Long.class);
 
         assertThat(sections).hasSize(2);
     }

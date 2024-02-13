@@ -65,7 +65,7 @@ public class SectionService {
         Line line = getLine(lineId);
         Station newStation = getStation(request.getStationId());
         Station nextStation = getStation(request.getNextStationId());
-        line.addStation(newStation, nextStation, request.getDistance());
+        line.addStationBefore(newStation, nextStation, request.getDistance());
         return line;
     }
 }

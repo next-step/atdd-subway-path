@@ -16,12 +16,12 @@ public class StationService {
     }
 
     @Transactional
-    public Station saveStation(StationRequest stationRequest) {
-        return stationRepository.save(new Station(stationRequest.getName()));
+    public StationResponse saveStation(StationRequest stationRequest) {
+        return StationResponse.of(stationRepository.save(new Station(stationRequest.getName())));
     }
 
-    public List<Station> findAllStations() {
-        return stationRepository.findAll();
+    public List<StationResponse> findAllStations() {
+        return stationRepository.findAll().stream().map(StationResponse::of).collect(Collectors.toList());
     }
 
     @Transactional
@@ -29,8 +29,9 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public Station findStationById(Long id) {
-        return stationRepository.findById(id)
+    public StationResponse findStationById(Long id) {
+        Station station = stationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다."));
+        return StationResponse.of(station);
     }
 }

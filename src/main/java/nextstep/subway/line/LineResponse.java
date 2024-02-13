@@ -1,9 +1,8 @@
 package nextstep.subway.line;
 
-import nextstep.subway.line.section.Section;
+import nextstep.subway.line.section.Sections;
 import nextstep.subway.station.Station;
 
-import java.util.List;
 
 public class LineResponse {
 
@@ -21,14 +20,14 @@ public class LineResponse {
         return endStation;
     }
 
-    private List<Section> sections;
+    private Sections sections;
 
 
     public static LineResponse of(Line line){
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSections(), line.getStartStation(), line.getEndStation());
     }
 
-    private LineResponse(Long id, String name, String color, List<Section> sections, Station startStation, Station endStation) {
+    private LineResponse(Long id, String name, String color, Sections sections, Station startStation, Station endStation) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -49,7 +48,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
         return sections;
     }
 }

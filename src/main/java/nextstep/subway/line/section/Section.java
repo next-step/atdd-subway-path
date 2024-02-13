@@ -7,7 +7,6 @@ import nextstep.subway.station.Station;
 
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 public class Section {
@@ -42,7 +41,7 @@ public class Section {
 
     public void setLine(Line line) {
         if(!line.getSections().contains(this)){
-            line.getSections().add(this);
+            line.getSections().addSection(this);
         }
         this.line = line;
     }

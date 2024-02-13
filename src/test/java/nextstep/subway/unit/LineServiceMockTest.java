@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +51,6 @@ public class LineServiceMockTest {
         // lineService.findLineById 메서드를 통해 검증
         LineService lineService = new LineService(lineRepository, stationRepository);
         Line line = lineService.findLineById(lineMock.getId());
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getSections().size()).isEqualTo(1);
     }
 }
