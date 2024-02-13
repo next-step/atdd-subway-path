@@ -106,7 +106,7 @@ public class StationSectionAcceptanceTest {
         class 성공 {
 
             @Nested
-            class 위치는_노선_처음 {
+            class 노선_처음에_추가 {
 
                 /**
                  * Given 지하철 노선이 생성되고, 구간을 추가한다.
@@ -133,7 +133,7 @@ public class StationSectionAcceptanceTest {
             }
 
             @Nested
-            class 위치는_노선_중간 {
+            class 노선_중간에_추가 {
                 /**
                  * Given 지하철 노선이 생성되고
                  * When  지하철 구간을 노선 중간에 등록할 때
@@ -159,7 +159,7 @@ public class StationSectionAcceptanceTest {
             }
 
             @Nested
-            class 위치는_노선_끝 {
+            class 노선_끝에_추가 {
                 /**
                  * Given 지하철 노선이 생성되고
                  * When  지하철 구간을 노선 끝에 등록할 때
@@ -189,7 +189,9 @@ public class StationSectionAcceptanceTest {
         class 실패 {
 
             @Nested
-            class 위치는_노선_처음 {
+            class 노선_처음에_추가 {
+
+                // TODO: 노선에 초기 등록을 제외하고, 요청한 구간의 상행역이 노선에 등록되어 있지 않은 역일 경우
 
                 /**
                  * Given 지하철 노선이 생성되고, 구간을 추가한다.
@@ -261,7 +263,9 @@ public class StationSectionAcceptanceTest {
             }
 
             @Nested
-            class 위치는_노선_중간 {
+            class 노선_중간에_추가 {
+
+                // TODO: 노선에 초기 등록을 제외하고, 요청한 구간의 상행역이 노선에 등록되어 있지 않은 역일 경우
 
                 /**
                  * Given 지하철 노선이 생성되고, 구간을 추가한다.
@@ -334,7 +338,9 @@ public class StationSectionAcceptanceTest {
             }
 
             @Nested
-            class 위치는_노선_끝 {
+            class 노선_끝에_추가 {
+
+                // TODO: 노선에 초기 등록을 제외하고, 요청한 구간의 상행역이 노선에 등록되어 있지 않은 역일 경우
 
                 /**
                  * Given 지하철 노선이 생성되고, 구간을 추가한다.
