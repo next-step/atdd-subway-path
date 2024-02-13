@@ -48,15 +48,17 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     /**
      * Given 지하철 노선을 생성하고 여기에 A역과 C역을 생성한다.
      * When B역을 등록한다.
-     * Then A역 - C역 - B역 순으로 구간이 등록되어 있다.
+     *   1. 노선 가운데 추가 할 수 있다.
+     *   2. 노선 처음에 추가 할 수 있다.
+     *   3. 노선 마지막에 추가 할 수 있다.
+     * Then 노선을 조회했을 때 역이 3개가 등록되어 있다.
      */
     // TODO: 지하철 구간 등록 인수 테스트 메서드 생성
     @DisplayName("지하철 구간을 등록한다.")
-    @Test
-    void createStationSection() {
+    @ParameterizedTest
+    @MethodSource("createSectionParameters")
+    void createSection(SectionRequest requestDto) {
         // when
-        SectionRequest requestDto = new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE); // C - B 구간
-
         ExtractableResponse<Response> response = StationSectionManager.save(savedLine.getId(), requestDto); // 노선에 구간 추가
 
         // then
@@ -90,7 +92,7 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     @Test
     void deleteStationSection() {
         // when
-        SectionRequest requestDto = new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE); // C - B 구간
+        SectionRequest requestDto = new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE, 2); // C - B 구간
         StationSectionManager.save(savedLine.getId(), requestDto); // 노선에 구간 추가
 
         // 구간 제거
@@ -121,10 +123,18 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
         StationSectionManager.removeFailure(savedLine.getId(), stationId);
     }
 
+    public static Stream<Arguments> createSectionParameters() {
+        return Stream.of(
+                Arguments.of(new SectionRequest(-1, savedFirstStationId, DISTANCE, 0)),
+                Arguments.of(new SectionRequest(savedFirstStationId, savedSecondStationId, DISTANCE, 1)),
+                Arguments.of(new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE, 2))
+        );
+    }
+
     private static Stream<Arguments> invalidSaveStationSectionParameters() {
         return Stream.of(
-                Arguments.of(new SectionRequest(savedSecondStationId, savedFirstStationId, DISTANCE)), // (A - C) - (C - A) // 이미 등록된 역(A)
-                Arguments.of(new SectionRequest(savedFirstStationId, savedThirdStationId, DISTANCE))  // A - C - (A - B) // 상행역이 하행역이 아닐 때
+                Arguments.of(new SectionRequest(savedSecondStationId, savedFirstStationId, DISTANCE, 2)), // (A - C) - (C - A) // 이미 등록된 역(A)
+                Arguments.of(new SectionRequest(savedFirstStationId, savedThirdStationId, DISTANCE, 2))  // A - C - (A - B) // 상행역이 하행역이 아닐 때
         );
     }
 }

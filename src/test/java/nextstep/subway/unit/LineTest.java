@@ -52,7 +52,6 @@ class LineTest {
         line.addSection(section);
         line.addSection(newSection);
         List<Section> sections = line.getSections();
-        System.out.println("sections.size() = " + sections.size());
 
         // when
         line.removeSection(newStation);
