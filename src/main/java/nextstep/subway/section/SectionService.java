@@ -13,12 +13,10 @@ public class SectionService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public SectionService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public SectionService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -31,7 +29,7 @@ public class SectionService {
                 () -> new BadRequestException("존재하지 않는 역입니다.")
         );
 
-        Section newSection = sectionRepository.save(new Section(upStation, downStation, sectionRequest.getDistance()));
+        Section newSection = new Section(upStation, downStation, sectionRequest.getDistance());
 
         line.addSection(newSection);
     }
@@ -42,7 +40,7 @@ public class SectionService {
         Station station = stationRepository.findById(deleteStationId).orElseThrow(
                 () -> new BadRequestException("존재하지 않는 역 입니다.")
         );
-        Long deleteSectionId = line.deleteSection(station);
-        sectionRepository.deleteById(deleteSectionId);
+
+        line.deleteSection(station);
     }
 }

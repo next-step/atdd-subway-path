@@ -16,17 +16,15 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private int distance;
 
     @Embedded
     private Sections sections = new Sections();
 
     public Line() {}
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
     public Long getId() {
@@ -39,10 +37,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public List<Section> getSections() {
@@ -60,7 +54,6 @@ public class Line {
 
     public void addSection(Section newSection) {
         sections.addSection(newSection);
-        this.distance += newSection.getDistance();
         newSection.registerLine(this);
     }
 

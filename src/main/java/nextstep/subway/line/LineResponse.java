@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import nextstep.subway.station.StationResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -10,11 +11,14 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    public LineResponse(Line line, List<StationResponse> stations) {
+    public LineResponse (Line line) {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
-        this.stations = stations;
+        this.stations = line.getStations()
+                .stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

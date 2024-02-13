@@ -1,11 +1,8 @@
 package nextstep.subway.line;
 
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,18 +20,18 @@ public class LineService {
         Line line = lineRequest.createLine();
         line = lineRepository.save(line);
 
-        return createLineResponse(line);
+        return new LineResponse(line);
     }
 
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-                .map(this::createLineResponse)
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow();
-        return createLineResponse(line);
+        return new LineResponse(line);
     }
 
     @Transactional
@@ -46,15 +43,5 @@ public class LineService {
     @Transactional
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
-    }
-
-    private LineResponse createLineResponse(Line line) {
-        List<StationResponse> stationResponses = new ArrayList<>();
-
-        for(Station station : line.getStations()) {
-            stationResponses.add(new StationResponse(station));
-        }
-
-        return new LineResponse(line, stationResponses);
     }
 }

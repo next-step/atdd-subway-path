@@ -3,6 +3,7 @@ package nextstep.subway.section;
 import nextstep.exception.BadRequestException;
 import nextstep.subway.station.Station;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.Objects;
 public class Sections {
     private final static int MIN_SECTION_SIZE = 1;
 
-    @OneToMany(mappedBy = "line", orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {}

@@ -3,9 +3,6 @@ package nextstep.subway.line;
 public class LineRequest {
     private String name;
     private String color;
-    private Long upStationId;
-    private Long downStationId;
-    private int distance;
 
     public String getName() {
         return name;
@@ -15,19 +12,7 @@ public class LineRequest {
         return color;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
     public Line createLine() {
-        return new Line(name, color, distance);
+        return new Line(name, color);
     }
 }
