@@ -22,15 +22,15 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        if(isAddFirstSection(section)) {
+        if (isAddFirstSection(section)) {
             sections.add(section);
             return;
         }
-        if(isAddIntermediateSection(section)) {
-            addIntermediateSection(section);
+        if (isInsertSection(section)) {
+            insertSection(section);
             return;
         }
-        if(isAddLastSection(section)) {
+        if (isAddLastSection(section)) {
             sections.add(section);
         }
     }
@@ -39,27 +39,30 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    private void addIntermediateSection(Section section) {
-        // 삽입 지점 찾기
-        int indexToIntermediate = IntStream.range(0, sections.size())
-                .filter(i -> sections.get(i).getUpStation().equals(section.getUpStation()))
-                .findFirst()
-                .orElseThrow(RuntimeException::new);
-        
+    private void insertSection(Section sectionToAdd) {
+        int insertionIndex = findInsertionIndex(sectionToAdd);
+
         // 직후 역 만들기 ...
-        Section existNextSection = sections.get(indexToIntermediate);
+        Section existNextSection = sections.get(insertionIndex);
         Station nextStation = existNextSection.getDownStation();
 
         // 직후 구간 만들기 ...
-        Section nextSection = new Section(section.getDownStation(), nextStation,
-                existNextSection.getDistance() - section.getDistance());
+        Section nextSection = new Section(sectionToAdd.getDownStation(), nextStation,
+                existNextSection.getDistance() - sectionToAdd.getDistance());
 
         // 삽입
-        sections.set(indexToIntermediate, section);
-        sections.add(indexToIntermediate + 1, nextSection);
+        sections.set(insertionIndex, sectionToAdd);
+        sections.add(insertionIndex + 1, nextSection);
     }
 
-    private boolean isAddIntermediateSection(Section section) {
+    private int findInsertionIndex(Section sectionToAdd) {
+        return IntStream.range(0, sections.size())
+                .filter(i -> sections.get(i).isUpStationSame(sectionToAdd))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+    }
+
+    private boolean isInsertSection(Section section) {
         return sections.stream()
                 .anyMatch(exists -> exists.getUpStation().equals(section.getUpStation()));
     }
@@ -72,24 +75,18 @@ public class Sections {
         return sections.get(0).getUpStation();
     }
 
-    public boolean hasExistingStationExceptLast(Section newSection) {
-        return sections.stream()
-                .limit(sections.size() - 1)
-                .anyMatch(section ->section.isLeastOneSameStation(newSection));
-    }
-
     public boolean isDeletionAllowed() {
         return sections.size() > MIN_DELETE_REQUIRED_SECTIONS_SIZE;
     }
 
     public boolean canSectionDelete(Station stationToDelete) {
-        if(sections.isEmpty()) {
-           throw new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다.");
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다.");
         }
-        if(!isDeletionAllowed()) {
+        if (!isDeletionAllowed()) {
             throw new IllegalArgumentException("해당 노선에 구간이 최소 2개 이상일 경우 삭제가 가능합니다.");
         }
-        if(!findLastStation().isSame(stationToDelete)) {
+        if (!findLastStation().isSame(stationToDelete)) {
             throw new IllegalArgumentException("마지막 구간의 하행역과 동일하지 않습니다.");
         }
         return true;
@@ -119,8 +116,14 @@ public class Sections {
         return new ArrayList<>(allStations);
     }
 
-    public boolean isConnectToLastStation(Section toSaveSection) {
-        return findLastStation().equals(toSaveSection.getUpStation());
+    public boolean hasExistingDownStation(Station downStation) {
+        return sections.stream()
+                .anyMatch(section -> section.isLeastOneSameStation(downStation));
+    }
+
+    public boolean hasExistingStation(Station upStation) {
+        return sections.stream()
+                .anyMatch(section -> section.isLeastOneSameStation(upStation));
     }
 
     public boolean hasNoSections() {

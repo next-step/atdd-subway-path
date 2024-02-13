@@ -52,12 +52,8 @@ public class Section {
         return this;
     }
 
-    public boolean isLeastOneSameStation(Section newSection) {
-        Station newUpStation = newSection.getUpStation();
-        Station newDownStation = newSection.getDownStation();
-
-        return (upStation.isSame(newUpStation) || upStation.isSame(newDownStation) ||
-                downStation.isSame(newUpStation) || downStation.isSame(newDownStation));
+    public boolean isLeastOneSameStation(Station downStation) {
+        return (this.upStation.isSame(downStation) || this.downStation.isSame(downStation));
     }
 
     private int validateDistance(Integer distance) {
@@ -65,6 +61,10 @@ public class Section {
             throw new IllegalArgumentException("거리는 0보다 커야합니다.");
         }
         return distance;
+    }
+
+    public boolean isUpStationSame(Section sectionToAdd) {
+        return this.upStation.equals(sectionToAdd.getUpStation());
     }
 
     public Long getId() {
