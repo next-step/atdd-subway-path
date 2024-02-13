@@ -56,5 +56,6 @@ public class Line {
 
     public void deleteStation(Station station) {
         sections.deleteStation(station);
+        this.distance = sections.getDistance();
     }
 }
