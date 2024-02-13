@@ -68,7 +68,7 @@ public class StationAcceptanceTest {
     void deleteStationTest() {
         // given
         String stationName = TEST_STATION_NAME_1;
-        createStation(stationName);
+        Long id = createStation(stationName).jsonPath().getLong("id");
 
         // when
         RestAssured.given()
@@ -78,7 +78,7 @@ public class StationAcceptanceTest {
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
         // then
-        assertThat(getStations().jsonPath().getList("name")).doesNotContain(stationName);
+        assertThat(getStations().jsonPath().getList("id")).doesNotContain(id);
     }
 
     private ExtractableResponse<Response> createStation(String name) {
