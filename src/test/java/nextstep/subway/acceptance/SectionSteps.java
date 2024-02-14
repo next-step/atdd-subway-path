@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class SectionSteps {
 
-    public static ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
+    public static ExtractableResponse<Response> addSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Long> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);

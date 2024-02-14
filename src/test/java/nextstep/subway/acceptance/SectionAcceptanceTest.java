@@ -31,19 +31,35 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 지하철 노선에 구간을 등록하면
-     * Then 지하철 노선에 구간이 등록된다.
+     * When 지하철 노선 마지막에 구간을 등록하면
+     * Then 지하철 노선 마지막에 구간이 등록된다.
      */
-    @DisplayName("지하철 노선에 구간을 등록한다.")
+    @DisplayName("지하철 노선 마지막에 구간을 등록한다.")
     @Test
-    void addSection() {
+    void addEndSection() {
         // when
-        ExtractableResponse<Response> response = SectionSteps.createSection(이호선, 역삼역, 선릉역, 10L);
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 역삼역, 선릉역, 10L);
         String locationHeader = response.header("Location");
 
         // then
         List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
-        assertThat(lineStationIds).contains(역삼역, 선릉역);
+        assertThat(lineStationIds).containsExactly(강남역, 역삼역, 선릉역);
+    }
+
+    /**
+     * When 지하철 노선 가운데에 구간을 등록하면
+     * Then 지하철 노선 가운데에 구간이 등록된다.
+     */
+    @DisplayName("지하철 노선에 역 추가시 노선 가운데에 추가 할 수 있다.")
+    @Test
+    void addMiddleSection() {
+        // when
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 강남역, 선릉역, 10L);
+        String locationHeader = response.header("Location");
+
+        // then
+        List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
+        assertThat(lineStationIds).containsExactly(강남역, 선릉역, 역삼역);
     }
 
     /**
@@ -54,7 +70,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void validateDuplicateStation() {
         // when
-        ExtractableResponse<Response> response = SectionSteps.createSection(이호선, 역삼역, 강남역, 10L);
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 역삼역, 강남역, 10L);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -70,7 +86,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection() {
         // given
-        ExtractableResponse<Response> response = SectionSteps.createSection(이호선, 역삼역, 선릉역, 10L);
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 역삼역, 선릉역, 10L);
         String locationHeader = response.header("Location");
 
         // when
@@ -90,7 +106,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void validateEndSection() {
         // given
-        SectionSteps.createSection(이호선, 역삼역, 선릉역, 10L);
+        SectionSteps.addSection(이호선, 역삼역, 선릉역, 10L);
 
         // when
         ExtractableResponse<Response> response = SectionSteps.deleteSection(이호선, 역삼역);

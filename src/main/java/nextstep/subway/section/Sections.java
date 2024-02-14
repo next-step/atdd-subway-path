@@ -24,16 +24,34 @@ public class Sections {
         if (sections.size() > 0) {
             validateDuplicateStation(section);
         }
+
+        if(isMiddleSection(section)){
+            Section nextSection = getNextSection(section);
+            nextSection.updateUpStation(section.getDownStation());
+        }
+
         this.sections.add(section);
     }
 
     private void validateDuplicateStation(Section section) {
-        if (isContains(section.getDownStation())) {
+        if (isMatchUpStation(section.getDownStation())) {
             throw new SubwayException("이미 등록되어있는 역입니다.");
         }
     }
 
-    private boolean isContains(Station station) {
+    private Section getNextSection(Section section) {
+        return this.sections.stream()
+                .filter(s -> s.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new SubwayException("역을 찾을 수 없습니다."));
+    }
+
+
+    private boolean isMiddleSection(Section section) {
+        return isMatchUpStation(section.getUpStation());
+    }
+
+    private boolean isMatchUpStation(Station station) {
         return this.sections.stream().anyMatch(section -> section.getUpStation().equals(station));
     }
 

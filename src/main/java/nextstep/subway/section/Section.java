@@ -38,6 +38,10 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
     public Long getId() {
         return id;
     }
