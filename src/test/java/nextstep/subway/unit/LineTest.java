@@ -39,11 +39,14 @@ class LineTest {
     @Test
     void addMiddleSection() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
+        Section nextSection = new Section(이호선, 역삼역, 선릉역, 10L);
+        이호선.addSection(nextSection);
 
-        Section section = new Section(이호선, 강남역, 선릉역, 3L);
-        이호선.addSection(section);
+        Section middleSection = new Section(이호선, 역삼역, 삼성역, 3L);
+        이호선.addSection(middleSection);
 
-        assertThat(이호선.getOrderedStations()).containsExactly(강남역, 선릉역, 역삼역);
+        assertThat(nextSection.getUpStation()).isEqualTo(삼성역);
+        assertThat(이호선.getOrderedStations()).containsExactly(강남역, 역삼역, 삼성역, 선릉역);
     }
 
     @DisplayName("지하철 노선 가운데에 구간 등록 시 다음 구간의 거리를 업데이트 한다.")
