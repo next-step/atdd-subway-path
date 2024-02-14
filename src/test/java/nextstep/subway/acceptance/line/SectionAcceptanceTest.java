@@ -161,49 +161,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @Nested
     class SectionDeleteTest {
-
-        /**
-         * Given 지하철 역 2개만 포함하는 노선을 1개 생성하고
-         * When 앞서 생성한 노선에서 역을 하나 제거하려는 경우
-         * Then 노선을 제거되지 않고 에러가 발생한다.
-         */
-        @DisplayName("구간이 1개인 경우 역을 제거하려 시도하면 에러가 발생한다.")
-        @Test
-        void deleteLineSectionFailWithOneLine() {
-            // when
-            ExtractableResponse<Response> response = LineApi.구간삭제요청(신분당선Id, 신논현역Id);
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
-            assertThat(LineApi.구간조회요청(신분당선Id).getList("stations.id", Long.class))
-                    .containsExactly(강남역Id, 신논현역Id);
-        }
-
-        /**
-         * Given 지하철 역 2개와 이 역들을 포함하는 노선을 1개 생성하고
-         * When 상행역을 구간에서 제거하려는 경우
-         * Then 노선을 제거되지 않고 에러가 발생한다.
-         */
-        @DisplayName("하행역이 아닌 역을 제거하려는 경우 에러가 발생한다.")
-        @Test
-        void deleteLineSectionFailWithUpStation() {
-            // when
-            ExtractableResponse<Response> response = LineApi.구간삭제요청(신분당선Id, 강남역Id);
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
-            assertThat(LineApi.구간조회요청(신분당선Id).getList("stations.id", Long.class))
-                    .containsExactly(강남역Id, 신논현역Id);
-        }
-
         /**
          * Given 지하철 역 3개로 2개의 구간을 가진 1개의 노선을 생성 후
          * When 하행역을 제거하면
-         * Then 지하철 역 2개, 1개의 구간을 가진 1개의 노선이 조회된다.
+         * Then 노선 역 리스트 조회 시 상행 종점역, 중간역만 조회된다.
          */
         @DisplayName("하행역을 제거함으로써 구간을 제거한다.")
         @Test
-        void deleteLineSectionSuccess() {
+        void succeedForDeletingLastStation() {
             // given
             LineApi.구간생성요청(신분당선Id, SectionFixture.추가구간_생성_바디(신논현역Id, 논현역Id));
 
@@ -216,5 +181,61 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                     .containsExactly(강남역Id, 신논현역Id);
         }
 
+        /**
+         * Given 지하철 역 3개로 2개의 구간을 가진 1개의 노선을 생성 후
+         * When 상행역을 제거하면,
+         * Then 노선 역 리스트 조회 시 중간역, 하행 종점역만 조회된다.
+         */
+        @DisplayName("상행역을 제거함으로써 구간을 제거한다.")
+        @Test
+        void succeedForDeletingFirstStation() {
+            // given
+            LineApi.구간생성요청(신분당선Id, SectionFixture.추가구간_생성_바디(신논현역Id, 논현역Id));
+
+            // when
+            ExtractableResponse<Response> response = LineApi.구간삭제요청(신분당선Id, 강남역Id);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            assertThat(LineApi.구간조회요청(신분당선Id).getList("stations.id", Long.class))
+                    .containsExactly(신논현역Id, 논현역Id);
+        }
+
+        /**
+         * Given 지하철 역 3개로 2개의 구간을 가진 1개의 노선을 생성 후
+         * When 중간역을 제거하면,
+         * Then 상행 종점역, 하행 종점역만 조회된다.
+         */
+        @DisplayName("노선 중간의 역을 제거함으로써 구간을 제거한다.")
+        @Test
+        void succeedForDeletingMiddleStation() {
+            // given
+            LineApi.구간생성요청(신분당선Id, SectionFixture.추가구간_생성_바디(신논현역Id, 논현역Id));
+
+            // when
+            ExtractableResponse<Response> response = LineApi.구간삭제요청(신분당선Id, 신논현역Id);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            assertThat(LineApi.구간조회요청(신분당선Id).getList("stations.id", Long.class))
+                    .containsExactly(강남역Id, 논현역Id);
+        }
+
+        /**
+         * Given 지하철 역 2개만 포함하는 노선을 1개 생성하고
+         * When 앞서 생성한 노선에서 역을 하나 제거하려는 경우
+         * Then 노선을 제거되지 않고 에러가 발생한다.
+         */
+        @DisplayName("구간이 1개인 경우 역을 제거하려 시도하면 에러가 발생한다.")
+        @Test
+        void failForLineWithOneSection() {
+            // when
+            ExtractableResponse<Response> response = LineApi.구간삭제요청(신분당선Id, 신논현역Id);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            assertThat(LineApi.구간조회요청(신분당선Id).getList("stations.id", Long.class))
+                    .containsExactly(강남역Id, 신논현역Id);
+        }
     }
 }
