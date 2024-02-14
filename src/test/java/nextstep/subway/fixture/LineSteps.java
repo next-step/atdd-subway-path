@@ -2,9 +2,9 @@ package nextstep.subway.fixture;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+import nextstep.subway.line.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import subway.line.LineResponse;
 
 import java.util.List;
 import java.util.Map;

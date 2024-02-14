@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
-import subway.station.StationResponse;
+
+import nextstep.subway.station.StationResponse;
 
 import java.util.List;
 import java.util.Objects;

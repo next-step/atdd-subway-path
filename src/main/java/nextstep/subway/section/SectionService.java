@@ -1,8 +1,10 @@
 package nextstep.subway.section;
 
 import nextstep.subway.line.Line;
+import nextstep.subway.line.LineNotFoundException;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.station.Station;
+import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +36,7 @@ public class SectionService {
         }
 
         Station downStation = getStation(sectionRequest.getDownStationId());
-        line.extendDownStation(downStation);
-        line.addDistance(sectionRequest.getDistance());
+        line.addDownStation(downStation, sectionRequest.getDistance());
         Section saved = sectionDao.save(new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance(), line.getId()));
 
         return new SectionResponse(saved.getUpStationId(), saved.getDownStationId(), saved.getDistance());
