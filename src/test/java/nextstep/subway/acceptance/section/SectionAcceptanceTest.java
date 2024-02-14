@@ -209,5 +209,4 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         지하철_구간_등록_검증(신논현_양재_구간_생성_응답, 신분당선_조회_응답);
     }
 
-
 }
