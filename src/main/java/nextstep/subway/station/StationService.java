@@ -1,10 +1,9 @@
 package nextstep.subway.station;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,7 +29,6 @@ public class StationService {
     public Station findById(long id) {
         return stationRepository.findById(id)
                 .orElse(null);
-//                .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다"));
     }
 
     @Transactional

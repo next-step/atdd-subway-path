@@ -45,16 +45,6 @@ public class Section {
     }
 
     public boolean isConnectedSection(Section section) {
-        System.out.println();
-        System.out.println("(isConnectedSection)");
-        System.out.println("this = " + this);
-        System.out.println("section = " + section);
-        System.out.println();
-
-        /**
-         * 1. 상행이 같아서 뒤에 연결해야 하는 경우
-         * 2. 하행이 같아서 앞에 연결해야 하는 경우 (위와 동일한 인덱스)
-         */
         return isConnectedUpStation(section) || isConnectedDownStation(section);
     }
 
@@ -86,22 +76,7 @@ public class Section {
         return this.downStation == station;
     }
 
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-//                ", line=" + line +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
-    }
-
     public boolean isFirstSection(Section firstSection) {
-        System.out.println("(isFirstSection)");
-        System.out.println("this = " + this);
-        System.out.println("firstSection = " + firstSection);
-        System.out.println();
         return this.downStation == firstSection.upStation;
     }
 
@@ -127,5 +102,16 @@ public class Section {
 
     private boolean isReverseRegisteredSection(Section anotherSection) {
         return this.upStation == anotherSection.downStation && this.downStation == anotherSection.upStation;
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+//                ", line=" + line +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 }

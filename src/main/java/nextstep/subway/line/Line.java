@@ -123,31 +123,6 @@ public class Line {
         return beforeSection.getUpStation();
     }
 
-    private boolean isInsertMiddleSection(int index) {
-        return index != 0 && index != sections.size() - 1;
-    }
-
-    private int getInsertingSectionIndex(Section section) {
-        // 처음 구간 추가
-        if (isFirstSection(section)) {
-            return 0;
-        }
-
-        // 마지막 구간 추가
-        if (isFinalSection(section)) {
-            System.out.println("final");
-            return sections.size();
-        }
-
-        System.out.println("other");
-        // 중간 구간 추가
-        return sections.stream()
-                .filter(s -> s.isConnectedSection(section))
-                .findFirst()
-                .map(s -> sections.indexOf(s) + 1)
-                .orElseThrow(() -> new IllegalArgumentException("구간이 올바르게 이어지지 않습니다."));
-    }
-
     private boolean isFirstSection(Section section) {
         return sections.isEmpty() || section.isFirstSection(sections.get(0));
     }
@@ -179,11 +154,6 @@ public class Line {
                 .anyMatch(section -> section.isAlreadyRegisteredSection(anotherSection));
     }
 
-    public boolean isConnectedSection(Section anotherSection) {
-        return sections.stream()
-                .anyMatch(section -> section.isConnectedSection(anotherSection));
-    }
-
     public boolean isRemoveFinalSection(Station station) {
         return getLastSection().isMatchDownStation(station);
     }
@@ -192,10 +162,6 @@ public class Line {
         if (isAlreadyRegisteredSection(section)) {
             throw new IllegalArgumentException("이미 등록된 구간입니다.");
         }
-
-//        if (!isConnectedSection(section)) {
-//            throw new IllegalArgumentException("구간이 올바르게 이어지지 않습니다.");
-//        }
     }
 
     public void validateDeleteSection(Station station) {

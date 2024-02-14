@@ -141,7 +141,7 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     private static Stream<Arguments> invalidSaveStationSectionParameters() {
         return Stream.of(
                 Arguments.of(new SectionRequest(savedSecondStationId, savedFirstStationId, DISTANCE)), // (A - C) - (C - A) // 이미 등록된 역(A)
-                Arguments.of(new SectionRequest(savedFirstStationId, savedSecondStationId, DISTANCE)) // (A - C) - (A - C) // 이미 등록된 역(A)
+                Arguments.of(new SectionRequest(savedFirstStationId, savedSecondStationId, DISTANCE)) // (A - C) - (A - C) // 이미 등록된 역
         );
     }
 }
