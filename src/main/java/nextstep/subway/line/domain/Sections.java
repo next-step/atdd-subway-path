@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import lombok.Getter;
 import nextstep.subway.section.domain.Section;
 
 import javax.persistence.Embeddable;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 @Embeddable
 public class Sections {
 
@@ -16,7 +18,7 @@ public class Sections {
     @JoinColumn(name = "line_id")
     private final List<Section> sections = new ArrayList<>();
 
-    public List<Long> getStationIds() {
+    public List<Long> getDownStationIds() {
         return sections.stream()
                     .map(Section::getDownStationId)
                     .collect(Collectors.toList());
@@ -46,6 +48,26 @@ public class Sections {
         return sections.stream()
                     .mapToInt(Section::getDistance)
                     .sum();
+    }
+
+    public List<Long> getStations() {
+        List<Long> stationIds = getSections().stream()
+                .map(section -> section.getUpStationId())
+                .collect(Collectors.toList());
+
+        stationIds.add(getDownStationId());
+
+        return stationIds;
+    }
+
+    public void removeSection() {
+        if (sections.isEmpty()) {
+            return;
+        }
+
+        sections.remove(sections.size() - 1);
+
+        return;
     }
 
     private Section getLastSection() {

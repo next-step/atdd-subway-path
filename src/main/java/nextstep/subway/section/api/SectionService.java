@@ -73,13 +73,13 @@ public class SectionService {
     }
 
     private void validateUniqueness(SectionCreateRequest request, Line line) {
-        if (line.getSections().getStationIds().contains(request.getDownStationId())) {
+        if (line.getSections().getDownStationIds().contains(request.getDownStationId())) {
             throw new AlreadyRegisteredException();
         }
     }
 
     private void validateLastStation(Line line) {
-        if (line.getSections().getStationIds().size() < 1) {
+        if (line.getSections().getDownStationIds().size() < 1) {
             throw new InsufficientStationException();
         }
     }
