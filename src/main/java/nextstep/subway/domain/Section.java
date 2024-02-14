@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,8 +16,6 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Integer orderNo;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "line_id")
@@ -33,22 +31,44 @@ public class Section {
 
     private int distance;
 
+    private boolean head;
+
+    private boolean tail;
+
     public Section() {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance,
-        Integer orderNo) {
+
+    public Section(Line line, Station upStation, Station downStation, int distance, boolean head,
+        boolean tail) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.orderNo = orderNo;
+        this.head = head;
+        this.tail = tail;
+    }
+
+    public static Section createHeadAndTailSection(Line line, Station upStation,
+        Station downStation,
+        int distance) {
+        return new Section(line, upStation, downStation, distance, true, true);
+    }
+
+    public static Section createHeadSection(Line line, Station upStation, Station downStation,
+        int distance) {
+        return new Section(line, upStation, downStation, distance, true, false);
+    }
+
+    public static Section createTailSection(Line line, Station upStation, Station downStation,
+        int distance) {
+        return new Section(line, upStation, downStation, distance, false, true);
     }
 
     public static Section createMiddleSection(Line line, Station upStation, Station downStation,
-        int distance, int orderNo) {
-        return new Section(line, upStation, downStation, distance, orderNo);
+        int distance) {
+        return new Section(line, upStation, downStation, distance, false, false);
     }
 
     public Long getId() {
@@ -71,26 +91,16 @@ public class Section {
         return distance;
     }
 
-    public int getOrderNo() {
-        return orderNo;
+    public boolean isHead() {
+        return head;
     }
 
-    public static Section createFirstSection(Line line, Station upStation, Station downStation,
-        int distance) {
-        return new Section(line, upStation, downStation, distance, 1);
-    }
-
-    public static Section createTempSection(Line line, Station upStation, Station downStation,
-        int distance) {
-        return new Section(line, upStation, downStation, distance, null);
+    public boolean isTail() {
+        return tail;
     }
 
     public void changeUpStation(Station downStation) {
         this.upStation = downStation;
-    }
-
-    public void changeOrderNo(int orderNo) {
-        this.orderNo = orderNo;
     }
 
     public void changeDistance(int distance) {
@@ -98,5 +108,41 @@ public class Section {
             throw new IllegalArgumentException();
         }
         this.distance = distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return distance == section.distance && head == section.head && tail == section.tail
+            && Objects.equals(id, section.id) && Objects.equals(line, section.line)
+            && Objects.equals(upStation, section.upStation) && Objects.equals(
+            downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation, distance, head, tail);
+    }
+
+    public void changeTail(boolean tail) {
+        this.tail = tail;
+    }
+
+    public void changeHead(boolean head) {
+        this.head = head;
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 }

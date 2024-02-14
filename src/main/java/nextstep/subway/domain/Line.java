@@ -1,17 +1,18 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.exception.LineException;
 
 @Entity
 public class Line {
@@ -65,71 +66,118 @@ public class Line {
     }
 
     public List<Section> getSections() {
-        return sections.stream().sorted(Comparator.comparing(Section::getOrderNo))
-            .collect(Collectors.toList());
+        if (sections.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Section> result = new LinkedList<>();
+        Optional<Section> headSection = getHeadSection();
+        if (headSection.isEmpty()) {
+            return result;
+        }
+        result.add(headSection.get());
+        Section _headSection = getHeadSection().get();
+        while (!_headSection.isTail()) {
+            Station downStation = _headSection.getDownStation();
+            Section nextSection = searchSection(sections, downStation).orElseThrow(
+                () -> new LineException(LineException.NOT_EXIST_SECTION));
+            result.add(nextSection);
+            _headSection = nextSection;
+        }
+        return result;
+    }
+
+    private Optional<Section> searchSection(List<Section> sections, Station downStation) {
+        return sections.stream()
+            .filter(section -> section.getUpStation().equals(downStation))
+            .findFirst();
+    }
+
+    private Optional<Section> getHeadSection() {
+        return this.sections.stream().filter(Section::isHead).findFirst();
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
-        // 중간에 끼워 넣는 경우, 맨 끝에 넣는 경우
         if (sections.isEmpty()) {
-            Section newSection = Section.createFirstSection(this, upStation, downStation, distance);
-            this.sections.add(newSection);
+            sections.add(Section.createHeadAndTailSection(this, upStation, downStation, distance));
             return;
         }
-        Section tempSection = Section.createTempSection(this, upStation, downStation, distance);
-        if (isLastSectionAndNewSectionConnectionValid(tempSection)) {
-            addTailSection(tempSection);
+        Section headSection = getHeadSection().orElseThrow(
+            () -> new LineException(LineException.NOT_EXIST_SECTION));
+        Section tailSection = getTailSection();
+        if (tailSection.isSameDownStation(upStation)) {
+            addTail(upStation, downStation, distance, tailSection);
             return;
         }
-        addMiddleSection(tempSection);
-    }
-
-    private void addTailSection(Section tempSection) {
-        Section newSection = new Section(this, tempSection.getUpStation(),
-            tempSection.getDownStation(), tempSection.getDistance(),
-            getLastSection().getOrderNo() + 1);
-        this.sections.add(newSection);
-    }
-
-    private boolean isLastSectionAndNewSectionConnectionValid(Section tempSection) {
-        // 마지막 지하철 구간의 하행역과 추가할 구간의 상행역이 같고, 추가할 구간의 하행역이 없을 때
-        if (getLastSection().getDownStation().equals(tempSection.getUpStation())
-            && getSections().stream().noneMatch(section ->
-            section.getDownStation().equals(tempSection.getDownStation()))) {
-            return true;
+        if (headSection.isSameUpStation(downStation)) {
+            addHead(upStation, downStation, distance, headSection);
+            return;
         }
-        return false;
-    }
-
-    private void addMiddleSection(Section tempSection) {
-        Section foundSection = getSections().stream()
-            .filter(section -> section.getUpStation().equals(tempSection.getUpStation()))
+        if (isNotExistsUpStationInSections(upStation)) {
+            throw new LineException(LineException.NOT_ADDABLE_SECTION);
+        }
+        sections.stream().filter(section -> section.getUpStation().equals(upStation))
             .findFirst()
-            .orElseThrow(IllegalArgumentException::new);
-        validateMiddleSectionAndNewSectionConnectionValid(tempSection);
-        foundSection.changeUpStation(tempSection.getDownStation());
-        // 거리는 기존 FoundSection 거리 - 새로운 Section 거리의 나머지
-        foundSection.changeDistance(foundSection.getDistance() - tempSection.getDistance());
-        Section newSection = Section.createMiddleSection(this, tempSection.getUpStation(),
-            tempSection.getDownStation(), tempSection.getDistance(), foundSection.getOrderNo());
-        this.sections.add(foundSection.getOrderNo() - 1, newSection);
-        for (int i = foundSection.getOrderNo(); i < getSections().size(); i++) {
-            getSections().get(i).changeOrderNo(getSections().get(i).getOrderNo() + 1);
-        }
+            .ifPresent(section -> {
+                addMiddle(section, upStation, downStation, distance);
+            });
     }
 
-    private void validateMiddleSectionAndNewSectionConnectionValid(Section tempSection) {
-        // 같은 하행역이 하나도 없는지 확인
+    private void addTail(Station upStation, Station downStation, int distance,
+        Section tailSection) {
+        validateSameDownStationNotExists(downStation);
+        tailSection.changeTail(false);
+        sections.add(Section.createTailSection(this, upStation, downStation, distance));
+    }
+
+    private void addHead(Station upStation, Station downStation, int distance,
+        Section headSection) {
+        validateSameUpStationNotExists(upStation);
+        headSection.changeHead(false);
+        sections.add(Section.createHeadSection(this, upStation, downStation, distance));
+    }
+    
+    private boolean isNotExistsUpStationInSections(Station upStation) {
+        return sections.stream().noneMatch(section -> section.getUpStation().equals(upStation));
+    }
+
+    private void addMiddle(Section targetSection, Station upStation, Station downStation,
+        int distance) {
+        validateSameDownStationNotExists(downStation);
+        if (targetSection.isHead()) {
+            targetSection.changeHead(false);
+            addMiddleToSections(targetSection, downStation, distance,
+                Section.createHeadSection(this, upStation, downStation, distance));
+            return;
+        }
+        addMiddleToSections(targetSection, downStation, distance,
+            new Section(this, upStation, downStation, distance, false, false));
+    }
+
+    private void addMiddleToSections(Section targetSection, Station downStation, int distance,
+        Section upStation) {
+        targetSection.changeUpStation(downStation);
+        targetSection.changeDistance(targetSection.getDistance() - distance);
+        sections.add(sections.indexOf(targetSection),
+            upStation);
+    }
+
+    private void validateSameUpStationNotExists(Station upStation) {
         if (getSections().stream()
-            .anyMatch(section -> section.getDownStation().equals(tempSection.getDownStation()))) {
-            throw new IllegalArgumentException();
+            .anyMatch(section -> section.getUpStation().equals(upStation))) {
+            throw new LineException(LineException.ALREADY_REGISTERED_STATION_EXCEPTION);
         }
     }
 
-    // 맨 끝에 넣는 경우
+    private void validateSameDownStationNotExists(Station downStation) {
+        if (getSections().stream()
+            .anyMatch(section -> section.getDownStation().equals(downStation))) {
+            throw new LineException(LineException.ALREADY_REGISTERED_STATION_EXCEPTION);
+        }
+    }
 
-    private Section getLastSection() {
-        return getSections().get(getSections().size() - 1);
+    private Section getTailSection() {
+        return this.sections.stream().filter(Section::isTail).findFirst()
+            .orElseThrow(() -> new LineException(LineException.NOT_EXIST_SECTION));
     }
 
     public Set<Station> getStations() {
@@ -141,12 +189,11 @@ public class Line {
         return stations;
     }
 
-    public void removeSection(Section section) {
-        this.sections.remove(section);
-    }
-
     public void removeSection(int index) {
         this.sections.remove(index);
+        if (sections.size() == 1) {
+            sections.get(0).changeTail(true);
+        }
     }
 
 }

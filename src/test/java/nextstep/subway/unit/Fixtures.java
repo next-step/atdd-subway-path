@@ -24,8 +24,7 @@ public class Fixtures {
 
     public static class SectionFixture {
 
-        public static Section section(Line line, Station upStation, Station downStation,
-            int distance, int orderNo) {
+        public static Section section(Line line, Station upStation, Station downStation, Integer distance, Boolean head, Boolean tail) {
             if (upStation == null) {
                 upStation = StationFixture.station(1L, "강남역");
             }
@@ -35,14 +34,20 @@ public class Fixtures {
             if (line == null) {
                 line = LineFixture.line(1L, "2호선", "green");
             }
-            if (distance == 0) {
+            if (distance == null) {
                 distance = 10;
             }
-            if (orderNo == 0) {
-                orderNo = 1;
+
+            if (head == null) {
+                head = false;
             }
 
-            return new Section(line, upStation, downStation, distance, orderNo);
+            if (tail == null) {
+                tail = false;
+            }
+
+
+            return new Section(line, upStation, downStation, distance, head, tail);
         }
     }
 
