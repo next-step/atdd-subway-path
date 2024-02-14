@@ -62,10 +62,6 @@ public class LineService {
         Line line = findLineById(request.getLineId());
         Section section = convertSectionRequestToEntity(request, line);
 
-        if (!existStation(section)) {
-            throw new IllegalArgumentException("요청한 역은 존재하지 않습니다.");
-        }
-
         return convertToSectionResponse(section.setLine(line));
     }
 
@@ -76,17 +72,13 @@ public class LineService {
     }
 
     public Line findLineById(Long lineId) {
-        return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
-    }
-
-    private boolean existStation(Section section) {
-        boolean upStationExists = stationRepository.findById(section.getUpStation().getId()).isPresent();
-        boolean downStationExists = stationRepository.findById(section.getDownStation().getId()).isPresent();
-        return upStationExists && downStationExists;
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("노선 번호에 해당하는 노선이 없습니다."));
     }
 
     private Station findStation(Long stationId) {
-        return stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new);
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new EntityNotFoundException("역 번호에 해당하는 역이 없습니다."));
     }
 
     private Line updateLine(LineRequest request, Line line) {
@@ -99,8 +91,7 @@ public class LineService {
     private Line convertToLineEntity(LineRequest request) {
         return new Line(
                 request.getName(),
-                request.getColor(),
-                request.getDistance());
+                request.getColor());
     }
 
     private LineResponse convertToLineResponse(Line line) {

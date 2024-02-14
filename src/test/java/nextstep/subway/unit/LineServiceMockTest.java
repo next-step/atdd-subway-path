@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -52,9 +53,14 @@ public class LineServiceMockTest {
         삼성역_번호 = 2L;
         신천역_번호 = 3L;
 
-        선릉역 = StationFixture.선릉.updateId(선릉역_번호);
-        삼성역 = StationFixture.삼성.updateId(삼성역_번호);
-        신천역 = StationFixture.신천.updateId(신천역_번호);
+        선릉역 = StationFixture.선릉;
+        ReflectionTestUtils.setField(선릉역, "id", 선릉역_번호);
+
+        삼성역 = StationFixture.삼성;
+        ReflectionTestUtils.setField(삼성역, "id", 삼성역_번호);
+        
+        신천역 = StationFixture.신천;
+        ReflectionTestUtils.setField(신천역, "id", 신천역_번호);
 
         when(lineRepository.findById(이호선_아이디)).thenReturn(Optional.of(LineFixture.이호선_생성()));
         when(stationRepository.findById(선릉역_번호)).thenReturn(Optional.of(선릉역));

@@ -1,6 +1,7 @@
 package nextstep.subway.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -40,16 +41,8 @@ public class Section {
         this.line = line;
     }
 
-    public boolean isConnectToLastUpStation(Station station) {
-        return this.upStation.equals(station);
-    }
-
     public boolean areStationsSame() {
         return upStation.equals(downStation);
-    }
-
-    public boolean isUpStationSame(Station station) {
-        return this.upStation.equals(station);
     }
 
     public Section setLine(Line line) {
@@ -59,12 +52,13 @@ public class Section {
         return this;
     }
 
-    public boolean isLeastOneSameStation(Section newSection) {
-        Station newUpStation = newSection.getUpStation();
-        Station newDownStation = newSection.getDownStation();
+    public boolean isAtLeastOneSameStation(Station station) {
+        return (this.upStation.isSame(station) || this.downStation.isSame(station));
+    }
 
-        return (upStation.isSame(newUpStation) || upStation.isSame(newDownStation) ||
-                downStation.isSame(newUpStation) || downStation.isSame(newDownStation));
+    public boolean isAtLeastOneSameStation(Section section) {
+        return isAtLeastOneSameStation(section.getUpStation()) ||
+                isAtLeastOneSameStation(section.getDownStation());
     }
 
     private int validateDistance(Integer distance) {
@@ -73,6 +67,21 @@ public class Section {
         }
         return distance;
     }
+
+    public boolean isUpStationSame(Section sectionToAdd) {
+        return this.upStation.equals(sectionToAdd.getUpStation());
+    }
+
+    public Station findCommonStation(Section sectionToAdd) {
+        if (sectionToAdd.isAtLeastOneSameStation(upStation)) {
+            return this.upStation;
+        }
+        if (sectionToAdd.isAtLeastOneSameStation(downStation)) {
+            return this.downStation;
+        }
+        return null;
+    }
+
 
     public Long getId() {
         return id;
@@ -88,6 +97,19 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, distance, line);
     }
 }
 

@@ -9,9 +9,11 @@ public class StationFixture {
     public static final Station 강남 = new Station("강남");
     public static final Station 양재 = new Station("양재");
     public static final Station 삼성 = new Station("삼성");
+    public static final Station 사성 = new Station("사성");
     public static final Station 선릉 = new Station("선릉");
     public static final Station 역삼 = new Station("역삼");
     public static final Station 신천 = new Station("신천");
+    public static final Station 서초 = new Station("서초");
 
     public static final StationRequest 가산디지털단지 = new StationRequest("가산디지털단지");
     public static final StationRequest 구로디지털단지 = new StationRequest("구로디지털단지");
