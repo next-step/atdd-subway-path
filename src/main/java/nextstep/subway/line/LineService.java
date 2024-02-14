@@ -72,12 +72,4 @@ public class LineService {
     public void removeSection(Line line, Station station) {
         line.removeSection(station);
     }
-
-    public boolean isExistSection(Line line, Section section) {
-        return line.isExistSection(section);
-    }
-
-    public boolean isConnectedSection(Line line, Section section) {
-        return line.isConnectedSection(section);
-    }
 }

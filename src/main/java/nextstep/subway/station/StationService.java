@@ -28,7 +28,9 @@ public class StationService {
     }
 
     public Station findById(long id) {
-        return stationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다"));
+        return stationRepository.findById(id)
+                .orElse(null);
+//                .orElseThrow(() -> new IllegalArgumentException("해당 역이 존재하지 않습니다"));
     }
 
     @Transactional

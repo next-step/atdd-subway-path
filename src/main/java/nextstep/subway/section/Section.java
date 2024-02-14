@@ -45,7 +45,25 @@ public class Section {
     }
 
     public boolean isConnectedSection(Section section) {
-        return this.downStation == section.upStation;
+        System.out.println();
+        System.out.println("(isConnectedSection)");
+        System.out.println("this = " + this);
+        System.out.println("section = " + section);
+        System.out.println();
+
+        /**
+         * 1. 상행이 같아서 뒤에 연결해야 하는 경우
+         * 2. 하행이 같아서 앞에 연결해야 하는 경우 (위와 동일한 인덱스)
+         */
+        return isConnectedUpStation(section) || isConnectedDownStation(section);
+    }
+
+    private boolean isConnectedUpStation(Section section) {
+        return this.upStation == section.upStation;
+    }
+
+    private boolean isConnectedDownStation(Section section) {
+        return this.downStation == section.downStation;
     }
 
     public long getId() {
@@ -77,5 +95,37 @@ public class Section {
                 ", downStation=" + downStation +
                 ", distance=" + distance +
                 '}';
+    }
+
+    public boolean isFirstSection(Section firstSection) {
+        System.out.println("(isFirstSection)");
+        System.out.println("this = " + this);
+        System.out.println("firstSection = " + firstSection);
+        System.out.println();
+        return this.downStation == firstSection.upStation;
+    }
+
+    public boolean isFinalSection(Section lastSection) {
+        return lastSection.getDownStation() == upStation;
+    }
+
+    public void updateDownStation(Station newUpStation) {
+        this.downStation = newUpStation;
+    }
+
+    public void updateUpStation(Station newDownStation) {
+        this.upStation = newDownStation;
+    }
+
+    public boolean isAlreadyRegisteredSection(Section anotherSection) {
+        return isExactlyRegisteredSection(anotherSection) || isReverseRegisteredSection(anotherSection);
+    }
+
+    private boolean isExactlyRegisteredSection(Section anotherSection) {
+        return this.upStation == anotherSection.upStation && this.downStation == anotherSection.downStation;
+    }
+
+    private boolean isReverseRegisteredSection(Section anotherSection) {
+        return this.upStation == anotherSection.downStation && this.downStation == anotherSection.upStation;
     }
 }

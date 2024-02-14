@@ -4,13 +4,11 @@ public class SectionRequest {
     private long upStationId;
     private long downStationId;
     private long distance;
-    private int index;
 
-    public SectionRequest(long upStationId, long downStationId, long distance, int index) {
+    public SectionRequest(long upStationId, long downStationId, long distance) {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-        this.index = index;
     }
 
     public long getUpStationId() {
@@ -23,5 +21,14 @@ public class SectionRequest {
 
     public long getDistance() {
         return distance;
+    }
+
+    @Override
+    public String toString() {
+        return "SectionRequest{" +
+                "upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
     }
 }
