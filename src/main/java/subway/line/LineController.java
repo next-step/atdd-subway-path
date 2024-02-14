@@ -37,8 +37,8 @@ public class LineController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<LineResponse> line(@PathVariable Long id) {
-		Line line = lineService.findLineById(id);
-		return ResponseEntity.ok(LineResponse.of(line));
+		LineResponse lineResponse = lineService.findLineById(id);
+		return ResponseEntity.ok(lineResponse);
 	}
 
 	@GetMapping
@@ -52,15 +52,14 @@ public class LineController {
 		Station upStation = stationService.findStationById(request.getUpStationId());
 		Station downStation = stationService.findStationById(request.getDownStationId());
 
-		Line line = lineService.save(request.toEntity(), upStation, downStation, request.getDistance());
+		LineResponse lineResponse = lineService.save(request.toEntity(), upStation, downStation, request.getDistance());
 
-		return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(LineResponse.of(line));
+		return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
 	}
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest request) {
-		Line line = lineService.findLineById(id);
-		lineService.update(line, request);
+		lineService.update(id, request);
 		return ResponseEntity.ok().build();
 	}
 
@@ -72,21 +71,19 @@ public class LineController {
 
 	@PostMapping("/{id}/sections")
 	public ResponseEntity<LineResponse> addSections(@PathVariable Long id, @RequestBody SectionRequest request) {
-		Line line = lineService.findLineById(id);
 		Station upStation = stationService.findStationById(request.getUpStationId());
 		Station downStation = stationService.findStationById(request.getDownStationId());
 
-		Line addedSectionLine = lineService.addSection(line, upStation, downStation, request.getDistance());
+		LineResponse lineResponse = lineService.addSection(id, upStation, downStation, request.getDistance());
 
-		return ResponseEntity.created(URI.create("/lines/" + id)).body(LineResponse.of(addedSectionLine));
+		return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
 	}
 
 	@DeleteMapping("/{id}/sections")
 	public ResponseEntity<Void> deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
-		Line line = lineService.findLineById(id);
 		Station deleteTargetStation = stationService.findStationById(stationId);
 
-		lineService.deleteSection(line, deleteTargetStation);
+		lineService.deleteSection(id, deleteTargetStation);
 
 		return ResponseEntity.noContent().build();
 	}

@@ -23,19 +23,59 @@ public class Sections {
 		this.sectionList = new ArrayList<>();
 	}
 
-	public void add(Line line, Station upStation, Station downStation, Integer distance) {
-		checkExistingStation(upStation);
-		checkFinalStation(upStation);
-		sectionList.add(new Section(line, upStation, downStation, distance));
+	public void add(Section newSection) {
+		// 최초 등록
+		if (sectionList.isEmpty()) {
+			sectionList.add(newSection);
+			return;
+		}
+
+		checkExistingStation(newSection);
+
+		// 첫 정류장 추가 or 마지막 정류장 추가
+		if (newSection.getUpStation().equals(getFinalStation())
+			|| newSection.getDownStation().equals(getFirstStation())
+		) {
+			sectionList.add(newSection);
+			return;
+		}
+
+		addMiddleSection(newSection);
 	}
 
-	private void checkExistingStation(Station upStation) {
-		List<Long> existsStationIds = sectionList
-			.stream()
-			.map(section -> section.getUpStation().getId())
-			.collect(toList());
+	private void addMiddleSection(Section newSection) {
+		Section changeSection = sectionList.stream()
+			.filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+			.findFirst()
+			.orElseThrow(EntityNotFoundException::new);
 
-		if (existsStationIds.contains(upStation.getId())) {
+		Section changeNewSection = new Section(
+			changeSection.getLine(),
+			newSection.getDownStation(),
+			changeSection.getDownStation(),
+			Math.abs(changeSection.getDistance() - newSection.getDistance())
+		);
+
+		sectionList.remove(changeSection);
+		sectionList.add(newSection);
+		sectionList.add(changeNewSection);
+	}
+
+	private void checkExistingStation(Section newSection) {
+		Station firstStation = getFirstStation();
+
+		if (newSection.getDownStation().equals(firstStation)) {
+			checkExistingStation(newSection.getUpStation());
+			return;
+		}
+
+		checkExistingStation(newSection.getDownStation());
+	}
+
+	private void checkExistingStation(Station station) {
+		List<Station> existsStation = getStations();
+
+		if (existsStation.contains(station)) {
 			throw new IllegalArgumentException("추가 할려는 정류장은 이미 해당 노선에 존재하는 정류장입니다.");
 		}
 	}
@@ -48,6 +88,14 @@ public class Sections {
 		if (!getFinalStation().getId().equals(station.getId())) {
 			throw new IllegalArgumentException("해당 노선의 마지막 정류장이 아닙니다.");
 		}
+	}
+
+	public Station getFirstStation() {
+		if (sectionList.isEmpty()) {
+			return new Station("");
+		}
+
+		return sectionList.get(0).getUpStation();
 	}
 
 	public Station getFinalStation() {
@@ -95,26 +143,38 @@ public class Sections {
 	}
 
 	public List<Station> getSortedStations() {
-		Station finalStation = getFinalStation();
 		List<Station> stations = sectionList.stream()
 			.sorted(stationComparator())
 			.map(Section::getUpStation)
 			.collect(toList());
-		stations.add(finalStation);
+		stations.add(getFinalStation());
 		return stations;
 	}
 
 	private static Comparator<Section> stationComparator() {
 		return (section, nextSection) -> {
 			final int sort = 1;
-			Long downStationId = section.getDownStation().getId();
-			Long nextUpStationId = nextSection.getUpStation().getId();
+			Station upStation = section.getUpStation();
+			Station downStation = section.getDownStation();
+			Station nextUpStation = nextSection.getUpStation();
+			Station nextDownStation = nextSection.getDownStation();
 
-			if (downStationId.equals(nextUpStationId)) {
+			if (downStation.equals(nextUpStation)) {
 				return -sort;
 			}
 
-			return sort;
+			if (upStation.equals(nextDownStation)) {
+				return sort;
+			}
+
+			return 0;
 		};
+	}
+
+	public List<Station> getStations() {
+		return sectionList.stream()
+			.flatMap(section -> section.getStations().stream())
+			.distinct()
+			.collect(toList());
 	}
 }
