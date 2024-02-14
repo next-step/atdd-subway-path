@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.exception.SectionException;
 
 @Entity
 public class Section {
@@ -105,7 +106,7 @@ public class Section {
 
     public void changeDistance(int distance) {
         if (distance == 0) {
-            throw new IllegalArgumentException();
+            throw new SectionException(SectionException.INVALID_DISTANCE);
         }
         this.distance = distance;
     }
