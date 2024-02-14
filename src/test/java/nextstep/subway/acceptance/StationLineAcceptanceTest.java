@@ -151,7 +151,6 @@ public class StationLineAcceptanceTest {
         LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
         LineRequest 분당선 = LineFixture.분당선(구로디지털단지역_번호, 신도림역_번호);
         LineRequest 신림선 = LineFixture.신림선(종각역_번호, 서울역_번호);
-        ;
 
         ExtractableResponse<Response> 신분당선_생성요청_응답 = 지하철_노선_생성_요청_검증_포함(신분당선);
         ExtractableResponse<Response> 분당선_생성요청_응답 = 지하철_노선_생성_요청_검증_포함(분당선);
