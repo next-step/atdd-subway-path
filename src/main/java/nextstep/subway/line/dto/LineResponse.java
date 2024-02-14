@@ -1,6 +1,7 @@
 package nextstep.subway.line.dto;
 
 import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.Station;
 import nextstep.subway.station.dto.StationResponse;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class LineResponse {
     }
 
     public static LineResponse ofEntity(Line line) {
-        List<StationResponse> stations = line.getSections().getStations().stream()
+        List<StationResponse> stations = line.getStations().stream()
                 .map(StationResponse::ofEntity).collect(Collectors.toList());
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);

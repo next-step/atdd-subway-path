@@ -57,7 +57,7 @@ public class Line {
     }
 
     public void deleteSection(Station station) {
-        sections.removeSection(station);
+        sections.removeSection(station, this);
     }
 
     public void generateSection(int distance, Station upStation, Station downStation) {

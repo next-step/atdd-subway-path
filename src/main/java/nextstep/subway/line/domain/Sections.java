@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -39,6 +40,10 @@ public class Sections {
         stations.add(getDownFinalStation());
 
         return stations;
+    }
+
+    private Station getUpFinalStation() {
+        return getSections().get(0).getUpStation();
     }
 
     private Station getDownFinalStation() {
@@ -73,12 +78,21 @@ public class Sections {
                 .ifPresent(previousStation -> previousStation.changeUpStation(section.getDownStation(), section.getDistance()));
     }
 
-    public void removeSection(Station station) {
+    public void removeSection(Station station, Line line) {
         verifySectionCount();
 
-        Section deleteSection = verifyDeleteDownStation(station);
+        boolean isUpFinalStation = getUpFinalStation().equals(station);
+        boolean isDownFinalStation = getDownFinalStation().equals(station);
 
-        sections.remove(deleteSection);
+        if (isUpFinalStation) {
+            removeUpFinalStation();
+
+        } else if (isDownFinalStation) {
+            removeDownFinalStation();
+
+        } else {
+            sectionRelocation(station, line);
+        }
     }
 
     private void verifySectionCount() {
@@ -87,16 +101,38 @@ public class Sections {
         }
     }
 
-    private Section verifyDeleteDownStation(Station downStation) {
-        Section deleteSection = sections
-                .stream()
-                .filter(s -> s.getDownStation().equals(downStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지않는 구간입니다."));
+    private void removeUpFinalStation() {
+        Section section = findSectionByStation(s -> s.getUpStation().equals(getUpFinalStation()));
+        sections.remove(section);
+    }
 
-        if (!deleteSection.getDownStation().equals(getDownFinalStation())) {
-            throw new SectionException("노선의 하행종점역만 제거할 수 있습니다.");
-        }
-        return deleteSection;
+    private void removeDownFinalStation() {
+        Section section = findSectionByStation(s -> s.getDownStation().equals(getDownFinalStation()));
+        sections.remove(section);
+    }
+
+    private void sectionRelocation(Station station, Line line) {
+        Section sectionFindByUpStation = findSectionByStation(s -> s.getUpStation().equals(station));
+        Section sectionFindByDownStation = findSectionByStation(s -> s.getDownStation().equals(station));
+
+        sections.remove(sectionFindByUpStation);
+        sections.remove(sectionFindByDownStation);
+
+        int distance = sectionFindByUpStation.getDistance() + sectionFindByDownStation.getDistance();
+        Section section = new Section(
+                distance,
+                sectionFindByDownStation.getUpStation(),
+                sectionFindByUpStation.getDownStation(),
+                line
+        );
+        sections.add(section);
+    }
+
+    private Section findSectionByStation(Predicate<? super Section> condition) {
+        return getSections()
+                .stream()
+                .filter(condition)
+                .findFirst()
+                .orElseThrow(() -> new SectionException("존재하지 않는 구간입니다."));
     }
 }

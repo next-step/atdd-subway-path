@@ -68,4 +68,45 @@ public class SectionsTest {
                 .isExactlyInstanceOf(SectionException.class)
                 .hasMessage("기존구간의 거리보다 더 길수 없습니다.");
     }
+
+    @DisplayName("중간에 구간을 삭제하면 구간이 재배치 된다.")
+    @Test
+    void deleteMiddleSection() {
+        //given
+        Station 용산역 = new Station("용산역");
+        이호선.generateSection(10, 잠실역, 성수역);
+        이호선.generateSection(10, 성수역, 용산역);
+
+        //when
+        이호선.deleteSection(성수역);
+
+        //then
+        assertThat(이호선.getStations()).containsExactly(건대입구역, 잠실역, 용산역);
+    }
+
+    @DisplayName("상행종점역을 삭제하면 그 다음 역이 상행종점역이 된다.")
+    @Test
+    void deleteUpFinalStation() {
+        //given
+        이호선.generateSection(10, 잠실역, 성수역);
+
+        //when
+        이호선.deleteSection(건대입구역);
+
+        //then
+        assertThat(이호선.getStations()).containsExactly(잠실역, 성수역);
+    }
+
+    @DisplayName("하행종점역을 삭제하면 그 이전 역이 하행종점역이 된다.")
+    @Test
+    void deleteDownFinalStation() {
+        //given
+        이호선.generateSection(10, 잠실역, 성수역);
+
+        //when
+        이호선.deleteSection(성수역);
+
+        //then
+        assertThat(이호선.getStations()).containsExactly(건대입구역, 잠실역);
+    }
 }

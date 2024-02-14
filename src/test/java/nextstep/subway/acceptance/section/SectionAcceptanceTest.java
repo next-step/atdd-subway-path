@@ -163,11 +163,10 @@ public class SectionAcceptanceTest {
     @Test
     void deleteMiddleSection() {
         //given
-        SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
-        SectionCreateRequest request2 = new SectionCreateRequest(건대입구역id, 잠실역id, 5);
-
-        SectionApiRequester.generateSection(request, 이호선id);
-        SectionApiRequester.generateSection(request2, 이호선id);
+        SectionCreateRequest 용산건대입구역 = new SectionCreateRequest(용산역id, 건대입구역id, 5);
+        SectionApiRequester.generateSection(용산건대입구역, 이호선id);
+        SectionCreateRequest 건대입구성수역 = new SectionCreateRequest(건대입구역id, 성수역id, 5);
+        SectionApiRequester.generateSection(건대입구성수역, 이호선id);
 
         //when
         ExtractableResponse<Response> response = SectionApiRequester.deleteSection(이호선id, 건대입구역id);
@@ -176,23 +175,20 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
-        assertThat(getStationIds(이호선)).containsExactly(용산역id, 잠실역id);
+        assertThat(getStationIds(이호선)).containsExactly(잠실역id, 용산역id, 성수역id);
     }
 
     /**
      * Given 지하철 구간을 등록하고
-     * When 종점이 제거될 경우
-     * Then 종잠 다음 혹은 전 역이 종점이 된다
+     * When 상행종점역이 제거될 경우
+     * Then 상행종점역의 다음 역이 상행종점역이 된다
      */
-    @DisplayName("종점이 제거될 경우 종점 다음 혹은 전 역이 종점이 된다")
+    @DisplayName("상행종점역이 제거될 경우 상행종점역의 다음 역이 상행종점역이 된다")
     @Test
-    void deleteFinalStation() {
+    void deleteUpFinalStation() {
         //given
         SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
-        SectionCreateRequest request2 = new SectionCreateRequest(건대입구역id, 잠실역id, 5);
-
         SectionApiRequester.generateSection(request, 이호선id);
-        SectionApiRequester.generateSection(request2, 이호선id);
 
         //when
         ExtractableResponse<Response> response = SectionApiRequester.deleteSection(이호선id, 잠실역id);
@@ -201,8 +197,31 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
+        Long downFinalStationId = getStationIds(이호선).get(0);
+        assertThat(downFinalStationId).isEqualTo(용산역id);
+    }
+
+    /**
+     * Given 지하철 구간을 등록하고
+     * When 하행종점역이 제거될 경우
+     * Then 하행종점역의 전 역이 하행종점역이 된다
+     */
+    @DisplayName("하행행종점역이 제거될 경우 하행종점역의 전 역이 하행종점역이 된다")
+    @Test
+    void deleteDownFinalStation() {
+        //given
+        SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
+        SectionApiRequester.generateSection(request, 이호선id);
+
+        //when
+        ExtractableResponse<Response> response = SectionApiRequester.deleteSection(이호선id, 건대입구역id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
         Long downFinalStationId = getStationIds(이호선).get(getStationIds(이호선).size() - 1);
-        assertThat(downFinalStationId).isEqualTo(건대입구역id);
+        assertThat(downFinalStationId).isEqualTo(용산역id);
     }
 
     /**
