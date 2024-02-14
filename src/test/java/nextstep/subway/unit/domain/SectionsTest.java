@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class SectionsTest {
@@ -41,12 +42,12 @@ public class SectionsTest {
         강남역 = Station.from(Constant.강남역);
         양재역 = Station.from(Constant.양재역);
         신사역 = Station.from(Constant.신사역);
-        논현_신논현_구간 = Section.of(논현역, 신논현역, Constant.기본_역_간격);
-        신논현_강남_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
-        논현_강남_구간 = Section.of(논현역, 강남역, Constant.기본_역_간격);
-        강남_신논현_구간 = Section.of(강남역, 신논현역, Constant.기본_역_간격);
-        신사_논현_구간 = Section.of(신사역, 논현역, Constant.기본_역_간격);
-        강남_양재_구간 = Section.of(강남역, 양재역, Constant.기본_역_간격);
+        논현_신논현_구간 = Section.of(논현역, 신논현역, Constant.역_간격_10);
+        신논현_강남_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
+        논현_강남_구간 = Section.of(논현역, 강남역, Constant.역_간격_5);
+        강남_신논현_구간 = Section.of(강남역, 신논현역, Constant.역_간격_5);
+        신사_논현_구간 = Section.of(신사역, 논현역, Constant.역_간격_10);
+        강남_양재_구간 = Section.of(강남역, 양재역, Constant.역_간격_10);
     }
 
     @DisplayName("노선 마지막에 구간 등록")
@@ -75,6 +76,7 @@ public class SectionsTest {
         // then
         List<Section> 구간들 = 신분당선_구간들.getSections();
         Assertions.assertThat(구간들).containsOnlyOnce(논현_강남_구간, 강남_신논현_구간);
+        assertThat(논현_강남_구간.getDistance() + 강남_신논현_구간.getDistance()).isEqualTo(Constant.역_간격_10);
     }
 
     @DisplayName("노선 처음에 구간 등록")

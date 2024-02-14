@@ -38,8 +38,8 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
         신논현역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신논현역)).jsonPath().getLong("stationId");
         압구정로데오역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.압구정로데오역)).jsonPath().getLong("stationId");
         강남구청역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.강남구청역)).jsonPath().getLong("stationId");
-        신분당선_생성_요청 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 강남역_ID, 신논현역_ID, Constant.기본_역_간격);
-        수인분당선_생성_요청 = CreateLineRequest.of(Constant.수인분당선, Constant.노란색, 압구정로데오역_ID, 강남구청역_ID, Constant.기본_역_간격);
+        신분당선_생성_요청 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 강남역_ID, 신논현역_ID, Constant.역_간격_10);
+        수인분당선_생성_요청 = CreateLineRequest.of(Constant.수인분당선, Constant.노란색, 압구정로데오역_ID, 강남구청역_ID, Constant.역_간격_10);
         신분당선_수정_요청 = UpdateLineRequest.of(Constant.파란색);
     }
 

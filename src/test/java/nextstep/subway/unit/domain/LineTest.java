@@ -38,7 +38,7 @@ class LineTest {
     @Test
     void 노선에_구간을_등록() {
         // given
-        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
+        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
 
         // when
         신분당선.addSection(신논현역_강남역_구간);
@@ -51,8 +51,8 @@ class LineTest {
     @Test
     void 등록한_역을_조회() {
         // given
-        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
-        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.기본_역_간격);
+        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
+        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.역_간격_10);
         신분당선.addSection(신논현역_강남역_구간);
         신분당선.addSection(강남역_양재역_구간);
 
@@ -70,8 +70,8 @@ class LineTest {
     @Test
     void 구간을_삭제() {
         // given
-        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
-        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.기본_역_간격);
+        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
+        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.역_간격_10);
         신분당선.addSection(신논현역_강남역_구간);
         신분당선.addSection(강남역_양재역_구간);
 
@@ -89,8 +89,8 @@ class LineTest {
     @Test
     void 노선에_등록되지_않은_역을_삭제하면_예외_발생() {
         // given
-        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
-        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.기본_역_간격);
+        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
+        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.역_간격_10);
         신분당선.addSection(신논현역_강남역_구간);
         신분당선.addSection(강남역_양재역_구간);
 
@@ -103,8 +103,8 @@ class LineTest {
     @Test
     void 노선의_하행역이_아닌_역을_삭제하면_예외_발생() {
         // given
-        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
-        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.기본_역_간격);
+        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
+        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.역_간격_10);
         신분당선.addSection(신논현역_강남역_구간);
         신분당선.addSection(강남역_양재역_구간);
 
@@ -117,7 +117,7 @@ class LineTest {
     @Test
     void 남은_구간이_한개인_노선의_역을_삭제하면_예외_발생() {
         // given
-        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.기본_역_간격);
+        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
         신분당선.addSection(신논현역_강남역_구간);
 
         // when & then

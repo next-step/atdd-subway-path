@@ -17,6 +17,8 @@ public class Constant {
     public static final String 파란색 = "bg-bule-600";
     public static final String 노란색 = "bg-yellow-600";
 
-    public static final int 기본_역_간격 = 10;
+    public static final int 역_간격_10 = 10;
+    public static final int 역_간격_5 = 5;
+    public static final int 역_간격_0 = 0;
 
 }

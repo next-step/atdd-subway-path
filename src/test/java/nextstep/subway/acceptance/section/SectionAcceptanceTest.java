@@ -40,7 +40,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         강남역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.강남역)).jsonPath().getLong("stationId");
         양재역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.양재역)).jsonPath().getLong("stationId");
         신사역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신사역)).jsonPath().getLong("stationId");
-        신분당선_생성_요청 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 논현역_ID, 신논현역_ID, Constant.기본_역_간격);
+        신분당선_생성_요청 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 논현역_ID, 신논현역_ID, Constant.역_간격_10);
     }
 
     /**
@@ -54,7 +54,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
         AddSectionResponse 신논현_강남_구간_생성_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
         // when
@@ -76,7 +76,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
         // when
-        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
         지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID);
 
         // then
@@ -112,7 +112,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
-        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
         AddSectionResponse 신논현_강남_노선_등록_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
         // when
@@ -134,11 +134,11 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
         AddSectionResponse 신논현_강남_구간_생성_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
         // when
-        AddSectionRequest 신논현_양재_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.기본_역_간격);
+        AddSectionRequest 신논현_양재_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.역_간격_5);
         AddSectionResponse 신논현_양재_구간_생성_응답 = 지하철_구간_추가(신논현_양재_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
         // then
@@ -159,7 +159,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
         // when
-        AddSectionRequest 신사_논현_구간_생성_요청 = AddSectionRequest.of(신사역_ID, 논현역_ID, Constant.기본_역_간격);
+        AddSectionRequest 신사_논현_구간_생성_요청 = AddSectionRequest.of(신사역_ID, 논현역_ID, Constant.역_간격_10);
         AddSectionResponse 신사_논현_구간_생성_응답 = 지하철_구간_추가(신사_논현_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
         // then
@@ -179,7 +179,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
         // when
-        AddSectionRequest 신논현_논현_구간_생성_요청 = AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.기본_역_간격);
+        AddSectionRequest 신논현_논현_구간_생성_요청 = AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10);
 
         // then
         ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(신논현_논현_구간_생성_요청, 신분당선_ID);
@@ -198,7 +198,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
         // when
-        AddSectionRequest 강남_양재_구간_생성_요청 = AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.기본_역_간격);
+        AddSectionRequest 강남_양재_구간_생성_요청 = AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.역_간격_10);
 
         // then
         ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(강남_양재_구간_생성_요청, 신분당선_ID);

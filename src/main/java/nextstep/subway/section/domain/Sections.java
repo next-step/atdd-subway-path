@@ -83,6 +83,7 @@ public class Sections {
     private void addMiddleSection(Section newSection) {
         int index = getStations().indexOf(newSection.getUpStation());
         this.sections.get(index).updateUpStation(newSection.getDownStation());
+        this.sections.get(index).reduceDistance(newSection.getDistance());
         this.sections.add(index, newSection);
     }
 

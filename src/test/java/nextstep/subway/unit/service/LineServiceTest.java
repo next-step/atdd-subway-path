@@ -43,10 +43,10 @@ public class LineServiceTest {
         Long 강남역_ID = 강남역.getStationId();
         Station 양재역 = stationRepository.save(Station.from(Constant.양재역));
         Long 양재역_ID = 양재역.getStationId();
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
 
         // when
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.역_간격_10));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
@@ -70,10 +70,10 @@ public class LineServiceTest {
         Long 강남역_ID = 강남역.getStationId();
         Station 양재역 = stationRepository.save(Station.from(Constant.양재역));
         Long 양재역_ID = 양재역.getStationId();
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
 
         // when
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.역_간격_5));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
@@ -101,10 +101,10 @@ public class LineServiceTest {
         Long 신논현역_ID = 신논현역.getStationId();
         Station 강남역 = stationRepository.save(Station.from(Constant.강남역));
         Long 강남역_ID = 강남역.getStationId();
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
 
         // when
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);

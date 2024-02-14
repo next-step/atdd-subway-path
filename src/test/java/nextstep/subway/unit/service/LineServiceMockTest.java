@@ -42,9 +42,9 @@ public class LineServiceMockTest {
     Long 강남역_ID = 2L;
     Station 양재역 = Station.from(Constant.양재역);
     Long 양재역_ID = 3L;
-    Section 신논현역_강남역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.강남역), Constant.기본_역_간격);
-    Section 신논현역_양재역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.양재역), Constant.기본_역_간격);
-    Section 강남역_양재역_구간 = Section.of(Station.from(Constant.강남역), Station.from(Constant.양재역), Constant.기본_역_간격);
+    Section 신논현역_강남역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.강남역), Constant.역_간격_10);
+    Section 신논현역_양재역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.양재역), Constant.역_간격_5);
+    Section 강남역_양재역_구간 = Section.of(Station.from(Constant.강남역), Station.from(Constant.양재역), Constant.역_간격_10);
     Line 신분당선 = Line.of(Constant.신분당선, Constant.빨간색);
     Long 신분당선_ID = 1L;
 
@@ -58,7 +58,7 @@ public class LineServiceMockTest {
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
@@ -83,8 +83,8 @@ public class LineServiceMockTest {
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격));
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.역_간격_5));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
@@ -107,16 +107,16 @@ public class LineServiceMockTest {
     @Test
     void 노선_처음에_구간_등록() {
         // given
-        when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
         when(stationService.findById(양재역_ID)).thenReturn(양재역);
+        when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
+        when(sectionService.save(강남역_양재역_구간)).thenReturn(강남역_양재역_구간);
         when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
-        when(sectionService.save(강남역_양재역_구간)).thenReturn(신논현역_양재역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.기본_역_간격));
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.역_간격_10));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
