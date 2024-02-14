@@ -8,8 +8,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static nextstep.subway.steps.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static subway.StationSteps.*;
 
 @Sql(value = "/sql/truncate.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @DisplayName("지하철역 관련 기능")

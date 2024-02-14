@@ -1,10 +1,10 @@
 package nextstep.subway.section.presentation;
 
+import nextstep.subway.section.api.SectionService;
+import nextstep.subway.section.api.response.SectionResponse;
+import nextstep.subway.section.presentation.request.SectionCreateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import subway.section.api.SectionService;
-import subway.section.api.response.SectionResponse;
-import subway.section.presentation.request.SectionCreateRequest;
 
 import java.net.URI;
 
