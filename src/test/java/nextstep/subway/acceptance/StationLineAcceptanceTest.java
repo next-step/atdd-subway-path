@@ -11,15 +11,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static nextstep.config.fixtures.StationFixture.역_10개;
 import static nextstep.subway.steps.StationLineSteps.*;
-import static nextstep.subway.steps.StationSteps.지하철_역_생성_요청;
+import static nextstep.subway.steps.StationSteps.*;
 import static nextstep.subway.utils.HttpResponseUtils.getCreatedLocationId;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,13 +28,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class StationLineAcceptanceTest {
 
-    public static final String ID_KEY = "id";
-    public static final String NAME_KEY = "name";
-    public static final String COLOR_KEY = "color";
+    Long 가산디지털단지역_번호;
+    Long 구로디지털단지역_번호;
+    Long 독산역_번호;
+    Long 신도림역_번호;
+    Long 홍대입구역_번호;
+    Long 종각역_번호;
+    Long 신림역_번호;
+    Long 잠실역_번호;
+    Long 교대역_번호;
+    Long 서울역_번호;
+
 
     @BeforeEach
     void 초기_지하철_역_설정() {
         지하철_역_생성_요청(역_10개);
+
+        Map<String, Long> 지하철역_맵 = convertStationResponses(지하철_역_목록_조회().jsonPath());
+        가산디지털단지역_번호 = 지하철역_맵.get("가산디지털단지");
+        구로디지털단지역_번호 = 지하철역_맵.get("구로디지털단지");
+        독산역_번호 = 지하철역_맵.get("독산역");
+        신도림역_번호 = 지하철역_맵.get("신도림");
+        홍대입구역_번호 = 지하철역_맵.get("홍대입구");
+        종각역_번호 = 지하철역_맵.get("종각");
+        신림역_번호 = 지하철역_맵.get("신림");
+        잠실역_번호 = 지하철역_맵.get("잠실");
+        교대역_번호 = 지하철역_맵.get("교대");
+        서울역_번호 = 지하철역_맵.get("서울역");
     }
 
     /**
@@ -46,7 +66,7 @@ public class StationLineAcceptanceTest {
     @Test
     void createStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
+        LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
 
         // when
         지하철_노선_생성_요청_검증_포함(신분당선);
@@ -66,8 +86,8 @@ public class StationLineAcceptanceTest {
     @Test
     void findAllStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
-        LineRequest 분당선 = LineFixture.신분당선(2L, 4L);
+        LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
+        LineRequest 분당선 = LineFixture.신분당선(구로디지털단지역_번호, 신도림역_번호);
 
         지하철_노선_생성_요청_검증_포함(신분당선);
         지하철_노선_생성_요청_검증_포함(분당선);
@@ -87,7 +107,7 @@ public class StationLineAcceptanceTest {
     @Test
     void findStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
+        LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
         ExtractableResponse<Response> response = 지하철_노선_생성_요청_검증_포함(신분당선);
 
         // when, then
@@ -105,8 +125,8 @@ public class StationLineAcceptanceTest {
     @Test
     void updateStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
-        LineRequest 수정된_신분당선 = LineFixture.수정된_신분당선(1L, 2L);
+        LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
+        LineRequest 수정된_신분당선 = LineFixture.수정된_신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
 
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청_검증_포함(신분당선);
 
@@ -128,9 +148,10 @@ public class StationLineAcceptanceTest {
     @Test
     void deleteStationLine() {
         // given
-        LineRequest 신분당선 = LineFixture.신분당선(1L, 2L);
-        LineRequest 분당선 = LineFixture.분당선(2L, 4L);
-        LineRequest 신림선 = LineFixture.신림선(6L, 10L);;
+        LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
+        LineRequest 분당선 = LineFixture.분당선(구로디지털단지역_번호, 신도림역_번호);
+        LineRequest 신림선 = LineFixture.신림선(종각역_번호, 서울역_번호);
+        ;
 
         ExtractableResponse<Response> 신분당선_생성요청_응답 = 지하철_노선_생성_요청_검증_포함(신분당선);
         ExtractableResponse<Response> 분당선_생성요청_응답 = 지하철_노선_생성_요청_검증_포함(분당선);
@@ -159,12 +180,6 @@ public class StationLineAcceptanceTest {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 주어진 JsonPath로 부터 LineResponse 객체를 만들어서 반환
-     *
-     * @param jsonPath JSON 응답 객체
-     * @return LineResponse 객체
-     */
     private LineResponse convertLineResponse(JsonPath jsonPath) {
         return new LineResponse(
                 jsonPath.getLong(ID_KEY),
