@@ -1,5 +1,6 @@
 package nextstep.subway.steps;
 
+import io.restassured.response.ExtractableResponse;
 import nextstep.subway.dto.StationRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +22,7 @@ public class StationSteps {
                 .when()
                 .post("/stations")
                 .then()
-                .statusCode(HttpStatus.CREATED.value());
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
     }
 }

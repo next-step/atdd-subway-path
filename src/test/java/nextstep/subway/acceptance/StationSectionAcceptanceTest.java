@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.config.annotations.AcceptanceTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.entity.Sections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -60,7 +61,24 @@ public class StationSectionAcceptanceTest {
                 /**
                  * Given 지하철 노선이 생성되고, 구간을 추가한다.
                  * When  지하철 구간을 노선 처음에 추가할 때
-                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있으면서
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있지 않으면서
+                 * When  요청한 구간의 하행역이 기존 노선의 가장 앞쪽에 역으로 등록되어 있는 경우
+                 * Then  지하철 구간 등록에 성공한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_등록되어_있지_않으면서_하행역은_등록되지_등록된_역일_경우() {
+                    // when
+                    ExtractableResponse<Response> 성공하는_생성요청_응답 =
+                            지하철_구간_추가요청_검증_생략(getCreatedLocationId(호남선_생성_응답), 지하철_구간(3L, 1L, 4));
+
+                    // then
+                    assertThat(성공하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                }
+
+                /**
+                 * Given 지하철 노선이 생성되고, 구간을 추가한다.
+                 * When  지하철 구간을 노선 처음에 추가할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 가장 앞쪽에 역으로 등록되어 있는 경우
                  * When  요청한 구간의 하행역이 기존 노선의 역으로 등록되어 있지 않을 경우
                  * Then  지하철 구간 등록에 성공한다.
                  */
@@ -77,6 +95,24 @@ public class StationSectionAcceptanceTest {
 
             @Nested
             class 노선_중간에_추가 {
+
+                /**
+                 * Given 지하철 노선이 생성되고
+                 * When  지하철 구간을 노선 중간에 추가할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있지 않으면서
+                 * When  요청한 구간의 하행역이 기존 노선의 역으로 등록되어 있는 경우
+                 * Then  지하철 구간 등록에 성공한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되지_않은_역이면서_하행역은_등록된_역일_경우() {
+                    // when
+                    ExtractableResponse<Response> 성공하는_생성요청_응답 =
+                            지하철_구간_추가요청_검증_생략(getCreatedLocationId(호남선_생성_응답), 지하철_구간(6L, 10L, 4));
+
+                    // then
+                    assertThat(성공하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                }
+                
                 /**
                  * Given 지하철 노선이 생성되고
                  * When  지하철 구간을 노선 중간에 추가할 때
@@ -97,6 +133,24 @@ public class StationSectionAcceptanceTest {
 
             @Nested
             class 노선_끝에_추가 {
+
+                /**
+                 * Given 지하철 노선이 생성되고
+                 * When  지하철 구간을 노선 끝에 추가할 때
+                 * When  요청한 구간의 상행역이 기존 노선의 역으로 등록되어 있지 않으면서
+                 * When  요청한 구간의 하행역이 기존 노선의 역으로 등록되어 있는 경우
+                 * Then  지하철 구간 등록에 성공한다.
+                 */
+                @Test
+                void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되지_않은_역이면서_하행역은_등록된_역일_경우() {
+                    // when
+                    ExtractableResponse<Response> 성공하는_생성요청_응답 =
+                            지하철_구간_추가요청_검증_생략(getCreatedLocationId(호남선_생성_응답), 지하철_구간(6L, 5L, 4));
+
+                    // then
+                    assertThat(성공하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+                }
+                
                 /**
                  * Given 지하철 노선이 생성되고
                  * When  지하철 구간을 노선 끝에 추가할 때
