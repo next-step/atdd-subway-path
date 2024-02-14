@@ -1,8 +1,8 @@
 package nextstep.subway.unit.domain;
 
 import nextstep.subway.common.Constant;
-import nextstep.subway.exception.AlreadyExistDownStationException;
 import nextstep.subway.exception.AlreadyExistSectionException;
+import nextstep.subway.exception.NotFoundUpStationOrDownStation;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -31,6 +31,7 @@ public class SectionsTest {
     private Section 논현_강남_구간;
     private Section 강남_신논현_구간;
     private Section 신사_논현_구간;
+    private Section 강남_양재_구간;
 
     @BeforeEach
     protected void setUp() {
@@ -45,6 +46,7 @@ public class SectionsTest {
         논현_강남_구간 = Section.of(논현역, 강남역, Constant.기본_역_간격);
         강남_신논현_구간 = Section.of(강남역, 신논현역, Constant.기본_역_간격);
         신사_논현_구간 = Section.of(신사역, 논현역, Constant.기본_역_간격);
+        강남_양재_구간 = Section.of(강남역, 양재역, Constant.기본_역_간격);
     }
 
     @DisplayName("노선 마지막에 구간 등록")
@@ -93,7 +95,7 @@ public class SectionsTest {
     @Test
     void 이미_등록된_구간을_등록하면_예외발생() {
         // given
-        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간))); // 논현 - 신논현
+        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간)));
 
         // when & then
         assertThatThrownBy(() -> 신분당선_구간들.addSection(논현_신논현_구간))
@@ -103,8 +105,13 @@ public class SectionsTest {
     @DisplayName("상행역과 하행역이 모두 노선에 없는 구간을 등록하면 예외발생")
     @Test
     void 상행역과_하행역이_모두_노선에_없는_구간을_등록하면_예외발생() {
-    }
+        // given
+        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간)));
 
+        // when & then
+        assertThatThrownBy(() -> 신분당선_구간들.addSection(강남_양재_구간))
+                .isInstanceOf(NotFoundUpStationOrDownStation.class);
+    }
 
 
 }

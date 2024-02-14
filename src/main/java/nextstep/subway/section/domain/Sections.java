@@ -7,7 +7,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,51 +47,33 @@ public class Sections {
             return;
         }
 
-        System.out.println("테스트");
-        
-        List<Station> stations = getStations();
-
-        if (this.sections.contains(newSection)) {
-            throw new AlreadyExistSectionException();
-        }
-        if (stations.contains(newSection.getUpStation()) || stations.contains(newSection.getDownStation())) {
-            // 추가하는 구간의 상행역 혹은 하행역이 노선에 있지 않으면 생성 X
-        }
+        validateAddSection(newSection);
 
         if (isFirstStation(newSection.getDownStation())) {
             addFirstSection(newSection);
             return;
         }
-
-        // 추가하고자 하는 section의 upStation이
-        // List<section> 의 요소의 downStation인 것이 있는지?
-        // 그럼 중간/마지막 구간에 추가한다.
-        // - 기존 구간 : 논현-신논현[0] - 신논현-강남[1]
-        // - 기존 역 : 논현[0] - 신논현[1] - 강남[2]
-        // - 추가 : 신논현 - 양재
-        // - 예샹 결과 : 논현[0] - 신논현[1] - 양재[2] - 강남[3]
         if (isLastStation(newSection.getUpStation())) {
             addLastSection(newSection);
             return;
         }
-
         addMiddleSection(newSection);
+    }
 
+    private void validateAddSection(Section newSection) {
+        List<Station> stations = getStations();
 
-//        if (isNotLastStation(section.getUpStation())) {
-//            throw new IsNotLastStationException();
-//        }
-//        if (isExistDownStation(section)) {
-//            throw new AlreadyExistDownStationException();
-//        }
+        if (this.sections.contains(newSection)) {
+            throw new AlreadyExistSectionException();
+        }
+        if (!stations.contains(newSection.getUpStation()) && !stations.contains(newSection.getDownStation())) {
+            throw new NotFoundUpStationOrDownStation();
+        }
     }
 
     private void addFirstSection(Section newSection) {
         this.sections.get(FIRST).updateUpStation(newSection.getDownStation());
         this.sections.add(FIRST, newSection);
-
-        System.out.println("this.sections.get(0) : " + this.sections.get(0).getUpStation().getName() + " / " + this.sections.get(0).getDownStation().getName());
-        System.out.println("this.sections.get(1) : " + this.sections.get(1).getUpStation().getName() + " / " + this.sections.get(1).getDownStation().getName());
     }
 
     private void addLastSection(Section newSection) {
@@ -103,11 +84,6 @@ public class Sections {
         int index = getStations().indexOf(newSection.getUpStation());
         this.sections.get(index).updateUpStation(newSection.getDownStation());
         this.sections.add(index, newSection);
-
-        System.out.println("this.sections.get(0) : " + this.sections.get(0).getUpStation().getName() + " / " + this.sections.get(0).getDownStation().getName());
-        System.out.println("this.sections.get(1) : " + this.sections.get(1).getUpStation().getName() + " / " + this.sections.get(1).getDownStation().getName());
-        System.out.println("this.sections.get(2) : " + this.sections.get(2).getUpStation().getName() + " / " + this.sections.get(2).getDownStation().getName());
-
     }
 
     public void deleteSection(Station station) {

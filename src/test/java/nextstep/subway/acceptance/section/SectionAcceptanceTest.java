@@ -11,7 +11,6 @@ import nextstep.subway.line.presentation.response.CreateLineResponse;
 import nextstep.subway.line.presentation.response.ShowLineResponse;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -42,46 +41,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         양재역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.양재역)).jsonPath().getLong("stationId");
         신사역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신사역)).jsonPath().getLong("stationId");
         신분당선_생성_요청 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 논현역_ID, 신논현역_ID, Constant.기본_역_간격);
-    }
-
-    /**
-     * When 새로운 구간의 상행역이 해당 노선에 등록되어있는 하행 종점역이 아니면
-     * Then 구간이 등록되지 않는다.
-     */
-    @DisplayName("새로운 구간의 상행역이 해당 노선에 등록되어있는 하행 종점역이 아니면 지하철 구간이 등록되지 않는다.")
-    @Test
-    @Disabled
-    void 노선의_하행_종점역이_아닌_상행역의_지하철_구간을_등록() {
-        // given
-        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
-        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-
-        // when
-        AddSectionRequest 양재_강남_구간_생성_요청 = AddSectionRequest.of(양재역_ID, 강남역_ID, Constant.기본_역_간격);
-
-        // then
-        ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(양재_강남_구간_생성_요청, 신분당선_ID);
-        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
-    }
-
-    /**
-     * When 이미 해당 노선에 등록되어 있는 역이 새로운 구간의 하행역이면
-     * Then 구간이 등록되지 않는다.
-     */
-    @DisplayName("등록할 역이 이미 있는 지하철 노선에는 구간이 등록되지 않는다.")
-    @Test
-    @Disabled
-    void 등록할_역이_이미_있는_지하철_노선에_구간을_등록() {
-        // given
-        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
-        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-
-        // when
-        AddSectionRequest 신논현_논현_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 논현역_ID, Constant.기본_역_간격);
-
-        // then
-        ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(신논현_논현_구간_생성_요청, 신분당선_ID);
-        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
     }
 
     /**
@@ -214,7 +173,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      */
     @DisplayName("이미 등록된 구간을 등록하면 구간이 등록되지 않는다.")
     @Test
-    @Disabled
     void 이미_등록된_구간을_등록() {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
@@ -228,15 +186,24 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
     }
 
+    /**
+     * When 상행역과 하행역이 모두 노선에 없는 구간을 등록하면
+     * Then 구간이 등록되지 않는다.
+     */
+    @DisplayName("상행역과 하행역이 모두 노선에 없는 구간을 등록하면 구간이 등록되지 않는다.")
+    @Test
+    void 상행역과_하행역이_모두_노선에_없는_구간을_등록() {
+        // given
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
 
+        // when
+        AddSectionRequest 강남_양재_구간_생성_요청 = AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.기본_역_간격);
 
-
-
-
-
-
-
-
+        // then
+        ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(강남_양재_구간_생성_요청, 신분당선_ID);
+        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
+    }
 
     void 지하철_구간_등록_검증(AddSectionResponse addSectionResponse, ShowLineResponse showLineResponse) {
         assertTrue(showLineResponse.getSections().stream()
@@ -258,8 +225,5 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     void 지하철_구간_삭제_예외발생_검증(ExtractableResponse<Response> extractableResponse) {
         assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
-
-
 
 }
