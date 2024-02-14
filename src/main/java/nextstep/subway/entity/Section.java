@@ -56,6 +56,11 @@ public class Section {
         return (this.upStation.isSame(station) || this.downStation.isSame(station));
     }
 
+    public boolean isAtLeastOneSameStation(Section section) {
+        return isAtLeastOneSameStation(section.getUpStation()) ||
+                isAtLeastOneSameStation(section.getDownStation());
+    }
+
     private int validateDistance(Integer distance) {
         if (distance == null || distance < MIN_DISTANCE_VALUE) {
             throw new IllegalArgumentException("거리는 0보다 커야합니다.");
@@ -67,11 +72,11 @@ public class Section {
         return this.upStation.equals(sectionToAdd.getUpStation());
     }
 
-    public Station findCommonStation(Section sectionToAdd) { // TODO: Refactor
-        if (upStation.isSame(sectionToAdd.getUpStation()) || upStation.isSame(sectionToAdd.getDownStation())) {
+    public Station findCommonStation(Section sectionToAdd) {
+        if (sectionToAdd.isAtLeastOneSameStation(upStation)) {
             return this.upStation;
         }
-        if (downStation.isSame(sectionToAdd.getUpStation()) || downStation.isSame(sectionToAdd.getDownStation())) {
+        if (sectionToAdd.isAtLeastOneSameStation(downStation)) {
             return this.downStation;
         }
         return null;
