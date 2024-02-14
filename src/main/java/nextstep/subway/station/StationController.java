@@ -17,19 +17,19 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Station station = stationService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(StationResponse.of(station));
+        StationResponse res = stationService.saveStation(stationRequest);
+        return ResponseEntity.created(URI.create("/stations/" + res.getId())).body(res);
     }
 
     @GetMapping(value = "/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations().stream().map(StationResponse::of).collect(Collectors.toList()));
+        return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
     @GetMapping(value = "/stations/{id}")
     public ResponseEntity<StationResponse> showStation(
             @PathVariable Long id) {
-        return ResponseEntity.ok().body(StationResponse.of(stationService.findStationById(id)));
+        return ResponseEntity.ok().body(stationService.findStationById(id));
     }
 
     @DeleteMapping("/stations/{id}")
