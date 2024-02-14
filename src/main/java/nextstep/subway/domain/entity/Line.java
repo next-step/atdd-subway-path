@@ -1,13 +1,12 @@
 package nextstep.subway.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -24,13 +23,20 @@ public class Line {
     @Column(nullable = false)
     private int distance;
 
-    @JsonIgnore
     @Embedded
     private Sections sections = new Sections();
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public List<Section> getSectionList() {
+        return this.sections.getSections();
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
     }
 
     public void addSection(Section section) {
@@ -46,5 +52,10 @@ public class Line {
     public void updateNameAndColor(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void deleteStation(Station station) {
+        sections.deleteStation(station);
+        this.distance = sections.getDistance();
     }
 }

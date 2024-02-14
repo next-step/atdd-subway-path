@@ -1,22 +1,22 @@
 package nextstep.subway.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonValue;
 import nextstep.subway.exception.ApplicationException;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.ExceptionMessage.*;
 
 @Embeddable
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Sections {
+    @JsonValue
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    List<Section> sections = new ArrayList<>();
+    private final List<Section> sections = new ArrayList<>();
 
     public void addSection(Section newSection) {
         // 추가하려는 구간의 상행역 하행역이 같으면
@@ -61,7 +61,7 @@ public class Sections {
             return;
         }
         // 하행역이 같다면
-        if (basedSection.isSameAsDwonStation(newSection.getDownStation())){
+        if (basedSection.isSameAsDwonStation(newSection.getDownStation())) {
             this.sections.add(new Section(basedSection.getUpStation(), newSection.getUpStation(), newDistance));
         }
     }
@@ -78,16 +78,14 @@ public class Sections {
     }
 
     public List<Station> getStations() {
-        List<Station> stations = new ArrayList<>();
-        for (Section section : sections) {
-            stations.addAll(section.getStations());
-        }
-
-        return stations.stream().distinct().collect(Collectors.toList());
+        return sections.stream()
+                .flatMap(section -> section.getStations().stream())
+                .distinct()
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
     public Section getLastSection() {
@@ -102,17 +100,19 @@ public class Sections {
     }
 
     private Section getSameUpStationSection(Station station) {
-        return sections.stream()
+        Optional<Section> findSection = sections.stream()
                 .filter(section -> section.isSameAsUpStation(station))
-                .findFirst()
-                .orElseThrow(() -> new ApplicationException(NO_EXISTS_SAME_UPSTATION_SECTION.getMessage()));
+                .findFirst();
+
+        return findSection.isPresent() ? findSection.get() : null;
     }
 
     private Section getSameDownStationSection(Station station) {
-        return sections.stream()
+        Optional<Section> findSection = sections.stream()
                 .filter(section -> section.isSameAsDwonStation(station))
-                .findFirst()
-                .orElseThrow(() -> new ApplicationException(NO_EXISTS_SAME_DOWNSTATION_SECTION.getMessage()));
+                .findFirst();
+
+        return findSection.isPresent() ? findSection.get() : null;
     }
 
     private boolean isFirstSection(Section basedSection) {
@@ -144,4 +144,30 @@ public class Sections {
     }
 
 
+    public void deleteStation(Station station) {
+        // 삭제할 역을 하행역으로 가진 구간 찾기
+        Section section1 = getSameDownStationSection(station);
+        // 삭제할 역을 상행역으로 가진 구간 찾기
+        Section section2 = getSameUpStationSection(station);
+
+        // 노선의 상행종점역인 경우 (삭제할 역을 상행역으로 가진 구간만 존재)
+        if (ObjectUtils.isEmpty(section1) && !ObjectUtils.isEmpty(section2)) {
+            // section2 노선 제거
+            sections.remove(section2);
+        }
+        // 노선의 하행종점역인 경우 (삭제할 역을 하행역으로 가진 구간만 존재)
+        if (!ObjectUtils.isEmpty(section1) && ObjectUtils.isEmpty(section2)) {
+            // section1 노선 제거
+            sections.remove(section1);
+        }
+        // 노선의 중간 역을 제거할 경우
+        if (!ObjectUtils.isEmpty(section1) && !ObjectUtils.isEmpty(section2)) {
+            // 삭제할 역을 포함한 구간의 상행역 - 하행역 구간 추가
+            Section newSection = new Section(section1.getLine(), section1.getUpStation(), section2.getDownStation(), section1.getDistance() + section2.getDistance());
+            sections.add(newSection);
+            // 삭제할 역을 포함한 구간 제거
+            sections.remove(section1);
+            sections.remove(section2);
+        }
+    }
 }

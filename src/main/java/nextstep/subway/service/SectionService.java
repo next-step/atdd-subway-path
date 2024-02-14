@@ -45,19 +45,13 @@ public class SectionService {
         Line line = lineRepository.findById(lineId).get();
         Station station = stationService.findById(stationId);
         Sections sections = line.getSections();
-        Section lastSection = sections.getLastSection(); // 마지막 구간
-
-        // stationId 는 마지막 하행 종착역 이어야 한다.
-        if (!station.equals(lastSection.getDownStation())) {
-            throw new ApplicationException(ExceptionMessage.DELETE_LAST_SECTION_EXCEPTION.getMessage());
-        }
 
         // 구간이 1개인 경우 삭제할 수 없다.
         if (sections.getSize() == 1) {
             throw new ApplicationException(ExceptionMessage.DELETE_ONLY_ONE_SECTION_EXCEPTION.getMessage());
         }
 
-        line.deleteSection(lastSection);
+        line.deleteStation(station);
     }
 
     public SectionResponse findSectionByLineIdAndId(Long lineId, Long sectionId) {
@@ -68,7 +62,6 @@ public class SectionService {
     public SectionResponse createSectionResponse(Section section) {
         return new SectionResponse(
                 section.getId(),
-                section.getLine(),
                 section.getUpStation(),
                 section.getDownStation(),
                 section.getDistance()
