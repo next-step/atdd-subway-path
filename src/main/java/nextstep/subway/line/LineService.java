@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
@@ -65,6 +66,11 @@ public class LineService {
     public void deleteLine(Long id) {
         lineRepository.findById(id)
                 .ifPresent(lineRepository::delete);
+    }
+
+    @Transactional
+    public void addSection(Section section) {
+
     }
 
     private static LineResponse toLineResponse(Line line) {
