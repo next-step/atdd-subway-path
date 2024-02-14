@@ -1,6 +1,7 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.service.LineService;
 import nextstep.subway.service.StationService;
