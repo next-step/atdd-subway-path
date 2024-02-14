@@ -78,6 +78,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * When 지하철 노선 처음에 구간을 등록하면
+     * Then 지하철 노선 처음에 구간이 등록된다.
+     */
+    @DisplayName("지하철 노선에 역 추가시 노선 처음에 추가 할 수 있다.")
+    @Test
+    void addStartSection() {
+        // when
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 선릉역, 강남역, 10L);
+        String locationHeader = response.header("Location");
+
+        // then
+        List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
+        assertThat(lineStationIds).containsExactly(선릉역, 강남역, 역삼역);
+    }
+
+    /**
      * When 이미 해당 노선에 등록되어있는 역을 등록하면
      * Then 에러를 반환한다.
      */

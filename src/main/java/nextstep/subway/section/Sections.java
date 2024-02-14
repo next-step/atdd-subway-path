@@ -34,9 +34,17 @@ public class Sections {
     }
 
     private void validateDuplicateStation(Section section) {
-        if (isMatchUpStation(section.getDownStation())) {
+        if (isMatchUpStation(section.getDownStation()) && isMatchDownStation(section.getUpStation())) {
             throw new SubwayException("이미 등록되어있는 역입니다.");
         }
+    }
+
+    private boolean isMatchUpStation(Station station) {
+        return this.sections.stream().anyMatch(section -> section.getUpStation().equals(station));
+    }
+
+    private boolean isMatchDownStation(Station station) {
+        return this.sections.stream().anyMatch(section -> section.getDownStation().equals(station));
     }
 
     private Section getNextSection(Section section) {
@@ -46,13 +54,8 @@ public class Sections {
                 .orElseThrow(() -> new SubwayException("역을 찾을 수 없습니다."));
     }
 
-
     private boolean isMiddleSection(Section section) {
         return isMatchUpStation(section.getUpStation());
-    }
-
-    private boolean isMatchUpStation(Station station) {
-        return this.sections.stream().anyMatch(section -> section.getUpStation().equals(station));
     }
 
     public void removeSection(Station station) {
