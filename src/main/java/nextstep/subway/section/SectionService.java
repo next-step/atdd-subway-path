@@ -27,7 +27,7 @@ public class SectionService {
 
         Line line = getLine(lineId);
 
-        if (!line.isLastStation(sectionRequest.getUpStationId())) {
+        if (!line.isLastStation(getStation(sectionRequest.getDownStationId()))) {
             throw new IllegalStateException("새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다");
         }
         LineSections sectionsByLine = sectionDao.findSectionsByLine(line.getId());
@@ -36,8 +36,9 @@ public class SectionService {
         }
 
         Station downStation = getStation(sectionRequest.getDownStationId());
-        line.addDownStation(downStation, sectionRequest.getDistance());
-        Section saved = sectionDao.save(new Section(sectionRequest.getUpStationId(), sectionRequest.getDownStationId(), sectionRequest.getDistance(), line.getId()));
+        Section section = new Section(getStation(sectionRequest.getUpStationId()), downStation, sectionRequest.getDistance(), line.getId());
+        line.addSection(section);
+        Section saved = sectionDao.save(section);
 
         return new SectionResponse(saved.getUpStationId(), saved.getDownStationId(), saved.getDistance());
     }
@@ -45,7 +46,7 @@ public class SectionService {
     public void deleteSection(long lineId, long stationId) {
 
         Line line = getLine(lineId);
-        if(!line.isLastStation(stationId)) {
+        if(!line.isLastStation(getStation(stationId))) {
             throw new IllegalStateException("마지막 구간만 제거할 수 있다.");
         }
 

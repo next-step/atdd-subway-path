@@ -1,8 +1,10 @@
 package nextstep.subway.line;
 
+import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "line")
@@ -30,10 +32,6 @@ public class Line {
 
     protected Line() {}
 
-    public Line(String name, Color color) {
-        this.name = name;
-        this.color = color;
-    }
 
     public Line(String name, Color color, Station upStation, Station downStation, int distance) {
         this.name = name;
@@ -72,20 +70,28 @@ public class Line {
         this.color = color;
     }
 
-
-    public boolean isLastStation(long upStationId) {
-        return downStation.equalStation(upStationId);
+    public boolean isLastStation(Station station) {
+        return downStation.equals(station);
     }
 
-    public void extendDownStation(Station downStation) {
-        this.downStation = downStation;
+
+    public void removeSection(Section section) {
+        if(!isLastStation(section.getDownStation())) {
+            throw new IllegalStateException("하행 종점만 제거 가능");
+        }
+        changeDownStation(section.getUpStation());
     }
 
-    public void addDistance(int distance) {
-        this.distance += distance;
+    public void addSection(Section section) {
+        this.downStation = section.getDownStation();
+        this.distance += section.getDistance();
     }
 
     public void changeDownStation(Station upStation) {
         this.downStation = upStation;
+    }
+
+    public List<Station> getStations() {
+        return List.of(upStation, downStation);
     }
 }

@@ -1,5 +1,7 @@
 package nextstep.subway.section;
 
+import nextstep.subway.station.Station;
+
 import javax.persistence.*;
 
 @Entity
@@ -9,14 +11,16 @@ public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long upStationId;
-    private Long downStationId;
+    @OneToOne
+    private Station upStation;
+    @OneToOne
+    private Station downStation;
     private Integer distance;
     private Long lineId;
 
-    public Section(Long upStationId, Long downStationId, int distance, Long lineId) {
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+    public Section(Station upStation, Station downStation, int distance, Long lineId) {
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
         this.lineId = lineId;
     }
@@ -24,17 +28,23 @@ public class Section {
     public Section() {
     }
 
-
-
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Integer getDistance() {
         return distance;
+    }
+
+    public long getUpStationId() {
+        return upStation.getId();
+    }
+
+    public long getDownStationId() {
+        return downStation.getId();
     }
 }
