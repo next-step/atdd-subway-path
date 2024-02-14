@@ -62,4 +62,30 @@ class LineTest {
         assertThat(line.getStartStation()).isEqualTo(upStation);
         assertThat(line.getEndStation()).isEqualTo(downStation);
     }
+
+    @DisplayName("노선에 등록된 역 제거 시 해당 역이 노선 가운데 있어도 제거할 수 있다.")
+    @Test
+    void removeStation() {
+        Station newStation = new Station("교대역");
+        line.addSection(section);
+        line.addStationBefore(newStation, downStation, 2);
+        line.removeStation(newStation);
+        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections().contains(newStation)).isFalse();
+        assertThat(line.getStartStation()).isEqualTo(upStation);
+        assertThat(line.getEndStation()).isEqualTo(downStation);
+    }
+
+    @DisplayName("노선에 등록된 역 제거 시 해당 역이 노선 가장 앞에 있을 때는 제거할 수 없다.")
+    @Test
+    void removeFirstStation() {
+        Station newStation = new Station("교대역");
+        line.addSection(section);
+        line.addStationBefore(newStation, upStation, 2);
+        line.removeStation(newStation);
+        assertThat(line.getSections().size()).isEqualTo(1);
+        assertThat(line.getSections().contains(newStation)).isFalse();
+        assertThat(line.getStartStation()).isEqualTo(upStation);
+        assertThat(line.getEndStation()).isEqualTo(downStation);
+    }
 }

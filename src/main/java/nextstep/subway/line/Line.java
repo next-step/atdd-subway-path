@@ -98,4 +98,8 @@ public class Line {
     public void setStartStation(Station startStation) {
         this.startStation = startStation;
     }
+
+    public void removeStation(Station newStation) {
+        getSections().removeStation(newStation, this);
+    }
 }

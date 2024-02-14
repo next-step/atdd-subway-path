@@ -68,4 +68,11 @@ public class SectionService {
         line.addStationBefore(newStation, nextStation, request.getDistance());
         return line;
     }
+
+    @Transactional
+    public void removeStationInLine(Long lineId, Long stationId) {
+        Line line = getLine(lineId);
+        Station station = getStation(stationId);
+        line.removeStation(station);
+    }
 }

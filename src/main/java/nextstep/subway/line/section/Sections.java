@@ -64,7 +64,7 @@ public class Sections {
         alreadyHaveStation(newStation);
 
         //새로운 구간 추가
-        Section newSection = new Section(newStation, nextStation, distance, line);
+        new Section(newStation, nextStation, distance, line);
 
         //기존 구간 수정
         Optional<Section> beforeSection = sections.stream().findFirst().filter(s -> s.getDownStation().equals(nextStation));
@@ -75,7 +75,6 @@ public class Sections {
         }else{
            line.setStartStation(newStation);
         }
-
     }
 
     private void mustHaveMoreThanOneSection() {
@@ -87,6 +86,31 @@ public class Sections {
     private void alreadyHaveStation(Station newStation) {
         if (sections.stream().anyMatch(section -> section.contains(newStation))) {
             throw new HttpBadRequestException("이미 등록된 역입니다.");
+        }
+    }
+
+    private void notExistStation(Station newStation) {
+        if (sections.stream().noneMatch(section -> section.contains(newStation))) {
+            throw new HttpBadRequestException("등록되지 않은 역입니다.");
+        }
+    }
+
+    public void removeStation(Station targetStation, Line line) {
+        notExistStation(targetStation);
+
+        Optional<Section> beforeSectionOptional = sections.stream().filter(s -> s.getDownStation().equals(targetStation)).findFirst();
+        Optional<Section> nextSectionsOptional = sections.stream().filter(s -> s.getUpStation().equals(targetStation)).findFirst();
+
+        if(nextSectionsOptional.isPresent()){
+            Section nextSection = nextSectionsOptional.get();
+            if(beforeSectionOptional.isPresent() ){
+                Section beforeSection = beforeSectionOptional.get();
+                beforeSection.setDownStation(nextSection.getDownStation());
+                beforeSection.setDistance(beforeSection.getDistance() + nextSection.getDistance());
+            }else{
+                line.setStartStation(nextSection.getDownStation());
+            }
+            sections.remove(nextSection);
         }
     }
 }
