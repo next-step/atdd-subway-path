@@ -51,7 +51,7 @@ public class LineService {
 
     public LineResponse getLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NoLineException(id + "에 해당하는 지하철 노선이 존재하지 않습니다."));
-        return createLineResponse(line);
+        return LineResponse.createLineResponse(line);
     }
 
     @Transactional
@@ -79,9 +79,10 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSection(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NoLineException(id + "에 해당하는 지하철 노선이 존재하지 않습니다."));
-        line.deleteSection();
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoLineException(lineId + "에 해당하는 지하철 노선이 존재하지 않습니다."));
+        Station station = stationRepository.findById(stationId).orElseThrow(() -> new NoStationException(stationId + "에 해당하는 지하철 역이 존재하지 않습니다."));
+        line.deleteLastSection(station);
         lineRepository.save(line);
     }
 }

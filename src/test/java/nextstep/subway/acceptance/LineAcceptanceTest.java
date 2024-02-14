@@ -14,10 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 
+@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
 

@@ -55,4 +55,7 @@ public class Section {
         return distance;
     }
 
+    public boolean isPossibleToDelete(Station station) {
+        return downStation.isSameStation(station);
+    }
 }

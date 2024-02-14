@@ -15,13 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.MethodMode;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-@DirtiesContext(classMode = BEFORE_CLASS)
+@DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
 public class StationAcceptanceTest extends BaseAcceptanceTest {
     /**
      * When 지하철역을 생성하면

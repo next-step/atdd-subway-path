@@ -22,7 +22,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 
-@DirtiesContext(classMode = BEFORE_CLASS)
+@DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
     ObjectMapper mapper = new ObjectMapper();
 
@@ -34,15 +34,15 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         createStation(왕십리역);
     }
 
-    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     @Test
-    void test_특정_노선에_구간을_등록하면_노선_조회시_등록한_구간을_확인할_수_있다() {
+    void test_특정_노선에_구간을_등록하면_노선_조회시_등록한_구간을_확인할_수_있다() throws JsonProcessingException {
         //when
         LineResponse lineResponse = createLine(getRequestParam_신분당선());
         //then
         LineResponse response = when()
             .get("/lines/" + lineResponse.getId())
             .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
+        System.out.println(mapper.writeValueAsString(response));
         List<SectionResponse> sectionsResponse = response.getSections();
         assertAll(
             () -> assertThat(sectionsResponse).hasSize(1),
@@ -52,7 +52,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         );
     }
 
-    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     @Test
     void 노선이_주어졌을때_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_같으면_해당_구간을_등록할_수_있다() throws JsonProcessingException {
         //given
@@ -65,6 +64,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         //then
         LineResponse lineAfterResponse = when().get("/lines/" + lineResponse.getId())
                                                .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
+        System.out.println(mapper.writeValueAsString(lineAfterResponse));
         List<SectionResponse> sectionResponses = lineAfterResponse.getSections();
         assertAll(
             () -> assertThat(sectionResponses).hasSize(2),
@@ -74,7 +74,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         );
     }
 
-    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     @Test
     void 노선이_주어졌을때_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_다르면_에러를_반환한다() throws JsonProcessingException {
         //given
@@ -87,7 +86,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                .when().post("/lines/" + lineResponse.getId() + "/sections").then().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 
-    @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
     @Test
     void 노선에_등록된_구간이_2개_이상_있을때_마지막_구간을_제거하면_노선_조회시_제거된_마지막_구간의_상행역이_전체_노선의_하행종점역이_된다() throws JsonProcessingException {
         //given
@@ -97,7 +95,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         //when
         when()
-            .delete("/lines/" + lineResponse.getId() + "/sections")
+            .delete("/lines/" + lineResponse.getId() +"/sections?stationId=" + 4L)
             .then().statusCode(HttpStatus.SC_NO_CONTENT);
 
         //then
@@ -108,6 +106,26 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
             () -> assertThat(sectionsResponse).hasSize(1),
             () -> assertThat(sectionsResponse.get(sectionsResponse.size() - 1).getDownStationId()).isEqualTo(sectionRequest.getUpStationId())
         );
+    }
+    @Test
+    void 노선에_등록된_구간이_2개_이상_있을때_요청한_역이_기존_노선의_하행종점역과_다르면_구간을_삭제할_수_없다() {
+        //given
+        LineResponse lineResponse = createLine(getRequestParam_신분당선());
+
+        //when & then
+        when()
+            .delete("/lines/" + lineResponse.getId() + "/sections?stationId=" + 4L)
+            .then().statusCode(HttpStatus.SC_BAD_REQUEST);
+    }
+    @Test
+    void 지하철_노선에_상행_종점역과_하행_종점역만_있는_경우_구간이_1개인_경우_역을_삭제할_수_없다() {
+        //given
+        LineResponse lineResponse = createLine(getRequestParam_신분당선());
+
+        //when & then
+        when()
+            .delete("/lines/" + lineResponse.getId() + "/sections?stationId=" + 2L)
+            .then().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 
     private void addSection(LineResponse lineResponse, SectionRequest sectionRequest) throws JsonProcessingException {

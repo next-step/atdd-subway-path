@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,5 +31,9 @@ public class Station {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isSameStation(Station station) {
+        return Objects.equals(this, station);
     }
 }

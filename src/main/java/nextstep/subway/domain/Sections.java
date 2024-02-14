@@ -11,6 +11,7 @@ import nextstep.subway.exception.IllegalSectionException;
 
 @Embeddable
 public class Sections {
+    public static final int ONLY_ONE_SECTION = 1;
     @OneToMany(cascade = CascadeType.ALL)
     private List<Section> sections;
 
@@ -42,7 +43,14 @@ public class Sections {
         return sections;
     }
 
-    public void remove() {
+    public void removeLastSection(Station station) {
+        if (ONLY_ONE_SECTION == sections.size()) {
+            throw new IllegalSectionException("해당 노선에 구간이 1개만 남아 있어 삭제할 수 없습니다.");
+        }
+        Section lastSection = sections.get(sections.size() - 1);
+        if (!lastSection.isPossibleToDelete(station)) {
+            throw new IllegalSectionException("해당 역은 노선에 등록된 하행 종점역이 아닙니다.");
+        }
         sections.remove(sections.size() - 1);
     }
 }
