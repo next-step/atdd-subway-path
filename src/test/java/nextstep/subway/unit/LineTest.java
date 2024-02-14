@@ -283,12 +283,12 @@ class LineTest {
     class SectionRemoveTest {
         /**
          * Given 노선을 생성하고, 구간을 하나 더 추가한 뒤
-         * When 하행역을 삭제하면
+         * When 하행 종점역을 삭제하면
          * Then 구간이 하나 제거되고, 삭제한 하행역은 역 목록에 조회되지 않는다.
          */
         @Test
-        @DisplayName("하행역을 올바르게 삭제하면 구간이 삭제된다")
-        void succeed() throws LineSectionException {
+        @DisplayName("하행 종점역을 삭제하면 구간이 삭제된다")
+        void succeedForDeletingLastSection() throws LineSectionException {
             // Given
             Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
             신분당선.addSection(추가구간_엔티티(역삼역_엔티티, 선릉역_엔티티));
@@ -297,6 +297,62 @@ class LineTest {
             // Then
             assertEquals(신분당선.getSections().size(), 1);
             assertFalse(신분당선.getAllStations().contains(선릉역_엔티티));
+        }
+
+        /**
+         * Given 노선을 생성하고, 구간을 하나 더 추가한 뒤
+         * When 상행 종점역을 삭제하면
+         * Then 구간이 하나 제거되고, 삭제한 상행역은 역 목록에 조회되지 않는다.
+         */
+        @Test
+        @DisplayName("상행 종점역을 삭제하면 구간이 삭제된다.")
+        void succeedForDeletingFirstSection() throws LineSectionException {
+            // Given
+            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+            신분당선.addSection(추가구간_엔티티(역삼역_엔티티, 선릉역_엔티티));
+            // When
+            신분당선.deleteStation(강남역_엔티티.getId());
+            // Then
+            assertEquals(신분당선.getSections().size(), 1);
+            assertFalse(신분당선.getAllStations().contains(강남역_엔티티));
+        }
+
+        /**
+         * Given 노선을 생성하고, 구간을 하나 더 추가한 뒤
+         * When 중간역을 삭제하면
+         * Then 구간이 하나 제거되고, 삭제한 중간역은 역 목록에 조회되지 않는다.
+         */
+        @Test
+        @DisplayName("중간역을 삭제하면 구간이 삭제된다.")
+        void succeedForDeletingMiddleSection() throws LineSectionException {
+            // Given
+            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+            신분당선.addSection(추가구간_엔티티(역삼역_엔티티, 선릉역_엔티티));
+            // When
+            신분당선.deleteStation(선릉역_엔티티.getId());
+            // Then
+            assertEquals(신분당선.getSections().size(), 1);
+            assertFalse(신분당선.getAllStations().contains(선릉역_엔티티));
+        }
+
+        /**
+         * Given 노선을 생성하고, 구간을 하나 더 추가한 뒤
+         * When 앞서 생성할 때 썼던 역들 외 역으로 삭제 시도시
+         * Then 실패한다
+         */
+        @Test
+        @DisplayName("노선에 존재하지 않는 역을 삭제하려 하면 실패한다")
+        void failForNotFoundStation() throws LineSectionException {
+            // Given
+            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+            신분당선.addSection(추가구간_엔티티(역삼역_엔티티, 선릉역_엔티티));
+            // When
+            // Then
+            assertThrows(
+                    LineSectionException.class,
+                    () -> 신분당선.deleteStation(삼성역_엔티티.getId()),
+                    "should throw"
+            );
         }
 
         /**
@@ -316,27 +372,6 @@ class LineTest {
                     "should throw"
             );
 
-        }
-
-        /**
-         * Given 노선을 생성하고, 구간을 하나 더 추가한 뒤
-         * When 하행역이 아닌 역을 삭제하려는 경우
-         * Then 실패한다
-         */
-        @Test
-        @DisplayName("하행역이 아닌 역을 제거하려 하면 실패한다")
-        void failForAttemptingToDeleteUpStations() throws LineSectionException {
-            // Given
-            Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
-            // When
-            Section 추가구간 = 추가구간_엔티티(역삼역_엔티티, 선릉역_엔티티);
-            신분당선.addSection(추가구간);
-            // Then
-            assertThrows(
-                    LineSectionException.class,
-                    () -> 신분당선.deleteStation(역삼역_엔티티.getId()),
-                    "should throw"
-            );
         }
     }
 }
