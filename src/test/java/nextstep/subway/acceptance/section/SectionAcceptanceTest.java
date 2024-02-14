@@ -31,6 +31,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     Long 신논현역_ID;
     Long 강남역_ID;
     Long 양재역_ID;
+    Long 신사역_ID;
     CreateLineRequest 신분당선_생성_요청;
 
     @BeforeEach
@@ -39,6 +40,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         신논현역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신논현역)).jsonPath().getLong("stationId");
         강남역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.강남역)).jsonPath().getLong("stationId");
         양재역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.양재역)).jsonPath().getLong("stationId");
+        신사역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신사역)).jsonPath().getLong("stationId");
         신분당선_생성_요청 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 논현역_ID, 신논현역_ID, Constant.기본_역_간격);
     }
 
@@ -163,6 +165,57 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         지하철_구간_삭제_검증(강남역_ID, 신분당선_조회_응답);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 노선 가운데에 구간을 추가하면
+     * Then 노선 가운데에 구간이 추가된다.
+     */
+    @DisplayName("지하철 노선 가운데에 역을 추가한다.")
+    @Test
+    void 지하철_노선_가운데에_역을_추가() {
+        // given
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
+        AddSectionResponse 신논현_강남_구간_생성_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
+
+        // when
+        AddSectionRequest 신논현_양재_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.기본_역_간격);
+        AddSectionResponse 신논현_양재_구간_생성_응답 = 지하철_구간_추가(신논현_양재_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
+
+        // then
+        ShowLineResponse 신분당선_조회_응답 = 지하철_노선_조회(신분당선_ID).as(ShowLineResponse.class);
+        지하철_구간_등록_검증(신논현_양재_구간_생성_응답, 신분당선_조회_응답);
+    }
+
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 노선 처음에 구간을 추가하면
+     * Then 노선 처음에 구간이 추가된다.
+     */
+    @DisplayName("지하철 노선 가운데에 역을 추가한다.")
+    @Test
+    void 지하철_노선_처음에_역을_추가() {
+        // given
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
+
+        // when
+        AddSectionRequest 신사_논현_구간_생성_요청 = AddSectionRequest.of(신사역_ID, 논현역_ID, Constant.기본_역_간격);
+        AddSectionResponse 신사_논현_구간_생성_응답 = 지하철_구간_추가(신사_논현_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
+
+        // then
+        ShowLineResponse 신분당선_조회_응답 = 지하철_노선_조회(신분당선_ID).as(ShowLineResponse.class);
+        지하철_구간_등록_검증(신사_논현_구간_생성_응답, 신분당선_조회_응답);
+    }
+
+
+
+
+
+
+
     void 지하철_구간_등록_검증(AddSectionResponse addSectionResponse, ShowLineResponse showLineResponse) {
         assertTrue(showLineResponse.getSections().stream()
                 .anyMatch(sectionDto ->
@@ -185,28 +238,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     }
 
 
-    /**
-     * Given 지하철 노선을 생성하고
-     * When 노선 가운데에 구간을 추가하면
-     * Then 노선 가운데에 구간이 추가된다.
-     */
-    @DisplayName("지하철 노선 가운데에 역을 추가한다.")
-    @Test
-    @Disabled
-    void 지하철_노선_가운데에_역을_추가() {
-        // given
-        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
-        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.기본_역_간격);
-        AddSectionResponse 신논현_강남_구간_생성_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
-        // when
-        AddSectionRequest 신논현_양재_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.기본_역_간격);
-        AddSectionResponse 신논현_양재_구간_생성_응답 = 지하철_구간_추가(신논현_양재_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
-
-        // then
-        ShowLineResponse 신분당선_조회_응답 = 지하철_노선_조회(신분당선_ID).as(ShowLineResponse.class);
-        지하철_구간_등록_검증(신논현_양재_구간_생성_응답, 신분당선_조회_응답);
-    }
 
 }
