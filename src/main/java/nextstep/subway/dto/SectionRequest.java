@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.Section;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SectionRequest {
@@ -13,6 +14,12 @@ public class SectionRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public static SectionRequest from(Section section) {
+        return new SectionRequest(section.getUpStation().getId(),
+                                  section.getDownStation().getId(),
+                                  section.getDistance());
     }
 
     public Long getUpStationId() {

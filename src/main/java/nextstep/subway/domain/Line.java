@@ -28,6 +28,17 @@ public class Line {
     private String name;
     @Column(length = 20, nullable = false)
     private String color;
+
+    @Override
+    public String toString() {
+        return "Line{" +
+               "id=" + id +
+               ", name='" + name + '\'' +
+               ", color='" + color + '\'' +
+               ", sections=" + sections +
+               '}';
+    }
+
     @Embedded
     private Sections sections = new Sections();
 
@@ -41,14 +52,12 @@ public class Line {
         this.sections = new Sections();
     }
 
-    public static Line of(Long id, String name, String color) {
-        return Line.builder()
-                   .id(id)
-                   .name(name)
-                   .color(color)
-                   .sections(new Sections()).build();
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections();
     }
-
     public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
         Line line = Line.builder()
                         .name(lineRequest.getName())

@@ -14,6 +14,14 @@ import nextstep.subway.exception.IllegalSectionException;
 @Embeddable
 public class Sections {
     public static final int ONLY_ONE_SECTION = 1;
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+               "sections=" + sections +
+               '}';
+    }
+
     @OneToMany(cascade = CascadeType.ALL)
     private List<Section> sections;
 
