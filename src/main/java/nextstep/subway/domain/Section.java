@@ -105,7 +105,7 @@ public class Section {
     }
 
     public void changeDistance(int distance) {
-        if (distance == 0) {
+        if (distance <= 0) {
             throw new SectionException(SectionException.INVALID_DISTANCE);
         }
         this.distance = distance;
