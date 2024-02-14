@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
+import nextstep.subway.station.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,9 +38,9 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
 
     @BeforeEach
     void setUp() {
-        savedFirstStationId = StationManager.save("지하철역").jsonPath().getLong("id");
-        savedSecondStationId = StationManager.save("새로운지하철역").jsonPath().getLong("id");
-        savedThirdStationId = StationManager.save("또다른지하철역").jsonPath().getLong("id");
+        savedFirstStationId = StationManager.save("A역").jsonPath().getLong("id");
+        savedSecondStationId = StationManager.save("C역").jsonPath().getLong("id");
+        savedThirdStationId = StationManager.save("B역").jsonPath().getLong("id");
 
         saveLineRequest = new LineRequest(FIRST_LINE_NAME, FIRST_LINE_COLOR, savedFirstStationId, savedSecondStationId, DISTANCE);
         savedLine = StationLineManager.save(saveLineRequest).as(LineResponse.class);  // A - C
@@ -48,8 +49,8 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     /**
      * Given 지하철 노선을 생성하고 여기에 A역과 C역을 생성한다.
      * When B역을 등록한다.
-     *   1. 노선 가운데 추가 할 수 있다.
-     *   2. 노선 처음에 추가 할 수 있다.
+     *   1. 노선 처음에 추가 할 수 있다.
+     *   2. 노선 가운데 추가 할 수 있다.
      *   3. 노선 마지막에 추가 할 수 있다.
      * Then 노선을 조회했을 때 역이 3개가 등록되어 있다.
      */
@@ -62,8 +63,9 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
         ExtractableResponse<Response> response = StationSectionManager.save(savedLine.getId(), requestDto); // 노선에 구간 추가
 
         // then
-        List<Long> result = response.jsonPath().getList("stations");
-        Assertions.assertThat(result.size()).isEqualTo(ALL_STATIONS_COUNT);  // A - C - B
+        List<StationResponse> result = response.jsonPath().getList("stations");
+        System.out.println("result = " + result);
+        Assertions.assertThat(result.size()).isEqualTo(ALL_STATIONS_COUNT);
     }
 
     /**
@@ -92,7 +94,7 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     @Test
     void deleteStationSection() {
         // when
-        SectionRequest requestDto = new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE, 2); // C - B 구간
+        SectionRequest requestDto = new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE); // C - B 구간
         StationSectionManager.save(savedLine.getId(), requestDto); // 노선에 구간 추가
 
         // 구간 제거
@@ -102,7 +104,7 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
         ExtractableResponse<Response> response = StationLineManager.findById(savedLine.getId());
 
         // then
-        List<Long> result = response.jsonPath().getList("stations");
+        List<StationResponse> result = response.jsonPath().getList("stations");
         Assertions.assertThat(result.size()).isEqualTo(ONE_REMOVE_STATIONS_COUNT); // A - C
     }
 
@@ -124,17 +126,22 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     }
 
     public static Stream<Arguments> createSectionParameters() {
-        return Stream.of(
-                Arguments.of(new SectionRequest(-1, savedFirstStationId, DISTANCE, 0)),
-                Arguments.of(new SectionRequest(savedFirstStationId, savedSecondStationId, DISTANCE, 1)),
-                Arguments.of(new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE, 2))
+//        return Stream.of(
+//                Arguments.of(new SectionRequest(-1, savedFirstStationId, DISTANCE)),
+//                Arguments.of(new SectionRequest(savedFirstStationId, savedSecondStationId, DISTANCE)),
+//                Arguments.of(new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE))
+//        );
+        return Stream.of( // setup() 함수가 실행되기 전에 실행되어서 StationId 값들이 0으로 채워져서 변수를 할당하지 못하네요..
+                Arguments.of(new SectionRequest(3, 1, DISTANCE)),  // B - A - C
+                Arguments.of(new SectionRequest(1, 3, DISTANCE)),  // A - B - C  (A - B) - (B - C)
+                Arguments.of(new SectionRequest(2, 3, DISTANCE))  // A - C - B
         );
     }
 
     private static Stream<Arguments> invalidSaveStationSectionParameters() {
         return Stream.of(
-                Arguments.of(new SectionRequest(savedSecondStationId, savedFirstStationId, DISTANCE, 2)), // (A - C) - (C - A) // 이미 등록된 역(A)
-                Arguments.of(new SectionRequest(savedFirstStationId, savedThirdStationId, DISTANCE, 2))  // A - C - (A - B) // 상행역이 하행역이 아닐 때
+                Arguments.of(new SectionRequest(savedSecondStationId, savedFirstStationId, DISTANCE)), // (A - C) - (C - A) // 이미 등록된 역(A)
+                Arguments.of(new SectionRequest(savedFirstStationId, savedSecondStationId, DISTANCE)) // (A - C) - (A - C) // 이미 등록된 역(A)
         );
     }
 }
