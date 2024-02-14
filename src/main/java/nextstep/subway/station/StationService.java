@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,14 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public StationResponse findStation(Long stationId) {
+        Station station = stationRepository.findById(stationId).orElseThrow(
+                () -> new EntityNotFoundException("지하철 역을 찾을 수 없습니다.")
+        );
+
+        return createStationResponse(station);
     }
 
     private StationResponse createStationResponse(Station station) {
