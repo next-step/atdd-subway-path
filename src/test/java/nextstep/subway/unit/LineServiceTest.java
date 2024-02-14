@@ -54,7 +54,7 @@ public class LineServiceTest {
         신천역_번호 = stationRepository.save(this.신천역).getId();
         존재하지_않는_강남역_번호 = 4L;
 
-        이호선_아이디 = lineRepository.save(new Line("이호선", "그린", 10)).getId();
+        이호선_아이디 = lineRepository.save(new Line("이호선", "그린")).getId();
         존재하지_않는_삼호선_아이디= 2L;
     }
 

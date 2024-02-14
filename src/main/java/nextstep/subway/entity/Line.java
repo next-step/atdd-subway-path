@@ -14,18 +14,15 @@ public class Line {
 
     private String color;
 
-    private int distance;
-
     @Embedded
     private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
     public Line update(String name, String color) {
@@ -87,10 +84,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public Sections getSections() {

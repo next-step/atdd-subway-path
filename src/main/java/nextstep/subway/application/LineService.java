@@ -91,8 +91,7 @@ public class LineService {
     private Line convertToLineEntity(LineRequest request) {
         return new Line(
                 request.getName(),
-                request.getColor(),
-                request.getDistance());
+                request.getColor());
     }
 
     private LineResponse convertToLineResponse(Line line) {
