@@ -156,23 +156,53 @@ public class SectionAcceptanceTest {
 
     /**
      * Given 지하철 구간을 등록하고
-     * When 노선의 하행종점역이 아닌 구간을 삭제하면
-     * Then 예외가 발생한다
+     * When 구간의 위치에 상관없이 구간을 삭제하면
+     * Then 해당 구간이 삭제되고, 구간이 재배치 된다
      */
-    @DisplayName("노선의 하행종점역이 아닌 구간은 삭제할 수 없다")
+    @DisplayName("구간의 위치에 상관없이 수정이 가능하다")
     @Test
-    void deleteNotDownSection() {
+    void deleteMiddleSection() {
         //given
         SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
+        SectionCreateRequest request2 = new SectionCreateRequest(건대입구역id, 잠실역id, 5);
 
         SectionApiRequester.generateSection(request, 이호선id);
+        SectionApiRequester.generateSection(request2, 이호선id);
 
         //when
-        ExtractableResponse<Response> response = SectionApiRequester.deleteSection(이호선id, 용산역id);
+        ExtractableResponse<Response> response = SectionApiRequester.deleteSection(이호선id, 건대입구역id);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asPrettyString()).isEqualTo("노선의 하행종점역만 제거할 수 있습니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
+        assertThat(getStationIds(이호선)).containsExactly(용산역id, 잠실역id);
+    }
+
+    /**
+     * Given 지하철 구간을 등록하고
+     * When 종점이 제거될 경우
+     * Then 종잠 다음 혹은 전 역이 종점이 된다
+     */
+    @DisplayName("종점이 제거될 경우 종점 다음 혹은 전 역이 종점이 된다")
+    @Test
+    void deleteFinalStation() {
+        //given
+        SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
+        SectionCreateRequest request2 = new SectionCreateRequest(건대입구역id, 잠실역id, 5);
+
+        SectionApiRequester.generateSection(request, 이호선id);
+        SectionApiRequester.generateSection(request2, 이호선id);
+
+        //when
+        ExtractableResponse<Response> response = SectionApiRequester.deleteSection(이호선id, 잠실역id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
+        Long downFinalStationId = getStationIds(이호선).get(getStationIds(이호선).size() - 1);
+        assertThat(downFinalStationId).isEqualTo(건대입구역id);
     }
 
     /**
