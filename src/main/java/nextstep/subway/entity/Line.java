@@ -54,13 +54,23 @@ public class Line {
         if (sections.hasNoSections()) {
             return true;
         }
-        if (hasExistingStation(sectionToAdd.getDownStation())) {
-            throw new IllegalArgumentException("이미 노선에 추가된 하행역입니다.");
+        if (hasStations(sectionToAdd)) {
+            throw new IllegalArgumentException("이미 노선에 포함되어 있는 상행역과 하행역입니다.");
         }
-        if (!hasExistingStation(sectionToAdd.getUpStation())) {
-            throw new IllegalArgumentException("추가할 구간의 상행역이 노선에 존재하지 않습니다.");
+        if (!hasExactlyOneStation(sectionToAdd)) {
+            throw new IllegalArgumentException("노선에 연결할 수 있는 상행역 혹은 하행역이 아닙니다.");
         }
         return true;
+    }
+
+    private boolean hasExactlyOneStation(Section sectionToAdd) {
+        return hasExistingStation(sectionToAdd.getUpStation()) ^
+                hasExistingStation(sectionToAdd.getDownStation());
+    }
+
+    private boolean hasStations(Section sectionToAdd) {
+        return hasExistingStation(sectionToAdd.getUpStation()) &&
+                hasExistingStation(sectionToAdd.getDownStation());
     }
 
     private boolean hasExistingStation(Station station) {

@@ -52,8 +52,8 @@ public class Section {
         return this;
     }
 
-    public boolean isLeastOneSameStation(Station downStation) {
-        return (this.upStation.isSame(downStation) || this.downStation.isSame(downStation));
+    public boolean isAtLeastOneSameStation(Station station) {
+        return (this.upStation.isSame(station) || this.downStation.isSame(station));
     }
 
     private int validateDistance(Integer distance) {
@@ -66,6 +66,17 @@ public class Section {
     public boolean isUpStationSame(Section sectionToAdd) {
         return this.upStation.equals(sectionToAdd.getUpStation());
     }
+
+    public Station findCommonStation(Section sectionToAdd) { // TODO: Refactor
+        if (upStation.isSame(sectionToAdd.getUpStation()) || upStation.isSame(sectionToAdd.getDownStation())) {
+            return this.upStation;
+        }
+        if (downStation.isSame(sectionToAdd.getUpStation()) || downStation.isSame(sectionToAdd.getDownStation())) {
+            return this.downStation;
+        }
+        return null;
+    }
+
 
     public Long getId() {
         return id;

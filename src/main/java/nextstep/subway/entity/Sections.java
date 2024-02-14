@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 @Embeddable
 public class Sections {
@@ -21,18 +20,16 @@ public class Sections {
     protected Sections() {
     }
 
-    public void addSection(Section section) {
-        if (isAddFirstSection(section)) {
-            sections.add(section);
+    public void addSection(Section sectionToAdd) {
+        if (isAddFirstSection()) {
+            sections.add(sectionToAdd);
             return;
         }
-        if (isInsertSection(section)) {
-            insertSection(section);
+        if (isAddLastSection(sectionToAdd)) {
+            sections.add(sectionToAdd);
             return;
         }
-        if (isAddLastSection(section)) {
-            sections.add(section);
-        }
+        insertSection(sectionToAdd);
     }
 
     public boolean isDeletionAllowed() {
@@ -78,24 +75,70 @@ public class Sections {
 
     public boolean hasExistingStation(Station station) {
         return sections.stream()
-                .anyMatch(section -> section.isLeastOneSameStation(station));
+                .anyMatch(section -> section.isAtLeastOneSameStation(station));
     }
 
     public boolean hasNoSections() {
         return sections.isEmpty();
     }
 
-    private boolean isAddFirstSection(Section section) {
+    private boolean isAddFirstSection() {
         return sections.isEmpty();
     }
 
     private void insertSection(Section sectionToAdd) {
-        int insertionIndex = findInsertionIndex(sectionToAdd);
-        Section currentSection = sections.get(insertionIndex);
+        // 1. 삽입할 구간 확인
+        Section insertionSection = findInsertionSection(sectionToAdd);
 
-        sections.set(insertionIndex, sectionToAdd);
-        sections.add(insertionIndex + 1, createNextSection(sectionToAdd, currentSection));
+        // 2. 삽입할 역 확인
+        Station insertionStation = insertionSection.findCommonStation(sectionToAdd);
+
+        if (isFirstStation(insertionStation)) {
+            if(insertionStation.isSame(sectionToAdd.getDownStation())) {
+                int insertionIndex = sections.indexOf(insertionSection);
+
+                sections.add(insertionIndex, sectionToAdd);
+                return;
+            }
+            if(insertionStation.isSame(sectionToAdd.getUpStation())) {
+                int insertionIndex = sections.indexOf(insertionSection);
+                Section nextSection = sections.get(insertionIndex);
+
+                sections.set(insertionIndex, sectionToAdd);
+                sections.add(insertionIndex + 1, createNextSection(sectionToAdd, nextSection));
+                return;
+            }
+        }
+
+        // 3. 삽입할 인덱스 확인
+        if(insertionStation.isSame(sectionToAdd.getUpStation())) {
+            int insertionIndex = sections.indexOf(insertionSection);
+            Section nextSection = sections.get(insertionIndex + 1);
+
+            sections.set(insertionIndex + 1, sectionToAdd);
+            sections.add(insertionIndex + 2, createNextSection(sectionToAdd, nextSection));
+            return;
+        }
+
+        if(insertionStation.isSame(sectionToAdd.getDownStation())) {
+            int insertionIndex = sections.indexOf(insertionSection);
+
+            sections.add(insertionIndex + 1, sectionToAdd);
+            sections.set(insertionIndex, createBeforeSection(sectionToAdd, insertionSection));
+        }
     }
+
+    private boolean isFirstStation(Station insertionStation) {
+        return sections.get(0).getUpStation().isSame(insertionStation);
+    }
+
+    private Section createBeforeSection(Section sectionToAdd, Section sectionOfIndex) {
+        return new Section(
+                sectionOfIndex.getUpStation(),
+                sectionToAdd.getUpStation(),
+                sectionOfIndex.getDistance() - sectionToAdd.getDistance());
+    }
+
 
     private Section createNextSection(Section sectionToAdd, Section sectionOfIndex) {
         return new Section(
@@ -104,20 +147,19 @@ public class Sections {
                 sectionOfIndex.getDistance() - sectionToAdd.getDistance());
     }
 
-    private int findInsertionIndex(Section sectionToAdd) {
-        return IntStream.range(0, sections.size())
-                .filter(i -> sections.get(i).isUpStationSame(sectionToAdd))
+    private Section findInsertionSection(Section sectionToAdd) {
+        return sections.stream()
+                .filter(section ->
+                                section.isAtLeastOneSameStation(sectionToAdd.getUpStation()) ||
+                                section.isAtLeastOneSameStation(sectionToAdd.getDownStation()))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
-    }
 
-    private boolean isInsertSection(Section section) {
-        return sections.stream()
-                .anyMatch(exists -> exists.getUpStation().equals(section.getUpStation()));
+
     }
 
     private boolean isAddLastSection(Section section) {
-        return findLastStation().equals(section.getUpStation());
+        return findLastStation().isSame(section.getUpStation());
     }
 
     public List<Section> getSections() {
