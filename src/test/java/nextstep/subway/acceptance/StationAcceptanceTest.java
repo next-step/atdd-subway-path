@@ -3,7 +3,6 @@ package nextstep.subway.acceptance;
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 
 import java.util.HashMap;
 import java.util.List;

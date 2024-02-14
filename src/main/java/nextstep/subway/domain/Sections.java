@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -52,5 +54,14 @@ public class Sections {
             throw new IllegalSectionException("해당 역은 노선에 등록된 하행 종점역이 아닙니다.");
         }
         sections.remove(sections.size() - 1);
+    }
+
+    public Stations getStations() {
+        List<Station> stations = sections.stream()
+                .flatMap(section ->
+                             Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
+        return Stations.of(stations);
     }
 }

@@ -35,6 +35,20 @@ public class Line {
 
     }
 
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections();
+    }
+
+    public static Line of(Long id, String name, String color) {
+        return Line.builder()
+                   .id(id)
+                   .name(name)
+                   .color(color)
+                   .sections(new Sections()).build();
+    }
+
     public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
         Line line = Line.builder()
                         .name(lineRequest.getName())
@@ -59,5 +73,9 @@ public class Line {
 
     public void deleteLastSection(Station station) {
         sections.removeLastSection(station);
+    }
+
+    public Stations getStations() {
+        return sections.getStations();
     }
 }
