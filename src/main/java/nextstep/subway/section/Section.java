@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
@@ -38,8 +39,16 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
-    public void updateUpStation(Station station) {
-        this.upStation = station;
+    public void update(Section middleSection) {
+        this.upStation = middleSection.getDownStation();
+        validateSectionDistance(middleSection);
+        this.distance -= middleSection.distance;
+    }
+
+    private void validateSectionDistance(Section middleSection) {
+        if (this.distance <= middleSection.distance) {
+            throw new SubwayException("중간 구간의 거리는 다음 구간보다 짧아야합니다.");
+        }
     }
 
     public Long getId() {

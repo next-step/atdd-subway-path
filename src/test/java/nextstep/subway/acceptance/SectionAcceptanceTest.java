@@ -54,12 +54,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addMiddleSection() {
         // when
-        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 강남역, 선릉역, 10L);
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 강남역, 선릉역, 9L);
         String locationHeader = response.header("Location");
 
         // then
         List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
         assertThat(lineStationIds).containsExactly(강남역, 선릉역, 역삼역);
+    }
+
+    /**
+     * When 지하철 노선 가운데에 다음 구간의 거리와 같거나 긴 구간을 등록하면
+     * Then 에러를 반환한다.
+     */
+    @DisplayName("다음 구간의 거리와 같거나 긴 구간을 등록하면 에러를 반환한다.")
+    @Test
+    void validateSectionDistance() {
+        // when
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 강남역, 선릉역, 11L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.jsonPath().getString("message")).isEqualTo("중간 구간의 거리는 다음 구간보다 짧아야합니다.");
     }
 
     /**

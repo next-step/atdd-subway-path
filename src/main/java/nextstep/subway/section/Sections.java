@@ -27,7 +27,7 @@ public class Sections {
 
         if(isMiddleSection(section)){
             Section nextSection = getNextSection(section);
-            nextSection.updateUpStation(section.getDownStation());
+            nextSection.update(section);
         }
 
         this.sections.add(section);
