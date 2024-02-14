@@ -29,7 +29,7 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> showOneLine(@PathVariable Long id) {
-        LineResponse line = lineService.findLine(id);
+        LineResponse line = lineService.findLineById(id);
         return ResponseEntity.ok().body(line);
     }
 
