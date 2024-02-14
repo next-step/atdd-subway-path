@@ -1,9 +1,6 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.exception.DeleteSectionException;
-import nextstep.subway.exception.EmptySectionException;
-import nextstep.subway.exception.IsNotLastStationException;
-import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.*;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -51,10 +48,12 @@ public class Sections {
             return;
         }
 
+        System.out.println("테스트");
+        
         List<Station> stations = getStations();
 
         if (this.sections.contains(newSection)) {
-            // 동일한 구간은 생성 X
+            throw new AlreadyExistSectionException();
         }
         if (stations.contains(newSection.getUpStation()) || stations.contains(newSection.getDownStation())) {
             // 추가하는 구간의 상행역 혹은 하행역이 노선에 있지 않으면 생성 X
@@ -91,6 +90,9 @@ public class Sections {
     private void addFirstSection(Section newSection) {
         this.sections.get(FIRST).updateUpStation(newSection.getDownStation());
         this.sections.add(FIRST, newSection);
+
+        System.out.println("this.sections.get(0) : " + this.sections.get(0).getUpStation().getName() + " / " + this.sections.get(0).getDownStation().getName());
+        System.out.println("this.sections.get(1) : " + this.sections.get(1).getUpStation().getName() + " / " + this.sections.get(1).getDownStation().getName());
     }
 
     private void addLastSection(Section newSection) {
@@ -101,6 +103,11 @@ public class Sections {
         int index = getStations().indexOf(newSection.getUpStation());
         this.sections.get(index).updateUpStation(newSection.getDownStation());
         this.sections.add(index, newSection);
+
+        System.out.println("this.sections.get(0) : " + this.sections.get(0).getUpStation().getName() + " / " + this.sections.get(0).getDownStation().getName());
+        System.out.println("this.sections.get(1) : " + this.sections.get(1).getUpStation().getName() + " / " + this.sections.get(1).getDownStation().getName());
+        System.out.println("this.sections.get(2) : " + this.sections.get(2).getUpStation().getName() + " / " + this.sections.get(2).getDownStation().getName());
+
     }
 
     public void deleteSection(Station station) {

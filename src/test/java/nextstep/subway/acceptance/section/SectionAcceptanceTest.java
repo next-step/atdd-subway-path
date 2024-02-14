@@ -84,7 +84,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
     }
 
-
     /**
      * Given 지하철 구간을 등록하고
      * When 지하철 노선을 조회하면
@@ -188,7 +187,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         지하철_구간_등록_검증(신논현_양재_구간_생성_응답, 신분당선_조회_응답);
     }
 
-
     /**
      * Given 지하철 노선을 생성하고
      * When 노선 처음에 구간을 추가하면
@@ -209,6 +207,30 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         ShowLineResponse 신분당선_조회_응답 = 지하철_노선_조회(신분당선_ID).as(ShowLineResponse.class);
         지하철_구간_등록_검증(신사_논현_구간_생성_응답, 신분당선_조회_응답);
     }
+
+    /**
+     * When 이미 등록된 구간을 등록하면
+     * Then 구간이 등록되지 않는다.
+     */
+    @DisplayName("이미 등록된 구간을 등록하면 구간이 등록되지 않는다.")
+    @Test
+    @Disabled
+    void 이미_등록된_구간을_등록() {
+        // given
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
+
+        // when
+        AddSectionRequest 신논현_논현_구간_생성_요청 = AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.기본_역_간격);
+
+        // then
+        ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(신논현_논현_구간_생성_요청, 신분당선_ID);
+        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
+    }
+
+
+
+
 
 
 

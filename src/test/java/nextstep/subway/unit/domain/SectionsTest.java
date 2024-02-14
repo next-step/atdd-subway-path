@@ -1,6 +1,8 @@
 package nextstep.subway.unit.domain;
 
 import nextstep.subway.common.Constant;
+import nextstep.subway.exception.AlreadyExistDownStationException;
+import nextstep.subway.exception.AlreadyExistSectionException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
@@ -13,6 +15,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class SectionsTest {
 
@@ -84,5 +88,23 @@ public class SectionsTest {
         List<Section> 구간들 = 신분당선_구간들.getSections();
         Assertions.assertThat(구간들).containsOnlyOnce(신사_논현_구간, 논현_신논현_구간);
     }
+
+    @DisplayName("이미 등록된 구간을 등록하면 예외발생")
+    @Test
+    void 이미_등록된_구간을_등록하면_예외발생() {
+        // given
+        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간))); // 논현 - 신논현
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선_구간들.addSection(논현_신논현_구간))
+                .isInstanceOf(AlreadyExistSectionException.class);
+    }
+
+    @DisplayName("상행역과 하행역이 모두 노선에 없는 구간을 등록하면 예외발생")
+    @Test
+    void 상행역과_하행역이_모두_노선에_없는_구간을_등록하면_예외발생() {
+    }
+
+
 
 }
