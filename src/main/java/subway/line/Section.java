@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import subway.station.Station;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,5 +89,22 @@ public class Section {
 	@Override
 	public int hashCode() {
 		return Objects.hash(line, upStation, downStation, distance);
+	}
+
+	@Override
+	public int compareTo(Section next) {
+		final int sort = 1;
+		Station nextUpStation = next.getUpStation();
+		Station nextDownStation = next.getDownStation();
+
+		if (downStation.equals(nextUpStation)) {
+			return -sort;
+		}
+
+		if (upStation.equals(nextDownStation)) {
+			return sort;
+		}
+
+		return 0;
 	}
 }

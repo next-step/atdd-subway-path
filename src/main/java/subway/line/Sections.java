@@ -3,7 +3,6 @@ package subway.line;
 import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -149,31 +148,11 @@ public class Sections {
 
 	public List<Station> getSortedStations() {
 		List<Station> stations = sectionList.stream()
-			.sorted(stationComparator())
+			.sorted()
 			.map(Section::getUpStation)
 			.collect(toList());
 		stations.add(getFinalStation());
 		return stations;
-	}
-
-	private static Comparator<Section> stationComparator() {
-		return (section, nextSection) -> {
-			final int sort = 1;
-			Station upStation = section.getUpStation();
-			Station downStation = section.getDownStation();
-			Station nextUpStation = nextSection.getUpStation();
-			Station nextDownStation = nextSection.getDownStation();
-
-			if (downStation.equals(nextUpStation)) {
-				return -sort;
-			}
-
-			if (upStation.equals(nextDownStation)) {
-				return sort;
-			}
-
-			return 0;
-		};
 	}
 
 	public List<Station> getStations() {
