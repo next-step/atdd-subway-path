@@ -1,5 +1,6 @@
-package nextstep.subway.line.util;
+package nextstep.subway.path;
 
+import nextstep.subway.exception.HttpBadRequestException;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.paths.Path;
@@ -21,11 +22,14 @@ class PathFinderTest {
     private Station 교대역;
     private Station 사당역;
     private Station 신림역;
+    private Station 가양역;
+    private Station 김포공항역;
 
     private Line 일호선;
     private Line 이호선;
     private Line 삼호선;
     private Line 신분당선;
+    private Line 구호선;
 
     private PathFinder pathFinder;
 
@@ -36,6 +40,8 @@ class PathFinderTest {
         교대역 = new Station("교대역");
         사당역 = new Station("사당역");
         신림역 = new Station("신림역");
+        가양역 = new Station("가양역");
+        김포공항역 = new Station("김포공항역");
 
         이호선 = new Line("2호선", "green", 강남역, 교대역);
         Section section = new Section(강남역, 교대역, 10, 이호선);
@@ -53,7 +59,11 @@ class PathFinderTest {
         Section section4 = new Section(신림역, 강남역, 2, 신분당선);
         신분당선.addSection(section4);
 
-        pathFinder = new PathFinder(List.of(이호선, 삼호선, 일호선, 신분당선));
+        구호선 = new Line("구호선", "blue", 김포공항역, 가양역);
+        Section section5 = new Section(김포공항역, 가양역, 5, 구호선);
+        구호선.addSection(section5);
+
+        pathFinder = new PathFinder(List.of(이호선, 삼호선, 일호선, 신분당선, 구호선));
     }
 
     @Test
@@ -68,7 +78,7 @@ class PathFinderTest {
     @DisplayName("예외_출발역과 도착역이 같습니다.")
     void error_sameStation() {
         Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 강남역))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(HttpBadRequestException.class);
     }
 
     @Test
@@ -76,14 +86,14 @@ class PathFinderTest {
     void error_notExistStation() {
         Station 잠실역 = new Station("잠실역");
         Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 잠실역))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(HttpBadRequestException.class);
     }
 
     @Test
     @DisplayName("경로가 존재하지 않습니다.")
     void error_notExistPath() {
-        Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 사당역))
-                .isInstanceOf(IllegalArgumentException.class);
+        Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 김포공항역))
+                .isInstanceOf(HttpBadRequestException.class);
     }
 
 }
