@@ -50,6 +50,16 @@ public class Sections {
 		}
 	}
 
+	private void checkExistingStation(Section newSection) {
+		Station firstStation = getFirstStation();
+
+		if (newSection.getDownStation().equals(firstStation)) {
+			checkExistingStation(newSection.getUpStation());
+			return;
+		}
+
+		checkExistingStation(newSection.getDownStation());
+	}
 
 	private void addMiddleSection(Section newSection) {
 		Section changeSection = sectionList.stream()
@@ -72,17 +82,6 @@ public class Sections {
 		sectionList.remove(changeSection);
 		sectionList.add(newSection);
 		sectionList.add(changeNewSection);
-	}
-
-	private void checkExistingStation(Section newSection) {
-		Station firstStation = getFirstStation();
-
-		if (newSection.getDownStation().equals(firstStation)) {
-			checkExistingStation(newSection.getUpStation());
-			return;
-		}
-
-		checkExistingStation(newSection.getDownStation());
 	}
 
 	private void checkExistingStation(Station station) {
