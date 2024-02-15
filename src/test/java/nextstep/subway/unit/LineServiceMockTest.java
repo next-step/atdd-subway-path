@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,6 +101,23 @@ public class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> lineService.getSubwayLine(1L))
                 .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void 지하철_노선_목록_조회() {
+        final Line 신분당선 = new Line("신분당선", "bg-red-600", mock(Station.class), mock(Station.class), 10);
+        final Line 지하철노선 = new Line("지하철노선", "bg-yello-600", mock(Station.class), mock(Station.class), 15);
+
+        when(lineRepository.findAll()).thenReturn(List.of(신분당선, 지하철노선));
+
+        // when
+        List<LineResponse> response = lineService.getSubwayLines();
+
+        // then
+        assertThat(response).hasSize(2);
+        assertThat(response.get(0).getName()).isEqualTo("신분당선");
+        assertThat(response.get(1).getName()).isEqualTo("지하철노선");
     }
 
 }
