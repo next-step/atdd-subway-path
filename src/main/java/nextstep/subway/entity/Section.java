@@ -99,6 +99,10 @@ public class Section {
         return distance;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

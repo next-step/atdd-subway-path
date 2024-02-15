@@ -21,14 +21,14 @@ public class StationSectionSteps {
                 .then().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_구간_추가요청_상태코드_검증_포함(Long upStationId, SectionRequest request) {
+    public static ExtractableResponse<Response> 지하철_구간_추가요청_상태코드_검증_포함(Long upStationId, SectionRequest request, HttpStatus httpStatus) {
         return given()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(String.format("/lines/%d/sections", upStationId))
                 .then()
-                .statusCode(HttpStatus.CREATED.value())
+                .statusCode(httpStatus.value())
                 .extract();
     }
 
@@ -42,6 +42,6 @@ public class StationSectionSteps {
     }
 
     public static void 지하철_구간_목록_추가요청_상태코드_검증_포함(Long 노선_번호, List<SectionRequest> 구간_요청_목록) {
-        구간_요청_목록.forEach(구간_요청 -> 지하철_구간_추가요청_상태코드_검증_포함(노선_번호, 구간_요청));
+        구간_요청_목록.forEach(구간_요청 -> 지하철_구간_추가요청_상태코드_검증_포함(노선_번호, 구간_요청, HttpStatus.CREATED));
     }
 }

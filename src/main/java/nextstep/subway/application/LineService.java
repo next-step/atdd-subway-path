@@ -3,7 +3,6 @@ package nextstep.subway.application;
 import nextstep.subway.dto.*;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
-import nextstep.subway.entity.Sections;
 import nextstep.subway.entity.Station;
 import nextstep.subway.entity.repository.LineRepository;
 import nextstep.subway.entity.repository.StationRepository;
@@ -99,7 +98,7 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                convertToStationResponses(line.getSections()));
+                convertToStationResponses(line.getAllStations()));
     }
 
     private Section convertToSectionEntity(LineRequest request, Line line) {
@@ -110,13 +109,9 @@ public class LineService {
                 line);
     }
 
-    private List<StationResponse> convertToStationResponses(Sections sections) {
+    private List<StationResponse> convertToStationResponses(List<Station> stations) {
         List<StationResponse> stationResponses = new ArrayList<>();
-        stationResponses.add(convertToStationResponse(sections.findFirstStation()));
-        sections.getSections()
-                .forEach(section ->
-                        stationResponses.add(convertToStationResponse(section.getDownStation())));
-
+        stations.forEach(station -> stationResponses.add(convertToStationResponse(station)));
         return stationResponses;
     }
 

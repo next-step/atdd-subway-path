@@ -92,7 +92,7 @@ class LineTest {
                         이호선.addSection(사성_삼성_구간);
 
                         // then
-                        assertThat(이호선.getStations())
+                        assertThat(이호선.getAllStations())
                                 .containsOnly(사성, 삼성, 선릉, 역삼, 강남, 서초);
 
                         assertThat(이호선.getAllSections())
@@ -116,7 +116,7 @@ class LineTest {
                         이호선.addSection(삼성_사성_구간);
 
                         // then
-                        assertThat(이호선.getStations())
+                        assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
                         assertThat(이호선.getAllSections())
@@ -145,7 +145,7 @@ class LineTest {
                         이호선.addSection(사성_역삼_구간);
 
                         // then
-                        assertThat(이호선.getStations())
+                        assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 선릉, 사성, 역삼, 강남, 서초);
 
                         assertThat(이호선.getAllSections())
@@ -169,7 +169,7 @@ class LineTest {
                         이호선.addSection(역삼_사성_구간);
 
                         // then
-                        assertThat(이호선.getStations())
+                        assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
                         assertThat(이호선.getAllSections())
@@ -198,7 +198,7 @@ class LineTest {
                         이호선.addSection(사성_서초_구간);
 
                         // then
-                        assertThat(이호선.getStations())
+                        assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 선릉, 역삼, 강남, 사성, 서초);
 
                         assertThat(이호선.getAllSections())
@@ -221,7 +221,7 @@ class LineTest {
                         이호선.addSection(서초_사성_구간);
 
                         // then
-                        assertThat(이호선.getStations())
+                        assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
                         assertThat(이호선.getAllSections())
@@ -352,7 +352,7 @@ class LineTest {
         이호선.addSection(삼성_선릉_구간);
 
         // when
-        List<Station> 이호선_모든_역 = 이호선.getStations();
+        List<Station> 이호선_모든_역 = 이호선.getAllStations();
 
         // then
         assertThat(이호선_모든_역).containsOnly(
@@ -379,7 +379,7 @@ class LineTest {
                 이호선.deleteSection(StationFixture.역삼);
 
                 // then
-                assertThat(이호선.getStations()).containsAnyOf(삼성, StationFixture.선릉);
+                assertThat(이호선.getAllStations()).containsAnyOf(삼성, StationFixture.선릉);
             }
         }
 

@@ -156,7 +156,8 @@ public class Sections {
         return new Section(
                 sectionOfIndex.getUpStation(),
                 sectionToAdd.getUpStation(),
-                sectionOfIndex.getDistance() - sectionToAdd.getDistance());
+                sectionOfIndex.getDistance() - sectionToAdd.getDistance(),
+                sectionToAdd.getLine());
     }
 
 
@@ -164,7 +165,8 @@ public class Sections {
         return new Section(
                 sectionToAdd.getDownStation(),
                 sectionOfIndex.getDownStation(),
-                sectionOfIndex.getDistance() - sectionToAdd.getDistance());
+                sectionOfIndex.getDistance() - sectionToAdd.getDistance(),
+                sectionToAdd.getLine());
     }
 
     private Section findInsertionPointSection(Section sectionToAdd) {
