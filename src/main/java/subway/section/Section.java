@@ -4,6 +4,7 @@ import subway.line.Line;
 import subway.station.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -59,5 +60,18 @@ public class Section {
 
     public boolean equalDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, distance, line);
     }
 }
