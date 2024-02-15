@@ -1,5 +1,8 @@
 package subway.line;
 
+import java.util.List;
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +14,7 @@ import javax.persistence.ManyToOne;
 import subway.station.Station;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,5 +63,48 @@ public class Section {
 
 	public Integer getDistance() {
 		return distance;
+	}
+
+	public List<Station> getStations() {
+		return List.of(upStation, downStation);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		Section section = (Section)o;
+		return Objects.equals(line, section.line)
+			&& Objects.equals(upStation, section.upStation)
+			&& Objects.equals(downStation, section.downStation)
+			&& Objects.equals(distance, section.distance);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(line, upStation, downStation, distance);
+	}
+
+	@Override
+	public int compareTo(Section next) {
+		final int sort = 1;
+		Station nextUpStation = next.getUpStation();
+		Station nextDownStation = next.getDownStation();
+
+		if (downStation.equals(nextUpStation)) {
+			return -sort;
+		}
+
+		if (upStation.equals(nextDownStation)) {
+			return sort;
+		}
+
+		return 0;
 	}
 }

@@ -1,13 +1,18 @@
 package subway.fixture.line;
 
+import static subway.fixture.station.StationEntityFixture.*;
+
 import java.util.List;
 
-import subway.fixture.section.SectionEntityFixture;
-import subway.fixture.station.StationEntityFixture;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import subway.line.Line;
+import subway.line.Section;
 import subway.station.Station;
 
 public class LineEntityFixture {
+	public static final Integer DISTANCE = 10;
+
 	private final String name;
 	private final String color;
 
@@ -21,53 +26,57 @@ public class LineEntityFixture {
 	}
 
 	public static Line 신분당선() {
-		return LineEntityFixture.builder()
+		Line line = LineEntityFixture.builder()
 			.name("신분당선")
 			.color("빨간색")
 			.build();
+
+		ReflectionTestUtils.setField(line, "id", 1L);
+		return line;
 	}
 
 	public static Line 삼호선() {
-		return LineEntityFixture.builder()
+		Line line = LineEntityFixture.builder()
 			.name("삼호선")
 			.color("주황색")
 			.build();
+		ReflectionTestUtils.setField(line, "id", 2L);
+		return line;
 	}
 
 	public static Line 신분당선_1구간_추가() {
-		Station 강남역 = StationEntityFixture.강남역();
-		Station 양재역 = StationEntityFixture.양재역();
-		Integer distance = SectionEntityFixture.DISTANCE;
-
 		Line line = 신분당선();
+		Station 강남역 = 강남역();
+		Station 양재역 = 양재역();
+		Section section = new Section(line, 강남역, 양재역, DISTANCE);
 
-		line.addSection(강남역, 양재역, distance);
+		line.addSection(section);
 
 		return line;
 	}
 
 	public static Line 신분당선_2구간_추가() {
-		Station 강남역 = StationEntityFixture.강남역();
-		Station 양재역 = StationEntityFixture.양재역();
-		Station 논현역 = StationEntityFixture.논현역();
-		Integer distance = SectionEntityFixture.DISTANCE;
-
 		Line line = 신분당선();
+		Station 강남역 = 강남역();
+		Station 양재역 = 양재역();
+		Station 논현역 = 논현역();
 
-		line.addSection(강남역, 양재역, distance);
-		line.addSection(양재역, 논현역, distance);
+		Section section1 = new Section(line, 강남역, 양재역, DISTANCE);
+		Section section2 = new Section(line, 양재역, 논현역, DISTANCE);
+
+		line.addSection(section1);
+		line.addSection(section2);
 
 		return line;
 	}
 
 	public static Line 삼호선_1구간_추가() {
-		Station 불광역 = StationEntityFixture.불광역();
-		Station 녹번역 = StationEntityFixture.녹번역();
-		Integer distance = SectionEntityFixture.DISTANCE;
-
 		Line line = 삼호선();
+		Station 불광역 = 불광역();
+		Station 녹번역 = 녹번역();
+		Section section = new Section(line, 불광역, 녹번역, DISTANCE);
 
-		line.addSection(불광역, 녹번역, distance);
+		line.addSection(section);
 
 		return line;
 	}

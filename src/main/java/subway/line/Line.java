@@ -1,5 +1,7 @@
 package subway.line;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -74,11 +76,15 @@ public class Line {
 		this.color = color;
 	}
 
-	public void addSection(Station upStation, Station downStation, Integer distance) {
-		getSections().add(this, upStation, downStation, distance);
+	public void addSection(Section section) {
+		getSections().add(section);
 	}
 
 	public void removeFinalStation(Station finalStation) {
 		getSections().remove(finalStation);
+	}
+
+	public List<Station> getSortedStations() {
+		return getSections().getSortedStations();
 	}
 }

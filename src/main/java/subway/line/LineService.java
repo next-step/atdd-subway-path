@@ -22,9 +22,14 @@ public class LineService {
 		this.lineRepository = lineRepository;
 	}
 
-	public Line findLineById(Long id) {
+	private Line findById(Long id) {
 		return lineRepository.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
+	}
+
+	public LineResponse findLineById(Long id) {
+		Line line = findById(id);
+		return LineResponse.of(line);
 	}
 
 	public List<LineResponse> lines() {
@@ -35,15 +40,16 @@ public class LineService {
 	}
 
 	@Transactional
-	public Line save(Line line, Station upStation, Station downStation, Integer distance) {
+	public LineResponse save(Line line, Station upStation, Station downStation, Integer distance) {
 		Line savedLine = lineRepository.save(line);
-		savedLine.addSection(upStation, downStation, distance);
+		savedLine.addSection(new Section(savedLine, upStation, downStation, distance));
 
-		return savedLine;
+		return LineResponse.of(savedLine);
 	}
 
 	@Transactional
-	public void update(Line line, LineUpdateRequest request) {
+	public void update(Long id, LineUpdateRequest request) {
+		Line line = findById(id);
 		line.changeName(request.getName());
 		line.changeColor(request.getColor());
 	}
@@ -54,13 +60,15 @@ public class LineService {
 	}
 
 	@Transactional
-	public Line addSection(Line line, Station upStation, Station downStation, Integer distance) {
-		line.addSection(upStation, downStation, distance);
-		return line;
+	public LineResponse addSection(Long id, Station upStation, Station downStation, Integer distance) {
+		Line line = findById(id);
+		line.addSection(new Section(line, upStation, downStation, distance));
+		return LineResponse.of(line);
 	}
 
 	@Transactional
-	public void deleteSection(Line line, Station deleteTargetStation) {
+	public void deleteSection(Long id, Station deleteTargetStation) {
+		Line line = findById(id);
 		line.removeFinalStation(deleteTargetStation);
 	}
 }

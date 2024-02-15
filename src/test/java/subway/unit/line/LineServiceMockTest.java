@@ -4,6 +4,8 @@ import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
+import static subway.fixture.line.LineEntityFixture.*;
+import static subway.fixture.station.StationEntityFixture.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,13 +19,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import subway.dto.line.LineResponse;
 import subway.dto.line.LineUpdateRequest;
-import subway.fixture.line.LineEntityFixture;
 import subway.fixture.line.LineRequestFixture;
-import subway.fixture.section.SectionEntityFixture;
-import subway.fixture.station.StationEntityFixture;
 import subway.line.Line;
 import subway.line.LineRepository;
 import subway.line.LineService;
+import subway.line.Section;
 import subway.station.Station;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,22 +38,22 @@ class LineServiceMockTest {
 	@Test
 	void successFindById() {
 		// given
-		Line 신분당선 = LineEntityFixture.신분당선_1구간_추가();
+		Line 신분당선 = 신분당선_1구간_추가();
 		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선));
 
 		// when
-		Line actualLine = lineService.findLineById(anyLong());
+		LineResponse actualLine = lineService.findLineById(anyLong());
 
 		// then
-		assertThat(actualLine).isEqualTo(신분당선);
+		assertThat(actualLine).usingRecursiveComparison().isEqualTo(LineResponse.of(신분당선));
 	}
 
 	@DisplayName("저장된 모든 노선을 조회한다.")
 	@Test
 	void successLines() {
 		// given
-		List<Line> 모든_노선_리스트 = LineEntityFixture.모든_노선_리스트();
-		given(lineRepository.findAll()).willReturn(모든_노선_리스트);
+		List<Line> 모든_노선_리스트 = 모든_노선_리스트();
+		given(lineRepository.findAll()).willReturn(모든_노선_리스트());
 
 		// when
 		List<LineResponse> actualResponse = lineService.lines();
@@ -69,17 +69,18 @@ class LineServiceMockTest {
 	@Test
 	void successSave() {
 		// given
-		Line 신분당선 = LineEntityFixture.신분당선();
+		Line 신분당선 = 신분당선();
 		given(lineRepository.save(any(Line.class))).willReturn(신분당선);
 
 		// when
-		Line 신분당선1 = LineEntityFixture.신분당선();
-		Station 강남역 = StationEntityFixture.강남역();
-		Station 양재역 = StationEntityFixture.양재역();
-		Line savedLine = lineService.save(신분당선1, 강남역, 양재역, SectionEntityFixture.DISTANCE);
+		Station 강남역 = 강남역();
+		Station 양재역 = 양재역();
+		LineResponse savedLine = lineService.save(신분당선, 강남역, 양재역, DISTANCE);
 
 		// then
-		assertThat(savedLine).usingRecursiveComparison().isEqualTo(신분당선);
+		Line 신분당선1 = 신분당선();
+		신분당선1.addSection(new Section(신분당선1, 강남역, 양재역, DISTANCE));
+		assertThat(savedLine).usingRecursiveComparison().isEqualTo(LineResponse.of(신분당선1));
 	}
 
 	@DisplayName("노선의 이름을 수정한다.")
@@ -87,14 +88,17 @@ class LineServiceMockTest {
 	void successUpdateName() {
 		// given
 		String changeName = "변경된 이름";
-		Line 신분당선 = LineEntityFixture.신분당선();
+
+		Line 신분당선 = 신분당선_1구간_추가();
+		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선));
+
 		LineUpdateRequest lineUpdateRequest =
-			LineRequestFixture.updateBuilder()
+			LineRequestFixture.lineUpdateRequest()
 				.name(changeName)
 				.build();
 
 		// when
-		lineService.update(신분당선, lineUpdateRequest);
+		lineService.update(신분당선.getId(), lineUpdateRequest);
 
 		// then
 		assertThat(신분당선.getName()).isEqualTo(changeName);
@@ -105,14 +109,16 @@ class LineServiceMockTest {
 	void successUpdateColor() {
 		// given
 		String changeColor = "변경된 색깔";
-		Line 신분당선 = LineEntityFixture.신분당선();
+		Line 신분당선 = 신분당선_1구간_추가();
+		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선));
+
 		LineUpdateRequest lineUpdateRequest =
-			LineRequestFixture.updateBuilder()
+			LineRequestFixture.lineUpdateRequest()
 				.color(changeColor)
 				.build();
 
 		// when
-		lineService.update(신분당선, lineUpdateRequest);
+		lineService.update(신분당선.getId(), lineUpdateRequest);
 
 		// then
 		assertThat(신분당선.getColor()).isEqualTo(changeColor);
@@ -122,7 +128,7 @@ class LineServiceMockTest {
 	@Test
 	void successDelete() {
 		// given
-		Line 신분당선_1구간_추가 = LineEntityFixture.신분당선_1구간_추가();
+		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
 
 		// when
 		lineService.delete(신분당선_1구간_추가.getId());
@@ -131,35 +137,83 @@ class LineServiceMockTest {
 		verify(lineRepository).deleteById(신분당선_1구간_추가.getId());
 	}
 
-	@DisplayName("노선에 구간을 추가한다.")
+	@DisplayName("노선의 최초 정류장 앞에 구간을 추가한다.")
 	@Test
-	void successAddSection() {
+	void successAddSection1() {
 		// given
-		Line 신분당선_1구간_추가 = LineEntityFixture.신분당선_1구간_추가();
-		Station 양재역 = StationEntityFixture.양재역();
-		Station 논현역 = StationEntityFixture.논현역();
-		Integer distance = SectionEntityFixture.DISTANCE;
+		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
+		Station 강남역 = 강남역();
+		Station 논현역 = 논현역();
+		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선_1구간_추가));
 
 		// when
-		lineService.addSection(신분당선_1구간_추가, 양재역, 논현역, distance);
+		LineResponse lineResponse = lineService.addSection(신분당선_1구간_추가.getId(), 논현역, 강남역, DISTANCE);
 
 		// then
-		Line 신분당선_2구간_추가 = LineEntityFixture.신분당선_2구간_추가();
-		assertThat(신분당선_1구간_추가).usingRecursiveComparison().isEqualTo(신분당선_2구간_추가);
+		assertThat(lineResponse).usingRecursiveComparison().isEqualTo(lineResponse);
+	}
+
+	@DisplayName("노선의 중간 지점에 구간을 추가한다.")
+	@Test
+	void successAddSection2() {
+		// given
+		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
+		Station 강남역 = 강남역();
+		Station 논현역 = 논현역();
+		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선_1구간_추가));
+
+		// when
+		LineResponse lineResponse = lineService.addSection(신분당선_1구간_추가.getId(), 강남역, 논현역, 8);
+
+		// then
+		assertThat(lineResponse).usingRecursiveComparison().isEqualTo(lineResponse);
+	}
+
+	@DisplayName("노선의 마지막 정류장에 이어서 구간을 추가한다.")
+	@Test
+	void successAddSection3() {
+		// given
+		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
+		Station 양재역 = 양재역();
+		Station 논현역 = 논현역();
+		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선_1구간_추가));
+
+		// when
+		LineResponse lineResponse = lineService.addSection(신분당선_1구간_추가.getId(), 양재역, 논현역, DISTANCE);
+
+		// then
+		assertThat(lineResponse).usingRecursiveComparison().isEqualTo(lineResponse);
+	}
+
+	@DisplayName("노선의 마지막 정류장에 이어서 구간을 추가한다.")
+	@Test
+	void failAddSection() {
+		// given
+		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
+		Station 양재역 = 양재역();
+		Station 논현역 = 논현역();
+		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선_1구간_추가));
+
+		// when
+		LineResponse lineResponse = lineService.addSection(신분당선_1구간_추가.getId(), 양재역, 논현역, DISTANCE);
+
+		// then
+		assertThat(lineResponse).usingRecursiveComparison().isEqualTo(lineResponse);
 	}
 
 	@DisplayName("노선에 구간을 삭제한다.")
 	@Test
 	void successDeleteSection() {
 		// given
-		Line 신분당선_2구간_추가 = LineEntityFixture.신분당선_2구간_추가();
-		Station 논현역 = StationEntityFixture.논현역();
+		Line 신분당선 = 신분당선_2구간_추가();
+		Station 논현역 = 논현역();
+		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선));
 
 		// when
-		lineService.deleteSection(신분당선_2구간_추가, 논현역);
+		lineService.deleteSection(신분당선.getId(), 논현역);
 
 		// then
-		Line 신분당선_1구간_추가 = LineEntityFixture.신분당선_1구간_추가();
-		assertThat(신분당선_2구간_추가).usingRecursiveComparison().isEqualTo(신분당선_1구간_추가);
+		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
+		assertThat(신분당선).usingRecursiveComparison().isEqualTo(신분당선_1구간_추가);
 	}
 }
