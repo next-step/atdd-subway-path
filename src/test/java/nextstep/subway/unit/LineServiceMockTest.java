@@ -143,6 +143,48 @@ public class LineServiceMockTest {
         assertThat(신분당선.getColor()).isEqualTo("bg-green-600");
     }
 
+    @DisplayName("지하철 노선 정보 수정 시 존재하지 않는 역을 수정할 경우 오류가 발생한다.")
+    @Test
+    void 지하철_노선_정보_수정_시_존재하지_않는_역으로_수정_불가() {
+        // given
+        LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // then
+        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, request))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("지하철 노선 정보 수정 시 노선명이 null 혹은 공백일 때 수정할 경우 오류가 발생한다.")
+    @Test
+    void 지하철_노선_정보_수정_시_노선명이_올바르지_않으면_수정_불가() {
+        // given
+        LineUpdateRequest 노선명_null = new LineUpdateRequest(null, "bg-green-600");
+        LineUpdateRequest 노선명_공백 = new LineUpdateRequest("", "bg-green-600");
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
+
+        // then
+        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 노선명_null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 노선명_공백))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("지하철 노선 정보 수정 시 색상값이 null 혹은 공백일 때 수정할 경우 오류가 발생한다.")
+    @Test
+    void 지하철_노선_정보_수정_시_색상값이_올바르지_않으면_수정_불가() {
+        // given
+        LineUpdateRequest 색상값_null = new LineUpdateRequest("2호선", null);
+        LineUpdateRequest 색상값_공백 = new LineUpdateRequest("2호선", "");
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
+
+        // then
+        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 색상값_null))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 색상값_공백))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     private LineRequest 신분당선_생성_요청() {
         return new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
     }
