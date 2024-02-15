@@ -10,14 +10,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.acceptance.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class SectionAcceptanceTest extends AcceptanceTest {
+@AcceptanceTest
+public class SectionAcceptanceTest {
     final String 상행역 = "강남역";
     private String 상행ID;
     final String 하행역 = "역삼역";

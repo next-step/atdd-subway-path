@@ -1,19 +1,14 @@
 package nextstep.subway.acceptance;
 
-import nextstep.subway.utils.DatabaseCleanup;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestExecutionListeners;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class AcceptanceTest {
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Retention(RetentionPolicy.RUNTIME)
+@TestExecutionListeners(value = {
+    AcceptanceTestExecutionListener.class,}, mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
+public @interface AcceptanceTest {
 
-    @BeforeEach
-    public void setUp() {
-        databaseCleanup.execute();
-    }
 }
