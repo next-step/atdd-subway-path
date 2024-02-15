@@ -146,7 +146,7 @@ class LineServiceTest {
 		Station 신논현역 = 정류장_생성("신논현역");
 
 		// when
-		LineResponse actualResponse = lineService.addSection(신분당선.getId(), 첫번째_정류장, 신논현역, 10);
+		LineResponse actualResponse = lineService.addSection(신분당선.getId(), 첫번째_정류장, 신논현역, 8);
 
 		// then
 		LineResponse expectedResponse = lineService.findLineById(신분당선.getId());
