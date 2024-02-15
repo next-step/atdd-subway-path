@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import subway.acceptance.AcceptanceTest;
 import subway.dto.line.LineResponse;
+import subway.dto.station.StationResponse;
 
 class LineAcceptanceTest extends AcceptanceTest {
 
@@ -140,7 +141,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	 */
 	@DisplayName("생성된 노선의 중간 부분에 정류장을 추가한다.")
 	@Test
-	void successAddSection() {
+	void successAddSection2() {
 		// given
 		LineResponse 노선_생성 = 노선_생성();
 		Long upStationId = 노선_생성.getStations().get(0).getId();
@@ -152,5 +153,53 @@ class LineAcceptanceTest extends AcceptanceTest {
 		// then
 		LineResponse 노선_조회 = 노선_조회(노선_생성.getId());
 		assertThat(노선_구간_추가).usingRecursiveComparison().isEqualTo(노선_조회);
+	}
+
+	/**
+	 * given 구간이 최소 2개 이상인 노선을 생성한다.
+	 * when 노선의 중간 정류장을 삭제한다.
+	 * then 삭제된 중간 정류장을 제외한 나머지 정류장이 순서대로 조회된다.
+	 *      ex) A -> B -> C의 경우 B를 삭제하면 A->C로 정류장 순서가 조회된다.
+	 */
+	@DisplayName("생선된 노선의 중간 구간을 삭제한다.")
+	@Test
+	void successDeleteSection1() {
+		// given
+		LineResponse 노선_생성 = 노선_생성();
+		Long 강남역 = 노선_생성.getStations().get(0).getId();
+		Long 논현역 = 정류장_생성_ID_반환("논현역");
+		LineResponse 노선_구간_추가 = 노선_구간_추가(노선_생성.getId(), 강남역, 논현역, 10);
+
+		// when
+		노선_구간_삭제(노선_구간_추가.getId(), 논현역);
+
+		// then
+		LineResponse 노선_조회 = 노선_조회(노선_구간_추가.getId());
+		assertThat(노선_생성).usingRecursiveComparison().isEqualTo(노선_조회);
+	}
+
+	/**
+	 * given 구간이 최소 2개 이상인 노선을 생성한다.
+	 * when 노선의 중간 정류장을 삭제한다.
+	 * then 삭제된 중간 정류장을 제외한 나머지 정류장이 순서대로 조회된다.
+	 *      ex) A -> B -> C의 경우 C를 삭제하면 A->B로 정류장 순서가 조회된다.
+	 */
+	@DisplayName("생선된 노선의 마지막 구간을 삭제한다.")
+	@Test
+	void successDeleteSection2() {
+		// given
+		LineResponse 노선_생성 = 노선_생성();
+		List<StationResponse> stations = 노선_생성.getStations();
+		Long 강남역 = stations.get(0).getId();
+		Long 논현역 = 정류장_생성_ID_반환("논현역");
+		Long 양재역 = stations.get(stations.size() - 1).getId();
+		LineResponse 노선_구간_추가 = 노선_구간_추가(노선_생성.getId(), 강남역, 논현역, 10);
+
+		// when
+		노선_구간_삭제(노선_구간_추가.getId(), 양재역);
+
+		// then
+		LineResponse 노선_조회 = 노선_조회(노선_구간_추가.getId());
+		assertThat(노선_생성).usingRecursiveComparison().isEqualTo(노선_조회);
 	}
 }

@@ -62,10 +62,8 @@ public class Sections {
 	}
 
 	private void addMiddleSection(Section newSection) {
-		Section changeSection = sectionList.stream()
-			.filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-			.findFirst()
-			.orElseThrow(EntityNotFoundException::new);
+		Predicate<Section> sectionByUpStationPredicate = findSectionByUpStationPredicate(newSection.getUpStation());
+		Section changeSection = findSectionByStation(sectionByUpStationPredicate);
 
 		Integer distance = changeSection.getDistance() - newSection.getDistance();
 		if (distance.compareTo(0) <= 0) {
@@ -130,15 +128,40 @@ public class Sections {
 		return section -> !upStationIds.contains(section.getDownStation().getId());
 	}
 
-	public void remove(Station finalStation) {
-		checkDeletableStation(finalStation);
-		Section section = getSectionMatchesDownStation(finalStation);
-		sectionList.remove(section);
+	public void remove(Station deleteTargetStation) {
+		checkOnlyTwoStations();
+		Predicate<Section> sectionByUpStationPredicate = findSectionByUpStationPredicate(deleteTargetStation);
+		Predicate<Section> sectionByDownStationPredicate = findSectionByDownStationPredicate(deleteTargetStation);
+
+		Section deleteStation = findSectionByStation(sectionByUpStationPredicate);
+		Section changeStation = findSectionByStation(sectionByDownStationPredicate);
+
+		Section newSection =
+			new Section(
+				changeStation.getLine(),
+				changeStation.getUpStation(),
+				deleteStation.getDownStation(),
+				deleteStation.getDistance() + changeStation.getDistance()
+			);
+
+		sectionList.remove(deleteStation);
+		sectionList.remove(changeStation);
+		sectionList.add(newSection);
 	}
 
-	private void checkDeletableStation(Station station) {
-		checkOnlyTwoStations();
-		checkFinalStation(station);
+	private Section findSectionByStation(Predicate<Section> predicate) {
+		return sectionList.stream()
+			.filter(predicate)
+			.findFirst()
+			.orElseThrow(EntityNotFoundException::new);
+	}
+
+	private static Predicate<Section> findSectionByUpStationPredicate(Station deleteTargetStation) {
+		return section -> section.getUpStation().equals(deleteTargetStation);
+	}
+
+	private static Predicate<Section> findSectionByDownStationPredicate(Station deleteTargetStation) {
+		return section -> section.getDownStation().equals(deleteTargetStation);
 	}
 
 	private void checkOnlyTwoStations() {

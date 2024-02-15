@@ -4,6 +4,11 @@ import static subway.utils.enums.Location.*;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import subway.dto.line.LineCreateRequest;
 import subway.dto.line.LineResponse;
 import subway.dto.line.LineUpdateRequest;
@@ -77,5 +82,16 @@ public class LineAcceptanceSteps {
 			.body(sectionRequest)
 			.post()
 			.as(LineResponse.class);
+	}
+
+	public static ExtractableResponse<Response> 노선_구간_삭제(Long id, Long deleteStationId) {
+		String uri = LINES.path(id).path("/sections").toUriString();
+
+		return RestAssured.given().log().all()
+			.when().param("stationId", String.valueOf(deleteStationId)).delete(uri)
+			.then().log().all()
+			.statusCode(HttpStatus.NO_CONTENT.value())
+			.extract();
+
 	}
 }
