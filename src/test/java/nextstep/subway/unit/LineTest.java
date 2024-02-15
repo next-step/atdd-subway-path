@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+@DisplayName("지하철 노선 단위 테스트")
 class LineTest {
 
     private Station upStation = new Station("강남역");;
