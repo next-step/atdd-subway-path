@@ -86,7 +86,7 @@ public class Sections {
 	}
 
 	public void deleteSection(Section section) {
-		if(getSize() <= 1) {
+		if (getSize() <= 1) {
 			throw new IllegalArgumentException("상행 종점역과 하행 종점역만 있는 노선입니다.");
 		}
 

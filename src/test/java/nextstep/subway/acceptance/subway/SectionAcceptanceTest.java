@@ -23,13 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SectionAcceptanceTest {
-	private Long 노선1;
+	private Long 일호선;
 	private static final int 종로3가역_시청역_길이 = 6;
 
 	@BeforeEach
 	void createLine() {
 		// given
-		노선1 = 노선_생성_요청("1호선", "파랑", 종로3가역, 시청역, 종로3가역_시청역_길이).jsonPath().getLong("id");
+		일호선 = 노선_생성_요청("1호선", "파랑", 종로3가역, 시청역, 종로3가역_시청역_길이).jsonPath().getLong("id");
 	}
 
 	/**
@@ -42,12 +42,12 @@ public class SectionAcceptanceTest {
 	@Test
 	void 하행_종점역_구간_등록() {
 		// when
-		ExtractableResponse<Response> response = 구간_생성_요청(서울역, 시청역, 10, 노선1);
+		ExtractableResponse<Response> response = 구간_생성_요청(서울역, 시청역, 10, 일호선);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-		LineResponse line = 노선_단건_조회_요청(노선1).as(LineResponse.class);
+		LineResponse line = 노선_단건_조회_요청(일호선).as(LineResponse.class);
 		상하행_종점역_길이_검증(line, 종로3가역, 서울역, 종로3가역_시청역_길이 + 10);
 	}
 
@@ -65,12 +65,12 @@ public class SectionAcceptanceTest {
 	@Test
 	void 중간역_구간_등록() {
 		// when
-		ExtractableResponse<Response> response = 구간_생성_요청(종각역, 종로3가역, 4, 노선1);
+		ExtractableResponse<Response> response = 구간_생성_요청(종각역, 종로3가역, 4, 일호선);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-		List<SectionResponse> sections = 구간_조회_요청(노선1).jsonPath().getList("", SectionResponse.class);
+		List<SectionResponse> sections = 구간_조회_요청(일호선).jsonPath().getList("", SectionResponse.class);
 		구간_검증(sections, 종로3가역, 종각역, 4);
 		구간_검증(sections, 종각역, 시청역, 2);
 	}
@@ -86,12 +86,12 @@ public class SectionAcceptanceTest {
 	@Test
 	void 상행_종점역_구간_등록() {
 		// when
-		ExtractableResponse<Response> response = 구간_생성_요청(종로3가역, 종로5가역, 1, 노선1);
+		ExtractableResponse<Response> response = 구간_생성_요청(종로3가역, 종로5가역, 1, 일호선);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-		LineResponse line = 노선_단건_조회_요청(노선1).as(LineResponse.class);
+		LineResponse line = 노선_단건_조회_요청(일호선).as(LineResponse.class);
 		상하행_종점역_길이_검증(line, 종로5가역, 시청역,종로3가역_시청역_길이 + 1);
 	}
 
@@ -105,10 +105,10 @@ public class SectionAcceptanceTest {
 	@Test
 	void 이미_등록된_역_구간_등록_시_실패() {
 		// given
-		구간_생성_요청(서울역, 시청역, 10, 노선1);
+		구간_생성_요청(서울역, 시청역, 10, 일호선);
 
 		// when & then
-		ExtractableResponse<Response> response = 구간_생성_요청(종로3가역, 서울역, 10, 노선1);
+		ExtractableResponse<Response> response = 구간_생성_요청(종로3가역, 서울역, 10, 일호선);
 
 		// then
 		실패시_코드값_메시지_검증(response, HttpStatus.BAD_REQUEST.value(), "해당 노선에 등록할 역들이 이미 존재합니다.");
@@ -123,7 +123,7 @@ public class SectionAcceptanceTest {
 	@Test
 	void 존재하지_않는_역만_있는_구간_등록_시_실패() {
 		// when
-		ExtractableResponse<Response> response = 구간_생성_요청(종로5가역, 동대문역, 10, 노선1);
+		ExtractableResponse<Response> response = 구간_생성_요청(종로5가역, 동대문역, 10, 일호선);
 
 		// then
 		실패시_코드값_메시지_검증(response, HttpStatus.BAD_REQUEST.value(),"등록 구간의 역들이 모두 노선에 존재하지 않습니다.");
@@ -141,7 +141,7 @@ public class SectionAcceptanceTest {
 	@Test
 	void 기존_구간_길이_이상의_구간_등록_시_실패() {
 		// when
-		ExtractableResponse<Response> response = 구간_생성_요청(종각역, 종로3가역, 6, 노선1);
+		ExtractableResponse<Response> response = 구간_생성_요청(종각역, 종로3가역, 6, 일호선);
 
 		// then
 		실패시_코드값_메시지_검증(response, HttpStatus.BAD_REQUEST.value(),"등록 구간의 길이는 기존 구간의 길이보다 크거나 같을 수 없습니다.");
@@ -161,15 +161,15 @@ public class SectionAcceptanceTest {
 	@Test
 	void 중간역_구간_제거() {
 		// given
-		구간_생성_요청(서울역, 시청역, 10, 노선1);
+		구간_생성_요청(서울역, 시청역, 10, 일호선);
 
 		// when
-		ExtractableResponse<Response> response = 구간_삭제_요청(Map.of("stationId", 시청역), 노선1);
+		ExtractableResponse<Response> response = 구간_삭제_요청(Map.of("stationId", 시청역), 일호선);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-		List<SectionResponse> sections = 구간_조회_요청(노선1).jsonPath().getList("", SectionResponse.class);
+		List<SectionResponse> sections = 구간_조회_요청(일호선).jsonPath().getList("", SectionResponse.class);
 		구간_검증(sections, 종로3가역, 서울역, 종로3가역_시청역_길이 + 10);
 	}
 
@@ -187,15 +187,15 @@ public class SectionAcceptanceTest {
 	@Test
 	void 상행_종점역_구간_제거() {
 		// given
-		구간_생성_요청(서울역, 시청역, 10, 노선1);
+		구간_생성_요청(서울역, 시청역, 10, 일호선);
 
 		// when
-		ExtractableResponse<Response> response = 구간_삭제_요청(Map.of("stationId", 종로3가역), 노선1);
+		ExtractableResponse<Response> response = 구간_삭제_요청(Map.of("stationId", 종로3가역), 일호선);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-		LineResponse line = 노선_단건_조회_요청(노선1).as(LineResponse.class);
+		LineResponse line = 노선_단건_조회_요청(일호선).as(LineResponse.class);
 		상하행_종점역_길이_검증(line, 시청역, 서울역, 10);
 	}
 
@@ -213,15 +213,15 @@ public class SectionAcceptanceTest {
 	@Test
 	void 하행_종점역_구간_제거() {
 		// given
-		구간_생성_요청(서울역, 시청역, 10, 노선1);
+		구간_생성_요청(서울역, 시청역, 10, 일호선);
 
 		// when
-		ExtractableResponse<Response> response = 구간_삭제_요청(Map.of("stationId", 서울역), 노선1);
+		ExtractableResponse<Response> response = 구간_삭제_요청(Map.of("stationId", 서울역), 일호선);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-		LineResponse line = 노선_단건_조회_요청(노선1).as(LineResponse.class);
+		LineResponse line = 노선_단건_조회_요청(일호선).as(LineResponse.class);
 		상하행_종점역_길이_검증(line, 종로3가역, 시청역, 종로3가역_시청역_길이);
 	}
 
@@ -236,7 +236,7 @@ public class SectionAcceptanceTest {
 	@Test
 	void 상하행_종점역만_있는_구간_제거_시_실패() {
 		// when
-		ExtractableResponse<Response> response = 구간_삭제_요청(Map.of("stationId", 시청역), 노선1);
+		ExtractableResponse<Response> response = 구간_삭제_요청(Map.of("stationId", 시청역), 일호선);
 
 		// then
 		실패시_코드값_메시지_검증(response, HttpStatus.BAD_REQUEST.value(),"상행 종점역과 하행 종점역만 있는 노선입니다.");
