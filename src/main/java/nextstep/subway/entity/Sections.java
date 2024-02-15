@@ -60,10 +60,6 @@ public class Sections {
         return sections.get(sections.size() - 1).getDownStation();
     }
 
-    public Station findFirstStation() {
-        return sections.get(0).getUpStation();
-    }
-
     public List<Station> getAllStations() {
         Set<Station> allStations = new HashSet<>();
         sections.forEach(section -> {
@@ -99,41 +95,30 @@ public class Sections {
 
     private void handleInsertForIntermediateStation(Section sectionToAdd, Station commonStationAtInsertion, Section insertionPoint) {
         if (isNextInsertion(sectionToAdd, commonStationAtInsertion)) {
-            int insertionIndex = sections.indexOf(insertionPoint);
-            insertNext(sectionToAdd, insertionIndex + 1, sections.get(insertionIndex + 1));
+            Section nextSection = sections.get(sections.indexOf(insertionPoint) + 1);
+            insertSection(sectionToAdd, createNextSection(sectionToAdd, nextSection), nextSection);
             return;
         }
 
         if (isPreviousInsertion(sectionToAdd, commonStationAtInsertion)) {
-            insertPrevious(sectionToAdd, insertionPoint);
+            insertSection(sectionToAdd, createPreviousSection(sectionToAdd, insertionPoint), insertionPoint);
         }
     }
 
     private void handleInsertForFirstStation(Section sectionToAdd, Station commonStationAtInsertion, Section insertionPoint) {
         if (isPreviousInsertion(sectionToAdd, commonStationAtInsertion)) {
-            insertAtBeginning(sectionToAdd, insertionPoint);
+            sections.add(sectionToAdd);
             return;
         }
         if (isNextInsertion(sectionToAdd, commonStationAtInsertion)) {
-            int insertionIndex = sections.indexOf(insertionPoint);
-            insertNext(sectionToAdd, insertionIndex, sections.get(insertionIndex));
+            insertSection(sectionToAdd, createNextSection(sectionToAdd, insertionPoint), insertionPoint);
         }
     }
 
-    private void insertNext(Section sectionToAdd, int insertionIndex, Section nextSection) {
-        sections.set(insertionIndex, sectionToAdd);
-        sections.add(insertionIndex + 1, createNextSection(sectionToAdd, nextSection));
-    }
-
-    private void insertPrevious(Section sectionToAdd, Section insertionPoint) {
-        int insertionIndex = sections.indexOf(insertionPoint);
-
-        sections.add(insertionIndex + 1, sectionToAdd);
-        sections.set(insertionIndex, createPreviousSection(sectionToAdd, insertionPoint));
-    }
-
-    private void insertAtBeginning(Section sectionToAdd, Section insertionPoint) {
-        sections.add(sections.indexOf(insertionPoint), sectionToAdd);
+    private void insertSection(Section sectionToAdd, Section connectSection, Section sectionToRemove) {
+        sections.add(sectionToAdd);
+        sections.add(connectSection);
+        sections.remove(sectionToRemove);
     }
 
     private Station findCommonStation(Section insertionPoint, Section sectionToAdd) {
@@ -178,10 +163,6 @@ public class Sections {
 
     private boolean isAddLastSection(Section section) {
         return isNextInsertion(section, findLastStation());
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 
     public List<Section> getAllSections() {

@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
@@ -17,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class SectionService {
 
     private final LineRepository lineRepository;
