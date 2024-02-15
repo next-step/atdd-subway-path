@@ -23,6 +23,8 @@ public class Sections {
 	}
 
 	public void add(Section newSection) {
+		stationIsCanNotBeTheSame(newSection);
+
 		// 최초 등록
 		if (sectionList.isEmpty()) {
 			sectionList.add(newSection);
@@ -41,6 +43,13 @@ public class Sections {
 
 		addMiddleSection(newSection);
 	}
+
+	private void stationIsCanNotBeTheSame(Section newSection) {
+		if (newSection.getUpStation().equals(newSection.getDownStation())) {
+			throw new IllegalArgumentException("상행역과 하행역은 동일할 수 없습니다.");
+		}
+	}
+
 
 	private void addMiddleSection(Section newSection) {
 		Section changeSection = sectionList.stream()
