@@ -1,5 +1,6 @@
 package subway.line;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.section.Section;
@@ -31,19 +32,20 @@ public class LineService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 역을 상행종점역으로 등록할 수 없습니다."));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 역을 하행종점역으로 등록할 수 없습니다."));
-        Line line = lineRepository.save(lineRequest.toEntity(upStation, downStation));
+        Line line = lineRepository.save(lineRequest.toEntity());
+        line.add(new Section(upStation, downStation, lineRequest.getDistance(), line));
         return new LineResponse(line, List.of(upStation, downStation));
     }
 
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-                .map(line -> new LineResponse(line, line.getSections().transferToStations()))
+                .map(line -> new LineResponse(line, line.sections().transferToStations()))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = lineRepository.getReferenceById(id);
-        List<Station> stations = line.getSections().transferToStations();
+        List<Station> stations = line.sections().transferToStations();
         return new LineResponse(line, stations);
     }
 
@@ -59,7 +61,7 @@ public class LineService {
     }
 
     @Transactional
-    public Long saveSection(Long lineId, SectionRequest sectionRequest) {
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 역을 상행종점역으로 등록할 수 없습니다."));
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
@@ -67,12 +69,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 라인을 찾을 수 없습니다."));
 
-        if (!line.getSections().isLastSection(upStation)) {
-            throw new IllegalArgumentException("상행역이 하행종점역과 같지 않습니다.");
-        }
-
-        Section section = sectionRepository.save(sectionRequest.toEntity(upStation, downStation, line));
-        return section.getId();
+        line.add(sectionRequest.toEntity(upStation, downStation, line));
     }
 
     @Transactional
@@ -82,14 +79,14 @@ public class LineService {
         Station station = stationRepository.findById(stationId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 역을 찾을 수 없습니다."));
 
-        if (line.getSections().hasUnderOneSection()) {
+        if (line.sections().hasUnderOneSection()) {
             throw new IllegalArgumentException("노선에는 하나 이상의 구간이 존재해야 합니다.");
         }
 
-        if (!line.getSections().isLastSection(station)) {
+        if (!line.sections().isLastSection(station)) {
             throw new IllegalArgumentException("노선의 마지막 구간이 아닙니다.");
         }
 
-        line.getSections().removeSection(line.getSections().lastSection());
+        line.sections().remove(line.sections().lastSection());
     }
 }

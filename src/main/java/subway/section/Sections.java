@@ -21,7 +21,7 @@ public class Sections {
         this.sections = sections;
     }
 
-    public List<Section> getSections() {
+    public List<Section> sections() {
         return sections;
     }
 
@@ -38,14 +38,24 @@ public class Sections {
     }
 
     public boolean isLastSection(Station station) {
-        return lastSection().eqDownStation(station);
+        return lastSection().equalDownStation(station);
     }
 
     public Section lastSection() {
         return sections.get(sections.size() -1);
     }
 
-    public void removeSection(Section section) {
+    public void add(Section section) {
+        if (!sections.isEmpty()) {
+            if (!isLastSection(section.getUpStation())) {
+                throw new IllegalArgumentException("상행역이 하행종점역과 같지 않습니다.");
+            }
+        }
+
+        sections.add(section);
+    }
+
+    public void remove(Section section) {
         sections.remove(section);
     }
 }

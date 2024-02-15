@@ -1,4 +1,4 @@
-package subway.line;
+package subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
+import subway.line.LineRequest;
+import subway.line.LineResponse;
+import subway.line.UpdateLineRequest;
 import subway.station.Station;
 import subway.station.StationResponse;
 import util.RestAssuredUtil;

@@ -1,4 +1,4 @@
-package subway.section;
+package subway.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import subway.line.LineRequest;
 import subway.line.LineResponse;
+import subway.section.SectionRequest;
 import subway.station.Station;
 import subway.station.StationResponse;
 import util.RestAssuredUtil;

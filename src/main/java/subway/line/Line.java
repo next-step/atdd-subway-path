@@ -50,12 +50,20 @@ public class Line {
         return color;
     }
 
-    public Sections getSections() {
+    public Sections sections() {
         return sections;
     }
 
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void add(Section section) {
+        sections.add(section);
+    }
+
+    public void remove(Section section) {
+        sections.remove(section);
     }
 }

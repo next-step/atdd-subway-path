@@ -45,12 +45,12 @@ public class LineController {
     }
 
     @PostMapping("/lines/{id}/sections")
-    public ResponseEntity<Long> createSection(
+    public ResponseEntity<Void> createSection(
             @PathVariable Long id,
             @RequestBody SectionRequest sectionRequest
     ) {
-        Long sectionId = lineService.saveSection(id, sectionRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(sectionId);
+        lineService.addSection(id, sectionRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/lines/{id}/sections")

@@ -49,4 +49,8 @@ public class LineRequest {
     public Line toEntity(Station upStation, Station downStation) {
         return new Line(name, color, distance, upStation, downStation);
     }
+
+    public Line toEntity() {
+        return new Line(name, color);
+    }
 }
