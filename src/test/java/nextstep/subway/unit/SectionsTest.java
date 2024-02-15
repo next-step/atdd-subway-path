@@ -1,0 +1,150 @@
+package nextstep.subway.unit;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Station;
+import nextstep.subway.exception.IllegalSectionException;
+
+
+class SectionsTest {
+
+    public static final Station 역삼역 = new Station("역삼역");
+    public static final Station 선릉역 = new Station("선릉역");
+    public static final Station 왕십리역 = new Station("왕십리역");
+    public static final Station 잠실역 = new Station("잠실역");
+    public static final Station 강남역 = new Station("강남역");
+    public static final Station 삼성역 = new Station("삼성역");
+
+    @Test
+    void testAddSection_마지막_구간의_하행_종점역이_추가하려는_구간의_상행역과_같으면_추가할_수_있다() {
+        //given
+        int distance = 10;
+
+        Section 구간_강남_선릉 = new Section(강남역, 선릉역, distance);
+        Section 구간_선릉_삼성 = new Section(선릉역, 삼성역, distance);
+
+        List<Section> existingSections = new ArrayList<>();
+        existingSections.add(구간_강남_선릉);
+        Sections sections = new Sections(existingSections);
+        //when
+        sections.add(구간_선릉_삼성);
+
+        //then
+        assertAll(
+            () -> assertThat(구간_강남_선릉.isPossibleToAdd(구간_선릉_삼성.getUpStation())).isTrue(),
+            () -> assertThat(sections.getLastSection()).isEqualTo(구간_선릉_삼성)
+        );
+    }
+
+    @Test
+    void testAddSection_마지막_구간의_하행_종점역이_추가하려는_구간의_상행역과_다르면_추가할_수_없다() {
+        //given
+        int distance = 10;
+
+        Section 구간_강남_선릉 = new Section(강남역, 선릉역, distance);
+        Section 구간_강남_삼성 = new Section(강남역, 삼성역, distance);
+
+        List<Section> existingSections = new ArrayList<>();
+        existingSections.add(구간_강남_선릉);
+        Sections sections = new Sections(existingSections);
+
+        //when & then
+        assertAll(
+            () -> assertThat(구간_강남_선릉.isPossibleToAdd(구간_강남_삼성.getUpStation())).isFalse(),
+            () -> assertThatThrownBy(() -> sections.add(구간_강남_삼성))
+                .isInstanceOf(IllegalSectionException.class)
+        );
+    }
+
+    @Test
+    void testAddSection_마지막_구간의_하행_종점역이_추가하려는_구간의_상행역과_다르면_추가할_수_없다_2() {
+        //given
+        int distance = 10;
+
+        Section 구간_강남_선릉 = new Section(강남역, 선릉역, distance);
+        Section 구간_강남_선릉_2 = new Section(강남역, 선릉역, distance);
+
+        List<Section> existingSections = new ArrayList<>();
+        existingSections.add(구간_강남_선릉);
+        Sections sections = new Sections(existingSections);
+
+        //when & then
+        assertAll(
+            () -> assertThat(구간_강남_선릉.isPossibleToAdd(구간_강남_선릉_2.getUpStation())).isFalse(),
+            () -> assertThatThrownBy(() -> sections.add(구간_강남_선릉_2))
+                .isInstanceOf(IllegalSectionException.class)
+        );
+    }
+
+    @Test
+    void testDeleteLastSection_구간이_2개_이상_등록되어_있을_떄_구간을_제거할_수_있다() {
+        Section section1 = new Section(역삼역, 선릉역, 10);
+        Section section2 = new Section(선릉역, 왕십리역, 2);
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(section1);
+        sectionList.add(section2);
+        Sections sections = new Sections(sectionList);
+
+        //when
+        sections.removeLastSection(왕십리역);
+
+        //then
+        assertAll(
+            () -> assertThat(sections.getSections()).hasSize(1),
+            () -> assertThat(sections.getLastSection().getDownStation()).isEqualTo(선릉역)
+        );
+    }
+    @Test
+    void testDeleteLastSection_노선에_구간이_1개_등록되어_있을_때_구간을_제거하면_예외를_반환한다() {
+        Station upStation1 = new Station("역삼역");
+        Station downStation1 = new Station("선릉역");
+        Section section1 = new Section(upStation1, downStation1, 10);
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(section1);
+        Sections sections = new Sections(sectionList);
+
+        //when & then
+        assertThatThrownBy(
+            () -> sections.removeLastSection(downStation1))
+            .isInstanceOf(IllegalSectionException.class);
+    }
+
+    @Test
+    void testDeleteLastSection_제거하려는_역이_기존_구간의_하행종점역과_다를_때_구간을_제거하면_예외를_반환한다() {
+        Section section1 = new Section(역삼역, 선릉역, 10);
+        Section section2 = new Section(선릉역, 왕십리역, 10);
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(section1);
+        sectionList.add(section2);
+        Sections sections = new Sections(sectionList);
+
+        //when & then
+        assertThatThrownBy(
+            () -> sections.removeLastSection(잠실역))
+            .isInstanceOf(IllegalSectionException.class);
+    }
+
+    @Test
+    void testGetLastSection_마지막_구간을_반환한다() {
+        //given
+        Section firstSection = new Section(역삼역, 선릉역, 10);
+        Section secondSection = new Section(선릉역, 왕십리역, 10);
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(firstSection);
+        sectionList.add(secondSection);
+        Sections sections = new Sections(sectionList);
+
+        Section lastSection = sections.getLastSection();
+        assertThat(lastSection).isEqualTo(secondSection);
+    }
+}
