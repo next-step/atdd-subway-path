@@ -68,10 +68,6 @@ public class Section {
         return distance;
     }
 
-    public boolean isUpStationSame(Section sectionToAdd) {
-        return this.upStation.equals(sectionToAdd.getUpStation());
-    }
-
     public Station findCommonStation(Section sectionToAdd) {
         if (sectionToAdd.isAtLeastOneSameStation(upStation)) {
             return this.upStation;
@@ -82,6 +78,13 @@ public class Section {
         return null;
     }
 
+    public boolean canConnectBefore(Section sectionToConnect) {
+        return upStation.isSame(sectionToConnect.getDownStation());
+    }
+
+    public boolean canConnectNext(Section sectionToConnect) {
+        return downStation.isSame(sectionToConnect.getUpStation());
+    }
 
     public Long getId() {
         return id;
