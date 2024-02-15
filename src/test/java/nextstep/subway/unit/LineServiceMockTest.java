@@ -35,7 +35,6 @@ public class LineServiceMockTest {
     @InjectMocks
     private LineService lineService;
 
-
     @Test
     @DisplayName("구간을 등록한다.")
     void addSection() {
