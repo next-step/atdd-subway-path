@@ -1,13 +1,14 @@
 package nextstep.subway.section;
 
 
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,12 +39,16 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean equalsUpStation(Station station) {
-        return this.upStation.equals(station);
+    public void update(Section middleSection) {
+        this.upStation = middleSection.getDownStation();
+        validateSectionDistance(middleSection);
+        this.distance -= middleSection.distance;
     }
 
-    public boolean equalsDownStation(Station station) {
-        return this.downStation.equals(station);
+    private void validateSectionDistance(Section middleSection) {
+        if (this.distance <= middleSection.distance) {
+            throw new SubwayException("중간 구간의 거리는 다음 구간보다 짧아야합니다.");
+        }
     }
 
     public Long getId() {
@@ -64,6 +69,17 @@ public class Section {
 
     public Long getDistance() {
         return distance;
+    }
+
+    @Override
+    public int compareTo(final Section section) {
+        if (this.equals(section)) {
+            return 0;
+        }
+        if (this.downStation.equals(section.upStation)) {
+            return -1;
+        }
+        return 1;
     }
 
 }

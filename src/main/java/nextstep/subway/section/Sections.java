@@ -8,7 +8,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -21,26 +22,40 @@ public class Sections {
 
     public void addSection(Section section) {
         if (sections.size() > 0) {
-            validateNextSection(section);
             validateDuplicateStation(section);
         }
+
+        if(isMiddleSection(section)){
+            Section nextSection = getNextSection(section);
+            nextSection.update(section);
+        }
+
         this.sections.add(section);
     }
 
-    private void validateNextSection(Section section) {
-        if (!getEndStation().equals(section.getUpStation())) {
-            throw new SubwayException("구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이 아닙니다.");
-        }
-    }
-
     private void validateDuplicateStation(Section section) {
-        if (isContains(section.getDownStation())) {
+        if (isMatchUpStation(section.getDownStation()) && isMatchDownStation(section.getUpStation())) {
             throw new SubwayException("이미 등록되어있는 역입니다.");
         }
     }
 
-    private boolean isContains(Station station) {
+    private boolean isMatchUpStation(Station station) {
         return this.sections.stream().anyMatch(section -> section.getUpStation().equals(station));
+    }
+
+    private boolean isMatchDownStation(Station station) {
+        return this.sections.stream().anyMatch(section -> section.getDownStation().equals(station));
+    }
+
+    private Section getNextSection(Section section) {
+        return this.sections.stream()
+                .filter(s -> s.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new SubwayException("역을 찾을 수 없습니다."));
+    }
+
+    private boolean isMiddleSection(Section section) {
+        return isMatchUpStation(section.getUpStation());
     }
 
     public void removeSection(Station station) {
@@ -67,51 +82,15 @@ public class Sections {
         }
     }
 
-    public List<Station> getOrderedStations() {
-        List<Station> stations = new ArrayList<>();
-        Station upStation = getStartStation();
-        stations.add(upStation);
-
-        for (int i = 0; i < sections.size(); i++) {
-            upStation = findNextStation(upStation);
-            stations.add(upStation);
-        }
-
-        return stations;
-    }
-
-    private Station findNextStation(Station upStation) {
-        return sections.stream()
-                .filter(section -> section.equalsUpStation(upStation))
-                .map(Section::getDownStation)
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
-    }
-
-    private Station getStartStation() {
-        return sections.stream()
-                .map(Section::getUpStation)
-                .filter(upStation -> isStartStation(upStation))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
-    }
-
-    private boolean isStartStation(Station upStation) {
-        return sections.stream()
-                .noneMatch(section -> section.equalsDownStation(upStation));
-    }
-
     private Station getEndStation() {
-        return sections.stream()
-                .map(Section::getDownStation)
-                .filter(downStation -> isEndStation(downStation))
-                .findFirst()
-                .orElseThrow(NoSuchElementException::new);
+        return getOrderedStations().get(sections.size());
     }
 
-    private boolean isEndStation(Station downStation) {
+    public List<Station> getOrderedStations() {
         return sections.stream()
-                .noneMatch(section -> section.equalsUpStation(downStation));
+                .sorted()
+                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .distinct()
+                .collect(Collectors.toList());
     }
-
 }
