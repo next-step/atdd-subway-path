@@ -8,11 +8,13 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.repository.LineRepository;
 import nextstep.subway.domain.repository.StationRepository;
 import nextstep.subway.service.LineService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -30,31 +32,31 @@ public class LineServiceTest {
     @Autowired
     private LineService lineService;
 
-    /**
-     * given stationRepository와 lineRepository를 활용하여 초기값 셋팅
-     * when lineService.addSection 호출
-     * then line.getSections 메서드를 통해 검증
-     */
+    Station 신림역;
+    Station 보라매역;
+    Station 보라매병원역;
+
+    @BeforeEach
+    public void setUp() {
+        신림역 = new Station("신림역");
+        보라매역 = new Station("보라매역");
+        보라매병원역 = new Station("보라매병원역");
+
+        stationRepository.saveAll(List.of(신림역, 보라매역, 보라매병원역));
+    }
+
     @Test
     @DisplayName("구간을 등록한다.")
     void addSection() {
         // given
-        Station 신림역 = Station.builder().id(1L).name("신림역").build();
-        Station 보라매역 = Station.builder().id(2L).name("보라매역").build();
-        Station 보라매병원역 = Station.builder().id(3L).name("보라매병원역").build();
-        stationRepository.saveAll(List.of(신림역, 보라매역, 보라매병원역));
-
         Line 신림선 = Line.builder()
                 .name("신림선")
                 .color("BLUE")
-                .build();
-        Section 신림보라매구간 = Section.builder()
-                .line(신림선)
                 .upStation(신림역)
                 .downStation(보라매역)
                 .distance(10L)
                 .build();
-        신림선.addSection(신림보라매구간);
+
         신림선 = lineRepository.save(신림선);
 
         // when
@@ -69,5 +71,36 @@ public class LineServiceTest {
         //then
         LineResponse lineResponse = lineService.findLineById(신림선.getId());
         assertThat(lineResponse.getStations()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다.")
+    void removeSection() {
+        // given
+        Line 신림선 = Line.builder()
+                .name("신림선")
+                .color("BLUE")
+                .upStation(신림역)
+                .downStation(보라매역)
+                .distance(10L)
+                .build();
+
+        신림선 = lineRepository.save(신림선);
+
+        Section 보라매보라매병원역 = Section.builder()
+                .line(신림선)
+                .upStation(보라매역)
+                .downStation(보라매병원역)
+                .distance(11L)
+                .build();
+        신림선.addSection(보라매보라매병원역);
+
+        // when
+        lineService.removeSection(신림선.getId(), 보라매병원역.getId());
+
+
+        //then
+        LineResponse lineResponse = lineService.findLineById(신림선.getId());
+        assertThat(lineResponse.getStations()).hasSize(2);
     }
 }

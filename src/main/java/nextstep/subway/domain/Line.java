@@ -26,13 +26,23 @@ public class Line {
     private Sections sections = new Sections();
 
     @Builder
-    public Line(String name, String color) {
+    public Line(String name, String color, Station upStation,Station downStation,Long distance) {
         this.name = name;
         this.color = color;
+        Section section = Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .line(this).build();
+        this.sections.addSection(section);
     }
 
     public void addSection(Section section) {
         this.sections.addSection(section);
+    }
+
+    public void removeSection(Long stationId) {
+        this.sections.deleteSection(stationId);
     }
 
     public String getName() {

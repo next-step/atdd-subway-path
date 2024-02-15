@@ -6,9 +6,9 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.repository.LineRepository;
-import nextstep.subway.domain.repository.SectionRepository;
 import nextstep.subway.service.LineService;
 import nextstep.subway.service.StationService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -27,46 +26,40 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
     @Mock
-    private SectionRepository sectionRepository;
-    @Mock
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
     @InjectMocks
     private LineService lineService;
+    private final Long 신림선_아이디 = 1L;
+
+    Line 신림선;
+    Station 신림역;
+    Station 보라매역;
+    Station 보라매병원역;
+
+    @BeforeEach
+    public void setUp() {
+        신림역 = new Station(1L, "신림역");
+        보라매역 = new Station(2L, "보라매역");
+        보라매병원역 = new Station(3L, "보라매병원역");
+
+        신림선 = Line.builder()
+                .name("신림선")
+                .upStation(신림역)
+                .downStation(보라매역)
+                .color("BLUE")
+                .distance(10L)
+                .build();
+    }
 
     @Test
     @DisplayName("구간을 등록한다.")
     void addSection() {
         // given
-        Station 신림역 = Station.builder().id(1L).name("신림역").build();
-        Station 보라매역 = Station.builder().id(2L).name("보라매역").build();
-        Station 보라매병원역 = Station.builder().id(3L).name("보라매병원역").build();
-
-        Line 신림선 = Line.builder()
-                .name("신림선")
-                .color("BLUE")
-                .build();
-
-        Section 신림보라매구간 = Section.builder()
-                .line(신림선)
-                .upStation(신림역)
-                .downStation(보라매역)
-                .distance(10L)
-                .build();
-        신림선.addSection(신림보라매구간);
-
-        Section 보라매보라매병원구간 = Section.builder()
-                .line(신림선)
-                .upStation(보라매역)
-                .downStation(보라매병원역)
-                .distance(10L)
-                .build();
-
-        when(stationService.getStationById(anyLong())).thenReturn(보라매역);
-        when(stationService.getStationById(anyLong())).thenReturn(보라매병원역);
+        when(stationService.getStationById(보라매역.getId())).thenReturn(보라매역);
+        when(stationService.getStationById(보라매병원역.getId())).thenReturn(보라매병원역);
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신림선));
-        when(sectionRepository.save(any())).thenReturn(보라매보라매병원구간);
 
 
         // when
@@ -75,11 +68,33 @@ public class LineServiceMockTest {
                 .downStationId(String.valueOf(보라매병원역.getId()))
                 .distance(22L)
                 .build();
-        lineService.addSection(1L, 구간_생성_요청);
+        lineService.addSection(신림선_아이디, 구간_생성_요청);
 
 
         // then
         LineResponse lineResponse = lineService.findLineById(1L);
         assertThat(lineResponse.getStations()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("구간을 삭제한다.")
+    void removeSection() {
+        //given
+        Section 보라매보라매병원역 = Section.builder()
+                .upStation(보라매역)
+                .downStation(보라매병원역)
+                .line(신림선)
+                .distance(11L)
+                .build();
+        신림선.addSection(보라매보라매병원역);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신림선));
+
+        //when
+        lineService.removeSection(신림선_아이디, 보라매병원역.getId());
+
+        //then
+        LineResponse lineResponse = lineService.findLineById(1L);
+        assertThat(lineResponse.getStations()).hasSize(2);
     }
 }

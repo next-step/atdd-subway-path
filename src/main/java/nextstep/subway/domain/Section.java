@@ -30,7 +30,7 @@ public class Section {
     private Long distance;
 
     @Builder
-    public Section(Line line, Station upStation, Station downStation, Long distance) {
+    public Section(Station upStation, Station downStation, Long distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;

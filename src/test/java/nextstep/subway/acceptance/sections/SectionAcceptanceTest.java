@@ -23,11 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SectionAcceptanceTest {
     private static ExtractableResponse<Response> 신림역;
     private static ExtractableResponse<Response> 보라매역;
-    private static ExtractableResponse<Response> 대방역;
     private static ExtractableResponse<Response> 서원역;
-    private static ExtractableResponse<Response> 판교역;
-    private static ExtractableResponse<Response> 청계산입구역;
-    private static ExtractableResponse<Response> 신분당선;
 
     @BeforeEach
     void before() {

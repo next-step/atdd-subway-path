@@ -39,16 +39,12 @@ public class LineService {
         Line line = Line.builder()
                 .name(lineCreateRequest.getName())
                 .color(lineCreateRequest.getColor())
-                .build();
-
-        line = lineRepository.save(line);
-
-        line.getSections().addSection(Section.builder()
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(lineCreateRequest.getDistance())
-                .line(line)
-                .build());
+                .build();
+
+        line = lineRepository.save(line);
 
         return lineToLineResponse(line);
     }
@@ -78,24 +74,21 @@ public class LineService {
 
         Line line = getLineById(lineId);
 
-        validDownStation(Long.valueOf(request.getDownStationId()), line);
-        validUpStation(Long.valueOf(request.getUpStationId()), line);
-
-        Section section = sectionRepository.save(Section.builder()
+        Section section = Section.builder()
                 .line(line)
                 .upStation(upStation)
                 .downStation(downStation)
                 .distance(request.getDistance())
-                .build());
-        line.getSections().addSection(section);
+                .build();
+        line.addSection(section);
 
         return sectionToSectionResponse(section);
     }
 
     @Transactional
-    public void deleteLineSection(Long lineId, Long stationId) {
+    public void removeSection(Long lineId, Long stationId) {
         Line line = getLineById(lineId);
-        line.getSections().deleteSection(stationId);
+        line.removeSection(stationId);
     }
 
     public LineResponse findLineById(Long id) {
@@ -106,26 +99,6 @@ public class LineService {
     public Line getLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다."));
-    }
-
-    private static void validDownStation(Long downStationId, Line line) {
-        if (line.getSections().getSections().size() != 0) {
-            List<Long> registeredStationIds = line.getSections().getStationIds();
-
-            if (registeredStationIds.contains(downStationId)) {
-                throw new CheckDuplicateStationException("이미 해당노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
-            }
-        }
-    }
-
-    private static void validUpStation(Long upStationId, Line line) {
-        if (line.getSections().getSections().size() != 0) {
-            Long downStationId = line.getSections().findDownStationId();
-
-            if (downStationId != upStationId) {
-                throw new InvalidUpStationException("새로운 구간의 상행역은 해당 노선에 등록되어 있는 하행 종점역이어야 합니다.");
-            }
-        }
     }
 
 }
