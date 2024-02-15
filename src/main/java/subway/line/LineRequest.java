@@ -1,7 +1,5 @@
 package subway.line;
 
-import subway.station.Station;
-
 public class LineRequest {
     private Long id;
     private String name;
@@ -44,10 +42,6 @@ public class LineRequest {
 
     public Long getDownStationId() {
         return downStationId;
-    }
-
-    public Line toEntity(Station upStation, Station downStation) {
-        return new Line(name, color, distance, upStation, downStation);
     }
 
     public Line toEntity() {

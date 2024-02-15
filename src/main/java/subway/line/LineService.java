@@ -1,6 +1,5 @@
 package subway.line;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import subway.section.Section;
@@ -33,7 +32,7 @@ public class LineService {
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
                 .orElseThrow(() -> new EntityNotFoundException("해당 역을 하행종점역으로 등록할 수 없습니다."));
         Line line = lineRepository.save(lineRequest.toEntity());
-        line.add(new Section(upStation, downStation, lineRequest.getDistance(), line));
+        line.addSection(new Section(upStation, downStation, lineRequest.getDistance(), line));
         return new LineResponse(line, List.of(upStation, downStation));
     }
 
@@ -69,7 +68,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 라인을 찾을 수 없습니다."));
 
-        line.add(sectionRequest.toEntity(upStation, downStation, line));
+        line.addSection(sectionRequest.toEntity(upStation, downStation, line));
     }
 
     @Transactional

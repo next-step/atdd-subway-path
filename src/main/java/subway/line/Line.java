@@ -29,15 +29,6 @@ public class Line {
         this.color = color;
     }
 
-    public Line(
-            String name, String color, Long distance,
-            Station upStation, Station downStation
-    ) {
-        this.name = name;
-        this.color = color;
-        this.sections = new Sections(List.of(new Section(upStation, downStation, distance, this)));
-    }
-
     public Long getId() {
         return id;
     }
@@ -59,7 +50,7 @@ public class Line {
         this.color = color;
     }
 
-    public void add(Section section) {
+    public void addSection(Section section) {
         sections.add(section);
     }
 

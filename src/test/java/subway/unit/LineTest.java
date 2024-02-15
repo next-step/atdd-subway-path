@@ -29,7 +29,7 @@ public class LineTest {
     @Test
     void addSection() {
         // when
-        line.add(firstSection);
+        line.addSection(firstSection);
 
         // then
         assertThat(line.sections().sections()).hasSize(1);
@@ -43,8 +43,8 @@ public class LineTest {
     @Test
     void getSections() {
         // when
-        line.add(firstSection);
-        line.add(secondSection);
+        line.addSection(firstSection);
+        line.addSection(secondSection);
 
         // then
         assertThat(line.sections().sections().get(0)).isEqualTo(firstSection);

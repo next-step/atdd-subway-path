@@ -14,7 +14,6 @@ import subway.section.SectionRepository;
 import subway.section.SectionRequest;
 import subway.station.Station;
 import subway.station.StationRepository;
-import subway.station.StationService;
 
 import java.util.Optional;
 
@@ -30,21 +29,21 @@ public class LineServiceMockTest {
     @Mock
     private SectionRepository sectionRepository;
 
+    private final Station dangsan = new Station("당산역");
+    private final Station seonyudo = new Station("선유도역");
+    private final Line line = new Line("9호선", "bg-gold-600");
+    private final Section section = new Section(dangsan, seonyudo, 20L, line);
+
     @Test
     void addSection() {
         // given
         // lineRepository, stationService stub 설정을 통해 초기값 셋팅
         LineService lineService = new LineService(lineRepository, stationRepository, sectionRepository);
-        Station upStation = new Station("당산역");
-        Station downStation = new Station("선유도역");
-        Station thirdStation = new Station("염창역");
-        Line line = new Line("9호선", "bg-gold-600", 10L, upStation, downStation);
-        SectionRequest sectionRequest = new SectionRequest(2L, 3L, 10L);
+        SectionRequest sectionRequest = new SectionRequest(1L, 2L, 20L);
 
         given(lineRepository.findById(1L)).willReturn(Optional.of(line));
-        given(stationRepository.findById(1L)).willReturn(Optional.of(upStation));
-        given(stationRepository.findById(2L)).willReturn(Optional.of(downStation));
-        given(stationRepository.findById(3L)).willReturn(Optional.of(thirdStation));
+        given(stationRepository.findById(1L)).willReturn(Optional.of(dangsan));
+        given(stationRepository.findById(2L)).willReturn(Optional.of(seonyudo));
 
         // when
         // lineService.addSection 호출
@@ -52,9 +51,8 @@ public class LineServiceMockTest {
 
         // then
         // lineService.findLineById 메서드를 통해 검증
-        Line lineAdd = lineRepository.findById(1L)
-                .orElseThrow();
-//        assertThat(lineAdd.getSections().getSections().get(0))
-//                .isEqualTo(section);
+        Line lineAdd = lineRepository.findById(1L).orElseThrow();
+        assertThat(lineAdd.sections().sections()).hasSize(1);
+        assertThat(lineAdd.sections().sections().get(0)).isEqualTo(section);
     }
 }
