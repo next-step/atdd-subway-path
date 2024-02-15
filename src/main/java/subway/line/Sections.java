@@ -49,11 +49,16 @@ public class Sections {
 			.findFirst()
 			.orElseThrow(EntityNotFoundException::new);
 
+		Integer distance = changeSection.getDistance() - newSection.getDistance();
+		if (distance.compareTo(0) <= 0) {
+			throw new IllegalArgumentException("추가 하려는 구간의 길이는 기존 구간의 길이 보다 크거나 같을 수 없습니다.");
+		}
+
 		Section changeNewSection = new Section(
 			changeSection.getLine(),
 			newSection.getDownStation(),
 			changeSection.getDownStation(),
-			Math.abs(changeSection.getDistance() - newSection.getDistance())
+			distance
 		);
 
 		sectionList.remove(changeSection);

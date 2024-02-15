@@ -163,7 +163,7 @@ class LineServiceMockTest {
 		given(lineRepository.findById(anyLong())).willReturn(Optional.of(신분당선_1구간_추가));
 
 		// when
-		LineResponse lineResponse = lineService.addSection(신분당선_1구간_추가.getId(), 강남역, 논현역, DISTANCE);
+		LineResponse lineResponse = lineService.addSection(신분당선_1구간_추가.getId(), 강남역, 논현역, 8);
 
 		// then
 		assertThat(lineResponse).usingRecursiveComparison().isEqualTo(lineResponse);

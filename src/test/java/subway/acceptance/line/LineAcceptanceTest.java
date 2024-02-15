@@ -147,7 +147,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 		Long downStationId = 정류장_생성_ID_반환("논현역");
 
 		// when
-		LineResponse 노선_구간_추가 = 노선_구간_추가(노선_생성.getId(), upStationId, downStationId, 10);
+		LineResponse 노선_구간_추가 = 노선_구간_추가(노선_생성.getId(), upStationId, downStationId, 8);
 
 		// then
 		LineResponse 노선_조회 = 노선_조회(노선_생성.getId());
