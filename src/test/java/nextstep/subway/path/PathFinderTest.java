@@ -2,11 +2,15 @@ package nextstep.subway.line.util;
 
 import nextstep.subway.line.Line;
 import nextstep.subway.line.section.Section;
+import nextstep.subway.paths.Path;
+import nextstep.subway.paths.PathFinder;
 import nextstep.subway.station.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,7 +53,7 @@ class PathFinderTest {
         Section section4 = new Section(신림역, 강남역, 2, 신분당선);
         신분당선.addSection(section4);
 
-        pathFinder = new PathFinder(이호선, 삼호선, 일호선, 신분당선);
+        pathFinder = new PathFinder(List.of(이호선, 삼호선, 일호선, 신분당선));
     }
 
     @Test

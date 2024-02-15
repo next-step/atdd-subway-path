@@ -1,4 +1,4 @@
-package nextstep.subway.line.util;
+package nextstep.subway.paths;
 
 import nextstep.subway.station.Station;
 
