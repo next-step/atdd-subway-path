@@ -2,11 +2,13 @@ package nextstep.subway.unit;
 
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.repository.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,18 +36,26 @@ public class LineServiceMockTest {
     @InjectMocks
     private LineService lineService;
 
+    private Station 강남역;
+    private Station 역삼역;
+    private Line 신분당선;
+
+    @BeforeEach
+    void setUp() {
+        강남역 = new Station("강남역");
+        역삼역 = new Station("역삼역");
+        신분당선 = new Line("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+    }
+
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void 지하철_노선_생성() {
         // given
-        final Station upStation = new Station("강남역");
-        final Station downStation = new Station("역삼역");
-        final Line line = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        final LineRequest lineRequest = this.신분당선_생성_요청();
 
-        when(stationRepository.findById(1L)).thenReturn(Optional.of(upStation));
-        when(stationRepository.findById(2L)).thenReturn(Optional.of(downStation));
-        when(lineRepository.save(any(Line.class))).thenReturn(line);
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(강남역));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(역삼역));
+        when(lineRepository.save(any(Line.class))).thenReturn(신분당선);
 
         // when
         final LineResponse response = lineService.createSubwayLine(lineRequest);
@@ -62,7 +72,7 @@ public class LineServiceMockTest {
     @Test
     void 지하철_노선_생성_시_존재하지_않는_역으로_조회_불가() {
         // given
-        final LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        final LineRequest lineRequest = this.신분당선_생성_요청();
 
         when(stationRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -75,21 +85,18 @@ public class LineServiceMockTest {
     @Test
     void 지하철_노선_조회() {
         // given
-        final Station upStation = new Station("강남역");
-        final Station downStation = new Station("역삼역");
-        final Line line = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
-        when(lineRepository.findById(line.getId())).thenReturn(Optional.of(line));
+        when(lineRepository.findById(신분당선.getId())).thenReturn(Optional.of(신분당선));
 
         // when
-        final LineResponse response = lineService.getSubwayLine(line.getId());
+        final LineResponse response = lineService.getSubwayLine(신분당선.getId());
 
         // then
-        assertThat(response.getName()).isEqualTo(line.getName());
-        assertThat(response.getColor()).isEqualTo(line.getColor());
-        assertThat(response.getStations().get(0).getName()).isEqualTo(upStation.getName());
+        assertThat(response.getName()).isEqualTo(신분당선.getName());
+        assertThat(response.getColor()).isEqualTo(신분당선.getColor());
+        assertThat(response.getStations().get(0).getName()).isEqualTo(강남역.getName());
         // 아래 검증은 실패하는데 이유는 equals에서 id 값으로만 비교하기 때문으로 추측. 어떻게 할 수 있을지?
 //        assertThat(response.getStations().get(1).getName()).isEqualTo(upStation.getName());
-        verify(lineRepository).findById(line.getId());
+        verify(lineRepository).findById(신분당선.getId());
     }
 
     @DisplayName("지하철 노선 조회 시 존재하지 않는 역으로 조회할 경우 오류가 발생한다.")
@@ -106,6 +113,7 @@ public class LineServiceMockTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void 지하철_노선_목록_조회() {
+        // given
         final Line 신분당선 = new Line("신분당선", "bg-red-600", mock(Station.class), mock(Station.class), 10);
         final Line 지하철노선 = new Line("지하철노선", "bg-yello-600", mock(Station.class), mock(Station.class), 15);
 
@@ -118,6 +126,25 @@ public class LineServiceMockTest {
         assertThat(response).hasSize(2);
         assertThat(response.get(0).getName()).isEqualTo("신분당선");
         assertThat(response.get(1).getName()).isEqualTo("지하철노선");
+    }
+
+    @DisplayName("지하철 노선 정보를 수정한다.")
+    @Test
+    void 지하철_노선_정보_수정() {
+        // given
+        LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
+
+        // when
+        lineService.updateSubwayLine(1L, request);
+
+        // then
+        assertThat(신분당선.getName()).isEqualTo("2호선");
+        assertThat(신분당선.getColor()).isEqualTo("bg-green-600");
+    }
+
+    private LineRequest 신분당선_생성_요청() {
+        return new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
     }
 
 }
