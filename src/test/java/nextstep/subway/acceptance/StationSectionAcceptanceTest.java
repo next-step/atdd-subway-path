@@ -97,7 +97,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     독산역_번호, 가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
 
                     assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
@@ -120,7 +120,11 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 종각역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
+
+                    assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 종각역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
             }
@@ -143,8 +147,12 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
-                                    가산디지털단지역_번호, 구로디지털단지역_번호, 종각역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 종각역_번호, 서울역_번호, 홍대입구역_번호));
+
+                    assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 종각역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
                 /**
@@ -162,8 +170,12 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
-                                    가산디지털단지역_번호, 구로디지털단지역_번호, 종각역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 종각역_번호, 서울역_번호, 홍대입구역_번호));
+
+                    assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 종각역_번호, 서울역_번호, 홍대입구역_번호));
                 }
             }
 
@@ -185,8 +197,12 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
-                                    가산디지털단지역_번호, 구로디지털단지역_번호, 종각역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 종각역_번호, 홍대입구역_번호));
+
+                    assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 종각역_번호, 홍대입구역_번호));
                 }
 
                 /**
@@ -204,8 +220,12 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
-                                    가산디지털단지역_번호, 구로디지털단지역_번호, 종각역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호, 종각역_번호));
+
+                    assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
+                            .containsSequence(Arrays.asList(
+                                    가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호, 종각역_번호));
                 }
             }
         }
@@ -229,10 +249,8 @@ public class StationSectionAcceptanceTest {
                             지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(교대역_번호, 종각역_번호, 3), HttpStatus.BAD_REQUEST);
 
                     // then
-                    assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -254,10 +272,8 @@ public class StationSectionAcceptanceTest {
                             지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(upStationId, 구로디지털단지역_번호, 10), HttpStatus.BAD_REQUEST);
 
                     // then
-                    assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -279,10 +295,8 @@ public class StationSectionAcceptanceTest {
                             지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(구로디지털단지역_번호, downStationId, 10), HttpStatus.BAD_REQUEST);
 
                     // then
-                    assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
 
                 }
@@ -304,10 +318,8 @@ public class StationSectionAcceptanceTest {
                             지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(구로디지털단지역_번호, 독산역_번호, distance), HttpStatus.BAD_REQUEST);
 
                     // then
-                    assertThat(실패하는_생성요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -331,7 +343,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -350,7 +362,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -368,7 +380,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
             }
@@ -391,7 +403,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -410,7 +422,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -428,7 +440,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -452,7 +464,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
@@ -471,7 +483,7 @@ public class StationSectionAcceptanceTest {
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
-                            .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            .containsSequence(Arrays.asList(
                                     가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
             }
@@ -590,7 +602,7 @@ public class StationSectionAcceptanceTest {
                             지하철_구간(서울역_번호, 홍대입구역_번호, 10)));
 
             assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
-                    .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                    .containsSequence(Arrays.asList(
                             가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
         }
     }

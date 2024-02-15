@@ -4,6 +4,7 @@ import nextstep.config.fixtures.LineFixture;
 import nextstep.config.fixtures.SectionFixture;
 import nextstep.config.fixtures.StationFixture;
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.entity.Station;
 import nextstep.subway.entity.repository.LineRepository;
@@ -40,10 +41,13 @@ public class LineServiceMockTest {
     @Mock
     LineRepository lineRepository;
 
+    @Mock
+    SectionService sectionService;
+
 
     @BeforeEach
     void 서비스_객체_생성() {
-        lineService = new LineService(stationRepository, lineRepository);
+        lineService = new LineService(stationRepository, lineRepository, sectionService);
     }
 
     @BeforeEach

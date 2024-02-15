@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,9 +24,12 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    public LineService(StationRepository stationRepository, LineRepository lineRepository) {
+    private final SectionService sectionService;
+
+    public LineService(StationRepository stationRepository, LineRepository lineRepository, SectionService sectionService) {
         this.stationRepository = stationRepository;
         this.lineRepository = lineRepository;
+        this.sectionService = sectionService;
     }
 
     @Transactional
@@ -98,7 +103,19 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                convertToStationResponses(line.getAllStations()));
+                getAllStation(sectionService.findAllSectionsByLine(line.getId())));
+    }
+
+    private List<StationResponse> getAllStation(List<SectionResponse> allSectionsByLine) {
+        Set<StationResponse> stationResponses = new LinkedHashSet<>();
+
+        allSectionsByLine
+                .forEach(sectionResponse -> {
+                    stationResponses.add(new StationResponse(sectionResponse.getUpStation().getId(), sectionResponse.getUpStation().getName()));
+                    stationResponses.add(new StationResponse(sectionResponse.getDownStation().getId(), sectionResponse.getDownStation().getName()));
+                });
+
+        return new ArrayList<>(stationResponses);
     }
 
     private Section convertToSectionEntity(LineRequest request, Line line) {
