@@ -70,7 +70,8 @@ class LineServiceTest {
 			.build();
 
 		// then
-		assertThatThrownBy(() -> lineService.update(신분당선.getId(), request))
+		Long lineId = 신분당선.getId();
+		assertThatThrownBy(() -> lineService.update(lineId, request))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("노선의 이름은 공백이 아니거나 20자 이하여야 합니다.");
 	}
@@ -101,7 +102,8 @@ class LineServiceTest {
 			.build();
 
 		// then
-		assertThatThrownBy(() -> lineService.update(신분당선.getId(), request))
+		Long lineId = 신분당선.getId();
+		assertThatThrownBy(() -> lineService.update(lineId, request))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("노선의 색깔은 공백이 아니거나 20자 이하여야 합니다.");
 	}
@@ -178,7 +180,8 @@ class LineServiceTest {
 		Station 강남역 = 정류장_생성("강남역");
 
 		// then
-		assertThatThrownBy(() -> lineService.addSection(신분당선.getId(), 마지막_정류장, 강남역, 10))
+		Long lineId = 신분당선.getId();
+		assertThatThrownBy(() -> lineService.addSection(lineId, 마지막_정류장, 강남역, 10))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("추가 할려는 정류장은 이미 해당 노선에 존재하는 정류장입니다.");
 	}
@@ -192,7 +195,8 @@ class LineServiceTest {
 		Station 양재역 = 정류장_생성("양재역");
 
 		// then
-		assertThatThrownBy(() -> lineService.addSection(신분당선.getId(), 첫번째_정류장, 양재역, 10))
+		Long lineId = 신분당선.getId();
+		assertThatThrownBy(() -> lineService.addSection(lineId, 첫번째_정류장, 양재역, 10))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("추가 할려는 정류장은 이미 해당 노선에 존재하는 정류장입니다.");
 	}
@@ -206,7 +210,8 @@ class LineServiceTest {
 		Station 강남역 = 정류장_생성("강남역");
 
 		// then
-		assertThatThrownBy(() -> lineService.addSection(신분당선.getId(), 강남역, 첫번째_정류장, 10))
+		Long id = 신분당선.getId();
+		assertThatThrownBy(() -> lineService.addSection(id, 양재역, 첫번째_정류장, 10))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("추가 할려는 정류장은 이미 해당 노선에 존재하는 정류장입니다.");
 	}
