@@ -72,19 +72,13 @@ public class Line {
     }
 
     public List<Station> getAllStations() {
-        return sections.stream()
+        Comparator<Section> sectionComparator = Comparator.comparingInt(this::getSectionOrder);
+
+        return getSections().stream()
+                .sorted(sectionComparator)
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
-    }
-
-    public Station getFirstStation() {
-        return sections.get(0).getUpStation();
-    }
-
-    public Station getLastStation() {
-        Section lastSection = sections.get(sections.size() - 1);
-        return lastSection.getDownStation();
     }
 
     public void deleteStation(Long stationId) {
@@ -96,20 +90,16 @@ public class Line {
             throw new LineSectionException("노선에 존재하지 않는 역입니다.");
         }
 
-        if (isFirstStation(stationId)) {
+        if (getFirstStation().getId().equals(stationId)) {
             sections.remove(0);
             return;
         }
 
-        if (isLastStation(stationId)) {
+        if (getLastStation().getId().equals(stationId)) {
             sections.remove(sections.size() - 1);
             return;
         }
-
-        if (!isFirstStation(stationId) && !isLastStation(stationId)) {
-            deleteMiddleSectionByStationId(stationId);
-        }
-        return;
+        deleteMiddleSectionByStationId(stationId);
     }
 
     public void addSection(Section sectionToAdd) {
@@ -142,16 +132,33 @@ public class Line {
         addAsLastSection(sectionToAdd);
     }
 
+    private Station getFirstStation() {
+        return getAllStations().get(0);
+    }
+
+    private Station getLastStation() {
+        return getAllStations().get(getAllStations().size() - 1);
+    }
+
     private boolean isToBeFirstSection(Section section) {
         return section.getDownStation().equals(getFirstStation());
     }
 
-    private boolean isFirstStation(Long stationId) {
-        return getAllStations().get(0).getId().equals(stationId);
+    private void addAsFirstSection(Section section) {
+        if (getAllStations().contains(section.getUpStation())) {
+            throw new LineSectionException("상행역은 기존 노선에 존재하는 역일 수 없습니다.");
+        }
+        sections.add(0, section);
     }
 
-    private boolean isLastStation(Long stationId) {
-        return getAllStations().get(getAllStations().size() - 1).getId().equals(stationId);
+    private void addAsLastSection(Section section) {
+        if (getAllStations().contains(section.getDownStation())) {
+            throw new LineSectionException("이미 노선에 포함된 역은 하행역으로 지정할 수 없습니다.");
+        }
+        if (!section.getUpStation().equals(getLastStation())) {
+            throw new LineSectionException("노선의 하행역만 상행역으로 지정 가능합니다.");
+        }
+        sections.add(section);
     }
 
     private void deleteMiddleSectionByStationId(Long stationId) {
@@ -165,28 +172,19 @@ public class Line {
                     return section.getUpStation().equals(sectionWithStationIdAsDownStation.getDownStation());
                 })
                 .findFirst()
-                .orElseThrow(() -> new LineSectionException("다음 구간이 존재하지 않습니다."));
+                .orElseThrow(() -> new LineSectionException(stationId + " 역의 다음 구간이 존재하지 않습니다."));
 
         int deletedSectionsDistance =
                 sectionWithStationIdAsUpStation.getDistance() + sectionWithStationIdAsDownStation.getDistance();
 
-        Section sectionToReconnect = Section.create(
+        Section sectionForReconnection = Section.create(
                 sectionWithStationIdAsDownStation.getUpStation(),
                 sectionWithStationIdAsUpStation.getDownStation(),
                 deletedSectionsDistance);
 
-        int idx = sections.indexOf(sectionWithStationIdAsDownStation);
-
         sections.remove(sectionWithStationIdAsDownStation);
         sections.remove(sectionWithStationIdAsUpStation);
-        sections.add(idx, sectionToReconnect);
-    }
-
-    private void addAsFirstSection(Section section) {
-        if (getAllStations().contains(section.getUpStation())) {
-            throw new LineSectionException("상행역은 기존 노선에 존재하는 역일 수 없습니다.");
-        }
-        sections.add(0, section);
+        sections.add(sectionForReconnection);
     }
 
     private Optional<Section> getSectionWithSameUpStation(Section section) {
@@ -212,10 +210,10 @@ public class Line {
                 sectionToAdd.getUpStation(),
                 existingSection.getDownStation(),
                 existingSection.getDistance() - sectionToAdd.getDistance());
-        int idx = sections.indexOf(existingSection);
+
         sections.remove(existingSection);
-        sections.add(idx, sectionToAdd);
-        sections.add(idx + 1, splitExistingSection);
+        sections.add(sectionToAdd);
+        sections.add(splitExistingSection);
     }
 
     private void addAsMiddleSectionOnExistingDownStation(Section sectionToAdd, Section existingSection) {
@@ -230,19 +228,23 @@ public class Line {
                 sectionToAdd.getUpStation(),
                 existingSection.getDistance() - sectionToAdd.getDistance());
 
-        int idx = sections.indexOf(existingSection);
         sections.remove(existingSection);
-        sections.add(idx, splitExistingSection);
-        sections.add(idx + 1, sectionToAdd);
+        sections.add(splitExistingSection);
+        sections.add(sectionToAdd);
     }
 
-    private void addAsLastSection(Section section) {
-        if (getAllStations().contains(section.getDownStation())) {
-            throw new LineSectionException("이미 노선에 포함된 역은 하행역으로 지정할 수 없습니다.");
+    private int getSectionOrder(Section section) {
+        int order = 0;
+
+        for (Section currentSection : sections) {
+            if (currentSection.equals(section)) {
+                break;
+            }
+            if (currentSection.getDownStation().getId().equals(section.getUpStation().getId())) {
+                order--;
+            }
+            order++;
         }
-        if (!section.getUpStation().equals(getLastStation())) {
-            throw new LineSectionException("노선의 하행역만 상행역으로 지정 가능합니다.");
-        }
-        sections.add(section);
+        return order;
     }
 }

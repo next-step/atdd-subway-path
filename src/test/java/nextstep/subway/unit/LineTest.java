@@ -4,7 +4,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.LineSectionException;
-import nextstep.subway.helper.fixture.StationFixture;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -239,8 +238,9 @@ class LineTest {
             // When
             신분당선.addSection(추가구간_엔티티(역삼역_엔티티, 선릉역_엔티티));
             // Then
-            Station station = 신분당선.getLastStation();
-            assertEquals(station.getName(), "선릉역");
+            List<Station> stations = 신분당선.getAllStations();
+            Station expectedLastStation = stations.get(stations.size() - 1);
+            assertEquals(expectedLastStation.getName(), "선릉역");
         }
 
         /**
