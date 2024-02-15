@@ -207,7 +207,7 @@ class LineServiceTest {
 		// given
 		LineResponse 신분당선 = 신분당선_생성();
 		Station 첫번째_정류장 = 정류장_조회(신분당선.getStations().get(0).getId());
-		Station 강남역 = 정류장_생성("강남역");
+		Station 양재역 = 정류장_생성("양재역");
 
 		// then
 		Long id = 신분당선.getId();
