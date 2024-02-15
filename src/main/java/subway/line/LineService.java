@@ -48,11 +48,10 @@ public class LineService {
 	}
 
 	@Transactional
-	public Line update(Long id, LineUpdateRequest request) {
+	public void update(Long id, LineUpdateRequest request) {
 		Line line = findById(id);
 		line.changeName(request.getName());
 		line.changeColor(request.getColor());
-		return line;
 	}
 
 	@Transactional

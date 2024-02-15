@@ -52,10 +52,11 @@ class LineServiceTest {
 		LineUpdateRequest request = LineRequestFixture.lineUpdateRequest().build();
 
 		// when
-		Line line = lineService.update(신분당선.getId(), request);
+		lineService.update(신분당선.getId(), request);
 
 		// then
-		assertThat(line.getName()).isEqualTo(request.getName());
+		LineResponse expectedResponse = lineService.findLineById(신분당선.getId());
+		assertThat(request.getName()).isEqualTo(expectedResponse.getName());
 	}
 
 	@DisplayName("노선의 이름은 20자를 넘길수 없다.")
@@ -82,10 +83,11 @@ class LineServiceTest {
 		LineUpdateRequest request = LineRequestFixture.lineUpdateRequest().build();
 
 		// when
-		Line line = lineService.update(신분당선.getId(), request);
+		lineService.update(신분당선.getId(), request);
 
 		// then
-		assertThat(line.getColor()).isEqualTo(request.getColor());
+		LineResponse expectedResponse = lineService.findLineById(신분당선.getId());
+		assertThat(request.getColor()).isEqualTo(expectedResponse.getColor());
 	}
 
 	@DisplayName("노선의 색깔은 20자를 넘길수 없다.")
