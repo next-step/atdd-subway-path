@@ -1,15 +1,11 @@
 package nextstep.subway.line;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import nextstep.subway.exception.HttpBadRequestException;
 import nextstep.subway.line.section.Section;
+import nextstep.subway.line.section.Sections;
 import nextstep.subway.station.Station;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+
 
 @Entity
 public class Line {
@@ -17,6 +13,14 @@ public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    public Station getStartStation() {
+        return startStation;
+    }
+
+    public Station getEndStation() {
+        return endStation;
+    }
 
     @Column(length = 20, nullable = false)
     private String name;
@@ -32,9 +36,9 @@ public class Line {
     @JoinColumn(name = "end_station_id", nullable = false)
     private Station endStation;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
+
 
     public Line() {
     }
@@ -48,18 +52,6 @@ public class Line {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    public boolean contains(Section section) {
-        return sections.contains(section);
-    }
-
-    public void addSection(Section section) {
-        this.sections.add(section);
     }
 
     public Long getId() {
@@ -79,58 +71,36 @@ public class Line {
         this.color = color;
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
+    public boolean contains(Section section) {
+        return getSections().contains(section);
+    }
+
     public void deleteSection(Section section) {
-        if (sections.size() == 1) {
-            throw new HttpBadRequestException("노선에는 최소 한 개의 구간이 존재해야 합니다.");
-        }
+        getSections().deleteSection(section);
+    }
 
-        if(!Objects.equals(sections.get(sections.size()-1), section)){
-            throw new HttpBadRequestException("노선의 마지막 구간만 삭제할 수 있습니다.");
-        }
-
-        sections.remove(section);
+    public void addSection(Section section) {
+        getSections().addSection(section);
     }
 
     public void removeSection(Section section) {
-        this.getSections().remove(section);
+        getSections().removeSection(section);
     }
 
-    public Station getStartStation() {
-        return startStation;
+    public void addStationBefore(Station newStation, Station nextStation, int distance) {
+        getSections().addStationBefore(newStation, nextStation, distance, this);
     }
 
-    public Station getEndStation() {
-        return endStation;
+    public void setStartStation(Station startStation) {
+        this.startStation = startStation;
     }
 
-    public void addStation(Station newStation, Station nextStation, int distance) {
-        mustHaveMoreThanOneSection();
-        alreadyHaveStation(newStation);
-
-        //새로운 구간 추가
-        Section newSection = new Section(newStation, nextStation, distance, this);
-
-        //기존 구간 수정
-        Optional<Section> beforeSection = sections.stream().findFirst().filter(s -> s.getDownStation().equals(nextStation));
-        if(beforeSection.isPresent()){
-            Section section = beforeSection.get();
-            section.setDownStation(newStation);
-            section.setDistance(section.getDistance() - distance);
-        }else{
-            this.startStation = newStation;
-        }
-
+    public void removeStation(Station newStation) {
+        getSections().removeStation(newStation, this);
     }
 
-    private void alreadyHaveStation(Station newStation) {
-        if (sections.stream().anyMatch(section -> section.contains(newStation))) {
-            throw new HttpBadRequestException("이미 등록된 역입니다.");
-        }
-    }
-
-    private void mustHaveMoreThanOneSection() {
-        if (sections.isEmpty()) {
-            throw new HttpBadRequestException("노선에는 최소 한 개의 구간이 존재해야 합니다.");
-        }
-    }
 }

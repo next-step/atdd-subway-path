@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import nextstep.subway.fixture.LineTestFixture;
 import nextstep.subway.fixture.SectionTestFixture;
 import nextstep.subway.fixture.StationTestFixture;
@@ -60,8 +61,41 @@ public class LineAcceptanceTest extends AcceptanceTest{
                 .when().post("/lines/{lineId}/stations", 이호선_아이디)
                 .then().log().all().extract();
 
-        List<Long> sections = extract.jsonPath().getList("sections.id", Long.class);
+        List<Long> sections = extract.jsonPath().getList("sections.sections.id", Long.class);
 
         assertThat(sections).hasSize(2);
     }
+
+    @DisplayName("지하철 노선의 중간역을 제거한다.")
+    @Test
+    void removeBetween() {
+        long 강남역_아이디 = StationTestFixture.createStationFromName("강남역").jsonPath().getLong("id");
+        long 역삼역_아이디 = StationTestFixture.createStationFromName("역삼역").jsonPath().getLong("id");
+        long 교대역_아이디 = StationTestFixture.createStationFromName("교대역").jsonPath().getLong("id");
+        long 이호선_아이디 = LineTestFixture.createLine("2호선", "green", 강남역_아이디, 역삼역_아이디).jsonPath().getLong("id");
+        SectionTestFixture.createSection(강남역_아이디, 역삼역_아이디, 10, 이호선_아이디);
+        SectionTestFixture.createSection(교대역_아이디, 강남역_아이디, 2, 이호선_아이디);
+
+        ValidatableResponse validatableResponse = RestAssured.given().log().all()
+                .when().delete("/lines/{lineId}/stations?stationId={stationId}", 이호선_아이디, 강남역_아이디)
+                .then().log().all()
+                .statusCode(204);
+    }
+
+    @DisplayName("지하철 노선의 출발역을 제거한다.")
+    @Test
+    void removeFirst() {
+        long 강남역_아이디 = StationTestFixture.createStationFromName("강남역").jsonPath().getLong("id");
+        long 역삼역_아이디 = StationTestFixture.createStationFromName("역삼역").jsonPath().getLong("id");
+        long 교대역_아이디 = StationTestFixture.createStationFromName("교대역").jsonPath().getLong("id");
+        long 이호선_아이디 = LineTestFixture.createLine("2호선", "green", 강남역_아이디, 역삼역_아이디).jsonPath().getLong("id");
+        SectionTestFixture.createSection(강남역_아이디, 역삼역_아이디, 10, 이호선_아이디);
+        SectionTestFixture.createSection(교대역_아이디, 강남역_아이디, 2, 이호선_아이디);
+
+        RestAssured.given().log().all()
+                .when().delete("/lines/{lineId}/stations?stationId={stationId}", 이호선_아이디, 교대역_아이디)
+                .then().log().all()
+                .statusCode(204);
+    }
+
 }
