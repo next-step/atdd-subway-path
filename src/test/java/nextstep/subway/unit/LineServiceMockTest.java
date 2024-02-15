@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -38,11 +39,18 @@ public class LineServiceMockTest {
     Station 보라매역;
     Station 보라매병원역;
 
+    private final Long 신림역_아이디= 1L;
+    private final Long 보라매역_아이디= 2L;
+    private final Long 보라매병원역_아이디= 3L;
+
     @BeforeEach
     public void setUp() {
-        신림역 = new Station(1L, "신림역");
-        보라매역 = new Station(2L, "보라매역");
-        보라매병원역 = new Station(3L, "보라매병원역");
+        신림역 = new Station("신림역");
+        ReflectionTestUtils.setField(신림역, "id", 신림역_아이디);
+        보라매역 = new Station("보라매역");
+        ReflectionTestUtils.setField(보라매역, "id", 보라매역_아이디);
+        보라매병원역 = new Station("보라매병원역");
+        ReflectionTestUtils.setField(보라매병원역, "id", 보라매병원역_아이디);
 
         신림선 = Line.builder()
                 .name("신림선")
