@@ -30,21 +30,25 @@ public class StationResponse {
     }
 
     public static List<StationResponse> sectionsToStationResponses(Sections sections) {
-        Set<StationResponse> stationResponses = new HashSet<>();
+        Set<Long> addedStationIds = new HashSet<>();
+        List<StationResponse> stationResponses = new ArrayList<>();
+
         for (Section section : sections.getSections()) {
-            StationResponse upStationResponse = StationResponse.builder()
-                    .id(section.getUpStation().getId())
-                    .name(section.getUpStation().getName())
-                    .build();
-
-            StationResponse downStationResponse = StationResponse.builder()
-                    .id(section.getDownStation().getId())
-                    .name(section.getDownStation().getName())
-                    .build();
-
-            stationResponses.add(upStationResponse);
-            stationResponses.add(downStationResponse);
+            addStationResponseIfNotExists(section.getUpStation(), addedStationIds, stationResponses);
+            addStationResponseIfNotExists(section.getDownStation(), addedStationIds, stationResponses);
         }
-        return new ArrayList<>(stationResponses);
+
+        return stationResponses;
+    }
+
+    private static void addStationResponseIfNotExists(Station station, Set<Long> addedStationIds, List<StationResponse> stationResponses) {
+        Long stationId = station.getId();
+        if (!addedStationIds.contains(stationId)) {
+            stationResponses.add(StationResponse.builder()
+                    .id(stationId)
+                    .name(station.getName())
+                    .build());
+            addedStationIds.add(stationId);
+        }
     }
 }

@@ -31,6 +31,22 @@ public class Line {
         this.color = color;
     }
 
+    public void addSection(Section section) {
+        this.sections.addSection(section);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
     public void update(String name, String color) {
         this.name = name;
         this.color = color;

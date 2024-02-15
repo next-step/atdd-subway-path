@@ -72,7 +72,7 @@ public class LineService {
     }
 
     @Transactional
-    public SectionResponse saveLineSection(Long lineId, SectionCreateRequest request) {
+    public SectionResponse addSection(Long lineId, SectionCreateRequest request) {
         Station upStation = stationService.getStationById(Long.valueOf(request.getUpStationId()));
         Station downStation = stationService.getStationById(Long.valueOf(request.getDownStationId()));
 
@@ -87,6 +87,7 @@ public class LineService {
                 .downStation(downStation)
                 .distance(request.getDistance())
                 .build());
+        line.getSections().addSection(section);
 
         return sectionToSectionResponse(section);
     }
@@ -97,7 +98,7 @@ public class LineService {
         line.getSections().deleteSection(stationId);
     }
 
-    public LineResponse findLine(Long id) {
+    public LineResponse findLineById(Long id) {
         Line findLine = getLineById(id);
         return lineToLineResponse(findLine);
     }
@@ -108,18 +109,22 @@ public class LineService {
     }
 
     private static void validDownStation(Long downStationId, Line line) {
-        List<Long> registeredStationIds = line.getSections().getStationIds();
+        if (line.getSections().getSections().size() != 0) {
+            List<Long> registeredStationIds = line.getSections().getStationIds();
 
-        if (registeredStationIds.contains(downStationId)) {
-            throw new CheckDuplicateStationException("이미 해당노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
+            if (registeredStationIds.contains(downStationId)) {
+                throw new CheckDuplicateStationException("이미 해당노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
+            }
         }
     }
 
     private static void validUpStation(Long upStationId, Line line) {
-        Long downStationId = line.getSections().findDownStationId();
+        if (line.getSections().getSections().size() != 0) {
+            Long downStationId = line.getSections().findDownStationId();
 
-        if (downStationId != upStationId) {
-            throw new InvalidUpStationException("새로운 구간의 상행역은 해당 노선에 등록되어 있는 하행 종점역이어야 합니다.");
+            if (downStationId != upStationId) {
+                throw new InvalidUpStationException("새로운 구간의 상행역은 해당 노선에 등록되어 있는 하행 종점역이어야 합니다.");
+            }
         }
     }
 
