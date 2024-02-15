@@ -8,6 +8,7 @@ import nextstep.subway.fixture.LineTestFixture;
 import nextstep.subway.fixture.SectionTestFixture;
 import nextstep.subway.fixture.StationTestFixture;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -16,17 +17,26 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DisplayName("지하철 노선 관련 기능")
+@DisplayName("지하철 노선 인수 테스")
 public class LineAcceptanceTest extends AcceptanceTest{
+
+    private long 강남역_아이디;
+    private long 역삼역_아이디;
+    private long 교대역_아이디;
+    private long 이호선_아이디;
+
+    @BeforeEach
+    public void setUp() {
+        강남역_아이디 = StationTestFixture.createStationFromName("강남역").jsonPath().getLong("id");
+        역삼역_아이디 = StationTestFixture.createStationFromName("역삼역").jsonPath().getLong("id");
+        교대역_아이디 = StationTestFixture.createStationFromName("교대역").jsonPath().getLong("id");
+        이호선_아이디 = LineTestFixture.createLine("2호선", "green", 강남역_아이디, 역삼역_아이디).jsonPath().getLong("id");
+        SectionTestFixture.createSection(강남역_아이디, 역삼역_아이디, 10, 이호선_아이디);
+    }
 
     @DisplayName("지하철 노선 맨 앞에 역을 등록한다.")
     @Test
     void addFirst() {
-        long 강남역_아이디 = StationTestFixture.createStationFromName("강남역").jsonPath().getLong("id");
-        long 역삼역_아이디 = StationTestFixture.createStationFromName("역삼역").jsonPath().getLong("id");
-        long 교대역_아이디 = StationTestFixture.createStationFromName("교대역").jsonPath().getLong("id");
-        long 이호선_아이디 = LineTestFixture.createLine("2호선", "green", 강남역_아이디, 역삼역_아이디).jsonPath().getLong("id");
-        SectionTestFixture.createSection(강남역_아이디, 역삼역_아이디, 10, 이호선_아이디);
 
         long newStartStationId = RestAssured.given().log().all()
                 .contentType("application/json")
@@ -45,11 +55,6 @@ public class LineAcceptanceTest extends AcceptanceTest{
     @DisplayName("지하철 노선 중간에 역을 등록한다.")
     @Test
     void addBetween() {
-        long 강남역_아이디 = StationTestFixture.createStationFromName("강남역").jsonPath().getLong("id");
-        long 역삼역_아이디 = StationTestFixture.createStationFromName("역삼역").jsonPath().getLong("id");
-        long 교대역_아이디 = StationTestFixture.createStationFromName("교대역").jsonPath().getLong("id");
-        long 이호선_아이디 = LineTestFixture.createLine("2호선", "green", 강남역_아이디, 역삼역_아이디).jsonPath().getLong("id");
-        SectionTestFixture.createSection(강남역_아이디, 역삼역_아이디, 10, 이호선_아이디);
 
         ExtractableResponse<Response> extract = RestAssured.given().log().all()
                 .contentType("application/json")
@@ -69,11 +74,7 @@ public class LineAcceptanceTest extends AcceptanceTest{
     @DisplayName("지하철 노선의 중간역을 제거한다.")
     @Test
     void removeBetween() {
-        long 강남역_아이디 = StationTestFixture.createStationFromName("강남역").jsonPath().getLong("id");
-        long 역삼역_아이디 = StationTestFixture.createStationFromName("역삼역").jsonPath().getLong("id");
-        long 교대역_아이디 = StationTestFixture.createStationFromName("교대역").jsonPath().getLong("id");
-        long 이호선_아이디 = LineTestFixture.createLine("2호선", "green", 강남역_아이디, 역삼역_아이디).jsonPath().getLong("id");
-        SectionTestFixture.createSection(강남역_아이디, 역삼역_아이디, 10, 이호선_아이디);
+
         SectionTestFixture.createSection(교대역_아이디, 강남역_아이디, 2, 이호선_아이디);
 
         ValidatableResponse validatableResponse = RestAssured.given().log().all()
@@ -85,11 +86,6 @@ public class LineAcceptanceTest extends AcceptanceTest{
     @DisplayName("지하철 노선의 출발역을 제거한다.")
     @Test
     void removeFirst() {
-        long 강남역_아이디 = StationTestFixture.createStationFromName("강남역").jsonPath().getLong("id");
-        long 역삼역_아이디 = StationTestFixture.createStationFromName("역삼역").jsonPath().getLong("id");
-        long 교대역_아이디 = StationTestFixture.createStationFromName("교대역").jsonPath().getLong("id");
-        long 이호선_아이디 = LineTestFixture.createLine("2호선", "green", 강남역_아이디, 역삼역_아이디).jsonPath().getLong("id");
-        SectionTestFixture.createSection(강남역_아이디, 역삼역_아이디, 10, 이호선_아이디);
         SectionTestFixture.createSection(교대역_아이디, 강남역_아이디, 2, 이호선_아이디);
 
         RestAssured.given().log().all()
