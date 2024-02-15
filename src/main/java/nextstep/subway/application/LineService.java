@@ -103,20 +103,20 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                getAllStation(sectionService.findAllSectionsByLine(line.getId())));
+                convertStationResponses(sectionService.findAllSectionsByLineId(line.getId())));
     }
 
-    private List<StationResponse> getAllStation(List<SectionResponse> allSectionsByLine) {
+    private List<StationResponse> convertStationResponses(List<Section> sections) {
         Set<StationResponse> stationResponses = new LinkedHashSet<>();
 
-        allSectionsByLine
-                .forEach(sectionResponse -> {
-                    stationResponses.add(new StationResponse(sectionResponse.getUpStation().getId(), sectionResponse.getUpStation().getName()));
-                    stationResponses.add(new StationResponse(sectionResponse.getDownStation().getId(), sectionResponse.getDownStation().getName()));
+        sections.forEach(section -> {
+                    stationResponses.add(convertToStationResponse(section.getUpStation()));
+                    stationResponses.add(convertToStationResponse(section.getDownStation()));
                 });
 
         return new ArrayList<>(stationResponses);
     }
+
 
     private Section convertToSectionEntity(LineRequest request, Line line) {
         return new Section(
@@ -124,12 +124,6 @@ public class LineService {
                 findStation(request.getDownStationId()),
                 request.getDistance(),
                 line);
-    }
-
-    private List<StationResponse> convertToStationResponses(List<Station> stations) {
-        List<StationResponse> stationResponses = new ArrayList<>();
-        stations.forEach(station -> stationResponses.add(convertToStationResponse(station)));
-        return stationResponses;
     }
 
     private StationResponse convertToStationResponse(Station station) {

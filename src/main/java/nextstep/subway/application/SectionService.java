@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,16 +32,19 @@ public class SectionService {
     }
 
     public List<SectionResponse> findAllSectionsByLine(Long lineId) {
-        return convertToSectionResponses(convertConnectedSections(
-                sectionRepository.findAllByLine(findLineById(lineId))));
+        return convertToSectionResponses(findAllSectionsByLineId(lineId));
     }
 
-    public Line findLineById(Long lineId) {
+    public List<Section> findAllSectionsByLineId(Long lineId) {
+        return convertConnectedSections(sectionRepository.findAllByLine(findLineById(lineId)));
+    }
+
+    private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("노선 번호에 해당하는 노선이 없습니다."));
     }
 
-    public List<Section> convertConnectedSections(List<Section> sections) {
+    private List<Section> convertConnectedSections(List<Section> sections) {
         LinkedList<Section> linkedSections = new LinkedList<>();
         List<Section> sectionsToRemove = new ArrayList<>();
 
