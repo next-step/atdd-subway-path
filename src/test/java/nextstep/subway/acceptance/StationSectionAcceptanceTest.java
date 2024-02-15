@@ -99,6 +99,10 @@ public class StationSectionAcceptanceTest {
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
                             .containsExactlyInAnyOrderElementsOf(Arrays.asList(
                                     독산역_번호, 가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
+
+                    assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
+                            .containsSequence(Arrays.asList(
+                                    독산역_번호, 가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
                 }
 
                 /**
@@ -564,6 +568,30 @@ public class StationSectionAcceptanceTest {
 
             // then
             assertThat(성공하는_삭제요청_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        }
+    }
+
+    @Nested
+    class 노선의_구간_목록_조회 {
+
+        /**
+         * Given 지하철 노선이 생성되고, 구간을 추가한다.
+         * When  노선의 모든 구간 목록을 조회하는 경우
+         * Then  해당 노선에 추가된 모든 구간이 조회된다.
+         */
+        @Test
+        void 노선에_구간을_추가하고_모든_구간_목록을_조회하는_경우_노선의_모든_구간_출력() {
+            ExtractableResponse<Response> 호남선_생성_응답 = 지하철_노선_생성_요청_검증_포함(
+                    호남선(가산디지털단지역_번호, 구로디지털단지역_번호, 10));
+
+            지하철_구간_목록_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답),
+                    List.of(지하철_구간(구로디지털단지역_번호, 신도림역_번호, 10),
+                            지하철_구간(신도림역_번호, 서울역_번호, 10),
+                            지하철_구간(서울역_번호, 홍대입구역_번호, 10)));
+
+            assertThat(convertToStationIdsFromSection(지하철_구간_목록_조회_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), HttpStatus.OK)))
+                    .containsExactlyInAnyOrderElementsOf(Arrays.asList(
+                            가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호));
         }
     }
 }

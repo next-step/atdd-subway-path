@@ -122,11 +122,11 @@ public class LineService {
         );
     }
 
-    private SectionResponse convertToSectionResponse(Section section) {
+    public SectionResponse convertToSectionResponse(Section section) {
         return new SectionResponse(
                 section.getId(),
-                section.getUpStation().getId(),
-                section.getDownStation().getId(),
+                findStation(section.getUpStation().getId()),
+                findStation(section.getDownStation().getId()),
                 section.getDistance()
         );
     }

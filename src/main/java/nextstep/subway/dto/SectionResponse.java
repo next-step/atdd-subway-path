@@ -1,24 +1,23 @@
 package nextstep.subway.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import nextstep.subway.entity.Station;
 
 public class SectionResponse {
 
-    private Long id;
+    private final Long id;
 
-    @JsonIgnore
-    private Long upStationId;
+    private final Station upStation;
 
-    @JsonIgnore
-    private Long downStationId;
+    private final Station downStation;
 
     @JsonIgnore
     private int distance;
 
-    public SectionResponse(Long id, Long upStationId, Long downStationId, int distance) {
+    public SectionResponse(Long id, Station upStation, Station downStation, int distance) {
         this.id = id;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -26,12 +25,12 @@ public class SectionResponse {
         return id;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
