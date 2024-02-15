@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 class LineTest {
     private static String name = "2호선";
-    private static String green = "green";
+    private static String color = "green";
     private static long upStationId = 1L;
     private static long downStationId = 2L;
     private static long distance = 10L;
@@ -67,7 +67,7 @@ class LineTest {
     }
 
     private static Line 라인생성() {
-        Line line = new Line(name, green);
+        Line line = new Line(name, color);
         return line;
     }
 }
