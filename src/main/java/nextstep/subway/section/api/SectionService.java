@@ -34,8 +34,8 @@ public class SectionService {
         Line line = getLine(lineId);
 
         if (line.getSections() != null) {
-            validateSequence(request, line);
-            validateUniqueness(request, line);
+            line.validateSequence(request);
+            line.validateUniqueness(request);
         }
 
         Section section = SectionCreateRequest.toEntity(
@@ -53,8 +53,8 @@ public class SectionService {
         Line line = getLine(lineId);
 
         validateStationId(stationId);
-        validateLastStation(line);
-        validateDownStationId(stationId, line);
+        line.validateLastStation();
+        line.validateDownStationId(stationId);
 
         line.getSections().deleteLastSection();
     }
@@ -63,31 +63,6 @@ public class SectionService {
         return lineRepository.findById(lineId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Line Id '%d'를 찾을 수 없습니다.", lineId))
         );
-    }
-
-    // 라인의 섹션
-    private void validateSequence(SectionCreateRequest request, Line line) {
-        if (line.getSections().getDownStationId() != request.getUpStationId()) {
-            throw new SectionMismatchException();
-        }
-    }
-
-    private void validateUniqueness(SectionCreateRequest request, Line line) {
-        if (line.getSections().getDownStationIds().contains(request.getDownStationId())) {
-            throw new AlreadyRegisteredException();
-        }
-    }
-
-    private void validateLastStation(Line line) {
-        if (line.getSections().getDownStationIds().size() < 1) {
-            throw new InsufficientStationException();
-        }
-    }
-
-    private void validateDownStationId(Long stationId, Line line) {
-        if (line.getSections().getDownStationId() != stationId) {
-            throw new StationNotMatchException();
-        }
     }
 
     private void validateStationId(Long stationId) {
