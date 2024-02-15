@@ -9,7 +9,8 @@ import java.util.stream.Stream;
 
 @Entity
 public class Line {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
@@ -29,14 +30,16 @@ public class Line {
         this.color = color;
     }
 
-    protected Line() {}
+    protected Line() {
+    }
 
     public static Line create(String name, String color, Station upStation, Station downStation, int distance) {
         Line line = new Line(name, color);
         return getSectionAddedLine(line, upStation, downStation, distance);
     }
 
-    public static Line createWithId(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+    public static Line createWithId(Long id, String name, String color, Station upStation, Station downStation,
+            int distance) {
         Line line = new Line(id, name, color);
         return getSectionAddedLine(line, upStation, downStation, distance);
     }
@@ -88,10 +91,25 @@ public class Line {
         if (sections.size() <= 1) {
             throw new LineSectionException("삭제할 수 있는 구간이 없습니다.");
         }
-        if (!Objects.equals(getLastStation().getId(), stationId)) {
-            throw new LineSectionException("노선의 하행역만 삭제할 수 있습니다.");
+
+        if (getAllStations().stream().noneMatch(station -> station.getId().equals(stationId))) {
+            throw new LineSectionException("노선에 존재하지 않는 역입니다.");
         }
-        sections.remove(sections.size() - 1);
+
+        if (isFirstStation(stationId)) {
+            sections.remove(0);
+            return;
+        }
+
+        if (isLastStation(stationId)) {
+            sections.remove(sections.size() - 1);
+            return;
+        }
+
+        if (!isFirstStation(stationId) && !isLastStation(stationId)) {
+            deleteMiddleSectionByStationId(stationId);
+        }
+        return;
     }
 
     public void addSection(Section sectionToAdd) {
@@ -128,6 +146,42 @@ public class Line {
         return section.getDownStation().equals(getFirstStation());
     }
 
+    private boolean isFirstStation(Long stationId) {
+        return getAllStations().get(0).getId().equals(stationId);
+    }
+
+    private boolean isLastStation(Long stationId) {
+        return getAllStations().get(getAllStations().size() - 1).getId().equals(stationId);
+    }
+
+    private void deleteMiddleSectionByStationId(Long stationId) {
+        Section sectionWithStationIdAsDownStation = sections.stream()
+                .filter(section -> section.getDownStation().getId().equals(stationId))
+                .findFirst()
+                .orElseThrow(() -> new LineSectionException("노선에 존재하지 않는 역입니다."));
+
+        Section sectionWithStationIdAsUpStation = sections.stream()
+                .filter(section -> {
+                    return section.getUpStation().equals(sectionWithStationIdAsDownStation.getDownStation());
+                })
+                .findFirst()
+                .orElseThrow(() -> new LineSectionException("다음 구간이 존재하지 않습니다."));
+
+        int deletedSectionsDistance =
+                sectionWithStationIdAsUpStation.getDistance() + sectionWithStationIdAsDownStation.getDistance();
+
+        Section sectionToReconnect = Section.create(
+                sectionWithStationIdAsDownStation.getUpStation(),
+                sectionWithStationIdAsUpStation.getDownStation(),
+                deletedSectionsDistance);
+
+        int idx = sections.indexOf(sectionWithStationIdAsDownStation);
+
+        sections.remove(sectionWithStationIdAsDownStation);
+        sections.remove(sectionWithStationIdAsUpStation);
+        sections.add(idx, sectionToReconnect);
+    }
+
     private void addAsFirstSection(Section section) {
         if (getAllStations().contains(section.getUpStation())) {
             throw new LineSectionException("상행역은 기존 노선에 존재하는 역일 수 없습니다.");
@@ -157,12 +211,11 @@ public class Line {
         Section splitExistingSection = Section.create(
                 sectionToAdd.getUpStation(),
                 existingSection.getDownStation(),
-                existingSection.getDistance() - sectionToAdd.getDistance()
-        );
+                existingSection.getDistance() - sectionToAdd.getDistance());
         int idx = sections.indexOf(existingSection);
         sections.remove(existingSection);
         sections.add(idx, sectionToAdd);
-        sections.add(idx+1, splitExistingSection);
+        sections.add(idx + 1, splitExistingSection);
     }
 
     private void addAsMiddleSectionOnExistingDownStation(Section sectionToAdd, Section existingSection) {
@@ -175,13 +228,12 @@ public class Line {
         Section splitExistingSection = Section.create(
                 existingSection.getUpStation(),
                 sectionToAdd.getUpStation(),
-                existingSection.getDistance() - sectionToAdd.getDistance()
-        );
+                existingSection.getDistance() - sectionToAdd.getDistance());
 
         int idx = sections.indexOf(existingSection);
         sections.remove(existingSection);
         sections.add(idx, splitExistingSection);
-        sections.add(idx+1, sectionToAdd);
+        sections.add(idx + 1, sectionToAdd);
     }
 
     private void addAsLastSection(Section section) {
