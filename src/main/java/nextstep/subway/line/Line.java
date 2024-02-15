@@ -65,7 +65,4 @@ public class Line {
         sections.removeLastSection(stationId);
     }
 
-    public boolean isDupleCate(Section section) {
-        return sections.isDupleCate(section);
-    }
 }
