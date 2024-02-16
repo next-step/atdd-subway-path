@@ -30,21 +30,20 @@ public class LineService {
         Station downStation = stationService.findById(request.getDownStationId());
         Line line = lineRepository.save(request.to());
 
-        this.addSection(line.getId(), upStation.getId(), downStation.getId(), line.getDistance());
+        // TODO 일급 컬렉션
+        this.addSection(line.getId(), upStation.getId(), downStation.getId(), request.getDistance());
 
         return LineResponse.from(line, getStations(line));
     }
 
     public List<LineResponse> showLines() {
-        // TODO fetch join
-        return lineRepository.findAll().stream()
+        return lineRepository.findAllWithSectionsUsingFetchJoin().stream()
             .map(line -> LineResponse.from(line, getStations(line)))
             .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        // TODO fetch join
-        Line line = lineRepository.findById(id)
+        Line line = lineRepository.findByIdWithSectionsUsingFetchJoin(id)
             .orElseThrow(() -> new BusinessException("노선 정보를 찾을 수 없습니다."));
 
         return LineResponse.from(line, getStations(line));
@@ -79,15 +78,12 @@ public class LineService {
             return Collections.emptyList();
         }
 
-        List<Station> stations = line.getSections().stream()
-            .map(Section::getDownStation)
+        List<Long> stationIds = line.getSections().stream()
+            .map(section -> section.getDownStation().getId())
             .collect(Collectors.toList());
+        stationIds.add(0, line.getSections().get(0).getUpStation().getId());
 
-        stations.add(0, line.getSections().get(0).getUpStation());
-
-        return stations.stream()
-            .map(StationResponse::from)
-            .collect(Collectors.toList());
+        return stationService.findAllByIdIn(stationIds);
     }
 
     @Transactional

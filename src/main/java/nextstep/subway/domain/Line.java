@@ -20,13 +20,6 @@ public class Line {
     private String name;
     private String color;
 
-    @Column(nullable = false)
-    private int distance;
-
-    private Long upStationId;
-
-    private Long downStationId;
-
     // TODO 일급 컬렉션 작성
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -42,16 +35,12 @@ public class Line {
             LineValidator.checkSectionForAddition(this, section);
         }
 
-        this.downStationId = section.getDownStation().getId();
-        this.distance += section.getDistance();
         this.sections.add(section);
     }
 
     public void removeSection(final Section section) {
         LineValidator.checkSectionForRemove(this, section);
 
-        this.downStationId = section.getUpStation().getId();
-        this.distance -= section.getDistance();
         this.sections.remove(section);
     }
 
@@ -59,11 +48,8 @@ public class Line {
         return this.getSections().isEmpty();
     }
 
-    public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
     }
 }

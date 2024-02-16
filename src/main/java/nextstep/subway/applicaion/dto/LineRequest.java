@@ -14,6 +14,6 @@ public class LineRequest {
     private int distance;
 
     public Line to() {
-        return new Line(name, color, upStationId, downStationId, distance);
+        return new Line(name, color);
     }
 }
