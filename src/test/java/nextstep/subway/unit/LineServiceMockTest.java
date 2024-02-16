@@ -239,6 +239,26 @@ public class LineServiceMockTest {
         verify(line).addSection(any(Section.class));
     }
 
+    @DisplayName("지하철 노선 구간을 삭제한다.")
+    @Test
+    void 지하철_노선_구간_삭제() {
+        // given
+        final Line line = mock(Line.class);
+        final Station station = mock(Station.class);
+        Sections sections = mock(Sections.class);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+        when(line.getSections()).thenReturn(sections);
+        when(sections.size()).thenReturn(2);
+        when(stationRepository.findById(anyLong())).thenReturn(Optional.of(station));
+
+        // when
+        lineService.deleteLineSection(1L, 1L);
+
+        // then
+        verify(line).removeSection(station);
+    }
+
     private LineRequest 신분당선_생성_요청() {
         return new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
     }
