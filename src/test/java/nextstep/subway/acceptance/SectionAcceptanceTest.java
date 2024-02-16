@@ -131,6 +131,24 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         );
     }
 
+    @DisplayName("given 특정 노선에 구간이 1개 이상 등록되었을 때\n"
+                 + "   when 등록하려는 역이 기존 노선에 있다면\n"
+                 + "   then 예외를 반환한다.")
+    @Test
+    void testAddSection_구간_추가시_기존에_등록되어있으면_예외_반환() throws JsonProcessingException {
+        //given
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        SectionRequest sectionRequest1 = new SectionRequest(2L, 3L, 5);
+        addSection(lineResponse, sectionRequest1);
+        //when
+        SectionRequest sectionRequest2 = new SectionRequest(3L, 2L, 7);
+
+        given().body(mapper.writeValueAsString(sectionRequest2))
+               .contentType(MediaType.APPLICATION_JSON_VALUE)
+               .when().post("/lines/" + lineResponse.getId() + "/sections").then().statusCode(HttpStatus.SC_BAD_REQUEST);
+
+    }
+
     @Test
     void 해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_다를_때_등록하려는_구간의_길이가_구간_사이에_들어올_수_없으면_에러를_반환한다() throws JsonProcessingException {
         //given
