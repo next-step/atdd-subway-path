@@ -34,13 +34,13 @@ public class StationSectionSteps {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_구간_삭제요청_검증_생략(
-            Long downStationIdToDelete, Long stationLineId) {
+    public static ExtractableResponse<Response> 지하철_구간_삭제요청_상태코드_검증_포함(
+            Long downStationIdToDelete, Long stationLineId, HttpStatus status) {
         return given().log().all()
                 .when()
                 .param("stationId", downStationIdToDelete)
                 .delete(String.format("/lines/%d/sections", stationLineId))
-                .then().extract();
+                .then().statusCode(status.value()).extract();
     }
 
     public static void 지하철_구간_목록_추가요청_상태코드_검증_포함(Long 노선_번호, List<SectionRequest> 구간_요청_목록) {
