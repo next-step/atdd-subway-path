@@ -12,7 +12,7 @@ public class LineFixture {
     }
 
     public static Line 신분당선_엔티티(Station upStation, Station downStation) {
-        return Line.createWithId(1L, "신분당선", "bg-red-600", upStation, downStation, 10);
+        return Line.create("신분당선", "bg-red-600", upStation, downStation, 10);
     }
 
     public static LineCreateRequestBody 이호선_생성_바디(Long upStationId, Long downStationId) {

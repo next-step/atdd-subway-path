@@ -24,23 +24,11 @@ public class Line {
         this.color = color;
     }
 
-    private Line(Long id, String name, String color) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-    }
-
     protected Line() {
     }
 
     public static Line create(String name, String color, Station upStation, Station downStation, int distance) {
         Line line = new Line(name, color);
-        return getSectionAddedLine(line, upStation, downStation, distance);
-    }
-
-    public static Line createWithId(Long id, String name, String color, Station upStation, Station downStation,
-            int distance) {
-        Line line = new Line(id, name, color);
         return getSectionAddedLine(line, upStation, downStation, distance);
     }
 
@@ -121,11 +109,11 @@ public class Line {
         Optional<Section> sectionWithSameDownStation = getSectionWithSameDownStation(sectionToAdd);
 
         if (sectionWithSameUpStation.isPresent()) {
-            addAsMiddleSectionOnExistingUpStation(sectionToAdd, sectionWithSameUpStation.get());
+            addAsMiddleSection(sectionToAdd, sectionWithSameUpStation.get());
             return;
         }
         if (sectionWithSameDownStation.isPresent()) {
-            addAsMiddleSectionOnExistingDownStation(sectionToAdd, sectionWithSameDownStation.get());
+            addAsMiddleSection(sectionToAdd, sectionWithSameDownStation.get());
             return;
         }
 
@@ -153,12 +141,45 @@ public class Line {
 
     private void addAsLastSection(Section section) {
         if (getAllStations().contains(section.getDownStation())) {
-            throw new LineSectionException("이미 노선에 포함된 역은 하행역으로 지정할 수 없습니다.");
+            throw new LineSectionException("노선의 마지막 구간을 추가하려는 경우 하행역은 기존 노선에 없는 역이여야 합니다.");
         }
         if (!section.getUpStation().equals(getLastStation())) {
             throw new LineSectionException("노선의 하행역만 상행역으로 지정 가능합니다.");
         }
         sections.add(section);
+    }
+
+    private void addAsMiddleSection(Section sectionToAdd, Section existingSection) {
+        boolean isSameUpStation = existingSection.getUpStation().equals(sectionToAdd.getUpStation());
+        boolean isSameDownStation = existingSection.getDownStation().equals(sectionToAdd.getDownStation());
+
+        if (isSameUpStation && isSameDownStation) {
+            throw new LineSectionException("이미 존재하는 구간입니다.");
+        }
+        if (existingSection.getDistance() <= sectionToAdd.getDistance()) {
+            throw new LineSectionException("추가하려는 구간의 거리가 기존 구간보다 큽니다.");
+        }
+
+        if (isSameUpStation && !isSameDownStation) {
+            Section splitExistingSection = Section.create(
+                    sectionToAdd.getUpStation(),
+                    existingSection.getDownStation(),
+                    existingSection.getDistance() - sectionToAdd.getDistance());
+
+            sections.remove(existingSection);
+            sections.add(sectionToAdd);
+            sections.add(splitExistingSection);
+            return;
+        }
+
+        Section splitExistingSection = Section.create(
+                existingSection.getUpStation(),
+                sectionToAdd.getUpStation(),
+                existingSection.getDistance() - sectionToAdd.getDistance());
+
+        sections.remove(existingSection);
+        sections.add(splitExistingSection);
+        sections.add(sectionToAdd);
     }
 
     private void deleteMiddleSectionByStationId(Long stationId) {
@@ -174,8 +195,8 @@ public class Line {
                 .findFirst()
                 .orElseThrow(() -> new LineSectionException(stationId + " 역의 다음 구간이 존재하지 않습니다."));
 
-        int deletedSectionsDistance =
-                sectionWithStationIdAsUpStation.getDistance() + sectionWithStationIdAsDownStation.getDistance();
+        int deletedSectionsDistance = sectionWithStationIdAsUpStation.getDistance()
+                + sectionWithStationIdAsDownStation.getDistance();
 
         Section sectionForReconnection = Section.create(
                 sectionWithStationIdAsDownStation.getUpStation(),
@@ -197,40 +218,6 @@ public class Line {
         return sections.stream()
                 .filter(s -> s.getDownStation().equals(section.getDownStation()))
                 .findFirst();
-    }
-
-    private void addAsMiddleSectionOnExistingUpStation(Section sectionToAdd, Section existingSection) {
-        if (existingSection.getDownStation().equals(sectionToAdd.getDownStation())) {
-            throw new LineSectionException("이미 존재하는 구간입니다.");
-        }
-        if (existingSection.getDistance() <= sectionToAdd.getDistance()) {
-            throw new LineSectionException("추가하려는 구간의 거리가 기존 구간보다 큽니다.");
-        }
-        Section splitExistingSection = Section.create(
-                sectionToAdd.getUpStation(),
-                existingSection.getDownStation(),
-                existingSection.getDistance() - sectionToAdd.getDistance());
-
-        sections.remove(existingSection);
-        sections.add(sectionToAdd);
-        sections.add(splitExistingSection);
-    }
-
-    private void addAsMiddleSectionOnExistingDownStation(Section sectionToAdd, Section existingSection) {
-        if (existingSection.getUpStation().equals(sectionToAdd.getUpStation())) {
-            throw new LineSectionException("이미 존재하는 구간입니다.");
-        }
-        if (existingSection.getDistance() <= sectionToAdd.getDistance()) {
-            throw new LineSectionException("추가하려는 구간의 거리가 기존 구간보다 큽니다.");
-        }
-        Section splitExistingSection = Section.create(
-                existingSection.getUpStation(),
-                sectionToAdd.getUpStation(),
-                existingSection.getDistance() - sectionToAdd.getDistance());
-
-        sections.remove(existingSection);
-        sections.add(splitExistingSection);
-        sections.add(sectionToAdd);
     }
 
     private int getSectionOrder(Section section) {
