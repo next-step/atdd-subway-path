@@ -198,32 +198,31 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 A-C 구간을 등록하고
-     * When 신규 구간 A-B을 추가하면
-     * Then 지하철 노선은 A-B, B-C 두 개의 구간을 갖는다.
+     * Given 지하철 노선에 A역과 C역을 갖는 구간을 등록하고
+     * When A역과 B역을 갖는 구간을 추가하면
+     * Then 지하철 노선 조회 시 A,B,C역을 조회할 수 있다.
      */
     @Test
     @DisplayName("노선의 구간 중간에 신규 구간을 추가한다.")
     void addMiddleSection() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 10, 이호선Id);
 
+        //when
+        Long 역삼역Id = extractResponseId(StationRestAssuredCRUD.createStation("역삼역"));
+        SectionRestAssuredCRUD.addSection(강남역Id, 역삼역Id, 3, 이호선Id);
+
+        //then
+        ExtractableResponse<Response> lineResponse = LineRestAssuredCRUD.showLine(이호선Id);
+        List<String> stationNames = lineResponse.jsonPath().getList("stations.name", String.class);
+
+        assertThat(stationNames).containsOnly("강남역", "역삼역", "선릉역");
     }
 
-    //given & when은 같고 then만 다른 케이스는 각각 인수테스트를 작성? 하나의 테스트에서 모두 검증?
-
-    /**
-     * Given 지하철 노선에 A-C 구간을 등록하고
-     * When 신규 구간 A-B를 추가하면
-     * Then B-C 구간 길이는 A-C 구간 길이에서 A-B 구간 길이를 뺀 길이를 갖는다.
-     */
-    @Test
-    @DisplayName("중간 구간 추가 시 추가된 역과 기존 구간의 하행역은 신규 구간 길이를 뺀 나머지 길이를 갖는다.")
-    void newStationAndDownStationDistance() {
-
-    }
 
     /**
      * Given 지하철 노선에 2개의 구간을 등록하고
-     * When 신규 구간을 등록하려는 구간과 같은 구간을 추가하면
+     * When 등록하려는 구간과 같은 구간을 추가하면
      * Then 400에러가 발생한다.
      */
     @Test
