@@ -28,7 +28,7 @@ public class Sections {
 
         if (isMiddleSection(section)) {
             Section nextSection = getNextSection(section);
-            nextSection.update(section);
+            nextSection.separate(section);
         }
 
         this.sections.add(section);
@@ -62,7 +62,17 @@ public class Sections {
     public void removeSection(Station station) {
         validateLastSection();
 
+        Optional<Section> sectionByUpStation = findSectionByUpStation(station);
         Optional<Section> sectionByDownStation = findSectionByDownStation(station);
+
+        if(sectionByUpStation.isPresent() && sectionByDownStation.isPresent()){
+            Section downSection = sectionByUpStation.get();
+            Section upSection = sectionByDownStation.get();
+
+            upSection.join(downSection);
+            this.sections.remove(downSection);
+            return;
+        }
 
         if(sectionByDownStation.isPresent()){
             this.sections.remove(sectionByDownStation.get());
@@ -81,6 +91,12 @@ public class Sections {
     private Optional<Section> findSectionByDownStation(Station station) {
         return this.sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
+                .findFirst();
+    }
+
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
                 .findFirst();
     }
 

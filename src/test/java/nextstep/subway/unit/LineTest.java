@@ -70,9 +70,9 @@ class LineTest {
         assertThat(이호선.getOrderedStations()).containsExactly(강남역, 역삼역);
     }
 
-    @DisplayName("지하철 노선에 구간을 삭제한다.")
+    @DisplayName("지하철 노선에 마지막 역을 삭제한다.")
     @Test
-    void removeSection() {
+    void removeEndSection() {
         Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
         Section section = new Section(이호선, 역삼역, 선릉역, 10L);
         이호선.addSection(section);
@@ -80,5 +80,22 @@ class LineTest {
         이호선.removeSection(선릉역);
 
         assertThat(이호선.getOrderedStations()).containsExactly(강남역, 역삼역);
+    }
+
+    @DisplayName("지하철 노선에 가운데 역을 삭제한다.")
+    @Test
+    void removeMiddleSection() {
+        Line 이호선 = new Line("2호선", "green", 강남역, 역삼역, 10L);
+        Section 역삼_선릉 = new Section(이호선, 역삼역, 선릉역, 10L);
+        이호선.addSection(역삼_선릉);
+
+        Section 선릉_삼성 = new Section(이호선, 선릉역, 삼성역, 10L);
+        이호선.addSection(선릉_삼성);
+
+        이호선.removeSection(선릉역);
+
+        assertThat(이호선.getOrderedStations()).containsExactly(강남역, 역삼역, 삼성역);
+        assertThat(역삼_선릉.getDownStation()).isEqualTo(선릉_삼성.getDownStation());
+        assertThat(역삼_선릉.getDistance()).isEqualTo(20L);
     }
 }

@@ -125,7 +125,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
-        assertThat(lineStationIds).doesNotContain(선릉역);
+        assertThat(lineStationIds).containsExactly(강남역, 역삼역);
+    }
+
+    /**
+     * Given 마지막 구간을 생성하고
+     * When 가운데 역을 삭제하면
+     * Then 노선 조회 시 등록한 역을 찾을 수 없다
+     */
+    @DisplayName("가운데 지하철역을 삭제하면 지하철역 목록 조회 시 생성한 역을 찾을 수 없다.")
+    @Test
+    void deleteMiddleSection() {
+        // given
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 역삼역, 선릉역, 10L);
+        String locationHeader = response.header("Location");
+
+        // when
+        SectionSteps.deleteSection(이호선, 역삼역);
+
+        // then
+        List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
+        assertThat(lineStationIds).containsExactly(강남역, 선릉역);
     }
 
     /**

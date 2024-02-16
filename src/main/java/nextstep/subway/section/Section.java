@@ -39,7 +39,7 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
-    public void update(Section middleSection) {
+    public void separate(Section middleSection) {
         this.upStation = middleSection.getDownStation();
         validateSectionDistance(middleSection);
         this.distance -= middleSection.distance;
@@ -49,6 +49,11 @@ public class Section implements Comparable<Section> {
         if (this.distance <= middleSection.distance) {
             throw new SubwayException("중간 구간의 거리는 다음 구간보다 짧아야합니다.");
         }
+    }
+
+    public void join(Section downSection) {
+        this.distance += downSection.distance;
+        this.downStation = downSection.downStation;
     }
 
     public Long getId() {
@@ -81,5 +86,4 @@ public class Section implements Comparable<Section> {
         }
         return 1;
     }
-
 }
