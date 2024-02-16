@@ -64,7 +64,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         //then
         LineResponse lineAfterResponse = when().get("/lines/" + lineResponse.getId())
                                                .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
-        System.out.println(mapper.writeValueAsString(lineAfterResponse));
         List<SectionResponse> sectionResponses = lineAfterResponse.getSections();
         assertAll(
             () -> assertThat(sectionResponses).hasSize(2),
@@ -105,6 +104,30 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
             () -> assertThat(lastSection.getUpStationId()).isEqualTo(2L),
             () -> assertThat(lastSection.getUpStationId()).isEqualTo(2L),
             () -> assertThat(lastSection.getDistance()).isEqualTo(existingDistance - newDistance)
+        );
+    }
+
+    @DisplayName("given 특정 노선에 구간이 1개 이상 등록되었을 때\n"
+                 + "   when 새 역을 상행종점역으로 등록하면 \n"
+                 + "   then 해당 노선의 상행종점역이 변경된다.")
+    @Test
+    void testAddSection_상행종점역_추가() throws JsonProcessingException {
+        //given
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+
+        //when
+        SectionRequest sectionRequest = new SectionRequest(4L, 1L, 5);
+        addSection(lineResponse, sectionRequest);
+
+        //then
+        LineResponse lineAfterResponse = when().get("/lines/" + lineResponse.getId())
+                                               .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
+        List<SectionResponse> sectionResponses = lineAfterResponse.getSections();
+        assertAll(
+            () -> assertThat(sectionResponses).hasSize(2),
+            () -> assertThat(sectionResponses.get(0).getUpStationId()).isEqualTo(4L),
+            () -> assertThat(sectionResponses.get(0).getDownStationId()).isEqualTo(1L),
+            () -> assertThat(sectionResponses.get(0).getDistance()).isEqualTo(5)
         );
     }
 
