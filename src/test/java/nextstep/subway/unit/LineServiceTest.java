@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -80,7 +81,7 @@ public class LineServiceTest {
         // given
         강남역 = 역_생성("강남역");
         역삼역 = 역_생성("역삼역");
-        신분당선 = 신분당선_생성();
+        신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
 
         // when
         final LineResponse response = lineService.getSubwayLine(신분당선.getId());
@@ -100,8 +101,27 @@ public class LineServiceTest {
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
-    private Line 신분당선_생성() {
-        return lineRepository.save(new Line("신분당선", "bg-red-600", 강남역, 역삼역, 10));
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void 지하철_노선_목록_조회() {
+        // given
+        강남역 = 역_생성("강남역");
+        역삼역 = 역_생성("역삼역");
+        final Station 지하철역 = 역_생성("지하철역");
+        신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+        final Line 지하철노선 = 노선_생성("지하철노선", "bg-yellow-600", 역삼역, 지하철역, 15);
+
+        // when
+        final List<LineResponse> response = lineService.getSubwayLines();
+
+        // then
+        assertThat(response).hasSize(2);
+        assertThat(response.get(0).getName()).isEqualTo("신분당선");
+        assertThat(response.get(1).getName()).isEqualTo("지하철노선");
+    }
+
+    private Line 노선_생성(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
+        return lineRepository.save(new Line(name, color, upStation, downStation, distance));
     }
 
     private Station 역_생성(final String 강남역) {
