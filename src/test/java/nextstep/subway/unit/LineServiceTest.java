@@ -190,6 +190,23 @@ public class LineServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void 지하철_노선_삭제() {
+        // given
+        강남역 = 역_생성("강남역");
+        역삼역 = 역_생성("역삼역");
+        신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+        final LineRequest 신분당선_생성_요청 = 신분당선_생성_요청();
+
+        // when
+        lineService.deleteSubwayLine(1L);
+
+        // then
+        assertThatThrownBy(() -> lineService.getSubwayLine(1L))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
+
     private Line 노선_생성(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
         return lineRepository.save(new Line(name, color, upStation, downStation, distance));
     }
