@@ -79,12 +79,12 @@ public class Line {
         }
 
         if (getFirstStation().getId().equals(stationId)) {
-            sections.remove(0);
+            sections.remove(getFirstSection());
             return;
         }
 
         if (getLastStation().getId().equals(stationId)) {
-            sections.remove(sections.size() - 1);
+            sections.remove(getLastSection());
             return;
         }
         deleteMiddleSectionByStationId(stationId);
@@ -118,6 +118,20 @@ public class Line {
         }
 
         addAsLastSection(sectionToAdd);
+    }
+
+    private Section getFirstSection() {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(getFirstStation()))
+                .findFirst()
+                .orElseThrow(() -> new LineSectionException("역이 존재하지 않는 노선입니다."));
+    }
+
+    private Section getLastSection() {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(getLastStation()))
+                .findFirst()
+                .orElseThrow(() -> new LineSectionException("역이 존재하지 않는 노선입니다."));
     }
 
     private Station getFirstStation() {
