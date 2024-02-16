@@ -1,6 +1,6 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.Exception.LineException;
+import nextstep.subway.Exception.SubwayException;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.Sections;
@@ -48,7 +48,7 @@ public class SectionsTest {
         sections.addSection(강남_역삼);
 
         assertThatThrownBy(() -> sections.addSection(new Section(new Line(), 역삼역, 강남역, 5L)))
-                .isInstanceOf(LineException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("추가할 역이 이미 존재합니다.");
     }
 
@@ -68,7 +68,7 @@ public class SectionsTest {
         sections.addSection(강남_선릉);
 
         assertThatThrownBy(() -> sections.addSection(강남_선릉))
-                .isInstanceOf(LineException.class)
+                .isInstanceOf(SubwayException.class)
                 .hasMessage("이미 등록된 구간입니다.");
     }
 

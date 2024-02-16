@@ -1,10 +1,11 @@
 package nextstep.subway.path;
 
 import nextstep.subway.Exception.ErrorCode;
-import nextstep.subway.Exception.LineException;
+import nextstep.subway.Exception.SubwayException;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.station.Station;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -21,7 +22,7 @@ public class PathFinder {
 
     public PathFinder(Station sourceStation, Station targetStation, List<Line> lines) {
         if (sourceStation.equals(targetStation)) {
-            throw new LineException(ErrorCode.CANNOT_FIND_SHORTEST_PATH, "출발역과 도착역이 같습니다.");
+            throw new SubwayException(ErrorCode.CANNOT_FIND_SHORTEST_PATH, "출발역과 도착역이 같습니다.");
         }
 
         this.sourceStation = sourceStation;
@@ -36,9 +37,12 @@ public class PathFinder {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = makeWeightedMultigraph(stations, sections);
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
 
-        List<Station> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+        GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation);
 
-        return new PathResponse(shortestPath, dijkstraShortestPath.getPathWeight(sourceStation, targetStation));
+        if (shortestPath == null){
+            throw new SubwayException(ErrorCode.CANNOT_FIND_SHORTEST_PATH, "연결되지 않은 역 정보입니다.");
+        }
+        return new PathResponse(shortestPath.getVertexList(), dijkstraShortestPath.getPathWeight(sourceStation, targetStation));
     }
 
     private List<Section> allSections() {

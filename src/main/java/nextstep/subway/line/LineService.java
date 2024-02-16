@@ -2,7 +2,7 @@ package nextstep.subway.line;
 
 
 import nextstep.subway.Exception.ErrorCode;
-import nextstep.subway.Exception.LineException;
+import nextstep.subway.Exception.SubwayException;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.SectionRequest;
 import nextstep.subway.line.section.SectionResponse;
@@ -37,8 +37,8 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new LineException(ErrorCode.STATION_NOT_FOUND, ""));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new LineException(ErrorCode.STATION_NOT_FOUND, ""));
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new SubwayException(ErrorCode.STATION_NOT_FOUND, ""));
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new SubwayException(ErrorCode.STATION_NOT_FOUND, ""));
 
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
 
@@ -54,11 +54,11 @@ public class LineService {
     }
 
     public LineResponse showLine(Long id) {
-        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new LineException(ErrorCode.LINE_NOT_FOUND, "")));
+        return createLineResponse(lineRepository.findById(id).orElseThrow(() -> new SubwayException(ErrorCode.LINE_NOT_FOUND, "")));
     }
 
     public void updateLine(Long id, UpdateLineRequest updateLineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new LineException(ErrorCode.LINE_NOT_FOUND, ""));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new SubwayException(ErrorCode.LINE_NOT_FOUND, ""));
         line.setName(updateLineRequest.getName());
         line.setColor(updateLineRequest.getColor());
     }
@@ -79,7 +79,7 @@ public class LineService {
     }
 
     public LineSectionResponse showLineSections(Long id) {
-        return createLineSectionResponse(lineRepository.findById(id).orElseThrow(() -> new LineException(ErrorCode.LINE_NOT_FOUND, "")));
+        return createLineSectionResponse(lineRepository.findById(id).orElseThrow(() -> new SubwayException(ErrorCode.LINE_NOT_FOUND, "")));
     }
 
     public SectionResponse addSection(Long id, SectionRequest sectionRequest) {
@@ -99,8 +99,8 @@ public class LineService {
     }
 
     public PathResponse getShortestPath(Long source, Long target) {
-        Station sourceStation = stationRepository.findById(source).get();
-        Station targetStation = stationRepository.findById(target).get();
+        Station sourceStation = stationRepository.findById(source).orElseThrow(() -> new SubwayException(ErrorCode.STATION_NOT_FOUND, ""));
+        Station targetStation = stationRepository.findById(target).orElseThrow(() -> new SubwayException(ErrorCode.STATION_NOT_FOUND, ""));
         List<Line> lines = lineRepository.findAll();
 
         return new PathFinder(sourceStation, targetStation, lines).shortestPath();

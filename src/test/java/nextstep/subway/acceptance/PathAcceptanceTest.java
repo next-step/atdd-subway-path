@@ -83,4 +83,51 @@ public class PathAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * given 환승역으로 이어진 노선을 3개와 연결되지 않은 노선 1개를 생성하고
+     * when 연결되어 있지 않은 출발역과 도착역 정보를 전달하면
+     * then 최단경로 조회 에러가 발생한다.
+     */
+    @DisplayName("에러_최단 경로 조회_출발역과 도착역이 연결되어 있지 않음")
+    @Test
+    void shortestPath_error_source_target_not_connected() {
+        // given
+        Long 미금역 = makeStation("미금역").jsonPath().getLong("id");
+        Long 정자역 = makeStation("정자역").jsonPath().getLong("id");
+        Long 분당선 = makeLine(new LineRequest("분당선", "yellow", 미금역, 정자역, 15L)).jsonPath().getLong("id");
+
+        // when
+        // then
+        RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("source", 교대역)
+                .param("target", 미금역)
+                .when()
+                .get("/paths")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * given 환승역으로 이어진 노선을 3개를 생성하고
+     * when 존재하지 않는 출발역 혹은 도착역 정보를 전달하면
+     * then 최단경로 조회 에러가 발생한다.
+     */
+    @DisplayName("에러_최단 경로 조회_출발역과 도착역을 찾을 수 없음")
+    @Test
+    void shortestPath_error_source_target_not_found() {
+        // when
+        // then
+        RestAssured
+                .given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("source", 교대역)
+                .param("target", 0L)
+                .when()
+                .get("/paths")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
 }
