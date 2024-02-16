@@ -2,6 +2,8 @@ package subway.utils.rest;
 
 import static io.restassured.RestAssured.*;
 
+import java.util.HashMap;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -35,6 +37,14 @@ public class Rest<T> {
 	private ExtractableResponse<Response> delete() {
 		return given().log().all()
 			.when().delete(uri)
+			.then().log().all()
+			.statusCode(HttpStatus.NO_CONTENT.value())
+			.extract();
+	}
+
+	private ExtractableResponse<Response> delete(HashMap<String, String> params) {
+		return given().log().all()
+			.when().params(params).delete(uri)
 			.then().log().all()
 			.statusCode(HttpStatus.NO_CONTENT.value())
 			.extract();
@@ -78,6 +88,10 @@ public class Rest<T> {
 
 		public ExtractableResponse<Response> get(String uri) {
 			return new Rest<T>(uri).get();
+		}
+
+		public ExtractableResponse<Response> delete(HashMap<String, String> params) {
+			return new Rest<T>(uri).delete(params);
 		}
 
 		public ExtractableResponse<Response> delete(String uri) {
