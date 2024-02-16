@@ -2,12 +2,13 @@ package nextstep.subway.section;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import nextstep.subway.station.Station;
 
 @Embeddable
 public class Sections {
@@ -16,50 +17,51 @@ public class Sections {
     private List<Section> sectionList = new ArrayList<>();
 
     public void addSection(Section section) {
-        if (sectionList.isEmpty()) {
-            sectionList.add(section);
-            return;
-        }
-        if(isAlreadyRegistration(section)) {
-            throw new IllegalStateException("이미 존재하는 구간입니다.");
-        }
-
-        // 상행역이나 하행역 둘 다 기존 노선에 없는 경우
-        //하행종점역에 추가되는 경우
-        if(isLastAddSection(section)) {
-            lastAddValidate(section);
+        if(sectionList.isEmpty()) {
             sectionList.add(section);
             return;
         }
 
-        //상행종점역에 추가하는 경우
-        if(isFirstAddSection(section)) {
-            firstAddValidate(section);
+        validateSection(section);
+        if (isFirstAddSection(section)) {
             sectionList.add(0, section);
             return;
         }
 
-        //중간에 추가하는 경우 해당 section 찾기
+        if (isLastAddSection(section)) {
+            sectionList.add(section);
+            return;
+        }
+
+        addMidSection(section);
+    }
+
+    private void validateSection(Section section) {
+        if (isAlreadyRegistration(section)) {
+            throw new IllegalStateException("이미 존재하는 구간입니다.");
+        }
+        if (isFirstAddSection(section) && isStationRegistered(section::firstAddValidate)) {
+            throw new IllegalStateException("상행 종점역에 추가할 때 상행역이 기존 노선에 등록되어 있는 역이라 추가할 수 없습니다.");
+        }
+        if (isLastAddSection(section) && isStationRegistered(section::lastAddValidate)) {
+            throw new IllegalStateException("하행 종점역에 추가할 때 하행역이 기존 노선에 등록되어 있는 역이라 추가할 수 없습니다.");
+        }
+    }
+
+    private boolean isStationRegistered(Predicate<Section> validate) {
+        return sectionList.stream().anyMatch(validate);
+    }
+
+    private void addMidSection(Section section) {
         Section findSection = findMidSection(section);
-        updateSectionDistance(section, findSection);
+        Long distance = findSection.getDistance() - section.getDistance();
+        updateSection(section, distance, findSection.getDownStationId());
         sectionList.add(section);
     }
 
-    private static void updateSectionDistance(Section section, Section findSection) {
-        Long distance = findSection.getDistance() - section.getDistance();
-        findSection.updateUpStationId(section.getDownStationId());
-        findSection.updateDistance(distance);
-    }
-
     private Section findMidSection(Section section) {
-        return sectionList.stream().map(item -> {
-            if (section.getUpStationId().equals(item.getUpStationId())) {
-                return item;
-            }
-            return null;
-        }).findFirst().orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+        return findSectionByUpStationId(section.getUpStationId());
     }
-
 
     private boolean isAlreadyRegistration(Section section) {
         return sectionList.stream().anyMatch(item -> isEqualUpAndDownId(section, item));
@@ -70,21 +72,8 @@ public class Sections {
             && section.getDownStationId().equals(item.getDownStationId());
     }
 
-
-    private void firstAddValidate(Section section) {
-        if(sectionList.stream().anyMatch(section::firstAddValidate)) {
-            throw new IllegalStateException("상행 종점역에 추가할 때 상행역이 기존 노선에 등록되어 있는 역이라 추가할 수 없습니다.");
-        }
-    }
-
     private boolean isFirstAddSection(Section section) {
         return section.getDownStationId().equals(getFirstUpStationId());
-    }
-
-    private void lastAddValidate(Section section) {
-        if(sectionList.stream().anyMatch(section::lastAddValidate)) {
-            throw new IllegalStateException("하행 종점역에 추가할 때 하행역이 기존 노선에 등록되어 있는 역이라 추가할 수 없습니다.");
-        }
     }
 
     private boolean isLastAddSection(Section section) {
@@ -131,30 +120,28 @@ public class Sections {
         }
 
         //중간역을 삭제하는 경우
+        removeMidSection(stationId);
+    }
+
+    private void removeMidSection(Long stationId) {
         Section findLeftSection = findSectionByDownStationId(stationId);
         Section findRightSection = findSectionByUpStationId(stationId);
-        long distance = findLeftSection.getDistance() + findRightSection.getDistance();
-        findRightSection.updateDistance(distance);
-        findRightSection.updateUpStationId(findLeftSection.getUpStationId());
+        Long distance = findLeftSection.getDistance() + findRightSection.getDistance();
+        updateSection(findRightSection, distance, findLeftSection.getUpStationId());
         sectionList.remove(findLeftSection);
     }
 
+    private static void updateSection(Section section, Long distance, Long upStationId) {
+        section.updateDistance(distance);
+        section.updateUpStationId(upStationId);
+    }
+
     private Section findSectionByUpStationId(Long stationId) {
-        return sectionList.stream().map(item -> {
-            if (stationId.equals(item.getUpStationId())) {
-                return item;
-            }
-            return null;
-        }).findFirst().orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+        return findSectionByStationId(stationId, Section::getUpStationId);
     }
 
     private Section findSectionByDownStationId(Long stationId) {
-        return sectionList.stream().map(item -> {
-            if (stationId.equals(item.getDownStationId())) {
-                return item;
-            }
-            return null;
-        }).findFirst().orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+        return findSectionByStationId(stationId, Section::getDownStationId);
     }
 
     private boolean isFirstRemoveSection(Long stationId) {
@@ -175,4 +162,10 @@ public class Sections {
                               section.getDownStationId())).distinct().collect(Collectors.toList());
     }
 
+    private Section findSectionByStationId(Long stationId, Function<Section, Long> getStationId) {
+        return sectionList.stream()
+                          .filter(item -> stationId.equals(getStationId.apply(item)))
+                          .findFirst()
+                          .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+    }
 }
