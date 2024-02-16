@@ -103,6 +103,6 @@ public class LineService {
         Station targetStation = stationRepository.findById(target).get();
         List<Line> lines = lineRepository.findAll();
 
-        return new PathFinder().shortestPath(sourceStation, targetStation, lines);
+        return new PathFinder(sourceStation, targetStation, lines).shortestPath();
     }
 }

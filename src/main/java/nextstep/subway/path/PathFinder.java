@@ -1,5 +1,7 @@
 package nextstep.subway.path;
 
+import nextstep.subway.Exception.ErrorCode;
+import nextstep.subway.Exception.LineException;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.station.Station;
@@ -13,9 +15,22 @@ import java.util.List;
 import java.util.Set;
 
 public class PathFinder {
+    private final Station sourceStation;
+    private final Station targetStation;
+    private final List<Line> lines;
 
-    public PathResponse shortestPath(Station sourceStation, Station targetStation, List<Line> lines){
-        List<Section> sections = allSections(lines);
+    public PathFinder(Station sourceStation, Station targetStation, List<Line> lines) {
+        if (sourceStation.equals(targetStation)) {
+            throw new LineException(ErrorCode.CANNOT_FIND_SHORTEST_PATH, "출발역과 도착역이 같습니다.");
+        }
+
+        this.sourceStation = sourceStation;
+        this.targetStation = targetStation;
+        this.lines = lines;
+    }
+
+    public PathResponse shortestPath() {
+        List<Section> sections = allSections();
         Set<Station> stations = allStations(sections);
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = makeWeightedMultigraph(stations, sections);
@@ -26,7 +41,7 @@ public class PathFinder {
         return new PathResponse(shortestPath, dijkstraShortestPath.getPathWeight(sourceStation, targetStation));
     }
 
-    private List<Section> allSections(List<Line> lines) {
+    private List<Section> allSections() {
         List<Section> sections = new ArrayList<>();
         lines.forEach(line -> sections.addAll(line.getSections().get()));
         return sections;
