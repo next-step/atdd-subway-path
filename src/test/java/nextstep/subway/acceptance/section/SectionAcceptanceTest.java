@@ -38,10 +38,9 @@ public class SectionAcceptanceTest {
     void AddFrontSectionAcceptanceTest() {
         //given
         String 신규하행ID = getStringIdFromResponse(지하철역_생성_요청(지하철_파라미터_생성(신규역)));
-        Long index = 0L;
 
         //when
-        var response = 구간_등록_요청(구간_파라미터_생성(하행ID, 신규하행ID, index), 노선ID);
+        var response = 구간_등록_요청(구간_파라미터_생성(하행ID, 신규하행ID), 노선ID);
 
         // then
         assertStatusCode(response, CREATED);
@@ -51,10 +50,9 @@ public class SectionAcceptanceTest {
     void AddMidSectionAcceptanceTest() {
         //given
         String 신규하행ID = getStringIdFromResponse(지하철역_생성_요청(지하철_파라미터_생성(신규역)));
-        Long index = 1L;
 
         //when
-        var response = 구간_등록_요청(구간_파라미터_생성(하행ID, 신규하행ID, index), 노선ID);
+        var response = 구간_등록_요청(구간_파라미터_생성(하행ID, 신규하행ID), 노선ID);
 
         // then
         assertStatusCode(response, CREATED);
@@ -64,10 +62,8 @@ public class SectionAcceptanceTest {
     void AddLastSectionAcceptanceTest() {
         //given
         String 신규하행ID = getStringIdFromResponse(지하철역_생성_요청(지하철_파라미터_생성(신규역)));
-        Long index = 2L;
-
         //when
-        var response = 구간_등록_요청(구간_파라미터_생성(하행ID, 신규하행ID, index), 노선ID);
+        var response = 구간_등록_요청(구간_파라미터_생성(하행ID, 신규하행ID), 노선ID);
 
         // then
         assertStatusCode(response, CREATED);
@@ -77,11 +73,10 @@ public class SectionAcceptanceTest {
     void AlreadyRegisterSectionAcceptanceTest() {
         //given
         String 신규하행ID = getStringIdFromResponse(지하철역_생성_요청(지하철_파라미터_생성(신규역)));
-        Long index = 2L;
-        구간_등록_요청(구간_파라미터_생성(하행ID, 신규하행ID, index), 노선ID);
+        구간_등록_요청(구간_파라미터_생성(하행ID, 신규하행ID), 노선ID);
 
         //when
-        var response = 구간_등록_요청(구간_파라미터_생성(신규하행ID, 상행ID, ++index), 노선ID);
+        var response = 구간_등록_요청(구간_파라미터_생성(신규하행ID, 상행ID), 노선ID);
 
         // then
         assertStatusCode(response, BAD_REQUEST);

@@ -19,11 +19,10 @@ public class SectionAcceptanceTestHelper {
                           .extract();
     }
 
-    public static HashMap<String, String> 구간_파라미터_생성(String upStationId, String downStationId, Long index) {
+    public static HashMap<String, String> 구간_파라미터_생성(String upStationId, String downStationId) {
         HashMap<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
-        params.put("index", index.toString());
         params.put("distance", "10");
         return params;
     }
