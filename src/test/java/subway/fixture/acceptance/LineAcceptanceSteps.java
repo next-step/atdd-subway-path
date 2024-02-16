@@ -2,11 +2,9 @@ package subway.fixture.acceptance;
 
 import static subway.utils.enums.Location.*;
 
+import java.util.HashMap;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import subway.dto.line.LineCreateRequest;
@@ -84,14 +82,10 @@ public class LineAcceptanceSteps {
 			.as(LineResponse.class);
 	}
 
-	public static ExtractableResponse<Response> 노선_구간_삭제(Long id, Long deleteStationId) {
+	public static ExtractableResponse<Response> 노선_구간_삭제(Long id, HashMap<String, String> params) {
 		String uri = LINES.path(id).path("/sections").toUriString();
-
-		return RestAssured.given().log().all()
-			.when().param("stationId", String.valueOf(deleteStationId)).delete(uri)
-			.then().log().all()
-			.statusCode(HttpStatus.NO_CONTENT.value())
-			.extract();
-
+		return Rest.builder()
+			.uri(uri)
+			.delete(params);
 	}
 }
