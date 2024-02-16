@@ -62,7 +62,7 @@ public class Sections {
 	}
 
 	private void addMiddleSection(Section newSection) {
-		Predicate<Section> sectionByUpStationPredicate = findSectionByUpStationPredicate(newSection.getUpStation());
+		Predicate<Section> sectionByUpStationPredicate = upStationPredicate(newSection.getUpStation());
 		Section changeSection = findSectionByStation(sectionByUpStationPredicate);
 
 		Integer distance = changeSection.getDistance() - newSection.getDistance();
