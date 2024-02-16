@@ -5,8 +5,6 @@ import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.entity.Line;
-import nextstep.subway.line.entity.Section;
-import nextstep.subway.line.entity.Sections;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.station.entity.Station;
@@ -22,12 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @Transactional
 @ActiveProfiles("test")
@@ -225,6 +220,39 @@ public class LineServiceTest {
 
         // then
         assertThat(신분당선.getSections().getSections()).hasSize(2);
+    }
+
+    @DisplayName("지하철 노선 구간을 삭제한다.")
+    @Test
+    void 지하철_노선_구간_삭제() {
+        // given
+        강남역 = 역_생성("강남역");
+        역삼역 = 역_생성("역삼역");
+        final Station 지하철역 = 역_생성("지하철역");
+        신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+        final SectionRequest 구간_생성_요청 = new SectionRequest(역삼역.getId(), 지하철역.getId(), 5);
+        lineService.createLineSection(신분당선.getId(), 구간_생성_요청);
+
+        // when
+        assertThat(신분당선.getSections().getSections()).hasSize(2);
+        lineService.deleteLineSection(신분당선.getId(), 지하철역.getId());
+
+        // then
+        assertThat(신분당선.getSections().getSections()).hasSize(1);
+    }
+
+    @DisplayName("지하철 노선 구간을 삭제 시 구간이 1개라면 오류가 발생한다.")
+    @Test
+    void 지하철_노선_구간_삭제_시_구간이_1개라면_삭제_불가() {
+        // given
+        강남역 = 역_생성("강남역");
+        역삼역 = 역_생성("역삼역");
+        final Station 지하철역 = 역_생성("지하철역");
+        신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+
+        // then
+        assertThatThrownBy(() -> lineService.deleteLineSection(신분당선.getId(), 역삼역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private Line 노선_생성(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
