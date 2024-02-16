@@ -17,13 +17,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @Transactional
 @ActiveProfiles("test")
@@ -55,8 +51,8 @@ public class LineServiceTest {
     @Test
     void 지하철_노선_생성() {
         // given
-        강남역 = stationRepository.save(new Station("강남역"));
-        역삼역 = stationRepository.save(new Station("역삼역"));
+        강남역 = 역_생성("강남역");
+        역삼역 = 역_생성("역삼역");
         final LineRequest lineRequest = this.신분당선_생성_요청();
 
         // when
@@ -76,6 +72,40 @@ public class LineServiceTest {
         // then
         assertThatThrownBy(() -> lineService.createSubwayLine(lineRequest))
                 .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void 지하철_노선_조회() {
+        // given
+        강남역 = 역_생성("강남역");
+        역삼역 = 역_생성("역삼역");
+        신분당선 = 신분당선_생성();
+
+        // when
+        final LineResponse response = lineService.getSubwayLine(신분당선.getId());
+
+        // then
+        assertThat(response.getName()).isEqualTo(신분당선.getName());
+        assertThat(response.getColor()).isEqualTo(신분당선.getColor());
+        assertThat(response.getStations().get(0).getName()).isEqualTo(강남역.getName());
+        assertThat(response.getStations().get(1).getName()).isEqualTo(역삼역.getName());
+    }
+
+    @DisplayName("지하철 노선 조회 시 존재하지 않는 역으로 조회할 경우 오류가 발생한다.")
+    @Test
+    void 지하철_노선_조회_시_존재하지_않는_역으로_조회_불가() {
+        // then
+        assertThatThrownBy(() -> lineService.getSubwayLine(1L))
+                .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    private Line 신분당선_생성() {
+        return lineRepository.save(new Line("신분당선", "bg-red-600", 강남역, 역삼역, 10));
+    }
+
+    private Station 역_생성(final String 강남역) {
+        return stationRepository.save(new Station(강남역));
     }
 
     private LineRequest 신분당선_생성_요청() {
