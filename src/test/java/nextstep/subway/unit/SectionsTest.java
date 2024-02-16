@@ -113,6 +113,26 @@ class SectionsTest {
     }
 
     @Test
+    void testAddSection_상행_종점역을_새로_추가할_수_있다() {
+        //given
+        int distance = 10;
+
+        Section 구간_역삼_선릉 = new Section(역삼역, 선릉역, distance);
+        Section 구간_강남_역삼 = new Section(강남역, 역삼역, distance);
+
+        List<Section> existingSections = new ArrayList<>();
+        existingSections.add(구간_역삼_선릉);
+        Sections sections = new Sections(existingSections);
+
+        //when
+        sections.add(구간_강남_역삼);
+
+        //then
+        Section firstSection = sections.getSections().get(0);
+        assertThat(firstSection).isEqualTo(구간_강남_역삼);
+    }
+
+    @Test
     void testDeleteLastSection_구간이_2개_이상_등록되어_있을_떄_구간을_제거할_수_있다() {
         Section section1 = new Section(역삼역, 선릉역, 10);
         Section section2 = new Section(선릉역, 왕십리역, 2);
