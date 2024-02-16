@@ -21,8 +21,12 @@ public class Section {
     private Long downStationId;
     private Long distance;
 
-    public boolean isDuplicated(Section section) {
-        return downStationId.equals(section.downStationId) || upStationId.equals(section.downStationId);
+    public boolean lastAddValidate(Section section) { // 여기 파라미터로 들어오는게 기존 역
+        return downStationId.equals(section.downStationId) || downStationId.equals(section.upStationId);
+    }
+
+    public boolean firstAddValidate(Section section) { // 여기 파라미터로 들어오는게 기존 역
+        return upStationId.equals(section.downStationId) || upStationId.equals(section.upStationId);
     }
 
     public Section() {
@@ -58,4 +62,11 @@ public class Section {
     }
 
 
+    public void updateUpStationId(Long downStationId) {
+        this.upStationId = downStationId;
+    }
+
+    public void updateDistance(Long distance) {
+        this.distance = distance;
+    }
 }
