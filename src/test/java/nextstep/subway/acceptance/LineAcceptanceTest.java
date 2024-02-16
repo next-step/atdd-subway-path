@@ -31,10 +31,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         Map<String, String> param3 = Map.of("name", "왕십리역");
         Map<String, String> param4 = Map.of("name", "고색역");
 
-        createStation(param1);
-        createStation(param2);
-        createStation(param3);
-        createStation(param4);
+        지하철_역_생성(param1);
+        지하철_역_생성(param2);
+        지하철_역_생성(param3);
+        지하철_역_생성(param4);
     }
 
     @DisplayName("지하철 노선을 생성하면 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다.")
@@ -81,7 +81,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선());
 
         //when
-        LineResponse lineResponse_신분당선 = when().get("/lines/" + linePostResponse.getId()).then().extract().jsonPath().getObject(".", LineResponse.class);
+        LineResponse lineResponse_신분당선 = 지하철_노선_조회(linePostResponse.getId());
         assertAll(
             () -> assertThat(lineResponse_신분당선.getId()).isEqualTo(1),
             () -> assertThat(lineResponse_신분당선.getName()).isEqualTo(getRequestParam_신분당선().get("name")),
@@ -121,24 +121,9 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         when().get("/lines/" + linePostResponse.getId()).then().log().all().statusCode(HttpStatus.SC_NOT_FOUND);
     }
 
-    private LineResponse 지하철_노선_생성(Map<String, String> lineRequestParam) {
-        return given()
-            .body(lineRequestParam)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines").then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
-    }
 
-    private void 지하철_노선_수정(Map<String, String> lineRequestParam, Long lineId) {
-        given()
-            .body(lineRequestParam)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put("/lines/" + lineId)
-            .then()
-            .log().all().statusCode(HttpStatus.SC_OK);
-    }
 
-    void createStation(Map<String, String> param) {
+    void 지하철_역_생성(Map<String, String> param) {
         given().body(param)
                .contentType(MediaType.APPLICATION_JSON_VALUE).log().all()
                .when().post("/stations")

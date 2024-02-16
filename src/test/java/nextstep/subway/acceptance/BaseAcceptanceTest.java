@@ -1,9 +1,11 @@
 package nextstep.subway.acceptance;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 
 import java.util.Map;
 
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,18 +27,37 @@ public class BaseAcceptanceTest {
         databaseCleanUp.execute();
     }
 
-    void createStation(Map<String, String> param1) {
+    void 지하철_역_생성(Map<String, String> param1) {
         given().body(param1)
                .contentType(MediaType.APPLICATION_JSON_VALUE).log().all()
                .when().post("/stations")
                .then().log().all();
     }
 
-    LineResponse createLine(Map<String, String> requestParam) {
-        return given().body(requestParam)
-                      .contentType(MediaType.APPLICATION_JSON_VALUE)
-                      .when().post("/lines").then().log().all().extract()
-                      .jsonPath().getObject(".", LineResponse.class);
+
+    public LineResponse 지하철_노선_생성(Map<String, String> lineRequestParam) {
+        return given()
+            .body(lineRequestParam)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines").then().log().all().extract()
+            .jsonPath().getObject(".", LineResponse.class);
+    }
+
+    public void 지하철_노선_수정(Map<String, String> lineRequestParam, Long lineId) {
+        given()
+            .body(lineRequestParam)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .put("/lines/" + lineId)
+            .then()
+            .log().all().statusCode(HttpStatus.SC_OK);
+    }
+
+    public LineResponse 지하철_노선_조회(Long lineId) {
+        return when()
+            .get("/lines/" + lineId)
+            .then().extract().jsonPath()
+            .getObject(".", LineResponse.class);
     }
 
     public Map<String, String> getRequestParam_신분당선() {

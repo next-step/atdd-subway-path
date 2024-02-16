@@ -4,12 +4,12 @@ import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 
 import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
+import nextstep.subway.dto.StationResponse;
 
 @DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
@@ -28,16 +29,16 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        createStation(역삼역);
-        createStation(선릉역);
-        createStation(강남역);
-        createStation(왕십리역);
+        지하철_역_생성(역삼역);
+        지하철_역_생성(선릉역);
+        지하철_역_생성(강남역);
+        지하철_역_생성(왕십리역);
     }
 
     @Test
     void test_특정_노선에_구간을_등록하면_노선_조회시_등록한_구간을_확인할_수_있다() throws JsonProcessingException {
         //when
-        LineResponse lineResponse = createLine(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
         //then
         LineResponse response = when()
             .get("/lines/" + lineResponse.getId())
@@ -55,7 +56,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선이_주어졌을때_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_같으면_해당_구간을_등록할_수_있다() throws JsonProcessingException {
         //given
-        LineResponse lineResponse = createLine(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
 
         //when
         SectionRequest sectionRequest = new SectionRequest(2L, 4L, 10);
@@ -77,7 +78,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선이_주어졌을때_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_다르면_에러를_반환한다() throws JsonProcessingException {
         //given
-        LineResponse lineResponse = createLine(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
 
         //when
         SectionRequest sectionRequest = new SectionRequest(1L, 4L, 10);
@@ -89,7 +90,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선에_등록된_구간이_2개_이상_있을때_마지막_구간을_제거하면_노선_조회시_제거된_마지막_구간의_상행역이_전체_노선의_하행종점역이_된다() throws JsonProcessingException {
         //given
-        LineResponse lineResponse = createLine(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
         SectionRequest sectionRequest = new SectionRequest(2L, 4L, 10);
         addSection(lineResponse, sectionRequest);
 
@@ -110,7 +111,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선에_등록된_구간이_2개_이상_있을때_요청한_역이_기존_노선의_하행종점역과_다르면_구간을_삭제할_수_없다() {
         //given
-        LineResponse lineResponse = createLine(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
 
         //when & then
         when()
@@ -120,7 +121,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 지하철_노선에_상행_종점역과_하행_종점역만_있는_경우_구간이_1개인_경우_역을_삭제할_수_없다() {
         //given
-        LineResponse lineResponse = createLine(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
 
         //when & then
         when()
@@ -132,6 +133,39 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         given().body(mapper.writeValueAsString(sectionRequest))
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .when().post("/lines/" + lineResponse.getId() + "/sections").then().log().all();
+    }
+    @DisplayName("given 특정 노선에 구간이 1개 이상 등록되었을 때\n"
+                 + "   when 기존 구간 중 특정 구간의 상행역과 등록하려는 구간의 상행역이 같고 \n"
+                 + "        등록하려는 구간의 길이가 특정 구간의 길이보다 짧으면\n"
+                 + "   then 기존 구간 사이에 새 구간이 등록된다.")
+    @Test
+    void testAddSection_지하철_구간_중간에_역_추가() throws JsonProcessingException {
+        //given
+        int existingDistance = 10;
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        SectionRequest sectionRequest = new SectionRequest(1L, 3L, existingDistance);
+        addSection(lineResponse, sectionRequest);
+
+        //when
+        Long newStationId = 2L;
+        int newDistance = 4;
+        SectionRequest newSectionRequest = new SectionRequest(1L, newStationId, newDistance);
+        addSection(lineResponse, newSectionRequest);
+
+        //then
+        LineResponse lineResponseAfterAddSection = 지하철_노선_조회(lineResponse.getId());
+
+        List<SectionResponse> sections = lineResponseAfterAddSection.getSections();
+        SectionResponse firstSection = sections.get(0);
+        SectionResponse lastSection = sections.get(sections.size() - 1);
+        assertAll(
+            () -> assertThat(sections).hasSize(2),
+            () -> assertThat(firstSection.getDownStationId()).isEqualTo(2L),
+            () -> assertThat(firstSection.getDistance()).isEqualTo(newDistance),
+            () -> assertThat(lastSection.getUpStationId()).isEqualTo(2L),
+            () -> assertThat(lastSection.getUpStationId()).isEqualTo(2L),
+            () -> assertThat(lastSection.getDistance()).isEqualTo(existingDistance - newDistance)
+        );
     }
 
 }
