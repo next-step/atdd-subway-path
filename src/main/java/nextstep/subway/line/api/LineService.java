@@ -49,9 +49,7 @@ public class LineService {
                 request.getDistance()
         );
 
-        Section savedSection = sectionRepository.save(section);
-
-        line.getSections().addSection(savedSection);
+        line.getSections().addSection(section);
         return LineResponse.of(savedLine, upStationResponse, downStationResponse);
     }
 

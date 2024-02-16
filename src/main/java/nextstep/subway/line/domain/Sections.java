@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import lombok.Getter;
 import nextstep.subway.section.domain.Section;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
     private final List<Section> sections = new ArrayList<>();
 

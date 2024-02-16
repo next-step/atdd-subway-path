@@ -43,9 +43,9 @@ public class SectionService {
                 request.getDownStationId(),
                 request.getDistance()
         );
-        Section savedSection = sectionRepository.save(section);
-        line.getSections().addSection(savedSection);
-        return SectionResponse.of(savedSection);
+
+        line.getSections().addSection(section);
+        return SectionResponse.of(section);
     }
 
     @Transactional
