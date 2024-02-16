@@ -41,7 +41,13 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public boolean isPossibleToAdd(Station nextUpStation) {
+    public static Section createMiddleSection(Section existingSection, Section newSection) {
+        return Section.of(newSection.getDownStation(),
+                          existingSection.getDownStation(),
+                          existingSection.getDistance() - newSection.getDistance());
+    }
+
+    public boolean isPossibleToAddLast(Station nextUpStation) {
         return downStation.equals(nextUpStation);
     }
 
@@ -59,6 +65,10 @@ public class Section {
 
     public boolean isPossibleToDelete(Station station) {
         return downStation.isSameStation(station);
+    }
+
+    public boolean isSameWithUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     @Override

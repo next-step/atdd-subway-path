@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
@@ -41,13 +40,40 @@ class SectionsTest {
 
         //then
         assertAll(
-            () -> assertThat(구간_강남_선릉.isPossibleToAdd(구간_선릉_삼성.getUpStation())).isTrue(),
+            () -> assertThat(구간_강남_선릉.isPossibleToAddLast(구간_선릉_삼성.getUpStation())).isTrue(),
             () -> assertThat(sections.getLastSection()).isEqualTo(구간_선릉_삼성)
+        );
+    }
+    @Test
+    void testAddSection_구간_중간에_역을_추가할_수_있다() {
+        //given
+        int existingDistance = 3;
+        int newDistance = 10;
+        Section 구간_강남_선릉 = new Section(강남역, 선릉역, existingDistance);
+        Section 구간_강남_삼성 = new Section(강남역, 삼성역, newDistance);
+
+        List<Section> existingSections = new ArrayList<>();
+        existingSections.add(구간_강남_삼성);
+        Sections sections = new Sections(existingSections);
+
+        //when
+        sections.add(구간_강남_선릉);
+
+        //then
+        List<Section> sectionList = sections.getSections();
+        Section firstSection = sectionList.get(0);
+        Section lastSection = sectionList.get(1);
+        assertAll(
+            () -> assertThat(sectionList).hasSize(2),
+            () -> assertThat(firstSection.getDownStation()).isEqualTo(선릉역),
+            () -> assertThat(lastSection.getUpStation()).isEqualTo(선릉역),
+            () -> assertThat(lastSection.getDownStation()).isEqualTo(삼성역),
+            () -> assertThat(lastSection.getDistance()).isEqualTo(newDistance - existingDistance)
         );
     }
 
     @Test
-    void testAddSection_마지막_구간의_하행_종점역이_추가하려는_구간의_상행역과_다르면_추가할_수_없다() {
+    void testAddSection_추가하려는_구간의_상행역과_다르면_추가할_수_없다() {
         //given
         int distance = 10;
 
@@ -60,14 +86,14 @@ class SectionsTest {
 
         //when & then
         assertAll(
-            () -> assertThat(구간_강남_선릉.isPossibleToAdd(구간_강남_삼성.getUpStation())).isFalse(),
+            () -> assertThat(구간_강남_선릉.isPossibleToAddLast(구간_강남_삼성.getUpStation())).isFalse(),
             () -> assertThatThrownBy(() -> sections.add(구간_강남_삼성))
                 .isInstanceOf(IllegalSectionException.class)
         );
     }
 
     @Test
-    void testAddSection_마지막_구간의_하행_종점역이_추가하려는_구간의_상행역과_다르면_추가할_수_없다_2() {
+    void testAddSection_역에_등록된_구간과_같은_구간을_등록할_수_없다() {
         //given
         int distance = 10;
 
@@ -80,7 +106,7 @@ class SectionsTest {
 
         //when & then
         assertAll(
-            () -> assertThat(구간_강남_선릉.isPossibleToAdd(구간_강남_선릉_2.getUpStation())).isFalse(),
+            () -> assertThat(구간_강남_선릉.isPossibleToAddLast(구간_강남_선릉_2.getUpStation())).isFalse(),
             () -> assertThatThrownBy(() -> sections.add(구간_강남_선릉_2))
                 .isInstanceOf(IllegalSectionException.class)
         );

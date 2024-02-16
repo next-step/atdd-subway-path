@@ -33,16 +33,40 @@ public class Sections {
         this.sections = sections;
     }
 
-    public void add(Section section) {
+    public void add(Section newSection) {
         if (sections.isEmpty()) {
-            sections.add(section);
+            sections.add(newSection);
             return;
         }
         Section lastSection = sections.get(sections.size() - 1);
-        if (!lastSection.isPossibleToAdd(section.getUpStation())) {
-            throw new IllegalSectionException("기존 노선의 하행 종점역과 추가하려는 구간의 상행역이 달라 추가할 수 없습니다.");
+        if (lastSection.isPossibleToAddLast(newSection.getUpStation())) {
+            sections.add(newSection);
+            return;
         }
-        sections.add(section);
+        addSectionInTheMiddle(newSection);
+
+    }
+
+    private void addSectionInTheMiddle(Section newSection) {
+        int sectionPosition = findSectionPositionByUpStation(newSection.getUpStation());
+        Section existingSection = sections.get(sectionPosition);
+        if (existingSection.getDistance() <= newSection.getDistance()) {
+            throw new IllegalSectionException("추가하려는 구간의 길이가 길어 기존 구간 사이에 추가할 수 없습니다.");
+        }
+        Section middleSection = Section.createMiddleSection(existingSection, newSection);
+        sections.remove(sectionPosition);
+        sections.add(sectionPosition, newSection);
+        sections.add(sectionPosition + 1, middleSection);
+    }
+
+    private int findSectionPositionByUpStation(Station station) {
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            if (section.isSameWithUpStation(station)) {
+                return i;
+            }
+        }
+        throw new IllegalSectionException("추가하려는 구간의 상행역이 해당 노선에 존재하지 않습니다");
     }
 
     public Section getLastSection() {
