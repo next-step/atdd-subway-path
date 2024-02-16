@@ -40,7 +40,7 @@ class SectionsTest {
 
         //then
         assertAll(
-            () -> assertThat(구간_강남_선릉.isPossibleToAddLast(구간_선릉_삼성.getUpStation())).isTrue(),
+            () -> assertThat(구간_강남_선릉.isSameWithDownStation(구간_선릉_삼성.getUpStation())).isTrue(),
             () -> assertThat(sections.getLastSection()).isEqualTo(구간_선릉_삼성)
         );
     }
@@ -86,7 +86,7 @@ class SectionsTest {
 
         //when & then
         assertAll(
-            () -> assertThat(구간_강남_선릉.isPossibleToAddLast(구간_강남_삼성.getUpStation())).isFalse(),
+            () -> assertThat(구간_강남_선릉.isSameWithDownStation(구간_강남_삼성.getUpStation())).isFalse(),
             () -> assertThatThrownBy(() -> sections.add(구간_강남_삼성))
                 .isInstanceOf(IllegalSectionException.class)
         );
@@ -106,7 +106,7 @@ class SectionsTest {
 
         //when & then
         assertAll(
-            () -> assertThat(구간_강남_선릉.isPossibleToAddLast(구간_강남_선릉_2.getUpStation())).isFalse(),
+            () -> assertThat(구간_강남_선릉.isSameWithDownStation(구간_강남_선릉_2.getUpStation())).isFalse(),
             () -> assertThatThrownBy(() -> sections.add(구간_강남_선릉_2))
                 .isInstanceOf(IllegalSectionException.class)
         );

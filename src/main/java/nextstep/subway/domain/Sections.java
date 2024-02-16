@@ -14,6 +14,7 @@ import nextstep.subway.exception.IllegalSectionException;
 @Embeddable
 public class Sections {
     public static final int ONLY_ONE_SECTION = 1;
+    public static final int SECTIONS_FIRST_POSITION = 0;
 
     @Override
     public String toString() {
@@ -38,13 +39,33 @@ public class Sections {
             sections.add(newSection);
             return;
         }
-        Section lastSection = sections.get(sections.size() - 1);
-        if (lastSection.isPossibleToAddLast(newSection.getUpStation())) {
+        if (isPossibleToAddLast(newSection)) {
             sections.add(newSection);
             return;
         }
+        if (isPossibleToAddFirst(newSection)) {
+            sections.add(SECTIONS_FIRST_POSITION, newSection);
+            return;
+        }
         addSectionInTheMiddle(newSection);
+    }
 
+    private boolean isPossibleToAddFirst(Section newSection) {
+        Section firstSection = sections.get(0);
+        if (firstSection.isSameWithUpStation(newSection.getDownStation())
+            && !existStationInSections(newSection.getUpStation())) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isPossibleToAddLast(Section newSection) {
+        Section lastSection = sections.get(sections.size() - 1);
+        if (lastSection.isSameWithDownStation(newSection.getUpStation())
+            && !existStationInSections(newSection.getDownStation())) {
+            return true;
+        }
+        return false;
     }
 
     private void addSectionInTheMiddle(Section newSection) {
@@ -90,10 +111,19 @@ public class Sections {
 
     public Stations getStations() {
         List<Station> stations = sections.stream()
-                .flatMap(section ->
-                             Stream.of(section.getUpStation(), section.getDownStation()))
-                .distinct()
-                .collect(Collectors.toList());
+                                         .flatMap(section ->
+                                                      Stream.of(section.getUpStation(), section.getDownStation()))
+                                         .distinct()
+                                         .collect(Collectors.toList());
         return Stations.of(stations);
+    }
+
+    private boolean existStationInSections(Station station) {
+        return sections.stream()
+                       .flatMap(section ->
+                                    Stream.of(section.getUpStation(), section.getDownStation()))
+                       .distinct()
+                       .collect(Collectors.toList())
+                       .contains(station);
     }
 }

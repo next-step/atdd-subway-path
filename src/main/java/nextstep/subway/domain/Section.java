@@ -47,7 +47,7 @@ public class Section {
                           existingSection.getDistance() - newSection.getDistance());
     }
 
-    public boolean isPossibleToAddLast(Station nextUpStation) {
+    public boolean isSameWithDownStation(Station nextUpStation) {
         return downStation.equals(nextUpStation);
     }
 
