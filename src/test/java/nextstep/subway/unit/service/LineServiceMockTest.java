@@ -36,17 +36,17 @@ public class LineServiceMockTest {
     @Mock
     private SectionService sectionService;
 
-    Station 신논현역 = Station.from(Constant.신논현역);
-    Long 신논현역_ID = 1L;
-    Station 강남역 = Station.from(Constant.강남역);
-    Long 강남역_ID = 2L;
-    Station 양재역 = Station.from(Constant.양재역);
-    Long 양재역_ID = 3L;
-    Section 신논현역_강남역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.강남역), Constant.역_간격_10);
-    Section 신논현역_양재역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.양재역), Constant.역_간격_5);
-    Section 강남역_양재역_구간 = Section.of(Station.from(Constant.강남역), Station.from(Constant.양재역), Constant.역_간격_10);
-    Line 신분당선 = Line.of(Constant.신분당선, Constant.빨간색);
-    Long 신분당선_ID = 1L;
+    private final Station 신논현역 = Station.from(Constant.신논현역);
+    private final Long 신논현역_ID = 1L;
+    private final Station 강남역 = Station.from(Constant.강남역);
+    private final Long 강남역_ID = 2L;
+    private final Station 양재역 = Station.from(Constant.양재역);
+    private final Long 양재역_ID = 3L;
+    private final Section 신논현역_강남역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.강남역), Constant.역_간격_10);
+    private final Section 신논현역_양재역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.양재역), Constant.역_간격_5);
+    private final Section 강남역_양재역_구간 = Section.of(Station.from(Constant.강남역), Station.from(Constant.양재역), Constant.역_간격_10);
+    private final Line 신분당선 = Line.of(Constant.신분당선, Constant.빨간색);
+    private final Long 신분당선_ID = 1L;
 
     @DisplayName("노선 마지막에 구간을 추가한다.")
     @Test

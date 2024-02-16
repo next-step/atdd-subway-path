@@ -7,7 +7,6 @@ import java.util.Objects;
 
 public class SectionDto {
 
-    private Long sectionId;
     private StationDto upStation;
     private StationDto downStation;
     private Integer distance;
@@ -15,8 +14,7 @@ public class SectionDto {
     private SectionDto() {
     }
 
-    private SectionDto(Long sectionId, StationDto upStation, StationDto downStation, Integer distance) {
-        this.sectionId = sectionId;
+    private SectionDto(StationDto upStation, StationDto downStation, Integer distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -24,15 +22,10 @@ public class SectionDto {
 
     public static SectionDto from(Section section) {
         return new SectionDto(
-                section.getSectionId(),
                 StationDto.from(section.getUpStation()),
                 StationDto.from(section.getDownStation()),
                 section.getDistance()
         );
-    }
-
-    public Long getSectionId() {
-        return sectionId;
     }
 
     public StationDto getUpStation() {
@@ -52,12 +45,12 @@ public class SectionDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SectionDto that = (SectionDto) o;
-        return Objects.equals(sectionId, that.sectionId) && Objects.equals(upStation, that.upStation) && Objects.equals(downStation, that.downStation) && Objects.equals(distance, that.distance);
+        return Objects.equals(upStation, that.upStation) && Objects.equals(downStation, that.downStation) && Objects.equals(distance, that.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionId, upStation, downStation, distance);
+        return Objects.hash(upStation, downStation, distance);
     }
 
 }

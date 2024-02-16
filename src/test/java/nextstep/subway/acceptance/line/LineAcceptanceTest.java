@@ -24,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends CommonAcceptanceTest {
 
-    Long 강남역_ID;
-    Long 신논현역_ID;
-    Long 압구정로데오역_ID;
-    Long 강남구청역_ID;
-    CreateLineRequest 신분당선_생성_요청;
-    CreateLineRequest 수인분당선_생성_요청;
-    UpdateLineRequest 신분당선_수정_요청;
+    private Long 강남역_ID;
+    private Long 신논현역_ID;
+    private Long 압구정로데오역_ID;
+    private Long 강남구청역_ID;
+    private CreateLineRequest 신분당선_생성_요청;
+    private CreateLineRequest 수인분당선_생성_요청;
+    private UpdateLineRequest 신분당선_수정_요청;
 
     @BeforeEach
     protected void setUp() {

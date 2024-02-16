@@ -3,7 +3,6 @@ package nextstep.subway.line.presentation.response;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.service.SectionDto;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
