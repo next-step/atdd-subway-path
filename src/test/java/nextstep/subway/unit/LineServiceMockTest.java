@@ -79,6 +79,7 @@ public class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> lineService.createSubwayLine(lineRequest))
                 .isInstanceOf(EntityNotFoundException.class);
+        verify(stationRepository).findById(anyLong());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -108,6 +109,7 @@ public class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> lineService.getSubwayLine(1L))
                 .isInstanceOf(EntityNotFoundException.class);
+        verify(lineRepository).findById(anyLong());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -120,19 +122,20 @@ public class LineServiceMockTest {
         when(lineRepository.findAll()).thenReturn(List.of(신분당선, 지하철노선));
 
         // when
-        List<LineResponse> response = lineService.getSubwayLines();
+        final List<LineResponse> response = lineService.getSubwayLines();
 
         // then
         assertThat(response).hasSize(2);
         assertThat(response.get(0).getName()).isEqualTo("신분당선");
         assertThat(response.get(1).getName()).isEqualTo("지하철노선");
+        verify(lineRepository).findAll();
     }
 
     @DisplayName("지하철 노선 정보를 수정한다.")
     @Test
     void 지하철_노선_정보_수정() {
         // given
-        LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
+        final LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
 
         // when
@@ -141,26 +144,28 @@ public class LineServiceMockTest {
         // then
         assertThat(신분당선.getName()).isEqualTo("2호선");
         assertThat(신분당선.getColor()).isEqualTo("bg-green-600");
+        verify(lineRepository).findById(1L);
     }
 
     @DisplayName("지하철 노선 정보 수정 시 존재하지 않는 역을 수정할 경우 오류가 발생한다.")
     @Test
     void 지하철_노선_정보_수정_시_존재하지_않는_역으로_수정_불가() {
         // given
-        LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
+        final LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
         when(lineRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // then
         assertThatThrownBy(() -> lineService.updateSubwayLine(1L, request))
                 .isInstanceOf(EntityNotFoundException.class);
+        verify(lineRepository).findById(anyLong());
     }
 
     @DisplayName("지하철 노선 정보 수정 시 노선명이 null 혹은 공백일 때 수정할 경우 오류가 발생한다.")
     @Test
     void 지하철_노선_정보_수정_시_노선명이_올바르지_않으면_수정_불가() {
         // given
-        LineUpdateRequest 노선명_null = new LineUpdateRequest(null, "bg-green-600");
-        LineUpdateRequest 노선명_공백 = new LineUpdateRequest("", "bg-green-600");
+        final LineUpdateRequest 노선명_null = new LineUpdateRequest(null, "bg-green-600");
+        final LineUpdateRequest 노선명_공백 = new LineUpdateRequest("", "bg-green-600");
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
 
         // then
@@ -168,14 +173,15 @@ public class LineServiceMockTest {
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 노선명_공백))
                 .isInstanceOf(IllegalArgumentException.class);
+        verify(lineRepository, times(2)).findById(anyLong());
     }
 
     @DisplayName("지하철 노선 정보 수정 시 색상값이 null 혹은 공백일 때 수정할 경우 오류가 발생한다.")
     @Test
     void 지하철_노선_정보_수정_시_색상값이_올바르지_않으면_수정_불가() {
         // given
-        LineUpdateRequest 색상값_null = new LineUpdateRequest("2호선", null);
-        LineUpdateRequest 색상값_공백 = new LineUpdateRequest("2호선", "");
+        final LineUpdateRequest 색상값_null = new LineUpdateRequest("2호선", null);
+        final LineUpdateRequest 색상값_공백 = new LineUpdateRequest("2호선", "");
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
 
         // then
@@ -183,13 +189,14 @@ public class LineServiceMockTest {
                 .isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 색상값_공백))
                 .isInstanceOf(IllegalArgumentException.class);
+        verify(lineRepository, times(2)).findById(anyLong());
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void 지하철_노선_삭제() {
         // given
-        LineRequest 신분당선_생성_요청 = 신분당선_생성_요청();
+        final LineRequest 신분당선_생성_요청 = 신분당선_생성_요청();
         when(stationRepository.findById(1L)).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(역삼역));
         when(lineRepository.save(any(Line.class))).thenReturn(신분당선);
