@@ -6,10 +6,11 @@ import nextstep.subway.Exception.LineException;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.SectionRequest;
 import nextstep.subway.line.section.SectionResponse;
+import nextstep.subway.path.PathFinder;
+import nextstep.subway.path.PathResponse;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
-import org.springframework.data.geo.format.DistanceFormatter;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -95,5 +96,13 @@ public class LineService {
     public void deleteSection(Long id, Long stationId) {
         Line line = lineRepository.findById(id).get();
         line.deleteSection(stationId);
+    }
+
+    public PathResponse getShortestPath(Long source, Long target) {
+        Station sourceStation = stationRepository.findById(source).get();
+        Station targetStation = stationRepository.findById(target).get();
+        List<Line> lines = lineRepository.findAll();
+
+        return new PathFinder().shortestPath(sourceStation, targetStation, lines);
     }
 }

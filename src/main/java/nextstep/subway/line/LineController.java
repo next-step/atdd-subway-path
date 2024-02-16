@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import nextstep.subway.line.section.SectionRequest;
 import nextstep.subway.line.section.SectionResponse;
+import nextstep.subway.path.PathResponse;
 import nextstep.subway.station.StationNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,5 +61,10 @@ public class LineController {
     public ResponseEntity<Void> deleteLineSection(@PathVariable Long id, @RequestParam Long stationId) {
         lineService.deleteSection(id, stationId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/paths")
+    public ResponseEntity<PathResponse> shortestPath(@RequestParam("source") Long source, @RequestParam("target") Long target) {
+        return ResponseEntity.ok().body(lineService.getShortestPath(source, target));
     }
 }
