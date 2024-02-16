@@ -3,7 +3,10 @@ package nextstep.subway.unit;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.entity.Line;
+import nextstep.subway.line.entity.Section;
+import nextstep.subway.line.entity.Sections;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.station.entity.Station;
@@ -19,9 +22,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @Transactional
 @ActiveProfiles("test")
@@ -110,7 +116,7 @@ public class LineServiceTest {
         역삼역 = 역_생성("역삼역");
         final Station 지하철역 = 역_생성("지하철역");
         신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
-        final Line 지하철노선 = 노선_생성("지하철노선", "bg-yellow-600", 역삼역, 지하철역, 15);
+        노선_생성("지하철노선", "bg-yellow-600", 역삼역, 지하철역, 15);
 
         // when
         final List<LineResponse> response = lineService.getSubwayLines();
@@ -201,6 +207,24 @@ public class LineServiceTest {
         // then
         assertThatThrownBy(() -> lineService.getSubwayLine(신분당선.getId()))
                 .isInstanceOf(EntityNotFoundException.class);
+    }
+
+    @DisplayName("지하철 노선 구간을 생성한다.")
+    @Test
+    void 지하철_노선_구간_생성() {
+        // given
+        강남역 = 역_생성("강남역");
+        역삼역 = 역_생성("역삼역");
+        final Station 지하철역 = 역_생성("지하철역");
+        신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+        final SectionRequest 구간_생성_요청 = new SectionRequest(역삼역.getId(), 지하철역.getId(), 5);
+
+        // when
+        assertThat(신분당선.getSections().getSections()).hasSize(1);
+        lineService.createLineSection(신분당선.getId(), 구간_생성_요청);
+
+        // then
+        assertThat(신분당선.getSections().getSections()).hasSize(2);
     }
 
     private Line 노선_생성(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
