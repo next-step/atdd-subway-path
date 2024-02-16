@@ -3,7 +3,10 @@ package nextstep.subway.unit;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.entity.Line;
+import nextstep.subway.line.entity.Section;
+import nextstep.subway.line.entity.Sections;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.station.entity.Station;
@@ -208,6 +211,32 @@ public class LineServiceMockTest {
 
         // then
         verify(lineRepository).deleteById(1L);
+    }
+
+    @DisplayName("지하철 노선 구간을 생성한다.")
+    @Test
+    void 지하철_노선_구간_생성() {
+        // given
+        final Station upStation = mock(Station.class);
+        final Station downStation = mock(Station.class);
+        final Section section = mock(Section.class);
+        final Sections sections = mock(Sections.class);
+        final Line line = mock(Line.class);
+        final SectionRequest 구간_생성_요청 = new SectionRequest(1L, 2L, 5);
+
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(upStation));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(downStation));
+        when(line.getSections()).thenReturn(sections);
+        when(sections.getSections()).thenReturn(List.of(section));
+        when(section.getUpStation()).thenReturn(upStation);
+        when(section.getDownStation()).thenReturn(downStation);
+
+        // when
+        lineService.createLineSection(1L, 구간_생성_요청);
+
+        // then
+        verify(line).addSection(any(Section.class));
     }
 
     private LineRequest 신분당선_생성_요청() {
