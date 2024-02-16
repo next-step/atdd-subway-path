@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static subway.fixture.acceptance.LineAcceptanceSteps.*;
 import static subway.fixture.acceptance.StationAcceptanceSteps.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -168,10 +169,12 @@ class LineAcceptanceTest extends AcceptanceTest {
 		LineResponse 노선_생성 = 노선_생성();
 		Long 강남역 = 노선_생성.getStations().get(0).getId();
 		Long 논현역 = 정류장_생성_ID_반환("논현역");
-		LineResponse 노선_구간_추가 = 노선_구간_추가(노선_생성.getId(), 강남역, 논현역, 10);
+		LineResponse 노선_구간_추가 = 노선_구간_추가(노선_생성.getId(), 강남역, 논현역, 8);
 
 		// when
-		노선_구간_삭제(노선_구간_추가.getId(), 논현역);
+		HashMap<String, String> params = new HashMap<>();
+		params.put("stationId", String.valueOf(논현역));
+		노선_구간_삭제(노선_구간_추가.getId(), params);
 
 		// then
 		LineResponse 노선_조회 = 노선_조회(노선_구간_추가.getId());
@@ -189,17 +192,22 @@ class LineAcceptanceTest extends AcceptanceTest {
 	void successDeleteSection2() {
 		// given
 		LineResponse 노선_생성 = 노선_생성();
-		List<StationResponse> stations = 노선_생성.getStations();
-		Long 강남역 = stations.get(0).getId();
+		Long 강남역 = 노선_생성.getStations().get(0).getId();
 		Long 논현역 = 정류장_생성_ID_반환("논현역");
-		Long 양재역 = stations.get(stations.size() - 1).getId();
-		LineResponse 노선_구간_추가 = 노선_구간_추가(노선_생성.getId(), 강남역, 논현역, 10);
+
+		LineResponse 노선_구간_추가 = 노선_구간_추가(노선_생성.getId(), 강남역, 논현역, 8);
+		List<StationResponse> 노선_구간_추가_Stations = 노선_구간_추가.getStations();
+		int finalStation = 노선_구간_추가_Stations.size() - 1;
+		Long 양재역 = 노선_구간_추가_Stations.get(finalStation).getId();
 
 		// when
-		노선_구간_삭제(노선_구간_추가.getId(), 양재역);
+		HashMap<String, String> params = new HashMap<>();
+		params.put("stationId", String.valueOf(양재역));
+		노선_구간_삭제(노선_구간_추가.getId(), params);
 
 		// then
 		LineResponse 노선_조회 = 노선_조회(노선_구간_추가.getId());
-		assertThat(노선_생성).usingRecursiveComparison().isEqualTo(노선_조회);
+		노선_구간_추가.getStations().remove(finalStation);
+		assertThat(노선_구간_추가).usingRecursiveComparison().isEqualTo(노선_조회);
 	}
 }
