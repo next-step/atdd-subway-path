@@ -28,16 +28,10 @@ public class ShowLineResponse {
     }
 
     public static ShowLineResponse from(Line line) {
-        List<SectionDto> sortedSections = line.getSections().stream()
-                .map(SectionDto::from)
-                .sorted(Comparator.comparing(s -> s.getUpStation().getName() + s.getDownStation().getName()))
-                .collect(Collectors.toList());
-
         return new ShowLineResponse(
                 line.getLineId(),
                 line.getName(),
                 line.getColor(),
-
                 line.getSections().stream()
                         .map(SectionDto::from)
                         .collect(Collectors.toList())

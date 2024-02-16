@@ -1,14 +1,17 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.exception.*;
-import nextstep.subway.section.service.SectionDto;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -42,35 +45,41 @@ public class Sections {
     }
 
     public List<Section> getSortedSections() {
-//        return getSections().stream()
-//                .sorted(Comparator.comparing((Section s) -> s.getUpStation().getName())
-//                        .thenComparing((s1, s2) -> {
-//                            String s1DownStationName = s1.getDownStation().getName();
-//                            String s2UpStationName = s2.getUpStation().getName();
-//                            return s1DownStationName.compareTo(s2UpStationName);
-//                        }))
-//                .collect(Collectors.toList());
+        Section firstSection = getFirstSection();
 
-        List<Section> sortedSections = sections;
+        List<Section> sortedSections =
+                Stream.iterate(firstSection, section -> sections.stream()
+                                .filter(nextSection -> section.getDownStation().equals(nextSection.getUpStation()))
+                                .findFirst()
+                                .orElse(null))
+                        .takeWhile(Objects::nonNull)
+                        .collect(Collectors.toList());
 
-        for (Section section : sections) {
+        return sortedSections;
+    }
 
-            sortedSections.stream()
-                    .filter(s ->
-
-                    )
-
-            ;
-
-            // section
-
-
-
+    private Section getFirstSection() {
+        if (this.sections.isEmpty()) {
+            throw new EmptySectionException();
         }
 
+        return sections.stream()
+                .filter(section -> sections.stream()
+                        .noneMatch(nextSection -> section.getUpStation().equals(nextSection.getDownStation())))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundSectionException());
+    }
 
+    private Section getLastSection() {
+        if (this.sections.isEmpty()) {
+            throw new EmptySectionException();
+        }
 
-        return null;
+        return sections.stream()
+                .filter(section -> sections.stream()
+                        .noneMatch(nextSection -> section.getDownStation().equals(nextSection.getUpStation())))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundSectionException());
     }
 
     public void addSection(Section newSection) {
@@ -80,12 +89,11 @@ public class Sections {
             this.sections.add(newSection);
             return;
         }
-
-        if (isFirstSection(newSection)) {
+        if (possibleAddedFirstSection(newSection)) {
             addFirstSection(newSection);
             return;
         }
-        if (isLastSection(newSection)) {
+        if (possibleAddedLastSection(newSection)) {
             addLastSection(newSection);
             return;
         }
@@ -108,21 +116,21 @@ public class Sections {
     }
 
     private void addFirstSection(Section newSection) {
-        if (!isFirstSection(newSection)) {
+        if (!possibleAddedFirstSection(newSection)) {
             return;
         }
         this.sections.add(newSection);
     }
 
     private void addLastSection(Section newSection) {
-        if (!isLastSection(newSection)) {
+        if (!possibleAddedLastSection(newSection)) {
             return;
         }
         this.sections.add(newSection);
     }
 
     private void addMiddleSection(Section newSection) {
-        if (isFirstSection(newSection) && isLastSection(newSection)) {
+        if (possibleAddedFirstSection(newSection) && possibleAddedLastSection(newSection)) {
             return;
         }
 
@@ -134,6 +142,20 @@ public class Sections {
         section.updateUpStation(newSection.getDownStation());
         section.reduceDistance(newSection.getDistance());
         this.sections.add(newSection);
+    }
+
+    private boolean possibleAddedFirstSection(Section targetSection) {
+        if (this.sections.isEmpty()) {
+            throw new EmptySectionException();
+        }
+        return getFirstSection().getUpStation().equals(targetSection.getDownStation());
+    }
+
+    private boolean possibleAddedLastSection(Section targetSection) {
+        if (this.sections.isEmpty()) {
+            throw new EmptySectionException();
+        }
+        return getLastSection().getDownStation().equals(targetSection.getUpStation());
     }
 
     public void deleteSection(Station station) {
@@ -153,43 +175,11 @@ public class Sections {
         this.sections.remove(lastSection);
     }
 
-    private boolean isFirstSection(Section targetSection) {
-        if (this.sections.isEmpty()) {
-            throw new EmptySectionException();
-        }
-        return getSortedSections().get(FIRST).getUpStation().equals(targetSection.getDownStation());
-    }
-
-    private boolean isLastSection(Section targetSection) {
-        if (this.sections.isEmpty()) {
-            throw new EmptySectionException();
-        }
-        return getSortedSections().get(size() - 1).getDownStation().equals(targetSection.getUpStation());
-    }
-
-    private boolean isMiddleSection(Section targetSection) {
-        if (this.sections.isEmpty()) {
-            throw new EmptySectionException();
-        }
-
-        return sections.stream()
-                .anyMatch(
-                        section -> section.getUpStation().equals(targetSection.getUpStation())
-                );
-    }
-
     private boolean isNotLastStation(Station station) {
         if (this.sections.isEmpty()) {
             throw new EmptySectionException();
         }
         return !getLastSection().isDownStation(station);
-    }
-
-    private Section getLastSection() {
-        if (this.sections.isEmpty()) {
-            throw new EmptySectionException();
-        }
-        return this.sections.get(size() - 1);
     }
 
     public boolean hasSection(Section section) {

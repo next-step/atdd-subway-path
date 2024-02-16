@@ -55,6 +55,7 @@ public class Line {
 
     public List<Section> getSections() {
         return this.sections.getSortedSections();
+        // return this.sections.getSections();
     }
 
     public void addSection(Section section) {
