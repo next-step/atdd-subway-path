@@ -110,22 +110,22 @@ public class Sections {
 
 	public Station getFinalStation() {
 		if (sectionList.isEmpty()) {
-			return new Station("");
+			throw new IllegalArgumentException("해당 노선은 설정된 구간이 없습니다.");
 		}
 
-		List<Long> upStationIds = sectionList.stream()
-			.map(section -> section.getUpStation().getId())
+		List<Station> upStations = sectionList.stream()
+			.map(Section::getUpStation)
 			.collect(toList());
 
 		return sectionList.stream()
-			.filter(isFinalStation(upStationIds))
+			.filter(isFinalStation(upStations))
 			.findFirst()
-			.orElseThrow(EntityNotFoundException::new)
+			.orElseThrow(NoSuchElementException::new)
 			.getDownStation();
 	}
 
-	private Predicate<Section> isFinalStation(List<Long> upStationIds) {
-		return section -> !upStationIds.contains(section.getDownStation().getId());
+	private Predicate<Section> isFinalStation(List<Station> stations) {
+		return section -> !stations.contains(section.getDownStation());
 	}
 
 	public void remove(Station deleteTargetStation) {
