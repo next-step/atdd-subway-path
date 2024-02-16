@@ -90,16 +90,6 @@ public class Sections {
 		}
 	}
 
-	private void checkFinalStation(Station station) {
-		if (sectionList.isEmpty()) {
-			throw new IllegalArgumentException("해당 노선은 설정된 구간이 없습니다.");
-		}
-
-		if (!getFinalStation().getId().equals(station.getId())) {
-			throw new IllegalArgumentException("해당 노선의 마지막 정류장이 아닙니다.");
-		}
-	}
-
 	public Station getFirstStation() {
 		if (sectionList.isEmpty()) {
 			return new Station("");
