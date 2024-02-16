@@ -7,7 +7,8 @@ public class LineValidator {
 
   public static void checkSectionForAddition(final Line line, final Section section) {
     // 새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다.
-    if (!Objects.equals(line.getDownStationId(), section.getUpStation().getId())) {
+    final var lastStationIdOfLine = line.getSections().get(line.getSections().size() - 1).getDownStation().getId();
+    if (!Objects.equals(lastStationIdOfLine, section.getUpStation().getId())) {
       throw new BusinessException("새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 합니다.");
     }
 
@@ -25,7 +26,8 @@ public class LineValidator {
 
   public static void checkSectionForRemove(final Line line, final Section section) {
     // 지하철 노선에 등록된 역(하행 종점역)만 제거할 수 있다. 즉, 마지막 구간만 제거할 수 있다.
-    if (!Objects.equals(line.getDownStationId(), section.getDownStation().getId())) {
+    final var lastStationIdOfLine = line.getSections().get(line.getSections().size() - 1).getDownStation().getId();
+    if (!Objects.equals(lastStationIdOfLine, section.getDownStation().getId())) {
       throw new BusinessException("노선의 마지막 구간만 제거할 수 있습니다.");
     }
 
