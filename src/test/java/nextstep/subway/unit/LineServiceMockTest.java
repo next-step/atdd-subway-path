@@ -245,7 +245,7 @@ public class LineServiceMockTest {
         // given
         final Line line = mock(Line.class);
         final Station station = mock(Station.class);
-        Sections sections = mock(Sections.class);
+        final Sections sections = mock(Sections.class);
 
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
         when(line.getSections()).thenReturn(sections);
@@ -257,6 +257,22 @@ public class LineServiceMockTest {
 
         // then
         verify(line).removeSection(station);
+    }
+
+    @DisplayName("지하철 노선 구간을 삭제 시 구간이 1개라면 오류가 발생한다.")
+    @Test
+    void 지하철_노선_구간_삭제_시_구간이_1개라면_삭제_불가() {
+        // given
+        final Line line = mock(Line.class);
+        final Sections sections = mock(Sections.class);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(line));
+        when(line.getSections()).thenReturn(sections);
+        when(sections.size()).thenReturn(1);
+
+        // then
+        assertThatThrownBy(() -> lineService.deleteLineSection(1L, 1L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private LineRequest 신분당선_생성_요청() {
