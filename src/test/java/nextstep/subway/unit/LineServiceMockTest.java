@@ -185,6 +185,24 @@ public class LineServiceMockTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void 지하철_노선_삭제() {
+        // given
+        LineRequest 신분당선_생성_요청 = 신분당선_생성_요청();
+        when(stationRepository.findById(1L)).thenReturn(Optional.of(강남역));
+        when(stationRepository.findById(2L)).thenReturn(Optional.of(역삼역));
+        when(lineRepository.save(any(Line.class))).thenReturn(신분당선);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
+        lineService.createSubwayLine(신분당선_생성_요청);
+
+        // when
+        lineService.deleteSubwayLine(1L);
+
+        // then
+        verify(lineRepository).deleteById(1L);
+    }
+
     private LineRequest 신분당선_생성_요청() {
         return new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
     }
