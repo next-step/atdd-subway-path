@@ -131,8 +131,21 @@ public class Sections {
         }
 
         //중간역을 삭제하는 경우
-        Section findSection = findSectionByDownStationId(stationId);
-        sectionList.remove(findSection);
+        Section findLeftSection = findSectionByDownStationId(stationId);
+        Section findRightSection = findSectionByUpStationId(stationId);
+        long distance = findLeftSection.getDistance() + findRightSection.getDistance();
+        findRightSection.updateDistance(distance);
+        findRightSection.updateUpStationId(findLeftSection.getUpStationId());
+        sectionList.remove(findLeftSection);
+    }
+
+    private Section findSectionByUpStationId(Long stationId) {
+        return sectionList.stream().map(item -> {
+            if (stationId.equals(item.getUpStationId())) {
+                return item;
+            }
+            return null;
+        }).findFirst().orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
     }
 
     private Section findSectionByDownStationId(Long stationId) {
