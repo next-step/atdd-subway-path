@@ -2,8 +2,11 @@ package subway.fixture.acceptance;
 
 import static subway.utils.enums.Location.*;
 
+import java.util.HashMap;
 import java.util.List;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import subway.dto.line.LineCreateRequest;
 import subway.dto.line.LineResponse;
 import subway.dto.line.LineUpdateRequest;
@@ -77,5 +80,12 @@ public class LineAcceptanceSteps {
 			.body(sectionRequest)
 			.post()
 			.as(LineResponse.class);
+	}
+
+	public static ExtractableResponse<Response> 노선_구간_삭제(Long id, HashMap<String, String> params) {
+		String uri = LINES.path(id).path("/sections").toUriString();
+		return Rest.builder()
+			.uri(uri)
+			.delete(params);
 	}
 }
