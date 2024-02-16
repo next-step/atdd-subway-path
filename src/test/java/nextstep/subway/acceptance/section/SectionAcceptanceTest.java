@@ -151,7 +151,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      * When 노선 처음에 구간을 추가하면
      * Then 노선 처음에 구간이 추가된다.
      */
-    @DisplayName("지하철 노선 가운데에 역을 추가한다.")
+    @DisplayName("지하철 노선 처음에 역을 추가한다.")
     @Test
     void 지하철_노선_처음에_역을_추가() {
         // given

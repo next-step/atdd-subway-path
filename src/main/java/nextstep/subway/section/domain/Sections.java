@@ -7,6 +7,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,18 +43,18 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+        validateAddSection(newSection);
+
         if (this.sections.isEmpty()) {
             this.sections.add(newSection);
             return;
         }
 
-        validateAddSection(newSection);
-
-        if (isFirstStation(newSection.getDownStation())) {
+        if (isFirstSection(newSection)) {
             addFirstSection(newSection);
             return;
         }
-        if (isLastStation(newSection.getUpStation())) {
+        if (isLastSection(newSection)) {
             addLastSection(newSection);
             return;
         }
@@ -61,30 +62,47 @@ public class Sections {
     }
 
     private void validateAddSection(Section newSection) {
-        List<Station> stations = getStations();
-
+        if (this.sections.isEmpty()) {
+            return;
+        }
         if (this.sections.contains(newSection)) {
             throw new AlreadyExistSectionException();
         }
+
+        List<Station> stations = getStations();
+
         if (!stations.contains(newSection.getUpStation()) && !stations.contains(newSection.getDownStation())) {
             throw new NotFoundUpStationOrDownStation();
         }
     }
 
     private void addFirstSection(Section newSection) {
-        this.sections.get(FIRST).updateUpStation(newSection.getDownStation());
-        this.sections.add(FIRST, newSection);
+        if (!isFirstSection(newSection)) {
+            return;
+        }
+        this.sections.add(newSection);
     }
 
     private void addLastSection(Section newSection) {
+        if (!isLastSection(newSection)) {
+            return;
+        }
         this.sections.add(newSection);
     }
 
     private void addMiddleSection(Section newSection) {
-        int index = getStations().indexOf(newSection.getUpStation());
-        this.sections.get(index).updateUpStation(newSection.getDownStation());
-        this.sections.get(index).reduceDistance(newSection.getDistance());
-        this.sections.add(index, newSection);
+        if (isFirstSection(newSection) && isLastSection(newSection)) {
+            return;
+        }
+
+        Section section = sections.stream()
+                .filter(s -> s.isUpStation(newSection.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundStationException());
+
+        section.updateUpStation(newSection.getDownStation());
+        section.reduceDistance(newSection.getDistance());
+        this.sections.add(newSection);
     }
 
     public void deleteSection(Station station) {
@@ -104,18 +122,37 @@ public class Sections {
         this.sections.remove(lastSection);
     }
 
-    private boolean isFirstStation(Station station) {
+    private boolean isFirstSection(Section targetSection) {
         if (this.sections.isEmpty()) {
             throw new EmptySectionException();
         }
-        return sections.get(FIRST).isUpStation(station);
+
+        return getStations().stream()
+                .noneMatch(station ->
+                        station.equals(targetSection.getUpStation())
+                );
     }
 
-    private boolean isLastStation(Station station) {
+    private boolean isLastSection(Section targetSection) {
         if (this.sections.isEmpty()) {
             throw new EmptySectionException();
         }
-        return getLastSection().isDownStation(station);
+
+        return sections.stream()
+                .anyMatch(
+                        section -> section.getDownStation().equals(targetSection.getUpStation())
+                );
+    }
+
+    private boolean isMiddleSection(Section targetSection) {
+        if (this.sections.isEmpty()) {
+            throw new EmptySectionException();
+        }
+
+        return sections.stream()
+                .anyMatch(
+                        section -> section.getUpStation().equals(targetSection.getUpStation())
+                );
     }
 
     private boolean isNotLastStation(Station station) {
@@ -130,13 +167,6 @@ public class Sections {
             throw new EmptySectionException();
         }
         return this.sections.get(size() - 1);
-    }
-
-    private boolean isExistDownStation(Section section) {
-        return getStations().stream()
-                .anyMatch(comparedStation ->
-                        comparedStation.equals(section.getDownStation())
-                );
     }
 
     public boolean hasSection(Section section) {
