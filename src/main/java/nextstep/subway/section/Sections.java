@@ -74,6 +74,11 @@ public class Sections {
             return;
         }
 
+        if(sectionByUpStation.isPresent()){
+            this.sections.remove(sectionByUpStation.get());
+            return;
+        }
+
         if(sectionByDownStation.isPresent()){
             this.sections.remove(sectionByDownStation.get());
             return;
