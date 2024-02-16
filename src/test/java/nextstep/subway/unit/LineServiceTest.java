@@ -19,13 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 @Transactional
 @ActiveProfiles("test")
@@ -135,7 +131,7 @@ public class LineServiceTest {
         final LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
 
         // when
-        lineService.updateSubwayLine(1L, request);
+        lineService.updateSubwayLine(신분당선.getId(), request);
 
         // then
         assertThat(신분당선.getName()).isEqualTo("2호선");
@@ -167,9 +163,9 @@ public class LineServiceTest {
         final LineUpdateRequest 노선명_공백 = new LineUpdateRequest("", "bg-green-600");
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 노선명_null))
+        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 노선명_null))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 노선명_공백))
+        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 노선명_공백))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -184,9 +180,9 @@ public class LineServiceTest {
         final LineUpdateRequest 색상값_공백 = new LineUpdateRequest("2호선", "");
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 색상값_null))
+        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 색상값_null))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 색상값_공백))
+        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 색상값_공백))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -200,10 +196,10 @@ public class LineServiceTest {
         final LineRequest 신분당선_생성_요청 = 신분당선_생성_요청();
 
         // when
-        lineService.deleteSubwayLine(1L);
+        lineService.deleteSubwayLine(신분당선.getId());
 
         // then
-        assertThatThrownBy(() -> lineService.getSubwayLine(1L))
+        assertThatThrownBy(() -> lineService.getSubwayLine(신분당선.getId()))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
