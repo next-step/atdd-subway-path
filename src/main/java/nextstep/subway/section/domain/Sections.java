@@ -1,15 +1,14 @@
 package nextstep.subway.section.domain;
 
 import nextstep.subway.exception.*;
+import nextstep.subway.section.service.SectionDto;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -40,6 +39,38 @@ public class Sections {
         stations.add(getLastSection().getDownStation());
 
         return stations;
+    }
+
+    public List<Section> getSortedSections() {
+//        return getSections().stream()
+//                .sorted(Comparator.comparing((Section s) -> s.getUpStation().getName())
+//                        .thenComparing((s1, s2) -> {
+//                            String s1DownStationName = s1.getDownStation().getName();
+//                            String s2UpStationName = s2.getUpStation().getName();
+//                            return s1DownStationName.compareTo(s2UpStationName);
+//                        }))
+//                .collect(Collectors.toList());
+
+        List<Section> sortedSections = sections;
+
+        for (Section section : sections) {
+
+            sortedSections.stream()
+                    .filter(s ->
+
+                    )
+
+            ;
+
+            // section
+
+
+
+        }
+
+
+
+        return null;
     }
 
     public void addSection(Section newSection) {
@@ -126,22 +157,14 @@ public class Sections {
         if (this.sections.isEmpty()) {
             throw new EmptySectionException();
         }
-
-        return getStations().stream()
-                .noneMatch(station ->
-                        station.equals(targetSection.getUpStation())
-                );
+        return getSortedSections().get(FIRST).getUpStation().equals(targetSection.getDownStation());
     }
 
     private boolean isLastSection(Section targetSection) {
         if (this.sections.isEmpty()) {
             throw new EmptySectionException();
         }
-
-        return sections.stream()
-                .anyMatch(
-                        section -> section.getDownStation().equals(targetSection.getUpStation())
-                );
+        return getSortedSections().get(size() - 1).getDownStation().equals(targetSection.getUpStation());
     }
 
     private boolean isMiddleSection(Section targetSection) {
@@ -180,5 +203,4 @@ public class Sections {
     public List<Section> getSections() {
         return this.sections;
     }
-
 }

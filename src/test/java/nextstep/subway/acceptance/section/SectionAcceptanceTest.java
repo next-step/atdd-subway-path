@@ -132,9 +132,9 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 지하철_노선_가운데에_역을_추가() {
         // given
-        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class); // 논현역, 신논현역
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);  // 논현역, 신논현역, 강남
         AddSectionResponse 신논현_강남_구간_생성_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
         // when
