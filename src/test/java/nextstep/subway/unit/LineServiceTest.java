@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.line.service.LineService;
@@ -18,9 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @Transactional
 @ActiveProfiles("test")
@@ -118,6 +123,23 @@ public class LineServiceTest {
         assertThat(response).hasSize(2);
         assertThat(response.get(0).getName()).isEqualTo("신분당선");
         assertThat(response.get(1).getName()).isEqualTo("지하철노선");
+    }
+
+    @DisplayName("지하철 노선 정보를 수정한다.")
+    @Test
+    void 지하철_노선_정보_수정() {
+        // given
+        강남역 = 역_생성("강남역");
+        역삼역 = 역_생성("역삼역");
+        신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
+        final LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
+
+        // when
+        lineService.updateSubwayLine(1L, request);
+
+        // then
+        assertThat(신분당선.getName()).isEqualTo("2호선");
+        assertThat(신분당선.getColor()).isEqualTo("bg-green-600");
     }
 
     private Line 노선_생성(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
