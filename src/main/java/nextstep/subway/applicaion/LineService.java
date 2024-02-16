@@ -1,5 +1,6 @@
 package nextstep.subway.applicaion;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.LineRequest;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
@@ -15,16 +16,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+
     private final LineRepository lineRepository;
     private final StationService stationService;
-
-    public LineService(LineRepository lineRepository, StationService stationService) {
-        this.lineRepository = lineRepository;
-        this.stationService = stationService;
-    }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
@@ -34,20 +32,22 @@ public class LineService {
 
         this.addSection(line.getId(), upStation.getId(), downStation.getId(), line.getDistance());
 
-        return createLineResponse(line);
+        return LineResponse.from(line, getStations(line));
     }
 
     public List<LineResponse> showLines() {
+        // TODO fetch join
         return lineRepository.findAll().stream()
-            .map(this::createLineResponse)
+            .map(line -> LineResponse.from(line, getStations(line)))
             .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        return createLineResponse(
-            lineRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("노선 정보를 찾을 수 없습니다."))
-        );
+        // TODO fetch join
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new BusinessException("노선 정보를 찾을 수 없습니다."));
+
+        return LineResponse.from(line, getStations(line));
     }
 
     @Transactional
@@ -74,16 +74,7 @@ public class LineService {
         line.addSection(new Section(line, upStation, downStation, distance));
     }
 
-    private LineResponse createLineResponse(Line line) {
-        return new LineResponse(
-            line.getId(),
-            line.getName(),
-            line.getColor(),
-            createStationResponses(line)
-        );
-    }
-
-    private List<StationResponse> createStationResponses(Line line) {
+    private List<StationResponse> getStations(Line line) {
         if (line.getSections().isEmpty()) {
             return Collections.emptyList();
         }
@@ -95,7 +86,7 @@ public class LineService {
         stations.add(0, line.getSections().get(0).getUpStation());
 
         return stations.stream()
-            .map(it -> stationService.createStationResponse(it))
+            .map(StationResponse::from)
             .collect(Collectors.toList());
     }
 

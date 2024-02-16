@@ -3,9 +3,17 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Entity
 public class Line {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,7 +45,6 @@ public class Line {
         this.downStationId = section.getDownStation().getId();
         this.distance += section.getDistance();
         this.sections.add(section);
-//        section.registerLine(this);
     }
 
     public void removeSection(final Section section) {
@@ -52,42 +59,11 @@ public class Line {
         return this.getSections().isEmpty();
     }
 
-    protected Line() {
-    }
-
     public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 }

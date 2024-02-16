@@ -1,7 +1,11 @@
 package nextstep.subway.applicaion.dto;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import nextstep.subway.domain.Line;
 
+@Getter
+@NoArgsConstructor
 public class LineRequest {
     private String name;
     private String color;
@@ -11,25 +15,5 @@ public class LineRequest {
 
     public Line to() {
         return new Line(name, color, upStationId, downStationId, distance);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 }
