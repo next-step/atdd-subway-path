@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.station.Station;
 
 @Embeddable
 public class Sections {
@@ -113,23 +114,46 @@ public class Sections {
     }
 
     public void removeLastSection(Long stationId) {
-        if(sectionList.isEmpty()) {
-            throw new IllegalArgumentException("section is Empty");
+        if(sectionList.isEmpty() || sectionList.size() < 2) {
+            throw new IllegalArgumentException("노선에 2개 미만에 구역이 존재하여 삭제할 수 없습니다.");
         }
 
-        if(!isRemovable(stationId)) {
-            throw new IllegalStateException("해당 역을 삭제할 수 없습니다.");
+        //하행종점역을 삭제하는 경우
+        if(isLastRemoveSection(stationId)) {
+            sectionList.remove(getLastIndex());
+            return;
         }
 
-        sectionList.remove(getLastIndex());
+        //상행종점역을 삭제하는 경우
+        if(isFirstRemoveSection(stationId)) {
+            sectionList.remove(0);
+            return;
+        }
+
+        //중간역을 삭제하는 경우
+        Section findSection = findSectionByDownStationId(stationId);
+        sectionList.remove(findSection);
+    }
+
+    private Section findSectionByDownStationId(Long stationId) {
+        return sectionList.stream().map(item -> {
+            if (stationId.equals(item.getDownStationId())) {
+                return item;
+            }
+            return null;
+        }).findFirst().orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
+    }
+
+    private boolean isFirstRemoveSection(Long stationId) {
+        return getFirstUpStationId().equals(stationId);
+    }
+
+    private boolean isLastRemoveSection(Long stationId) {
+        return getLastDownStationId().equals(stationId);
     }
 
     private int getLastIndex() {
         return sectionList.size() - 1;
-    }
-
-    private boolean isRemovable(Long stationId) {
-        return sectionList.size() > 1 && getLastDownStationId().equals(stationId);
     }
 
     public List<Long> getAllStationId() {
