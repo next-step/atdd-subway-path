@@ -4,6 +4,7 @@ import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.ui.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +28,8 @@ public class StationService {
 
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
-                .map(this::createStationResponse)
-                .collect(Collectors.toList());
+            .map(this::createStationResponse)
+            .collect(Collectors.toList());
     }
 
     @Transactional
@@ -38,12 +39,13 @@ public class StationService {
 
     public StationResponse createStationResponse(Station station) {
         return new StationResponse(
-                station.getId(),
-                station.getName()
+            station.getId(),
+            station.getName()
         );
     }
 
     public Station findById(Long id) {
-        return stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        return stationRepository.findById(id)
+            .orElseThrow(() -> new BusinessException("역 정보를 찾을 수 없습니다."));
     }
 }

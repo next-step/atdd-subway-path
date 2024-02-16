@@ -50,8 +50,8 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(lineId, sectionRequest);
+    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest request) {
+        lineService.addSection(lineId, request.getUpStationId(), request.getDownStationId(), request.getDistance());
         return ResponseEntity.ok().build();
     }
 
