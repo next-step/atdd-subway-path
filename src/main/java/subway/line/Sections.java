@@ -4,11 +4,11 @@ import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 
 import subway.station.Station;
@@ -129,12 +129,39 @@ public class Sections {
 	}
 
 	public void remove(Station deleteTargetStation) {
-		checkOnlyTwoStations();
-		Predicate<Section> sectionByUpStationPredicate = findSectionByUpStationPredicate(deleteTargetStation);
-		Predicate<Section> sectionByDownStationPredicate = findSectionByDownStationPredicate(deleteTargetStation);
+		checkDeletableSection(deleteTargetStation);
 
-		Section deleteStation = findSectionByStation(sectionByUpStationPredicate);
-		Section changeStation = findSectionByStation(sectionByDownStationPredicate);
+		if (getFinalStation().equals(deleteTargetStation)) {
+			removeFinalSection(deleteTargetStation);
+			return;
+		}
+
+		removeMiddleSection(deleteTargetStation);
+	}
+
+	private void checkDeletableSection(Station station) {
+		checkOnlyTwoStations();
+		checkFirstStation(station);
+	}
+
+	private void checkFirstStation(Station deleteTargetStation) {
+		if (getFirstStation().equals(deleteTargetStation)) {
+			throw new IllegalArgumentException("첫 번째 정류장은 삭제할 수 없습니다.");
+		}
+	}
+
+	private void removeFinalSection(Station deleteTargetStation) {
+		Predicate<Section> downStationPredicate = downStationPredicate(deleteTargetStation);
+		Section deleteStation = findSectionByStation(downStationPredicate);
+		sectionList.remove(deleteStation);
+	}
+
+	private void removeMiddleSection(Station deleteTargetStation) {
+		Predicate<Section> upStationPredicate = upStationPredicate(deleteTargetStation);
+		Predicate<Section> downStationPredicate = downStationPredicate(deleteTargetStation);
+
+		Section deleteStation = findSectionByStation(upStationPredicate);
+		Section changeStation = findSectionByStation(downStationPredicate);
 
 		Section newSection =
 			new Section(
@@ -149,32 +176,25 @@ public class Sections {
 		sectionList.add(newSection);
 	}
 
-	private Section findSectionByStation(Predicate<Section> predicate) {
-		return sectionList.stream()
-			.filter(predicate)
-			.findFirst()
-			.orElseThrow(EntityNotFoundException::new);
-	}
-
-	private static Predicate<Section> findSectionByUpStationPredicate(Station deleteTargetStation) {
-		return section -> section.getUpStation().equals(deleteTargetStation);
-	}
-
-	private static Predicate<Section> findSectionByDownStationPredicate(Station deleteTargetStation) {
-		return section -> section.getDownStation().equals(deleteTargetStation);
-	}
-
 	private void checkOnlyTwoStations() {
 		if (sectionList.size() < 2) {
 			throw new IllegalArgumentException("해당 노선은 두개의 정류장만 존재 하므로, 삭제할 수 없습니다.");
 		}
 	}
 
-	public Section getSectionMatchesDownStation(Station station) {
+	private static Predicate<Section> upStationPredicate(Station deleteTargetStation) {
+		return section -> section.getUpStation().equals(deleteTargetStation);
+	}
+
+	private static Predicate<Section> downStationPredicate(Station deleteTargetStation) {
+		return section -> section.getDownStation().equals(deleteTargetStation);
+	}
+
+	private Section findSectionByStation(Predicate<Section> predicate) {
 		return sectionList.stream()
-			.filter(section -> section.getDownStation().getId().equals(station.getId()))
+			.filter(predicate)
 			.findFirst()
-			.orElseThrow(() -> new EntityNotFoundException(""));
+			.orElseThrow(NoSuchElementException::new);
 	}
 
 	public List<Station> getSortedStations() {
