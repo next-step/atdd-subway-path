@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
 import org.springframework.http.MediaType;
 
-public class StationApiExtractableResponse {
+public class StationAcceptanceStep {
 
     public static ExtractableResponse<Response> 지하철_역_생성(CreateStationRequest createStationRequest) {
         return RestAssured

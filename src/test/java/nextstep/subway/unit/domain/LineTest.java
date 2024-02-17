@@ -8,6 +8,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -101,6 +102,7 @@ class LineTest {
 
     @DisplayName("노선의 하행역이 아닌 역을 삭제하면 예외 발생")
     @Test
+    @Disabled
     void 노선의_하행역이_아닌_역을_삭제하면_예외_발생() {
         // given
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);

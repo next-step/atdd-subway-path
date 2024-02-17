@@ -36,12 +36,15 @@ public class LineServiceMockTest {
     @Mock
     private SectionService sectionService;
 
+    private final Station 논현역 = Station.from(Constant.논현역);
+    private final Long 논현역_ID = 1L;
     private final Station 신논현역 = Station.from(Constant.신논현역);
-    private final Long 신논현역_ID = 1L;
+    private final Long 신논현역_ID = 2L;
     private final Station 강남역 = Station.from(Constant.강남역);
-    private final Long 강남역_ID = 2L;
+    private final Long 강남역_ID = 3L;
     private final Station 양재역 = Station.from(Constant.양재역);
-    private final Long 양재역_ID = 3L;
+    private final Long 양재역_ID = 4L;
+    private final Section 논현역_신논현역_구간 = Section.of(Station.from(Constant.논현역), Station.from(Constant.신논현역), Constant.역_간격_10);
     private final Section 신논현역_강남역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.강남역), Constant.역_간격_10);
     private final Section 신논현역_양재역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.양재역), Constant.역_간격_5);
     private final Section 강남역_양재역_구간 = Section.of(Station.from(Constant.강남역), Station.from(Constant.양재역), Constant.역_간격_10);
@@ -131,6 +134,33 @@ public class LineServiceMockTest {
                 .anyMatch(sectionDto ->
                         sectionDto.getUpStation().equals(StationDto.from(강남역))
                                 && sectionDto.getDownStation().equals(StationDto.from(양재역))
+                )
+        );
+    }
+
+    @DisplayName("노선 마지막 구간을 제거한다.")
+    @Test
+    void 노선_마지막_구간_제거() {
+        // given
+        when(stationService.findById(논현역_ID)).thenReturn(논현역);
+        when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
+        when(stationService.findById(강남역_ID)).thenReturn(강남역);
+        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
+        when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
+        when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
+
+        // when
+        lineService.deleteSection(신분당선_ID, 강남역_ID);
+
+        // then
+        ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
+        assertThat(신분당선_조회_응답.getSections()).isNotEmpty();
+        assertTrue(신분당선_조회_응답.getSections().stream()
+                .noneMatch(sectionDto ->
+                        sectionDto.getUpStation().getName().equals(강남역.getName())
+                                || sectionDto.getDownStation().getName().equals(강남역.getName())
                 )
         );
     }

@@ -159,28 +159,44 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        if (!getStations().contains(station)) {
-            throw new NotFoundStationException();
-        }
-        if (isNotLastStation(station)) {
-            throw new IsNotLastStationException();
-        }
-        if (size() == 1) {
-            throw new DeleteSectionException();
-        }
+        validateDeleteSection(station);
 
+//        if (possibleAddedFirstSection(newSection)) {
+//            addFirstSection(newSection);
+//            return;
+//        }
+        if (possibleDeletedLastSection(station)) {
+            deleteLastSection();
+            return;
+        }
+//        addMiddleSection(newSection);
+    }
+
+    private boolean possibleDeletedLastSection(Station station) {
+        return getLastSection().getDownStation().equals(station);
+    }
+
+    private void deleteLastSection() {
         Section lastSection = getLastSection();
-
         lastSection.delete();
         this.sections.remove(lastSection);
     }
 
-    private boolean isNotLastStation(Station station) {
-        if (this.sections.isEmpty()) {
-            throw new EmptySectionException();
+    private void validateDeleteSection(Station station) {
+        if (!getStations().contains(station)) {
+            throw new NotFoundStationException();
         }
-        return !getLastSection().isDownStation(station);
+        if (size() == 1) {
+            throw new DeleteSectionException();
+        }
     }
+
+//    private boolean isNotLastStation(Station station) {
+//        if (this.sections.isEmpty()) {
+//            throw new EmptySectionException();
+//        }
+//        return !getLastSection().isDownStation(station);
+//    }
 
     public boolean hasSection(Section section) {
         return this.sections.contains(section);

@@ -16,8 +16,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.acceptance.line.LineApiExtractableResponse.*;
-import static nextstep.subway.acceptance.station.StationApiExtractableResponse.지하철_역_생성;
+import static nextstep.subway.acceptance.line.LineAcceptanceStep.*;
+import static nextstep.subway.acceptance.station.StationAcceptanceStep.지하철_역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

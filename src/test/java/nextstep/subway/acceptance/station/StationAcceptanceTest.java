@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.acceptance.station.StationApiExtractableResponse.*;
+import static nextstep.subway.acceptance.station.StationAcceptanceStep.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("지하철역 관련 기능")
