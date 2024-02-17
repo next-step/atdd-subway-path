@@ -146,12 +146,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     void testAddSection_구간_추가시_기존에_등록되어있으면_예외_반환() throws JsonProcessingException {
         //given
         LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
-        SectionRequest sectionRequest1 = new SectionRequest(2L, 3L, 5);
-        addSection(lineResponse, sectionRequest1);
+        SectionRequest initialSectionRequest = new SectionRequest(2L, 3L, 5);
+        addSection(lineResponse, initialSectionRequest);
         //when
-        SectionRequest sectionRequest2 = new SectionRequest(3L, 2L, 7);
+        SectionRequest conflictingSectionRequest = new SectionRequest(3L, 2L, 7);
 
-        given().body(mapper.writeValueAsString(sectionRequest2))
+        given().body(mapper.writeValueAsString(conflictingSectionRequest))
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .when().post("/lines/" + lineResponse.getId() + "/sections").then().statusCode(HttpStatus.SC_BAD_REQUEST);
 
