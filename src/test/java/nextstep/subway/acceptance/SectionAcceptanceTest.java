@@ -42,9 +42,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         //when
         LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
         //then
-        LineResponse response = when()
-            .get("/lines/" + lineResponse.getId())
-            .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
+        LineResponse response = 지하철_노선_조회(lineResponse.getId());
         List<SectionResponse> sectionsResponse = response.getSections();
         assertAll(
             () -> assertThat(sectionsResponse).hasSize(1),
@@ -64,8 +62,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         addSection(lineResponse, sectionRequest);
 
         //then
-        LineResponse lineAfterResponse = when().get("/lines/" + lineResponse.getId())
-                                               .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
+        LineResponse lineAfterResponse = 지하철_노선_조회(lineResponse.getId());
         List<SectionResponse> sectionResponses = lineAfterResponse.getSections();
         assertAll(
             () -> assertThat(sectionResponses).hasSize(2),

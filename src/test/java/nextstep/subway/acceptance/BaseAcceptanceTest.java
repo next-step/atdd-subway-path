@@ -52,10 +52,11 @@ public class BaseAcceptanceTest {
     }
 
     public LineResponse 지하철_노선_조회(Long lineId) {
-        return when()
-            .get("/lines/" + lineId)
-            .then().extract().jsonPath()
-            .getObject(".", LineResponse.class);
+        return given()
+            .pathParam("lineId", lineId)
+            .when()
+            .get("/lines/{lineId}")
+            .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
     }
 
     public Map<String, String> getRequestParam_신분당선(Long upStationId, Long downStationId) {
