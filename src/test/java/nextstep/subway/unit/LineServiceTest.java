@@ -59,7 +59,7 @@ public class LineServiceTest {
         final LineRequest lineRequest = this.신분당선_생성_요청();
 
         // when
-        final LineResponse response = lineService.createSubwayLine(lineRequest);
+        final LineResponse response = lineService.createLine(lineRequest);
 
         // then
         assertThat(response.getName()).isEqualTo(lineRequest.getName());
@@ -73,7 +73,7 @@ public class LineServiceTest {
         final LineRequest lineRequest = this.신분당선_생성_요청();
 
         // then
-        assertThatThrownBy(() -> lineService.createSubwayLine(lineRequest))
+        assertThatThrownBy(() -> lineService.createLine(lineRequest))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -86,7 +86,7 @@ public class LineServiceTest {
         신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
 
         // when
-        final LineResponse response = lineService.getSubwayLine(신분당선.getId());
+        final LineResponse response = lineService.getLine(신분당선.getId());
 
         // then
         assertThat(response.getName()).isEqualTo(신분당선.getName());
@@ -99,7 +99,7 @@ public class LineServiceTest {
     @Test
     void 지하철_노선_조회_시_존재하지_않는_역으로_조회_불가() {
         // then
-        assertThatThrownBy(() -> lineService.getSubwayLine(1L))
+        assertThatThrownBy(() -> lineService.getLine(1L))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -114,7 +114,7 @@ public class LineServiceTest {
         노선_생성("지하철노선", "bg-yellow-600", 역삼역, 지하철역, 15);
 
         // when
-        final List<LineResponse> response = lineService.getSubwayLines();
+        final List<LineResponse> response = lineService.getLines();
 
         // then
         assertThat(response).hasSize(2);
@@ -132,7 +132,7 @@ public class LineServiceTest {
         final LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
 
         // when
-        lineService.updateSubwayLine(신분당선.getId(), request);
+        lineService.updateLine(신분당선.getId(), request);
 
         // then
         assertThat(신분당선.getName()).isEqualTo("2호선");
@@ -149,7 +149,7 @@ public class LineServiceTest {
         final LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(3L, request))
+        assertThatThrownBy(() -> lineService.updateLine(3L, request))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -164,9 +164,9 @@ public class LineServiceTest {
         final LineUpdateRequest 노선명_공백 = new LineUpdateRequest("", "bg-green-600");
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 노선명_null))
+        assertThatThrownBy(() -> lineService.updateLine(신분당선.getId(), 노선명_null))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 노선명_공백))
+        assertThatThrownBy(() -> lineService.updateLine(신분당선.getId(), 노선명_공백))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -181,9 +181,9 @@ public class LineServiceTest {
         final LineUpdateRequest 색상값_공백 = new LineUpdateRequest("2호선", "");
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 색상값_null))
+        assertThatThrownBy(() -> lineService.updateLine(신분당선.getId(), 색상값_null))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 색상값_공백))
+        assertThatThrownBy(() -> lineService.updateLine(신분당선.getId(), 색상값_공백))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -197,10 +197,10 @@ public class LineServiceTest {
         final LineRequest 신분당선_생성_요청 = 신분당선_생성_요청();
 
         // when
-        lineService.deleteSubwayLine(신분당선.getId());
+        lineService.deleteLine(신분당선.getId());
 
         // then
-        assertThatThrownBy(() -> lineService.getSubwayLine(신분당선.getId()))
+        assertThatThrownBy(() -> lineService.getLine(신분당선.getId()))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 

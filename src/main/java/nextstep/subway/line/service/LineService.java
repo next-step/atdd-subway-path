@@ -30,7 +30,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse createSubwayLine(final LineRequest request) {
+    public LineResponse createLine(final LineRequest request) {
         final String lineName = request.getName();
         final String lineColor = request.getColor();
         final Station upStation = this.findStationById(request.getUpStationId());
@@ -43,19 +43,19 @@ public class LineService {
         return LineResponse.convertToDto(savedLine);
     }
 
-    public LineResponse getSubwayLine(final Long lindId) {
+    public LineResponse getLine(final Long lindId) {
         final Line line = this.findLineById(lindId);
         return LineResponse.convertToDto(line);
     }
 
-    public List<LineResponse> getSubwayLines() {
+    public List<LineResponse> getLines() {
         return lineRepository.findAll().stream()
                 .map(LineResponse::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void updateSubwayLine(final Long id, final LineUpdateRequest request) {
+    public void updateLine(final Long id, final LineUpdateRequest request) {
         final Line line = this.findLineById(id);
 
         final String name = request.getName();
@@ -64,7 +64,7 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteSubwayLine(final Long lineId) {
+    public void deleteLine(final Long lineId) {
         this.findLineById(lineId);
         lineRepository.deleteById(lineId);
     }

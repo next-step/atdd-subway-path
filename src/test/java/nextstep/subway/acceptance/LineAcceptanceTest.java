@@ -96,10 +96,10 @@ public class LineAcceptanceTest extends BaseTest {
         // given
         final LineRequest 신분당선_생성_요청 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 역삼역_ID, 10);
         final ExtractableResponse<Response> 신분당선_생성_응답 = callPostApi(신분당선_생성_요청, LINE_API_PATH);
-        final Long subwayLineId = getIdFromApiResponse(신분당선_생성_응답);
+        final Long lineId = getIdFromApiResponse(신분당선_생성_응답);
 
         // when
-        final ExtractableResponse<Response> 노선_조회_응답 = callGetApi(LINE_API_PATH + "/{id}", subwayLineId);
+        final ExtractableResponse<Response> 노선_조회_응답 = callGetApi(LINE_API_PATH + "/{id}", lineId);
         final JsonPath jsonPath = 노선_조회_응답.jsonPath();
 
         // then
@@ -118,21 +118,21 @@ public class LineAcceptanceTest extends BaseTest {
         // given
         final LineRequest 신분당선_생성_요청 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 역삼역_ID, 10);
         final ExtractableResponse<Response> 신분당선_생성_응답 = callPostApi(신분당선_생성_요청, LINE_API_PATH);
-        final Long subwayLineId = getIdFromApiResponse(신분당선_생성_응답);
+        final Long lineId = getIdFromApiResponse(신분당선_생성_응답);
 
         final LineUpdateRequest 신분당선_수정_요청 = new LineUpdateRequest("2호선", "bg-yellow-600");
 
         // when
-        callPutApi(신분당선_수정_요청, LINE_API_PATH + "/{id}", subwayLineId);
+        callPutApi(신분당선_수정_요청, LINE_API_PATH + "/{id}", lineId);
 
         // then
-        final ExtractableResponse<Response> 노선_조회_응답 = callGetApi(LINE_API_PATH + "/{id}", subwayLineId);
-        final JsonPath afterUpdatedSubwayLine = 노선_조회_응답.jsonPath();
+        final ExtractableResponse<Response> 노선_조회_응답 = callGetApi(LINE_API_PATH + "/{id}", lineId);
+        final JsonPath afterUpdatedLine = 노선_조회_응답.jsonPath();
 
-        final String updatedName = afterUpdatedSubwayLine.get("name");
+        final String updatedName = afterUpdatedLine.get("name");
         assertThat(updatedName).isEqualTo("2호선");
 
-        final String updatedColor = afterUpdatedSubwayLine.get("color");
+        final String updatedColor = afterUpdatedLine.get("color");
         assertThat(updatedColor).isEqualTo("bg-yellow-600");
     }
 
@@ -147,10 +147,10 @@ public class LineAcceptanceTest extends BaseTest {
         // given
         final LineRequest 신분당선_생성_요청 = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 역삼역_ID, 10);
         final ExtractableResponse<Response> 신분당선_생성_응답 = callPostApi(신분당선_생성_요청, LINE_API_PATH);
-        final Long subwayLineId = getIdFromApiResponse(신분당선_생성_응답);
+        final Long lineId = getIdFromApiResponse(신분당선_생성_응답);
 
         // when
-        callDeleteApi(LINE_API_PATH + "/{id}", subwayLineId);
+        callDeleteApi(LINE_API_PATH + "/{id}", lineId);
 
         // then
         final ExtractableResponse<Response> 노선_조회_응답 = callGetApi(LINE_API_PATH);
