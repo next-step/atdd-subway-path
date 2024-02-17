@@ -92,7 +92,7 @@ public class Sections {
 
 	public Station getFirstStation() {
 		if (sectionList.isEmpty()) {
-			return new Station("");
+			throw new IllegalArgumentException("해당 노선은 설정된 구간이 없습니다.");
 		}
 
 		return sectionList.get(0).getUpStation();
