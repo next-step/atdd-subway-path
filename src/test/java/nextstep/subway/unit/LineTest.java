@@ -175,8 +175,13 @@ class LineTest {
         line.addSection(강남역, 양재역, 10);
         Station 정자역 = StationFixture.station(3L, "정자역");
         line.addSection(강남역, 정자역, 4);
+        assertThat(line.getSections().get(0).getDistance()).isEqualTo(4);
+        assertThat(line.getSections().get(1).getDistance()).isEqualTo(6);
         Station 판교역 = StationFixture.station(4L, "판교역");
         line.addSection(정자역, 판교역, 4);
+        assertThat(line.getSections().get(0).getDistance()).isEqualTo(4);
+        assertThat(line.getSections().get(1).getDistance()).isEqualTo(4);
+        assertThat(line.getSections().get(2).getDistance()).isEqualTo(2);
         // when
         line.removeSection(정자역);
         // then
