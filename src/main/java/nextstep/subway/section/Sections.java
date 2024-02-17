@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,9 +26,9 @@ public class Sections {
             validateDuplicateStation(section);
         }
 
-        if(isMiddleSection(section)){
+        if (isMiddleSection(section)) {
             Section nextSection = getNextSection(section);
-            nextSection.update(section);
+            nextSection.separate(section);
         }
 
         this.sections.add(section);
@@ -60,14 +61,30 @@ public class Sections {
 
     public void removeSection(Station station) {
         validateLastSection();
-        validateEndSection(station);
 
-        Section deleteSection = this.sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
-                .findFirst()
-                .orElseThrow(() -> new SubwayException("역을 찾을 수 없습니다."));
+        Optional<Section> sectionByUpStation = findSectionByUpStation(station);
+        Optional<Section> sectionByDownStation = findSectionByDownStation(station);
 
-        this.sections.remove(deleteSection);
+        if(sectionByUpStation.isPresent() && sectionByDownStation.isPresent()){
+            Section downSection = sectionByUpStation.get();
+            Section upSection = sectionByDownStation.get();
+
+            upSection.join(downSection);
+            this.sections.remove(downSection);
+            return;
+        }
+
+        if(sectionByUpStation.isPresent()){
+            this.sections.remove(sectionByUpStation.get());
+            return;
+        }
+
+        if(sectionByDownStation.isPresent()){
+            this.sections.remove(sectionByDownStation.get());
+            return;
+        }
+
+        throw new SubwayException("존재하지 않는 역입니다");
     }
 
     private void validateLastSection() {
@@ -76,14 +93,16 @@ public class Sections {
         }
     }
 
-    private void validateEndSection(Station station) {
-        if (!getEndStation().equals(station)) {
-            throw new SubwayException("마지막 구간만 제거할 수 있습니다.");
-        }
+    private Optional<Section> findSectionByDownStation(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst();
     }
 
-    private Station getEndStation() {
-        return getOrderedStations().get(sections.size());
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst();
     }
 
     public List<Station> getOrderedStations() {

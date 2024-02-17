@@ -109,13 +109,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 구간을 생성하고
-     * When 그 구간을 삭제하면
+     * Given 마지막 구간을 생성하고
+     * When 마지막 역을 삭제하면
      * Then 노선 조회 시 등록한 역을 찾을 수 없다
      */
-    @DisplayName("지하철역을 삭제하면 지하철역 목록 조회 시 생성한 역을 찾을 수 없다.")
+    @DisplayName("마지막 지하철역을 삭제하면 지하철역 목록 조회 시 생성한 역을 찾을 수 없다.")
     @Test
-    void deleteSection() {
+    void deleteEndSection() {
         // given
         ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 역삼역, 선릉역, 10L);
         String locationHeader = response.header("Location");
@@ -125,26 +125,47 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
-        assertThat(lineStationIds).doesNotContain(선릉역);
+        assertThat(lineStationIds).containsExactly(강남역, 역삼역);
     }
 
     /**
-     * Given 구간을 생성하고
-     * When 마지막 구간이 아닌 구간을 삭제하면
-     * Then 에러를 반환한다.
+     * Given 마지막 구간을 생성하고
+     * When 가운데 역을 삭제하면
+     * Then 노선 조회 시 등록한 역을 찾을 수 없다
      */
-    @DisplayName("마지막 구간이 아닌 구간을 삭제하면 에러를 반환한다.")
+    @DisplayName("가운데 지하철역을 삭제하면 지하철역 목록 조회 시 생성한 역을 찾을 수 없다.")
     @Test
-    void validateEndSection() {
+    void deleteMiddleSection() {
         // given
-        SectionSteps.addSection(이호선, 역삼역, 선릉역, 10L);
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 역삼역, 선릉역, 10L);
+        String locationHeader = response.header("Location");
 
         // when
-        ExtractableResponse<Response> response = SectionSteps.deleteSection(이호선, 역삼역);
+        SectionSteps.deleteSection(이호선, 역삼역);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.jsonPath().getString("message")).isEqualTo("마지막 구간만 제거할 수 있습니다.");
+        List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
+        assertThat(lineStationIds).containsExactly(강남역, 선릉역);
+    }
+
+    /**
+     * Given 마지막 구간을 생성하고
+     * When 상행 종점 역을 삭제하면
+     * Then 노선 조회 시 등록한 역을 찾을 수 없다
+     */
+    @DisplayName("상행 종점 역을 삭제하면 지하철역 목록 조회 시 생성한 역을 찾을 수 없다.")
+    @Test
+    void deleteStartSection() {
+        // given
+        ExtractableResponse<Response> response = SectionSteps.addSection(이호선, 역삼역, 선릉역, 10L);
+        String locationHeader = response.header("Location");
+
+        // when
+        SectionSteps.deleteSection(이호선, 강남역);
+
+        // then
+        List<Long> lineStationIds = LineSteps.getLineStationIds(locationHeader);
+        assertThat(lineStationIds).containsExactly(역삼역, 선릉역);
     }
 
     /**
