@@ -41,7 +41,7 @@ public class PathFinder {
 
         GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(start, end);
         if(path == null) {
-            throw new HttpBadRequestException("경로가 존재하지 않습니다.");
+            throw new IllegalArgumentException("경로가 존재하지 않습니다.");
         }
         List<Station> shortestPath = path.getVertexList();
         double pathWeight = dijkstraShortestPath.getPathWeight(start, end);
@@ -50,10 +50,10 @@ public class PathFinder {
 
     private void validation(Station start, Station end) {
         if (start.equals(end)) {
-            throw new HttpBadRequestException("출발역과 도착역이 같습니다.");
+            throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
         }
         if (!graph.containsVertex(start) || !graph.containsVertex(end)) {
-            throw new HttpBadRequestException("존재하지 않는 역입니다.");
+            throw new IllegalArgumentException("존재하지 않는 역입니다.");
         }
     }
 }

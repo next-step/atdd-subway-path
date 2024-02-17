@@ -78,22 +78,22 @@ class PathFinderTest {
     @DisplayName("예외_출발역과 도착역이 같습니다.")
     void error_sameStation() {
         Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 강남역))
-                .isInstanceOf(HttpBadRequestException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    @DisplayName("존재하지 않는 역입니다.")
+    @DisplayName("예외_존재하지 않는 역입니다.")
     void error_notExistStation() {
         Station 잠실역 = new Station("잠실역");
         Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 잠실역))
-                .isInstanceOf(HttpBadRequestException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    @DisplayName("경로가 존재하지 않습니다.")
+    @DisplayName("예외_경로가 존재하지 않습니다.")
     void error_notExistPath() {
         Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 김포공항역))
-                .isInstanceOf(HttpBadRequestException.class);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }
