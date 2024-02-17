@@ -22,7 +22,7 @@ public class StationResponse {
     }
 
     @Override
-    public boolean equals(Object o) { // TODO: 리팩토링
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         StationResponse that = (StationResponse) o;
