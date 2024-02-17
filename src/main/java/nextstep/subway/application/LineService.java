@@ -72,7 +72,7 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationIdToDelete) {
         Line line = findLineById(lineId);
-        line.deleteSection(findStation(stationIdToDelete));
+        line.delete(findStation(stationIdToDelete));
     }
 
     public Line findLineById(Long lineId) {

@@ -38,9 +38,9 @@ public class Line {
         }
     }
 
-    public void deleteSection(Station stationToDelete) {
+    public void delete(Station stationToDelete) {
         if (sections.canSectionDelete(stationToDelete)) {
-            sections.deleteLastSection();
+            sections.deleteSection(this, stationToDelete);
         }
     }
 

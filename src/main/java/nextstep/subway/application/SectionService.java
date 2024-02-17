@@ -67,7 +67,10 @@ public class SectionService {
             }
             sections.removeAll(sectionsToRemove);
         }
-        return linkedSections;
+
+        sections.clear();
+        sections.addAll(linkedSections);
+        return sections;
     }
 
     private boolean canConnectBefore(Section targetSection, Section sectionToConnect) {

@@ -4,10 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -41,16 +38,98 @@ public class Sections {
             throw new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다.");
         }
         if (!isDeletionAllowed()) {
-            throw new IllegalArgumentException("해당 노선에 구간이 최소 2개 이상일 경우 삭제가 가능합니다.");
+            throw new IllegalArgumentException("구간이 최소 2개 이상일 경우에만 삭제할 수 있습니다.");
         }
-        if (!findLastStation().isSame(stationToDelete)) {
-            throw new IllegalArgumentException("마지막 구간의 하행역과 동일하지 않습니다.");
+        if (!getAllStations().contains(stationToDelete)) {
+            throw new IllegalArgumentException("해당 역이 구간에 존재하지 않습니다.");
         }
         return true;
     }
 
-    public void deleteLastSection() {
-        sections.remove(sections.size() - 1);
+    public void deleteSection(Line line, Station stationToDelete) {
+        if (isFirstStation(stationToDelete)) {
+            sections.remove(findFirstSection());
+            return;
+        }
+
+        if (isLastStation(stationToDelete)) {
+            sections.remove(findLastSection());
+            return;
+        }
+        deleteIntermediateStation(line, stationToDelete);
+    }
+
+    private void deleteIntermediateStation(Line line, Station stationToDelete) {
+        convertConnectedSections(sections);
+
+        Section deletionPoint = sections.stream()
+                .filter(section -> section.isAtLeastOneSameStation(stationToDelete))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        int deletionPointIndex = sections.indexOf(deletionPoint);
+
+        Section nextSectionOfPoint = sections.get(deletionPointIndex + 1);
+
+        sections.remove(deletionPoint);
+        sections.remove(nextSectionOfPoint);
+
+        sections.add(new Section(
+                deletionPoint.getUpStation(),
+                nextSectionOfPoint.getDownStation(),
+                deletionPoint.getDistance() + nextSectionOfPoint.getDistance(),
+                line
+                ));
+
+        convertConnectedSections(sections);
+    }
+
+    private Section findLastSection() {
+        return sections.get(sections.size() - 1);
+    }
+
+    private Section findFirstSection() {
+        return sections.get(0);
+    }
+
+    private boolean isLastStation(Station stationToDelete) {
+        return findLastStation().isSame(stationToDelete);
+    }
+
+    private void convertConnectedSections(List<Section> sections) {
+        LinkedList<Section> linkedSections = new LinkedList<>();
+        List<Section> sectionsToRemove = new ArrayList<>();
+
+        Section firstSection = sections.get(0);
+        linkedSections.add(firstSection);
+        sectionsToRemove.add(firstSection);
+
+        while (!sections.isEmpty()) {
+            for (Section section : sections) {
+                if (canConnectBefore(linkedSections.getFirst(), section)) {
+                    linkedSections.addFirst(section);
+                    sectionsToRemove.add(section);
+                    break;
+                }
+
+                if (canConnectNext(linkedSections.getLast(), section)) {
+                    linkedSections.addLast(section);
+                    sectionsToRemove.add(section);
+                }
+            }
+            sections.removeAll(sectionsToRemove);
+        }
+
+        sections.clear();
+        sections.addAll(linkedSections);
+    }
+
+    private boolean canConnectBefore(Section targetSection, Section sectionToConnect) {
+        return targetSection.canConnectBefore(sectionToConnect);
+    }
+
+    private boolean canConnectNext(Section targetSection, Section sectionToConnect) {
+        return targetSection.canConnectNext(sectionToConnect);
     }
 
     public Station findLastStation() {
@@ -166,6 +245,7 @@ public class Sections {
     }
 
     public List<Section> getAllSections() {
+        convertConnectedSections(sections);
         return sections;
     }
 }
