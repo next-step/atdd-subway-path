@@ -1,8 +1,6 @@
 package nextstep.subway.acceptance;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import nextstep.subway.domain.request.LineRequest;
 import nextstep.subway.domain.response.PathResponse;
 import nextstep.subway.domain.response.StationResponse;
@@ -10,13 +8,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.LineTestUtil.createSubwayLine;
@@ -76,23 +72,25 @@ public class PathAcceptanceTest {
         params.put("source", 교대역.toString());
         params.put("target", 양재역.toString());
 
-        PathResponse pathResponse = RestAssured.given().log().all()
+        PathResponse response = RestAssured.given().log().all()
                 .queryParams(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/paths")
+                .when().get("/paths")
                 .then().log().all()
                 .extract()
                 .as(PathResponse.class);
 
         // then
+        List<StationResponse> stationList = response.getStationList();
+        int pathDistance = response.getDistance();
+
         // 교대 - 남부터미널 - 양재 (거리 : 5)
-        List<Long> stationIdList = pathResponse.getStations().stream()
+        List<Long> stationIdList = stationList.stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
         assertAll(
-                () -> assertThat(pathResponse.getStations()).hasSize(3),
-                () -> assertThat(pathResponse.getDistance()).isEqualTo(5),
+                () -> assertThat(stationIdList).hasSize(3),
+                () -> assertThat(pathDistance).isEqualTo(5),
                 () -> assertThat(stationIdList).startsWith(교대역),
                 () -> assertThat(stationIdList).endsWith(양재역),
                 () -> assertThat(stationIdList).contains(남부터미널역)
