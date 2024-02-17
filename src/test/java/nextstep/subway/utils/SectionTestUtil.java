@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class SectionTestUtil {
@@ -34,4 +35,12 @@ public class SectionTestUtil {
                 .then().log().all().extract();
     }
 
+    public static Map<String, Object> createSectionParams(Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return params;
+    }
 }
