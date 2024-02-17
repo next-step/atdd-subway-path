@@ -156,4 +156,36 @@ class LineTest {
         assertThat(sections.get(2).getDownStation()).isEqualTo(downStation);
     }
 
+    /***
+     * Given 지하철 노선을 생성하고
+     * Given 지하철역 두 개를 생성하고
+     * Given 지하철 구간을 생성한다
+     * Given 지하철 노선에 지하철 구간을 추가한다
+     * Given 지하철역 한 개를 생성하고
+     * Given 지하철 노선에 지하철 구간을 추가한다
+     * When 지하철 노선을 삭제하면
+     * Then 지하철 노선이 삭제된다
+     */
+    @Test
+    void removeSectionInMiddle() {
+        // given
+        Line line = LineFixture.line(1L, "2호선", "green");
+        Station 강남역 = StationFixture.station(1L, "강남역");
+        Station 양재역 = StationFixture.station(2L, "양재역");
+        line.addSection(강남역, 양재역, 10);
+        Station 정자역 = StationFixture.station(3L, "정자역");
+        line.addSection(강남역, 정자역, 4);
+        Station 판교역 = StationFixture.station(4L, "판교역");
+        line.addSection(정자역, 판교역, 4);
+        // when
+        line.removeSection(정자역);
+        // then
+        List<Section> result = line.getSections();
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).getUpStation()).isEqualTo(정자역);
+        assertThat(result.get(0).getDownStation()).isEqualTo(판교역);
+        assertThat(result.get(1).getUpStation()).isEqualTo(판교역);
+        assertThat(result.get(1).getDownStation()).isEqualTo(양재역);
+    }
+
 }
