@@ -66,9 +66,9 @@ public class LineServiceMockTest {
         // then
         assertThat(response.getName()).isEqualTo(lineRequest.getName());
         assertThat(response.getColor()).isEqualTo(lineRequest.getColor());
-        verify(lineRepository).save(any(Line.class));
-        verify(stationRepository).findById(lineRequest.getUpStationId());
-        verify(stationRepository).findById(lineRequest.getDownStationId());
+        verify(lineRepository, times(1)).save(any(Line.class));
+        verify(stationRepository, times(1)).findById(lineRequest.getUpStationId());
+        verify(stationRepository, times(1)).findById(lineRequest.getDownStationId());
     }
 
     @DisplayName("지하철 노선 생성 시 존재하지 않는 역으로 조회할 경우 오류가 발생한다.")
@@ -82,7 +82,7 @@ public class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> lineService.createSubwayLine(lineRequest))
                 .isInstanceOf(EntityNotFoundException.class);
-        verify(stationRepository).findById(anyLong());
+        verify(stationRepository, times(1)).findById(anyLong());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -100,7 +100,7 @@ public class LineServiceMockTest {
         assertThat(response.getStations().get(0).getName()).isEqualTo(강남역.getName());
         // 아래 검증은 실패하는데 이유는 equals에서 id 값으로만 비교하기 때문으로 추측. 어떻게 할 수 있을지?
 //        assertThat(response.getStations().get(1).getName()).isEqualTo(upStation.getName());
-        verify(lineRepository).findById(신분당선.getId());
+        verify(lineRepository, times(1)).findById(신분당선.getId());
     }
 
     @DisplayName("지하철 노선 조회 시 존재하지 않는 역으로 조회할 경우 오류가 발생한다.")
@@ -112,7 +112,7 @@ public class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> lineService.getSubwayLine(1L))
                 .isInstanceOf(EntityNotFoundException.class);
-        verify(lineRepository).findById(anyLong());
+        verify(lineRepository, times(1)).findById(anyLong());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -131,7 +131,7 @@ public class LineServiceMockTest {
         assertThat(response).hasSize(2);
         assertThat(response.get(0).getName()).isEqualTo("신분당선");
         assertThat(response.get(1).getName()).isEqualTo("지하철노선");
-        verify(lineRepository).findAll();
+        verify(lineRepository, times(1)).findAll();
     }
 
     @DisplayName("지하철 노선 정보를 수정한다.")
@@ -147,7 +147,7 @@ public class LineServiceMockTest {
         // then
         assertThat(신분당선.getName()).isEqualTo("2호선");
         assertThat(신분당선.getColor()).isEqualTo("bg-green-600");
-        verify(lineRepository).findById(1L);
+        verify(lineRepository, times(1)).findById(1L);
     }
 
     @DisplayName("지하철 노선 정보 수정 시 존재하지 않는 역을 수정할 경우 오류가 발생한다.")
@@ -160,7 +160,7 @@ public class LineServiceMockTest {
         // then
         assertThatThrownBy(() -> lineService.updateSubwayLine(1L, request))
                 .isInstanceOf(EntityNotFoundException.class);
-        verify(lineRepository).findById(anyLong());
+        verify(lineRepository, times(1)).findById(anyLong());
     }
 
     @DisplayName("지하철 노선 정보 수정 시 노선명이 null 혹은 공백일 때 수정할 경우 오류가 발생한다.")
@@ -210,7 +210,7 @@ public class LineServiceMockTest {
         lineService.deleteSubwayLine(1L);
 
         // then
-        verify(lineRepository).deleteById(1L);
+        verify(lineRepository, times(1)).deleteById(1L);
     }
 
     @DisplayName("지하철 노선 구간을 생성한다.")
@@ -236,7 +236,7 @@ public class LineServiceMockTest {
         lineService.createLineSection(1L, 구간_생성_요청);
 
         // then
-        verify(line).addSection(any(Section.class));
+        verify(line, times(1)).addSection(any(Section.class));
     }
 
     @DisplayName("지하철 노선 구간을 삭제한다.")
@@ -256,7 +256,7 @@ public class LineServiceMockTest {
         lineService.deleteLineSection(1L, 1L);
 
         // then
-        verify(line).removeSection(station);
+        verify(line, times(1)).removeSection(station);
     }
 
     @DisplayName("지하철 노선 구간을 삭제 시 구간이 1개라면 오류가 발생한다.")
