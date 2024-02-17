@@ -106,10 +106,10 @@ public class LineService {
         Line line = this.findLineById(lineId);
 
         if (line.getSections().size() == 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Cannot delete the only section in the line.");
         }
 
-        Station station = stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException());
+        Station station = stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException("Station not found. Station Id: " + stationId));
         line.removeSection(station);
     }
 }

@@ -28,11 +28,11 @@ public class Line {
     }
 
     public Line(final String name, final String color, final Station upStation, final Station downStation, final int distance) {
-        Assert.hasText(name);
-        Assert.hasText(color);
-        Assert.notNull(upStation);
-        Assert.notNull(downStation);
-        Assert.isTrue(distance > 0);
+        Assert.hasText(name, "Line name cannot be empty.");
+        Assert.hasText(color, "Line color cannot be empty.");
+        Assert.notNull(upStation, "Line upStation cannot be null.");
+        Assert.notNull(downStation, "Line downStation cannot be null.");
+        Assert.isTrue(distance > 0, "Distance must be greater than 0.");
 
         this.name = name;
         this.color = color;
@@ -43,8 +43,8 @@ public class Line {
     }
 
     public void updateDetails(final String name, final String color) {
-        Assert.hasText(name);
-        Assert.hasText(color);
+        Assert.hasText(name, "Line name cannot be empty.");
+        Assert.hasText(color, "Line color cannot be empty.");
 
         this.name = name;
         this.color = color;

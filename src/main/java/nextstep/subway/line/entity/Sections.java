@@ -59,11 +59,11 @@ public class Sections {
 
     private void ensureRemovableSection(final Long stationId) {
         if (sections.size() == 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Cannot remove the only section in the line.");
         }
 
         if (!this.isLastStation(stationId)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Can only remove the last station of the line.");
         }
     }
 
@@ -71,13 +71,15 @@ public class Sections {
         final boolean hasDuplicateDownStation = this.getSections().stream()
                 .anyMatch(section -> newSection.getDownStation().getId().equals(section.getUpStation().getId()));
 
-        if (hasDuplicateDownStation) throw new IllegalArgumentException();
+        if (hasDuplicateDownStation) {
+            throw new IllegalArgumentException("The down station of the new section matches the up station of an existing section, causing a duplication.");
+        }
     }
 
     private Section findSectionByDownStation(final Station station) {
         final Section targetSection = this.getSections().stream()
                 .filter(section -> section.getDownStation().getId().equals(station.getId()))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException());
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("No section found with the down station ID: " + station.getId()));
 
         return targetSection;
     }

@@ -81,7 +81,8 @@ public class LineServiceMockTest {
 
         // then
         assertThatThrownBy(() -> lineService.createLine(lineRequest))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Station not found. Station Id: ");
         verify(stationRepository, times(1)).findById(anyLong());
     }
 
@@ -128,7 +129,8 @@ public class LineServiceMockTest {
 
         // then
         assertThatThrownBy(() -> lineService.getLine(1L))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Line not found. Line Id: " + 1L);
         verify(lineRepository, times(1)).findById(anyLong());
     }
 
@@ -176,7 +178,8 @@ public class LineServiceMockTest {
 
         // then
         assertThatThrownBy(() -> lineService.updateLine(1L, request))
-                .isInstanceOf(EntityNotFoundException.class);
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Line not found. Line Id: " + 1L);
         verify(lineRepository, times(1)).findById(anyLong());
     }
 
@@ -190,9 +193,11 @@ public class LineServiceMockTest {
 
         // then
         assertThatThrownBy(() -> lineService.updateLine(1L, 노선명_null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
         assertThatThrownBy(() -> lineService.updateLine(1L, 노선명_공백))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
         verify(lineRepository, times(2)).findById(anyLong());
     }
 
@@ -206,9 +211,11 @@ public class LineServiceMockTest {
 
         // then
         assertThatThrownBy(() -> lineService.updateLine(1L, 색상값_null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
         assertThatThrownBy(() -> lineService.updateLine(1L, 색상값_공백))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
         verify(lineRepository, times(2)).findById(anyLong());
     }
 
@@ -289,7 +296,8 @@ public class LineServiceMockTest {
 
         // then
         assertThatThrownBy(() -> lineService.deleteLineSection(1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot delete the only section in the line.");
     }
 
     private LineRequest 신분당선_생성_요청() {

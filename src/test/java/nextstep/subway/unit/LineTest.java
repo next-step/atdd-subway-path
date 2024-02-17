@@ -47,10 +47,12 @@ class LineTest {
     void 지하철_노선_엔티티_생성_시_이름이_null_혹은_공백이라면_생성_불가() {
         // then
         assertThatThrownBy(() -> new Line(null, "bg-red-600", upStation, downStation, 10))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
 
         assertThatThrownBy(() -> new Line("", "bg-red-600", upStation, downStation, 10))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
     }
 
     @DisplayName("Line 엔티티 생성 시 색상이 null 혹은 공백이라면 오류가 발생한다.")
@@ -58,10 +60,12 @@ class LineTest {
     void 지하철_노선_엔티티_생성_시_색상이_null_혹은_공백이라면_생성_불가() {
         // then
         assertThatThrownBy(() -> new Line("신분당선", null, upStation, downStation, 10))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
 
         assertThatThrownBy(() -> new Line("신분당선", "", upStation, downStation, 10))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
     }
 
     @DisplayName("Line 엔티티 생성 시 상행역이 null이라면 오류가 발생한다.")
@@ -69,7 +73,8 @@ class LineTest {
     void 지하철_노선_엔티티_생성_시_상행역이_null이라면_생성_불가() {
         // then
         assertThatThrownBy(() -> new Line("신분당선", "bg-red-600", null, downStation, 10))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line upStation cannot be null.");
     }
 
     @DisplayName("Line 엔티티 생성 시 하행역이 null이라면 오류가 발생한다.")
@@ -77,7 +82,8 @@ class LineTest {
     void 지하철_노선_엔티티_생성_시_하행역이_null이라면_생성_불가() {
         // then
         assertThatThrownBy(() -> new Line("신분당선", "bg-red-600", upStation, null, 10))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line downStation cannot be null.");
     }
 
     @DisplayName("Line 엔티티 생성 시 거리가 0보다 작다면 오류가 발생한다.")
@@ -85,7 +91,8 @@ class LineTest {
     void 지하철_노선_엔티티_생성_시_거리가_0보다_작다면_생성_불가() {
         // then
         assertThatThrownBy(() -> new Line("신분당선", "bg-red-600", upStation, downStation, -1))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Distance must be greater than 0.");
     }
 
     @DisplayName("노선명과 색상을 변경한다.")
@@ -110,10 +117,12 @@ class LineTest {
 
         // then
         assertThatThrownBy(() -> newLine.updateDetails(null, "색상"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
 
         assertThatThrownBy(() -> newLine.updateDetails("", "색상"))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
     }
 
     @DisplayName("노선명과 색상을 변경 시 색상이 null 혹은 공백이라면 오류가 발생한다.")
@@ -124,10 +133,12 @@ class LineTest {
 
         // then
         assertThatThrownBy(() -> newLine.updateDetails("지하철노선", null))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
 
         assertThatThrownBy(() -> newLine.updateDetails("지하철노선", ""))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
     }
 
     @DisplayName("노선에 구간을 추가한다.")
@@ -162,7 +173,8 @@ class LineTest {
 
         // when
         assertThatThrownBy(() -> newLine.addSection(section))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("The down station of the new section matches the up station of an existing section, causing a duplication.");
     }
 
     @DisplayName("노선에 구간을 제거한다.")
@@ -201,7 +213,8 @@ class LineTest {
 
         // then
         assertThatThrownBy(() -> newLine.removeSection(deleteTargetStation))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Can only remove the last station of the line.");
     }
 
     @DisplayName("노선에 구간을 제거 시 구간이 1개라면 오류가 발생한다.")
@@ -214,7 +227,8 @@ class LineTest {
 
         // then
         assertThatThrownBy(() -> newLine.removeSection(downStation))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot remove the only section in the line.");
     }
 
 }
