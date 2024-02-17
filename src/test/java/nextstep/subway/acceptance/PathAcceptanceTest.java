@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import nextstep.subway.domain.request.LineRequest;
 import nextstep.subway.domain.response.PathResponse;
 import nextstep.subway.domain.response.StationResponse;
@@ -10,12 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.LineTestUtil.createSubwayLine;
+import static nextstep.subway.utils.PathTestUtil.getShortestPath;
 import static nextstep.subway.utils.SectionTestUtil.addSection;
 import static nextstep.subway.utils.SectionTestUtil.createSectionParams;
 import static nextstep.subway.utils.StationTestUtil.createStation;
@@ -68,16 +66,7 @@ public class PathAcceptanceTest {
         // given (setUp)
 
         // when 교대역 ~ 양재 최단경로 구하기
-        Map<String, String> params = new HashMap<>();
-        params.put("source", 교대역.toString());
-        params.put("target", 양재역.toString());
-
-        PathResponse response = RestAssured.given().log().all()
-                .queryParams(params)
-                .when().get("/paths")
-                .then().log().all()
-                .extract()
-                .as(PathResponse.class);
+        PathResponse response = getShortestPath(교대역, 양재역);
 
         // then
         List<StationResponse> stationList = response.getStationList();
