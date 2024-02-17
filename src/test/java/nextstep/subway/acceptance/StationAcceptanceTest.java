@@ -21,7 +21,6 @@ import io.restassured.response.Response;
 import nextstep.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-@DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
 public class StationAcceptanceTest extends BaseAcceptanceTest {
     /**
      * When 지하철역을 생성하면

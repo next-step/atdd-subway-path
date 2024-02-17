@@ -22,12 +22,13 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 
-@DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
+
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
     ObjectMapper mapper = new ObjectMapper();
 
     @BeforeEach
     void setUp() {
+        databaseCleanUp.execute();
         지하철_역_생성(역삼역);
         지하철_역_생성(선릉역);
         지하철_역_생성(강남역);

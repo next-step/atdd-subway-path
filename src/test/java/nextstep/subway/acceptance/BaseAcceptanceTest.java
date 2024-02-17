@@ -22,11 +22,6 @@ public class BaseAcceptanceTest {
     @Autowired
     DatabaseCleanUp databaseCleanUp;
 
-    @BeforeEach
-    void setUp() {
-        databaseCleanUp.execute();
-    }
-
     void 지하철_역_생성(Map<String, String> param1) {
         given().body(param1)
                .contentType(MediaType.APPLICATION_JSON_VALUE).log().all()
