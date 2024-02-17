@@ -43,7 +43,7 @@ class LineTest {
                 @Test
                 void 지하철_구간_추가_성공() {
                     // given
-                    Section 강남_양재_구간 = SectionFixture.강남_양재_구간(10);
+                    Section 강남_양재_구간 = SectionFixture.강남_양재_구간(10, 이호선);
 
                     // when
                     이호선.addSection(강남_양재_구간);
@@ -62,10 +62,10 @@ class LineTest {
 
                 @BeforeEach
                 void 초기_노선에_구간_추가() {
-                    삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10);
-                    선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10);
-                    역삼_강남_구간 = SectionFixture.역삼_강남_구간(10);
-                    강남_서초_구간 = SectionFixture.강남_서초_구간(10);
+                    삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10, 이호선);
+                    선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10, 이호선);
+                    역삼_강남_구간 = SectionFixture.역삼_강남_구간(10, 이호선);
+                    강남_서초_구간 = SectionFixture.강남_서초_구간(10, 이호선);
 
                     이호선.addSection(삼성_선릉_구간);
                     이호선.addSection(선릉_역삼_구간);
@@ -86,7 +86,7 @@ class LineTest {
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되지_않은_역이면서_하행역은_등록된_역일_경우() {
                         // given
-                        Section 사성_삼성_구간 = new Section(사성, 삼성, 5);
+                        Section 사성_삼성_구간 = new Section(사성, 삼성, 5, 이호선);
 
                         // when
                         이호선.addSection(사성_삼성_구간);
@@ -109,8 +109,8 @@ class LineTest {
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
                         // given
-                        Section 삼성_사성_구간 = new Section(삼성, 사성, 5);
-                        Section 사성_선릉_구간 = new Section(사성, 선릉, 5);
+                        Section 삼성_사성_구간 = new Section(삼성, 사성, 5, 이호선);
+                        Section 사성_선릉_구간 = new Section(사성, 선릉, 5, 이호선);
 
                         // when
                         이호선.addSection(삼성_사성_구간);
@@ -138,8 +138,8 @@ class LineTest {
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있지_않고_하행역은_등록된_역일_경우() {
                         // given
-                        Section 사성_역삼_구간 = new Section(사성, 역삼, 5);
-                        Section 선릉_사성_구간 = new Section(선릉, 사성, 5);
+                        Section 사성_역삼_구간 = new Section(사성, 역삼, 5, 이호선);
+                        Section 선릉_사성_구간 = new Section(선릉, 사성, 5, 이호선);
 
                         // when
                         이호선.addSection(사성_역삼_구간);
@@ -162,8 +162,8 @@ class LineTest {
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
                         // given
-                        Section 역삼_사성_구간 = new Section(역삼, 사성, 5);
-                        Section 사성_강남_구간 = new Section(사성, 강남, 5);
+                        Section 역삼_사성_구간 = new Section(역삼, 사성, 5, 이호선);
+                        Section 사성_강남_구간 = new Section(사성, 강남, 5, 이호선);
 
                         // when
                         이호선.addSection(역삼_사성_구간);
@@ -191,8 +191,8 @@ class LineTest {
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있지_않고_하행역은_등록된_역일_경우() {
                         // given
-                        Section 사성_서초_구간 = new Section(사성, 서초, 5);
-                        Section 강남_사성_구간 = new Section(강남, 사성, 5);
+                        Section 사성_서초_구간 = new Section(사성, 서초, 5, 이호선);
+                        Section 강남_사성_구간 = new Section(강남, 사성, 5, 이호선);
 
                         // when
                         이호선.addSection(사성_서초_구간);
@@ -215,7 +215,7 @@ class LineTest {
                     @Test
                     void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
                         // given
-                        Section 서초_사성_구간 = new Section(서초, 사성, 5);
+                        Section 서초_사성_구간 = new Section(서초, 사성, 5, 이호선);
 
                         // when
                         이호선.addSection(서초_사성_구간);
@@ -242,10 +242,10 @@ class LineTest {
 
             @BeforeEach
             void 초기_노선에_구간_추가() {
-                삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10);
-                선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10);
-                역삼_강남_구간 = SectionFixture.역삼_강남_구간(10);
-                강남_서초_구간 = SectionFixture.강남_서초_구간(10);
+                삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10, 이호선);
+                선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10, 이호선);
+                역삼_강남_구간 = SectionFixture.역삼_강남_구간(10, 이호선);
+                강남_서초_구간 = SectionFixture.강남_서초_구간(10, 이호선);
 
                 이호선.addSection(삼성_선릉_구간);
                 이호선.addSection(선릉_역삼_구간);
@@ -264,7 +264,7 @@ class LineTest {
                 @Test
                 void 추가할_구간의_상행역과_하행역_중_하나라도_기존_노선에_등록되지_않았을_경우() {
                     // given
-                    Section 양재_사성_구간 = new Section(양재, 사성, 5);
+                    Section 양재_사성_구간 = new Section(양재, 사성, 5, 이호선);
 
                     // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
@@ -282,7 +282,7 @@ class LineTest {
                 @Test
                 void 상행역과_하행역이_동일한_구간일_경우() {
                     // given
-                    Section 역삼_역삼_구간 = new Section(역삼, 역삼, 5);
+                    Section 역삼_역삼_구간 = new Section(역삼, 역삼, 5, 이호선);
 
                     // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
@@ -304,7 +304,7 @@ class LineTest {
                 @Test
                 void 추가할_구간의_하행역을_기준으로_직후_역과의_거리가_1보다_작은_경우() {
                     // given
-                    Section 삼성_사성_구간 = new Section(삼성, 사성, 10);
+                    Section 삼성_사성_구간 = new Section(삼성, 사성, 10, 이호선);
 
                     // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
@@ -326,7 +326,7 @@ class LineTest {
                 @Test
                 void 추가할_구간의_하행역을_기준으로_직후_역과의_거리가_1보다_작은_경우() {
                     // given
-                    Section 역삼_사성_구간 = new Section(역삼, 사성, 10);
+                    Section 역삼_사성_구간 = new Section(역삼, 사성, 10, 이호선);
 
                     // when, then
                     assertThatExceptionOfType(IllegalArgumentException.class)
@@ -347,7 +347,7 @@ class LineTest {
     @Test
     void 지하철_모든_구간의_역_조회() {
         // given
-        Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10);
+        Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10, 이호선);
 
         이호선.addSection(삼성_선릉_구간);
 
@@ -373,10 +373,10 @@ class LineTest {
 
             @BeforeEach
             void 초기_노선에_구간_추가() {
-                삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10);
-                선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10);
-                역삼_강남_구간 = SectionFixture.역삼_강남_구간(10);
-                강남_서초_구간 = SectionFixture.강남_서초_구간(10);
+                삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10, 이호선);
+                선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10, 이호선);
+                역삼_강남_구간 = SectionFixture.역삼_강남_구간(10, 이호선);
+                강남_서초_구간 = SectionFixture.강남_서초_구간(10, 이호선);
 
                 이호선.addSection(삼성_선릉_구간);
                 이호선.addSection(선릉_역삼_구간);
@@ -395,7 +395,7 @@ class LineTest {
                 @Test
                 void 구간이_한개_이상_존재하고_가장_앞쪽의_위치한_구간의_상행역을_삭제하는_경우_삭제_성공() {
                     // when
-                    이호선.deleteSection(StationFixture.삼성);
+                    이호선.delete(StationFixture.삼성);
 
                     // then
                     assertThat(이호선.getAllSections())
@@ -415,10 +415,10 @@ class LineTest {
                 @Test
                 void 구간이_한개_이상_존재하고_노선_중앙의_위치한_구간의_상행역_삭제하는_경우_삭제_성공() {
                     // given
-                    Section 선릉_강남_구간 =  new Section(StationFixture.선릉, StationFixture.강남, 20);
+                    Section 선릉_강남_구간 =  new Section(StationFixture.선릉, StationFixture.강남, 20, 이호선);
 
                     // when
-                    이호선.deleteSection(StationFixture.역삼);
+                    이호선.delete(StationFixture.역삼);
 
                     // then
                     assertThat(이호선.getAllSections())
@@ -433,10 +433,10 @@ class LineTest {
                 @Test
                 void 구간이_한개_이상_존재하고_노선_중앙의_위치한_구간의_하행역을_삭제하는_경우_삭제_성공() {
                     // given
-                    Section 역삼_서초_구간 =  new Section(StationFixture.역삼, StationFixture.서초, 20);
+                    Section 역삼_서초_구간 =  new Section(StationFixture.역삼, StationFixture.서초, 20, 이호선);
                     
                     // when
-                    이호선.deleteSection(StationFixture.강남);
+                    이호선.delete(StationFixture.강남);
 
                     // then
                     assertThat(이호선.getAllSections())
@@ -455,7 +455,7 @@ class LineTest {
                 @Test
                 void 구간이_한개_이상_존재하고_하행_종점역을_삭제하는_경우_삭제_성공() {
                     // when
-                    이호선.deleteSection(StationFixture.서초);
+                    이호선.delete(StationFixture.서초);
 
                     // then
                     assertThat(이호선.getAllSections())
@@ -476,12 +476,12 @@ class LineTest {
             @Test
             void 한개의_구간만_존재할_경우() {
                 // given
-                이호선.addSection(SectionFixture.삼성_선릉_구간(10));
+                이호선.addSection(SectionFixture.삼성_선릉_구간(10, 이호선));
 
                 // when, then
                 assertThatExceptionOfType(IllegalArgumentException.class)
                         .isThrownBy(() -> {
-                            이호선.deleteSection(선릉);
+                            이호선.delete(선릉);
                         })
                         .withMessageMatching("구간이 최소 2개 이상일 경우에만 삭제할 수 있습니다.");
             }
@@ -493,11 +493,16 @@ class LineTest {
              */
             @Test
             void 기존_노선_구간_목록에_구간이_존재하지_않을_경우_삭제_실패() {
+                이호선.addSection(SectionFixture.삼성_선릉_구간(10, 이호선));
+                이호선.addSection(SectionFixture.선릉_역삼_구간(10, 이호선));
+                이호선.addSection(SectionFixture.역삼_강남_구간(10, 이호선));
+                이호선.addSection(SectionFixture.강남_서초_구간(10, 이호선));
+
                 assertThatExceptionOfType(IllegalArgumentException.class)
                         .isThrownBy(() -> {
-                            이호선.deleteSection(사성);
+                            이호선.delete(사성);
                         })
-                        .withMessageMatching("해당 노선에 구간이 존재하지 않습니다.");
+                        .withMessageMatching("해당 역이 구간에 존재하지 않습니다.");
             }
         }
     }

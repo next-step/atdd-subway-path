@@ -28,12 +28,6 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = validateDistance(distance);
-    }
-
     public Section(Station upStation, Station downStation, int distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
