@@ -2,6 +2,8 @@ package nextstep.subway.station.dto;
 
 import nextstep.subway.station.Station;
 
+import java.util.Objects;
+
 public class StationResponse {
     private Long id;
     private String name;
@@ -21,5 +23,18 @@ public class StationResponse {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StationResponse that = (StationResponse) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

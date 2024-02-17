@@ -1,15 +1,15 @@
-package nextstep.subway.acceptance.section;
+package nextstep.subway.acceptance.path;
 
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.annotation.AcceptanceTest;
 import nextstep.subway.acceptance.line.LineApiRequester;
+import nextstep.subway.acceptance.section.SectionApiRequester;
 import nextstep.subway.acceptance.station.StationApiRequester;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.SectionCreateRequest;
 import nextstep.subway.utils.JsonPathUtil;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("지하철노선 구간 경로 조회 관련 기능")
 @AcceptanceTest
-public class SectionPathAcceptanceTest {
+public class PathAcceptanceTest {
 
     Long 교대역id;
     Long 강남역id;
@@ -59,7 +59,7 @@ public class SectionPathAcceptanceTest {
      */
     @DisplayName("출발역과 도착역까지의 경로 조회")
     @Test
-    void showSectionPaths() {
+    void showPaths() {
         //when
         ExtractableResponse<Response> response = given().log().all()
                 .queryParam("source", 교대역id)
