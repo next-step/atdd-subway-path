@@ -21,14 +21,39 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        return sections.stream()
-                .sorted((s1, s2) -> {
-                    if (s1.getDownStation().equals(s2.getUpStation())) {
-                        return -1;
-                    }
-                    return 0;
-                })
+        if (sections.size() <= 1) {
+            return sections;
+        }
+        
+        List<Section> list = new ArrayList<>();
+
+        list.add(getFirstSection());
+
+        for (int i = 0; i < sections.size(); i++) {
+            Station downStation = list.get(list.size() - 1).getDownStation();
+
+            sections.stream().filter(s -> s.getUpStation().equals(downStation)).findFirst()
+                    .ifPresent(list::add);
+        }
+
+        return list;
+    }
+
+    private Section getFirstSection() {
+        List<Station> upStations = sections.stream()
+                .map(Section::getUpStation)
                 .collect(Collectors.toList());
+
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        Station upStation = upStations.stream()
+                .filter(station -> !downStations.contains(station))
+                .findFirst().orElseThrow(() -> new SectionException("상행 종점역이 존재하지 않습니다."));
+
+        return sections.stream().filter(s -> s.getUpStation().equals(upStation)).findFirst()
+                .orElseThrow(() -> new SectionException("상행 종점역이 존재하지 않습니다."));
     }
 
     public List<Station> getStations() {

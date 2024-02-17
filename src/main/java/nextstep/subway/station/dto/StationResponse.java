@@ -4,7 +4,8 @@ import nextstep.subway.station.Station;
 
 import java.util.Objects;
 
-public class StationResponse {
+public class
+StationResponse {
     private Long id;
     private String name;
 

@@ -20,6 +20,11 @@ public class Station {
         this.name = name;
     }
 
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }
@@ -31,9 +36,9 @@ public class Station {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Station)) return false;
         Station station = (Station) o;
-        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+        return Objects.equals(id, station.getId());
     }
 
     @Override

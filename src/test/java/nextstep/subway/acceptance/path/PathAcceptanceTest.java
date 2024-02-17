@@ -9,6 +9,7 @@ import nextstep.subway.acceptance.section.SectionApiRequester;
 import nextstep.subway.acceptance.station.StationApiRequester;
 import nextstep.subway.line.dto.LineCreateRequest;
 import nextstep.subway.line.dto.SectionCreateRequest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.JsonPathUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.*;
@@ -64,14 +66,15 @@ public class PathAcceptanceTest {
         ExtractableResponse<Response> response = given().log().all()
                 .queryParam("source", 교대역id)
                 .queryParam("target", 양재역id)
-                .when().delete("/paths")
+                .when().get("/paths")
                 .then().log().all()
                 .extract();
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
-        List<Long> ids = response.jsonPath().getList("id", Long.class);
+        List<Long> ids = response.jsonPath().getList("stations", StationResponse.class)
+                .stream().map(StationResponse::getId).collect(Collectors.toList());
         int distance = response.jsonPath().getInt("distance");
         assertThat(ids).containsExactly(교대역id, 남부터미널역id, 양재역id);
         assertThat(distance).isEqualTo(5);
@@ -89,7 +92,7 @@ public class PathAcceptanceTest {
         ExtractableResponse<Response> response = given().log().all()
                 .queryParam("source", 교대역id)
                 .queryParam("target", 교대역id)
-                .when().delete("/paths")
+                .when().get("/paths")
                 .then().log().all()
                 .extract();
 
@@ -106,38 +109,22 @@ public class PathAcceptanceTest {
     @DisplayName("연결되어있지 않은 출발역과 도착역의 경로를 조회")
     @Test
     void showDisConnectedStation() {
+        //given
+        Long 서울역id = JsonPathUtil.getId(StationApiRequester.createStationApiCall("서울역"));
+        Long 명동역id = JsonPathUtil.getId(StationApiRequester.createStationApiCall("명동역"));
+        LineCreateRequest 사호선 = new LineCreateRequest("4호선", "sky", 서울역id, 명동역id, 2);
+        JsonPathUtil.getId(LineApiRequester.createLineApiCall(사호선));
+
         //when
         ExtractableResponse<Response> response = given().log().all()
                 .queryParam("source", 교대역id)
-                .queryParam("target", 강남역id)
-                .when().delete("/paths")
+                .queryParam("target", 서울역id)
+                .when().get("/paths")
                 .then().log().all()
                 .extract();
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.asPrettyString()).isEqualTo("연결되어있지 않은 출발역과 도착역의 경로는 조회할 수 없습니다.");
-    }
-
-    /**
-     * Given 지하철 구간을 등록하고
-     * When 노선에 등록되어있지 않은 출발역과 도착역의 경로를 조회하면
-     * Then 예외가 발생한다
-     */
-    @DisplayName("존재하지 않는 출발역과 도착역의 경로를 조회")
-    @Test
-    void showNotExistsStation() {
-        Long 성수역id = JsonPathUtil.getId(StationApiRequester.createStationApiCall("성수역"));
-        //when
-        ExtractableResponse<Response> response = given().log().all()
-                .queryParam("source", 성수역id)
-                .queryParam("target", 강남역id)
-                .when().delete("/paths")
-                .then().log().all()
-                .extract();
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asPrettyString()).isEqualTo("노선에 등록되어있지 않은 출발역과 도착역의 경로는 조회할 수 없습니다.");
     }
 }

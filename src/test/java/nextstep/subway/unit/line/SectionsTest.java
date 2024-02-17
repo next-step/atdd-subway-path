@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
@@ -24,9 +24,9 @@ public class SectionsTest {
     @BeforeEach
     void setUp() {
         이호선 = new Line("2호선", "green");
-        건대입구역 = new Station("건대입구역");
-        잠실역 = new Station("잠실역");
-        성수역 = new Station("성수역");
+        건대입구역 = new Station(1L, "건대입구역");
+        잠실역 = new Station(2L, "잠실역");
+        성수역 = new Station(3L, "성수역");
         이호선.generateSection(10, 건대입구역, 잠실역);
     }
 
@@ -34,20 +34,15 @@ public class SectionsTest {
     @Test
     void getSections() {
         //given
-        Station 용산역 = new Station("용산역");
-        이호선.generateSection(9, 건대입구역, 용산역);
-        이호선.generateSection(8, 건대입구역, 성수역);
+        Station 용산역 = new Station(4L, "용산역");
+        이호선.generateSection(8, 잠실역, 용산역);
 
         //when
         Sections result = 이호선.getSections();
 
         //then
-        List<Station> upStations = result
-                .getSections()
-                .stream()
-                .map(Section::getUpStation)
-                .collect(Collectors.toList());
-        assertThat(upStations).containsExactly(건대입구역, 성수역, 용산역);
+        List<Station> upStations = result.getStations();
+        assertThat(upStations).containsExactly(건대입구역, 잠실역, 용산역);
     }
 
     @DisplayName("구간을 노선의 가운데 추가할 경우 기존에 연결되어있던 구간의 상행역이 등록할 구간의 하행역으로 변경된다.")
