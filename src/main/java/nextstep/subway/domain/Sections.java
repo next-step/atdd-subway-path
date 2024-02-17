@@ -1,7 +1,9 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -117,12 +119,12 @@ public class Sections {
     }
 
     public Stations getStations() {
-        List<Station> stations = sections.stream()
-                                         .flatMap(section ->
+        Set<Station> orderedStations = sections.stream()
+                                        .flatMap(section ->
                                                       Stream.of(section.getUpStation(), section.getDownStation()))
-                                         .distinct()
-                                         .collect(Collectors.toList());
-        return Stations.of(stations);
+                                        .collect(Collectors.toCollection(LinkedHashSet::new));
+        List<Station> stationList = new ArrayList<>(orderedStations);
+        return Stations.of(stationList);
     }
 
     private boolean existStationInSections(Station station) {
