@@ -20,6 +20,8 @@ import nextstep.subway.dto.StationResponse;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
+
+    public static final int BASIC_DISTANCE = 10;
     private Long 역삼역_ID;
     private Long 선릉역_ID;
     private Long 강남역_ID;
@@ -39,7 +41,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void test_지하철노선_생성() {
         //when
         LineResponse linePostResponse = given()
-            .body(getRequestParam_신분당선(역삼역_ID, 선릉역_ID))
+            .body(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines").then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
         List<StationResponse> stationPostResponses = linePostResponse.getStations();
@@ -59,15 +61,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void test_지하철_노선_목록_조회() {
         //given
-        지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
-        지하철_노선_생성(getRequestParam_분당선(강남역_ID, 왕십리역_ID));
+        지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
+        지하철_노선_생성(getRequestParam_분당선(강남역_ID, 왕십리역_ID, BASIC_DISTANCE));
 
         //when
         List<LineResponse> lineResponses = when().get("/lines").then().extract().jsonPath().getList(".", LineResponse.class);
         assertAll(
             () -> assertThat(lineResponses).hasSize(2),
-            () -> assertThat(lineResponses).extracting(LineResponse::getName).containsExactly(getRequestParam_신분당선(역삼역_ID, 선릉역_ID).get("name"), getRequestParam_분당선(강남역_ID, 왕십리역_ID).get("name")),
-            () -> assertThat(lineResponses).extracting(LineResponse::getColor).containsExactly(getRequestParam_신분당선(역삼역_ID, 선릉역_ID).get("color"), getRequestParam_분당선(강남역_ID, 왕십리역_ID).get("color"))
+            () -> assertThat(lineResponses).extracting(LineResponse::getName).containsExactly(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE).get("name"), getRequestParam_분당선(강남역_ID, 왕십리역_ID, BASIC_DISTANCE).get("name")),
+            () -> assertThat(lineResponses).extracting(LineResponse::getColor).containsExactly(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE).get("color"), getRequestParam_분당선(강남역_ID, 왕십리역_ID, BASIC_DISTANCE).get("color"))
         );
     }
 
@@ -75,14 +77,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void test_지하철_생성_노선_조회() {
         //given
-        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when
         LineResponse lineResponse_신분당선 = 지하철_노선_조회(linePostResponse.getId());
         assertAll(
             () -> assertThat(lineResponse_신분당선.getId()).isEqualTo(1),
-            () -> assertThat(lineResponse_신분당선.getName()).isEqualTo(getRequestParam_신분당선(역삼역_ID, 선릉역_ID).get("name")),
-            () -> assertThat(lineResponse_신분당선.getColor()).isEqualTo(getRequestParam_신분당선(역삼역_ID, 선릉역_ID).get("color"))
+            () -> assertThat(lineResponse_신분당선.getName()).isEqualTo(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE).get("name")),
+            () -> assertThat(lineResponse_신분당선.getColor()).isEqualTo(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE).get("color"))
         );
     }
 
@@ -90,7 +92,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void test_지하철_노선_수정() {
         //given
-        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
         Map<String, String> putRequest = Map.of(
             "name", "다른분당선",
             "color", "Red"
@@ -108,7 +110,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void test_지하철_노선_삭제() {
         //given
-        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when & then
         when()

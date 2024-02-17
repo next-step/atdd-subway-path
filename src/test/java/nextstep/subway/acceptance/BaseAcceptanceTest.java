@@ -59,10 +59,9 @@ public class BaseAcceptanceTest {
             .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
     }
 
-    public Map<String, String> getRequestParam_신분당선(Long upStationId, Long downStationId) {
+    public Map<String, String> getRequestParam_신분당선(Long upStationId, Long downStationId, Integer distance) {
         String lineName = "신분당선";
         String lineColor = "bg-red-600";
-        Integer distance = 10;
 
         return Map.of(
             "name", lineName,
@@ -73,10 +72,9 @@ public class BaseAcceptanceTest {
         );
     }
 
-    public Map<String, String> getRequestParam_분당선(Long upStationId, Long downStationId) {
+    public Map<String, String> getRequestParam_분당선(Long upStationId, Long downStationId, Integer distance) {
         String lineName = "분당선";
         String lineColor = "bg-yellow-600";
-        Integer distance = 2;
 
         return Map.of(
             "name", lineName,

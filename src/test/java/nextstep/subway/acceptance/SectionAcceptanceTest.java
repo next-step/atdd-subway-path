@@ -2,6 +2,7 @@ package nextstep.subway.acceptance;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
+import static nextstep.subway.acceptance.LineAcceptanceTest.BASIC_DISTANCE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -12,8 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -38,9 +37,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Test
-    void test_특정_노선에_구간을_등록하면_노선_조회시_등록한_구간을_확인할_수_있다() throws JsonProcessingException {
+    void test_특정_노선에_구간을_등록하면_노선_조회시_등록한_구간을_확인할_수_있다() {
         //when
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
         //then
         LineResponse response = 지하철_노선_조회(lineResponse.getId());
         List<SectionResponse> sectionsResponse = response.getSections();
@@ -53,12 +52,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Test
-    void 노선이_주어졌을때_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_같으면_해당_구간을_마지막_구간에_등록할_수_있다() throws JsonProcessingException {
+    void 노선이_주어졌을때_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_같으면_해당_구간을_마지막_구간에_등록할_수_있다() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when
-        SectionRequest sectionRequest = new SectionRequest(2L, 4L, 10);
+        SectionRequest sectionRequest = new SectionRequest(선릉역_ID, 왕십리역_ID, 10);
         addSection(lineResponse, sectionRequest);
 
         //then
@@ -77,17 +76,14 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                  + "        등록하려는 구간의 길이가 특정 구간의 길이보다 짧으면\n"
                  + "   then 기존 구간 사이에 새 구간이 등록된다.")
     @Test
-    void testAddSection_지하철_구간_중간에_역_추가() throws JsonProcessingException {
+    void testAddSection_지하철_구간_중간에_역_추가() {
         //given
-        int existingDistance = 10;
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
-        SectionRequest sectionRequest = new SectionRequest(1L, 3L, existingDistance);
-        addSection(lineResponse, sectionRequest);
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when
-        Long newStationId = 2L;
+        Long newStationId = 왕십리역_ID;
         int newDistance = 4;
-        SectionRequest newSectionRequest = new SectionRequest(1L, newStationId, newDistance);
+        SectionRequest newSectionRequest = new SectionRequest(역삼역_ID, newStationId, newDistance);
         addSection(lineResponse, newSectionRequest);
 
         //then
@@ -98,11 +94,11 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         SectionResponse lastSection = sections.get(sections.size() - 1);
         assertAll(
             () -> assertThat(sections).hasSize(2),
-            () -> assertThat(firstSection.getDownStationId()).isEqualTo(2L),
+            () -> assertThat(firstSection.getDownStationId()).isEqualTo(newStationId),
             () -> assertThat(firstSection.getDistance()).isEqualTo(newDistance),
-            () -> assertThat(lastSection.getUpStationId()).isEqualTo(2L),
-            () -> assertThat(lastSection.getUpStationId()).isEqualTo(2L),
-            () -> assertThat(lastSection.getDistance()).isEqualTo(existingDistance - newDistance)
+            () -> assertThat(lastSection.getUpStationId()).isEqualTo(newStationId),
+            () -> assertThat(lastSection.getDownStationId()).isEqualTo(선릉역_ID),
+            () -> assertThat(lastSection.getDistance()).isEqualTo(BASIC_DISTANCE - newDistance)
         );
     }
 
@@ -110,9 +106,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                  + "   when 새 역을 상행종점역으로 등록하면 \n"
                  + "   then 해당 노선의 상행종점역이 변경된다.")
     @Test
-    void testAddSection_상행종점역_추가() throws JsonProcessingException {
+    void testAddSection_상행종점역_추가() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when
         SectionRequest sectionRequest = new SectionRequest(4L, 1L, 5);
@@ -134,9 +130,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                  + "   when 등록하려는 역이 기존 노선에 있다면\n"
                  + "   then 예외를 반환한다.")
     @Test
-    void testAddSection_구간_추가시_기존에_등록되어있으면_예외_반환() throws JsonProcessingException {
+    void testAddSection_구간_추가시_기존에_등록되어있으면_예외_반환() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
         SectionRequest initialSectionRequest = new SectionRequest(2L, 3L, 5);
         addSection(lineResponse, initialSectionRequest);
         //when
@@ -149,9 +145,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Test
-    void 해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_다를_때_등록하려는_구간의_길이가_구간_사이에_들어올_수_없으면_에러를_반환한다() throws JsonProcessingException {
+    void 해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_다를_때_등록하려는_구간의_길이가_구간_사이에_들어올_수_없으면_에러를_반환한다() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when
         SectionRequest sectionRequest = new SectionRequest(1L, 4L, 15);
@@ -161,9 +157,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Test
-    void 노선에_등록된_구간이_2개_이상_있을때_마지막_구간을_제거하면_노선_조회시_제거된_마지막_구간의_상행역이_전체_노선의_하행종점역이_된다() throws JsonProcessingException {
+    void 노선에_등록된_구간이_2개_이상_있을때_마지막_구간을_제거하면_노선_조회시_제거된_마지막_구간의_상행역이_전체_노선의_하행종점역이_된다() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
         SectionRequest sectionRequest = new SectionRequest(2L, 4L, 10);
         addSection(lineResponse, sectionRequest);
 
@@ -185,7 +181,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선에_등록된_구간이_2개_이상_있을때_요청한_역이_기존_노선의_하행종점역과_다르면_구간을_삭제할_수_없다() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when & then
         when()
@@ -196,7 +192,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 지하철_노선에_상행_종점역과_하행_종점역만_있는_경우_구간이_1개인_경우_역을_삭제할_수_없다() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when & then
         when()
@@ -204,7 +200,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
             .then().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 
-    private void addSection(LineResponse lineResponse, SectionRequest sectionRequest) throws JsonProcessingException {
+    private void addSection(LineResponse lineResponse, SectionRequest sectionRequest) {
         given().body(sectionRequest)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .when().post("/lines/" + lineResponse.getId() + "/sections").then().log().all();
