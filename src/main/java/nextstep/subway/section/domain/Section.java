@@ -27,4 +27,16 @@ public class Section {
         this.downStationId = downStationId;
         this.distance = distance;
     }
+
+    public void changeUpStationId(Long upStationId) {
+        this.upStationId = upStationId;
+    }
+
+    public void changeDownStationId(Long downStationId) {
+        this.downStationId = downStationId;
+    }
+
+    public void changeDistance(int distance) {
+        this.distance = distance;
+    }
 }
