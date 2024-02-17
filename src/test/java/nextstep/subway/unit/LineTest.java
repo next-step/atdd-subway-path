@@ -2,7 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.line.Color;
 import nextstep.subway.line.Line;
-import nextstep.subway.section.Section;
+import nextstep.subway.line.Section;
 import nextstep.subway.station.Station;
 import org.junit.jupiter.api.Test;
 
@@ -18,11 +18,9 @@ class LineTest {
         Station 강변역 = new Station("강변역");
 
         Line line = new Line("2호선", Color.GREEN, 건대입구역, 구의역, 6);
-        Section section = new Section(구의역, 강변역, 4, line.getId());
+        line.addSection(new Section(구의역, 강변역, 4, line));
 
-        line.addSection(section);
-
-        assertThat(line.getDownStation()).isEqualTo(강변역);
+        assertThat(line.getStations()).containsExactly(건대입구역, 구의역, 강변역);
     }
 
     @Test
@@ -33,11 +31,12 @@ class LineTest {
         Station 강변역 = new Station("강변역");
 
         Line line = new Line("2호선", Color.GREEN, 건대입구역, 구의역, 6);
-        Section section = new Section(구의역, 강변역, 4, line.getId());
+        Section section1 = new Section(건대입구역, 구의역, 6, line);
+        line.addSection(section1);
+        Section section2 = new Section(구의역, 강변역, 4, line);
+        line.addSection(section2);
 
-        line.addSection(section);
-
-        assertThat(line.getStations()).containsExactly(건대입구역, 강변역);
+        assertThat(line.getStations()).containsExactly(건대입구역, 구의역, 강변역);
     }
 
     @Test
@@ -48,10 +47,13 @@ class LineTest {
         Station 강변역 = new Station("강변역");
 
         Line line = new Line("2호선", Color.GREEN, 건대입구역, 구의역, 6);
-        Section section = new Section(구의역, 강변역, 4, line.getId());
-        line.addSection(section);
+        Section section1 = new Section(건대입구역, 구의역, 6, line);
+        line.addSection(section1);
 
-        line.removeSection(section);
+        Section section2 = new Section(구의역, 강변역, 4, line);
+        line.addSection(section2);
+
+        line.removeSection(section2);
 
         assertThat(line.getDownStation()).isEqualTo(구의역);
     }

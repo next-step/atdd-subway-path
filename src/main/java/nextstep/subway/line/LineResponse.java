@@ -17,11 +17,11 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, Color color, StationResponse upStationResponse, StationResponse downStationResponse) {
+    public LineResponse(Long id, String name, Color color, List<StationResponse> stationResponses) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = List.of(upStationResponse, downStationResponse);
+        this.stations = stationResponses;
     }
 
 

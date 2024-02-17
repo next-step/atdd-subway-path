@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
@@ -30,10 +29,11 @@ public class LineService {
 
         Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance()));
 
-        StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
-        StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
+        List<StationResponse> stationResponses = line.getStations().stream()
+                .map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), upStationResponse, downStationResponse);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
     private Station getStation(long stationId) {
@@ -69,8 +69,9 @@ public class LineService {
     }
 
     @Transactional
-    public void addSection(Section section) {
-
+    public void addSection(Line line, Section section) {
+        line.addSection(section);
+        lineRepository.save(line);
     }
 
     private static LineResponse toLineResponse(Line line) {
@@ -78,6 +79,9 @@ public class LineService {
         Station downStation = line.getDownStation();
         StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
         StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), upStationResponse, downStationResponse);
+        List<StationResponse> stationResponses = line.getStations()
+                .stream().map(station -> new StationResponse(station.getId(), station.getName()))
+                .collect(Collectors.toList());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 }

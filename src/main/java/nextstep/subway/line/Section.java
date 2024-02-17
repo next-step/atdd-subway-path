@@ -1,5 +1,6 @@
-package nextstep.subway.section;
+package nextstep.subway.line;
 
+import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
@@ -11,19 +12,22 @@ public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Station upStation;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Station downStation;
     private Integer distance;
-    private Long lineId;
 
-    public Section(Station upStation, Station downStation, int distance, Long lineId) {
+    @ManyToOne
+    private Line line;
+
+    public Section(Station upStation, Station downStation, int distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.lineId = lineId;
+        this.line = line;
     }
+
 
     public Section() {
     }
@@ -34,10 +38,6 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public Integer getDistance() {
-        return distance;
     }
 
     public long getUpStationId() {

@@ -1,10 +1,10 @@
 package nextstep.subway.line;
 
-import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "line")
@@ -27,6 +27,9 @@ public class Line {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
+    @Embedded
+    private LineSections lineSections = new LineSections();
+
     @Column(nullable = false)
     private Integer distance;
 
@@ -39,6 +42,40 @@ public class Line {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        lineSections.add(new Section(upStation, downStation, distance, this));
+    }
+
+    public void update(String name, Color color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void addSection(Section section) {
+        lineSections.add(section);
+    }
+
+    public void removeSection(long stationsId) {
+        Optional<Section> section = lineSections.find(stationsId);
+        section.ifPresent(value -> lineSections.remove(value));
+    }
+
+    public void removeSection(Section section) {
+        lineSections.remove(section);
+    }
+
+    public List<Station> getStations() {
+        return lineSections.getStations();
+    }
+
+    public boolean hasStation(long downStationId) {
+        return lineSections.exist(downStationId);
+    }
+
+    public boolean isLastStation(long stationID) {
+        return downStation.getId().equals(stationID);
+    }
+    public boolean deletableSection() {
+        return lineSections.deletable();
     }
 
     public Long getId() {
@@ -63,35 +100,5 @@ public class Line {
 
     public Integer getDistance() {
         return distance;
-    }
-
-    public void update(String name, Color color) {
-        this.name = name;
-        this.color = color;
-    }
-
-    public boolean isLastStation(Station station) {
-        return downStation.equals(station);
-    }
-
-
-    public void removeSection(Section section) {
-        if(!isLastStation(section.getDownStation())) {
-            throw new IllegalStateException("하행 종점만 제거 가능");
-        }
-        changeDownStation(section.getUpStation());
-    }
-
-    public void addSection(Section section) {
-        this.downStation = section.getDownStation();
-        this.distance += section.getDistance();
-    }
-
-    public void changeDownStation(Station upStation) {
-        this.downStation = upStation;
-    }
-
-    public List<Station> getStations() {
-        return List.of(upStation, downStation);
     }
 }

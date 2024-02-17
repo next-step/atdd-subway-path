@@ -1,8 +1,5 @@
-package nextstep.subway.section;
+package nextstep.subway.line;
 
-import nextstep.subway.line.Line;
-import nextstep.subway.line.LineNotFoundException;
-import nextstep.subway.line.LineRepository;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
@@ -11,13 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SectionService {
 
-    private final SectionDao sectionDao;
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    public SectionService(SectionDao sectionDao,
-                          LineRepository lineRepository,
+    public SectionService(LineRepository lineRepository,
                           StationRepository stationRepository) {
-        this.sectionDao = sectionDao;
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }
@@ -27,38 +21,33 @@ public class SectionService {
 
         Line line = getLine(lineId);
 
-        if (!line.isLastStation(getStation(sectionRequest.getDownStationId()))) {
+        if (!line.isLastStation(sectionRequest.getUpStationId())) {
             throw new IllegalStateException("새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다");
         }
-        LineSections sectionsByLine = sectionDao.findSectionsByLine(line.getId());
-        if(sectionsByLine.hasStation(sectionRequest.getDownStationId())) {
+
+        if(line.hasStation(sectionRequest.getDownStationId())){
             throw new IllegalStateException("이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다");
         }
 
         Station downStation = getStation(sectionRequest.getDownStationId());
-        Section section = new Section(getStation(sectionRequest.getUpStationId()), downStation, sectionRequest.getDistance(), line.getId());
+        Station upStation = getStation(sectionRequest.getUpStationId());
+        Section section = new Section(upStation, downStation, sectionRequest.getDistance(), line);
         line.addSection(section);
-        Section saved = sectionDao.save(section);
+        Line saved = lineRepository.save(line);
 
-        return new SectionResponse(saved.getUpStationId(), saved.getDownStationId(), saved.getDistance());
+        return new SectionResponse(saved.getUpStation().getId(), saved.getDownStation().getId(), saved.getDistance());
     }
 
     public void deleteSection(long lineId, long stationId) {
 
         Line line = getLine(lineId);
-        if(!line.isLastStation(getStation(stationId))) {
-            throw new IllegalStateException("마지막 구간만 제거할 수 있다.");
-        }
+        line.removeSection(stationId);
 
-        LineSections sections = sectionDao.findSectionsByLine(lineId);
-        if(sections.hasOnlyOneSection()) {
+        if(line.deletableSection()) {
             throw new IllegalStateException("구간이 1개여서 역을 삭제할 수 없다");
         }
 
-        Section section = sectionDao.findDownStation(stationId);
-        sectionDao.deleteSection(section);
-
-        line.changeDownStation(getStation(section.getUpStationId()));
+        line.removeSection(stationId);
         lineRepository.save(line);
     }
 
