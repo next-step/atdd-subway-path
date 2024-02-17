@@ -39,18 +39,6 @@ public class Line {
         this.color = color;
     }
 
-    public void validateSequence(SectionCreateRequest request) {
-        if (this.getSections().getDownStationId() != request.getUpStationId()) {
-            throw new SectionMismatchException();
-        }
-    }
-
-    public void validateUniqueness(SectionCreateRequest request) {
-        if (this.getSections().getDownStationIds().contains(request.getDownStationId())) {
-            throw new AlreadyRegisteredException();
-        }
-    }
-
     public void validateLastStation() {
         if (this.getSections().getDownStationIds().size() < 1) {
             throw new InsufficientStationException();
