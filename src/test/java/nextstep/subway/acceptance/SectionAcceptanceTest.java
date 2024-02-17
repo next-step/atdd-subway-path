@@ -25,20 +25,27 @@ import nextstep.subway.dto.SectionResponse;
 
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
     ObjectMapper mapper = new ObjectMapper();
+    private Long 역삼역_ID;
+
+    private Long 선릉역_ID;
+
+    private Long 강남역_ID;
+
+    private Long 왕십리역_ID;
 
     @BeforeEach
     void setUp() {
         databaseCleanUp.execute();
-        지하철_역_생성(역삼역);
-        지하철_역_생성(선릉역);
-        지하철_역_생성(강남역);
-        지하철_역_생성(왕십리역);
+        역삼역_ID = 지하철_역_생성(역삼역);
+        선릉역_ID = 지하철_역_생성(선릉역);
+        강남역_ID = 지하철_역_생성(강남역);
+        왕십리역_ID = 지하철_역_생성(왕십리역);
     }
 
     @Test
     void test_특정_노선에_구간을_등록하면_노선_조회시_등록한_구간을_확인할_수_있다() throws JsonProcessingException {
         //when
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
         //then
         LineResponse response = when()
             .get("/lines/" + lineResponse.getId())
@@ -56,7 +63,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선이_주어졌을때_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_같으면_해당_구간을_마지막_구간에_등록할_수_있다() throws JsonProcessingException {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
 
         //when
         SectionRequest sectionRequest = new SectionRequest(2L, 4L, 10);
@@ -82,7 +89,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     void testAddSection_지하철_구간_중간에_역_추가() throws JsonProcessingException {
         //given
         int existingDistance = 10;
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
         SectionRequest sectionRequest = new SectionRequest(1L, 3L, existingDistance);
         addSection(lineResponse, sectionRequest);
 
@@ -114,7 +121,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void testAddSection_상행종점역_추가() throws JsonProcessingException {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
 
         //when
         SectionRequest sectionRequest = new SectionRequest(4L, 1L, 5);
@@ -138,7 +145,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void testAddSection_구간_추가시_기존에_등록되어있으면_예외_반환() throws JsonProcessingException {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
         SectionRequest sectionRequest1 = new SectionRequest(2L, 3L, 5);
         addSection(lineResponse, sectionRequest1);
         //when
@@ -153,7 +160,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_다를_때_등록하려는_구간의_길이가_구간_사이에_들어올_수_없으면_에러를_반환한다() throws JsonProcessingException {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
 
         //when
         SectionRequest sectionRequest = new SectionRequest(1L, 4L, 15);
@@ -165,7 +172,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선에_등록된_구간이_2개_이상_있을때_마지막_구간을_제거하면_노선_조회시_제거된_마지막_구간의_상행역이_전체_노선의_하행종점역이_된다() throws JsonProcessingException {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
         SectionRequest sectionRequest = new SectionRequest(2L, 4L, 10);
         addSection(lineResponse, sectionRequest);
 
@@ -187,7 +194,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선에_등록된_구간이_2개_이상_있을때_요청한_역이_기존_노선의_하행종점역과_다르면_구간을_삭제할_수_없다() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
 
         //when & then
         when()
@@ -198,7 +205,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 지하철_노선에_상행_종점역과_하행_종점역만_있는_경우_구간이_1개인_경우_역을_삭제할_수_없다() {
         //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID));
 
         //when & then
         when()
