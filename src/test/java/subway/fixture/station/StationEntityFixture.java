@@ -69,6 +69,24 @@ public class StationEntityFixture {
 		return 녹번역;
 	}
 
+	public static Station 교대역() {
+		Station 교대역 = StationEntityFixture.builder()
+			.name("교대역")
+			.build();
+
+		ReflectionTestUtils.setField(교대역, "id", 7L);
+		return 교대역;
+	}
+
+	public static Station 남부터미널역() {
+		Station 남부터미널역 = StationEntityFixture.builder()
+			.name("남부터미널역")
+			.build();
+
+		ReflectionTestUtils.setField(남부터미널역, "id", 8L);
+		return 남부터미널역;
+	}
+
 	public static Builder builder() {
 		return new Builder();
 	}
