@@ -86,10 +86,6 @@ public class Line {
         return color;
     }
 
-    public Sections getSections() {
-        return sections;
-    }
-
     public List<Station> getAllStations() {
         return sections.getAllStations();
     }

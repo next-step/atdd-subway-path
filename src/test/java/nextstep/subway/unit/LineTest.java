@@ -378,10 +378,11 @@ class LineTest {
                 역삼_강남_구간 = SectionFixture.역삼_강남_구간(10, 이호선);
                 강남_서초_구간 = SectionFixture.강남_서초_구간(10, 이호선);
 
-                이호선.addSection(삼성_선릉_구간);
-                이호선.addSection(선릉_역삼_구간);
-                이호선.addSection(역삼_강남_구간);
-                이호선.addSection(강남_서초_구간);
+                이호선.addSection(역삼_강남_구간); // New (역삼 - 강남)
+                이호선.addSection(선릉_역삼_구간); // New (선릉 - 역삼) + 역삼 - 강남
+                이호선.addSection(삼성_선릉_구간); // New (삼성 - 선릉) + 선릉 - 역삼 + 역삼 - 강남
+                이호선.addSection(강남_서초_구간); // 삼성 - 선릉 + 선릉 - 역삼 + 역삼 - 강남 + New (강남 - 서초)
+                
             }
 
             @Nested

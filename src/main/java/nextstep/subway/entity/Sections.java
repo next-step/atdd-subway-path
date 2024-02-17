@@ -22,6 +22,9 @@ public class Sections {
             sections.add(sectionToAdd);
             return;
         }
+
+        sortSectionsByConnectedSections(sections);
+
         if (isAddLastSection(sectionToAdd)) {
             sections.add(sectionToAdd);
             return;
@@ -47,7 +50,7 @@ public class Sections {
     }
 
     public void deleteSection(Line line, Station stationToDelete) {
-        //convertConnectedSections(sections);
+        sortSectionsByConnectedSections(sections);
 
         if (isFirstStation(stationToDelete)) {
             sections.remove(findFirstSection());
@@ -95,7 +98,7 @@ public class Sections {
         return findLastStation().isSame(stationToDelete);
     }
 
-    private List<Section> convertConnectedSections(List<Section> sections) {
+    private List<Section> sortSectionsByConnectedSections(List<Section> sections) {
         LinkedList<Section> linkedSections = new LinkedList<>();
         List<Section> sectionsToRemove = new ArrayList<>();
 
@@ -245,6 +248,6 @@ public class Sections {
     }
 
     public List<Section> getAllSections() {
-        return convertConnectedSections(sections);
+        return sortSectionsByConnectedSections(sections);
     }
 }
