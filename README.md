@@ -16,5 +16,5 @@
 - [X] 테스트에서 Stubbing 하기 위해서, Station Entity에 `updateId` 메서드를 추가했다. 좋은 방법일까?
 - [X] 엔티티별 핵심 메서드에 대해서 테스트를 했다면, Service 레이어에서는 어떠한 테스트를 해야할까?
 - [ ] 테스트 코드 작성 중(getStations() 비교) LazyInitializationException이 발생했다. fetch = FetchType.EAGER 속성을 추가하는 것이 무조건 정답일까?
-- [ ] 지하철 구간 목록이 내부적으로 연결되도록 정렬하는 메서드(`sortByConnectedSections`)를 Bubble Sort로 구현했다. 최적화 혹은 다른 알고리즘을 찾아보자.
+- [ ] 지하철 구간 목록이 내부적으로 연결되도록 정렬하는 메서드(`sortByConnectedSections`)를 2중 for문으로 구현했다. 최적화 혹은 다른 방법이 있을까?
   - [ ] 2중 for문은 가독성이 굉장히 떨어진다. 리팩토링 해보자.
