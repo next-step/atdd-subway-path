@@ -1,7 +1,5 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.service.LineService;
 import nextstep.subway.service.StationService;
@@ -38,24 +36,21 @@ public class LineServiceMockTest {
     @Test
     @DisplayName("addSection을 호출하면 섹션이 추가된다.")
     void addSection() {
-        Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
+        final Long lineId = 1L;
+        final Long upStationId = 2L;
+        final Long downStationId = 3L;
 
         // given
-        // lineRepository, stationService stub 설정을 통해 초기값 셋팅
-        when(stationService.findStationById(역삼역_엔티티.getId())).thenReturn(역삼역_엔티티);
-        when(stationService.findStationById(선릉역_엔티티.getId())).thenReturn(선릉역_엔티티);
-        when(lineRepository.findById(신분당선.getId())).thenReturn(Optional.of(신분당선));
+        when(stationService.findStationById(upStationId)).thenReturn(역삼역_엔티티);
+        when(stationService.findStationById(downStationId)).thenReturn(선릉역_엔티티);
+        when(lineRepository.findById(lineId)).thenReturn(Optional.of(신분당선_엔티티(강남역_엔티티, 역삼역_엔티티)));
 
         // when
-        // lineService.addSection 호출
-        AddSectionCommand command = new AddSectionCommand(
-                신분당선.getId(), 역삼역_엔티티.getId(), 선릉역_엔티티.getId(), 10
-        );
+        AddSectionCommand command = new AddSectionCommand(lineId, upStationId, downStationId, 10);
         LineSectionDto createdSection = lineService.addSection(command);
 
         // then
-        // lineService.findLineById 메서드를 통해 검증
-        LineDto foundLine = lineService.getLineByIdOrFail(신분당선.getId());
+        LineDto foundLine = lineService.getLineByIdOrFail(lineId);
 
         List<String> actualLineStationNames = foundLine.getStations()
                 .stream().map(StationDto::getName)

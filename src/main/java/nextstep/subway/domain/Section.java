@@ -21,19 +21,8 @@ public class Section {
         this.distance = distance;
     }
 
-    private Section(Long id, Station upStation, Station downStation, int distance) {
-        this.id = id;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
     public static Section create(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
-    }
-
-    public static Section createWithId(Long id, Station upStation, Station downStation, int distance) {
-        return new Section(id, upStation, downStation, distance);
     }
 
     public Long getId() {
