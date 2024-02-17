@@ -44,6 +44,15 @@ public class LineEntityFixture {
 		return line;
 	}
 
+	public static Line 이호선() {
+		Line line = LineEntityFixture.builder()
+			.name("이호선")
+			.color("빨간색")
+			.build();
+		ReflectionTestUtils.setField(line, "id", 3L);
+		return line;
+	}
+
 	public static Line 신분당선_1구간_추가() {
 		Line line = 신분당선();
 		Station 강남역 = 강남역();

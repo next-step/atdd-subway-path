@@ -196,6 +196,12 @@ public class Sections {
 		return stations;
 	}
 
+	public List<Section> getSortedSections() {
+		return sectionList.stream()
+			.sorted()
+			.collect(toList());
+	}
+
 	public List<Station> getStations() {
 		return sectionList.stream()
 			.flatMap(section -> section.getStations().stream())

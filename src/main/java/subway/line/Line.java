@@ -87,4 +87,8 @@ public class Line {
 	public List<Station> getSortedStations() {
 		return getSections().getSortedStations();
 	}
+
+	public List<Section> getSortedSections() {
+		return getSections().getSortedSections();
+	}
 }
