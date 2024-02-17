@@ -1,6 +1,5 @@
 package nextstep.subway.path;
 
-import nextstep.subway.exception.HttpBadRequestException;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.section.Section;
 import nextstep.subway.paths.Path;
@@ -30,6 +29,8 @@ class PathFinderTest {
     private Line 삼호선;
     private Line 신분당선;
     private Line 구호선;
+
+    private List<Line> 지하철_목록_일호선_이호선_삼호선_신분당선_구호선;
 
     private PathFinder pathFinder;
 
@@ -63,13 +64,14 @@ class PathFinderTest {
         Section section5 = new Section(김포공항역, 가양역, 5, 구호선);
         구호선.addSection(section5);
 
-        pathFinder = new PathFinder(List.of(이호선, 삼호선, 일호선, 신분당선, 구호선));
+        지하철_목록_일호선_이호선_삼호선_신분당선_구호선 = List.of(이호선, 삼호선, 일호선, 신분당선, 구호선);
+        pathFinder = new PathFinder();
     }
 
     @Test
     @DisplayName("출발역으로부터 도착역까지의 경로에 있는 역 목록")
     void findPath() {
-        Path path = pathFinder.findPath(강남역, 교대역);
+        Path path = pathFinder.findPath(지하철_목록_일호선_이호선_삼호선_신분당선_구호선, 강남역, 교대역);
         assertThat(path.getPath()).contains(강남역, 교대역);
         assertThat(path.getDistance()).isEqualTo(6);
     }
@@ -77,7 +79,7 @@ class PathFinderTest {
     @Test
     @DisplayName("예외_출발역과 도착역이 같습니다.")
     void error_sameStation() {
-        Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 강남역))
+        Assertions.assertThatThrownBy(() -> pathFinder.findPath(지하철_목록_일호선_이호선_삼호선_신분당선_구호선, 강남역, 강남역))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -85,14 +87,14 @@ class PathFinderTest {
     @DisplayName("예외_존재하지 않는 역입니다.")
     void error_notExistStation() {
         Station 잠실역 = new Station("잠실역");
-        Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 잠실역))
+        Assertions.assertThatThrownBy(() -> pathFinder.findPath(지하철_목록_일호선_이호선_삼호선_신분당선_구호선, 강남역, 잠실역))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     @DisplayName("예외_경로가 존재하지 않습니다.")
     void error_notExistPath() {
-        Assertions.assertThatThrownBy(() -> pathFinder.findPath(강남역, 김포공항역))
+        Assertions.assertThatThrownBy(() -> pathFinder.findPath(지하철_목록_일호선_이호선_삼호선_신분당선_구호선, 강남역, 김포공항역))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
