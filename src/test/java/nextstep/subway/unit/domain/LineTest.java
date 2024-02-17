@@ -2,13 +2,11 @@ package nextstep.subway.unit.domain;
 
 import nextstep.subway.common.Constant;
 import nextstep.subway.exception.DeleteSectionException;
-import nextstep.subway.exception.IsNotLastStationException;
 import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -61,10 +59,8 @@ class LineTest {
         List<Station> 신분당선_역_목록 = 신분당선.getStations();
 
         // then
-        assertAll(
-                () -> assertThat(신분당선_역_목록).contains(신논현역, 강남역, 양재역),
-                () -> assertThat(신분당선_역_목록).doesNotContain(논현역)
-        );
+        assertThat(신분당선_역_목록).contains(신논현역, 강남역, 양재역);
+        assertThat(신분당선_역_목록).doesNotContain(논현역);
     }
 
     @DisplayName("구간을 삭제")
@@ -80,10 +76,8 @@ class LineTest {
         신분당선.deleteSection(양재역);
 
         // then
-        assertAll(
-                () -> assertThat(신분당선.hasSection(신논현역_강남역_구간)).isTrue(),
-                () -> assertThat(신분당선.hasSection(강남역_양재역_구간)).isFalse()
-        );
+        assertThat(신분당선.hasSection(신논현역_강남역_구간)).isTrue();
+        assertThat(신분당선.hasSection(강남역_양재역_구간)).isFalse();
     }
 
     @DisplayName("노선에 등록되지 않은 역을 삭제하면 예외 발생")

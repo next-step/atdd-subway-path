@@ -161,10 +161,10 @@ public class Sections {
     public void deleteSection(Station station) {
         validateDeleteSection(station);
 
-//        if (possibleAddedFirstSection(newSection)) {
-//            addFirstSection(newSection);
-//            return;
-//        }
+        if (possibleDeletedFirstSection(station)) {
+            deleteFirstSection();
+            return;
+        }
         if (possibleDeletedLastSection(station)) {
             deleteLastSection();
             return;
@@ -172,8 +172,18 @@ public class Sections {
         deleteMiddleSection(station);
     }
 
+    private boolean possibleDeletedFirstSection(Station station) {
+        return getFirstSection().getUpStation().equals(station);
+    }
+
     private boolean possibleDeletedLastSection(Station station) {
         return getLastSection().getDownStation().equals(station);
+    }
+
+    private void deleteFirstSection() {
+        Section firstSection = getFirstSection();
+        firstSection.delete();
+        this.sections.remove(firstSection);
     }
 
     private void deleteLastSection() {

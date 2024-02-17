@@ -147,27 +147,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
     }
 
-
-//    /**
-//     * When 지하철 노선에 등록된 역(하행 종점역)이 아닌 역을 삭제하면
-//     * Then 구간이 삭제되지 않는다.
-//     */
-//    @DisplayName("지하철 노선에 등록된 역(하행 종점역)이 아닌 역을 삭제하면 구간이 삭제되지 않는다.")
-//    @Test
-//    void 등록되지_않은_하행역을_삭제() {
-//        // given
-//        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
-//        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-//
-//        // when
-//        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
-//        지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID);
-//
-//        // then
-//        ExtractableResponse<Response> 지하철_노선_삭제_응답 = 지하철_구간_삭제(신분당선_ID, 논현역_ID);
-//        지하철_구간_삭제_예외발생_검증(지하철_노선_삭제_응답);
-//    }
-
     /**
      * When 지하철 노선의 구간이 1개인데 역을 삭제하면
      * Then 역이 삭제되지 않는다.
@@ -195,7 +174,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-
         AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
         AddSectionResponse 신논현_강남_노선_등록_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
@@ -206,7 +184,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         // then
         지하철_구간_삭제_검증(강남역_ID, 신분당선_조회_응답);
     }
-
 
     /**
      * Given 지하철 노선을 생성하고
@@ -219,7 +196,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-
         AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
         AddSectionResponse 신논현_강남_노선_등록_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
 
@@ -229,6 +205,28 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
 
         // then
         지하철_구간_삭제_검증(신논현역_ID, 신분당선_조회_응답);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 노선 처음 구간을 제거하면
+     * Then 노선 처음 구간이 제거된다.
+     */
+    @DisplayName("지하철 노선 처음 역을 제거한다.")
+    @Test
+    void 지하철_노선_처음_역을_삭제() {
+        // given
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
+        AddSectionRequest 신논현_강남_구간_생성_요청 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
+        AddSectionResponse 신논현_강남_노선_등록_응답 = 지하철_구간_추가(신논현_강남_구간_생성_요청, 신분당선_ID).as(AddSectionResponse.class);
+
+        // when
+        지하철_구간_삭제(신분당선_ID, 논현역_ID);
+        ShowLineResponse 신분당선_조회_응답 = 지하철_노선_조회(신분당선_ID).as(ShowLineResponse.class);
+
+        // then
+        지하철_구간_삭제_검증(논현역_ID, 신분당선_조회_응답);
     }
 
     void 지하철_구간_등록_검증(AddSectionResponse addSectionResponse, ShowLineResponse showLineResponse) {
