@@ -197,10 +197,6 @@ public class Sections {
             return;
         }
 
-        // (논현 - 신논현) (신논현 - 강남) (강남 - 양재)
-        // (논현 - 신논현) (신논현 - 양재)
-
-
         Section deletedSection = sections.stream()
                 .filter(s -> s.isDownStation(station))
                 .findFirst()
@@ -216,9 +212,6 @@ public class Sections {
 
         deletedSection.delete();
         this.sections.remove(deletedSection);
-//        Section lastSection = getLastSection();
-//        lastSection.delete();
-//        this.sections.remove(lastSection);
     }
 
     private void validateDeleteSection(Station station) {
@@ -229,13 +222,6 @@ public class Sections {
             throw new DeleteSectionException();
         }
     }
-
-//    private boolean isNotLastStation(Station station) {
-//        if (this.sections.isEmpty()) {
-//            throw new EmptySectionException();
-//        }
-//        return !getLastSection().isDownStation(station);
-//    }
 
     public boolean hasSection(Section section) {
         return this.sections.contains(section);

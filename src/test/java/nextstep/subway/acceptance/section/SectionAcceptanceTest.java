@@ -125,7 +125,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
 
         // then
         ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(신논현_논현_구간_생성_요청, 신분당선_ID);
-        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
+        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -144,23 +144,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
 
         // then
         ExtractableResponse<Response> 지하철_노선_등록_응답 = 지하철_구간_추가(강남_양재_구간_생성_요청, 신분당선_ID);
-        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답);
-    }
-
-    /**
-     * When 지하철 노선의 구간이 1개인데 역을 삭제하면
-     * Then 역이 삭제되지 않는다.
-     */
-    @DisplayName("지하철 노선의 구간이 1개인 경우 역이 삭제되지 않는다.")
-    @Test
-    void 남은_구간이_한개인_노선의_역_삭제() {
-        // given
-        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
-        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
-
-        // when & then
-        ExtractableResponse<Response> 지하철_노선_삭제_응답 = 지하철_구간_삭제(신분당선_ID, 신논현역_ID);
-        지하철_구간_삭제_예외발생_검증(지하철_노선_삭제_응답);
+        지하철_구간_등록_예외발생_검증(지하철_노선_등록_응답, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -168,9 +152,9 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      * When 노선 마지막 구간을 제거하면
      * Then 노선 마지막에 구간이 제거된다.
      */
-    @DisplayName("지하철 노선 마지막 역을 제거한다.")
+    @DisplayName("지하철 노선 마지막 구간을 제거한다.")
     @Test
-    void 지하철_노선_마지막_역을_삭제() {
+    void 지하철_노선_마지막_구간을_삭제() {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
@@ -190,9 +174,9 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      * When 노선 가운데 구간을 제거하면
      * Then 노선 가운데 구간이 제거된다.
      */
-    @DisplayName("지하철 노선 가운데 역을 제거한다.")
+    @DisplayName("지하철 노선 가운데 구간을 제거한다.")
     @Test
-    void 지하철_노선_가운데_역을_삭제() {
+    void 지하철_노선_가운데_구간을_삭제() {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
@@ -212,9 +196,9 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
      * When 노선 처음 구간을 제거하면
      * Then 노선 처음 구간이 제거된다.
      */
-    @DisplayName("지하철 노선 처음 역을 제거한다.")
+    @DisplayName("지하철 노선 처음 구간을 제거한다.")
     @Test
-    void 지하철_노선_처음_역을_삭제() {
+    void 지하철_노선_처음_구간을_삭제() {
         // given
         CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
         Long 신분당선_ID = 신분당선_생성_응답.getLineId();
@@ -229,6 +213,38 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         지하철_구간_삭제_검증(논현역_ID, 신분당선_조회_응답);
     }
 
+    /**
+     * When 지하철 노선의 구간이 1개인데 역을 삭제하면
+     * Then 역이 삭제되지 않는다.
+     */
+    @DisplayName("지하철 노선의 구간이 1개인 경우 역이 삭제되지 않는다.")
+    @Test
+    void 남은_구간이_한개인_노선의_구간_삭제() {
+        // given
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
+
+        // when & then
+        ExtractableResponse<Response> 지하철_노선_삭제_응답 = 지하철_구간_삭제(신분당선_ID, 신논현역_ID);
+        지하철_구간_삭제_예외발생_검증(지하철_노선_삭제_응답, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * When 노선에 상행역 또는 하행역이 없는 구간을 삭제하면
+     * Then 구간이 삭제되지 않는다.
+     */
+    @DisplayName("삭제하려는 구간의 상행역 또는 하행역이 노선에 존재하지 않으면 삭제되지 않는다.")
+    @Test
+    void 하행역_또는_상행역이_노선에_없는_구간_삭제() {
+        // given
+        CreateLineResponse 신분당선_생성_응답 = 지하철_노선_생성(신분당선_생성_요청).as(CreateLineResponse.class);
+        Long 신분당선_ID = 신분당선_생성_응답.getLineId();
+
+        // when & then
+        ExtractableResponse<Response> 지하철_노선_삭제_응답 = 지하철_구간_삭제(신분당선_ID, 양재역_ID);
+        지하철_구간_삭제_예외발생_검증(지하철_노선_삭제_응답, HttpStatus.NOT_FOUND);
+    }
+
     void 지하철_구간_등록_검증(AddSectionResponse addSectionResponse, ShowLineResponse showLineResponse) {
         assertTrue(showLineResponse.getSections().stream()
                 .anyMatch(sectionDto ->
@@ -237,8 +253,8 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
                 ));
     }
 
-    void 지하철_구간_등록_예외발생_검증(ExtractableResponse<Response> extractableResponse) {
-        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    void 지하철_구간_등록_예외발생_검증(ExtractableResponse<Response> extractableResponse, HttpStatus status) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(status.value());
     }
 
     void 지하철_구간_삭제_검증(Long stationId, ShowLineResponse showLineResponse) {
@@ -249,8 +265,8 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
                 ));
     }
 
-    void 지하철_구간_삭제_예외발생_검증(ExtractableResponse<Response> extractableResponse) {
-        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    void 지하철_구간_삭제_예외발생_검증(ExtractableResponse<Response> extractableResponse, HttpStatus status) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(status.value());
     }
 
 }

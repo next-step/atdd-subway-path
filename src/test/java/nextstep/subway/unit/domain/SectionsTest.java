@@ -2,6 +2,7 @@ package nextstep.subway.unit.domain;
 
 import nextstep.subway.common.Constant;
 import nextstep.subway.exception.AlreadyExistSectionException;
+import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.exception.NotFoundUpStationOrDownStation;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
@@ -156,6 +157,17 @@ public class SectionsTest {
         // then
         List<Section> 구간들 = 신분당선_구간들.getSortedSections();
         구간_변화_검증(구간들, 1, List.of(신논현_강남_구간), Constant.역_간격_10);
+    }
+
+    @DisplayName("상행역과 하행역이 모두 노선에 없는 구간을 제거하면 예외발생")
+    @Test
+    void 상행역과_하행역이_모두_노선에_없는_구간을_등록하면_제거발생() {
+        // given
+        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간)));
+
+        // when & then
+        assertThatThrownBy(() -> 신분당선_구간들.deleteSection(강남역))
+                .isInstanceOf(NotFoundStationException.class);
     }
 
     void 구간_변화_검증(List<Section> 구간들, int 구간_수, List<Section> 비교_구간들, int 노선_길이) {
