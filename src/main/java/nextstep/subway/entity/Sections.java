@@ -47,6 +47,8 @@ public class Sections {
     }
 
     public void deleteSection(Line line, Station stationToDelete) {
+        //convertConnectedSections(sections);
+
         if (isFirstStation(stationToDelete)) {
             sections.remove(findFirstSection());
             return;
@@ -60,7 +62,6 @@ public class Sections {
     }
 
     private void deleteIntermediateStation(Line line, Station stationToDelete) {
-        convertConnectedSections(sections);
 
         Section deletionPoint = sections.stream()
                 .filter(section -> section.isAtLeastOneSameStation(stationToDelete))
@@ -79,9 +80,7 @@ public class Sections {
                 nextSectionOfPoint.getDownStation(),
                 deletionPoint.getDistance() + nextSectionOfPoint.getDistance(),
                 line
-                ));
-
-        convertConnectedSections(sections);
+        ));
     }
 
     private Section findLastSection() {
@@ -96,7 +95,7 @@ public class Sections {
         return findLastStation().isSame(stationToDelete);
     }
 
-    private void convertConnectedSections(List<Section> sections) {
+    private List<Section> convertConnectedSections(List<Section> sections) {
         LinkedList<Section> linkedSections = new LinkedList<>();
         List<Section> sectionsToRemove = new ArrayList<>();
 
@@ -122,6 +121,7 @@ public class Sections {
 
         sections.clear();
         sections.addAll(linkedSections);
+        return sections;
     }
 
     private boolean canConnectBefore(Section targetSection, Section sectionToConnect) {
@@ -245,7 +245,6 @@ public class Sections {
     }
 
     public List<Section> getAllSections() {
-        convertConnectedSections(sections);
-        return sections;
+        return convertConnectedSections(sections);
     }
 }

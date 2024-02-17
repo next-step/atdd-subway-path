@@ -47,16 +47,6 @@ public class StationSectionSteps {
         구간_요청_목록.forEach(구간_요청 -> 지하철_구간_추가요청_상태코드_검증_포함(노선_번호, 구간_요청, HttpStatus.CREATED));
     }
 
-    public static JsonPath 지하철_구간_목록_조회_상태코드_검증_포함(
-            Long stationLineId, HttpStatus httpStatus) {
-        return given()
-                .when()
-                .get(String.format("/lines/%d/sections", stationLineId))
-                .then().log().all()
-                .statusCode(httpStatus.value())
-                .extract().jsonPath();
-    }
-
     public static List<Long> convertToStationIdsFromSection(JsonPath jsonPath) {
         Set<Long> allStationIds = new LinkedHashSet<>();
 

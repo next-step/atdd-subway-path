@@ -1,30 +1,20 @@
 package nextstep.subway.presentation;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 public class SectionController {
 
     private final LineService lineService;
 
-    private final SectionService sectionService;
-
-    public SectionController(LineService lineService, SectionService sectionService) {
+    public SectionController(LineService lineService) {
         this.lineService = lineService;
-        this.sectionService = sectionService;
-    }
-
-    @GetMapping("/lines/{lineId}/sections")
-    public ResponseEntity<List<SectionResponse>> findAllSectionsByLine(@PathVariable Long lineId) {
-        return ResponseEntity.ok(sectionService.findAllSectionsByLine(lineId));
     }
 
     @PostMapping("/lines/{lineId}/sections")

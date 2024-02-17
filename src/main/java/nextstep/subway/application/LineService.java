@@ -24,12 +24,9 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    private final SectionService sectionService;
-
-    public LineService(StationRepository stationRepository, LineRepository lineRepository, SectionService sectionService) {
+    public LineService(StationRepository stationRepository, LineRepository lineRepository) {
         this.stationRepository = stationRepository;
         this.lineRepository = lineRepository;
-        this.sectionService = sectionService;
     }
 
     @Transactional
@@ -103,7 +100,7 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                convertStationResponses(sectionService.findAllSectionsByLineId(line.getId())));
+                convertStationResponses(line.getAllSections()));
     }
 
     private List<StationResponse> convertStationResponses(List<Section> sections) {
