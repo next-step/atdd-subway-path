@@ -1,9 +1,6 @@
 package nextstep.subway.section.api;
 
 import nextstep.subway.global.exception.AlreadyRegisteredException;
-import nextstep.subway.global.exception.InsufficientStationException;
-import nextstep.subway.global.exception.SectionMismatchException;
-import nextstep.subway.global.exception.StationNotMatchException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.section.SectionRepository;
@@ -33,19 +30,88 @@ public class SectionService {
     public SectionResponse create(Long lineId, SectionCreateRequest request) {
         Line line = getLine(lineId);
 
-        if (line.getSections() != null) {
-            validateSequence(request, line);
-            validateUniqueness(request, line);
+        if (line.getSections().getStations().contains(request.getUpStationId()) && line.getSections().getStations().contains(request.getDownStationId())) {
+            throw new AlreadyRegisteredException();
         }
 
-        Section section = SectionCreateRequest.toEntity(
-                request.getUpStationId(),
-                request.getDownStationId(),
-                request.getDistance()
-        );
-        Section savedSection = sectionRepository.save(section);
-        line.getSections().addSection(savedSection);
-        return SectionResponse.of(savedSection);
+        if (line.getSections().getStations().contains(request.getUpStationId())) {
+            // 새로 추가하는 역은 request.다운스테이션
+            int index = line.getSections().getStations().indexOf(request.getUpStationId());
+
+            if (index == line.getSections().getStations().size() - 1) {
+                // 마지막에 추가하는 경우
+                Section newSection = SectionCreateRequest.toEntity(
+                        request.getUpStationId(),
+                        request.getDownStationId(),
+                        request.getDistance()
+                );
+                line.getSections().addSection(newSection);
+                return SectionResponse.of(newSection);
+            }
+
+            // 중간에 추가
+            Long originalUpStationId = line.getSections().getStations().get(index);
+
+            // 기존 구간 찾기
+            Section originalSection = line.getSections().getSections().stream().filter(
+                    section -> section.getUpStationId() == originalUpStationId
+            ).findFirst().get();
+
+            // 기존 구간에 새로운 구간 추가
+            Section newSection = SectionCreateRequest.toEntity(
+                    request.getDownStationId(),
+                    originalSection.getDownStationId(),
+                    originalSection.getDistance() - request.getDistance()
+            );
+            int newIndex = line.getSections().getSections().indexOf(originalSection) + 1;
+            line.getSections().getSections().add(newIndex, newSection);
+
+            // 기존 구간 정보 변경
+            originalSection.changeDownStationId(request.getDownStationId());
+            originalSection.changeDistance(request.getDistance());
+
+            return SectionResponse.of(newSection);
+        } else if (line.getSections().getStations().contains(request.getDownStationId())) {
+            // 새로운 역은 request.getUpstationId
+            int index = line.getSections().getStations().indexOf(request.getDownStationId());
+
+            if (index == 0) {
+                // 라인의 첫구간에 추가
+                Section newSection = SectionCreateRequest.toEntity(
+                        request.getUpStationId(),
+                        request.getDownStationId(),
+                        request.getDistance()
+                );
+
+                line.getSections().getSections().add(0, newSection);
+                return SectionResponse.of(newSection);
+            }
+
+            // 라인의 중간에 추가
+            Long originalDownStationId = line.getSections().getStations().get(index);
+
+            Section originalSection = line.getSections().getSections().stream().filter(
+                    section -> section.getDownStationId() == originalDownStationId
+            ).findFirst().orElseThrow(
+                    () -> new EntityNotFoundException("구간이 존재하지 않습니다.")
+            );
+
+            Section newSection = SectionCreateRequest.toEntity(
+                    request.getUpStationId(),
+                    request.getDownStationId(),
+                    request.getDistance()
+            );
+
+            int newIndex = line.getSections().getSections().indexOf(originalSection) + 1;
+            line.getSections().getSections().add(newIndex, newSection);
+
+            // 기존 구간 정보 변경
+            originalSection.changeDownStationId(request.getUpStationId());
+            originalSection.changeDistance(originalSection.getDistance() - request.getDistance());
+
+            return SectionResponse.of(newSection);
+        }
+        throw new IllegalArgumentException("아직 개발자가 모르는 예외입니다.");
     }
 
     @Transactional
@@ -53,8 +119,8 @@ public class SectionService {
         Line line = getLine(lineId);
 
         validateStationId(stationId);
-        validateLastStation(line);
-        validateDownStationId(stationId, line);
+        line.validateLastStation();
+        line.validateDownStationId(stationId);
 
         line.getSections().deleteLastSection();
     }
@@ -63,31 +129,6 @@ public class SectionService {
         return lineRepository.findById(lineId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Line Id '%d'를 찾을 수 없습니다.", lineId))
         );
-    }
-
-    // 라인의 섹션
-    private void validateSequence(SectionCreateRequest request, Line line) {
-        if (line.getSections().getDownStationId() != request.getUpStationId()) {
-            throw new SectionMismatchException();
-        }
-    }
-
-    private void validateUniqueness(SectionCreateRequest request, Line line) {
-        if (line.getSections().getDownStationIds().contains(request.getDownStationId())) {
-            throw new AlreadyRegisteredException();
-        }
-    }
-
-    private void validateLastStation(Line line) {
-        if (line.getSections().getDownStationIds().size() < 1) {
-            throw new InsufficientStationException();
-        }
-    }
-
-    private void validateDownStationId(Long stationId, Line line) {
-        if (line.getSections().getDownStationId() != stationId) {
-            throw new StationNotMatchException();
-        }
     }
 
     private void validateStationId(Long stationId) {

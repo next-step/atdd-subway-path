@@ -1,20 +1,29 @@
 package nextstep.subway.acceptance;
 
 import io.restassured.response.Response;
+import nextstep.subway.utils.DatabaseCleanup;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
 import static nextstep.subway.steps.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Sql(value = "/sql/truncate.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class StationAcceptanceTest {
+
+    @Autowired
+    DatabaseCleanup databaseCleanup;
+
+    @BeforeEach
+    public void setUp() {
+        databaseCleanup.execute();
+    }
 
     /**
      * Given 지하철역을 생성한다
