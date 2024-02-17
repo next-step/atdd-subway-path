@@ -33,7 +33,7 @@ public class StationService {
     }
 
     public ShowAllStationsResponse findAllStations() {
-        return ShowAllStationsResponse.of(stationRepository.findAll().stream()
+        return ShowAllStationsResponse.from(stationRepository.findAll().stream()
                 .map(StationDto::from)
                 .collect(Collectors.toList()));
     }

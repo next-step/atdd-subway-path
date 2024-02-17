@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.exception.NotPositiveDistanceException;
+import nextstep.subway.exception.SameStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.SQLDelete;
@@ -33,31 +35,63 @@ public class Section {
     private Integer distance;
 
     @Column
-    private LocalDateTime deleted_at;
+    private LocalDateTime deletedAt;
 
     protected Section() {
     }
 
     private Section(Station upStation, Station downStation, Integer distance) {
+        validate(upStation, downStation, distance);
+
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public static Section init() {
-        return new Section();
     }
 
     public static Section of(Station upStation, Station downStation, Integer distance) {
         return new Section(upStation, downStation, distance);
     }
 
+    private void validate(Station upStation, Station downStation, Integer distance) {
+        if (upStation.equals(downStation)) {
+            throw new SameStationException();
+        }
+        if (distance < 1) {
+            throw new NotPositiveDistanceException();
+        }
+    }
+
     public boolean isDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public void updateDownStation(Station downStation) {
+        if (this.upStation.equals(downStation)) {
+            throw new SameStationException();
+        }
+        this.downStation = downStation;
+    }
+
+    public void updateUpStation(Station upStation) {
+        if (this.downStation.equals(upStation)) {
+            throw new SameStationException();
+        }
+        this.upStation = upStation;
+    }
+
+    public void reduceDistance(int reductionDistance) {
+        if (this.distance <= reductionDistance) {
+            throw new NotPositiveDistanceException();
+        }
+        this.distance = this.distance - reductionDistance;
+    }
+
     public void delete() {
-        deleted_at = LocalDateTime.now();
+        deletedAt = LocalDateTime.now();
     }
 
     public Long getSectionId() {
@@ -94,7 +128,7 @@ public class Section {
 
     @Override
     public int hashCode() {
-        return Objects.hash(sectionId, line, upStation, downStation, distance, deleted_at);
+        return Objects.hash(sectionId, line, upStation, downStation, distance, deletedAt);
     }
 
 }

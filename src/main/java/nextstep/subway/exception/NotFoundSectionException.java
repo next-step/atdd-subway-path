@@ -1,14 +1,14 @@
 package nextstep.subway.exception;
 
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class NotFoundLineException extends RuntimeException {
+public class NotFoundSectionException extends RuntimeException {
 
-    public NotFoundLineException() {
-        super("없는 지하철 노선입니다.");
+    public NotFoundSectionException() {
+        super("없는 지하철 구간입니다.");
     }
 
 }
+

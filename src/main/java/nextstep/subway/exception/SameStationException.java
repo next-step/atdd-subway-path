@@ -4,10 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class DeleteSectionException extends RuntimeException {
+public class SameStationException extends RuntimeException {
 
-    public DeleteSectionException() {
-        super("남은 구간이 1개인 역은 삭제할 수 없습니다.");
+    public SameStationException() {
+        super("구간의 상행역과 하앵역이 동일합니다.");
     }
 
 }

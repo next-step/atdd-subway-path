@@ -1,56 +1,65 @@
 package nextstep.subway.acceptance.station;
 
 import nextstep.subway.acceptance.util.CommonAcceptanceTest;
+import nextstep.subway.common.Constant;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
+import nextstep.subway.station.presentation.response.CreateStationResponse;
+import nextstep.subway.station.presentation.response.ShowAllStationsResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static nextstep.subway.acceptance.station.StationApiExtractableResponse.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends CommonAcceptanceTest {
 
-    private String 강남역 = "강남역";
-    private String 광화문역 = "광화문역";
+    private CreateStationRequest 강남역_생성_요청;
+    private CreateStationRequest 신논현역_생성_요청;
+
+    @BeforeEach
+    protected void setUp() {
+        강남역_생성_요청 = CreateStationRequest.from(Constant.강남역);
+        신논현역_생성_요청 = CreateStationRequest.from(Constant.신논현역);
+    }
 
     /**
-     * When 지하철역을 생성하면
-     * Then 지하철역이 생성된다
-     * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
+     * Given 지하철역을 생성하고
+     * When 지하철역 목록을 조회하면
+     * Then 생성한 역을 찾을 수 있다
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
     void 지하철_역을_생성() {
-        // when & then
-        createStation(CreateStationRequest.from(강남역));
+        // given
+        CreateStationResponse 강남역_생성_응답 = 지하철_역_생성(강남역_생성_요청).as(CreateStationResponse.class);
+
+        // when
+        ShowAllStationsResponse 지하철_역_목록_조회_응답 = 지하철_역_목록_조회().as(ShowAllStationsResponse.class);
 
         // then
-        List<String> stationNames =
-                selectStations().jsonPath().getList("stations.name", String.class);
-        assertThat(stationNames).contains(강남역);
+        지하철_역_생성_검증(강남역_생성_응답, 지하철_역_목록_조회_응답);
     }
 
     /**
      * Given 2개의 지하철역을 생성하고
      * When 지하철역 목록을 조회하면
-     * Then 2개의 지하철역을 응답 받는다
+     * Then 생성한 2개의 역을 찾을 수 있다
      */
     @DisplayName("지하철역 목록을 조회한다.")
     @Test
     void 지하철_역_목록을_조회() {
         // given
-        createStation(CreateStationRequest.from(강남역));
-        createStation(CreateStationRequest.from(광화문역));
+        CreateStationResponse 강남역_생성_응답 = 지하철_역_생성(강남역_생성_요청).as(CreateStationResponse.class);
+        CreateStationResponse 광화문_생성_응답 = 지하철_역_생성(신논현역_생성_요청).as(CreateStationResponse.class);
 
         // when
-        List<String> stationNames =
-                selectStations().jsonPath().getList("stations.name", String.class);
+        ShowAllStationsResponse 지하철_역_목록_조회_응답 = 지하철_역_목록_조회().as(ShowAllStationsResponse.class);
 
         // then
-        assertThat(stationNames).contains(강남역, 광화문역);
+        지하철_역_생성_검증(강남역_생성_응답, 지하철_역_목록_조회_응답);
+        지하철_역_생성_검증(광화문_생성_응답, 지하철_역_목록_조회_응답);
     }
 
     /**
@@ -62,15 +71,26 @@ public class StationAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 지하철_역을_삭제() {
         // given
-        Long stationId = createStation(CreateStationRequest.from(강남역)).jsonPath().getLong("stationId");
+        Long 강남역_ID = 지하철_역_생성(강남역_생성_요청).as(CreateStationResponse.class).getStationId();
 
         // when
-        deleteStation(stationId);
+        노선_삭제(강남역_ID);
 
         // then
-        List<String> stationNames =
-                selectStations().jsonPath().getList("stations.name", String.class);
-        assertThat(stationNames).doesNotContain(강남역);
+        ShowAllStationsResponse 지하철_역_목록_조회_응답 = 지하철_역_목록_조회().as(ShowAllStationsResponse.class);
+        지하철_역_삭제_검증(강남역_ID, 지하철_역_목록_조회_응답);
+    }
+
+    void 지하철_역_생성_검증(CreateStationResponse createStationResponse, ShowAllStationsResponse stationsResponse) {
+        assertTrue(stationsResponse.getStations().stream()
+                .anyMatch(station -> station.getStationId().equals(createStationResponse.getStationId())));
+        assertTrue(stationsResponse.getStations().stream()
+                .anyMatch(station -> station.getName().equals(createStationResponse.getName())));
+    }
+
+    void 지하철_역_삭제_검증(Long stationId, ShowAllStationsResponse stationsResponse) {
+        assertTrue(stationsResponse.getStations().stream()
+                .noneMatch(station -> station.getStationId().equals(stationId)));
     }
 
 }

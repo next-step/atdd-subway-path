@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 
 public class LineApiExtractableResponse {
 
-    public static ExtractableResponse<Response> createLine(CreateLineRequest createLineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성(CreateLineRequest createLineRequest) {
         return RestAssured
                 .given().log().all()
                 .body(createLineRequest)
@@ -19,7 +19,7 @@ public class LineApiExtractableResponse {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> selectLines() {
+    public static ExtractableResponse<Response> 지하철_노선_목록_조회() {
         return RestAssured
                 .given().log().all()
                 .when().get("/lines")
@@ -27,7 +27,7 @@ public class LineApiExtractableResponse {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> selectLine(Long lineId) {
+    public static ExtractableResponse<Response> 지하철_노선_조회(Long lineId) {
         return RestAssured
                 .given().log().all()
                 .pathParam("id", lineId)
@@ -36,7 +36,7 @@ public class LineApiExtractableResponse {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updateLine(Long lineId, UpdateLineRequest updateLineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_수정(Long lineId, UpdateLineRequest updateLineRequest) {
         return RestAssured
                 .given().log().all()
                 .body(updateLineRequest)
@@ -47,7 +47,7 @@ public class LineApiExtractableResponse {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteLine(Long lineId) {
+    public static ExtractableResponse<Response> 지하철_노선_삭제(Long lineId) {
         return RestAssured
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

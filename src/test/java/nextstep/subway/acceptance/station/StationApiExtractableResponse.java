@@ -8,7 +8,7 @@ import org.springframework.http.MediaType;
 
 public class StationApiExtractableResponse {
 
-    public static ExtractableResponse<Response> createStation(CreateStationRequest createStationRequest) {
+    public static ExtractableResponse<Response> 지하철_역_생성(CreateStationRequest createStationRequest) {
         return RestAssured
                 .given().log().all()
                 .body(createStationRequest)
@@ -18,7 +18,7 @@ public class StationApiExtractableResponse {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> selectStations() {
+    public static ExtractableResponse<Response> 지하철_역_목록_조회() {
         return RestAssured
                 .given().log().all()
                 .when().get("/stations")
@@ -26,7 +26,7 @@ public class StationApiExtractableResponse {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteStation(Long stationId) {
+    public static ExtractableResponse<Response> 노선_삭제(Long stationId) {
         return RestAssured
                 .given().log().all()
                 .pathParam("stationId", stationId)
