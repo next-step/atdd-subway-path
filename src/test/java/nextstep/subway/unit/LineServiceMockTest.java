@@ -89,6 +89,18 @@ public class LineServiceMockTest {
     @Test
     void 지하철_노선_조회() {
         // given
+        강남역 = mock(Station.class);
+        역삼역 = mock(Station.class);
+        Section section = mock(Section.class);
+        Sections sections = mock(Sections.class);
+        신분당선 = mock(Line.class);
+
+        when(신분당선.getSections()).thenReturn(sections);
+        when(sections.getSections()).thenReturn(List.of(section));
+        when(section.getUpStation()).thenReturn(강남역);
+        when(section.getDownStation()).thenReturn(역삼역);
+        when(강남역.getId()).thenReturn(1L);
+        when(역삼역.getId()).thenReturn(2L);
         when(lineRepository.findById(신분당선.getId())).thenReturn(Optional.of(신분당선));
 
         // when
@@ -98,8 +110,13 @@ public class LineServiceMockTest {
         assertThat(response.getName()).isEqualTo(신분당선.getName());
         assertThat(response.getColor()).isEqualTo(신분당선.getColor());
         assertThat(response.getStations().get(0).getName()).isEqualTo(강남역.getName());
-        // 아래 검증은 실패하는데 이유는 equals에서 id 값으로만 비교하기 때문으로 추측. 어떻게 할 수 있을지?
-//        assertThat(response.getStations().get(1).getName()).isEqualTo(upStation.getName());
+        assertThat(response.getStations().get(1).getName()).isEqualTo(역삼역.getName());
+        verify(신분당선, times(1)).getSections();
+        verify(sections, times(1)).getSections();
+        verify(section, times(1)).getUpStation();
+        verify(section, times(1)).getDownStation();
+        verify(강남역, times(1)).getId();
+        verify(역삼역, times(1)).getId();
         verify(lineRepository, times(1)).findById(신분당선.getId());
     }
 
