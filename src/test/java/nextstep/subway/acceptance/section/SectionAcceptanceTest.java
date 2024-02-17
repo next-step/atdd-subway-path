@@ -208,8 +208,8 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     void 지하철_구간_등록_검증(AddSectionResponse addSectionResponse, ShowLineResponse showLineResponse) {
         assertTrue(showLineResponse.getSections().stream()
                 .anyMatch(sectionDto ->
-                        sectionDto.getUpStation().equals(addSectionResponse.getUpStation())
-                                && sectionDto.getDownStation().equals(addSectionResponse.getDownStation())
+                        sectionDto.getUpStation().getName().equals(addSectionResponse.getUpStation().getName())
+                                && sectionDto.getDownStation().getName().equals(addSectionResponse.getDownStation().getName())
                 ));
     }
 

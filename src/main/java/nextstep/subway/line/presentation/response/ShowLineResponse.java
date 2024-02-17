@@ -1,7 +1,7 @@
 package nextstep.subway.line.presentation.response;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.service.SectionDto;
+import nextstep.subway.section.service.dto.ShowLineSectionDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,12 +14,12 @@ public class ShowLineResponse {
 
     private String color;
 
-    private List<SectionDto> sections;
+    private List<ShowLineSectionDto> sections;
 
     private ShowLineResponse() {
     }
 
-    public ShowLineResponse(Long lineId, String name, String color, List<SectionDto> sections) {
+    public ShowLineResponse(Long lineId, String name, String color, List<ShowLineSectionDto> sections) {
         this.lineId = lineId;
         this.name = name;
         this.color = color;
@@ -32,7 +32,7 @@ public class ShowLineResponse {
                 line.getName(),
                 line.getColor(),
                 line.getSections().stream()
-                        .map(SectionDto::from)
+                        .map(ShowLineSectionDto::from)
                         .collect(Collectors.toList())
         );
     }
@@ -49,7 +49,7 @@ public class ShowLineResponse {
         return color;
     }
 
-    public List<SectionDto> getSections() {
+    public List<ShowLineSectionDto> getSections() {
         return sections;
     }
 

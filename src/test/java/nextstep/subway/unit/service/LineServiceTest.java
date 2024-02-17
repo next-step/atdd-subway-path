@@ -6,7 +6,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
 import nextstep.subway.line.presentation.response.ShowLineResponse;
 import nextstep.subway.line.service.LineService;
-import nextstep.subway.section.service.SectionDto;
+import nextstep.subway.section.service.dto.ShowLineSectionDto;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.service.StationDto;
@@ -66,7 +66,7 @@ public class LineServiceTest {
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
-        List<SectionDto> 신분당선_구간들 = 신분당선_조회_응답.getSections();
+        List<ShowLineSectionDto> 신분당선_구간들 = 신분당선_조회_응답.getSections();
         assertTrue(신분당선_구간들.stream()
                 .anyMatch(sectionDto ->
                         sectionDto.getUpStation().equals(StationDto.from(강남역))

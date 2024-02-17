@@ -67,7 +67,7 @@ public class Sections {
                 .filter(section -> sections.stream()
                         .noneMatch(nextSection -> section.getUpStation().equals(nextSection.getDownStation())))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundSectionException());
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     private Section getLastSection() {
@@ -79,7 +79,7 @@ public class Sections {
                 .filter(section -> sections.stream()
                         .noneMatch(nextSection -> section.getDownStation().equals(nextSection.getUpStation())))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundSectionException());
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     public void addSection(Section newSection) {
@@ -137,7 +137,7 @@ public class Sections {
         Section section = sections.stream()
                 .filter(s -> s.isUpStation(newSection.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundStationException());
+                .orElseThrow(NotFoundStationException::new);
 
         section.updateUpStation(newSection.getDownStation());
         section.reduceDistance(newSection.getDistance());
