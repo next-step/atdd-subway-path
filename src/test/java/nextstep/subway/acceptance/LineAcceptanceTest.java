@@ -22,15 +22,20 @@ public class LineAcceptanceTest extends AcceptanceTest{
     private long 강남역;
     private long 역삼역;
     private long 교대역;
+
     private long 이호선;
 
     @BeforeEach
     public void setUp() {
+        강남역_역삼역_교대역_생성();
+        이호선 = LineTestFixture.createLine("2호선", "green", 강남역, 역삼역).jsonPath().getLong("id");
+        SectionTestFixture.createSection(강남역, 역삼역, 10, 이호선);
+    }
+
+    private void 강남역_역삼역_교대역_생성() {
         강남역 = StationTestFixture.createStationFromName("강남역").jsonPath().getLong("id");
         역삼역 = StationTestFixture.createStationFromName("역삼역").jsonPath().getLong("id");
         교대역 = StationTestFixture.createStationFromName("교대역").jsonPath().getLong("id");
-        이호선 = LineTestFixture.createLine("2호선", "green", 강남역, 역삼역).jsonPath().getLong("id");
-        SectionTestFixture.createSection(강남역, 역삼역, 10, 이호선);
     }
 
     @DisplayName("지하철 노선 맨 앞에 역을 등록한다.")
