@@ -182,49 +182,77 @@ public class Line {
 
     public Set<Station> getStations() {
         Set<Station> stations = new HashSet<>();
-        for (Section section : sections) {
+        for (Section section : getSections()) {
             stations.add(section.getUpStation());
             stations.add(section.getDownStation());
         }
         return stations;
     }
 
-    public void removeSection(int index) {
-        Section targetSection = findSectionByIndexInSections(index);
-        removeSection(targetSection.getDownStation());
-    }
-
-    private Section findSectionByIndexInSections(int index) {
-        return Optional.of(sections.get(index))
-            .orElseThrow(() -> new LineException(LineException.NOT_EXIST_SECTION));
-    }
-
-    public void removeSection(Station downStation) {
-        Section targetSection = findSectionByDownStationInSections(downStation);
-        if (sections.size() == 1) {
-            sections.remove(targetSection);
+    public void removeSection(Station station) {
+        if (sections.isEmpty()) {
+            throw new LineException(LineException.NOT_REMOVE_EXCEPTION);
+        }
+        if (!getStations().contains(station)) {
+            throw new LineException(LineException.NOT_EXIST_STATION);
+        }
+        Optional<Section> targetSection = findSectionByDownStationInSections(station);
+        if (targetSection.isEmpty()) {
+            removeHeadSectionByUpStation(station);
             return;
         }
-        if (!sections.isEmpty() && targetSection.isTail()) {
-            Section previousSection = getSections().get(sections.size() - 2);
-            previousSection.changeTail(true);
-            this.sections.remove(targetSection);
-            return;
-        }
-        if (!sections.isEmpty() && targetSection.isHead()) {
-            Section nextSection = getSections().get(1);
-            nextSection.changeHead(true);
-            this.sections.remove(targetSection);
-            return;
-        }
-        removeMiddleSection(targetSection);
+        targetSection.ifPresent(section -> {
+            if (section.isHead()) {
+                removeHeadSection(section);
+                return;
+            }
+            if (section.isTail()) {
+                removeTailSection(section);
+                return;
+            }
+            removeMiddleSection(section);
+        });
     }
 
-    private Section findSectionByDownStationInSections(Station station) {
+    private Optional<Section> findSectionByDownStationInSections(Station station) {
         return sections.stream()
             .filter(section -> section.isSameDownStation(station))
+            .findFirst();
+    }
+
+    private void removeHeadSectionByUpStation(Station station) {
+        Section headSection = findSectionByUpStationInSections(station);
+        removeHeadSectionBySection(headSection);
+    }
+
+    private Section findSectionByUpStationInSections(Station station) {
+        return sections.stream()
+            .filter(section -> section.isSameUpStation(station))
             .findFirst()
             .orElseThrow(() -> new LineException(LineException.NOT_EXIST_SECTION));
+    }
+
+    private void removeHeadSection(Section section) {
+        removeHeadSectionBySection(section);
+    }
+
+    private void removeHeadSectionBySection(Section section) {
+        if (!section.isHead()) {
+            throw new LineException(LineException.NOT_REMOVE_EXCEPTION);
+        }
+        if (sections.size() == 1) {
+            sections.remove(section);
+            return;
+        }
+        Section nextSection = getSections().get(1);
+        nextSection.changeHead(true);
+        this.sections.remove(section);
+    }
+
+    private void removeTailSection(Section targetSection) {
+        Section previousSection = getSections().get(sections.size() - 2);
+        previousSection.changeTail(true);
+        this.sections.remove(targetSection);
     }
 
 
@@ -232,14 +260,15 @@ public class Line {
         if (targetSection.isHead() || targetSection.isTail()) {
             throw new LineException(LineException.NOT_REMOVE_EXCEPTION);
         }
-        // AB BC CD
-        // AB BD
         Section previousSection = findPreviousSection(targetSection);
-        Section nextSection = findNextSection(targetSection);
+        // AB BC CD
+        // 4 4 2
+        // AB BD
         previousSection.changeDistance(previousSection.getDistance() + targetSection.getDistance());
+        Section nextSection = findNextSection(targetSection);
+        nextSection.changeUpStation(targetSection.getUpStation());
         sections.remove(targetSection);
     }
-
 
     private Section findPreviousSection(Section targetSection) {
         return sections.stream()
