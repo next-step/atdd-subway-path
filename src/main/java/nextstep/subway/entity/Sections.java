@@ -18,7 +18,7 @@ public class Sections {
     }
 
     public void addSection(Section sectionToAdd) {
-        if (isAddFirstSection()) {
+        if (hasNoSections()) {
             sections.add(sectionToAdd);
             return;
         }
@@ -36,7 +36,7 @@ public class Sections {
         return sections.size() > MIN_DELETE_REQUIRED_SECTIONS_SIZE;
     }
 
-    public boolean canSectionDelete(Station stationToDelete) {
+    public boolean canDeleteSection(Station stationToDelete) {
         if (sections.isEmpty()) {
             throw new IllegalArgumentException("해당 노선에 구간이 존재하지 않습니다.");
         }
@@ -128,11 +128,11 @@ public class Sections {
     }
 
     private boolean canConnectBefore(Section targetSection, Section sectionToConnect) {
-        return targetSection.canConnectBefore(sectionToConnect);
+        return targetSection.canPrependSection(sectionToConnect);
     }
 
     private boolean canConnectNext(Section targetSection, Section sectionToConnect) {
-        return targetSection.canConnectNext(sectionToConnect);
+        return targetSection.canAppendSection(sectionToConnect);
     }
 
     public Station findLastStation() {
@@ -140,15 +140,6 @@ public class Sections {
             throw new RuntimeException();
         }
         return sections.get(sections.size() - 1).getDownStation();
-    }
-
-    public List<Station> getAllStations() {
-        Set<Station> allStations = new HashSet<>();
-        sections.forEach(section -> {
-            allStations.add(section.getUpStation());
-            allStations.add(section.getDownStation());
-        });
-        return new ArrayList<>(allStations);
     }
 
     public boolean hasExistingStation(Station station) {
@@ -160,94 +151,102 @@ public class Sections {
         return sections.isEmpty();
     }
 
-    private boolean isAddFirstSection() {
-        return sections.isEmpty();
-    }
+    private void insertSection(Section sectionToInsert) {
+        Section commonSection = findSectionContainingStation(sectionToInsert);
+        Station commonStation = findCommonStation(commonSection, sectionToInsert);
 
-    private void insertSection(Section sectionToAdd) {
-        Section insertionPoint = findInsertionPointSection(sectionToAdd);
-        Station commonStationAtInsertion = findCommonStation(insertionPoint, sectionToAdd);
-
-        if (isFirstStation(commonStationAtInsertion)) {
-            handleInsertForFirstStation(sectionToAdd, commonStationAtInsertion, insertionPoint);
+        if (isFirstStation(commonStation)) {
+            insertBasedOnFirstStation(sectionToInsert, commonSection, commonStation);
             return;
         }
-        handleInsertForIntermediateStation(sectionToAdd, commonStationAtInsertion, insertionPoint);
+        insertBasedOnIntermediateStation(sectionToInsert, commonStation, commonSection);
     }
 
-    private void handleInsertForIntermediateStation(Section sectionToAdd, Station commonStationAtInsertion, Section insertionPoint) {
-        if (isNextInsertion(sectionToAdd, commonStationAtInsertion)) {
-            Section nextSection = sections.get(sections.indexOf(insertionPoint) + 1);
-            insertSection(sectionToAdd, createNextSection(sectionToAdd, nextSection), nextSection);
+    private void insertBasedOnIntermediateStation(Section sectionToInsert, Station commonStation, Section commonSection) {
+        if (canPrependSectionBasedOnStation(sectionToInsert, commonStation)) {
+            prependSection(sectionToInsert, commonSection);
             return;
         }
-
-        if (isPreviousInsertion(sectionToAdd, commonStationAtInsertion)) {
-            insertSection(sectionToAdd, createPreviousSection(sectionToAdd, insertionPoint), insertionPoint);
+        if (canAppendSectionBasedOnStation(sectionToInsert, commonStation)) {
+            appendSection(sectionToInsert, sections.get(sections.indexOf(commonSection) + 1));
         }
     }
 
-    private void handleInsertForFirstStation(Section sectionToAdd, Station commonStationAtInsertion, Section insertionPoint) {
-        if (isPreviousInsertion(sectionToAdd, commonStationAtInsertion)) {
-            sections.add(sectionToAdd);
+    private void insertBasedOnFirstStation(Section sectionToInsert, Section commonSection, Station firstStation) {
+        if (canPrependSectionBasedOnStation(sectionToInsert, firstStation)) {
+            sections.add(sectionToInsert);
             return;
         }
-        if (isNextInsertion(sectionToAdd, commonStationAtInsertion)) {
-            insertSection(sectionToAdd, createNextSection(sectionToAdd, insertionPoint), insertionPoint);
+        if (canAppendSectionBasedOnStation(sectionToInsert, firstStation)) {
+            appendSection(sectionToInsert, commonSection);
         }
     }
 
-    private void insertSection(Section sectionToAdd, Section connectSection, Section sectionToRemove) {
-        sections.add(sectionToAdd);
-        sections.add(connectSection);
-        sections.remove(sectionToRemove);
+    private void prependSection(Section newSectionToInsert, Section previousSectionToConnect) {
+        sections.add(newSectionToInsert);
+        sections.add(createPreviousSection(newSectionToInsert, previousSectionToConnect));
+        sections.remove(previousSectionToConnect);
     }
 
-    private Station findCommonStation(Section insertionPoint, Section sectionToAdd) {
-        return insertionPoint.findCommonStation(sectionToAdd);
+    private void appendSection(Section newSectionToInsert, Section nextSection) {
+        sections.add(newSectionToInsert);
+        sections.add(createNextSection(newSectionToInsert, nextSection));
+        sections.remove(nextSection);
     }
 
-    private boolean isNextInsertion(Section sectionToAdd, Station insertionPointStation) {
-        return insertionPointStation.isSame(sectionToAdd.getUpStation());
+    private Station findCommonStation(Section commonSectionAtInsertion, Section sectionToInsert) {
+        return commonSectionAtInsertion.findCommonStation(sectionToInsert);
     }
 
-    private boolean isPreviousInsertion(Section sectionToAdd, Station insertionPointStation) {
-        return insertionPointStation.isSame(sectionToAdd.getDownStation());
+    private boolean canAppendSectionBasedOnStation(Section sectionToInsert, Station commonStation) {
+        return commonStation.isSame(sectionToInsert.getUpStation());
+    }
+
+    private boolean canPrependSectionBasedOnStation(Section sectionToInsert, Station commonStation) {
+        return commonStation.isSame(sectionToInsert.getDownStation());
     }
 
     private boolean isFirstStation(Station insertionStation) {
         return sections.get(0).getUpStation().isSame(insertionStation);
     }
 
-    private Section createPreviousSection(Section sectionToAdd, Section sectionOfIndex) {
+    private Section createPreviousSection(Section sectionToInsert, Section sectionOfIndex) {
         return new Section(
                 sectionOfIndex.getUpStation(),
-                sectionToAdd.getUpStation(),
-                sectionOfIndex.getDistance() - sectionToAdd.getDistance(),
-                sectionToAdd.getLine());
+                sectionToInsert.getUpStation(),
+                sectionOfIndex.getDistance() - sectionToInsert.getDistance(),
+                sectionToInsert.getLine());
     }
 
-
-    private Section createNextSection(Section sectionToAdd, Section sectionOfIndex) {
+    private Section createNextSection(Section sectionToInsert, Section sectionOfIndex) {
         return new Section(
-                sectionToAdd.getDownStation(),
+                sectionToInsert.getDownStation(),
                 sectionOfIndex.getDownStation(),
-                sectionOfIndex.getDistance() - sectionToAdd.getDistance(),
-                sectionToAdd.getLine());
+                sectionOfIndex.getDistance() - sectionToInsert.getDistance(),
+                sectionToInsert.getLine());
     }
 
-    private Section findInsertionPointSection(Section sectionToAdd) {
+    private Section findSectionContainingStation(Section sectionToInsert) {
         return sections.stream()
-                .filter(section -> section.isAtLeastOneSameStation(sectionToAdd))
+                .filter(section -> section.isAtLeastOneSameStation(sectionToInsert))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
 
     private boolean isAddLastSection(Section section) {
-        return isNextInsertion(section, findLastStation());
+        return canAppendSectionBasedOnStation(section, findLastStation());
     }
 
     public List<Section> getAllSections() {
         return sortSectionsByConnectedSections(sections);
+    }
+
+    public List<Station> getAllStations() {
+        Set<Station> allStations = new HashSet<>();
+        sections.forEach(section -> {
+            allStations.add(section.getUpStation());
+            allStations.add(section.getDownStation());
+        });
+        return new ArrayList<>(allStations);
     }
 }

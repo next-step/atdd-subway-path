@@ -32,19 +32,19 @@ public class Line {
     }
 
 
-    public void addSection(Section createdSection) {
-        if (canSectionAdd(createdSection)) {
-            sections.addSection(createdSection);
+    public void addSection(Section sectionToAdd) {
+        if (canAddSection(sectionToAdd)) {
+            sections.addSection(sectionToAdd);
         }
     }
 
     public void delete(Station stationToDelete) {
-        if (sections.canSectionDelete(stationToDelete)) {
+        if (sections.canDeleteSection(stationToDelete)) {
             sections.deleteSection(this, stationToDelete);
         }
     }
 
-    private boolean canSectionAdd(Section sectionToAdd) {
+    private boolean canAddSection(Section sectionToAdd) {
         if (sectionToAdd.areStationsSame()) {
             throw new IllegalArgumentException("추가할 구간의 상행역과 하행역은 동일할 수 없습니다.");
         }
@@ -60,14 +60,14 @@ public class Line {
         return true;
     }
 
-    private boolean hasExactlyOneStation(Section sectionToAdd) {
-        return hasExistingStation(sectionToAdd.getUpStation()) ^
-                hasExistingStation(sectionToAdd.getDownStation());
+    private boolean hasExactlyOneStation(Section station) {
+        return hasExistingStation(station.getUpStation()) ^
+                hasExistingStation(station.getDownStation());
     }
 
-    private boolean hasStations(Section sectionToAdd) {
-        return hasExistingStation(sectionToAdd.getUpStation()) &&
-                hasExistingStation(sectionToAdd.getDownStation());
+    private boolean hasStations(Section station) {
+        return hasExistingStation(station.getUpStation()) &&
+                hasExistingStation(station.getDownStation());
     }
 
     private boolean hasExistingStation(Station station) {

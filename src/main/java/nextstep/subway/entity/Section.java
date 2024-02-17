@@ -37,13 +37,6 @@ public class Section {
         return upStation.equals(downStation);
     }
 
-    public Section setLine(Line line) {
-        this.line = line;
-        line.addSection(this);
-
-        return this;
-    }
-
     public boolean isAtLeastOneSameStation(Station station) {
         return (this.upStation.isSame(station) || this.downStation.isSame(station));
     }
@@ -51,13 +44,6 @@ public class Section {
     public boolean isAtLeastOneSameStation(Section section) {
         return isAtLeastOneSameStation(section.getUpStation()) ||
                 isAtLeastOneSameStation(section.getDownStation());
-    }
-
-    private int validateDistance(Integer distance) {
-        if (distance == null || distance < MIN_DISTANCE_VALUE) {
-            throw new IllegalArgumentException("거리는 0보다 커야합니다.");
-        }
-        return distance;
     }
 
     public Station findCommonStation(Section sectionToAdd) {
@@ -70,12 +56,19 @@ public class Section {
         return null;
     }
 
-    public boolean canConnectBefore(Section sectionToConnect) {
+    public boolean canPrependSection(Section sectionToConnect) {
         return upStation.isSame(sectionToConnect.getDownStation());
     }
 
-    public boolean canConnectNext(Section sectionToConnect) {
+    public boolean canAppendSection(Section sectionToConnect) {
         return downStation.isSame(sectionToConnect.getUpStation());
+    }
+
+    private int validateDistance(Integer distance) {
+        if (distance == null || distance < MIN_DISTANCE_VALUE) {
+            throw new IllegalArgumentException("거리는 0보다 커야합니다.");
+        }
+        return distance;
     }
 
     public Long getId() {
@@ -96,6 +89,13 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    public Section setLine(Line line) {
+        this.line = line;
+        line.addSection(this);
+
+        return this;
     }
 
     @Override
