@@ -40,7 +40,7 @@ public class Line {
     }
 
     public void validateLastStation() {
-        if (this.getSections().getDownStationIds().size() < 1) {
+        if (this.getSections().getDownStationIds().isEmpty()) {
             throw new InsufficientStationException();
         }
     }
