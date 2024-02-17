@@ -83,11 +83,18 @@ public class Section {
         this.upStation = upStation;
     }
 
-    public void reduceDistance(int reductionDistance) {
-        if (this.distance <= reductionDistance) {
+    public void decreaseDistance(int distance) {
+        if (this.distance <= distance) {
             throw new NotPositiveDistanceException();
         }
-        this.distance = this.distance - reductionDistance;
+        this.distance = this.distance - distance;
+    }
+
+    public void increaseDistance(int distance) {
+        if (distance <= 0) {
+            throw new NotPositiveDistanceException();
+        }
+        this.distance = this.distance + distance;
     }
 
     public void delete() {

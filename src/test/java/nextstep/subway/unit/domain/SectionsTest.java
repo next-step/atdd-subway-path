@@ -7,7 +7,6 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,8 +43,8 @@ public class SectionsTest {
         신사역 = Station.from(Constant.신사역);
         논현_신논현_구간 = Section.of(논현역, 신논현역, Constant.역_간격_10);
         신논현_강남_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
-        논현_강남_구간 = Section.of(논현역, 강남역, Constant.역_간격_5);
-        강남_신논현_구간 = Section.of(강남역, 신논현역, Constant.역_간격_5);
+        논현_강남_구간 = Section.of(논현역, 강남역, Constant.역_간격_20);
+        강남_신논현_구간 = Section.of(강남역, 신논현역, Constant.역_간격_10);
         신사_논현_구간 = Section.of(신사역, 논현역, Constant.역_간격_10);
         강남_양재_구간 = Section.of(강남역, 양재역, Constant.역_간격_10);
     }
@@ -60,37 +59,42 @@ public class SectionsTest {
         신분당선_구간들.addSection(신논현_강남_구간);
 
         // then
-        List<Section> 구간들 = 신분당선_구간들.getSections();
-        Assertions.assertThat(구간들).containsOnlyOnce(논현_신논현_구간, 신논현_강남_구간);
+        List<Section> 구간들 = 신분당선_구간들.getSortedSections();
+        assertThat(구간들).hasSize(2);
+        assertThat(구간들).containsExactly(논현_신논현_구간, 신논현_강남_구간);
+        assertThat(구간들.stream().mapToInt(Section::getDistance).sum()).isEqualTo(Constant.역_간격_20);
     }
 
     @DisplayName("노선 중간에 구간 등록")
     @Test
     void 노선_중간에_구간_등록() {
         // given
-        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간))); // 논현 - 신논현
+        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_강남_구간)));
 
         // when
-        신분당선_구간들.addSection(논현_강남_구간); // 논현 - 강남 - 신논현
+        신분당선_구간들.addSection(논현_신논현_구간);
 
         // then
-        List<Section> 구간들 = 신분당선_구간들.getSections();
-        Assertions.assertThat(구간들).containsOnlyOnce(논현_강남_구간, 강남_신논현_구간);
-        assertThat(논현_강남_구간.getDistance() + 강남_신논현_구간.getDistance()).isEqualTo(Constant.역_간격_10);
+        List<Section> 구간들 = 신분당선_구간들.getSortedSections();
+        assertThat(구간들).hasSize(2);
+        assertThat(구간들).containsExactly(논현_신논현_구간, 신논현_강남_구간);
+        assertThat(구간들.stream().mapToInt(Section::getDistance).sum()).isEqualTo(Constant.역_간격_20);
     }
 
     @DisplayName("노선 처음에 구간 등록")
     @Test
     void 노선_처음에_구간_등록() {
         // given
-        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간))); // 논현 - 신논현
+        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간)));
 
         // when
-        신분당선_구간들.addSection(신사_논현_구간); // 신사 - 논현 - 신논현
+        신분당선_구간들.addSection(신사_논현_구간);
 
         // then
-        List<Section> 구간들 = 신분당선_구간들.getSections();
-        Assertions.assertThat(구간들).containsOnlyOnce(신사_논현_구간, 논현_신논현_구간);
+        List<Section> 구간들 = 신분당선_구간들.getSortedSections();
+        assertThat(구간들).hasSize(2);
+        assertThat(구간들).containsExactly(신사_논현_구간, 논현_신논현_구간);
+        assertThat(구간들.stream().mapToInt(Section::getDistance).sum()).isEqualTo(Constant.역_간격_20);
     }
 
     @DisplayName("이미 등록된 구간을 등록하면 예외발생")
@@ -115,5 +119,38 @@ public class SectionsTest {
                 .isInstanceOf(NotFoundUpStationOrDownStation.class);
     }
 
+    @DisplayName("노선 마지막 구간 삭제")
+    @Test
+    void 노선_마지막_구간_삭제() {
+        // given
+        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간)));
+        신분당선_구간들.addSection(신논현_강남_구간);
+
+        // when
+        신분당선_구간들.deleteSection(강남역);
+
+        // then
+        List<Section> 구간들 = 신분당선_구간들.getSortedSections();
+        assertThat(구간들).hasSize(1);
+        assertThat(구간들).containsExactly(논현_신논현_구간);
+        assertThat(구간들.stream().mapToInt(Section::getDistance).sum()).isEqualTo(Constant.역_간격_10);
+    }
+
+    @DisplayName("노선 중간 구간 삭제")
+    @Test
+    void 노선_중간_구간_삭제() {
+        // given
+        Sections 신분당선_구간들 = Sections.from(new LinkedList(Arrays.asList(논현_신논현_구간)));
+        신분당선_구간들.addSection(신논현_강남_구간);
+
+        // when
+        신분당선_구간들.deleteSection(신논현역);
+
+        // then
+        List<Section> 구간들 = 신분당선_구간들.getSortedSections();
+        assertThat(구간들).hasSize(1);
+        assertThat(구간들).containsExactly(논현_강남_구간);
+        assertThat(구간들.stream().mapToInt(Section::getDistance).sum()).isEqualTo(Constant.역_간격_20);
+    }
 
 }

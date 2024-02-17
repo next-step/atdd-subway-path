@@ -100,21 +100,6 @@ class LineTest {
                 .isInstanceOf(NotFoundStationException.class);
     }
 
-    @DisplayName("노선의 하행역이 아닌 역을 삭제하면 예외 발생")
-    @Test
-    @Disabled
-    void 노선의_하행역이_아닌_역을_삭제하면_예외_발생() {
-        // given
-        Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_10);
-        Section 강남역_양재역_구간 = Section.of(강남역, 양재역, Constant.역_간격_10);
-        신분당선.addSection(신논현역_강남역_구간);
-        신분당선.addSection(강남역_양재역_구간);
-
-        // when & then
-        assertThatThrownBy(() -> 신분당선.deleteSection(신논현역))
-                .isInstanceOf(IsNotLastStationException.class);
-    }
-
     @DisplayName("남은 구간이 한개인 노선의 역을 삭제하면 예외 발생")
     @Test
     void 남은_구간이_한개인_노선의_역을_삭제하면_예외_발생() {

@@ -8,6 +8,7 @@ import nextstep.subway.line.presentation.response.ShowLineResponse;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.service.SectionService;
+import nextstep.subway.section.service.dto.ShowLineSectionDto;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.service.StationDto;
 import nextstep.subway.station.service.StationService;
@@ -18,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,8 +48,9 @@ public class LineServiceMockTest {
     private final Long 양재역_ID = 4L;
     private final Section 논현역_신논현역_구간 = Section.of(Station.from(Constant.논현역), Station.from(Constant.신논현역), Constant.역_간격_10);
     private final Section 신논현역_강남역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.강남역), Constant.역_간격_10);
-    private final Section 신논현역_양재역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.양재역), Constant.역_간격_5);
     private final Section 강남역_양재역_구간 = Section.of(Station.from(Constant.강남역), Station.from(Constant.양재역), Constant.역_간격_10);
+    private final Section 논현역_강남역_구간 = Section.of(Station.from(Constant.논현역), Station.from(Constant.강남역), Constant.역_간격_20);
+    private final Section 신논현역_양재역_구간 = Section.of(Station.from(Constant.신논현역), Station.from(Constant.양재역), Constant.역_간격_20);
     private final Line 신분당선 = Line.of(Constant.신분당선, Constant.빨간색);
     private final Long 신분당선_ID = 1L;
 
@@ -55,87 +58,69 @@ public class LineServiceMockTest {
     @Test
     void 노선_마지막에_구간_등록() {
         // given
+        when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
+        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
         when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10));
         lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
-        assertThat(신분당선_조회_응답.getSections()).isNotEmpty();
-        assertTrue(신분당선_조회_응답.getSections().stream()
-                .anyMatch(sectionDto ->
-                        sectionDto.getUpStation().equals(StationDto.from(신논현역))
-                                && sectionDto.getDownStation().equals(StationDto.from(강남역))
-                )
-        );
+        List<ShowLineSectionDto> 구간들 = 신분당선_조회_응답.getSections();
+        assertThat(구간들).hasSize(2);
+        assertThat(구간들).containsExactly(ShowLineSectionDto.from(논현역_신논현역_구간), ShowLineSectionDto.from(신논현역_강남역_구간));
+        assertThat(구간들.stream().mapToInt(ShowLineSectionDto::getDistance).sum()).isEqualTo(Constant.역_간격_20);
     }
 
     @DisplayName("노선 중간에 구간을 추가한다.")
     @Test
     void 노선_중간에_구간_등록() {
         // given
+        when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
-        when(stationService.findById(양재역_ID)).thenReturn(양재역);
-        when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
-        when(sectionService.save(신논현역_양재역_구간)).thenReturn(신논현역_양재역_구간);
+        when(sectionService.save(논현역_강남역_구간)).thenReturn(논현역_강남역_구간);
+        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 양재역_ID, Constant.역_간격_5));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 강남역_ID, Constant.역_간격_20));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
-        assertThat(신분당선_조회_응답.getSections()).isNotEmpty();
-        assertTrue(신분당선_조회_응답.getSections().stream()
-                .anyMatch(sectionDto ->
-                        sectionDto.getUpStation().equals(StationDto.from(신논현역))
-                                && sectionDto.getDownStation().equals(StationDto.from(양재역))
-                )
-        );
-        assertTrue(신분당선_조회_응답.getSections().stream()
-                .anyMatch(sectionDto ->
-                        sectionDto.getUpStation().equals(StationDto.from(양재역))
-                                && sectionDto.getDownStation().equals(StationDto.from(강남역))
-                )
-        );
+        List<ShowLineSectionDto> 구간들 = 신분당선_조회_응답.getSections();
+        assertThat(구간들).hasSize(2);
+        assertThat(구간들).containsExactly(ShowLineSectionDto.from(논현역_신논현역_구간), ShowLineSectionDto.from(신논현역_강남역_구간));
+        assertThat(구간들.stream().mapToInt(ShowLineSectionDto::getDistance).sum()).isEqualTo(Constant.역_간격_20);
     }
 
     @DisplayName("노선 처음에 구간을 추가한다.")
     @Test
     void 노선_처음에_구간_등록() {
         // given
-        when(stationService.findById(강남역_ID)).thenReturn(강남역);
-        when(stationService.findById(양재역_ID)).thenReturn(양재역);
+        when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
-        when(sectionService.save(강남역_양재역_구간)).thenReturn(강남역_양재역_구간);
+        when(stationService.findById(강남역_ID)).thenReturn(강남역);
+        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
         when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.역_간격_10));
         lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10));
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
-        assertThat(신분당선_조회_응답.getSections()).isNotEmpty();
-        assertTrue(신분당선_조회_응답.getSections().stream()
-                .anyMatch(sectionDto ->
-                        sectionDto.getUpStation().equals(StationDto.from(신논현역))
-                                && sectionDto.getDownStation().equals(StationDto.from(강남역))
-                )
-        );
-        assertTrue(신분당선_조회_응답.getSections().stream()
-                .anyMatch(sectionDto ->
-                        sectionDto.getUpStation().equals(StationDto.from(강남역))
-                                && sectionDto.getDownStation().equals(StationDto.from(양재역))
-                )
-        );
+        List<ShowLineSectionDto> 구간들 = 신분당선_조회_응답.getSections();
+        assertThat(구간들).hasSize(2);
+        assertThat(구간들).containsExactly(ShowLineSectionDto.from(논현역_신논현역_구간), ShowLineSectionDto.from(신논현역_강남역_구간));
+        assertThat(구간들.stream().mapToInt(ShowLineSectionDto::getDistance).sum()).isEqualTo(Constant.역_간격_20);
     }
 
     @DisplayName("노선 마지막 구간을 제거한다.")
@@ -148,21 +133,42 @@ public class LineServiceMockTest {
         when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
         when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10));
-        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
 
         // when
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
         lineService.deleteSection(신분당선_ID, 강남역_ID);
 
         // then
         ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
-        assertThat(신분당선_조회_응답.getSections()).isNotEmpty();
-        assertTrue(신분당선_조회_응답.getSections().stream()
-                .noneMatch(sectionDto ->
-                        sectionDto.getUpStation().getName().equals(강남역.getName())
-                                || sectionDto.getDownStation().getName().equals(강남역.getName())
-                )
-        );
+        List<ShowLineSectionDto> 구간들 = 신분당선_조회_응답.getSections();
+        assertThat(구간들).hasSize(1);
+        assertThat(구간들).containsExactly(ShowLineSectionDto.from(논현역_신논현역_구간));
+        assertThat(구간들.stream().mapToInt(ShowLineSectionDto::getDistance).sum()).isEqualTo(Constant.역_간격_10);
+    }
+
+    @DisplayName("노선 중간 구간을 제거한다.")
+    @Test
+    void 노선_중간_구간_제거() {
+        // given
+        when(stationService.findById(논현역_ID)).thenReturn(논현역);
+        when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
+        when(stationService.findById(강남역_ID)).thenReturn(강남역);
+        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
+        when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
+        when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
+
+        // when
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_10));
+        lineService.addSection(신분당선_ID, AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10));
+        lineService.deleteSection(신분당선_ID, 신논현역_ID);
+
+        // then
+        ShowLineResponse 신분당선_조회_응답 = lineService.findLine(신분당선_ID);
+        List<ShowLineSectionDto> 구간들 = 신분당선_조회_응답.getSections();
+        assertThat(구간들).hasSize(1);
+        assertThat(구간들).containsExactly(ShowLineSectionDto.from(논현역_강남역_구간));
+        assertThat(구간들.stream().mapToInt(ShowLineSectionDto::getDistance).sum()).isEqualTo(Constant.역_간격_20);
     }
 
 }

@@ -10,6 +10,7 @@ import nextstep.subway.line.presentation.response.AddSectionResponse;
 import nextstep.subway.line.presentation.response.CreateLineResponse;
 import nextstep.subway.line.presentation.response.ShowLineResponse;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
+import nextstep.subway.station.presentation.response.CreateStationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,20 +27,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends CommonAcceptanceTest {
 
-    Long 논현역_ID;
-    Long 신논현역_ID;
-    Long 강남역_ID;
-    Long 양재역_ID;
-    Long 신사역_ID;
-    CreateLineRequest 신분당선_생성_요청;
+    private Long 논현역_ID;
+    private Long 신논현역_ID;
+    private Long 강남역_ID;
+    private Long 양재역_ID;
+    private Long 신사역_ID;
+    private CreateLineRequest 신분당선_생성_요청;
 
     @BeforeEach
     protected void setUp() {
-        논현역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.논현역)).jsonPath().getLong("stationId");
-        신논현역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신논현역)).jsonPath().getLong("stationId");
-        강남역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.강남역)).jsonPath().getLong("stationId");
-        양재역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.양재역)).jsonPath().getLong("stationId");
-        신사역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신사역)).jsonPath().getLong("stationId");
+        논현역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.논현역)).as(CreateStationResponse.class).getStationId();
+        신논현역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신논현역)).as(CreateStationResponse.class).getStationId();
+        강남역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.강남역)).as(CreateStationResponse.class).getStationId();
+        양재역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.양재역)).as(CreateStationResponse.class).getStationId();
+        신사역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.신사역)).as(CreateStationResponse.class).getStationId();
         신분당선_생성_요청 = CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 논현역_ID, 신논현역_ID, Constant.역_간격_10);
     }
 
@@ -207,8 +208,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     }
 
 
-
-
     /**
      * Given 지하철 노선을 생성하고
      * When 노선 가운데 구간을 제거하면
@@ -232,8 +231,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         지하철_구간_삭제_검증(신논현역_ID, 신분당선_조회_응답);
     }
 
-
-
     void 지하철_구간_등록_검증(AddSectionResponse addSectionResponse, ShowLineResponse showLineResponse) {
         assertTrue(showLineResponse.getSections().stream()
                 .anyMatch(sectionDto ->
@@ -250,7 +247,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         assertTrue(showLineResponse.getSections().stream()
                 .noneMatch(sectionDto ->
                         sectionDto.getDownStation().getStationId().equals(stationId)
-                        || sectionDto.getUpStation().getStationId().equals(stationId)
+                                || sectionDto.getUpStation().getStationId().equals(stationId)
                 ));
     }
 

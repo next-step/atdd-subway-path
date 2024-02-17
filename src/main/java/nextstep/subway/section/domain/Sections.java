@@ -140,7 +140,7 @@ public class Sections {
                 .orElseThrow(NotFoundStationException::new);
 
         section.updateUpStation(newSection.getDownStation());
-        section.reduceDistance(newSection.getDistance());
+        section.decreaseDistance(newSection.getDistance());
         this.sections.add(newSection);
     }
 
@@ -169,7 +169,7 @@ public class Sections {
             deleteLastSection();
             return;
         }
-//        addMiddleSection(newSection);
+        deleteMiddleSection(station);
     }
 
     private boolean possibleDeletedLastSection(Station station) {
@@ -180,6 +180,35 @@ public class Sections {
         Section lastSection = getLastSection();
         lastSection.delete();
         this.sections.remove(lastSection);
+    }
+
+    private void deleteMiddleSection(Station station) {
+        if (possibleDeletedLastSection(station)) {
+            return;
+        }
+
+        // (논현 - 신논현) (신논현 - 강남) (강남 - 양재)
+        // (논현 - 신논현) (신논현 - 양재)
+
+
+        Section deletedSection = sections.stream()
+                .filter(s -> s.isDownStation(station))
+                .findFirst()
+                .orElseThrow(NotFoundStationException::new);
+
+        Section updateSection = sections.stream()
+                .filter(s -> s.isUpStation(station))
+                .findFirst()
+                .orElseThrow(NotFoundStationException::new);
+
+        updateSection.updateUpStation(deletedSection.getUpStation());
+        updateSection.increaseDistance(deletedSection.getDistance());
+
+        deletedSection.delete();
+        this.sections.remove(deletedSection);
+//        Section lastSection = getLastSection();
+//        lastSection.delete();
+//        this.sections.remove(lastSection);
     }
 
     private void validateDeleteSection(Station station) {

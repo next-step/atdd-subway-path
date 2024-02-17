@@ -98,7 +98,7 @@ public class SectionTest {
         Section 신논현역_강남역_구간 = Section.of(신논현역, 강남역, Constant.역_간격_5);
 
         // when & then
-        assertThatThrownBy(() -> 신논현역_강남역_구간.reduceDistance(Constant.역_간격_5))
+        assertThatThrownBy(() -> 신논현역_강남역_구간.decreaseDistance(Constant.역_간격_5))
                 .isInstanceOf(NotPositiveDistanceException.class);
     }
 
