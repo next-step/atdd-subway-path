@@ -107,40 +107,32 @@ public class Sections {
     }
 
     private List<Section> sortByConnectedSections(List<Section> sections) {
-        LinkedList<Section> linkedSections = new LinkedList<>();
-        List<Section> sectionsToRemove = new ArrayList<>();
+        for (int baseIndex = 0; baseIndex < sections.size(); baseIndex++) {
+            for (int connectIndex = baseIndex + 1; connectIndex < sections.size(); connectIndex++) {
+                Section sectionToConnect = sections.get(connectIndex);
 
-        Section firstSection = sections.get(0);
-        linkedSections.add(firstSection);
-        sectionsToRemove.add(firstSection);
-
-        while (!sections.isEmpty()) {
-            for (Section section : sections) {
-                if (canConnectBefore(linkedSections.getFirst(), section)) {
-                    linkedSections.addFirst(section);
-                    sectionsToRemove.add(section);
+                if(canPrependSectionBasedOnSection(findFirstSection(), sectionToConnect)) {
+                    sections.remove(sectionToConnect);
+                    sections.add(0, sectionToConnect);
                     break;
                 }
 
-                if (canConnectNext(linkedSections.getLast(), section)) {
-                    linkedSections.addLast(section);
-                    sectionsToRemove.add(section);
+                if(canAppendSectionBasedOnStation(sections.get(baseIndex), sectionToConnect)) {
+                    sections.remove(sectionToConnect);
+                    sections.add(baseIndex + 1, sectionToConnect);
+                    break;
                 }
             }
-            sections.removeAll(sectionsToRemove);
         }
-
-        sections.clear();
-        sections.addAll(linkedSections);
         return sections;
     }
 
-    private boolean canConnectBefore(Section targetSection, Section sectionToConnect) {
-        return targetSection.canPrependSection(sectionToConnect);
+    private boolean canPrependSectionBasedOnSection(Section section, Section sectionToConnect) {
+        return section.canPrependSection(sectionToConnect);
     }
 
-    private boolean canConnectNext(Section targetSection, Section sectionToConnect) {
-        return targetSection.canAppendSection(sectionToConnect);
+    private boolean canAppendSectionBasedOnStation(Section section, Section sectionToConnect) {
+        return section.canAppendSection(sectionToConnect);
     }
 
     public Station findLastStation() {
