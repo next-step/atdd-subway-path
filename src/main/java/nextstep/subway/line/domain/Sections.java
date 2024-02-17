@@ -3,10 +3,7 @@ package nextstep.subway.line.domain;
 import lombok.Getter;
 import nextstep.subway.section.domain.Section;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +37,7 @@ public class Sections {
 
     public Long getDownStationId() {
         if (sections.isEmpty()) {
-            return null;
+            throw new EntityNotFoundException("지하철역이 존재하지 않습니다.");
         }
         return sections.get(sections.size() - 1).getDownStationId();
     }
