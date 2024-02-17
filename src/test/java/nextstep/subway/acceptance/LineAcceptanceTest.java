@@ -98,7 +98,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         StationResponse 강남역 = StationSteps.지하철역_생성("강남역");
         StationResponse 양재역 = StationSteps.지하철역_생성("양재역");
 
-        LineResponse line = 지하철_노선_생성("2호선", "green", 강남역.getId(), 양재역.getId(), 10);
+        LineResponse line = 지하철_노선_생성("2호선", "초록", 강남역.getId(), 양재역.getId(), 10);
 
         // when
         Map<String, String> params = new HashMap<>();
@@ -114,7 +114,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getString("color")).isEqualTo("red");
+        assertThat(response.jsonPath().getString("color")).isEqualTo("초록");
     }
 
     /**

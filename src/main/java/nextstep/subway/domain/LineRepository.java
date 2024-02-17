@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface LineRepository extends JpaRepository<Line, Long> {
 
-    @Query("SELECT distinct l FROM Line l JOIN FETCH l.sections")
+    @Query("SELECT distinct l FROM Line l LEFT JOIN FETCH l.sections")
     List<Line> findAllWithSectionsUsingFetchJoin();
 
-    @Query("SELECT distinct l FROM Line l JOIN FETCH l.sections WHERE l.id = :id")
+    @Query("SELECT distinct l FROM Line l LEFT JOIN FETCH l.sections WHERE l.id = :id")
     Optional<Line> findByIdWithSectionsUsingFetchJoin(@Param(value = "id") Long id);
 }

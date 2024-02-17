@@ -17,7 +17,11 @@ public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(length = 20, nullable = false)
     private String name;
+
+    @Column(length = 20, nullable = false)
     private String color;
 
     // TODO 일급 컬렉션 작성
