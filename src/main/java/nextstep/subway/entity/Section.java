@@ -6,8 +6,6 @@ import java.util.Objects;
 @Entity
 public class Section {
 
-    public static final int MIN_STATION_ID_VALUE = 1;
-
     public static final int MIN_DISTANCE_VALUE = 1;
 
     @Id
