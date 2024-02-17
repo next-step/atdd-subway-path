@@ -45,12 +45,6 @@ public class Sections {
         return sections.get(sections.size() - 1).getDownStationId();
     }
 
-    public int getTotalDistance() {
-        return sections.stream()
-                    .mapToInt(Section::getDistance)
-                    .sum();
-    }
-
     public List<Long> getStations() {
         List<Long> stationIds = getSections().stream()
                 .map(section -> section.getUpStationId())
