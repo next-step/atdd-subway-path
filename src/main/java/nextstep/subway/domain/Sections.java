@@ -7,7 +7,12 @@ import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+
+import org.springframework.core.annotation.Order;
 
 import nextstep.subway.exception.IllegalSectionException;
 
@@ -23,11 +28,13 @@ public class Sections {
                '}';
     }
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Section> sections;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "line_id")
+    @OrderColumn
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
-        this.sections = new ArrayList<>();
+
     }
 
     public Sections(List<Section> sections) {
