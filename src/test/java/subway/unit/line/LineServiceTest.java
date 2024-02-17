@@ -123,7 +123,7 @@ class LineServiceTest {
 
 	@DisplayName("노선의 최초 정류장 앞에 구간을 추가한다.")
 	@Test
-	void successAddSection1() {
+	void successAddBeforeFirstSection() {
 		// given
 		LineResponse 신분당선 = 신분당선_생성();
 		Station 첫번째_정류장 = 정류장_조회(신분당선.getStations().get(0).getId());
@@ -139,7 +139,7 @@ class LineServiceTest {
 
 	@DisplayName("노선의 중간 지점에 구간을 추가한다.")
 	@Test
-	void successAddSection2() {
+	void successAddMiddleSection() {
 		// given
 		LineResponse 신분당선 = 신분당선_생성();
 		Station 첫번째_정류장 = 정류장_조회(신분당선.getStations().get(0).getId());
@@ -155,7 +155,7 @@ class LineServiceTest {
 
 	@DisplayName("노선의 마지막 정류장에 이어서 구간을 추가한다.")
 	@Test
-	void successAddSection3() {
+	void successAddAfterLastSection() {
 		// given
 		LineResponse 신분당선 = 신분당선_생성();
 		List<StationResponse> stations = 신분당선.getStations();
