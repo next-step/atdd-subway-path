@@ -243,4 +243,24 @@ public class SectionAcceptanceTest {
         return JsonPathUtil.getList(findLine, "stations", StationResponse.class)
                 .stream().map(StationResponse::getId).collect(Collectors.toList());
     }
+
+    /**
+     * When 존재하지 않는 역을 삭제하면
+     * Then 예외가 발생한다
+     */
+    @DisplayName("노선에 존재하지 않는 역은 삭제할 수 없다")
+    @Test
+    void deleteNotExistsStation() {
+        //given
+        SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
+        SectionApiRequester.generateSection(request, 이호선id);
+        Long 역삼역id = JsonPathUtil.getId(StationApiRequester.createStationApiCall("잠실역"));
+
+        //when
+        ExtractableResponse<Response> response = SectionApiRequester.deleteSection(이호선id, 역삼역id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asPrettyString()).isEqualTo("노선에 존재하지 않는 역은 삭제할 수 없습니다.");
+    }
 }

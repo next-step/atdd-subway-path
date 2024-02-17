@@ -79,7 +79,7 @@ public class Sections {
     }
 
     public void removeSection(Station station, Line line) {
-        verifySectionCount();
+        verifyDeletable(station);
 
         boolean isUpFinalStation = getUpFinalStation().equals(station);
         boolean isDownFinalStation = getDownFinalStation().equals(station);
@@ -95,9 +95,14 @@ public class Sections {
         }
     }
 
-    private void verifySectionCount() {
+    private void verifyDeletable(Station station) {
         if (sections.size() <= 1) {
             throw new SectionException("구간이 1개인 노선의 구간은 삭제할 수 없습니다.");
+        }
+
+        boolean isExistsStation = getStations().stream().anyMatch(s -> s.equals(station));
+        if (!isExistsStation) {
+            throw new SectionException("노선에 존재하지 않는 역은 삭제할 수 없습니다.");
         }
     }
 

@@ -58,6 +58,8 @@ public class SectionsTest {
 
         //then
         assertThat(이호선.getStations()).containsExactly(건대입구역, 성수역, 잠실역);
+        List<Integer> distances = getDistances();
+        assertThat(distances).containsExactly(9, 1);
     }
 
     @DisplayName("중간에 구간을 등록할 경우 등록할 구간의 거리가 기존 구간의 거리보다 긴 경우 예외가 발생한다.")
@@ -82,6 +84,7 @@ public class SectionsTest {
 
         //then
         assertThat(이호선.getStations()).containsExactly(건대입구역, 잠실역, 용산역);
+        assertThat(getDistances()).containsExactly(10, 20);
     }
 
     @DisplayName("상행종점역을 삭제하면 그 다음 역이 상행종점역이 된다.")
@@ -95,6 +98,7 @@ public class SectionsTest {
 
         //then
         assertThat(이호선.getStations()).containsExactly(잠실역, 성수역);
+        assertThat(getDistances()).containsExactly(10);
     }
 
     @DisplayName("하행종점역을 삭제하면 그 이전 역이 하행종점역이 된다.")
@@ -108,5 +112,10 @@ public class SectionsTest {
 
         //then
         assertThat(이호선.getStations()).containsExactly(건대입구역, 잠실역);
+        assertThat(getDistances()).containsExactly(10);
+    }
+
+    private List<Integer> getDistances() {
+        return 이호선.getSectionList().stream().map(Section::getDistance).collect(Collectors.toList());
     }
 }
