@@ -12,19 +12,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.MethodMode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 
-
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
-    ObjectMapper mapper = new ObjectMapper();
     private Long 역삼역_ID;
 
     private Long 선릉역_ID;
@@ -50,7 +45,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         LineResponse response = when()
             .get("/lines/" + lineResponse.getId())
             .then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
-        System.out.println(mapper.writeValueAsString(response));
         List<SectionResponse> sectionsResponse = response.getSections();
         assertAll(
             () -> assertThat(sectionsResponse).hasSize(1),
@@ -151,7 +145,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         //when
         SectionRequest conflictingSectionRequest = new SectionRequest(3L, 2L, 7);
 
-        given().body(mapper.writeValueAsString(conflictingSectionRequest))
+        given().body(conflictingSectionRequest)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .when().post("/lines/" + lineResponse.getId() + "/sections").then().statusCode(HttpStatus.SC_BAD_REQUEST);
 
@@ -164,7 +158,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         //when
         SectionRequest sectionRequest = new SectionRequest(1L, 4L, 15);
-        given().body(mapper.writeValueAsString(sectionRequest))
+        given().body(sectionRequest)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .when().post("/lines/" + lineResponse.getId() + "/sections").then().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
@@ -214,7 +208,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     private void addSection(LineResponse lineResponse, SectionRequest sectionRequest) throws JsonProcessingException {
-        given().body(mapper.writeValueAsString(sectionRequest))
+        given().body(sectionRequest)
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .when().post("/lines/" + lineResponse.getId() + "/sections").then().log().all();
     }
