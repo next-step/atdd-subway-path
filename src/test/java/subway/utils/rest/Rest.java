@@ -58,6 +58,14 @@ public class Rest<T> {
 			.extract();
 	}
 
+	private ExtractableResponse<Response> get(HashMap<String, String> params) {
+		return given().log().all()
+			.when().params(params).get(uri)
+			.then().log().all()
+			.statusCode(HttpStatus.OK.value())
+			.extract();
+	}
+
 	private Rest(String uri, T body) {
 		this.uri = uri;
 		this.body = body;
@@ -90,8 +98,8 @@ public class Rest<T> {
 			return new Rest<T>(uri).get();
 		}
 
-		public ExtractableResponse<Response> delete(HashMap<String, String> params) {
-			return new Rest<T>(uri).delete(params);
+		public ExtractableResponse<Response> get(HashMap<String, String> params) {
+			return new Rest<T>(uri).get(params);
 		}
 
 		public ExtractableResponse<Response> delete(String uri) {

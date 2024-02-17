@@ -6,8 +6,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 public enum Location {
 	LINES("/lines", path -> UriComponentsBuilder.fromPath("/lines/").path(path)),
-	STATIONS("/stations", path -> UriComponentsBuilder.fromPath("/stations/").path(path));
-
+	STATIONS("/stations", path -> UriComponentsBuilder.fromPath("/stations/").path(path)),
+	PATHS("/paths", path -> UriComponentsBuilder.fromPath("/stations/").path(path));
+	
 	private final String uri;
 	private final Function<String, UriComponentsBuilder> expression;
 

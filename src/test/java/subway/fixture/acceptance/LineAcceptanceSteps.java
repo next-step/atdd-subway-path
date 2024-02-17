@@ -18,6 +18,29 @@ import subway.utils.enums.Location;
 import subway.utils.rest.Rest;
 
 public class LineAcceptanceSteps {
+	
+	public static LineResponse 노선_생성(
+		String name,
+		String color,
+		Long upStationId,
+		Long downStationId,
+		Integer distance
+	) {
+		LineCreateRequest lineCreateRequest =
+			LineRequestFixture.lineCreateRequest()
+				.name(name)
+				.color(color)
+				.upStationId(upStationId)
+				.downStationId(downStationId)
+				.distance(distance)
+				.build();
+
+		return Rest.builder()
+			.uri(Location.LINES.path())
+			.body(lineCreateRequest)
+			.post()
+			.as(LineResponse.class);
+	}
 
 	public static LineResponse 노선_생성(Long upStationId, Long downStationId) {
 		LineCreateRequest lineCreateRequest =
