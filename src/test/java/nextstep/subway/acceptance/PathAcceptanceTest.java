@@ -1,17 +1,22 @@
 package nextstep.subway.acceptance;
 
+import io.restassured.RestAssured;
 import nextstep.subway.domain.request.LineRequest;
 import nextstep.subway.domain.response.PathResponse;
 import nextstep.subway.domain.response.StationResponse;
+import nextstep.subway.exception.ExceptionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.exception.ExceptionMessage.*;
 import static nextstep.subway.utils.LineTestUtil.createSubwayLine;
 import static nextstep.subway.utils.PathTestUtil.getShortestPath;
 import static nextstep.subway.utils.SectionTestUtil.addSection;
@@ -66,7 +71,7 @@ public class PathAcceptanceTest {
         // given (setUp)
 
         // when 교대역 ~ 양재 최단경로 구하기
-        PathResponse response = getShortestPath(교대역, 양재역);
+        PathResponse response = getShortestPath(교대역, 양재역).as(PathResponse.class);
 
         // then
         List<StationResponse> stationList = response.getStationList();
@@ -85,4 +90,63 @@ public class PathAcceptanceTest {
                 () -> assertThat(stationIdList).contains(남부터미널역)
         );
     }
+
+    @DisplayName("출발역과 도착역이 같으면 예외처리")
+    @Test
+    void findShortestPathException1() {
+        // given (setUp)
+
+        // when 교대역 ~ 교대역 (동일한 출발역, 도착역)
+        String exceptionMessage = getShortestPath(교대역, 교대역).as(ExceptionResponse.class).getMessage();
+
+        // then
+        assertThat(exceptionMessage).isEqualTo(SAME_SOURCE_TARGET_EXCEPTION.getMessage());
+    }
+
+    /**
+     * 교대역    --- *2호선, 10* ---   강남역
+     *   |                            |
+     * *3호선, 2*                   *신분당선, 10*
+     *   |                            |
+     * 남부터미널역  --- *3호선, 3* ---   양재
+     *
+     * 사당역 --- *4호선, 10* --- 이수역
+     */
+    @DisplayName("출발역과 도착역이 연결되어 있지 않으면 예외처리")
+    @Test
+    void findShortestPathException2() {
+        // given (setUp)
+        // 4호선 (사당역 - 이수역) 추가
+        Long 사당역 = createStation("사당역").jsonPath().getLong("id");
+        Long 이수역 = createStation("이수역").jsonPath().getLong("id");
+        Long 사호선 = createSubwayLine(new LineRequest("4호선", "orange", 사당역, 이수역, 2)).jsonPath().getLong("id");
+
+        // when 교대역 ~ 사당역
+        String exceptionMessage = getShortestPath(교대역, 사당역).as(ExceptionResponse.class).getMessage();
+
+        // then
+        assertThat(exceptionMessage).isEqualTo(NOT_CONNECTED_EXCEPTION.getMessage());
+    }
+
+    /**
+     * 교대역    --- *2호선, 10* ---   강남역
+     *   |                            |
+     * *3호선, 2*                   *신분당선, 10*
+     *   |                            |
+     * 남부터미널역  --- *3호선, 3* ---   양재
+     */
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우 예외처리")
+    @Test
+    void findShortestPathException3() {
+        // given (setUp)
+        // 노선에 존재하지 않는 사당역
+        Long 사당역 = createStation("사당역").jsonPath().getLong("id");
+
+        // when 교대역 ~ 사당역
+        String exceptionMessage = getShortestPath(교대역, 사당역).as(ExceptionResponse.class).getMessage();
+
+        // then
+        assertThat(exceptionMessage).isEqualTo(NO_EXISTS_STATION_EXCEPTION.getMessage());
+    }
+
 }

@@ -4,15 +4,19 @@ import nextstep.subway.domain.entity.Section;
 import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.response.PathResponse;
 import nextstep.subway.domain.response.StationResponse;
+import nextstep.subway.exception.ApplicationException;
 import nextstep.subway.repository.SectionRepository;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static nextstep.subway.exception.ExceptionMessage.*;
 
 @Service
 public class PathService {
@@ -28,12 +32,27 @@ public class PathService {
         Station source = stationService.findById(sourceId);
         Station target = stationService.findById(targetId);
 
+        // 출발역과 도착역이 같으면 예외처리
+        if (source.equals(target)) {
+            throw new ApplicationException(SAME_SOURCE_TARGET_EXCEPTION.getMessage());
+        }
+
         // 그래프에 모든 역 추가
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         createSubwayGraph(graph);
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        GraphPath path = dijkstraShortestPath.getPath(source, target);
+        GraphPath path;
+        try {
+            path = dijkstraShortestPath.getPath(source, target);
+        } catch (IllegalArgumentException e) {
+            throw new ApplicationException(NO_EXISTS_STATION_EXCEPTION.getMessage());
+        }
+
+        // 경로가 없으면 예외처리
+        if (ObjectUtils.isEmpty(path)) {
+            throw new ApplicationException(NOT_CONNECTED_EXCEPTION.getMessage());
+        }
 
         // 최단 경로 리턴
         return createPathResponse(path);
