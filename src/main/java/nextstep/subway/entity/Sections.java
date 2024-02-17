@@ -65,25 +65,33 @@ public class Sections {
     }
 
     private void deleteIntermediateStation(Line line, Station stationToDelete) {
+        Section commonSection = findCommonSection(stationToDelete);
+        replaceAndConnectSection(commonSection, findNextSection(commonSection));
+    }
 
-        Section deletionPoint = sections.stream()
-                .filter(section -> section.isAtLeastOneSameStation(stationToDelete))
+    private Section findNextSection(Section commonSection) {
+        return sections.get(sections.indexOf(commonSection) + 1);
+    }
+
+    private void replaceAndConnectSection(Section sectionToDelete, Section nextSection) {
+        sections.remove(sectionToDelete);
+        sections.remove(nextSection);
+        sections.add(createAndConnectNewSection(sectionToDelete, nextSection));
+    }
+
+    private Section createAndConnectNewSection(Section commonSection, Section nextSectionBasedOnCommonSection) {
+        return new Section(
+                commonSection.getUpStation(),
+                nextSectionBasedOnCommonSection.getDownStation(),
+                commonSection.getDistance() + nextSectionBasedOnCommonSection.getDistance(),
+                commonSection.getLine());
+    }
+
+    private Section findCommonSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isAtLeastOneSameStation(station))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
-
-        int deletionPointIndex = sections.indexOf(deletionPoint);
-
-        Section nextSectionOfPoint = sections.get(deletionPointIndex + 1);
-
-        sections.remove(deletionPoint);
-        sections.remove(nextSectionOfPoint);
-
-        sections.add(new Section(
-                deletionPoint.getUpStation(),
-                nextSectionOfPoint.getDownStation(),
-                deletionPoint.getDistance() + nextSectionOfPoint.getDistance(),
-                line
-        ));
     }
 
     private Section findLastSection() {
@@ -168,7 +176,7 @@ public class Sections {
             return;
         }
         if (canAppendSectionBasedOnStation(sectionToInsert, commonStation)) {
-            appendSection(sectionToInsert, sections.get(sections.indexOf(commonSection) + 1));
+            appendSection(sectionToInsert, findNextSection(commonSection));
         }
     }
 
