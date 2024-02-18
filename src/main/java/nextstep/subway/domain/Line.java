@@ -276,4 +276,13 @@ public class Line {
             .findFirst()
             .orElseThrow(() -> new LineException(LineException.NOT_EXIST_SECTION));
     }
+
+    public void update(String name, String color) {
+        if (name != null) {
+            setName(name);
+        }
+        if (color != null) {
+            setColor(color);
+        }
+    }
 }
