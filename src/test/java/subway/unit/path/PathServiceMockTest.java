@@ -71,4 +71,20 @@ class PathServiceMockTest {
 		PathResponse expectedResponse = new PathResponse(shortestPath, 4);
 		Assertions.assertThat(pathResponse).usingRecursiveComparison().isEqualTo(expectedResponse);
 	}
+
+	@DisplayName("서로 연결 되지 않은 역을 조회할 경우 - IllegalArgumentException 발생")
+	@Test
+	void failFindShortestPath() {
+		// given
+		Line 사호선 = 노선_생성("사호선", "파랑");
+		Station 서울역 = 정류장_생성("서울역");
+		Station 충무로 = 정류장_생성("충무로");
+		사호선.addSection(new Section(사호선, 서울역, 충무로, 10));
+		given(lineRepository.findAll()).willReturn(List.of(이호선, 삼호선, 신분당선, 사호선));
+
+		// when
+		// then
+		Assertions.assertThatThrownBy(() -> pathService.findShortestPath(서울역, 양재역))
+			.isInstanceOf(IllegalArgumentException.class);
+	}
 }

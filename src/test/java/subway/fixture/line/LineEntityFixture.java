@@ -25,6 +25,13 @@ public class LineEntityFixture {
 		return new Builder();
 	}
 
+	public static Line 노선_생성(String name, String color) {
+		return LineEntityFixture.builder()
+			.name(name)
+			.color(color)
+			.build();
+	}
+
 	public static Line 신분당선() {
 		Line line = LineEntityFixture.builder()
 			.name("신분당선")

@@ -1,7 +1,9 @@
 package subway.path;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -41,7 +43,10 @@ public class JgraphAdapter {
 	}
 
 	public List<Station> getPath(Station sourceStation, Station targetStation) {
-		return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+		GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(sourceStation, targetStation);
+		return Optional.ofNullable(graphPath)
+			.map(GraphPath::getVertexList)
+			.orElseThrow(IllegalArgumentException::new);
 	}
 
 	public Integer getPathWeight(Station sourceStation, Station targetStation) {
