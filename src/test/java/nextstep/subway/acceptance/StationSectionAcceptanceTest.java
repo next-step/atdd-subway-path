@@ -92,7 +92,7 @@ public class StationSectionAcceptanceTest {
                 void 추가_요청한_구간의_상행역이_등록되어_있지_않으면서_하행역은_등록되지_등록된_역일_경우() {
                     // when
                     ExtractableResponse<Response> 성공하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(독산역_번호, 가산디지털단지역_번호, 4), HttpStatus.CREATED);
+                            성공하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(독산역_번호, 가산디지털단지역_번호, 4));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -111,7 +111,7 @@ public class StationSectionAcceptanceTest {
                 void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
                     // when
                     ExtractableResponse<Response> 성공하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(구로디지털단지역_번호, 종각역_번호, 4), HttpStatus.CREATED);
+                            성공하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(구로디지털단지역_번호, 종각역_번호, 4));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -134,7 +134,7 @@ public class StationSectionAcceptanceTest {
                 void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되지_않은_역이면서_하행역은_등록된_역일_경우() {
                     // when
                     ExtractableResponse<Response> 성공하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(종각역_번호, 서울역_번호, 4), HttpStatus.CREATED);
+                            성공하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(종각역_번호, 서울역_번호, 4));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -153,7 +153,7 @@ public class StationSectionAcceptanceTest {
                 void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
                     // when
                     ExtractableResponse<Response> 성공하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(신도림역_번호, 종각역_번호, 4), HttpStatus.CREATED);
+                            성공하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(신도림역_번호, 종각역_번호, 4));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -176,7 +176,7 @@ public class StationSectionAcceptanceTest {
                 void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되지_않은_역이면서_하행역은_등록된_역일_경우() {
                     // when
                     ExtractableResponse<Response> 성공하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(종각역_번호, 홍대입구역_번호, 4), HttpStatus.CREATED);
+                            성공하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(종각역_번호, 홍대입구역_번호, 4));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -195,7 +195,7 @@ public class StationSectionAcceptanceTest {
                 void 추가_요청한_구간의_상행역이_기존_노선의_역으로_등록되어_있고_하행역은_등록되지_않은_역일_경우() {
                     // when
                     ExtractableResponse<Response> 성공하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(홍대입구역_번호, 종각역_번호, 4), HttpStatus.CREATED);
+                            성공하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(홍대입구역_번호, 종각역_번호, 4));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -221,7 +221,7 @@ public class StationSectionAcceptanceTest {
                 void 추가_요청한_구간의_상행역이_기존_노선에_등록되지_않았을_경우() {
                     // when, 최초 10개의 역 생성(@BeforeEach)
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(교대역_번호, 종각역_번호, 3), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(교대역_번호, 종각역_번호, 3));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -244,7 +244,7 @@ public class StationSectionAcceptanceTest {
 
                     // when
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(upStationId, 구로디지털단지역_번호, 10), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(response), 지하철_구간(upStationId, 구로디지털단지역_번호, 10));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -267,7 +267,7 @@ public class StationSectionAcceptanceTest {
 
                     // when
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(구로디지털단지역_번호, downStationId, 10), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(response), 지하철_구간(구로디지털단지역_번호, downStationId, 10));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -290,7 +290,7 @@ public class StationSectionAcceptanceTest {
 
                     // when
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(response), 지하철_구간(구로디지털단지역_번호, 독산역_번호, distance), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(response), 지하철_구간(구로디지털단지역_번호, 독산역_번호, distance));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -314,7 +314,7 @@ public class StationSectionAcceptanceTest {
                 void 상행역이_등록되어_있으면서_하행역이_노선의_역으로_등록되어_있는_경우() {
                     // when
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(구로디지털단지역_번호, 서울역_번호, 3), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(구로디지털단지역_번호, 서울역_번호, 3));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -333,7 +333,7 @@ public class StationSectionAcceptanceTest {
                 void 상행역이_등록되어_있으면서_하행역이_역으로_등록되어_있지_않은_경우() {
                     // when, 최초 10개의 역 생성(@BeforeEach)
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(구로디지털단지역_번호, 200L, 3), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(구로디지털단지역_번호, 200L, 3));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -351,7 +351,7 @@ public class StationSectionAcceptanceTest {
                 void 요청한_구간의_하행역을_기준으로_직후_역과의_거리가_1보다_작은_경우() {
                     // when, 최초 10개의 역 생성(@BeforeEach)
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(구로디지털단지역_번호, 잠실역_번호, 10), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(구로디지털단지역_번호, 잠실역_번호, 10));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -374,7 +374,7 @@ public class StationSectionAcceptanceTest {
                 void 상행역이_등록되어_있으면서_하행역이_노선의_역으로_등록되어_있는_경우() {
                     // when
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(신도림역_번호, 홍대입구역_번호, 3), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(신도림역_번호, 홍대입구역_번호, 3));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -393,7 +393,7 @@ public class StationSectionAcceptanceTest {
                 void 상행역이_등록되어_있으면서_하행역이_역으로_등록되어_있지_않은_경우() {
                     // when, 최초 10개의 역 생성(@BeforeEach)
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(신도림역_번호, 20L, 3), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(신도림역_번호, 20L, 3));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -411,7 +411,7 @@ public class StationSectionAcceptanceTest {
                 void 요청한_구간의_하행역을_기준으로_직후_역과의_거리가_1보다_작은_경우() {
                     // when
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(신도림역_번호, 종각역_번호, 10), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(신도림역_번호, 종각역_번호, 10));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -435,7 +435,7 @@ public class StationSectionAcceptanceTest {
                 void 상행역이_등록되어_있으면서_하행역이_노선의_역으로_등록되어_있는_경우() {
                     // when
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(홍대입구역_번호, 구로디지털단지역_번호, 3), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(홍대입구역_번호, 구로디지털단지역_번호, 3));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -454,7 +454,7 @@ public class StationSectionAcceptanceTest {
                 void 상행역이_등록되어_있으면서_하행역이_역으로_등록되어_있지_않은_경우() {
                     // when, 최초 10개의 역 생성(@BeforeEach)
                     ExtractableResponse<Response> 실패하는_생성요청_응답 =
-                            지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 지하철_구간(홍대입구역_번호, 20L, 3), HttpStatus.BAD_REQUEST);
+                            실패하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 지하철_구간(홍대입구역_번호, 20L, 3));
 
                     // then
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
@@ -486,7 +486,7 @@ public class StationSectionAcceptanceTest {
                 ExtractableResponse<Response> 호남선_생성_응답 = 지하철_노선_생성_요청_검증_포함(호남선);
 
                 // when, then
-                지하철_구간_삭제요청_상태코드_검증_포함(호남선.getDownStationId(), getCreatedLocationId(호남선_생성_응답), HttpStatus.BAD_REQUEST);
+                실패하는_지하철_구간_삭제요청(호남선.getDownStationId(), getCreatedLocationId(호남선_생성_응답));
                 assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
                         .containsExactly(가산디지털단지역_번호, 구로디지털단지역_번호);
             }
@@ -504,10 +504,10 @@ public class StationSectionAcceptanceTest {
                         지하철_노선_생성_요청_검증_포함(호남선(가산디지털단지역_번호, 구로디지털단지역_번호, 10));
 
                 SectionRequest 생성할_지하철_구간 = 지하철_구간(구로디지털단지역_번호, 신도림역_번호, 10);
-                지하철_구간_추가요청_상태코드_검증_포함(getCreatedLocationId(호남선_생성_응답), 생성할_지하철_구간, HttpStatus.CREATED);
+                성공하는_지하철_구간_추가요청(getCreatedLocationId(호남선_생성_응답), 생성할_지하철_구간);
 
                 // when, then
-                지하철_구간_삭제요청_상태코드_검증_포함(100L, getCreatedLocationId(호남선_생성_응답), HttpStatus.BAD_REQUEST);
+                실패하는_지하철_구간_삭제요청(100L, getCreatedLocationId(호남선_생성_응답));
                 assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
                         .containsExactly(가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호);
             }
@@ -542,7 +542,7 @@ public class StationSectionAcceptanceTest {
                 @Test
                 void 구간이_한개_이상_존재하고_가장_앞쪽의_위치한_구간의_상행역을_삭제하는_경우_삭제_성공() {
                     // when, then
-                    지하철_구간_삭제요청_상태코드_검증_포함(홍대입구역_번호, getCreatedLocationId(호남선_생성_응답), HttpStatus.NO_CONTENT);
+                    성공하는_지하철_구간_삭제요청(홍대입구역_번호, getCreatedLocationId(호남선_생성_응답));
 
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
                             .containsExactly(가산디지털단지역_번호, 구로디지털단지역_번호, 신도림역_번호, 서울역_번호);
@@ -561,7 +561,7 @@ public class StationSectionAcceptanceTest {
                 @Test
                 void 구간이_한개_이상_존재하고_하행_종점역이_포함된_구간을_삭제하는_경우_삭제_성공() {
                     // when, then
-                    지하철_구간_삭제요청_상태코드_검증_포함(신도림역_번호, getCreatedLocationId(호남선_생성_응답), HttpStatus.NO_CONTENT);
+                    성공하는_지하철_구간_삭제요청(신도림역_번호, getCreatedLocationId(호남선_생성_응답));
 
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
                             .containsExactly(가산디지털단지역_번호, 구로디지털단지역_번호, 서울역_번호, 홍대입구역_번호);
@@ -581,7 +581,7 @@ public class StationSectionAcceptanceTest {
                 @Test
                 void 구간이_한개_이상_존재하고_하행_종점역이_포함된_구간을_삭제하는_경우_삭제_성공() {
                     // when, then
-                    지하철_구간_삭제요청_상태코드_검증_포함(가산디지털단지역_번호, getCreatedLocationId(호남선_생성_응답), HttpStatus.NO_CONTENT);
+                    성공하는_지하철_구간_삭제요청(가산디지털단지역_번호, getCreatedLocationId(호남선_생성_응답));
 
                     assertThat(convertStationIds(지하철_노선_조회_요청(getCreatedLocationId(호남선_생성_응답))))
                             .containsExactly(구로디지털단지역_번호, 신도림역_번호, 서울역_번호, 홍대입구역_번호);
