@@ -6,8 +6,6 @@ import java.util.Objects;
 @Entity
 public class Section {
 
-    public static final int MIN_STATION_ID_VALUE = 1;
-
     public static final int MIN_DISTANCE_VALUE = 1;
 
     @Id
@@ -28,12 +26,6 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = validateDistance(distance);
-    }
-
     public Section(Station upStation, Station downStation, int distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
@@ -45,13 +37,6 @@ public class Section {
         return upStation.equals(downStation);
     }
 
-    public Section setLine(Line line) {
-        this.line = line;
-        line.addSection(this);
-
-        return this;
-    }
-
     public boolean isAtLeastOneSameStation(Station station) {
         return (this.upStation.isSame(station) || this.downStation.isSame(station));
     }
@@ -59,17 +44,6 @@ public class Section {
     public boolean isAtLeastOneSameStation(Section section) {
         return isAtLeastOneSameStation(section.getUpStation()) ||
                 isAtLeastOneSameStation(section.getDownStation());
-    }
-
-    private int validateDistance(Integer distance) {
-        if (distance == null || distance < MIN_DISTANCE_VALUE) {
-            throw new IllegalArgumentException("거리는 0보다 커야합니다.");
-        }
-        return distance;
-    }
-
-    public boolean isUpStationSame(Section sectionToAdd) {
-        return this.upStation.equals(sectionToAdd.getUpStation());
     }
 
     public Station findCommonStation(Section sectionToAdd) {
@@ -82,6 +56,20 @@ public class Section {
         return null;
     }
 
+    public boolean canPrependSection(Section sectionToConnect) {
+        return upStation.isSame(sectionToConnect.getDownStation());
+    }
+
+    public boolean canAppendSection(Section sectionToConnect) {
+        return downStation.isSame(sectionToConnect.getUpStation());
+    }
+
+    private int validateDistance(Integer distance) {
+        if (distance == null || distance < MIN_DISTANCE_VALUE) {
+            throw new IllegalArgumentException("거리는 0보다 커야합니다.");
+        }
+        return distance;
+    }
 
     public Long getId() {
         return id;
@@ -97,6 +85,17 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Section setLine(Line line) {
+        this.line = line;
+        line.addSection(this);
+
+        return this;
     }
 
     @Override

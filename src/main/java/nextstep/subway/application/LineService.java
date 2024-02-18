@@ -3,7 +3,6 @@ package nextstep.subway.application;
 import nextstep.subway.dto.*;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
-import nextstep.subway.entity.Sections;
 import nextstep.subway.entity.Station;
 import nextstep.subway.entity.repository.LineRepository;
 import nextstep.subway.entity.repository.StationRepository;
@@ -12,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,7 +69,7 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationIdToDelete) {
         Line line = findLineById(lineId);
-        line.deleteSection(findStation(stationIdToDelete));
+        line.delete(findStation(stationIdToDelete));
     }
 
     public Line findLineById(Long lineId) {
@@ -99,8 +100,20 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                convertToStationResponses(line.getSections()));
+                convertStationResponses(line.getAllSections()));
     }
+
+    private List<StationResponse> convertStationResponses(List<Section> sections) {
+        Set<StationResponse> stationResponses = new LinkedHashSet<>();
+
+        sections.forEach(section -> {
+                    stationResponses.add(convertToStationResponse(section.getUpStation()));
+                    stationResponses.add(convertToStationResponse(section.getDownStation()));
+                });
+
+        return new ArrayList<>(stationResponses);
+    }
+
 
     private Section convertToSectionEntity(LineRequest request, Line line) {
         return new Section(
@@ -110,16 +123,6 @@ public class LineService {
                 line);
     }
 
-    private List<StationResponse> convertToStationResponses(Sections sections) {
-        List<StationResponse> stationResponses = new ArrayList<>();
-        stationResponses.add(convertToStationResponse(sections.findFirstStation()));
-        sections.getSections()
-                .forEach(section ->
-                        stationResponses.add(convertToStationResponse(section.getDownStation())));
-
-        return stationResponses;
-    }
-
     private StationResponse convertToStationResponse(Station station) {
         return new StationResponse(
                 station.getId(),
@@ -127,11 +130,11 @@ public class LineService {
         );
     }
 
-    private SectionResponse convertToSectionResponse(Section section) {
+    public SectionResponse convertToSectionResponse(Section section) {
         return new SectionResponse(
                 section.getId(),
-                section.getUpStation().getId(),
-                section.getDownStation().getId(),
+                findStation(section.getUpStation().getId()),
+                findStation(section.getDownStation().getId()),
                 section.getDistance()
         );
     }

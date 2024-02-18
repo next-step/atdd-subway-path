@@ -82,7 +82,7 @@ public class LineServiceMockTest {
         lineService.addSection(선릉_삼성_구간);
 
         // then
-        assertThat(lineService.findLineById(이호선_아이디).getStations())
+        assertThat(lineService.findLineById(이호선_아이디).getAllStations())
                 .containsAnyOf(선릉역, 삼성역);
     }
 
@@ -108,7 +108,7 @@ public class LineServiceMockTest {
         lineService.deleteSection(이호선_아이디, 신천역_번호);
 
         // then
-        assertThat(lineService.findLineById(이호선_아이디).getStations())
+        assertThat(lineService.findLineById(이호선_아이디).getAllStations())
                 .containsAnyOf(선릉역, 삼성역);
     }
 }

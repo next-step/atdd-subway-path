@@ -53,4 +53,8 @@ public class StationSteps {
                 .boxed()
                 .collect(Collectors.toMap(names::get, ids::get));
     }
+
+    public static List<Long> convertStationIds(JsonPath jsonPath) {
+        return jsonPath.getList("stations.id", Long.class);
+    }
 }

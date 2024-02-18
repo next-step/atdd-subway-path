@@ -18,7 +18,7 @@ public class SectionController {
     }
 
     @PostMapping("/lines/{lineId}/sections")
-    public ResponseEntity<SectionResponse> createLine(@PathVariable Long lineId,
+    public ResponseEntity<SectionResponse> addSection(@PathVariable Long lineId,
                                                       @RequestBody SectionRequest request) {
         SectionResponse sectionResponse =
                 lineService.addSection(SectionRequest.mergeForCreateLine(lineId, request));
@@ -27,8 +27,8 @@ public class SectionController {
     }
 
     @DeleteMapping("/lines/{lineId}/sections")
-    public ResponseEntity<Void> deleteLine(@PathVariable Long lineId,
-                                           @RequestParam(name = "stationId") Long stationIdToDelete) {
+    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId,
+                                              @RequestParam(name = "stationId") Long stationIdToDelete) {
         lineService.deleteSection(lineId, stationIdToDelete);
         return ResponseEntity.noContent().build();
     }

@@ -69,7 +69,7 @@ public class StationLineAcceptanceTest {
         LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
 
         // when
-        지하철_노선_생성_요청_검증_포함(신분당선);
+        ExtractableResponse<Response> 신분당선_노선_생성_응답 = 지하철_노선_생성_요청_검증_포함(신분당선);
 
         // then
         assertThat(convertLineResponses(모든_지하철_노선_조회_요청())).usingRecursiveComparison()
@@ -89,8 +89,8 @@ public class StationLineAcceptanceTest {
         LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
         LineRequest 분당선 = LineFixture.신분당선(구로디지털단지역_번호, 신도림역_번호);
 
-        지하철_노선_생성_요청_검증_포함(신분당선);
-        지하철_노선_생성_요청_검증_포함(분당선);
+        ExtractableResponse<Response> 신분당선_노선_생성_응답 = 지하철_노선_생성_요청_검증_포함(신분당선);
+        ExtractableResponse<Response> 분당선_노선_생성_응답 = 지하철_노선_생성_요청_검증_포함(분당선);
 
         // when
         assertThat(convertLineResponses(모든_지하철_노선_조회_요청())).usingRecursiveComparison()
@@ -108,10 +108,10 @@ public class StationLineAcceptanceTest {
     void findStationLine() {
         // given
         LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청_검증_포함(신분당선);
+        ExtractableResponse<Response> 신분당선_노선_생성_응답 = 지하철_노선_생성_요청_검증_포함(신분당선);
 
         // when, then
-        assertThat(convertLineResponse(지하철_노선_조회_요청(getCreatedLocationId(response)))).usingRecursiveComparison()
+        assertThat(convertLineResponse(지하철_노선_조회_요청(getCreatedLocationId(신분당선_노선_생성_응답)))).usingRecursiveComparison()
                 .ignoringFields("id", "stations")
                 .isEqualTo(신분당선);
     }
@@ -128,13 +128,13 @@ public class StationLineAcceptanceTest {
         LineRequest 신분당선 = LineFixture.신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
         LineRequest 수정된_신분당선 = LineFixture.수정된_신분당선(가산디지털단지역_번호, 구로디지털단지역_번호);
 
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청_검증_포함(신분당선);
+        ExtractableResponse<Response> 신분당선_노선_생성_응답 = 지하철_노선_생성_요청_검증_포함(신분당선);
 
         // when
-        지하철_노선_수정_요청(수정된_신분당선, getCreatedLocationId(createResponse));
+        지하철_노선_수정_요청(수정된_신분당선, getCreatedLocationId(신분당선_노선_생성_응답));
 
         // then
-        assertThat(convertLineResponse(지하철_노선_조회_요청(getCreatedLocationId(createResponse)))).usingRecursiveComparison()
+        assertThat(convertLineResponse(지하철_노선_조회_요청(getCreatedLocationId(신분당선_노선_생성_응답)))).usingRecursiveComparison()
                 .ignoringFields("id", "stations")
                 .isEqualTo(수정된_신분당선);
     }
