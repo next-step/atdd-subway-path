@@ -45,7 +45,7 @@ public class Line {
         return color;
     }
 
-    public List<Section> getSections() {
+    public List<Section> getSectionList() {
         return sections.getSections();
     }
 
@@ -58,13 +58,25 @@ public class Line {
         this.color = color;
     }
 
-    public void addSection(Section newSection) {
-        sections.addSection(newSection);
+    public void addMiddleSection(Section newSection) {
         newSection.registerLine(this);
     }
 
-    public Long deleteSection(Station deleteStation) {
-        return sections.deleteStation(deleteStation);
+    public void addEndSection(Section newSection) {
+        sections.validateSection(newSection);
+        newSection.registerLine(this);
+    }
+
+    public Long deleteDownSection(Station deleteStation) {
+        return sections.deleteDownStation(deleteStation);
+    }
+
+    public Section createNewSection(Section existingSection, Section requestSection) {
+        return sections.createNewSection(existingSection, requestSection);
+    }
+
+    public void removeSection(Section section) {
+        sections.removeSection(section);
     }
 
     @Override
@@ -72,11 +84,11 @@ public class Line {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor()) && Objects.equals(getSections(), line.getSections());
+        return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor()) && Objects.equals(getSectionList(), line.getSectionList());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor(), getSections());
+        return Objects.hash(getId(), getName(), getColor(), getSectionList());
     }
 }
