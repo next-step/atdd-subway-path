@@ -205,6 +205,30 @@ class SectionsTest {
     }
 
     @Test
+    void testDeleteLastSection_상행종점역을_제거할_수_있다() {
+
+        int firstSectionDistance = 10;
+        Section firstSection = new Section(역삼역, 선릉역, firstSectionDistance);
+        int lastSectionDistance = 12;
+        Section lastSection = new Section(선릉역, 왕십리역, lastSectionDistance);
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(firstSection);
+        sectionList.add(lastSection);
+        Sections sections = new Sections(sectionList);
+
+        //when
+        sections.removeSection(역삼역);
+
+        //then
+        assertAll(
+            () -> assertThat(sections.getSections()).hasSize(1),
+            () -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(선릉역),
+            () -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(왕십리역),
+            () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(lastSectionDistance)
+        );
+    }
+
+    @Test
     void testGetLastSection_마지막_구간을_반환한다() {
         //given
         Section firstSection = new Section(역삼역, 선릉역, 10);
