@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 public class SectionsTest {
 
     @Test
@@ -26,9 +29,11 @@ public class SectionsTest {
         Section newSection = sections.createNewSection(기존구간, 신규구간);
 
         //then
-        Assertions.assertThat(newSection.getUpStation()).isEqualTo(신규구간_하행역);
-        Assertions.assertThat(newSection.getDownStation()).isEqualTo(기존구간_하행역);
-        Assertions.assertThat(newSection.getDistance()).isEqualTo(기존구간.getDistance()-신규구간.getDistance());
+        assertAll(
+                () -> assertThat(newSection.getUpStation()).isEqualTo(신규구간_하행역),
+                () -> assertThat(newSection.getDownStation()).isEqualTo(기존구간_하행역),
+                () -> assertThat(newSection.getDistance()).isEqualTo(기존구간.getDistance()-신규구간.getDistance())
+        );
     }
 
 }

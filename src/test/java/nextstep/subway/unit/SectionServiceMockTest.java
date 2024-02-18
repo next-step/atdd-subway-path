@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.exception.BadRequestException;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineRepository;
 import nextstep.subway.line.LineService;
@@ -20,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -51,6 +53,7 @@ public class SectionServiceMockTest {
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
+        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.ofNullable(null));
 
         // when
         SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 선릉역.getId(), 7);
@@ -75,10 +78,10 @@ public class SectionServiceMockTest {
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(신규역.getId())).thenReturn(Optional.of(신규역));
-        when(sectionRepository.findByUpStation(강남역)).thenReturn(강남_선릉_구간);
+        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.of(강남_선릉_구간));
 
         when(sectionRepository.save(any(Section.class))).then(AdditionalAnswers.returnsFirstArg());
-        when(sectionRepository.findByDownStation(강남역)).thenReturn(null);
+        when(sectionRepository.findByDownStation(강남역)).thenReturn(Optional.ofNullable(null));
 
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
@@ -87,5 +90,23 @@ public class SectionServiceMockTest {
 
         //then
         assertThat(lineService.findLineById(이호선.getId()).getStations()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("신규 구간을 추가할 기존 구간을 찾을때 추가하려는 구간과 같은 경우 오류가 발생한다.")
+    void sameSectionException() {
+
+//        Line 이호선 = new Line(1L, "2호선", "green");
+        Station 강남역 = new Station(1L, "강남역");
+        Station 선릉역 = new Station(2L, "선릉역");
+
+        Section 기존_구간 = new Section(1L, 강남역, 선릉역, 10, null);
+        Section 등록할_구간 = new Section(2L, 강남역, 선릉역, 10, null);
+
+        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.of(기존_구간));
+
+        //when & then
+        assertThatThrownBy(() -> sectionService.findExistingSection(등록할_구간))
+                .isInstanceOf(BadRequestException.class);
     }
 }

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.*;
 
 
@@ -66,8 +67,8 @@ public class LineServiceMockTest {
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
         when(stationRepository.findById(삼성역.getId())).thenReturn(Optional.of(삼성역));
-        when(sectionRepository.findByUpStation(강남역)).thenReturn(null);
-        when(sectionRepository.findByUpStation(선릉역)).thenReturn(null);
+        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.ofNullable(null));
+        when(sectionRepository.findByUpStation(선릉역)).thenReturn(Optional.ofNullable(null));
 
         sectionService.addSection(이호선, new SectionRequest(강남역.getId(), 선릉역.getId(), 7));
         sectionService.addSection(이호선,  new SectionRequest(선릉역.getId(), 삼성역.getId(), 3));
@@ -76,7 +77,9 @@ public class LineServiceMockTest {
         lineService.deleteSection(이호선.getId(), 삼성역.getId());
 
         //then
-        assertThat(lineService.findLineById(이호선.getId()).getStations()).hasSize(2);
-        assertThat(lineService.findLineById(이호선.getId()).getStations()).containsAll(List.of(new StationResponse(강남역), new StationResponse(선릉역)));
+        assertAll(
+                () -> assertThat(lineService.findLineById(이호선.getId()).getStations()).hasSize(2),
+                () ->assertThat(lineService.findLineById(이호선.getId()).getStations()).containsAll(List.of(new StationResponse(강남역), new StationResponse(선릉역)))
+        );
     }
 }

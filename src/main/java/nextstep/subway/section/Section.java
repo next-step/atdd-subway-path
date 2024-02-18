@@ -85,6 +85,13 @@ public class Section {
         line.getSectionList().add(this);
     }
 
+    public boolean isSameSection(Section otherSection) {
+        if(upStation.equals(otherSection.getUpStation()) && downStation.equals(otherSection.downStation)){
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

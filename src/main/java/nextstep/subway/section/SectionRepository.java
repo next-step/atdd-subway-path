@@ -3,8 +3,10 @@ package nextstep.subway.section;
 import nextstep.subway.station.Station;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SectionRepository extends JpaRepository<Section, Long> {
-    Section findByUpStation(Station station);
+import java.util.Optional;
 
-    Section findByDownStation(Station station);
+public interface SectionRepository extends JpaRepository<Section, Long> {
+    Optional<Section> findByUpStation(Station station);
+
+    Optional<Section> findByDownStation(Station station);
 }

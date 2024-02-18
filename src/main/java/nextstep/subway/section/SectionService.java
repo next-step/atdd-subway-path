@@ -28,7 +28,7 @@ public class SectionService {
         requestSection.changeNextSection(newSection);
 
         //기존 구간의 이전 구간에 nextStationId 셋팅
-        Section prevSection = sectionRepository.findByDownStation(requestSection.getUpStation());
+        Section prevSection = sectionRepository.findByDownStation(requestSection.getUpStation()).orElse(null);
         if(prevSection != null) {
             prevSection.changeNextSection(requestSection);
         }
@@ -50,12 +50,23 @@ public class SectionService {
         );
 
         Section requestSection = new Section(upStation, downStation, sectionRequest.getDistance()); //A-B 구간
-        Section middleObjectSection = sectionRepository.findByUpStation(upStation); //A-C 구간
-        if(middleObjectSection != null) {
-            addMiddleSection(line, requestSection, middleObjectSection);
+        Section existingSection = findExistingSection(requestSection); //A-C 구간
+        if(existingSection != null) {
+            addMiddleSection(line, requestSection, existingSection);
         }
         else {
             line.addEndSection(requestSection);
         }
+    }
+
+    public Section findExistingSection(Section requestSection) {
+        Section existingSection = sectionRepository.findByUpStation(requestSection.getUpStation()).orElse(null);
+        if(existingSection == null){
+            return null;
+        }
+        if(requestSection.isSameSection(existingSection)) {
+            throw new BadRequestException("기존 구간과 같은 구간은 추가할 수 없습니다.");
+        }
+        return existingSection;
     }
 }
