@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.response.StationResponse;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -22,5 +23,12 @@ public class Station {
 
     public Station(String name) {
         this.name = name;
+    }
+
+    public StationResponse createStationResponse() {
+        return new StationResponse(
+                this.id,
+                this.name
+        );
     }
 }

@@ -62,15 +62,13 @@ public class PathService {
         List<Station> stations = path.getVertexList();
         int shortestDistance = (int) path.getWeight();
 
-        return new PathResponse(createStationResponseList(stations), shortestDistance);
-    }
+        List<StationResponse> stationList = new ArrayList<>();
+        stations.stream()
+                .forEach(
+                        station -> stationList.add(station.createStationResponse())
+                );
 
-    private List<StationResponse> createStationResponseList(List<Station> stations) {
-        List<StationResponse> stationResponseList = new ArrayList<>();
-        for (Station station : stations) {
-            stationResponseList.add(stationService.createStationResponse(station));
-        }
-        return stationResponseList;
+        return new PathResponse(stationList, shortestDistance);
     }
 
     private void createSubwayGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph) {
