@@ -2,7 +2,7 @@ package nextstep.subway.line.section;
 
 
 import nextstep.subway.Exception.ErrorCode;
-import nextstep.subway.Exception.LineException;
+import nextstep.subway.Exception.SubwayException;
 import nextstep.subway.station.Station;
 
 import javax.persistence.CascadeType;
@@ -49,7 +49,7 @@ public class Sections {
         }
 
         if (isDuplicatedSection(newSection)) {
-            throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "이미 등록된 구간입니다.");
+            throw new SubwayException(ErrorCode.CANNOT_ADD_SECTION, "이미 등록된 구간입니다.");
         }
 
         if (isFirstAdded(newSection)) {
@@ -79,7 +79,7 @@ public class Sections {
 
     private void addInFirst(Section newSection) {
         if (isDuplicatedUpStation(newSection.getUpStation())) {
-            throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
+            throw new SubwayException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
         }
         sections.add(0, newSection);
     }
@@ -90,20 +90,20 @@ public class Sections {
 
     private void addInLast(Section newSection) {
         if (isDuplicatedDownStation(newSection.getDownStation())) {
-            throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
+            throw new SubwayException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
         }
         sections.add(newSection);
     }
 
     private void addInMiddle(Section newSection) {
         if (isDuplicatedDownStation(newSection.getDownStation())) {
-            throw new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
+            throw new SubwayException(ErrorCode.CANNOT_ADD_SECTION, "추가할 역이 이미 존재합니다.");
         }
 
         Section targetSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new LineException(ErrorCode.CANNOT_ADD_SECTION, "추가할 구간 정보를 찾을 수 없습니다ㅏ."));
+                .orElseThrow(() -> new SubwayException(ErrorCode.CANNOT_ADD_SECTION, "추가할 구간 정보를 찾을 수 없습니다ㅏ."));
 
         int index = sections.indexOf(targetSection);
         sections.add(index == 0 ? 0 : index - 1, newSection);
@@ -117,7 +117,7 @@ public class Sections {
 
     public void deleteSection(Long stationId) {
         if (sections.size() == 1) {
-            throw new LineException(ErrorCode.CANNOT_DELETE_SECTION, "구간이 한개인 경우 삭제할 수 없습니다.");
+            throw new SubwayException(ErrorCode.CANNOT_DELETE_SECTION, "구간이 한개인 경우 삭제할 수 없습니다.");
         }
 
         if (isFirstUpStation(stationId)) {
@@ -145,7 +145,7 @@ public class Sections {
         Section targetSection = sections.stream()
                 .filter(section -> section.getDownStation().match(stationId))
                 .findFirst()
-                .orElseThrow(() -> new LineException(ErrorCode.CANNOT_DELETE_SECTION, "삭제할 역 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new SubwayException(ErrorCode.CANNOT_DELETE_SECTION, "삭제할 역 정보를 찾을 수 없습니다."));
 
         int targetIndex = sections.indexOf(targetSection);
         Section nextSection = sections.get(targetIndex + 1);
