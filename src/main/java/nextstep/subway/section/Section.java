@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import nextstep.exception.BadRequestException;
 import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
@@ -85,11 +86,13 @@ public class Section {
         line.getSectionList().add(this);
     }
 
-    public boolean isSameSection(Section otherSection) {
+    public void validMiddleSection(Section otherSection) {
         if(upStation.equals(otherSection.getUpStation()) && downStation.equals(otherSection.downStation)){
-            return true;
+            throw new BadRequestException("기존 구간과 같은 구간은 추가할 수 없습니다.");
         }
-        return false;
+        if(distance >= otherSection.getDistance()) {
+            throw new BadRequestException("기존 구간보다 긴 구간은 추가할 수 없습니다.");
+        }
     }
 
     @Override

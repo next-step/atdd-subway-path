@@ -246,6 +246,14 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     @DisplayName("기존 구간보다 긴 구간을 추가하면 400에러가 발생한다.")
     void addLongerDistanceSectionException() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 10, 이호선Id);
 
+        //when
+        Long 역삼역Id = extractResponseId(StationRestAssuredCRUD.createStation("역삼역"));
+        ExtractableResponse<Response> addResponse = SectionRestAssuredCRUD.addSection(강남역Id, 역삼역Id, 13, 이호선Id);
+
+        //then
+        assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

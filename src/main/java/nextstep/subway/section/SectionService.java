@@ -61,12 +61,10 @@ public class SectionService {
 
     public Section findExistingSection(Section requestSection) {
         Section existingSection = sectionRepository.findByUpStation(requestSection.getUpStation()).orElse(null);
-        if(existingSection == null){
-            return null;
+        if(existingSection != null){
+            requestSection.validMiddleSection(existingSection);
         }
-        if(requestSection.isSameSection(existingSection)) {
-            throw new BadRequestException("기존 구간과 같은 구간은 추가할 수 없습니다.");
-        }
+
         return existingSection;
     }
 }

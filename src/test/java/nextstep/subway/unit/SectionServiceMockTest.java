@@ -93,15 +93,30 @@ public class SectionServiceMockTest {
     }
 
     @Test
-    @DisplayName("신규 구간을 추가할 기존 구간을 찾을때 추가하려는 구간과 같은 경우 오류가 발생한다.")
+    @DisplayName("신규 구간을 추가할 기존 구간을 찾을때 추가하려는 구간과 같은 경우 예외가 발생한다.")
     void sameSectionException() {
-
-//        Line 이호선 = new Line(1L, "2호선", "green");
         Station 강남역 = new Station(1L, "강남역");
         Station 선릉역 = new Station(2L, "선릉역");
 
         Section 기존_구간 = new Section(1L, 강남역, 선릉역, 10, null);
         Section 등록할_구간 = new Section(2L, 강남역, 선릉역, 10, null);
+
+        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.of(기존_구간));
+
+        //when & then
+        assertThatThrownBy(() -> sectionService.findExistingSection(등록할_구간))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("신규 구간을 추가할 기존 구간을 찾을 때 기존 구간 보다 신규 구간이 길면 예외가 발생한다.")
+    void overDistanceSectionException() {
+        Station 강남역 = new Station(1L, "강남역");
+        Station 선릉역 = new Station(2L, "선릉역");
+        Station 역삼역 = new Station(3L, "역삼역");
+
+        Section 기존_구간 = new Section(1L, 강남역, 선릉역, 10, null);
+        Section 등록할_구간 = new Section(2L, 강남역, 역삼역, 13, null);
 
         when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.of(기존_구간));
 
