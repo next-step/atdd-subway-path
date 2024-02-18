@@ -7,6 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.utils.subway.LineSteps.노선_생성_요청;
 import static nextstep.subway.utils.subway.PathSteps.최단_경로_조회_요청;
@@ -35,19 +39,14 @@ public class PathAcceptanceTest {
 	 * Then 구간의 거리는 16이다.
 	 */
 	@DisplayName("단건인 경로를 조회한다.")
+	@DirtiesContext
 	@Test
 	void 단건인_경로_조회() {
 		// given
 		구간_생성_요청(서울역, 종로3가역, 10, 일호선);
 
-		// when
-		ExtractableResponse<Response> response = 최단_경로_조회_요청(서울역, 동대문역);
-
-		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getList("stations.id"))
-				.containsExactly(서울역, 종로3가역, 동대문역);
-		assertThat(response.jsonPath().getInt("distance")).isEqualTo(16);
+		// when & then
+		최단_경로_조회_성공(최단_경로_조회_요청(서울역, 동대문역), 16, 서울역, 종로3가역, 동대문역);
 	}
 
 	/**
@@ -69,14 +68,8 @@ public class PathAcceptanceTest {
 		Long 사호선 = 노선_생성_요청("4호선", "하늘", 동대문역, 충무로역, 4).jsonPath().getLong("id");
 		구간_생성_요청(서울역, 충무로역, 8, 사호선);
 
-		// when
-		ExtractableResponse<Response> response = 최단_경로_조회_요청(서울역, 동대문역);
-
-		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getList("stations.id"))
-				.containsExactly(서울역, 충무로역, 동대문역);
-		assertThat(response.jsonPath().getInt("distance")).isEqualTo(12);
+		// when & then
+		최단_경로_조회_성공(최단_경로_조회_요청(서울역, 동대문역), 12, 서울역, 충무로역, 동대문역);
 	}
 
 	/**
@@ -93,14 +86,8 @@ public class PathAcceptanceTest {
 		// given
 		Long 사호선 = 노선_생성_요청("4호선", "하늘", 동대문역, 충무로역, 4).jsonPath().getLong("id");
 
-		// when
-		ExtractableResponse<Response> response = 최단_경로_조회_요청(종로3가역, 충무로역);
-
-		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-		assertThat(response.jsonPath().getList("stations.id"))
-				.containsExactly(종로3가역, 동대문역, 충무로역);
-		assertThat(response.jsonPath().getInt("distance")).isEqualTo(10);
+		// when & then
+		최단_경로_조회_성공(최단_경로_조회_요청(종로3가역, 충무로역), 10, 종로3가역, 동대문역, 충무로역);
 	}
 
 	/**
@@ -110,7 +97,7 @@ public class PathAcceptanceTest {
 	 * When 종로3가부터 종각역까지의 경로를 조회하면
 	 * Then "경로가 존재하지 않습니다."라는 메시지를 반환한다.
 	 */
-	@DisplayName("경로가 존재하지 않으 조회 실패.")
+	@DisplayName("경로가 존재하지 않으면 조회 실패.")
 	@Test
 	void 경로가_존재하지_않으면_조회_실패() {
 		// given
@@ -147,6 +134,15 @@ public class PathAcceptanceTest {
 	void 출발역_도착역_같으면_조회_실패() {
 		// when & then
 		실패시_코드값_메시지_검증(최단_경로_조회_요청(종로3가역, 종로3가역), HttpStatus.BAD_REQUEST.value(),"출발역과 도착역이 같을 수 없습니다.");
+	}
+
+	private void 최단_경로_조회_성공(ExtractableResponse<Response> response, int distance, Long... stationIds) {
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(response.jsonPath().getList("stations.id"))
+				.isEqualTo(Arrays.stream(stationIds)
+						.map(Long::intValue)
+						.collect(Collectors.toList()));
+		assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
 	}
 
 	private void 실패시_코드값_메시지_검증(ExtractableResponse<Response> response, int statusCode, String message) {
