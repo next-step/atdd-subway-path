@@ -1,23 +1,17 @@
 package nextstep.subway.unit;
 
-import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.util.Optional;
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineRepository;
-import nextstep.subway.line.LineRequest;
-import nextstep.subway.line.LineResponse;
 import nextstep.subway.line.LineService;
 import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationService;
-import nextstep.subway.utils.line.StationLineManager;
-import nextstep.subway.utils.station.StationManager;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,7 +49,6 @@ public class LineServiceMockTest {
         Station findDownStation = stationService.findById(2L);
         Section section = new Section(expectedLine, findUpStation, findDownStation, 10L);
         lineService.addSection(expectedLine, section);
-
 
         // then
         Line line = lineService.findLineById(1L);

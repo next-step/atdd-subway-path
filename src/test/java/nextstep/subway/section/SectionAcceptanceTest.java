@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import nextstep.subway.line.LineRequest;
 import nextstep.subway.line.LineResponse;
+import nextstep.subway.station.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,46 +23,88 @@ import nextstep.subway.utils.station.StationManager;
 @DisplayName("지하철역 구간 관리 기능")
 public class SectionAcceptanceTest extends E2ETestInitializer {
 
-    public static final long DISTANCE = 10L;
-    public static final int ALL_STATIONS_COUNT = 3;
-    public static final int ONE_REMOVE_STATIONS_COUNT = 2;
-    public static final String FIRST_LINE_NAME = "신분당선";
-    public static final String FIRST_LINE_COLOR = "bg-red-600";
+    public static final long 거리 = 10L;
+    public static final String _2호선_NAME = "_2호선";
+    public static final String _2호선_COLOR = "bg-red-600";
 
-    private static LineResponse savedLine;
-    private static LineRequest saveLineRequest;
+    private static LineResponse 라인_응답_DTO;
+    private static LineRequest 라인_요청_DTO;
 
-    private static long savedFirstStationId;
-    private static long savedSecondStationId;
-    private static long savedThirdStationId;
+    private static long 강남역_ID;
+    private static long 역삼역_ID;
+    private static long 선릉역_ID;
 
     @BeforeEach
     void setUp() {
-        savedFirstStationId = StationManager.save("지하철역").jsonPath().getLong("id");
-        savedSecondStationId = StationManager.save("새로운지하철역").jsonPath().getLong("id");
-        savedThirdStationId = StationManager.save("또다른지하철역").jsonPath().getLong("id");
+        강남역_ID = StationManager.save("강남역").jsonPath().getLong("id");
+        역삼역_ID = StationManager.save("역삼역").jsonPath().getLong("id");
+        선릉역_ID = StationManager.save("선릉역").jsonPath().getLong("id");
 
-        saveLineRequest = new LineRequest(FIRST_LINE_NAME, FIRST_LINE_COLOR, savedFirstStationId, savedSecondStationId, DISTANCE);
-        savedLine = StationLineManager.save(saveLineRequest).as(LineResponse.class);  // A - C
+        라인_요청_DTO = new LineRequest(_2호선_NAME, _2호선_COLOR, 강남역_ID, 역삼역_ID, 거리);
+        라인_응답_DTO = StationLineManager.save(라인_요청_DTO).as(LineResponse.class);
     }
 
     /**
-     * Given 지하철 노선을 생성하고 여기에 A역과 C역을 생성한다.
+     * Given 2호선에 강남역 - 역삼역 구간이 등록되어 있다.
      * When B역을 등록한다.
-     * Then A역 - C역 - B역 순으로 구간이 등록되어 있다.
+     *   - 노선 처음에 추가 할 수 있다.
+     * Then 노선을 조회했을 때 역이 3개가 등록되어 있다.
      */
     // TODO: 지하철 구간 등록 인수 테스트 메서드 생성
-    @DisplayName("지하철 구간을 등록한다.")
+    @DisplayName("지하철 구간을 등록한다. (처음)")
     @Test
-    void createStationSection() {
-        // when
-        SectionRequest requestDto = new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE); // C - B 구간
+    void createFirstSection() {
+        // given
+        SectionRequest requestDto = new SectionRequest(선릉역_ID, 강남역_ID, 거리);
 
-        ExtractableResponse<Response> response = StationSectionManager.save(savedLine.getId(), requestDto); // 노선에 구간 추가
+        // when
+        ExtractableResponse<Response> response = StationSectionManager.save(라인_응답_DTO.getId(), requestDto);
 
         // then
-        List<Long> result = response.jsonPath().getList("stations");
-        Assertions.assertThat(result.size()).isEqualTo(ALL_STATIONS_COUNT);  // A - C - B
+        List<StationResponse> result = response.jsonPath().getList("stations");
+        Assertions.assertThat(result.size()).isEqualTo(3);
+    }
+
+    /**
+     * Given 2호선에 강남역 - 역삼역 구간이 등록되어 있다.
+     * When B역을 등록한다.
+     *   - 노선 가운데 추가 할 수 있다.
+     * Then 노선을 조회했을 때 역이 3개가 등록되어 있다.
+     */
+    // TODO: 지하철 구간 등록 인수 테스트 메서드 생성
+    @DisplayName("지하철 구간을 등록한다. (중간)")
+    @Test
+    void createMiddleSection() {
+        // given
+        SectionRequest requestDto = new SectionRequest(강남역_ID, 선릉역_ID, 거리);
+
+        // when
+        ExtractableResponse<Response> response = StationSectionManager.save(라인_응답_DTO.getId(), requestDto);
+
+        // then
+        List<StationResponse> result = response.jsonPath().getList("stations");
+        Assertions.assertThat(result.size()).isEqualTo(3);
+    }
+
+    /**
+     * Given 2호선에 강남역 - 역삼역 구간이 등록되어 있다.
+     * When B역을 등록한다.
+     *   - 노선 마지막에 추가 할 수 있다.
+     * Then 노선을 조회했을 때 역이 3개가 등록되어 있다.
+     */
+    // TODO: 지하철 구간 등록 인수 테스트 메서드 생성
+    @DisplayName("지하철 구간을 등록한다. (마지막)")
+    @Test
+    void createLastSection() {
+        // given
+        SectionRequest requestDto = new SectionRequest(역삼역_ID, 선릉역_ID, 거리);
+
+        // when
+        ExtractableResponse<Response> response = StationSectionManager.save(라인_응답_DTO.getId(), requestDto);
+
+        // then
+        List<StationResponse> result = response.jsonPath().getList("stations");
+        Assertions.assertThat(result.size()).isEqualTo(3);
     }
 
     /**
@@ -74,34 +117,34 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     @MethodSource("invalidSaveStationSectionParameters")
     void invalidCreateStationSection(SectionRequest requestDto) {
         // given
-        // 현재 노선: A(1) - C(2)
+        // 현재 노선: 강남역(1) - 역삼역(2)
 
         // when
-        StationSectionManager.saveFailure(savedLine.getId(), requestDto);
+        StationSectionManager.saveFailure(라인_응답_DTO.getId(), requestDto);
     }
 
     /**
-     * Given 지하철 노선을 생성하고 A역 - C역 - B역 구간을 등록한다.
-     * When B역을 제거한다.
-     * Then A역 - C역 순으로 구간이 등록되어 있다.
+     * Given 지하철 노선을 생성하고 강남역 - 선릉역 - 역삼역 구간을 등록한다.
+     * When 역삼역을 제거한다.
+     * Then 강남역 - 선릉역 순으로 구간이 등록되어 있다.
      */
     // TODO: 지하철 구간 제거 인수 테스트 메서드 생성
     @DisplayName("지하철 구간을 제거한다.")
     @Test
     void deleteStationSection() {
         // when
-        SectionRequest requestDto = new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE); // C - B 구간
-        StationSectionManager.save(savedLine.getId(), requestDto); // 노선에 구간 추가
+        SectionRequest requestDto = new SectionRequest(역삼역_ID, 선릉역_ID, 거리);
+        StationSectionManager.save(라인_응답_DTO.getId(), requestDto);
 
         // 구간 제거
-        StationSectionManager.remove(savedLine.getId(), savedThirdStationId);
+        StationSectionManager.remove(라인_응답_DTO.getId(), 선릉역_ID);
 
         // 조회
-        ExtractableResponse<Response> response = StationLineManager.findById(savedLine.getId());
+        ExtractableResponse<Response> response = StationLineManager.findById(라인_응답_DTO.getId());
 
         // then
-        List<Long> result = response.jsonPath().getList("stations");
-        Assertions.assertThat(result.size()).isEqualTo(ONE_REMOVE_STATIONS_COUNT); // A - C
+        List<StationResponse> result = response.jsonPath().getList("stations");
+        Assertions.assertThat(result.size()).isEqualTo(2);
     }
 
     /**
@@ -115,16 +158,15 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     @ValueSource(longs = {1L, 2L})
     void invalidDeleteStationSection(long stationId) {
         // given
-        // 현재 노선: A(1) - C(2)
+        // 현재 노선: 강남역(1) - 역삼역(2)
 
         // when
-        StationSectionManager.removeFailure(savedLine.getId(), stationId);
+        StationSectionManager.removeFailure(라인_응답_DTO.getId(), stationId);
     }
-
     private static Stream<Arguments> invalidSaveStationSectionParameters() {
         return Stream.of(
-                Arguments.of(new SectionRequest(savedSecondStationId, savedFirstStationId, DISTANCE)), // (A - C) - (C - A) // 이미 등록된 역(A)
-                Arguments.of(new SectionRequest(savedFirstStationId, savedThirdStationId, DISTANCE))  // A - C - (A - B) // 상행역이 하행역이 아닐 때
+                Arguments.of(new SectionRequest(역삼역_ID, 강남역_ID, 거리)),
+                Arguments.of(new SectionRequest(강남역_ID, 역삼역_ID, 거리))
         );
     }
 }

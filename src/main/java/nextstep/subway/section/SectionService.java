@@ -2,10 +2,10 @@ package nextstep.subway.section;
 
 import nextstep.subway.line.Line;
 import nextstep.subway.line.LineService;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)

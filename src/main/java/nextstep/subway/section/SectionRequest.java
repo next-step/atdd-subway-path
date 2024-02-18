@@ -22,4 +22,13 @@ public class SectionRequest {
     public long getDistance() {
         return distance;
     }
+
+    @Override
+    public String toString() {
+        return "SectionRequest{" +
+                "upStationId=" + upStationId +
+                ", downStationId=" + downStationId +
+                ", distance=" + distance +
+                '}';
+    }
 }

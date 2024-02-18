@@ -29,7 +29,7 @@ public class LineServiceTest {
         // given
         // stationRepository와 lineRepository를 활용하여 초기값 셋팅
         Station upStation = new Station("상행역");
-        Station downStation = new Station("해행역");
+        Station downStation = new Station("하행역");
         stationRepository.save(upStation);
         stationRepository.save(downStation);
 

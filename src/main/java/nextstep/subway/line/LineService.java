@@ -2,11 +2,11 @@ package nextstep.subway.line;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
@@ -71,13 +71,5 @@ public class LineService {
 
     public void removeSection(Line line, Station station) {
         line.removeSection(station);
-    }
-
-    public boolean isExistSection(Line line, Section section) {
-        return line.isExistSection(section);
-    }
-
-    public boolean isConnectedSection(Line line, Section section) {
-        return line.isConnectedSection(section);
     }
 }

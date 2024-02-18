@@ -45,6 +45,27 @@ public class Section {
     }
 
     public boolean isConnectedSection(Section section) {
+        return isConnectedUpStation(section) || isConnectedDownStation(section) || connectedStation(section);
+    }
+
+    /**
+     * 현재 구간의 상행역과 다른 구간의 하행역이 같은지 확인
+     */
+    private boolean isConnectedUpStation(Section section) {
+        return this.upStation == section.upStation;
+    }
+
+    /**
+     * 현재 구간의 하행역과 다른 구간의 하행역이 같은지 확인
+     */
+    private boolean isConnectedDownStation(Section section) {
+        return this.downStation == section.downStation;
+    }
+
+    /**
+     * 마지막 구간에서 추가로 이어지는지 확인
+     */
+    private boolean connectedStation(Section section) {
         return this.downStation == section.upStation;
     }
 
@@ -66,6 +87,34 @@ public class Section {
 
     public boolean isMatchDownStation(Station station) {
         return this.downStation == station;
+    }
+
+    public boolean isFirstSection(Section firstSection) {
+        return this.downStation == firstSection.upStation;
+    }
+
+    public boolean isFinalSection(Section lastSection) {
+        return lastSection.getDownStation() == upStation;
+    }
+
+    public void updateDownStation(Station newUpStation) {
+        this.downStation = newUpStation;
+    }
+
+    public void updateUpStation(Station newDownStation) {
+        this.upStation = newDownStation;
+    }
+
+    public boolean isAlreadyRegisteredSection(Section anotherSection) {
+        return isExactlyRegisteredSection(anotherSection) || isReverseRegisteredSection(anotherSection);
+    }
+
+    private boolean isExactlyRegisteredSection(Section anotherSection) {
+        return this.upStation == anotherSection.upStation && this.downStation == anotherSection.downStation;
+    }
+
+    private boolean isReverseRegisteredSection(Section anotherSection) {
+        return this.upStation == anotherSection.downStation && this.downStation == anotherSection.upStation;
     }
 
     @Override
