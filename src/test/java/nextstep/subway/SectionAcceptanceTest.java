@@ -256,4 +256,65 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 지하철 노선에 구간을 하나 등록하고
+     * When 기존 구간의 앞에 구간을 추가하면
+     * Then 지하철 노선 조회 시 추가된 역을 조회할 수 있다.
+     */
+    @Test
+    @DisplayName("노선의 구간 앞에 신규 구간을 추가한다.")
+    void addFirstSection() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 10, 이호선Id);
+
+        //when
+        Long 서초역Id = extractResponseId(StationRestAssuredCRUD.createStation("서초역"));
+        SectionRestAssuredCRUD.addSection(서초역Id, 강남역Id, 4, 이호선Id);
+
+        //then
+        ExtractableResponse<Response> lineResponse = LineRestAssuredCRUD.showLine(이호선Id);
+        List<String> stationNames = lineResponse.jsonPath().getList("stations.name", String.class);
+
+        assertThat(stationNames).containsOnly("서초역", "강남역", "선릉역");
+    }
+
+    /**
+     * Given 지하철 노선에 두개의 구간을 등록하고
+     * When 노선에 하행역으로 등록된 역을 하행역으로 갖는 구간을 추가하면
+     * Then 400에러가 발생한다.
+     */
+    @Test
+    @DisplayName("신규 구간의 하행역을 하행역으로 갖는 구간이 노선에 이미 존재할 경우 에러가 발생한다.")
+    void wrongSectionRequestException() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 10, 이호선Id);
+        Long 삼성역Id = extractResponseId(StationRestAssuredCRUD.createStation("삼성역"));
+        SectionRestAssuredCRUD.addSection(선릉역Id, 삼성역Id, 3, 이호선Id);
+
+        //when
+        Long 역삼역Id = extractResponseId(StationRestAssuredCRUD.createStation("역삼역"));
+        ExtractableResponse<Response> addResponse = SectionRestAssuredCRUD.addSection(역삼역Id, 선릉역Id, 3, 이호선Id);
+
+        //then
+        assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선에 하나의 구간을 등록하고
+     * When 상행역이 이미 노선에 존재하는 구간을 맨 앞에 추가하면
+     * Then 400에러가 발생한다.
+     */
+    @Test
+    @DisplayName("구간 맨 앞에 역 추가 시 신규 구간의 상행역이 노선에 이미 등록되어 있는 역이면 에러가 발생한다.")
+    void firstSectionAlreadyExistException() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 10, 이호선Id);
+
+        //when
+        ExtractableResponse<Response> addResponse = SectionRestAssuredCRUD.addSection(선릉역Id, 강남역Id, 3, 이호선Id);
+
+        //then
+        assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
