@@ -44,12 +44,54 @@ public class SectionAcceptanceTest {
     @Nested
     class 구간_생성 {
         /**
-         * When 노선에 신규 구간을 등록하면
+         * When 노선의 하행역 신규 구간을 등록하면
          * Then 노선 조회 시 등록한 구간이 조회된다.
          */
-        @DisplayName("지하철 구간을 생성한다")
+        @DisplayName("노선의 하행역에 구간을 추가한다.")
         @Test
-        void 구간_등록_성공() {
+        void 하행_구간_등록_성공() {
+            // when
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 역삼역_ID, 5);
+
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            // then
+            LineResponse 이호선 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            List<Long> 이호선_역_리스트 = 이호선.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+            assertThat(이호선_역_리스트).containsExactly(강남역_ID, 역삼역_ID, 선릉역_ID);
+        }
+
+        /**
+         * When 노선의 상행역에 신규 구간을 등록하면
+         * Then 노선 조회 시 등록한 구간이 조회된다.
+         */
+        @DisplayName("노선의 상행역에 구간을 추가한다.")
+        @Test
+        void 상행_구간_등록_성공() {
+            // when
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 강남역_ID, 5);
+
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            // then
+            LineResponse 이호선 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            List<Long> 이호선_역_리스트 = 이호선.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+            assertThat(이호선_역_리스트).containsExactly(강남역_ID, 선릉역_ID, 역삼역_ID);
+        }
+
+        /**
+         * When 노선의 중간에 신규 구간을 등록하면
+         * Then 노선 조회 시 등록한 구간이 조회된다.
+         */
+        @DisplayName("노선의 중간에 구간을 추가한다.")
+        @Test
+        void 중간_구간_등록_성공() {
             // when
             ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 강남역_ID, 5);
 

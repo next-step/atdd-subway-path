@@ -49,7 +49,7 @@ public class Sections {
 
         verifyConnectedSection(existsUpStation, existsDownStation);
 
-        verifyDuplicationSection(existsUpStation, existsDownStation);
+        verifyDuplicationStation(existsUpStation, existsDownStation);
     }
 
     private void verifyConnectedSection(boolean existsUpStation, boolean existsDownStation) {
@@ -58,7 +58,7 @@ public class Sections {
         }
     }
 
-    private void verifyDuplicationSection(boolean existsUpStation, boolean existsDownStation) {
+    private void verifyDuplicationStation(boolean existsUpStation, boolean existsDownStation) {
         if(existsUpStation && existsDownStation) {
             throw new IllegalArgumentException("중복된 역은 등록 불가합니다.");
         }
