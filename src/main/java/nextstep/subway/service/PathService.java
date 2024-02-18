@@ -63,10 +63,7 @@ public class PathService {
         int shortestDistance = (int) path.getWeight();
 
         List<StationResponse> stationList = new ArrayList<>();
-        stations.stream()
-                .forEach(
-                        station -> stationList.add(station.createStationResponse())
-                );
+        stations.forEach(station -> stationList.add(station.createStationResponse()));
 
         return new PathResponse(stationList, shortestDistance);
     }

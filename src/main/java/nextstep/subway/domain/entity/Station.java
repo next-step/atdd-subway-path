@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.domain.response.StationResponse;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Getter
