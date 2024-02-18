@@ -17,7 +17,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,54 +42,99 @@ public class SectionAcceptanceTest {
     }
 
     @Nested
-    class createSection {
+    class 구간_생성 {
         /**
-         * When 노선에 신규 구간을 등록하면
+         * When 노선의 하행역 신규 구간을 등록하면
          * Then 노선 조회 시 등록한 구간이 조회된다.
          */
-        @DisplayName("지하철 구간을 생성한다")
+        @DisplayName("노선의 하행역에 구간을 추가한다.")
         @Test
-        void success() {
+        void 하행_구간_등록_성공() {
             // when
-            ExtractableResponse<Response> response = createSection(이호선_ID, 선릉역_ID, 역삼역_ID, 15);
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 역삼역_ID, 5);
 
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
             // then
-            LineResponse line = LineFixture.getLine(이호선_ID).as(LineResponse.class);
-            List<Long> stationIds = line.getStations().stream()
+            LineResponse 이호선 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            List<Long> 이호선_역_리스트 = 이호선.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
 
-            assertThat(stationIds).contains(강남역_ID, 역삼역_ID, 선릉역_ID);
+            assertThat(이호선_역_리스트).containsExactly(강남역_ID, 역삼역_ID, 선릉역_ID);
+        }
+
+        /**
+         * When 노선의 상행역에 신규 구간을 등록하면
+         * Then 노선 조회 시 등록한 구간이 조회된다.
+         */
+        @DisplayName("노선의 상행역에 구간을 추가한다.")
+        @Test
+        void 상행_구간_등록_성공() {
+            // when
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 강남역_ID, 5);
+
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            // then
+            LineResponse 이호선 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            List<Long> 이호선_역_리스트 = 이호선.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+            assertThat(이호선_역_리스트).containsExactly(강남역_ID, 선릉역_ID, 역삼역_ID);
+        }
+
+        /**
+         * When 노선의 중간에 신규 구간을 등록하면
+         * Then 노선 조회 시 등록한 구간이 조회된다.
+         */
+        @DisplayName("노선의 중간에 구간을 추가한다.")
+        @Test
+        void 중간_구간_등록_성공() {
+            // when
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 강남역_ID, 5);
+
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            // then
+            LineResponse 이호선 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            List<Long> 이호선_역_리스트 = 이호선.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+            assertThat(이호선_역_리스트).containsExactly(강남역_ID, 선릉역_ID, 역삼역_ID);
         }
 
         /**
          * When 노선에 신규 구간을 등록하면
-         * Then 신규 구간의 상행역과 노선의 하행역이 일치하지 않아 에러가 발생한다.
+         * Then 연결할 수 없는 구간이면 에러가 발생한다.
          */
-        @DisplayName("새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다.")
+        @DisplayName("연결할 수 없는 구간 등록시 에러가 발생한다.")
         @Test
-        void invalidUpStation() {
+        void 연결_불가_구간_등록_실패() {
+            // given
+            Long 삼성역_ID = StationFixture.createStation("삼성역").as(StationResponse.class).getId();
+
             // when
-            ExtractableResponse<Response> sectionResponse = createSection(이호선_ID, 선릉역_ID, 강남역_ID, 15);
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 삼성역_ID, 선릉역_ID, 15);
 
             // then
-            assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
         /**
          * When 노선에 신규 구간을 등록하면
-         * Then 신규 구간의 상행역과 노선의 하행역이 일치하지 않아 에러가 발생한다.
+         * Then 이미 등록되어있는 역 존재시 에러가 발생한다.
          */
-        @DisplayName("이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다.")
+        @DisplayName("이미 등록되어있는 역은 노선에 등록될 수 없다.")
         @Test
-        void duplicateDownStation() {
+        void 동일한_역_구간_등록_실패() {
             // when
-            ExtractableResponse<Response> sectionResponse = createSection(이호선_ID, 역삼역_ID, 선릉역_ID, 15);
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 역삼역_ID, 강남역_ID, 15);
 
             // then
-            assertThat(sectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
     }
 

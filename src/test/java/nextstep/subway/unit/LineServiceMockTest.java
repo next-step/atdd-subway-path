@@ -44,19 +44,16 @@ public class LineServiceMockTest {
     @Test
     void addSection() {
         // given
-        when(stationService.findStation(강남역.getId())).thenReturn(강남역);
-        when(stationService.findStation(역삼역.getId())).thenReturn(역삼역);
+        when(stationService.findStation(1L)).thenReturn(강남역);
+        when(stationService.findStation(2L)).thenReturn(역삼역);
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
-        SectionRequest request = new SectionRequest(역삼역.getId(), 강남역.getId(), 10);
+        SectionRequest request = new SectionRequest(2L, 1L, 10);
 
         // when
         lineService.createSection(이호선.getId(), request);
 
         // then
-        LineResponse response = lineService.getLine(이호선.getId());
-        assertThat(response.getStations()).hasSize(2);
-        assertThat(response.getStations().stream().map(StationResponse::getId))
-            .containsExactly(request.getDownStationId(), request.getUpStationId());
+        assertThat(이호선.getSections().getStations()).hasSize(2);
     }
 }

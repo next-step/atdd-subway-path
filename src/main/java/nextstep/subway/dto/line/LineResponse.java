@@ -2,7 +2,7 @@ package nextstep.subway.dto.line;
 
 import nextstep.subway.dto.station.StationResponse;
 import nextstep.subway.entity.Line;
-import nextstep.subway.entity.Sections;
+import nextstep.subway.entity.Station;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +21,12 @@ public class LineResponse {
         this.name = line.getName();
         this.color = line.getColor();
         this.stations.addAll(
-            createStationResponses(line.getSections())
+            createStationResponses(line.getStationList())
         );
     }
 
-    private List<StationResponse> createStationResponses(
-        Sections sections
-    ) {
-        return sections.getStations().stream()
+    private List<StationResponse> createStationResponses(List<Station> stations) {
+        return stations.stream()
             .map(station -> new StationResponse(station.getId(), station.getName()))
             .collect(Collectors.toList());
     }

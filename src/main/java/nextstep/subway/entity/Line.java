@@ -1,6 +1,7 @@
 package nextstep.subway.entity;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -92,4 +93,13 @@ public class Line {
     public Station getDownStation() {
         return downStation;
     }
+
+    public List<Section> getSectionsList() {
+        return sections.getSections();
+    }
+
+    public List<Station> getStationList() {
+        return sections.getStations();
+    }
+
 }
