@@ -19,3 +19,4 @@ build/
 *.iml
 *.ipr
 out/
+/.jqwik-database
