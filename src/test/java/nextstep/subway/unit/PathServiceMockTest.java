@@ -4,9 +4,9 @@ import nextstep.subway.domain.entity.Section;
 import nextstep.subway.domain.entity.Station;
 import nextstep.subway.domain.response.PathResponse;
 import nextstep.subway.domain.response.StationResponse;
+import nextstep.subway.exception.ApplicationException;
 import nextstep.subway.exception.ExceptionMessage;
 import nextstep.subway.repository.SectionRepository;
-import nextstep.subway.service.LineService;
 import nextstep.subway.service.PathService;
 import nextstep.subway.service.StationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +35,6 @@ public class PathServiceMockTest {
     @Mock
     private SectionRepository sectionRepository;
 
-    @Mock
-    private LineService lineService;
-
     @InjectMocks
     private PathService pathService;
 
@@ -53,6 +50,7 @@ public class PathServiceMockTest {
     private Section 강남_양재;
     private Section 교대_남부터미널;
     private Section 남부터미널_양재;
+
 
     /**
      * 교대역    --- *2호선(10)* ---   강남역
@@ -72,19 +70,15 @@ public class PathServiceMockTest {
         강남_양재 = new Section(강남역, 양재역, 10);
         교대_남부터미널 = new Section(교대역, 남부터미널역, 2);
         남부터미널_양재 = new Section(남부터미널역, 양재역, 3);
-
     }
 
     @DisplayName("최단 경로 탐색")
     @Test
     void findShortestPath() {
-        // given: 역 정보와 노선 정보가 주어진다.
-        when(stationService.findById(교대역ID))
-                .thenReturn(교대역);
-        when(stationService.findById(양재역ID))
-                .thenReturn(양재역);
-        when(sectionRepository.findAll())
-                .thenReturn(List.of(교대_강남, 강남_양재, 교대_남부터미널, 남부터미널_양재));
+        // given
+        when(stationService.findById(교대역ID)).thenReturn(교대역);
+        when(stationService.findById(양재역ID)).thenReturn(양재역);
+        when(sectionRepository.findAll()).thenReturn(List.of(교대_강남, 강남_양재, 교대_남부터미널, 남부터미널_양재));
 
         // when: 출발역 id와 도착역 id를 받으면 최단경로를 반환한다.
         PathResponse pathResponse = pathService.findShortestPath(교대역ID, 양재역ID);
@@ -103,12 +97,53 @@ public class PathServiceMockTest {
     @Test
     void findShortestPathException1() {
         // given
-        Long source = 교대역ID;
-        Long target = 교대역ID;
+        when(stationService.findById(교대역ID))
+                .thenReturn(교대역);
 
         // when, then
-        assertThatThrownBy(() -> pathService.findShortestPath(source, target))
-                .isEqualTo(ExceptionMessage.SAME_SOURCE_TARGET_EXCEPTION.getMessage());
+        Long source = 교대역ID;
+        Long target = 교대역ID;
+        assertThatThrownBy(() ->  pathService.findShortestPath(source, target))
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage(ExceptionMessage.SAME_SOURCE_TARGET_EXCEPTION.getMessage());
+    }
+
+    @DisplayName("출발역과 도착역이 연결되어 있지 않으면 예외처리")
+    @Test
+    void findShortestPathException2() {
+        // given
+        Station 사당역 = new Station(5L, "사당역");
+        Station 이수역 = new Station(6L, "이수역");
+        Section 사당_이수 = new Section(사당역, 이수역, 10);
+
+        when(stationService.findById(교대역ID)).thenReturn(교대역);
+        when(stationService.findById(5L)).thenReturn(사당역);
+        when(sectionRepository.findAll()).thenReturn(List.of(교대_강남, 강남_양재, 교대_남부터미널, 남부터미널_양재, 사당_이수));
+
+        // when, then
+        Long source = 5L; // 사당역 ID
+        Long target = 교대역ID;
+        assertThatThrownBy(() ->  pathService.findShortestPath(source, target))
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage(ExceptionMessage.NOT_CONNECTED_EXCEPTION.getMessage());
+    }
+
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우 예외처리")
+    @Test
+    void findShortestPathException3() {
+        // given
+        Station 사당역 = new Station(5L, "사당역");
+
+        when(stationService.findById(교대역ID)).thenReturn(교대역);
+        when(stationService.findById(5L)).thenReturn(사당역);
+        when(sectionRepository.findAll()).thenReturn(List.of(교대_강남, 강남_양재, 교대_남부터미널, 남부터미널_양재));
+
+        // when, then
+        Long source = 5L; // 사당역 ID
+        Long target = 교대역ID;
+        assertThatThrownBy(() ->  pathService.findShortestPath(source, target))
+                .isInstanceOf(ApplicationException.class)
+                .hasMessage(ExceptionMessage.NO_EXISTS_STATION_EXCEPTION.getMessage());
     }
 
 }
