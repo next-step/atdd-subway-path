@@ -65,9 +65,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         List<SectionResponse> sectionResponses = lineAfterResponse.getSections();
         assertAll(
             () -> assertThat(sectionResponses).hasSize(2),
-            () -> assertThat(sectionResponses.get(sectionResponses.size() - 1).getUpStationName()).isEqualTo("선릉역"),
-            () -> assertThat(sectionResponses.get(sectionResponses.size() - 1).getDownStationName()).isEqualTo("왕십리역"),
-            () -> assertThat(sectionResponses.get(sectionResponses.size() - 1).getDistance()).isEqualTo(10)
+            () -> assertThat(sectionResponses.get(sectionResponses.size() - 1).getUpStationId()).isEqualTo(sectionRequest.getUpStationId()),
+            () -> assertThat(sectionResponses.get(sectionResponses.size() - 1).getDownStationId()).isEqualTo(sectionRequest.getDownStationId()),
+            () -> assertThat(sectionResponses.get(sectionResponses.size() - 1).getDistance()).isEqualTo(BASIC_DISTANCE)
         );
     }
 
