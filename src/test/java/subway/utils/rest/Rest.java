@@ -105,5 +105,9 @@ public class Rest<T> {
 		public ExtractableResponse<Response> delete(String uri) {
 			return new Rest<T>(uri).delete();
 		}
+
+		public ExtractableResponse<Response> delete(HashMap<String, String> params) {
+			return new Rest<T>(uri).delete(params);
+		}
 	}
 }

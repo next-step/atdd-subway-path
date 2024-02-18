@@ -12,13 +12,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class JgraphTest {
-	private WeightedMultigraph<String, DefaultWeightedEdge> graph;
-	private DijkstraShortestPath dijkstraShortestPath;
+	private DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath;
 
 	@BeforeEach
 	void beforeEach() {
-		graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-		dijkstraShortestPath = new DijkstraShortestPath(graph);
+		WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+		dijkstraShortestPath = new DijkstraShortestPath<>(graph);
 
 		// 노드 설정
 		graph.addVertex("v1");
