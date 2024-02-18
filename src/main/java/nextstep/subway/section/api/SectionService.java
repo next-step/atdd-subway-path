@@ -119,8 +119,8 @@ public class SectionService {
         Line line = getLine(lineId);
 
         validateStationId(stationId);
-        line.validateLastStation();
-        line.validateDownStationId(stationId);
+        line.getSections().validateLastStation();
+        line.getSections().validateDownStationId(stationId);
 
         line.getSections().deleteLastSection();
     }

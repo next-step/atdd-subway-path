@@ -38,16 +38,4 @@ public class Line {
     public void updateColor(String color) {
         this.color = color;
     }
-
-    public void validateLastStation() {
-        if (this.getSections().getDownStationIds().isEmpty()) {
-            throw new InsufficientStationException();
-        }
-    }
-
-    public void validateDownStationId(Long stationId) {
-        if (this.getSections().getDownStationId() != stationId) {
-            throw new StationNotMatchException();
-        }
-    }
 }

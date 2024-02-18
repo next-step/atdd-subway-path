@@ -1,6 +1,8 @@
 package nextstep.subway.line.domain;
 
 import lombok.Getter;
+import nextstep.subway.global.exception.InsufficientStationException;
+import nextstep.subway.global.exception.StationNotMatchException;
 import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
@@ -67,5 +69,17 @@ public class Sections {
             return null;
         }
         return sections.get(sections.size() - 1);
+    }
+
+    public void validateLastStation() {
+        if (this.getDownStationIds().isEmpty()) {
+            throw new InsufficientStationException();
+        }
+    }
+
+    public void validateDownStationId(Long stationId) {
+        if (this.getDownStationId() != stationId) {
+            throw new StationNotMatchException();
+        }
     }
 }
