@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,5 +46,27 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    // TODO 메소드 네이밍 변경, 로직 이관
+    public void updateDownStation(Station upStation, int distance) {
+        this.downStation = upStation;
+        this.distance = distance;
+    }
+
+    // TODO 메소드 네이밍 변경, 로직 이관
+    public void updateUpStation(Station downStation, int distance) {
+        this.upStation = downStation;
+        this.distance = distance;
+    }
+
+    @Override
+    public int compareTo(Section other) {
+        if (this.getUpStation().getId().equals(other.getUpStation().getId()) &&
+            this.getDownStation().getId().equals(other.getDownStation().getId())) {
+            return 0;
+        }
+
+        return this.getDownStation().getId().equals(other.getUpStation().getId()) ? -1 : 1;
     }
 }
