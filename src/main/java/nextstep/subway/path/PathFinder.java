@@ -10,54 +10,49 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PathFinder {
-    private final Station sourceStation;
-    private final Station targetStation;
     private final List<Line> lines;
 
-    public PathFinder(Station sourceStation, Station targetStation, List<Line> lines) {
+    public PathFinder(List<Line> lines) {
+        this.lines = lines;
+    }
+
+    public PathResponse shortestPath(Station sourceStation, Station targetStation) {
         if (sourceStation.equals(targetStation)) {
             throw new SubwayException(ErrorCode.CANNOT_FIND_SHORTEST_PATH, "출발역과 도착역이 같습니다.");
         }
 
-        this.sourceStation = sourceStation;
-        this.targetStation = targetStation;
-        this.lines = lines;
-    }
-
-    public PathResponse shortestPath() {
         List<Section> sections = allSections();
-        Set<Station> stations = allStations(sections);
+        List<Station> stations = allStations(sections);
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = makeWeightedMultigraph(stations, sections);
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
 
         GraphPath<Station, DefaultWeightedEdge> shortestPath = dijkstraShortestPath.getPath(sourceStation, targetStation);
 
-        if (shortestPath == null){
+        if (shortestPath == null) {
             throw new SubwayException(ErrorCode.CANNOT_FIND_SHORTEST_PATH, "연결되지 않은 역 정보입니다.");
         }
-        return new PathResponse(shortestPath.getVertexList(), dijkstraShortestPath.getPathWeight(sourceStation, targetStation));
+        return new PathResponse(shortestPath.getVertexList(), (long) dijkstraShortestPath.getPathWeight(sourceStation, targetStation));
     }
 
     private List<Section> allSections() {
-        List<Section> sections = new ArrayList<>();
-        lines.forEach(line -> sections.addAll(line.getSections().get()));
-        return sections;
+        return lines.stream()
+                .flatMap(line -> line.getSections().get().stream())
+                .collect(Collectors.toList());
     }
 
-    private static Set<Station> allStations(List<Section> sections) {
-        Set<Station> stations = new HashSet<>();
-        sections.forEach(s -> stations.addAll(s.stations()));
-        return stations;
+    private static List<Station> allStations(List<Section> sections) {
+        return sections.stream()
+                .flatMap(section -> section.stations().stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    private static WeightedMultigraph<Station, DefaultWeightedEdge> makeWeightedMultigraph(Set<Station> stations, List<Section> sections) {
+    private static WeightedMultigraph<Station, DefaultWeightedEdge> makeWeightedMultigraph(List<Station> stations, List<Section> sections) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         stations.forEach(graph::addVertex);
         sections.forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));

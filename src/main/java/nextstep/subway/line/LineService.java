@@ -103,6 +103,6 @@ public class LineService {
         Station targetStation = stationRepository.findById(target).orElseThrow(() -> new SubwayException(ErrorCode.STATION_NOT_FOUND, ""));
         List<Line> lines = lineRepository.findAll();
 
-        return new PathFinder(sourceStation, targetStation, lines).shortestPath();
+        return new PathFinder(lines).shortestPath(sourceStation, targetStation);
     }
 }

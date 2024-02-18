@@ -27,6 +27,7 @@ public class PathFinderTest {
     private final Line 삼호선 = new Line(3L, "삼호선", "orange", 양재역, 교대역, 23L);
     private final Line 분당선 = new Line(4L, "분당선", "yellow", 미금역, 정자역, 15L);
     private final List<Line> LINES = List.of(이호선, 신분당선, 삼호선, 분당선);
+
     @BeforeEach
     void setUp() {
         삼호선.addSection(new Section(삼호선, 양재역, 남부터미널역, 5L));
@@ -35,16 +36,16 @@ public class PathFinderTest {
     @DisplayName("최단 경로 조회")
     @Test
     void shortestPath() {
-        PathResponse pathResponse = new PathFinder(교대역, 양재역, LINES).shortestPath();
+        PathResponse pathResponse = new PathFinder(LINES).shortestPath(교대역, 양재역);
 
         assertThat(pathResponse.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
-        assertThat(pathResponse.getDistance()).isEqualTo(23);
+        assertThat(pathResponse.getDistance()).isEqualTo(23L);
     }
 
     @DisplayName("에러_최단 경로 조회_출발역 도착역 같음")
     @Test
     void error_shortestPath_target_source_same() {
-        assertThatThrownBy(() -> new PathFinder(교대역, 교대역, LINES).shortestPath())
+        assertThatThrownBy(() -> new PathFinder(LINES).shortestPath(교대역, 교대역))
                 .isInstanceOf(SubwayException.class)
                 .hasMessage("출발역과 도착역이 같습니다.");
     }
@@ -52,7 +53,7 @@ public class PathFinderTest {
     @DisplayName("에러_최단 경로 조회_출발역 도착역 연결되지 않음")
     @Test
     void error_shortestPath_target_source_not_connected() {
-        assertThatThrownBy(() -> new PathFinder(교대역, 미금역, LINES).shortestPath())
+        assertThatThrownBy(() -> new PathFinder(LINES).shortestPath(교대역, 미금역))
                 .isInstanceOf(SubwayException.class)
                 .hasMessage("연결되지 않은 역 정보입니다.");
     }

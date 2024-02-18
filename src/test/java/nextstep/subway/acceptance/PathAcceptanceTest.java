@@ -40,8 +40,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     /**
      * given 환승역으로 이어진 노선을 3개 생성하고
-     * when 출발역과 도착역 정보를 전달하면
-     * then 출발여고가 도착역 사이의 최단 경로 정보를 응답한다.
+     * when 출발역과 도착역 정보로 최단 경로를 조회하면
+     * then 출발역과 도착역 사이의 최단 경로 정보를 응답한다.
      */
     @DisplayName("최단 경로 조회")
     @Test
@@ -65,7 +65,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     /**
      * given 환승역으로 이어진 노선을 3개 생성하고
-     * when 출발역과 도착역을 같은 정보로 전달하면
+     * when 출발역과 도착역을 같은 정보로 최단 경로를 조회하면
      * then 최단경로 조회 에러가 발생한다.
      */
     @DisplayName("에러_최단 경로 조회_출발역과 도착역 같음")
@@ -86,7 +86,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     /**
      * given 환승역으로 이어진 노선을 3개와 연결되지 않은 노선 1개를 생성하고
-     * when 연결되어 있지 않은 출발역과 도착역 정보를 전달하면
+     * when 연결되어 있지 않은 출발역과 도착역 정보로 최단 경로를 조회하면
      * then 최단경로 조회 에러가 발생한다.
      */
     @DisplayName("에러_최단 경로 조회_출발역과 도착역이 연결되어 있지 않음")
@@ -112,7 +112,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     /**
      * given 환승역으로 이어진 노선을 3개를 생성하고
-     * when 존재하지 않는 출발역 혹은 도착역 정보를 전달하면
+     * when 존재하지 않는 출발역 혹은 도착역 정보로 최단 경로를 조회하면
      * then 최단경로 조회 에러가 발생한다.
      */
     @DisplayName("에러_최단 경로 조회_출발역과 도착역을 찾을 수 없음")
