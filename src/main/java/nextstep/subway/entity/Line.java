@@ -94,7 +94,7 @@ public class Line {
         return downStation;
     }
 
-    public List<Section> getSectionsList() {
+    public List<Section> getSectionList() {
         return sections.getSections();
     }
 

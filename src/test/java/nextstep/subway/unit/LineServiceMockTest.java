@@ -54,6 +54,6 @@ public class LineServiceMockTest {
         lineService.createSection(이호선.getId(), request);
 
         // then
-        assertThat(이호선.getSections().getStations()).hasSize(2);
+        assertThat(이호선.getStationList()).hasSize(2);
     }
 }

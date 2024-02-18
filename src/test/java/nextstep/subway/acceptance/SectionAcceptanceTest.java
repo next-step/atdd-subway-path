@@ -8,6 +8,7 @@ import nextstep.subway.acceptance.fixture.StationFixture;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.section.SectionRequest;
 import nextstep.subway.dto.station.StationResponse;
+import nextstep.subway.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -140,52 +141,89 @@ public class SectionAcceptanceTest {
 
 
     @Nested
-    class deleteSection {
+    class 구간_삭제 {
         /**
          * Given 구간을 생성하고
-         * When 생성한 구간을 삭제하면
+         * When 노선의 하행 구간을 삭제하면
          * Then 해당 구간의 정보는 삭제된다.
          */
-        @DisplayName("지하철 구간을 삭제한다")
+        @DisplayName("노선의 하행 구간을 삭제한다.")
         @Test
-        void success() {
+        void 하행_구간_삭제_성공() {
             // given
-            ExtractableResponse<Response> createResponse = createSection(이호선_ID, 선릉역_ID, 역삼역_ID, 15);
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 역삼역_ID, 15);
 
-            assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
             // when
-            ExtractableResponse<Response> response = deleteSection(이호선_ID, 선릉역_ID);
+            ExtractableResponse<Response> 구간_삭제_응답 = deleteSection(이호선_ID, 선릉역_ID);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         }
 
         /**
          * Given 구간을 생성하고
-         * When 노선 시 생성된 구간을 삭제하면
-         * Then 노선의 마지막 구간이 아니기에 에러가 발생한다.
+         * When 노선의 상행 구간을 삭제하면
+         * Then 해당 구간의 정보는 삭제된다.
          */
-        @DisplayName("지하철 노선에 등록된 마지막 구간만 제거할 수 있다.")
+        @DisplayName("노선의 상행 구간을 삭제한다.")
+        @Test
+        void 상행_구간_삭제_성공() {
+            // given
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 역삼역_ID, 15);
+
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            // when
+            ExtractableResponse<Response> 구간_삭제_응답 = deleteSection(이호선_ID, 강남역_ID);
+
+            // then
+            assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+
+        /**
+         * Given 구간을 생성하고
+         * When 노선의 중간 구간을 삭제하면
+         * Then 해당 구간의 정보는 삭제된다.
+         */
+        @DisplayName("노선의 중간 구간을 삭제한다.")
+        @Test
+        void 중간_구간_삭제_성공() {
+            // given
+            ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 선릉역_ID, 역삼역_ID, 15);
+
+            assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            // when
+            ExtractableResponse<Response> 구간_삭제_응답 = deleteSection(이호선_ID, 역삼역_ID);
+
+            // then
+            assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+
+        /**
+         * When 구간을 삭제하면
+         * Then 존재하지 않는 구간일 시 에러가 발생한다.
+         */
+        @DisplayName("노선에 존재하는 구간만 삭제 가능하다.")
         @Test
         void invalidDownStation() {
             // given
-            ExtractableResponse<Response> createResponse = createSection(이호선_ID, 선릉역_ID, 역삼역_ID, 15);
-
-            assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            Long 서초역_ID = StationFixture.createStation("서초역").as(StationResponse.class).getId();
 
             // when
-            ExtractableResponse<Response> response = deleteSection(이호선_ID, 역삼역_ID);
+            ExtractableResponse<Response> response = deleteSection(이호선_ID, 서초역_ID);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         }
 
         /**
-         * When 노선 시 생성된 구간을 삭제하면
-         * Then 등록된 구간이 1개라서 에러가 발생한다.
+         * When 구간을 삭제하면
+         * Then 유일한 구간일 시 에러가 발생한다.
          */
-        @DisplayName("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다.")
+        @DisplayName("노선의 유일한 구간은 삭제가 불가하다.")
         @Test
         void notExistsOtherSection() {
             // when

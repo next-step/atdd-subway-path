@@ -38,8 +38,8 @@ class LineTest {
         이호선.addSection(역삼_선릉_구간);
 
         // then
-        assertThat(이호선.getSectionsList()).hasSize(2);
-        assertThat(이호선.getSectionsList()).containsExactly(강남_역삼_구간, 역삼_선릉_구간);
+        assertThat(이호선.getSectionList()).hasSize(2);
+        assertThat(이호선.getSectionList()).containsExactly(강남_역삼_구간, 역삼_선릉_구간);
     }
 
     @DisplayName("노선의 상행역에 구간을 등록할 수 있다.")
@@ -53,8 +53,8 @@ class LineTest {
         이호선.addSection(서초_강남_구간);
 
         // then
-        assertThat(이호선.getSectionsList()).hasSize(2);
-        assertThat(이호선.getSectionsList()).containsExactly(서초_강남_구간, 강남_역삼_구간);
+        assertThat(이호선.getSectionList()).hasSize(2);
+        assertThat(이호선.getSectionList()).containsExactly(서초_강남_구간, 강남_역삼_구간);
     }
 
     @DisplayName("노선의 중간에 구간을 등록할 수 있다.")
@@ -68,8 +68,8 @@ class LineTest {
         이호선.addSection(강남_신규_구간);
 
         // then
-        assertThat(이호선.getSectionsList()).hasSize(2);
-        assertThat(이호선.getSectionsList()).containsExactly(강남_신규_구간, 강남_역삼_구간);
+        assertThat(이호선.getSectionList()).hasSize(2);
+        assertThat(이호선.getSectionList()).containsExactly(강남_신규_구간, 강남_역삼_구간);
     }
 
     @DisplayName("연결할 수 없는 구간 등록시 예외가 발생한다.")
@@ -118,23 +118,75 @@ class LineTest {
         이호선.addSection(서초_강남_구간);
 
         // when
-        List<Section> 구간_목록 = 이호선.getSectionsList();
+        List<Section> 구간_목록 = 이호선.getSectionList();
 
         // then
         assertThat(구간_목록).containsExactly(서초_강남_구간, 강남_역삼_구간);
     }
 
+    @DisplayName("노선의 하행 구간을 제거한다.")
     @Test
-    void removeSection() {
+    void removeDownSection() {
         // given
         Station 선릉역 = new Station("선릉역");
-        Section 신규구간 = new Section(이호선, 선릉역, 이호선.getDownStation(), 15);
-        이호선.addSection(신규구간);
+        Section 역삼_선릉_구간 = new Section(이호선, 선릉역, 역삼역, 15);
+        이호선.addSection(역삼_선릉_구간);
 
         // when
-        이호선.removeSection(신규구간.getDownStation());
+        이호선.removeSection(선릉역);
 
         // then
-        assertThat(이호선.getSections().getSections()).hasSize(1);
+        assertThat(이호선.getSectionList()).hasSize(1);
+    }
+
+    @DisplayName("노선의 상행 구간을 제거한다.")
+    @Test
+    void removeUpSection() {
+        // given
+        Station 선릉역 = new Station("선릉역");
+        Section 역삼_선릉_구간 = new Section(이호선, 선릉역, 역삼역, 15);
+        이호선.addSection(역삼_선릉_구간);
+
+        // when
+        이호선.removeSection(강남역);
+
+        // then
+        assertThat(이호선.getSectionList()).hasSize(1);
+    }
+
+    @DisplayName("노선의 중간 구간을 제거한다.")
+    @Test
+    void removeMiddleSection() {
+        // given
+        Station 선릉역 = new Station("선릉역");
+        Section 역삼_선릉_구간 = new Section(이호선, 선릉역, 역삼역, 15);
+        이호선.addSection(역삼_선릉_구간);
+
+        // when
+        이호선.removeSection(역삼역);
+
+        // then
+        assertThat(이호선.getSectionList()).hasSize(1);
+    }
+
+    @DisplayName("존재하지 않는 구간은 삭제시 예외가 발생한다.")
+    @Test
+    void verifyExistsSection() {
+        // given
+        Station 서초역 = new Station("서초역");
+
+        // then
+        assertThatThrownBy(() -> 이호선.removeSection(서초역))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("존재하는 구간만 삭제 가능하다.");
+    }
+
+    @DisplayName("유일한 구간은 삭제 시 예외가 발생한다.")
+    @Test
+    void verifyIsOnlySection() {
+        // then
+        assertThatThrownBy(() -> 이호선.removeSection(역삼역))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("유일한 구간은 삭제가 불가하다.");
     }
 }
