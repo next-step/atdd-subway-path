@@ -136,22 +136,32 @@ class LineAcceptanceTest extends AcceptanceTest {
         // given
         Long 신사역 = 지하철역_생성_요청("신사역").jsonPath().getLong("id");
         Long 강남역 = 지하철역_생성_요청("강남역").jsonPath().getLong("id");
+        Long 양재역 = 지하철역_생성_요청("양재역").jsonPath().getLong("id");
         Long 신분당선 = 지하철_노선_생성_요청("신분당선", "green").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(신사역, 강남역));
+        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(강남역, 양재역));
         Long 잠원역 = 지하철역_생성_요청("잠원역").jsonPath().getLong("id");
+        Long 고속터미널역 = 지하철역_생성_요청("고속터미널역").jsonPath().getLong("id");
         Long 삼호선 = 지하철_노선_생성_요청("3호선", "orange").jsonPath().getLong("id");
         지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(신사역, 잠원역));
+        지하철_노선에_지하철_구간_생성_요청(삼호선, createSectionCreateParams(잠원역, 고속터미널역));
 
+        // 신사역 강남역
+        // 잠원역
         // when
         ExtractableResponse<Response> response = RestAssured
             .given().log().all()
-            .when().get("/paths" + "?source=" + 강남역 + "&target=" + 잠원역)
+            .queryParam("source", 양재역)
+            .queryParam("target", 고속터미널역)
+            .when().get("/paths")
             .then().log().all().extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 신사역,
-            잠원역);
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(양재역, 강남역,
+            신사역, 잠원역, 고속터미널역);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(40);
+
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId) {
