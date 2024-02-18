@@ -9,6 +9,12 @@ public class SectionRequest {
 
     protected SectionRequest() {}
 
+    public SectionRequest(long upStationId, long downStationId, int distance) {
+        this.downStationId = downStationId;
+        this.upStationId = upStationId;
+        this.distance = distance;
+    }
+
     public long getDownStationId() {
         return downStationId;
     }

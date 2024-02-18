@@ -29,7 +29,7 @@ public class StationService {
 
     public StationResponse findStation(long id) {
         Station station = stationRepository.findById(id)
-                .orElseThrow(() -> new StationNotFoundException(id));
+                .orElseThrow(() -> new StationNotFoundException(Long.toString(id)));
         return createStationResponse(station);
     }
 

@@ -5,6 +5,8 @@ import nextstep.subway.station.StationNotFoundException;
 import nextstep.subway.station.StationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SectionService {
 
@@ -20,15 +22,6 @@ public class SectionService {
     public SectionResponse createSection(long lineId, SectionRequest sectionRequest) {
 
         Line line = getLine(lineId);
-
-        if (!line.isLastStation(sectionRequest.getUpStationId())) {
-            throw new IllegalStateException("새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다");
-        }
-
-        if(line.hasStation(sectionRequest.getDownStationId())){
-            throw new IllegalStateException("이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다");
-        }
-
         Station downStation = getStation(sectionRequest.getDownStationId());
         Station upStation = getStation(sectionRequest.getUpStationId());
         Section section = new Section(upStation, downStation, sectionRequest.getDistance(), line);
@@ -58,6 +51,6 @@ public class SectionService {
 
     private Station getStation(long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationNotFoundException(stationId));
+                .orElseThrow(() -> new StationNotFoundException(Long.toString(stationId)));
     }
 }

@@ -38,7 +38,7 @@ public class LineService {
 
     private Station getStation(long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationNotFoundException(stationId));
+                .orElseThrow(() -> new StationNotFoundException(Long.toString(stationId)));
     }
 
     public List<LineResponse> findAllLines() {

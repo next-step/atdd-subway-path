@@ -20,10 +20,6 @@ import static org.mockito.ArgumentMatchers.any;
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
     @Mock
-    private LineRepository lineRepository;
-    @Mock
-    private StationService stationService;
-    @Mock
     private LineService lineService;
 
     @Test
