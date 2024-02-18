@@ -14,27 +14,26 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 
-@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseAcceptanceTest {
+
+    public static final int BASIC_DISTANCE = 10;
+    private Long 역삼역_ID;
+    private Long 선릉역_ID;
+    private Long 강남역_ID;
+    private Long 왕십리역_ID;
 
     @BeforeEach
     void setUp() {
         databaseCleanUp.execute();
-        Map<String, String> param1 = Map.of("name", "역삼역");
-        Map<String, String> param2 = Map.of("name", "선릉역");
-        Map<String, String> param3 = Map.of("name", "왕십리역");
-        Map<String, String> param4 = Map.of("name", "고색역");
-
-        createStation(param1);
-        createStation(param2);
-        createStation(param3);
-        createStation(param4);
+        역삼역_ID = 지하철_역_생성(역삼역);
+        선릉역_ID = 지하철_역_생성(선릉역);
+        강남역_ID = 지하철_역_생성(강남역);
+        왕십리역_ID = 지하철_역_생성(왕십리역);
     }
 
     @DisplayName("지하철 노선을 생성하면 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다.")
@@ -42,7 +41,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     void test_지하철노선_생성() {
         //when
         LineResponse linePostResponse = given()
-            .body(getRequestParam_신분당선())
+            .body(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines").then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
         List<StationResponse> stationPostResponses = linePostResponse.getStations();
@@ -62,15 +61,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void test_지하철_노선_목록_조회() {
         //given
-        지하철_노선_생성(getRequestParam_신분당선());
-        지하철_노선_생성(getRequestParam_분당선());
+        지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
+        지하철_노선_생성(getRequestParam_분당선(강남역_ID, 왕십리역_ID, BASIC_DISTANCE));
 
         //when
         List<LineResponse> lineResponses = when().get("/lines").then().extract().jsonPath().getList(".", LineResponse.class);
         assertAll(
             () -> assertThat(lineResponses).hasSize(2),
-            () -> assertThat(lineResponses).extracting(LineResponse::getName).containsExactly(getRequestParam_신분당선().get("name"), getRequestParam_분당선().get("name")),
-            () -> assertThat(lineResponses).extracting(LineResponse::getColor).containsExactly(getRequestParam_신분당선().get("color"), getRequestParam_분당선().get("color"))
+            () -> assertThat(lineResponses).extracting(LineResponse::getName).containsExactly(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE).get("name"), getRequestParam_분당선(강남역_ID, 왕십리역_ID, BASIC_DISTANCE).get("name")),
+            () -> assertThat(lineResponses).extracting(LineResponse::getColor).containsExactly(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE).get("color"), getRequestParam_분당선(강남역_ID, 왕십리역_ID, BASIC_DISTANCE).get("color"))
         );
     }
 
@@ -78,14 +77,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void test_지하철_생성_노선_조회() {
         //given
-        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when
-        LineResponse lineResponse_신분당선 = when().get("/lines/" + linePostResponse.getId()).then().extract().jsonPath().getObject(".", LineResponse.class);
+        LineResponse lineResponse_신분당선 = 지하철_노선_조회(linePostResponse.getId());
         assertAll(
             () -> assertThat(lineResponse_신분당선.getId()).isEqualTo(1),
-            () -> assertThat(lineResponse_신분당선.getName()).isEqualTo(getRequestParam_신분당선().get("name")),
-            () -> assertThat(lineResponse_신분당선.getColor()).isEqualTo(getRequestParam_신분당선().get("color"))
+            () -> assertThat(lineResponse_신분당선.getName()).isEqualTo(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE).get("name")),
+            () -> assertThat(lineResponse_신분당선.getColor()).isEqualTo(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE).get("color"))
         );
     }
 
@@ -93,7 +92,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void test_지하철_노선_수정() {
         //given
-        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
         Map<String, String> putRequest = Map.of(
             "name", "다른분당선",
             "color", "Red"
@@ -111,7 +110,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void test_지하철_노선_삭제() {
         //given
-        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선());
+        LineResponse linePostResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
         //when & then
         when()
@@ -119,30 +118,6 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .then()
             .log().all().statusCode(HttpStatus.SC_NO_CONTENT);
         when().get("/lines/" + linePostResponse.getId()).then().log().all().statusCode(HttpStatus.SC_NOT_FOUND);
-    }
-
-    private LineResponse 지하철_노선_생성(Map<String, String> lineRequestParam) {
-        return given()
-            .body(lineRequestParam)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines").then().log().all().extract().jsonPath().getObject(".", LineResponse.class);
-    }
-
-    private void 지하철_노선_수정(Map<String, String> lineRequestParam, Long lineId) {
-        given()
-            .body(lineRequestParam)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .put("/lines/" + lineId)
-            .then()
-            .log().all().statusCode(HttpStatus.SC_OK);
-    }
-
-    void createStation(Map<String, String> param) {
-        given().body(param)
-               .contentType(MediaType.APPLICATION_JSON_VALUE).log().all()
-               .when().post("/stations")
-               .then().log().all();
     }
 
 }

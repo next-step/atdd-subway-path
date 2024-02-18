@@ -1,9 +1,7 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
 
 import java.util.Optional;
 
@@ -16,8 +14,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.exception.NoLineException;
-import nextstep.subway.exception.NoStationException;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.LineService;

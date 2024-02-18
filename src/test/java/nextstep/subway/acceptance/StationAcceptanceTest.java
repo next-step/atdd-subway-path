@@ -21,7 +21,6 @@ import io.restassured.response.Response;
 import nextstep.subway.dto.StationResponse;
 
 @DisplayName("지하철역 관련 기능")
-@DirtiesContext(methodMode = MethodMode.AFTER_METHOD)
 public class StationAcceptanceTest extends BaseAcceptanceTest {
     /**
      * When 지하철역을 생성하면
@@ -74,8 +73,8 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         Map<String, String> param1 = Map.of("name", "역삼역");
         Map<String, String> param2 = Map.of("name", "선릉역");
 
-        createStation(param1);
-        createStation(param2);
+        지하철_역_생성(param1);
+        지하철_역_생성(param2);
         //when
         List<StationResponse> response =
             when().get("/stations").then().log().all().extract().jsonPath().getList(".", StationResponse.class);
