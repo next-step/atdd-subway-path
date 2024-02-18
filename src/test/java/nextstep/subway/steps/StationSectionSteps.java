@@ -12,51 +12,47 @@ import static io.restassured.RestAssured.given;
 
 public class StationSectionSteps {
 
-    public static ExtractableResponse<Response> 성공하는_지하철_구간_추가요청(Long upStationId, SectionRequest request) {
+    private static ExtractableResponse<Response> 지하철_구간_추가요청(Long upStationId, SectionRequest request, HttpStatus httpStatus) {
         return given()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post(String.format("/lines/%d/sections", upStationId))
                 .then()
-                .statusCode(HttpStatus.CREATED.value())
+                .statusCode(httpStatus.value())
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 성공하는_지하철_구간_추가요청(Long upStationId, SectionRequest request) {
+        return 지하철_구간_추가요청(upStationId, request, HttpStatus.CREATED);
+    }
+
     public static ExtractableResponse<Response> 실패하는_지하철_구간_추가요청(Long upStationId, SectionRequest request) {
-        return given()
-                .body(request)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        return 지하철_구간_추가요청(upStationId, request, HttpStatus.BAD_REQUEST);
+    }
+
+    public static void 지하철_구간_목록_추가요청_상태코드_검증_포함(Long 노선_번호, List<SectionRequest> 구간_요청_목록) {
+        구간_요청_목록.forEach(구간_요청 -> 성공하는_지하철_구간_추가요청(노선_번호, 구간_요청));
+    }
+
+    private static ExtractableResponse<Response> 지하철_구간_삭제요청(
+            Long downStationIdToDelete, Long stationLineId, HttpStatus httpStatus) {
+        return given().log().all()
                 .when()
-                .post(String.format("/lines/%d/sections", upStationId))
+                .param("stationId", downStationIdToDelete)
+                .delete(String.format("/lines/%d/sections", stationLineId))
                 .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .statusCode(httpStatus.value())
                 .extract();
     }
 
     public static ExtractableResponse<Response> 성공하는_지하철_구간_삭제요청(
             Long downStationIdToDelete, Long stationLineId) {
-        return given().log().all()
-                .when()
-                .param("stationId", downStationIdToDelete)
-                .delete(String.format("/lines/%d/sections", stationLineId))
-                .then()
-                .statusCode(HttpStatus.NO_CONTENT.value())
-                .extract();
+        return 지하철_구간_삭제요청(downStationIdToDelete, stationLineId, HttpStatus.NO_CONTENT);
     }
 
     public static ExtractableResponse<Response> 실패하는_지하철_구간_삭제요청(
             Long downStationIdToDelete, Long stationLineId) {
-        return given().log().all()
-                .when()
-                .param("stationId", downStationIdToDelete)
-                .delete(String.format("/lines/%d/sections", stationLineId))
-                .then()
-                .statusCode(HttpStatus.BAD_REQUEST.value())
-                .extract();
-    }
-
-    public static void 지하철_구간_목록_추가요청_상태코드_검증_포함(Long 노선_번호, List<SectionRequest> 구간_요청_목록) {
-        구간_요청_목록.forEach(구간_요청 -> 성공하는_지하철_구간_추가요청(노선_번호, 구간_요청));
+        return 지하철_구간_삭제요청(downStationIdToDelete, stationLineId, HttpStatus.BAD_REQUEST);
     }
 }
