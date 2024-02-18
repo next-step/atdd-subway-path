@@ -49,8 +49,8 @@ public class Section {
                           existingSection.getDistance() - newSection.getDistance());
     }
 
-    public boolean isSameWithDownStation(Station nextUpStation) {
-        return downStation.equals(nextUpStation);
+    public boolean isSameWithDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Station getUpStation() {

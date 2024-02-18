@@ -3,18 +3,16 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
-
-import org.springframework.core.annotation.Order;
 
 import nextstep.subway.exception.IllegalSectionException;
 
@@ -62,7 +60,7 @@ public class Sections {
     private boolean isPossibleToAddFirst(Section newSection) {
         Section firstSection = sections.get(0);
         if (firstSection.isSameWithUpStation(newSection.getDownStation())
-            && !existStationInSections(newSection.getUpStation())) {
+            && notExistStationInSections(newSection.getUpStation())) {
             return true;
         }
         return false;
@@ -71,7 +69,7 @@ public class Sections {
     private boolean isPossibleToAddLast(Section newSection) {
         Section lastSection = sections.get(sections.size() - 1);
         if (lastSection.isSameWithDownStation(newSection.getUpStation())
-            && !existStationInSections(newSection.getDownStation())) {
+            && notExistStationInSections(newSection.getDownStation())) {
             return true;
         }
         return false;
@@ -96,7 +94,17 @@ public class Sections {
                 return i;
             }
         }
-        throw new IllegalSectionException("추가하려는 구간의 상행역이 해당 노선에 존재하지 않습니다");
+        throw new IllegalSectionException("해당 역을 상행역으로 가진 구간이 해당 노선에 존재하지 않습니다");
+    }
+
+    private int findSectionPositionByDownStation(Station station) {
+        for (int i = 0; i < sections.size(); i++) {
+            Section section = sections.get(i);
+            if (section.isSameWithDownStation(station)) {
+                return i;
+            }
+        }
+        throw new IllegalSectionException("해당 역을 하행역으로 가진 구간이 해당 노선에 존재하지 않습니다");
     }
 
     public Section getLastSection() {
@@ -107,17 +115,44 @@ public class Sections {
         return sections;
     }
 
-    public void removeLastSection(Station station) {
+    public void removeSection(Station station) {
         if (ONLY_ONE_SECTION == sections.size()) {
             throw new IllegalSectionException("해당 노선에 구간이 1개만 남아 있어 삭제할 수 없습니다.");
         }
-        Section lastSection = sections.get(sections.size() - 1);
-        if (!lastSection.isPossibleToDelete(station)) {
-            throw new IllegalSectionException("해당 역은 노선에 등록된 하행 종점역이 아닙니다.");
+        if (notExistStationInSections(station)) {
+            throw new IllegalSectionException("노선에 해당 역이 존재하지 않습니다.");
         }
-        sections.remove(sections.size() - 1);
+        if (isLastDownStation(station)) {
+            sections.remove(sections.size() - 1);
+            return;
+        }
+        if (isFirstUpStation(station)) {
+            sections.remove(0);
+            return;
+        }
+        removeSectionInTheMiddle(station);
     }
 
+    private void removeSectionInTheMiddle(Station station) {
+        int sectionPosition = findSectionPositionByDownStation(station);
+        Section prevSectionToRemove = sections.get(sectionPosition);
+        Section nextSectionToRemove = sections.get(sectionPosition + 1);
+        Section sectionAfterRemove = Section.of(prevSectionToRemove.getUpStation(),
+                                                nextSectionToRemove.getDownStation(),
+                                                prevSectionToRemove.getDistance() + nextSectionToRemove.getDistance());
+        sections.remove(sectionPosition); // remove prevSectionToRemove
+        sections.remove(sectionPosition); // remove nextSectionToRemove
+        sections.add(sectionPosition, sectionAfterRemove);
+    }
+    private boolean isLastDownStation(Station station) {
+        Section lastSection = sections.get(sections.size() - 1);
+        return lastSection.isSameWithDownStation(station);
+    }
+
+    private boolean isFirstUpStation(Station station) {
+        Section firstSection = sections.get(0);
+        return firstSection.isSameWithUpStation(station);
+    }
     public Stations getStations() {
         Set<Station> orderedStations = sections.stream()
                                         .flatMap(section ->
@@ -127,12 +162,12 @@ public class Sections {
         return Stations.of(stationList);
     }
 
-    private boolean existStationInSections(Station station) {
-        return sections.stream()
-                       .flatMap(section ->
-                                    Stream.of(section.getUpStation(), section.getDownStation()))
-                       .distinct()
-                       .collect(Collectors.toList())
-                       .contains(station);
+    private boolean notExistStationInSections(Station station) {
+        return !sections.stream()
+                        .flatMap(section ->
+                                     Stream.of(section.getUpStation(), section.getDownStation()))
+                        .distinct()
+                        .collect(Collectors.toList())
+                        .contains(station);
     }
 }

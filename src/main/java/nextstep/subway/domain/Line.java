@@ -81,7 +81,7 @@ public class Line {
     }
 
     public void deleteLastSection(Station station) {
-        sections.removeLastSection(station);
+        sections.removeSection(station);
     }
 
     public Stations getStations() {

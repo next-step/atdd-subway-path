@@ -145,7 +145,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Test
-    void testDeleteSection_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_다를_때_등록하려는_구간의_길이가_구간_사이에_들어올_수_없으면_에러를_반환한다() {
+    void testAddSection_해당_노선의_하행_종점역과_새로_등록하려는_구간의_상행_종점역이_다를_때_등록하려는_구간의_길이가_구간_사이에_들어올_수_없으면_에러를_반환한다() {
         //given
         LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
@@ -182,21 +182,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Test
-    void testDeleteSection_노선에_등록된_구간이_2개_이상_있을때_요청한_역이_기존_노선의_하행종점역과_다르면_구간을_삭제할_수_없다() {
-        //given
-        LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
-
-        //when & then
-        given()
-            .pathParam("lineId", lineResponse.getId())
-            .queryParam("stationId", 왕십리역_ID)
-        .when()
-            .delete("/lines/{lineId}/sections")
-            .then().statusCode(HttpStatus.SC_BAD_REQUEST);
-    }
-
-    @Test
-    void testDeleteSection_지하철_노선에_상행_종점역과_하행_종점역만_있는_경우_구간이_1개인_경우_역을_삭제할_수_없다() {
+    void testDeleteSection_지하철_노선에_구간이_1개인_경우_역을_삭제할_수_없다() {
         //given
         LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
 
@@ -222,16 +208,18 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
             .queryParam("stationId", 선릉역_ID)
             .when()
             .delete("/lines/{lineId}/sections")
-            .then().statusCode(HttpStatus.SC_OK);
+            .then().statusCode(HttpStatus.SC_NO_CONTENT);
 
         LineResponse lineResponseAfterDeleteSection = 지하철_노선_조회(lineResponse.getId());
         List<StationResponse> stations = lineResponseAfterDeleteSection.getStations();
         List<SectionResponse> sections = lineResponseAfterDeleteSection.getSections();
         assertAll(
-            () -> assertThat(stations).hasSize(1),
-            () -> assertThat(stations).doesNotContain(new StationResponse(선릉역_ID, "선릉역")),
+            () -> assertThat(stations).hasSize(2),
+            () -> assertThat(stations).extracting(StationResponse::getId).anySatisfy(id -> assertThat(id).isNotEqualTo(선릉역_ID)),
             () -> assertThat(sections).hasSize(1),
-            () -> assertThat(sections.get(0)).isEqualTo(new SectionResponse(역삼역_ID, "역삼역", 왕십리역_ID, "왕십리역", BASIC_DISTANCE + distance))
+            () -> assertThat(sections.get(0).getUpStationId()).isEqualTo(역삼역_ID),
+            () -> assertThat(sections.get(0).getDownStationId()).isEqualTo(왕십리역_ID),
+            () -> assertThat(sections.get(0).getDistance()).isEqualTo(BASIC_DISTANCE + distance)
         );
     }
 

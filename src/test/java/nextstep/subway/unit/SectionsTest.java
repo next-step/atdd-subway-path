@@ -142,7 +142,7 @@ class SectionsTest {
         Sections sections = new Sections(sectionList);
 
         //when
-        sections.removeLastSection(왕십리역);
+        sections.removeSection(왕십리역);
 
         //then
         assertAll(
@@ -161,7 +161,7 @@ class SectionsTest {
 
         //when & then
         assertThatThrownBy(
-            () -> sections.removeLastSection(downStation1))
+            () -> sections.removeSection(downStation1))
             .isInstanceOf(IllegalSectionException.class);
     }
 
@@ -176,7 +176,7 @@ class SectionsTest {
 
         //when & then
         assertThatThrownBy(
-            () -> sections.removeLastSection(잠실역))
+            () -> sections.removeSection(잠실역))
             .isInstanceOf(IllegalSectionException.class);
     }
 
