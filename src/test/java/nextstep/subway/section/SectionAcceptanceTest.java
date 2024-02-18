@@ -23,27 +23,25 @@ import nextstep.subway.utils.station.StationManager;
 @DisplayName("지하철역 구간 관리 기능")
 public class SectionAcceptanceTest extends E2ETestInitializer {
 
-    public static final long DISTANCE = 10L;
-    public static final int ALL_STATIONS_COUNT = 3;
-    public static final int ONE_REMOVE_STATIONS_COUNT = 2;
-    public static final String FIRST_LINE_NAME = "신분당선";
-    public static final String FIRST_LINE_COLOR = "bg-red-600";
+    public static final long 거리 = 10L;
+    public static final String _2호선_NAME = "_2호선";
+    public static final String _2호선_COLOR = "bg-red-600";
 
-    private static LineResponse savedLine;
-    private static LineRequest saveLineRequest;
+    private static LineResponse 라인_응답_DTO;
+    private static LineRequest 라인_요청_DTO;
 
-    private static long savedFirstStationId;
-    private static long savedSecondStationId;
-    private static long savedThirdStationId;
+    private static long 강남역_ID;
+    private static long 역삼역_ID;
+    private static long 선릉역_ID;
 
     @BeforeEach
     void setUp() {
-        savedFirstStationId = StationManager.save("A역").jsonPath().getLong("id");
-        savedSecondStationId = StationManager.save("C역").jsonPath().getLong("id");
-        savedThirdStationId = StationManager.save("B역").jsonPath().getLong("id");
+        강남역_ID = StationManager.save("강남역").jsonPath().getLong("id");
+        역삼역_ID = StationManager.save("역삼역").jsonPath().getLong("id");
+        선릉역_ID = StationManager.save("선릉역").jsonPath().getLong("id");
 
-        saveLineRequest = new LineRequest(FIRST_LINE_NAME, FIRST_LINE_COLOR, savedFirstStationId, savedSecondStationId, DISTANCE);
-        savedLine = StationLineManager.save(saveLineRequest).as(LineResponse.class);  // A - C
+        라인_요청_DTO = new LineRequest(_2호선_NAME, _2호선_COLOR, 강남역_ID, 역삼역_ID, 거리);
+        라인_응답_DTO = StationLineManager.save(라인_요청_DTO).as(LineResponse.class);  // A - C
     }
 
     /**
@@ -60,12 +58,11 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     @MethodSource("createSectionParameters")
     void createSection(SectionRequest requestDto) {
         // when
-        ExtractableResponse<Response> response = StationSectionManager.save(savedLine.getId(), requestDto); // 노선에 구간 추가
+        ExtractableResponse<Response> response = StationSectionManager.save(라인_응답_DTO.getId(), requestDto); // 노선에 구간 추가
 
         // then
         List<StationResponse> result = response.jsonPath().getList("stations");
-        System.out.println("result = " + result);
-        Assertions.assertThat(result.size()).isEqualTo(ALL_STATIONS_COUNT);
+        Assertions.assertThat(result.size()).isEqualTo(3);
     }
 
     /**
@@ -81,7 +78,7 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
         // 현재 노선: A(1) - C(2)
 
         // when
-        StationSectionManager.saveFailure(savedLine.getId(), requestDto);
+        StationSectionManager.saveFailure(라인_응답_DTO.getId(), requestDto);
     }
 
     /**
@@ -94,18 +91,18 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
     @Test
     void deleteStationSection() {
         // when
-        SectionRequest requestDto = new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE); // C - B 구간
-        StationSectionManager.save(savedLine.getId(), requestDto); // 노선에 구간 추가
+        SectionRequest requestDto = new SectionRequest(역삼역_ID, 선릉역_ID, 거리); // C - B 구간
+        StationSectionManager.save(라인_응답_DTO.getId(), requestDto); // 노선에 구간 추가
 
         // 구간 제거
-        StationSectionManager.remove(savedLine.getId(), savedThirdStationId);
+        StationSectionManager.remove(라인_응답_DTO.getId(), 선릉역_ID);
 
         // 조회
-        ExtractableResponse<Response> response = StationLineManager.findById(savedLine.getId());
+        ExtractableResponse<Response> response = StationLineManager.findById(라인_응답_DTO.getId());
 
         // then
         List<StationResponse> result = response.jsonPath().getList("stations");
-        Assertions.assertThat(result.size()).isEqualTo(ONE_REMOVE_STATIONS_COUNT); // A - C
+        Assertions.assertThat(result.size()).isEqualTo(2); // A - C
     }
 
     /**
@@ -122,26 +119,21 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
         // 현재 노선: A(1) - C(2)
 
         // when
-        StationSectionManager.removeFailure(savedLine.getId(), stationId);
+        StationSectionManager.removeFailure(라인_응답_DTO.getId(), stationId);
     }
 
     public static Stream<Arguments> createSectionParameters() {
-//        return Stream.of(
-//                Arguments.of(new SectionRequest(-1, savedFirstStationId, DISTANCE)),
-//                Arguments.of(new SectionRequest(savedFirstStationId, savedSecondStationId, DISTANCE)),
-//                Arguments.of(new SectionRequest(savedSecondStationId, savedThirdStationId, DISTANCE))
-//        );
         return Stream.of( // setup() 함수가 실행되기 전에 실행되어서 StationId 값들이 0으로 채워져서 변수를 할당하지 못하네요..
-                Arguments.of(new SectionRequest(3, 1, DISTANCE)),  // B - A - C
-                Arguments.of(new SectionRequest(1, 3, DISTANCE)),  // A - B - C  (A - B) - (B - C)
-                Arguments.of(new SectionRequest(2, 3, DISTANCE))  // A - C - B
+                Arguments.of(new SectionRequest(3, 1, 거리)),  // B - A - C
+                Arguments.of(new SectionRequest(1, 3, 거리)),  // A - B - C  (A - B) - (B - C)
+                Arguments.of(new SectionRequest(2, 3, 거리))  // A - C - B
         );
     }
 
     private static Stream<Arguments> invalidSaveStationSectionParameters() {
         return Stream.of(
-                Arguments.of(new SectionRequest(savedSecondStationId, savedFirstStationId, DISTANCE)), // (A - C) - (C - A) // 이미 등록된 역(A)
-                Arguments.of(new SectionRequest(savedFirstStationId, savedSecondStationId, DISTANCE)) // (A - C) - (A - C) // 이미 등록된 역
+                Arguments.of(new SectionRequest(역삼역_ID, 강남역_ID, 거리)), // (A - C) - (C - A) // 이미 등록된 역(A)
+                Arguments.of(new SectionRequest(강남역_ID, 역삼역_ID, 거리)) // (A - C) - (A - C) // 이미 등록된 역
         );
     }
 }

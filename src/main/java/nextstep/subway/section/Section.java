@@ -45,15 +45,28 @@ public class Section {
     }
 
     public boolean isConnectedSection(Section section) {
-        return isConnectedUpStation(section) || isConnectedDownStation(section);
+        return isConnectedUpStation(section) || isConnectedDownStation(section) || connectedStation(section);
     }
 
+    /**
+     * 현재 구간의 상행역과 다른 구간의 하행역이 같은지 확인
+     */
     private boolean isConnectedUpStation(Section section) {
         return this.upStation == section.upStation;
     }
 
+    /**
+     * 현재 구간의 하행역과 다른 구간의 하행역이 같은지 확인
+     */
     private boolean isConnectedDownStation(Section section) {
         return this.downStation == section.downStation;
+    }
+
+    /**
+     * 마지막 구간에서 추가로 이어지는지 확인
+     */
+    private boolean connectedStation(Section section) {
+        return this.downStation == section.upStation;
     }
 
     public long getId() {
