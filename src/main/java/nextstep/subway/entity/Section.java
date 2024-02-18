@@ -3,7 +3,7 @@ package nextstep.subway.entity;
 import javax.persistence.*;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,6 +42,21 @@ public class Section {
         this.downStation = downStation;
         this.upStation = upStation;
         this.distance = distance;
+    }
+
+    public void updateNextSection(Station upStation, Integer distance) {
+        this.upStation = upStation;
+        this.distance -= distance;
+    }
+
+    public void updatePrevSection(Station downStation, Integer distance) {
+        this.downStation = downStation;
+        this.distance -= distance;
+    }
+
+    @Override
+    public int compareTo(Section other) {
+        return this.getDownStation().equals(other.getUpStation()) ? -1 : 1;
     }
 
     public Long getId() {
