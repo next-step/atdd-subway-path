@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import java.util.List;
@@ -7,9 +8,11 @@ import java.util.Set;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.exception.LineException;
 import nextstep.subway.unit.Fixtures.LineFixture;
 import nextstep.subway.unit.Fixtures.StationFixture;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class LineTest {
@@ -77,6 +80,23 @@ class LineTest {
         assertThat(신분당선.getSections().size()).isEqualTo(1);
         assertThat(신분당선.getSections().get(0).getUpStation()).isEqualTo(양재역);
         assertThat(신분당선.getSections().get(0).getDownStation()).isEqualTo(판교역);
+    }
+
+
+    /**
+     * Given 지하철 노선에 지하철 구간을 추가한다
+     * When 지하철 노선에 구간이 하나밖에 없을 떄 구간을 제거하면 예외가 발생한다.
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("지하철 노선에 구간이 하나밖에 없을 떄 구간을 제거하면 예외가 발생한다.")
+    @Test
+    void removeSectionException() {
+        // given
+        신분당선.addSection(강남역, 양재역, 10);
+        // when
+        // then
+        assertThatThrownBy(() -> 신분당선.removeSection(강남역))
+            .isInstanceOf(LineException.class);
     }
 
     /***
