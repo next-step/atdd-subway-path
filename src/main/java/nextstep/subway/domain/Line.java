@@ -237,12 +237,8 @@ public class Line {
     }
 
     private void removeHeadSectionBySection(Section section) {
-        if (!section.isHead()) {
+        if (!section.isHead() || sections.size() == 1) {
             throw new LineException(LineException.NOT_REMOVE_EXCEPTION);
-        }
-        if (sections.size() == 1) {
-            sections.remove(section);
-            return;
         }
         Section nextSection = getSections().get(1);
         nextSection.changeHead(true);
@@ -261,9 +257,6 @@ public class Line {
             throw new LineException(LineException.NOT_REMOVE_EXCEPTION);
         }
         Section previousSection = findPreviousSection(targetSection);
-        // AB BC CD
-        // 4 4 2
-        // AB BD
         previousSection.changeDistance(previousSection.getDistance() + targetSection.getDistance());
         Section nextSection = findNextSection(targetSection);
         nextSection.changeUpStation(targetSection.getUpStation());
