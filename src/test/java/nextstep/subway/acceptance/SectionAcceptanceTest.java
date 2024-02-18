@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
+import nextstep.subway.dto.StationResponse;
 
 public class SectionAcceptanceTest extends BaseAcceptanceTest {
     private Long 역삼역_ID;
@@ -212,14 +213,26 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     void testDeleteSection_노선에_등록된_역_중_가운데_역을_제거하면_역이_제거된다() {
         //given
         LineResponse lineResponse = 지하철_노선_생성(getRequestParam_신분당선(역삼역_ID, 선릉역_ID, BASIC_DISTANCE));
-
+        int distance = 7;
+        SectionRequest sectionRequest = new SectionRequest(선릉역_ID, 왕십리역_ID, distance);
+        addSection(lineResponse, sectionRequest);
         //when & then
         given()
             .pathParam("lineId", lineResponse.getId())
             .queryParam("stationId", 선릉역_ID)
             .when()
             .delete("/lines/{lineId}/sections")
-            .then().statusCode(HttpStatus.SC_BAD_REQUEST);
+            .then().statusCode(HttpStatus.SC_OK);
+
+        LineResponse lineResponseAfterDeleteSection = 지하철_노선_조회(lineResponse.getId());
+        List<StationResponse> stations = lineResponseAfterDeleteSection.getStations();
+        List<SectionResponse> sections = lineResponseAfterDeleteSection.getSections();
+        assertAll(
+            () -> assertThat(stations).hasSize(1),
+            () -> assertThat(stations).doesNotContain(new StationResponse(선릉역_ID, "선릉역")),
+            () -> assertThat(sections).hasSize(1),
+            () -> assertThat(sections.get(0)).isEqualTo(new SectionResponse(역삼역_ID, "역삼역", 왕십리역_ID, "왕십리역", BASIC_DISTANCE + distance))
+        );
     }
 
     private void addSection(LineResponse lineResponse, SectionRequest sectionRequest) {
