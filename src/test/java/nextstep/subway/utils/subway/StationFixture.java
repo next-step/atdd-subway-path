@@ -9,5 +9,4 @@ public class StationFixture {
 	public static final Long 종각역 = 역_생성_요청("종각역").jsonPath().getLong("id");
 	public static final Long 종로5가역 = 역_생성_요청("종로5가역").jsonPath().getLong("id");
 	public static final Long 동대문역 = 역_생성_요청("동대문역").jsonPath().getLong("id");
-	public static final Long 충무로역 = 역_생성_요청("충무로역").jsonPath().getLong("id");
 }

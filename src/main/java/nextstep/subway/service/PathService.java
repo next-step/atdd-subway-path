@@ -21,7 +21,7 @@ public class PathService {
 		List<Long> stations = Path.getPath(source, target);
 		return new PathResponse(
 				stations.stream()
-						.map(id -> new StationResponse( id, stationService.findStationById(id).getName()))
+						.map(id -> new StationResponse(id, stationService.findStationById(id).getName()))
 						.collect(Collectors.toList())
 				, (int) (Path.getDistance(source, target))
 		);
