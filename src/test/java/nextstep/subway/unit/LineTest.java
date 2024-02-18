@@ -20,14 +20,14 @@ class LineTest {
         Station newStation = new Station("삼성역");
 
         Section initSection = new Section(upStation, downStation, 7);
-        line.addSection(initSection);
+        line.addEndSection(initSection);
 
         //when
         Section newSection = new Section(downStation, newStation, 3);
-        line.addSection(newSection);
+        line.addEndSection(newSection);
 
         //then
-        assertThat(line.getSections()).hasSize(2);
+        assertThat(line.getSectionList()).hasSize(2);
     }
 
     @Test
@@ -39,10 +39,10 @@ class LineTest {
         Station newStation = new Station("삼성역");
 
         Section initSection = new Section(upStation, downStation, 7);
-        line.addSection(initSection);
+        line.addEndSection(initSection);
 
         Section newSection = new Section(downStation, newStation, 3);
-        line.addSection(newSection);
+        line.addEndSection(newSection);
 
         //when
         List<Station> stations = line.getStations();
@@ -60,15 +60,15 @@ class LineTest {
         Station newStation = new Station("삼성역");
 
         Section initSection = new Section(upStation, downStation, 7);
-        line.addSection(initSection);
+        line.addEndSection(initSection);
 
         Section newSection = new Section(downStation, newStation, 3);
-        line.addSection(newSection);
+        line.addEndSection(newSection);
 
         //when
-        line.deleteSection(newStation);
+        line.deleteDownSection(newStation);
 
         //then
-        assertThat(line.getSections()).hasSize(1);
+        assertThat(line.getSectionList()).hasSize(1);
     }
 }
