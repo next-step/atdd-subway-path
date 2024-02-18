@@ -1,6 +1,5 @@
 package nextstep.subway.acceptance;
 
-import io.restassured.RestAssured;
 import nextstep.subway.domain.request.LineRequest;
 import nextstep.subway.domain.response.PathResponse;
 import nextstep.subway.domain.response.StationResponse;
@@ -11,9 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.ExceptionMessage.*;
