@@ -1,11 +1,13 @@
 package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
-import java.util.Collections;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+import nextstep.subway.ui.BusinessException;
 import nextstep.subway.utils.FixtureUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
