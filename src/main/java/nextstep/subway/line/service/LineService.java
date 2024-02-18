@@ -7,6 +7,7 @@ import nextstep.subway.line.presentation.request.AddSectionRequest;
 import nextstep.subway.line.presentation.request.CreateLineRequest;
 import nextstep.subway.line.presentation.request.UpdateLineRequest;
 import nextstep.subway.line.presentation.response.*;
+import nextstep.subway.line.service.dto.ShowLineDto;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.domain.Station;
@@ -49,13 +50,13 @@ public class LineService {
 
     public ShowAllLinesResponse findAllLines() {
         return ShowAllLinesResponse.of(lineRepository.findAll().stream()
-                .map(LineDto::from)
+                .map(ShowLineDto::from)
                 .collect(Collectors.toList()));
     }
 
     public ShowLineResponse findLine(Long lineId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundLineException());
+                .orElseThrow(NotFoundLineException::new);
 
         return ShowLineResponse.from(line);
     }
@@ -63,7 +64,7 @@ public class LineService {
     @Transactional
     public UpdateLineResponse updateLine(Long lineId, UpdateLineRequest updateLineRequest) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundLineException());
+                .orElseThrow(NotFoundLineException::new);
 
         line.updateLine(updateLineRequest.getColor());
 
@@ -82,7 +83,7 @@ public class LineService {
         Section section = sectionService.save(Section.of(upStation, downStation, addSectionRequest.getDistance()));
 
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundLineException());
+                .orElseThrow(NotFoundLineException::new);
 
         line.addSection(section);
 
@@ -92,7 +93,7 @@ public class LineService {
     @Transactional
     public void deleteSection(final Long lineId, final Long stationId) {
         Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundLineException());
+                .orElseThrow(NotFoundLineException::new);
         Station deletedStation = stationService.findById(stationId);
 
         line.deleteSection(deletedStation);

@@ -1,7 +1,7 @@
 package nextstep.subway.line.presentation.response;
 
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.station.service.StationDto;
+import nextstep.subway.station.service.dto.AddSectionStationDto;
 
 public class AddSectionResponse {
 
@@ -9,16 +9,16 @@ public class AddSectionResponse {
 
     private Long sectionId;
 
-    private StationDto upStation;
+    private AddSectionStationDto upStation;
 
-    private StationDto downStation;
+    private AddSectionStationDto downStation;
 
     private Integer distance;
 
     private AddSectionResponse() {
     }
 
-    private AddSectionResponse(Long lineId, Long sectionId, StationDto upStation, StationDto downStation, Integer distance) {
+    private AddSectionResponse(Long lineId, Long sectionId, AddSectionStationDto upStation, AddSectionStationDto downStation, Integer distance) {
         this.lineId = lineId;
         this.sectionId = sectionId;
         this.upStation = upStation;
@@ -30,8 +30,8 @@ public class AddSectionResponse {
         return new AddSectionResponse(
                 section.getLine().getLineId(),
                 section.getSectionId(),
-                StationDto.from(section.getUpStation()),
-                StationDto.from(section.getDownStation()),
+                AddSectionStationDto.from(section.getUpStation()),
+                AddSectionStationDto.from(section.getDownStation()),
                 section.getDistance()
         );
     }
@@ -44,11 +44,11 @@ public class AddSectionResponse {
         return sectionId;
     }
 
-    public StationDto getUpStation() {
+    public AddSectionStationDto getUpStation() {
         return upStation;
     }
 
-    public StationDto getDownStation() {
+    public AddSectionStationDto getDownStation() {
         return downStation;
     }
 

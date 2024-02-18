@@ -1,25 +1,25 @@
 package nextstep.subway.line.presentation.response;
 
-import nextstep.subway.line.service.LineDto;
+import nextstep.subway.line.service.dto.ShowLineDto;
 
 import java.util.List;
 
 public class ShowAllLinesResponse {
 
-    private List<LineDto> lines;
+    private List<ShowLineDto> lines;
 
     private ShowAllLinesResponse() {
     }
 
-    private ShowAllLinesResponse(List<LineDto> lineDtos) {
+    private ShowAllLinesResponse(List<ShowLineDto> lineDtos) {
         this.lines = lineDtos;
     }
 
-    public static ShowAllLinesResponse of(List<LineDto> lineDtos) {
+    public static ShowAllLinesResponse of(List<ShowLineDto> lineDtos) {
         return new ShowAllLinesResponse(lineDtos);
     }
 
-    public List<LineDto> getLines() {
+    public List<ShowLineDto> getLines() {
         return lines;
     }
 

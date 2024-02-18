@@ -1,25 +1,25 @@
 package nextstep.subway.station.presentation.response;
 
-import nextstep.subway.station.service.StationDto;
+import nextstep.subway.station.service.dto.ShowStationDto;
 
 import java.util.List;
 
 public class ShowAllStationsResponse {
 
-    private List<StationDto> stations;
+    private List<ShowStationDto> stations;
 
     private ShowAllStationsResponse() {
     }
 
-    private ShowAllStationsResponse(List<StationDto> stationDtos) {
+    private ShowAllStationsResponse(List<ShowStationDto> stationDtos) {
         this.stations = stationDtos;
     }
 
-    public static ShowAllStationsResponse from(List<StationDto> stationDtos) {
+    public static ShowAllStationsResponse from(List<ShowStationDto> stationDtos) {
         return new ShowAllStationsResponse(stationDtos);
     }
 
-    public List<StationDto> getStations() {
+    public List<ShowStationDto> getStations() {
         return stations;
     }
 

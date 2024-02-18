@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
 import org.springframework.http.MediaType;
 
-public class SectionApiExtractableResponse {
+public class SectionAcceptanceStep {
 
     public static ExtractableResponse<Response> 지하철_구간_추가(AddSectionRequest addSectionRequest, Long lineId) {
         return RestAssured

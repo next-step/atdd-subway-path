@@ -1,12 +1,12 @@
-package nextstep.subway.line.presentation.response;
+package nextstep.subway.line.service.dto;
 
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.section.service.dto.CreateLineSectionDto;
+import nextstep.subway.section.service.dto.ShowLineSectionDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CreateLineResponse {
+public class ShowLineDto {
 
     private Long lineId;
 
@@ -14,25 +14,25 @@ public class CreateLineResponse {
 
     private String color;
 
-    private List<CreateLineSectionDto> sections;
+    private List<ShowLineSectionDto> sections;
 
-    private CreateLineResponse() {
+    private ShowLineDto() {
     }
 
-    private CreateLineResponse(Long lineId, String name, String color, List<CreateLineSectionDto> sections) {
+    private ShowLineDto(Long lineId, String name, String color, List<ShowLineSectionDto> sections) {
         this.lineId = lineId;
         this.name = name;
         this.color = color;
         this.sections = sections;
     }
 
-    public static CreateLineResponse from(Line line) {
-        return new CreateLineResponse(
+    public static ShowLineDto from(Line line) {
+        return new ShowLineDto(
                 line.getLineId(),
                 line.getName(),
                 line.getColor(),
                 line.getSections().stream()
-                        .map(CreateLineSectionDto::from)
+                        .map(ShowLineSectionDto::from)
                         .collect(Collectors.toList())
         );
     }
@@ -49,7 +49,7 @@ public class CreateLineResponse {
         return color;
     }
 
-    public List<CreateLineSectionDto> getSections() {
+    public List<ShowLineSectionDto> getSections() {
         return sections;
     }
 

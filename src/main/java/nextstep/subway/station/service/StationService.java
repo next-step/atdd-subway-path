@@ -6,6 +6,7 @@ import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
 import nextstep.subway.station.presentation.response.CreateStationResponse;
 import nextstep.subway.station.presentation.response.ShowAllStationsResponse;
+import nextstep.subway.station.service.dto.ShowStationDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ public class StationService {
 
     public Station findById(Long StationId) {
         return stationRepository.findById(StationId)
-                .orElseThrow(() -> new NotFoundLineException());
+                .orElseThrow(NotFoundLineException::new);
     }
 
     @Transactional
@@ -34,7 +35,7 @@ public class StationService {
 
     public ShowAllStationsResponse findAllStations() {
         return ShowAllStationsResponse.from(stationRepository.findAll().stream()
-                .map(StationDto::from)
+                .map(ShowStationDto::from)
                 .collect(Collectors.toList()));
     }
 

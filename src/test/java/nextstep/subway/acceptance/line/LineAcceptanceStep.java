@@ -7,7 +7,7 @@ import nextstep.subway.line.presentation.request.CreateLineRequest;
 import nextstep.subway.line.presentation.request.UpdateLineRequest;
 import org.springframework.http.MediaType;
 
-public class LineApiExtractableResponse {
+public class LineAcceptanceStep {
 
     public static ExtractableResponse<Response> 지하철_노선_생성(CreateLineRequest createLineRequest) {
         return RestAssured

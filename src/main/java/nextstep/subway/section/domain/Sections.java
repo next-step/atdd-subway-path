@@ -67,7 +67,7 @@ public class Sections {
                 .filter(section -> sections.stream()
                         .noneMatch(nextSection -> section.getUpStation().equals(nextSection.getDownStation())))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundSectionException());
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     private Section getLastSection() {
@@ -79,7 +79,7 @@ public class Sections {
                 .filter(section -> sections.stream()
                         .noneMatch(nextSection -> section.getDownStation().equals(nextSection.getUpStation())))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundSectionException());
+                .orElseThrow(NotFoundSectionException::new);
     }
 
     public void addSection(Section newSection) {
@@ -137,10 +137,10 @@ public class Sections {
         Section section = sections.stream()
                 .filter(s -> s.isUpStation(newSection.getUpStation()))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundStationException());
+                .orElseThrow(NotFoundStationException::new);
 
         section.updateUpStation(newSection.getDownStation());
-        section.reduceDistance(newSection.getDistance());
+        section.decreaseDistance(newSection.getDistance());
         this.sections.add(newSection);
     }
 
@@ -159,27 +159,68 @@ public class Sections {
     }
 
     public void deleteSection(Station station) {
-        if (!getStations().contains(station)) {
-            throw new NotFoundStationException();
-        }
-        if (isNotLastStation(station)) {
-            throw new IsNotLastStationException();
-        }
-        if (size() == 1) {
-            throw new DeleteSectionException();
-        }
+        validateDeleteSection(station);
 
+        if (possibleDeletedFirstSection(station)) {
+            deleteFirstSection();
+            return;
+        }
+        if (possibleDeletedLastSection(station)) {
+            deleteLastSection();
+            return;
+        }
+        deleteMiddleSection(station);
+    }
+
+    private boolean possibleDeletedFirstSection(Station station) {
+        return getFirstSection().getUpStation().equals(station);
+    }
+
+    private boolean possibleDeletedLastSection(Station station) {
+        return getLastSection().getDownStation().equals(station);
+    }
+
+    private void deleteFirstSection() {
+        Section firstSection = getFirstSection();
+        firstSection.delete();
+        this.sections.remove(firstSection);
+    }
+
+    private void deleteLastSection() {
         Section lastSection = getLastSection();
-
         lastSection.delete();
         this.sections.remove(lastSection);
     }
 
-    private boolean isNotLastStation(Station station) {
-        if (this.sections.isEmpty()) {
-            throw new EmptySectionException();
+    private void deleteMiddleSection(Station station) {
+        if (possibleDeletedLastSection(station)) {
+            return;
         }
-        return !getLastSection().isDownStation(station);
+
+        Section deletedSection = sections.stream()
+                .filter(s -> s.isDownStation(station))
+                .findFirst()
+                .orElseThrow(NotFoundStationException::new);
+
+        Section updateSection = sections.stream()
+                .filter(s -> s.isUpStation(station))
+                .findFirst()
+                .orElseThrow(NotFoundStationException::new);
+
+        updateSection.updateUpStation(deletedSection.getUpStation());
+        updateSection.increaseDistance(deletedSection.getDistance());
+
+        deletedSection.delete();
+        this.sections.remove(deletedSection);
+    }
+
+    private void validateDeleteSection(Station station) {
+        if (!getStations().contains(station)) {
+            throw new NotFoundStationException();
+        }
+        if (size() == 1) {
+            throw new DeleteSectionException();
+        }
     }
 
     public boolean hasSection(Section section) {
