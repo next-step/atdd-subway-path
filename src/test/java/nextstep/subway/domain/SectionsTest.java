@@ -21,7 +21,7 @@ class SectionsTest {
     // then
     assertThat(sections.size()).isEqualTo(1);
     assertThat(sections.getStations()).containsExactly(stations.get(0), stations.get(1));
-    assertThat(sections.getStations().size()).isEqualTo(2);
+    assertThat(sections.getStations()).hasSize(stations.size());
   }
 
   @DisplayName("노선의 맨 앞에 구간을 추가한다.")
@@ -41,7 +41,7 @@ class SectionsTest {
     assertThat(sections.size()).isEqualTo(stations.size() - 1);
     assertThat(sections.getStations()).containsExactly(stations.toArray(new Station[4]));
     assertThat(sections.getFirstStation().get()).isEqualTo(stations.get(0));
-    assertThat(sections.getStations().size()).isEqualTo(stations.size());
+    assertThat(sections.getStations()).hasSize(stations.size());
   }
 
   @DisplayName("노선의 중간에 구간을 추가한다.")
@@ -62,7 +62,7 @@ class SectionsTest {
     assertThat(sections.size()).isEqualTo(stations.size() - 1);
     assertThat(sections.getStations()).containsExactly(stations.toArray(new Station[4]));
     assertThat(sections.getLastStation().get()).isEqualTo(stations.get(stations.size() - 1));
-    assertThat(sections.getStations().size()).isEqualTo(stations.size());
+    assertThat(sections.getStations()).hasSize(stations.size());
   }
 
   @DisplayName("노선의 맨 뒤에 구간을 추가한다.")
@@ -82,6 +82,6 @@ class SectionsTest {
     assertThat(sections.size()).isEqualTo(stations.size() - 1);
     assertThat(sections.getStations()).containsExactly(stations.toArray(new Station[4]));
     assertThat(sections.getLastStation().get()).isEqualTo(stations.get(stations.size() - 1));
-    assertThat(sections.getStations().size()).isEqualTo(stations.size());
+    assertThat(sections.getStations()).hasSize(stations.size());
   }
 }
