@@ -17,7 +17,10 @@ public class Line {
     private List<Section> sections = new ArrayList<>();
 
 
-    public Line() {
+    public Line(long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
     }
 
     public Line(String name, String color) {
@@ -50,7 +53,7 @@ public class Line {
         }
     }
 
-//    새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다.
+    //    새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 한다.
 //    이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없다.
     public void addSection(Station upStation, Station downStation, int distance) {
         if (sections.isEmpty()) {

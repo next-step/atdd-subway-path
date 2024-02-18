@@ -19,18 +19,18 @@ public class StationController {
 
     @PostMapping("/stations")
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse station = stationService.saveStation(stationRequest);
+        StationResponse station = stationService.save(stationRequest);
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
     }
 
     @GetMapping(value = "/stations")
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations());
+        return ResponseEntity.ok().body(stationService.retrieveAll());
     }
 
     @DeleteMapping("/stations/{id}")
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        stationService.deleteStationById(id);
+        stationService.removeById(id);
         return ResponseEntity.noContent().build();
     }
 }

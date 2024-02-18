@@ -8,6 +8,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,19 +21,19 @@ public class StationService {
     }
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
+    public StationResponse save(StationRequest stationRequest) {
         Station station = stationRepository.save(new Station(stationRequest.getName()));
         return createStationResponse(station);
     }
 
-    public List<StationResponse> findAllStations() {
+    public List<StationResponse> retrieveAll() {
         return stationRepository.findAll().stream()
                 .map(this::createStationResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void deleteStationById(Long id) {
+    public void removeById(Long id) {
         stationRepository.deleteById(id);
     }
 
@@ -41,5 +42,9 @@ public class StationService {
                 station.getId(),
                 station.getName()
         );
+    }
+
+    public Optional<Station> retrieveById(Long upStationId) {
+        return stationRepository.findById(upStationId);
     }
 }
