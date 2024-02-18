@@ -4,6 +4,7 @@ import nextstep.subway.line.section.Section;
 import nextstep.subway.line.section.Sections;
 import nextstep.subway.station.Station;
 import javax.persistence.*;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -73,6 +74,10 @@ public class Line {
 
     public Sections getSections() {
         return sections;
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
     public boolean contains(Section section) {

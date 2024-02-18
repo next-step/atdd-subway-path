@@ -9,6 +9,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Sections {
 
@@ -112,5 +114,14 @@ public class Sections {
             }
             sections.remove(nextSection);
         }
+    }
+
+    public List<Station> getStations() {
+        List<Station> stations = new ArrayList<>();
+        sections.stream().forEach(section -> {
+            stations.add(section.getUpStation());
+            stations.add(section.getDownStation());
+        });
+        return stations.stream().distinct().collect(Collectors.toList());
     }
 }
