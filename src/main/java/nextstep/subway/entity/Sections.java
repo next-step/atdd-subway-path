@@ -4,7 +4,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Embeddable
 public class Sections {
@@ -49,7 +52,7 @@ public class Sections {
         return true;
     }
 
-    public void deleteSection(Line line, Station stationToDelete) {
+    public void deleteSection(Station stationToDelete) {
         sortByConnectedSections(sections);
 
         if (isFirstStation(stationToDelete)) {
@@ -61,10 +64,10 @@ public class Sections {
             sections.remove(findLastSection());
             return;
         }
-        deleteIntermediateStation(line, stationToDelete);
+        deleteIntermediateStation(stationToDelete);
     }
 
-    private void deleteIntermediateStation(Line line, Station stationToDelete) {
+    private void deleteIntermediateStation(Station stationToDelete) {
         Section commonSection = findCommonSection(stationToDelete);
         replaceAndConnectSection(commonSection, findNextSection(commonSection));
     }
@@ -108,30 +111,39 @@ public class Sections {
 
     private List<Section> sortByConnectedSections(List<Section> sections) {
         for (int baseIndex = 0; baseIndex < sections.size(); baseIndex++) {
-            for (int connectIndex = baseIndex + 1; connectIndex < sections.size(); connectIndex++) {
-                Section sectionToConnect = sections.get(connectIndex);
-
-                if(canPrependSectionBasedOnSection(findFirstSection(), sectionToConnect)) {
-                    sections.remove(sectionToConnect);
-                    sections.add(0, sectionToConnect);
-                    break;
-                }
-
-                if(canAppendSectionBasedOnStation(sections.get(baseIndex), sectionToConnect)) {
-                    sections.remove(sectionToConnect);
-                    sections.add(baseIndex + 1, sectionToConnect);
-                    break;
-                }
-            }
+            connectBasedOnSection(sections.get(baseIndex));
         }
         return sections;
+    }
+
+    private void connectBasedOnSection(Section baseSection) {
+        for (int indexToConnect = sections.indexOf(baseSection); indexToConnect < sections.size(); indexToConnect++) {
+            if (canConnect(baseSection, sections.get(indexToConnect))) {
+                break;
+            }
+        }
+    }
+
+    private boolean canConnect(Section baseSection, Section sectionToConnect) {
+        if (canPrependSectionBasedOnSection(findFirstSection(), sectionToConnect)) {
+            sections.remove(sectionToConnect);
+            sections.add(0, sectionToConnect);
+            return true;
+        }
+
+        if (canAppendSectionBasedOnSection(baseSection, sectionToConnect)) {
+            sections.remove(sectionToConnect);
+            sections.add(sections.indexOf(baseSection) + 1, sectionToConnect);
+            return true;
+        }
+        return false;
     }
 
     private boolean canPrependSectionBasedOnSection(Section section, Section sectionToConnect) {
         return section.canPrependSection(sectionToConnect);
     }
 
-    private boolean canAppendSectionBasedOnStation(Section section, Section sectionToConnect) {
+    private boolean canAppendSectionBasedOnSection(Section section, Section sectionToConnect) {
         return section.canAppendSection(sectionToConnect);
     }
 

@@ -130,7 +130,7 @@ public class LineService {
         );
     }
 
-    public SectionResponse convertToSectionResponse(Section section) {
+    private SectionResponse convertToSectionResponse(Section section) {
         return new SectionResponse(
                 section.getId(),
                 findStation(section.getUpStation().getId()),
