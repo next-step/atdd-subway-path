@@ -42,6 +42,7 @@ class PathFinderTest {
             new SectionEdge(신사역, 잠원역, 10),
             new SectionEdge(잠원역, 교대역, 10),
             new SectionEdge(북한역, 남한역, 10)
+            new SectionEdge(잠원역, 교대역, 10)
         ));
     }
 
