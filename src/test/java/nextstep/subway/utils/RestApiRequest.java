@@ -19,6 +19,15 @@ public class RestApiRequest<T> {
 				.extract();
 	}
 
+	public ExtractableResponse<Response> get(String path, Map<String, Object> queryParams, Object... pathParams) {
+		return RestAssured.given().log().all()
+				.queryParams(queryParams)
+				.when()
+				.get(path, pathParams)
+				.then().log().all()
+				.extract();
+	}
+
 	public ExtractableResponse<Response> post(String path, T body, Object... pathParams) {
 		return RestAssured.given().log().all()
 				.body(body)
