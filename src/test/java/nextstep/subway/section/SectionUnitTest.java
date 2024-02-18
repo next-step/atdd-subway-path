@@ -49,24 +49,4 @@ public class SectionUnitTest {
                 Arguments.of(선릉_용산_구간, false)
         );
     }
-
-
-    @ParameterizedTest
-    @MethodSource("notConnectedSectionParameters")
-    void testInvalidConnectionTest() {
-        // given
-
-        // when
-
-        // then
-
-    }
-
-    public static Stream<Arguments> notConnectedSectionParameters() {
-        return Stream.of(
-                Arguments.of(new Section(), new Section()),
-                Arguments.of(new Section(), new Section()),
-                Arguments.of(new Section(), new Section())
-        );
-    }
 }

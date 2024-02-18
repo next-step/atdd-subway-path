@@ -41,7 +41,7 @@ public class SectionAcceptanceTest extends E2ETestInitializer {
         선릉역_ID = StationManager.save("선릉역").jsonPath().getLong("id");
 
         라인_요청_DTO = new LineRequest(_2호선_NAME, _2호선_COLOR, 강남역_ID, 역삼역_ID, 거리);
-        라인_응답_DTO = StationLineManager.save(라인_요청_DTO).as(LineResponse.class);  // A - C
+        라인_응답_DTO = StationLineManager.save(라인_요청_DTO).as(LineResponse.class);
     }
 
     /**
