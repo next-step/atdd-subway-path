@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.domain.Path.addPath;
+import static nextstep.subway.domain.Path.removePath;
+
 @Embeddable
 public class Sections {
 	@OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
@@ -45,6 +48,7 @@ public class Sections {
 
 	public void addSection(Section section) {
 		this.sections.add(section);
+		addPath(section.getDownStationId(), section.getUpStationId(), section.getDistance());
 	}
 
 	public void addSection(Line line, Section section) {
@@ -91,6 +95,7 @@ public class Sections {
 		}
 
 		this.sections.remove(section);
+		removePath(section.getDownStationId(), section.getUpStationId());
 	}
 
 	public void deleteSection(Line line, Long stationId) {
