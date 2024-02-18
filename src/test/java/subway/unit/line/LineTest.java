@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.*;
 import static subway.fixture.line.LineEntityFixture.*;
 import static subway.fixture.station.StationEntityFixture.*;
 
+import java.util.List;
+
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -148,5 +151,26 @@ class LineTest {
 		assertThatThrownBy(() -> 신분당선_1구간_추가.removeFinalStation(양재역))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage("해당 노선은 두개의 정류장만 존재 하므로, 삭제할 수 없습니다.");
+	}
+
+	@DisplayName("노선 구간을 정렬된 상태로 가져온다.")
+	@Test
+	void successSortedSection() {
+		// given
+		Line 신분당선 = 신분당선();
+		Station 강남역 = 강남역();
+		Station 양재역 = 양재역();
+		Station 논현역 = 논현역();
+		신분당선.addSection(new Section(신분당선, 강남역, 양재역, 10));
+		신분당선.addSection(new Section(신분당선, 강남역, 논현역, 8));
+
+		// when
+		// then
+		List<Section> expectedSections =
+			List.of(
+				new Section(신분당선, 강남역, 논현역, 8),
+				new Section(신분당선, 논현역, 양재역, 2)
+			);
+		Assertions.assertThat(신분당선.getSortedSections()).isEqualTo(expectedSections);
 	}
 }
