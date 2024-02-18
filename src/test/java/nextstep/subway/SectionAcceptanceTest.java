@@ -36,7 +36,7 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     /**
      * Given 지하철 노선을 생성하고
      * When 새로운 구간을 등록하면
-     * Then 지하철 노선 조회 시 노선의 하행역은 추가한 구간의 하행역이다.
+     * Then 지하철 노선 조회 시 추가된 역을 조회할 수 있다.
      */
     @DisplayName("지하철 노선에 새로운 구간을 추가한다.")
     @Test
@@ -198,9 +198,9 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선에 A역과 C역을 갖는 구간을 등록하고
-     * When A역과 B역을 갖는 구간을 추가하면
-     * Then 지하철 노선 조회 시 A,B,C역을 조회할 수 있다.
+     * Given 지하철 노선에 구간을 등록하고
+     * When 기존 구간의 중간역을 갖는 구간을 추가하면
+     * Then 지하철 노선 조회 시 추가된 역을 조회할 수 있다.
      */
     @Test
     @DisplayName("노선의 구간 중간에 신규 구간을 추가한다.")
@@ -228,7 +228,14 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
     @Test
     @DisplayName("기존 구간과 같은 구간을 추가하면 400에러가 발생한다.")
     void addSameSectionException() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 10, 이호선Id);
 
+        //when
+        ExtractableResponse<Response> addResponse = SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 10, 이호선Id);
+
+        //then
+        assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
