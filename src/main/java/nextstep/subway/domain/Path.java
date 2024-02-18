@@ -1,10 +1,12 @@
 package nextstep.subway.domain;
 
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class Path {
 	private static WeightedMultigraph<Long, DefaultWeightedEdge> path = new WeightedMultigraph(DefaultWeightedEdge.class);
@@ -18,7 +20,13 @@ public final class Path {
 	}
 
 	public static List<Long> getPath(Long source, Long target) {
-		return dijkstraShortestPath.getPath(source, target).getVertexList();
+		GraphPath path = dijkstraShortestPath.getPath(source, target);
+
+		if(Objects.isNull(path)) {
+			throw new IllegalArgumentException("경로가 존재하지 않습니다.");
+		}
+
+		return path.getVertexList();
 	}
 
 	public static double getDistance(Long source, Long target) {
