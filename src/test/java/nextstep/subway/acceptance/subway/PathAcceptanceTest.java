@@ -2,12 +2,9 @@ package nextstep.subway.acceptance.subway;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -20,33 +17,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 경로 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class PathAcceptanceTest {
-	private Long 일호선;
-
-	@BeforeEach
+	@BeforeAll
 	void createLine() {
 		// given
-		일호선 = 노선_생성_요청("1호선", "파랑", 동대문역, 종로3가역, 6).jsonPath().getLong("id");
-	}
-
-	/**
-	 * Scenario: 경로가 단건일 경우, 조회 성공
-	 * Given 해당 지하철 노선은
-	 *       상행역 : 동대문역 / 하행역 : 종로3가역 / 길이 : 6
-	 *       상행역 : 종로3가역 / 하행역 : 서울역 / 길이 : 10 인 구간들이 존재하는 노선을 생성한다.
-	 * When 서울역부터 동대문역까지의 경로를 조회하면
-	 * Then 경로에 있는 역 목록은 동대문역, 종로3가역, 서울역 순서대로 구성된다.
-	 * Then 구간의 거리는 16이다.
-	 */
-	@DisplayName("단건인 경로를 조회한다.")
-	@DirtiesContext
-	@Test
-	void 단건인_경로_조회() {
-		// given
+		Long 일호선 = 노선_생성_요청("1호선", "파랑", 동대문역, 종로3가역, 6).jsonPath().getLong("id");
 		구간_생성_요청(서울역, 종로3가역, 10, 일호선);
 
-		// when & then
-		최단_경로_조회_성공(최단_경로_조회_요청(서울역, 동대문역), 16, 서울역, 종로3가역, 동대문역);
+		Long 사호선 = 노선_생성_요청("4호선", "하늘", 동대문역, 충무로역, 4).jsonPath().getLong("id");
+		구간_생성_요청(서울역, 충무로역, 8, 사호선);
 	}
 
 	/**
@@ -61,13 +41,7 @@ public class PathAcceptanceTest {
 	 */
 	@DisplayName("다건인 경로 중 최단 경로를 조회한다.")
 	@Test
-	void 다건인_경로_중_최단_경로_조회() {
-		// given
-		구간_생성_요청(서울역, 종로3가역, 10, 일호선);
-
-		Long 사호선 = 노선_생성_요청("4호선", "하늘", 동대문역, 충무로역, 4).jsonPath().getLong("id");
-		구간_생성_요청(서울역, 충무로역, 8, 사호선);
-
+	void 최단_경로_조회() {
 		// when & then
 		최단_경로_조회_성공(최단_경로_조회_요청(서울역, 동대문역), 12, 서울역, 충무로역, 동대문역);
 	}
@@ -83,9 +57,6 @@ public class PathAcceptanceTest {
 	@DisplayName("노선이 다른 경로 조회.")
 	@Test
 	void 노선이_다른_경로_조회() {
-		// given
-		Long 사호선 = 노선_생성_요청("4호선", "하늘", 동대문역, 충무로역, 4).jsonPath().getLong("id");
-
 		// when & then
 		최단_경로_조회_성공(최단_경로_조회_요청(종로3가역, 충무로역), 10, 종로3가역, 동대문역, 충무로역);
 	}
@@ -101,10 +72,10 @@ public class PathAcceptanceTest {
 	@Test
 	void 경로가_존재하지_않으면_조회_실패() {
 		// given
-		노선_생성_요청("4호선", "하늘", 충무로역, 서울역, 8).jsonPath().getLong("id");
+		노선_생성_요청("1-1호선", "파랑", 종로5가역, 종각역, 8).jsonPath().getLong("id");
 
 		// when & then
-		실패시_코드값_메시지_검증(최단_경로_조회_요청(종로3가역, 충무로역), HttpStatus.BAD_REQUEST.value(),"경로가 존재하지 않습니다.");
+		실패시_코드값_메시지_검증(최단_경로_조회_요청(종로3가역, 종각역), HttpStatus.BAD_REQUEST.value(),"경로가 존재하지 않습니다.");
 	}
 
 	/**
@@ -119,7 +90,7 @@ public class PathAcceptanceTest {
 	@Test
 	void 출발역_도착역_존재하지_않으면_조회_실패() {
 		// when & then
-		실패시_코드값_메시지_검증(최단_경로_조회_요청(종로5가역, 동대문역), HttpStatus.BAD_REQUEST.value(),"출발역이 존재하지 않습니다.");
+		실패시_코드값_메시지_검증(최단_경로_조회_요청(시청역, 동대문역), HttpStatus.BAD_REQUEST.value(),"출발역이 존재하지 않습니다.");
 		실패시_코드값_메시지_검증(최단_경로_조회_요청(종로3가역, 시청역), HttpStatus.BAD_REQUEST.value(),"도착역이 존재하지 않습니다.");
 	}
 

@@ -20,13 +20,13 @@ public final class Path {
 	}
 
 	public static List<Long> getPath(Long source, Long target) {
-		GraphPath path = dijkstraShortestPath.getPath(source, target);
+		GraphPath graphPath = dijkstraShortestPath.getPath(source, target);
 
-		if(Objects.isNull(path)) {
+		if(Objects.isNull(graphPath)) {
 			throw new IllegalArgumentException("경로가 존재하지 않습니다.");
 		}
 
-		return path.getVertexList();
+		return graphPath.getVertexList();
 	}
 
 	public static double getDistance(Long source, Long target) {
