@@ -6,11 +6,11 @@ import io.restassured.response.Response;
 
 public class PathAcceptanceStep {
 
-    public static ExtractableResponse<Response> 지하철_최단_경로_조회(Long source, Long target) {
+    public static ExtractableResponse<Response> 지하철_최단_경로_조회(Long startStationId, Long endStationId) {
         return RestAssured
                 .given().log().all()
-                .queryParam("source", source)
-                .queryParam("target", target)
+                .queryParam("startStationId", startStationId)
+                .queryParam("endStationId", endStationId)
                 .when().get("/paths")
                 .then().log().all()
                 .extract();

@@ -1,10 +1,12 @@
 package nextstep.subway.path.service;
 
+import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.path.presentation.response.FindPathResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.service.dto.ShowStationDto;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -21,44 +23,23 @@ import java.util.stream.Collectors;
 public class PathService {
 
     private LineRepository lineRepository;
+    private StationRepository stationRepository;
+    private PathFinder pathFinder;
 
-    public PathService(LineRepository lineRepository) {
+    public PathService(LineRepository lineRepository, StationRepository stationRepository, PathFinder pathFinder) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
+        this.pathFinder = pathFinder;
     }
 
-    public FindPathResponse findShortestPath(Long source, Long target) {
-
+    public FindPathResponse findShortestPath(Long startStationId, Long endStationId) {
         List<Line> lines = lineRepository.findAll();
+        Station startStation = stationRepository.findById(startStationId)
+                .orElseThrow(NotFoundLineException::new);
+        Station endStation = stationRepository.findById(endStationId)
+                .orElseThrow(NotFoundLineException::new);
 
-        List<Section> sections = lines.stream()
-                .map(line -> line.getSections())
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        List<Station> stations = lines.stream()
-                .map(line -> line.getStations())
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
-
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-
-        stations.stream().forEach(station -> graph.addVertex(station.getStationId()));
-        sections.stream().forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation().getStationId(), section.getDownStation().getStationId()), section.getDistance()));
-
-        GraphPath shortestPath = new DijkstraShortestPath(graph).getPath(source, target);
-        List<Long> shortestPathStations = shortestPath.getVertexList();
-
-        List<ShowStationDto> pathStations = shortestPathStations.stream()
-                .map(stationId -> stations.stream()
-                        .filter(station -> station.getStationId().equals(stationId))
-                        .findFirst()
-                        .map(ShowStationDto::from)
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        return FindPathResponse.of(pathStations, (int) shortestPath.getWeight());
+        return pathFinder.findShortestPath(lines, startStation, endStation);
     }
 
 }

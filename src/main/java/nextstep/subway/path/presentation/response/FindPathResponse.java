@@ -1,9 +1,11 @@
 package nextstep.subway.path.presentation.response;
 
+import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.service.dto.ShowStationDto;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class FindPathResponse {
 
@@ -19,8 +21,13 @@ public class FindPathResponse {
         this.distance = distance;
     }
 
-    public static FindPathResponse of(List<ShowStationDto> stations, Integer distance) {
-        return new FindPathResponse(stations, distance);
+    public static FindPathResponse of(List<Station> stations, Integer distance) {
+        return new FindPathResponse(
+                stations.stream()
+                        .map(ShowStationDto::from)
+                        .collect(Collectors.toList()),
+                distance
+        );
     }
 
     public List<ShowStationDto> getStations() {

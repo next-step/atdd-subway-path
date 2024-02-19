@@ -6,17 +6,17 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.path.presentation.response.FindPathResponse;
-import nextstep.subway.path.service.PathService;
+import nextstep.subway.path.service.PathFinder;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +32,7 @@ public class PathServiceTest {
     @Autowired
     private LineService lineService;
     @Autowired
-    private PathService pathService;
+    private PathFinder pathFinder;
 
     private Station 교대역;
     private Long 교대역_ID;
@@ -53,6 +53,8 @@ public class PathServiceTest {
     private Long 삼호선_ID;
     private Line 신분당선;
     private Long 신분당선_ID;
+
+    private List<Line> 노선들;
 
     private AddSectionRequest 교대역_강남역_구간;
     private AddSectionRequest 교대역_남부터미널역_구간;
@@ -96,13 +98,15 @@ public class PathServiceTest {
         lineService.addSection(신분당선_ID, 논현역_신논현역_구간);
         lineService.addSection(신분당선_ID, 신논현역_강남역_구간);
         lineService.addSection(신분당선_ID, 강남역_양재역_구간);
+
+        노선들 = lineRepository.findAll();
     }
 
     @DisplayName("같은 출발역과 도착역의 최단 경로를 조회한다.")
     @Test
     void 같은_노선의_출발역과_도착역의_최단_경로_조회() {
         // when
-        FindPathResponse 교대역_양재역_경로_조회_응답 = pathService.findShortestPath(논현역_ID, 강남역_ID);
+        FindPathResponse 교대역_양재역_경로_조회_응답 = pathFinder.findShortestPath(노선들, 논현역, 강남역);
 
         // then
         assertThat(교대역_양재역_경로_조회_응답.getDistance()).isEqualTo(논현역_신논현역_구간.getDistance() + 신논현역_강남역_구간.getDistance());
@@ -117,7 +121,7 @@ public class PathServiceTest {
     @Test
     void 여러_노선의_출발역과_도착역의_최단_경로_조회() {
         // when
-        FindPathResponse 교대역_양재역_경로_조회_응답 = pathService.findShortestPath(교대역_ID, 양재역_ID);
+        FindPathResponse 교대역_양재역_경로_조회_응답 = pathFinder.findShortestPath(노선들, 교대역, 양재역);
 
         // then
         assertThat(교대역_양재역_경로_조회_응답.getDistance()).isEqualTo(교대역_강남역_구간.getDistance() + 강남역_양재역_구간.getDistance());
