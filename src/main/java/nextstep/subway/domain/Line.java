@@ -64,23 +64,15 @@ public class Line {
     }
 
     public List<Station> getAllStations() {
-        Comparator<Section> sectionComparator = Comparator.comparingInt(this::getSectionOrder);
-
-        return getSections().stream()
-                .sorted(sectionComparator)
+        return getAllSections()
+                .stream()
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
     }
 
     public void deleteStation(Long stationId) {
-        if (sections.size() <= 1) {
-            throw new LineSectionException("삭제할 수 있는 구간이 없습니다.");
-        }
-
-        if (getAllStations().stream().noneMatch(station -> station.getId().equals(stationId))) {
-            throw new LineSectionException("노선에 존재하지 않는 역입니다.");
-        }
+        validateDeleteStation(stationId);
 
         if (getFirstStation().getId().equals(stationId)) {
             sections.remove(getFirstSection());
@@ -124,26 +116,30 @@ public class Line {
         addAsLastSection(sectionToAdd);
     }
 
-    private Section getFirstSection() {
-        return sections.stream()
-                .filter(section -> section.getUpStation().equals(getFirstStation()))
-                .findFirst()
-                .orElseThrow(() -> new LineSectionException("역이 존재하지 않는 노선입니다."));
-    }
+    private void validateDeleteStation(Long stationId) {
+        if (sections.size() <= 1) {
+            throw new LineSectionException("삭제할 수 있는 구간이 없습니다.");
+        }
 
-    private Section getLastSection() {
-        return sections.stream()
-                .filter(section -> section.getDownStation().equals(getLastStation()))
-                .findFirst()
-                .orElseThrow(() -> new LineSectionException("역이 존재하지 않는 노선입니다."));
+        if (getAllStations().stream().noneMatch(station -> station.getId().equals(stationId))) {
+            throw new LineSectionException("노선에 존재하지 않는 역입니다.");
+        }
     }
 
     private Station getFirstStation() {
         return getAllStations().get(0);
     }
 
+    private Section getFirstSection() {
+        return getAllSections().get(0);
+    }
+
     private Station getLastStation() {
         return getAllStations().get(getAllStations().size() - 1);
+    }
+
+    private Section getLastSection() {
+        return getAllSections().get(getAllSections().size() - 1);
     }
 
     private boolean isToBeFirstSection(Section section) {
@@ -207,9 +203,7 @@ public class Line {
                 .orElseThrow(() -> new LineSectionException("노선에 존재하지 않는 역입니다."));
 
         Section sectionWithStationIdAsUpStation = sections.stream()
-                .filter(section -> {
-                    return section.getUpStation().equals(sectionWithStationIdAsDownStation.getDownStation());
-                })
+                .filter(section -> section.getUpStation().equals(sectionWithStationIdAsDownStation.getDownStation()))
                 .findFirst()
                 .orElseThrow(() -> new LineSectionException(stationId + " 역의 다음 구간이 존재하지 않습니다."));
 
@@ -238,18 +232,7 @@ public class Line {
                 .findFirst();
     }
 
-    private int getSectionOrder(Section section) {
-        int order = 0;
-
-        for (Section currentSection : sections) {
-            if (currentSection.equals(section)) {
-                break;
-            }
-            if (currentSection.getDownStation().equals(section.getUpStation())) {
-                order--;
-            }
-            order++;
-        }
-        return order;
+    private List<Section> getAllSections() {
+        return getSections().stream().sorted().collect(Collectors.toList());
     }
 }

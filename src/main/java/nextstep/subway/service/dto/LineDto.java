@@ -36,8 +36,4 @@ public class LineDto {
     public static LineDto from(Line line) {
         return new LineDto(line.getId(), line.getName(), line.getColor(), StationDto.from(line.getAllStations()));
     }
-
-    public static Line toEntity(LineDto lineDto) {
-        return Line.create(lineDto.getName(), lineDto.getColor());
-    }
 }
