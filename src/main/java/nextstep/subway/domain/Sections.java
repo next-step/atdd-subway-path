@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
-import static java.util.stream.Collectors.toUnmodifiableList;
-
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -23,23 +22,39 @@ public class Sections {
 
   public void addSection(final Section newSection) {
     // 첫 번째 구간은 검증 제외
-    if (!isEmpty()) {
-      AddSectionValidator.validate(this, newSection);
-    }
+    AddSectionValidator.validate(this, newSection);
 
-    // 1. 중간 앞
-    Optional<Section> afterSection = getAfterSection(newSection);
-    if (afterSection.isPresent()) {
-      afterSection.ifPresent(
-          it -> it.updateUpStation(newSection.getDownStation(), it.getDistance() - newSection.getDistance()));
-    }
-    // 2. 중간 뒤
-    Optional<Section> beforeSection = getBeforeSection(newSection);
-    if (beforeSection.isPresent()) {
-      beforeSection.ifPresent(
-          it -> it.updateDownStation(newSection.getUpStation(), it.getDistance() - newSection.getDistance())
-      );
-    }
+    // TODO 로직 이관
+    /**
+     *    중간 구간을 앞에서부터 분할
+     *          origin
+     *   |-------------------|
+     *       new
+     *   |---------|
+     *
+     *           result
+     *       new      origin
+     *   |---------|---------|
+     */
+    getBeforeSection(newSection).ifPresent(
+        it -> it.updateDownStation(newSection.getUpStation(), it.getDistance() - newSection.getDistance())
+    );
+
+    // TODO 로직 이관
+    /**
+     *    중간 구간을 뒤에서부터 분할
+     *          origin
+     *   |-------------------|
+     *                 new
+     *             |---------|
+     *
+     *           result
+     *     origin      new
+     *   |---------|---------|
+     */
+    getAfterSection(newSection).ifPresent(
+        it -> it.updateUpStation(newSection.getDownStation(), it.getDistance() - newSection.getDistance())
+    );
 
     this.sections.add(newSection);
   }
@@ -56,12 +71,11 @@ public class Sections {
     this.sections.remove(section);
   }
 
-  // FIXME 테스트를 위한 메소드?
-  public List<Section> getSections() {
-    return sections.stream().collect(toUnmodifiableList());
-  }
-
   public List<Station> getStations() {
+    if (sections.isEmpty()) {
+      return Collections.emptyList();
+    }
+
     final var stations = sections.stream()
         .map(Section::getUpStation)
         .collect(Collectors.toList());
@@ -88,19 +102,15 @@ public class Sections {
 
   // TODO 메소드 이름 변경
   public Optional<Section> getBeforeSection(final Section section) {
-    final var downStationIdOfNewSection = section.getDownStation().getId();
-
     return sections.stream()
-        .filter(it -> it.getDownStation().getId().equals(downStationIdOfNewSection))
+        .filter(it -> it.isDownStation(section))
         .findFirst();
   }
 
   // TODO 메소드 이름 변경
   public Optional<Section> getAfterSection(final Section section) {
-    final var upStationIdOfNewSection = section.getUpStation().getId();
-
     return sections.stream()
-        .filter(it -> it.getUpStation().getId().equals(upStationIdOfNewSection))
+        .filter(it -> it.isUpStation(section))
         .findFirst();
   }
 

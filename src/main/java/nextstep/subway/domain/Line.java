@@ -57,7 +57,7 @@ public class Line {
         return sections.getStations();
     }
 
-    public boolean isNewLine() {
+    private boolean isNewLine() {
         return sections.isEmpty();
     }
 

@@ -50,14 +50,30 @@ public class Section implements Comparable<Section> {
 
     // TODO 메소드 네이밍 변경, 로직 이관
     public void updateDownStation(Station upStation, int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간의 거리는 양수여야 합니다.");
+        }
+
         this.downStation = upStation;
         this.distance = distance;
     }
 
     // TODO 메소드 네이밍 변경, 로직 이관
     public void updateUpStation(Station downStation, int distance) {
+        if (distance <= 0) {
+            throw new IllegalArgumentException("구간의 거리는 양수여야 합니다.");
+        }
+
         this.upStation = downStation;
         this.distance = distance;
+    }
+
+    public boolean isDownStation(Section other) {
+        return downStation.getId().equals(other.getDownStation().getId());
+    }
+
+    public boolean isUpStation(Section other) {
+        return upStation.getId().equals(other.getUpStation().getId());
     }
 
     @Override
