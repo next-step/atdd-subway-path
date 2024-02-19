@@ -51,6 +51,11 @@ public class PathFinderTest {
         모든_노선.add(신분당선);
     }
 
+    /**
+     * Given 여러 노선으로 연결된 지하철 시스템을 생성 후 (BeforeEach 참고)
+     * When 모든 노선들과, 노선에 있는 역들 중 두 곳을 출발역, 도착역으로 하여 경로를 조회하면
+     * Then 경로에 있는 역들과 경로 거리를 구할 수 있다.
+     */
     @Test
     @DisplayName("최단경로를 찾아 그 사이 stations와 총 가중치(거리)를 반환한다.")
     void succeed() {
@@ -63,6 +68,11 @@ public class PathFinderTest {
         assertThat(path.getDistance()).isEqualTo(27);
     }
 
+    /**
+     * Given 여러 노선으로 연결된 지하철 시스템을 생성 후
+     * When 연결점이 없는 노선끼리 경로 조회 시도 시
+     * Then 에러가 발생한다.
+     */
     @Test
     @DisplayName("경로를 찾지 못했을 때 에러가 발생한다.")
     void failForPathNotExist() {
@@ -77,6 +87,11 @@ public class PathFinderTest {
         );
     }
 
+    /**
+     * Given 노선이 없는 경우
+     * When 경로 조회 시도 시
+     * Then 에러가 발생한다.
+     */
     @Test
     @DisplayName("노선이 존재하지 않을 시 에러가 발생한다.")
     void failForNotFoundStation() {
@@ -91,6 +106,11 @@ public class PathFinderTest {
         );
     }
 
+    /**
+     * Given 여러 노선으로 연결된 지하철 시스템을 생성 후
+     * When 출발역과 도착역을 동일하게 두면
+     * Then 에러가 발생한다.
+     */
     @Test
     @DisplayName("출발역과 도착역이 같은 값으로 주어지는 경우 에러가 발생한다.")
     void failForSameSourceAndTargetStation() {
