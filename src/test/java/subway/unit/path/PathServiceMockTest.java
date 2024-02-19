@@ -85,6 +85,7 @@ class PathServiceMockTest {
 		// when
 		// then
 		Assertions.assertThatThrownBy(() -> pathService.findShortestPath(서울역, 양재역))
+			.hasMessage("경로를 찾을수 없습니다.")
 			.isInstanceOf(IllegalArgumentException.class);
 	}
 }

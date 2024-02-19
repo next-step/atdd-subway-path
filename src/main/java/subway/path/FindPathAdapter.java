@@ -9,7 +9,6 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
 import subway.line.Line;
-import subway.line.Section;
 import subway.station.Station;
 
 public class FindPathAdapter {
@@ -46,7 +45,7 @@ public class FindPathAdapter {
 		GraphPath<Station, DefaultWeightedEdge> graphPath = dijkstraShortestPath.getPath(sourceStation, targetStation);
 		return Optional.ofNullable(graphPath)
 			.map(GraphPath::getVertexList)
-			.orElseThrow(IllegalArgumentException::new);
+			.orElseThrow(() -> new IllegalArgumentException("경로를 찾을수 없습니다."));
 	}
 
 	public Integer getPathWeight(Station sourceStation, Station targetStation) {
