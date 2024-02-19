@@ -26,18 +26,18 @@ public class FindPathAdapter {
 	private DijkstraShortestPath<Station, DefaultWeightedEdge> init(List<Line> lines) {
 		WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
-		for (Line line : lines) {
-			List<Station> sortedSections = line.getSortedStations();
-			for (Station station : sortedSections) {
-				graph.addVertex(station);
+		lines.forEach(
+			line -> {
+				line.getSortedStations().forEach(graph::addVertex);
+				line.getSortedSections().forEach(
+					section ->
+						graph.setEdgeWeight(
+							graph.addEdge(section.getUpStation(), section.getDownStation()),
+							section.getDistance()
+						)
+				);
 			}
-
-			List<Section> sections = line.getSortedSections();
-			for (Section section : sections) {
-				DefaultWeightedEdge weightedEdge = graph.addEdge(section.getUpStation(), section.getDownStation());
-				graph.setEdgeWeight(weightedEdge, section.getDistance());
-			}
-		}
+		);
 
 		return new DijkstraShortestPath<>(graph);
 	}
