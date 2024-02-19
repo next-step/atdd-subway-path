@@ -8,7 +8,6 @@ import nextstep.subway.acceptance.fixture.StationFixture;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.section.SectionRequest;
 import nextstep.subway.dto.station.StationResponse;
-import nextstep.subway.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,10 +34,10 @@ public class SectionAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        강남역_ID = StationFixture.createStation("강남역").as(StationResponse.class).getId();
-        역삼역_ID = StationFixture.createStation("역삼역").as(StationResponse.class).getId();
-        선릉역_ID = StationFixture.createStation("선릉역").as(StationResponse.class).getId();
-        이호선_ID = LineFixture.createLine("2호선", "green", 10, 강남역_ID, 역삼역_ID)
+        강남역_ID = StationFixture.지하철역_생성_요청("강남역").as(StationResponse.class).getId();
+        역삼역_ID = StationFixture.지하철역_생성_요청("역삼역").as(StationResponse.class).getId();
+        선릉역_ID = StationFixture.지하철역_생성_요청("선릉역").as(StationResponse.class).getId();
+        이호선_ID = LineFixture.노선_생성_요청("2호선", "green", 10, 강남역_ID, 역삼역_ID)
             .as(LineResponse.class).getId();
     }
 
@@ -57,7 +56,7 @@ public class SectionAcceptanceTest {
             assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
             // then
-            LineResponse 이호선 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            LineResponse 이호선 = LineFixture.노선_조회_요청(이호선_ID).as(LineResponse.class);
             List<Long> 이호선_역_리스트 = 이호선.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
@@ -78,7 +77,7 @@ public class SectionAcceptanceTest {
             assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
             // then
-            LineResponse 이호선 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            LineResponse 이호선 = LineFixture.노선_조회_요청(이호선_ID).as(LineResponse.class);
             List<Long> 이호선_역_리스트 = 이호선.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
@@ -99,7 +98,7 @@ public class SectionAcceptanceTest {
             assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
             // then
-            LineResponse 이호선 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            LineResponse 이호선 = LineFixture.노선_조회_요청(이호선_ID).as(LineResponse.class);
             List<Long> 이호선_역_리스트 = 이호선.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
@@ -115,7 +114,7 @@ public class SectionAcceptanceTest {
         @Test
         void 연결_불가_구간_등록_실패() {
             // given
-            Long 삼성역_ID = StationFixture.createStation("삼성역").as(StationResponse.class).getId();
+            Long 삼성역_ID = StationFixture.지하철역_생성_요청("삼성역").as(StationResponse.class).getId();
 
             // when
             ExtractableResponse<Response> 구간_생성_응답 = createSection(이호선_ID, 삼성역_ID, 선릉역_ID, 15);
@@ -231,7 +230,7 @@ public class SectionAcceptanceTest {
         @Test
         void invalidDownStation() {
             // given
-            Long 서초역_ID = StationFixture.createStation("서초역").as(StationResponse.class).getId();
+            Long 서초역_ID = StationFixture.지하철역_생성_요청("서초역").as(StationResponse.class).getId();
 
             // when
             ExtractableResponse<Response> response = deleteSection(이호선_ID, 서초역_ID);
