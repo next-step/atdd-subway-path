@@ -17,11 +17,11 @@ public class PathFinderDijkstraStrategy implements PathFinderStrategy {
     @Override
     public Path findShortestPathAndItsDistance(List<Line> lines, Station sourceStation, Station targetStation) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-
         List<Station> allExistingStations = lines.stream()
                 .flatMap(it -> it.getAllStations().stream())
-                .distinct()
                 .collect(Collectors.toList());
+
+        allExistingStations.forEach(station -> System.out.println(station.getName()));
 
         allExistingStations.forEach(graph::addVertex);
 
@@ -39,8 +39,9 @@ public class PathFinderDijkstraStrategy implements PathFinderStrategy {
         }
 
         List<Station> stations = path.getVertexList();
-        System.out.println(stations.size());
+
         double distance = path.getWeight();
+
         return new Path(stations, (int) distance);
     }
 }

@@ -4,32 +4,30 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.path.Path;
 import nextstep.subway.domain.path.PathFinder;
-import nextstep.subway.service.dto.LineDto;
+import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.dto.PathDto;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PathService {
-    private final StationService stationService;
-    private final LineService lineService;
+    private final StationRepository stationRepository;
+    private final LineRepository lineRepository;
     private final PathFinder pathFinder;
 
-    public PathService(StationService stationService, LineService lineService, PathFinder pathFinder) {
-        this.stationService = stationService;
-        this.lineService = lineService;
+    public PathService(StationRepository stationRepository, LineRepository lineRepository, PathFinder pathFinder) {
+        this.stationRepository = stationRepository;
+        this.lineRepository = lineRepository;
         this.pathFinder = pathFinder;
     }
 
     public PathDto findShortestPath(Long sourceStationId, Long targetStationId) {
-        Station sourceStation = stationService.findStationById(sourceStationId);
-        Station targetStation = stationService.findStationById(targetStationId);
-        List<Line> lines = lineService.findAllLines()
-                .stream()
-                .map(LineDto::toEntity)
-                .collect(Collectors.toList());
+        Station sourceStation = stationRepository.findById(sourceStationId).orElseThrow(EntityNotFoundException::new);
+        Station targetStation = stationRepository.findById(targetStationId).orElseThrow(EntityNotFoundException::new);
+        List<Line> lines = lineRepository.findAll();
 
         Path path = pathFinder.findShortestPathAndItsDistance(lines, sourceStation, targetStation);
         return PathDto.from(path);

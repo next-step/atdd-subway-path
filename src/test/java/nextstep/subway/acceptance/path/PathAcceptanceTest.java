@@ -45,6 +45,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
      */
     @BeforeEach
     void setup() {
+        System.out.println("BEGIN");
         신사역ID = StationApi.create(신사역_생성_바디).getLong("id");
         논현역ID = StationApi.create(논현역_생성_바디).getLong("id");
         신논현역ID = StationApi.create(신논현역_생성_바디).getLong("id");
@@ -53,12 +54,14 @@ public class PathAcceptanceTest extends AcceptanceTest {
         서빙고역ID = StationApi.create(서빙고역_생성_바디).getLong("id");
 
         신분당선ID = 노선생성요청(신분당선_생성_바디(논현역ID, 신논현역ID)).getLong("id");
-        노선생성요청(구호선_생성_바디(고속터미널역ID, 신논현역ID)).getLong("id");
-        노선생성요청(삼호선_생성_바디(고속터미널역ID, 신사역ID)).getLong("id");
-        노선생성요청(칠호선_생성_바디(고속터미널역ID, 논현역ID)).getLong("id");
-        노선생성요청(경의중앙선_생성_바디(한남역ID, 서빙고역ID)).getLong("id");
+        노선생성요청(구호선_생성_바디(고속터미널역ID, 신논현역ID));
+        노선생성요청(삼호선_생성_바디(고속터미널역ID, 신사역ID));
+        노선생성요청(칠호선_생성_바디(고속터미널역ID, 논현역ID));
+        노선생성요청(경의중앙선_생성_바디(한남역ID, 서빙고역ID));
 
         구간생성요청(신분당선ID, 추가구간_생성_바디(신사역ID, 논현역ID, 5));
+
+        System.out.println("DONE");
     }
 
     @Test
@@ -70,7 +73,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 요청결과 = 최단경로조회요청(신사역ID, 신논현역ID);
 
         List<String> 포함된역_반환결과 = 요청결과.jsonPath().getList("stations.name", String.class);
-        int 거리_반환결과 = 요청결과.jsonPath().getInt("distance");
+        int 거리_반환결과 = 요청결과.jsonPath().get("distance");
 
         assertThat(요청결과.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(포함된역_반환결과).containsExactlyElementsOf(포함된역_예상결과);
@@ -78,18 +81,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("주어진 출발역과 도착역이 연결되지 않은 경우 0개의 역이 반환된다.")
+    @DisplayName("주어진 출발역과 도착역이 연결되지 않은 경우 에러가 발생한다.")
     void succeedForUnlinkedPath() {
-        int 거리_예상결과 = -1;
-
         ExtractableResponse<Response> 요청결과 = 최단경로조회요청(신사역ID, 한남역ID);
 
-        List<String> 포함된역_반환결과 = 요청결과.jsonPath().getList("stations.name", String.class);
-        int 거리_반환결과 = 요청결과.jsonPath().getInt("distance");
-
-        assertThat(요청결과.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(포함된역_반환결과).isEmpty();
-        assertThat(거리_반환결과).isEqualTo(거리_예상결과);
+        assertThat(요청결과.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test

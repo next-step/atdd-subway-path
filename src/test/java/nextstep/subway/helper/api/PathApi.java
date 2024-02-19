@@ -9,7 +9,8 @@ public class PathApi {
 
     public static ExtractableResponse<Response> 최단경로조회요청(Long 출발역ID, Long 도착역ID) {
         return RestAssured.given().log().all()
-                .queryParam("source", 출발역ID, "target", 도착역ID)
+                .queryParam("source", 출발역ID)
+                .queryParam("target", 도착역ID)
                 .when().get(routePrefix)
                 .then().log().all()
                 .extract();
