@@ -143,6 +143,24 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.body().asString()).isEqualTo("노선에 새로운 구간과 이어지는 역이 없습니다.");
     }
 
+    /**
+     * When 지하철 노선의 중간에 구간 등록을 요청 할 때 새 구간의 길이가 분할 될 구간보다 길면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("지하철 노선의 새 구간의 거리가 분할 될 구간보다 길면 에러가 발생한다.")
+    @Test
+    void 지하철_노선에_구간_추가_실패_구간_길이_검증_실패() {
+        // given
+        final var 정자역 = 지하철역_생성("정자역").getId();
+
+        // when
+        final var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 10));
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.body().asString()).isEqualTo("새 구간이 추가 될 구간의 길이가 새 구간보다 짧습니다.");
+    }
+
 
     /**
      * Given 지하철 노선에 새로운 구간 추가를 요청 하고

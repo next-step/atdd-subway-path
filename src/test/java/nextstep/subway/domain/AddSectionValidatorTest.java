@@ -41,7 +41,7 @@ class AddSectionValidatorTest {
     final var throwable = catchThrowable(() ->
         AddSectionValidator.validate(
             sections,
-            new Section(null, stations.get(0), stations.get(1), 5))
+            new Section(null, stations.get(0), stations.get(1), 3))
     );
 
     // then
@@ -68,5 +68,27 @@ class AddSectionValidatorTest {
     // then
     assertThat(throwable).isInstanceOf(BusinessException.class)
         .hasMessageContaining("노선에 새로운 구간과 이어지는 역이 없습니다.");
+  }
+
+  @DisplayName("새 구간의 거리가 분할 될 구간보다 길 수 없다.")
+  @Test
+  void validate_구간_길이_검증_실패() {
+    // given
+    final var stations = FixtureUtil.getFixtures(Station.class, 4);
+    final var sections = new Sections();
+    sections.addSection(new Section(null, stations.get(0), stations.get(1), 5));
+    sections.addSection(new Section(null, stations.get(1), stations.get(3), 5));
+
+    // when
+    final var throwable = catchThrowable(() ->
+        AddSectionValidator.validate(
+            sections,
+            new Section(null, stations.get(1), stations.get(2), 6)
+        )
+    );
+
+    // then
+    assertThat(throwable).isInstanceOf(BusinessException.class)
+        .hasMessageContaining("새 구간이 추가 될 구간의 길이가 새 구간보다 짧습니다.");
   }
 }
