@@ -1,5 +1,6 @@
 package nextstep.subway.path.service;
 
+import nextstep.subway.exception.SameStartStationAndEndStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.path.presentation.response.FindPathResponse;
 import nextstep.subway.station.domain.Station;
@@ -20,11 +21,19 @@ public class PathFinder {
         addVertex(lines, graph);
         setEdgeWeight(lines, graph);
 
+        validate(startStation, endStation);
+
         GraphPath shortestPath = new DijkstraShortestPath(graph).getPath(startStation, endStation);
         List<Station> shortestPathStations = shortestPath.getVertexList();
         double shortestPathWeight = shortestPath.getWeight();
 
         return FindPathResponse.of(shortestPathStations, (int) shortestPathWeight);
+    }
+
+    private void validate(Station startStation, Station endStation) {
+        if (startStation.equals(endStation)) {
+            throw new SameStartStationAndEndStationException();
+        }
     }
 
     private void addVertex(List<Line> lines, WeightedMultigraph graph) {

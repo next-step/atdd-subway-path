@@ -1,6 +1,8 @@
 package nextstep.subway.unit.service;
 
 import nextstep.subway.common.Constant;
+import nextstep.subway.exception.NotFoundStationException;
+import nextstep.subway.exception.SameStartStationAndEndStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
@@ -20,10 +22,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-public class PathServiceTest {
+public class PathFinderTest {
 
     @Autowired
     private StationRepository stationRepository;
@@ -130,6 +133,14 @@ public class PathServiceTest {
                 .map(stationDto -> stationDto.getName())
                 .collect(Collectors.toList())
         ).containsExactly(Constant.교대역, Constant.강남역, Constant.양재역);
+    }
+
+    @DisplayName("출발역과 도착역이 동일하게는 경로를 조회하면 예외발생")
+    @Test
+    void 출발역과_도착역을_동일하게_경로_조회하면_예외발생() {
+        // when & then
+        assertThatThrownBy(() -> pathFinder.findShortestPath(노선들, 양재역, 양재역))
+                .isInstanceOf(SameStartStationAndEndStationException.class);;
     }
 
 }

@@ -1,5 +1,7 @@
 package nextstep.subway.acceptance.path;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.acceptance.util.CommonAcceptanceTest;
 import nextstep.subway.common.Constant;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 import java.util.stream.Collectors;
 
@@ -58,7 +61,6 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
     }
 
     /**
-     * Given 지하철 역/구간/노선을 생성하고
      * When 같은 노선의 출발역과 도착역의 경로를 검색하면
      * Then 최단 경로를 알려준다.
      */
@@ -78,7 +80,6 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
     }
 
     /**
-     * Given 지하철 역/구간/노선을 생성하고
      * When 여러 노선의 출발역과 도착역의 경로를 검색하면
      * Then 최단 경로를 알려준다.
      */
@@ -97,4 +98,23 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
         ).containsExactly(Constant.교대역, Constant.남부터미널역, Constant.양재역);
     }
 
+
+
+    /**
+     * When 출발역과 도착역이 같게 경로를 검색하면
+     * Then 경로가 조회되지 않는다.
+     */
+    @DisplayName("출발역과 도착역이 동일하게는 경로를 조회할 수 없다.")
+    @Test
+    void 출발역과_도착역을_동일하게_경로_조회() {
+        // when
+        ExtractableResponse<Response> 경로_조회_응답 = 지하철_최단_경로_조회(강남역_ID, 강남역_ID);
+
+        // then
+        지하철_경로_조회_예외발생_검증(경로_조회_응답, HttpStatus.BAD_REQUEST);
+    }
+
+    void 지하철_경로_조회_예외발생_검증(ExtractableResponse<Response> extractableResponse, HttpStatus status) {
+        assertThat(extractableResponse.statusCode()).isEqualTo(status.value());
+    }
 }
