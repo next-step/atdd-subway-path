@@ -216,6 +216,8 @@ public class LineServiceMockTest {
             // given
             List<Line> 모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
 
+            when(stationRepository.existsById(강남역_아이디)).thenReturn(true);
+            when(stationRepository.existsById(남부터미널역_아이디)).thenReturn(true);
             when(stationRepository.findById(강남역_아이디)).thenReturn(Optional.of(강남));
             when(stationRepository.findById(남부터미널역_아이디)).thenReturn(Optional.of(남부터미널));
             when(lineRepository.findAll()).thenReturn(모든_노선_목록);
@@ -239,6 +241,8 @@ public class LineServiceMockTest {
             // given
             List<Line> 모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
 
+            when(stationRepository.existsById(교대역_아이디)).thenReturn(true);
+            when(stationRepository.existsById(양재역_아이디)).thenReturn(true);
             when(stationRepository.findById(교대역_아이디)).thenReturn(Optional.of(교대));
             when(stationRepository.findById(양재역_아이디)).thenReturn(Optional.of(양재));
             when(lineRepository.findAll()).thenReturn(모든_노선_목록);
