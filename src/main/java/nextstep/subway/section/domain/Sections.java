@@ -173,11 +173,11 @@ public class Sections {
     }
 
     private boolean possibleDeletedFirstSection(Station station) {
-        return getFirstSection().getUpStation().equals(station);
+        return getFirstSection().isUpStation(station);
     }
 
     private boolean possibleDeletedLastSection(Station station) {
-        return getLastSection().getDownStation().equals(station);
+        return getLastSection().isDownStation(station);
     }
 
     private void deleteFirstSection() {
