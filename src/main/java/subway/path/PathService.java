@@ -21,11 +21,11 @@ public class PathService {
 
 	public PathResponse findShortestPath(Station sourceStation, Station targetStation) {
 		List<Line> lines = lineRepository.findAll();
-		JgraphAdapter jgraphAdapter = JgraphAdapter.of(lines);
+		FindPathAdapter findPathAdapter = FindPathAdapter.of(lines);
 
 		return new PathResponse(
-			jgraphAdapter.getPath(sourceStation, targetStation),
-			jgraphAdapter.getPathWeight(sourceStation, targetStation)
+			findPathAdapter.getPath(sourceStation, targetStation),
+			findPathAdapter.getPathWeight(sourceStation, targetStation)
 		);
 	}
 }
