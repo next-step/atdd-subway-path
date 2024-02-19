@@ -6,7 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.path.Path;
 import nextstep.subway.domain.path.PathFinder;
 import nextstep.subway.domain.path.PathFinderDijkstraStrategy;
-import nextstep.subway.exception.PathException;
+import nextstep.subway.exception.path.PathException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

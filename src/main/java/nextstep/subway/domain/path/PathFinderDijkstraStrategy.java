@@ -2,7 +2,7 @@ package nextstep.subway.domain.path;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.PathException;
+import nextstep.subway.exception.path.PathNotFoundException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -35,7 +35,7 @@ public class PathFinderDijkstraStrategy implements PathFinderStrategy {
         GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
 
         if (path == null) {
-            throw new PathException("주어진 출발역과 도착역은 연결된 구간이 없습니다.");
+            throw new PathNotFoundException("주어진 출발역과 도착역은 연결된 구간이 없습니다.");
         }
 
         List<Station> stations = path.getVertexList();

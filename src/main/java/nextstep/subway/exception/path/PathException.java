@@ -1,12 +1,14 @@
-package nextstep.subway.exception;
+package nextstep.subway.exception.path;
 
 public class PathException extends RuntimeException {
+    private static String DEFAULT_MESSAGE = "경로 에러 : ";
+
     public PathException() {
         super();
     }
 
     public PathException(String message) {
-        super(message);
+        super(String.format("%s %s", DEFAULT_MESSAGE, message));
     }
 
     public PathException(String message, Throwable cause) {

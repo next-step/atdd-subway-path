@@ -7,7 +7,6 @@ import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,10 +34,6 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
-    }
-
-    public Station findStationById(Long id) {
-        return stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     private StationResponseBody createStationResponse(Station station) {

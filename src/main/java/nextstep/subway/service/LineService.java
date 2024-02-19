@@ -3,13 +3,14 @@ package nextstep.subway.service;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.line.LineNotFoundException;
+import nextstep.subway.exception.station.StationNotFoundException;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -80,10 +81,10 @@ public class LineService {
     }
 
     private Line findLineByIdOrFail(Long id) {
-        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
     }
 
     private Station findStationByIdOrFail(Long id) {
-        return stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
     }
 }

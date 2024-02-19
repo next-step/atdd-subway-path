@@ -9,7 +9,7 @@ import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.dto.PathDto;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
+import nextstep.subway.exception.station.StationNotFoundException;
 import java.util.List;
 
 @Service
@@ -25,8 +25,8 @@ public class PathService {
     }
 
     public PathDto findShortestPath(Long sourceStationId, Long targetStationId) {
-        Station sourceStation = stationRepository.findById(sourceStationId).orElseThrow(EntityNotFoundException::new);
-        Station targetStation = stationRepository.findById(targetStationId).orElseThrow(EntityNotFoundException::new);
+        Station sourceStation = stationRepository.findById(sourceStationId).orElseThrow(StationNotFoundException::new);
+        Station targetStation = stationRepository.findById(targetStationId).orElseThrow(StationNotFoundException::new);
         List<Line> lines = lineRepository.findAll();
 
         Path path = pathFinder.findShortestPathAndItsDistance(lines, sourceStation, targetStation);
