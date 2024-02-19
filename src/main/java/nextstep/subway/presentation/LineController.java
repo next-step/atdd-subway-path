@@ -3,6 +3,7 @@ package nextstep.subway.presentation;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.PathRequest;
 import nextstep.subway.dto.PathResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,8 @@ public class LineController {
     }
 
     @GetMapping("/paths")
-    public ResponseEntity<PathResponse> findShortestPath(@RequestParam("source") Long source, @RequestParam("target") Long target) {
-        return ResponseEntity.ok(lineService.findShortestPath(source, target));
+    public ResponseEntity<PathResponse> findShortestPath(@RequestParam("source") Long departureStationId,
+                                                         @RequestParam("target") Long arrivalStationId) {
+        return ResponseEntity.ok(lineService.findShortestPath(new PathRequest(departureStationId, arrivalStationId)));
     }
 }

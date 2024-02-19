@@ -76,20 +76,33 @@ public class LineService {
         line.delete(findStation(stationIdToDelete));
     }
 
-    public PathResponse findShortestPath(Long departureStationId, Long arrivalStationId) {
-        if (departureStationId.equals(arrivalStationId)) {
+    public PathResponse findShortestPath(PathRequest pathRequest) {
+        validatePathRequest(pathRequest);
+
+        return convertPathResponse(pathFinder.calculateShortestPath(
+                lineRepository.findAll(),
+                findStation(pathRequest.getDepartureStationId()),
+                findStation(pathRequest.getArrivalStationId())));
+    }
+
+    private void validatePathRequest(PathRequest pathRequest) {
+        if (areStationsSame(pathRequest)) {
             throw new IllegalArgumentException("출발역과 도착역이 동일할 수 없습니다.");
         }
-        if (!stationRepository.existsById(departureStationId)) {
+        if (!existsStation(pathRequest.getDepartureStationId())) {
             throw new IllegalArgumentException("출발역은 역으로 등록되어 있지 않습니다.");
         }
-        if (!stationRepository.existsById(arrivalStationId)) {
+        if (!existsStation(pathRequest.getArrivalStationId())) {
             throw new IllegalArgumentException("도착역은 역으로 등록되어 있지 않습니다.");
         }
+    }
 
-        PathResult pathResult = pathFinder.calculateShortestPath(lineRepository.findAll(),
-                findStation(departureStationId), findStation(arrivalStationId));
-        return new PathResponse(pathResult.getStations(), pathResult.getDistance());
+    private boolean existsStation(Long stationId) {
+        return stationRepository.existsById(stationId);
+    }
+
+    private boolean areStationsSame(PathRequest pathRequest) {
+        return pathRequest.getDepartureStationId().equals(pathRequest.getArrivalStationId());
     }
 
     public Line findLineById(Long lineId) {
@@ -166,5 +179,9 @@ public class LineService {
                 request.getDistance(),
                 line
         );
+    }
+
+    private PathResponse convertPathResponse(PathResult pathResult) {
+        return new PathResponse(pathResult.getStations(), pathResult.getDistance());
     }
 }
