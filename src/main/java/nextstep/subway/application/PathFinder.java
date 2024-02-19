@@ -32,9 +32,10 @@ public class PathFinder {
         DijkstraShortestPath shortestPath = new DijkstraShortestPath<>(graph);
         GraphPath path = shortestPath.getPath(departureStation, arrivalStation);
 
-        List vertexInOrder = path.getVertexList();
-        int distance = (int) path.getWeight();
+        if(path == null) {
+            throw new IllegalArgumentException("출발역과 도착역이 연결되어 있지 않습니다.");
+        }
 
-        return new PathResult(vertexInOrder, distance);
+        return new PathResult(path.getVertexList(), (int) path.getWeight());
     }
 }

@@ -80,10 +80,10 @@ public class LineService {
         if (departureStationId.equals(arrivalStationId)) {
             throw new IllegalArgumentException("출발역과 도착역이 동일할 수 없습니다.");
         }
-        if (stationRepository.existsById(departureStationId)) {
+        if (!stationRepository.existsById(departureStationId)) {
             throw new IllegalArgumentException("출발역은 역으로 등록되어 있지 않습니다.");
         }
-        if (stationRepository.existsById(arrivalStationId)) {
+        if (!stationRepository.existsById(arrivalStationId)) {
             throw new IllegalArgumentException("도착역은 역으로 등록되어 있지 않습니다.");
         }
 
