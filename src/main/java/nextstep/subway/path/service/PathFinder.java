@@ -1,5 +1,6 @@
 package nextstep.subway.path.service;
 
+import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.exception.SameStartStationAndEndStationException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.path.presentation.response.FindPathResponse;
@@ -11,6 +12,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PathFinder {
@@ -21,7 +23,7 @@ public class PathFinder {
         addVertex(lines, graph);
         setEdgeWeight(lines, graph);
 
-        validate(startStation, endStation);
+        validate(lines, startStation, endStation);
 
         GraphPath shortestPath = new DijkstraShortestPath(graph).getPath(startStation, endStation);
         List<Station> shortestPathStations = shortestPath.getVertexList();
@@ -30,15 +32,31 @@ public class PathFinder {
         return FindPathResponse.of(shortestPathStations, (int) shortestPathWeight);
     }
 
-    private void validate(Station startStation, Station endStation) {
+    private void validate(List<Line> lines, Station startStation, Station endStation) {
+        if (hasMissStation(lines, startStation) || hasMissStation(lines, endStation)) {
+            throw new NotFoundStationException();
+        }
         if (startStation.equals(endStation)) {
             throw new SameStartStationAndEndStationException();
         }
     }
 
+    private List<Station> getStations(List<Line> lines) {
+        return lines.stream()
+                .flatMap(line -> line.getStations().stream())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private boolean hasMissStation(List<Line> lines, Station station) {
+        return getStations(lines).stream()
+                .noneMatch(s -> s.equals(station));
+    }
+
     private void addVertex(List<Line> lines, WeightedMultigraph graph) {
         lines.stream()
                 .flatMap(line -> line.getStations().stream())
+                .distinct()
                 .forEach(graph::addVertex);
     }
 
@@ -47,6 +65,5 @@ public class PathFinder {
                 .flatMap(line -> line.getSections().stream())
                 .forEach(section -> graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
     }
-
 
 }

@@ -135,12 +135,27 @@ public class PathFinderTest {
         ).containsExactly(Constant.교대역, Constant.강남역, Constant.양재역);
     }
 
-    @DisplayName("출발역과 도착역이 동일하게는 경로를 조회하면 예외발생")
+    @DisplayName("출발역과 도착역이 동일할 경우 경로 조회시 예외발생가 발생한다.")
     @Test
-    void 출발역과_도착역을_동일하게_경로_조회하면_예외발생() {
+    void 출발역과_도착역이_동일하게_경로_조회시_예외발생() {
         // when & then
         assertThatThrownBy(() -> pathFinder.findShortestPath(노선들, 양재역, 양재역))
                 .isInstanceOf(SameStartStationAndEndStationException.class);;
+    }
+
+    /**
+     * When 존재하지 않은 출발역이나 도착역을 조회 할 경우
+     * Then 경로가 조회되지 않는다.
+     */
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회할 경우 예외발생")
+    @Test
+    void 존재하지_않은_출발역이나_도착역_경로_조회시_예외발생() {
+        // given
+        Station 왕십리역 = Station.from("왕십리역");
+
+        // when & then
+        assertThatThrownBy(() -> pathFinder.findShortestPath(노선들, 양재역, 왕십리역))
+                .isInstanceOf(NotFoundStationException.class);
     }
 
 }

@@ -32,6 +32,7 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
     private Long 양재역_ID;
     private Long 남부터미널역_ID;
     private Long 역삼역_ID;
+    private Long 압구정로데오역_ID;
 
     private Long 이호선_ID;
     private Long 삼호선_ID;
@@ -52,6 +53,7 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
         양재역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.양재역)).as(CreateStationResponse.class).getStationId();
         남부터미널역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.남부터미널역)).as(CreateStationResponse.class).getStationId();
         역삼역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.역삼역)).as(CreateStationResponse.class).getStationId();
+        압구정로데오역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.압구정로데오역)).as(CreateStationResponse.class).getStationId();
 
         이호선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.이호선, Constant.초록색, 교대역_ID, 강남역_ID, Constant.역_간격_15)).as(CreateLineResponse.class).getLineId();
         지하철_구간_추가(AddSectionRequest.of(강남역_ID, 역삼역_ID, Constant.역_간격_15), 이호선_ID);
@@ -98,20 +100,32 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
         ).containsExactly(Constant.교대역, Constant.남부터미널역, Constant.양재역);
     }
 
-
-
     /**
-     * When 출발역과 도착역이 같게 경로를 검색하면
+     * When 출발역과 도착역이 동일할 경우
      * Then 경로가 조회되지 않는다.
      */
-    @DisplayName("출발역과 도착역이 동일하게는 경로를 조회할 수 없다.")
+    @DisplayName("출발역과 도착역이 동일할 경우 경로를 조회할 수 없다.")
     @Test
-    void 출발역과_도착역을_동일하게_경로_조회() {
+    void 출발역과_도착역이_동일하게_경로_조회() {
         // when
         ExtractableResponse<Response> 경로_조회_응답 = 지하철_최단_경로_조회(강남역_ID, 강남역_ID);
 
         // then
         지하철_경로_조회_예외발생_검증(경로_조회_응답, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * When 존재하지 않은 출발역이나 도착역을 조회 할 경우
+     * Then 경로가 조회되지 않는다.
+     */
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우 경로를 조회할 수 없다.")
+    @Test
+    void 존재하지_않은_출발역이나_도착역_경로_조회() {
+        // when
+        ExtractableResponse<Response> 경로_조회_응답 = 지하철_최단_경로_조회(강남역_ID, 압구정로데오역_ID);
+
+        // then
+        지하철_경로_조회_예외발생_검증(경로_조회_응답, HttpStatus.NOT_FOUND);
     }
 
     void 지하철_경로_조회_예외발생_검증(ExtractableResponse<Response> extractableResponse, HttpStatus status) {
