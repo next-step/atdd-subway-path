@@ -125,7 +125,7 @@ public class PathFinderComponentTest {
             Station 도착_남부터미널역 = 남부터미널;
 
             // when
-            PathResult 경로_조회_결과 = pathFinder.findShortestPath(모든_노선_목록, 출발_강남역, 도착_남부터미널역);
+            PathResult 경로_조회_결과 = pathFinder.calculateShortestPath(모든_노선_목록, 출발_강남역, 도착_남부터미널역);
 
             // then
             assertThat(경로_조회_결과.getStations()).containsExactly(강남, 교대, 남부터미널);
@@ -146,7 +146,7 @@ public class PathFinderComponentTest {
             Station 도착_양재역 = 양재;
 
             // when
-            PathResult 경로_조회_결과 = pathFinder.findShortestPath(모든_노선_목록, 출발_교대역, 도착_양재역);
+            PathResult 경로_조회_결과 = pathFinder.calculateShortestPath(모든_노선_목록, 출발_교대역, 도착_양재역);
 
             // then
             assertThat(경로_조회_결과.getStations()).containsExactly(교대, 남부터미널, 양재);

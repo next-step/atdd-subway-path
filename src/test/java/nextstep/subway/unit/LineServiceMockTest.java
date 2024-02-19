@@ -221,7 +221,7 @@ public class LineServiceMockTest {
             when(stationRepository.findById(강남역_아이디)).thenReturn(Optional.of(강남));
             when(stationRepository.findById(남부터미널역_아이디)).thenReturn(Optional.of(남부터미널));
             when(lineRepository.findAll()).thenReturn(모든_노선_목록);
-            when(pathFinder.findShortestPath(모든_노선_목록, 강남, 남부터미널)).thenReturn(new PathResult(List.of(강남, 교대, 남부터미널), 12));
+            when(pathFinder.calculateShortestPath(모든_노선_목록, 강남, 남부터미널)).thenReturn(new PathResult(List.of(강남, 교대, 남부터미널), 12));
 
             // when
             PathResponse shortestPath = lineService.findShortestPath(강남역_아이디, 남부터미널역_아이디);
@@ -246,7 +246,7 @@ public class LineServiceMockTest {
             when(stationRepository.findById(교대역_아이디)).thenReturn(Optional.of(교대));
             when(stationRepository.findById(양재역_아이디)).thenReturn(Optional.of(양재));
             when(lineRepository.findAll()).thenReturn(모든_노선_목록);
-            when(pathFinder.findShortestPath(모든_노선_목록, 교대, 양재)).thenReturn(new PathResult(List.of(교대, 남부터미널, 양재), 5));
+            when(pathFinder.calculateShortestPath(모든_노선_목록, 교대, 양재)).thenReturn(new PathResult(List.of(교대, 남부터미널, 양재), 5));
 
             // when
             PathResponse shortestPath = lineService.findShortestPath(교대역_아이디, 양재역_아이디);

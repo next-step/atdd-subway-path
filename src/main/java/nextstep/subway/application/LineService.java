@@ -87,7 +87,8 @@ public class LineService {
             throw new IllegalArgumentException("도착역은 역으로 등록되어 있지 않습니다.");
         }
 
-        PathResult pathResult = pathFinder.findShortestPath(lineRepository.findAll(), findStation(departureStationId), findStation(arrivalStationId));
+        PathResult pathResult = pathFinder.calculateShortestPath(lineRepository.findAll(),
+                findStation(departureStationId), findStation(arrivalStationId));
         return new PathResponse(pathResult.getStations(), pathResult.getDistance());
     }
 
