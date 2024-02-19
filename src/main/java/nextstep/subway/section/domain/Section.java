@@ -101,6 +101,16 @@ public class Section {
         deletedAt = LocalDateTime.now();
     }
 
+    public void changeSectionWithAddUpSection(Section upSection) {
+        updateUpStation(upSection.getDownStation());
+        decreaseDistance(upSection.getDistance());
+    }
+
+    public void changeSectionWithDeleteUpSection(Section upSection) {
+        updateUpStation(upSection.getUpStation());
+        increaseDistance(upSection.getDistance());
+    }
+
     public Long getSectionId() {
         return this.sectionId;
     }
