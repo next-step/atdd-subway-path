@@ -184,7 +184,7 @@ public class LineServiceTest {
         Throwable throwable = catchThrowable(() -> lineService.updateLine(신분당선.getId(), request));
 
         // then
-//        assertThat(throwable).isInstanceOf(AssertionError.class);
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
@@ -202,7 +202,7 @@ public class LineServiceTest {
 
     @DisplayName("지하철 노선에 구간을 추가한다.")
     @Test
-    void 지하철_구간_추가() {
+    void 지하철_노선에_구간_추가() {
         // given
         final var 강남역 = 역_생성("강남역");
         final var 양재역 = 역_생성("양재역");
@@ -216,27 +216,45 @@ public class LineServiceTest {
         lineService.addSection(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 5);
 
         // then
-        assertThat(
-            신분당선.getSections().stream()
-                .anyMatch(
-                    section -> section.getLine().getId().equals(신분당선.getId())
-                        && section.getUpStation().getId().equals(양재역.getId())
-                        && section.getDownStation().getId().equals(청계산입구역.getId())
-                )
-        ).isTrue();
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 청계산입구역);
     }
 
-    @DisplayName("지하철 구간을 생성 시 노선에 이미 등록된 구간인 경우 에러가 발생한다.")
+    @DisplayName("지하철 구간을 생성 시 노선에 이미 존재하는 구간인 경우 에러가 발생한다.")
     @Test
-    void 지하철_구간_생성_실패_이미_등록된_구간() {
+    void 지하철_노선에_구간_추가_실패_중복_구간() {
         // given
-        // stationRepository와 lineRepository를 활용하여 초기값 셋팅
+        final var 강남역 = 역_생성("강남역");
+        final var 양재역 = 역_생성("양재역");
+        final var 신분당선 = 노선_생성("신분당선", "빨강");
+        final var 첫구간 = new Section(신분당선, 강남역, 양재역, 10);
+        신분당선.addSection(첫구간);
+
+        final var 청계산입구역 = 역_생성("청계산입구역");
 
         // when
-        // lineService.addSection 호출
+        lineService.addSection(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 5);
 
         // then
-        // line.getSections 메서드를 통해 검증
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 청계산입구역);
+    }
+
+    @DisplayName("지하철 노선의 기존 구간에 연결되지 않는 구간을 추가할 수 없다.")
+    @Test
+    void 지하철_노선에_구간_추가_실패_연결되지_않는_구간() {
+        // given
+        final var 강남역 = 역_생성("강남역");
+        final var 양재역 = 역_생성("양재역");
+        final var 신분당선 = 노선_생성("신분당선", "빨강");
+        final var 첫구간 = new Section(신분당선, 강남역, 양재역, 10);
+        신분당선.addSection(첫구간);
+
+        final var 청계산입구역 = 역_생성("청계산입구역");
+
+        // when
+        lineService.addSection(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 5);
+
+        // then
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 청계산입구역);
     }
 
     @DisplayName("지하철 구간을 삭제한다.")

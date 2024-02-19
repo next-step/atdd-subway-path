@@ -1,8 +1,14 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,32 +30,35 @@ public class Line {
     @Column(length = 20, nullable = false)
     private String color;
 
-    // TODO 일급 컬렉션 작성
-    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     public void updateLine(final String name, final String color) {
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(color);
+
         this.name = name;
         this.color = color;
     }
 
     public void addSection(final Section section) {
-        // 새 라인의 경우 section 검증 제외
-        if (!isNewLine()) {
-            LineValidator.checkSectionForAddition(this, section);
-        }
-
-        this.sections.add(section);
+        sections.addSection(section);
     }
 
-    public void removeSection(final Section section) {
-        LineValidator.checkSectionForRemove(this, section);
+    public void removeSection(final Long stationId) {
+        sections.removeSection(stationId);
+    }
 
-        this.sections.remove(section);
+    public List<Station> getStations() {
+        if (isNewLine()) {
+            return Collections.emptyList();
+        }
+
+        return sections.getStations();
     }
 
     private boolean isNewLine() {
-        return this.getSections().isEmpty();
+        return sections.isEmpty();
     }
 
     public Line(String name, String color) {
