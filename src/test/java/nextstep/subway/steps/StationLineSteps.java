@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.given;
+import static nextstep.subway.utils.HttpResponseUtils.getCreatedLocationId;
 
 public class StationLineSteps {
 
@@ -86,4 +87,9 @@ public class StationLineSteps {
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
+
+    public static Long 지하철_노선_생성(LineRequest request) {
+        return getCreatedLocationId(지하철_노선_생성_요청_검증_포함(request));
+    }
+
 }

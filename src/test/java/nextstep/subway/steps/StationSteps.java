@@ -25,8 +25,8 @@ public class StationSteps {
         requests.forEach(StationSteps::지하철_역_생성_요청);
     }
 
-    public static void 지하철_역_생성_요청(StationRequest request) {
-        given()
+    public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
+        return given()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()

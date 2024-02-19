@@ -12,12 +12,12 @@ import static io.restassured.RestAssured.given;
 
 public class StationSectionSteps {
 
-    private static ExtractableResponse<Response> 지하철_구간_추가요청(Long upStationId, SectionRequest request, HttpStatus httpStatus) {
+    private static ExtractableResponse<Response> 지하철_구간_추가요청(Long lineId, SectionRequest request, HttpStatus httpStatus) {
         return given()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .post(String.format("/lines/%d/sections", upStationId))
+                .post(String.format("/lines/%d/sections", lineId))
                 .then()
                 .statusCode(httpStatus.value())
                 .extract();
