@@ -21,6 +21,10 @@ public class Sections {
     public Sections() {
     }
 
+    private static boolean isMiddleSection(Optional<Section> downSection, Optional<Section> upSection) {
+        return downSection.isPresent() && upSection.isPresent();
+    }
+
     public void addSection(Section section) {
         if (sections.size() > 0) {
             validateDuplicateStation(section);
@@ -62,29 +66,34 @@ public class Sections {
     public void removeSection(Station station) {
         validateLastSection();
 
-        Optional<Section> sectionByUpStation = findSectionByUpStation(station);
-        Optional<Section> sectionByDownStation = findSectionByDownStation(station);
+        Optional<Section> downSection = findSectionByUpStation(station);
+        Optional<Section> upSection = findSectionByDownStation(station);
+        validatePresent(downSection, upSection);
 
-        if(sectionByUpStation.isPresent() && sectionByDownStation.isPresent()){
-            Section downSection = sectionByUpStation.get();
-            Section upSection = sectionByDownStation.get();
-
-            upSection.join(downSection);
-            this.sections.remove(downSection);
+        if (isMiddleSection(downSection, upSection)) {
+            removeMiddleSection(downSection.get(), upSection.get());
             return;
         }
 
-        if(sectionByUpStation.isPresent()){
-            this.sections.remove(sectionByUpStation.get());
-            return;
-        }
+        removeSection(downSection);
+        removeSection(upSection);
+    }
 
-        if(sectionByDownStation.isPresent()){
-            this.sections.remove(sectionByDownStation.get());
-            return;
+    private void validatePresent(Optional<Section> downSection, Optional<Section> upSection) {
+        if (!downSection.isPresent() && !upSection.isPresent()) {
+            throw new SubwayException("존재하지 않는 역입니다");
         }
+    }
 
-        throw new SubwayException("존재하지 않는 역입니다");
+    private void removeMiddleSection(Section downSection, Section upSection) {
+        upSection.join(downSection);
+        this.sections.remove(downSection);
+    }
+
+    private void removeSection(Optional<Section> section) {
+        if (section.isPresent()) {
+            this.sections.remove(section.get());
+        }
     }
 
     private void validateLastSection() {
