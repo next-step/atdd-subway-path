@@ -139,7 +139,7 @@ class LineServiceMockTest {
 
 	@DisplayName("노선의 최초 정류장 앞에 구간을 추가한다.")
 	@Test
-	void successAddSection1() {
+	void successAddBeforeFirstSection() {
 		// given
 		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
 		Station 강남역 = 강남역();
@@ -155,7 +155,7 @@ class LineServiceMockTest {
 
 	@DisplayName("노선의 중간 지점에 구간을 추가한다.")
 	@Test
-	void successAddSection2() {
+	void successAddMiddleSection() {
 		// given
 		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
 		Station 강남역 = 강남역();
@@ -171,7 +171,7 @@ class LineServiceMockTest {
 
 	@DisplayName("노선의 마지막 정류장에 이어서 구간을 추가한다.")
 	@Test
-	void successAddSection3() {
+	void successAddAfterLastSection() {
 		// given
 		Line 신분당선_1구간_추가 = 신분당선_1구간_추가();
 		Station 양재역 = 양재역();

@@ -20,10 +20,15 @@ dependencies {
     // log
     implementation 'net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1'
 
+    // JGraphT
+    implementation 'org.jgrapht:jgrapht-core:1.5.2'
+
+    // Test
     testImplementation 'com.google.guava:guava:r05'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.rest-assured:rest-assured:4.5.1'
 
+    // H2
     runtimeOnly 'com.h2database:h2'
 }
 

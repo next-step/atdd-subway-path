@@ -121,7 +121,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	 */
 	@DisplayName("생성된 노선의 처음 부분에 정류장을 추가한다.")
 	@Test
-	void successAddSection1() {
+	void successAddFirstSection() {
 		// given
 		LineResponse 노선_생성 = 노선_생성();
 		Long upStationId = 정류장_생성_ID_반환("논현역");
@@ -142,7 +142,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	 */
 	@DisplayName("생성된 노선의 중간 부분에 정류장을 추가한다.")
 	@Test
-	void successAddSection2() {
+	void successAddMiddleSection() {
 		// given
 		LineResponse 노선_생성 = 노선_생성();
 		Long upStationId = 노선_생성.getStations().get(0).getId();
@@ -164,7 +164,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	 */
 	@DisplayName("생선된 노선의 중간 구간을 삭제한다.")
 	@Test
-	void successDeleteSection1() {
+	void successDeleteMiddleSection() {
 		// given
 		LineResponse 노선_생성 = 노선_생성();
 		Long 강남역 = 노선_생성.getStations().get(0).getId();
@@ -189,7 +189,7 @@ class LineAcceptanceTest extends AcceptanceTest {
 	 */
 	@DisplayName("생선된 노선의 마지막 구간을 삭제한다.")
 	@Test
-	void successDeleteSection2() {
+	void successDeleteLastSection() {
 		// given
 		LineResponse 노선_생성 = 노선_생성();
 		Long 강남역 = 노선_생성.getStations().get(0).getId();
