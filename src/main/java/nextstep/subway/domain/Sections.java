@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import nextstep.subway.ui.BusinessException;
 import org.hibernate.annotations.SortComparator;
 
 @Embeddable
@@ -60,15 +59,23 @@ public class Sections {
   }
 
   public void removeSection(final Long stationId) {
-    RemoveSectionValidator.validate(this);
+    RemoveSectionValidator.validate(this, stationId);
 
-    // TODO 2단계 과제
-    final var section = sections.stream()
+    final var before = sections.stream()
         .filter(it -> it.getDownStation().getId().equals(stationId))
-        .findAny()
-        .orElseThrow(() -> new BusinessException("구간 정보를 찾을 수 없습니다."));
+        .findAny();
+    final var after = sections.stream()
+        .filter(it -> it.getUpStation().getId().equals(stationId))
+        .findAny();
 
-    this.sections.remove(section);
+    if (before.isEmpty() && after.isPresent()) {
+      this.sections.remove(after.get());
+    } else if (before.isPresent() && after.isEmpty()) {
+      this.sections.remove(before.get());
+    } else if (before.isPresent() && after.isPresent()) {
+      before.get().updateDownStation(after.get().getDownStation(), before.get().getDistance() + after.get().getDistance());
+      this.sections.remove(after.get());
+    }
   }
 
   public List<Station> getStations() {
