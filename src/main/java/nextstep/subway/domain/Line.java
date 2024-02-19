@@ -32,6 +32,10 @@ public class Line {
         return getSectionAddedLine(line, upStation, downStation, distance);
     }
 
+    public static Line create(String name, String color) {
+        return new Line(name, color);
+    }
+
     private static Line getSectionAddedLine(Line line, Station upStation, Station downStation, int distance) {
         Section section = Section.create(upStation, downStation, distance);
         line.sections.add(section);

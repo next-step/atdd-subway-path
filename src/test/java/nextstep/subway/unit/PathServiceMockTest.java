@@ -1,7 +1,10 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.path.Path;
+import nextstep.subway.domain.path.PathFinder;
 import nextstep.subway.service.LineService;
-import nextstep.subway.service.PathFinder;
 import nextstep.subway.service.PathService;
 import nextstep.subway.service.StationService;
 import nextstep.subway.service.dto.LineDto;
@@ -15,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.helper.fixture.LineFixture.신분당선_엔티티;
 import static nextstep.subway.helper.fixture.LineFixture.이호선_엔티티;
@@ -36,32 +40,42 @@ public class PathServiceMockTest {
     @Test
     @DisplayName("findShortestPath를 호출하면 path 정보를 조회할 수 있다.")
     void succeed() {
-        final Long sourceStationId = 1L;
-        final Long targetStationId = 2L;
+        final Station 출발역 = 논현역_엔티티;
+        final Station 도착역 = 역삼역_엔티티;
+        final Long 출발역ID = 1L;
+        final Long 도착역ID = 3L;
 
         // given
-        List<LineDto> givenLines = List.of(
-                LineDto.from(신분당선_엔티티(강남역_엔티티, 논현역_엔티티)),
-                LineDto.from(이호선_엔티티(강남역_엔티티, 역삼역_엔티티)));
+        Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 출발역);
+        Line 이호선 = 이호선_엔티티(강남역_엔티티, 도착역);
 
-        PathDto givenPathDto = new PathDto(List.of(
-                StationDto.from(강남역_엔티티),
-                StationDto.from(논현역_엔티티)),
-                5);
-        when(stationService.findStationById(sourceStationId)).thenReturn(강남역_엔티티);
-        when(stationService.findStationById(targetStationId)).thenReturn(논현역_엔티티);
-        when(lineService.findAllLines()).thenReturn(givenLines);
-        when(pathFinder.findShortestPath(givenLines, 강남역_엔티티, 논현역_엔티티)).thenReturn(givenPathDto);
+        List<LineDto> 모든_노선 = List.of(LineDto.from(신분당선), LineDto.from(이호선));
+        Path 예상_경로 = new Path(List.of(출발역, 강남역_엔티티, 도착역), 5);
+
+        when(stationService.findStationById(출발역ID)).thenReturn(출발역);
+        when(stationService.findStationById(도착역ID)).thenReturn(도착역);
+        when(lineService.findAllLines()).thenReturn(모든_노선);
+        when(pathFinder.findShortestPathAndItsDistance(anyList(), eq(출발역), eq(도착역))).thenReturn(예상_경로);
 
         // when
-        PathDto path = pathService.findShortestPath(sourceStationId, targetStationId);
+        PathDto path = pathService.findShortestPath(출발역ID, 도착역ID);
 
         // then
-        assertThat(path.getDistance()).isEqualTo(givenPathDto.getDistance());
-        assertThat(path.getStations()).containsExactlyElementsOf(givenPathDto.getStations());
+        PathDto 경로_리턴값 = new PathDto(StationDto.from(예상_경로.getStations()), 예상_경로.getDistance());
+        List<String> 경로_역들_이름 = 경로_리턴값.getStations()
+                .stream()
+                .map(StationDto::getName)
+                .collect(Collectors.toList());
 
-        verify(stationService, times(1)).findStationById(sourceStationId);
-        verify(stationService, times(1)).findStationById(targetStationId);
+        assertThat(path.getDistance()).isEqualTo(경로_리턴값.getDistance());
+        assertThat(path.getStations()
+                .stream()
+                .map(StationDto::getName)
+                .collect(Collectors.toList())
+        ).containsExactlyElementsOf(경로_역들_이름);
+
+        verify(stationService, times(1)).findStationById(출발역ID);
+        verify(stationService, times(1)).findStationById(도착역ID);
         verify(lineService, times(1)).findAllLines();
     }
 }

@@ -2,7 +2,6 @@ package nextstep.subway.helper.fixture;
 
 import nextstep.subway.domain.Station;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class StationFixture {
@@ -21,6 +20,9 @@ public class StationFixture {
 
     public static Station 강남역_엔티티 = new Station("강남역");
     public static Station 논현역_엔티티 = new Station("논현역");
+    public static Station 신논현역_엔티티 = new Station("신논현역_엔티티");
+    public static Station 신사역_엔티티 = new Station("신사역");
+    public static Station 고속터미널역_엔티티 = new Station("고속터미널역");
     public static Station 역삼역_엔티티 = new Station("역삼역");
     public static Station 선릉역_엔티티 = new Station("선릉역");
     public static Station 삼성역_엔티티 = new Station("삼성역");

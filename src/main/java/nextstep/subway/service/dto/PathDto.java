@@ -1,5 +1,7 @@
 package nextstep.subway.service.dto;
 
+import nextstep.subway.domain.path.Path;
+
 import java.util.List;
 
 public class PathDto {
@@ -17,5 +19,9 @@ public class PathDto {
 
     public int getDistance() {
         return distance;
+    }
+
+    public static PathDto from(Path path) {
+        return new PathDto(StationDto.from(path.getStations()), path.getDistance());
     }
 }
