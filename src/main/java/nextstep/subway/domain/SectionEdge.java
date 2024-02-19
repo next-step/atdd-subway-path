@@ -4,21 +4,21 @@ import org.jgrapht.graph.DefaultEdge;
 
 public class SectionEdge extends DefaultEdge {
 
-    private final String source;
-    private final String target;
+    private final Long source;
+    private final Long target;
     private final int weight;
 
-    public SectionEdge(String source, String target, int weight) {
+    public SectionEdge(Long source, Long target, int weight) {
         this.source = source;
         this.target = target;
         this.weight = weight;
     }
 
-    public String getSource() {
+    public Long getSource() {
         return source;
     }
 
-    public String getTarget() {
+    public Long getTarget() {
         return target;
     }
 

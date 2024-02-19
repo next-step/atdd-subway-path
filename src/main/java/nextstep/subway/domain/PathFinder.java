@@ -1,18 +1,19 @@
 package nextstep.subway.domain;
 
-import java.util.Set;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
+import java.util.Set;
+
 public class PathFinder {
 
-    private WeightedMultigraph<String, DefaultWeightedEdge> graph;
+    private WeightedMultigraph<Long, DefaultWeightedEdge> graph;
 
     public PathFinder(Set<SectionEdge> edges) {
         this.graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         edges.forEach(edge -> {
-            String source = edge.getSource();
-            String target = edge.getTarget();
+            Long source = edge.getSource();
+            Long target = edge.getTarget();
             graph.addVertex(source);
             graph.addVertex(target);
             int weight = edge.getWeight();
@@ -20,7 +21,7 @@ public class PathFinder {
         });
     }
 
-    public Path findPath(String source, String target) {
+    public Path findPath(Long source, Long target) {
         return new Path(this.graph, source, target);
     }
 }

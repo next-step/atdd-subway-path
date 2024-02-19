@@ -1,19 +1,20 @@
 package nextstep.subway.domain;
 
-import java.util.List;
 import nextstep.subway.domain.exception.PathException;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
+import java.util.List;
+
 public class Path {
 
-    private List<String> shortestPath;
+    private List<Long> shortestPath;
     private int distance;
 
-    public Path(WeightedMultigraph<String, DefaultWeightedEdge> graph, String source,
-        String target) {
+    public Path(WeightedMultigraph<Long, DefaultWeightedEdge> graph, Long source,
+                Long target) {
         if (source.equals(target)) {
             throw new PathException.PathSourceTargetSameException();
         }
@@ -34,7 +35,7 @@ public class Path {
         return distance;
     }
 
-    public List<String> getShortestPath() {
+    public List<Long> getShortestPath() {
         return shortestPath;
     }
 }

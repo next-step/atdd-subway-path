@@ -2,31 +2,31 @@ package nextstep.subway.applicaion.dto;
 
 public class PathRequest {
 
-    private String source;
-    private String target;
+    private Long source;
+    private Long target;
 
     public PathRequest() {
 
     }
 
-    public PathRequest(String source, String target) {
+    public PathRequest(Long source, Long target) {
         this.source = source;
         this.target = target;
     }
 
-    public String getSource() {
+    public Long getSource() {
         return source;
     }
 
-    public String getTarget() {
+    public Long getTarget() {
         return target;
     }
 
-    public void setSource(String source) {
+    public void setSource(Long source) {
         this.source = source;
     }
 
-    public void setTarget(String target) {
+    public void setTarget(Long target) {
         this.target = target;
     }
 }
