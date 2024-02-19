@@ -25,6 +25,8 @@ public class PathFinderComponentTest {
     Line 삼호선;
     Line 사호선;
 
+    List<Line> 모든_노선_목록;
+
     Long 이호선_아이디;
     Long 신분당선_아이디;
     Long 삼호선_아이디;
@@ -76,6 +78,8 @@ public class PathFinderComponentTest {
         사호선 = new Line("사호선", "blue");
         ReflectionTestUtils.setField(사호선, "id", 사호선_아이디);
 
+        모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
+
         교대역_아이디 = 1L;
         강남역_아이디 = 2L;
         양재역_아이디 = 3L;
@@ -118,14 +122,8 @@ public class PathFinderComponentTest {
          */
         @Test
         void 강남역에서_남부터미널역까지_경로_조회() {
-            // given
-            List<Line> 모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
-
-            Station 출발_강남역 = 강남;
-            Station 도착_남부터미널역 = 남부터미널;
-
             // when
-            PathResult 경로_조회_결과 = pathFinder.calculateShortestPath(모든_노선_목록, 출발_강남역, 도착_남부터미널역);
+            PathResult 경로_조회_결과 = pathFinder.calculateShortestPath(모든_노선_목록, 강남, 남부터미널);
 
             // then
             assertThat(경로_조회_결과.getStations()).containsExactly(강남, 교대, 남부터미널);
@@ -139,14 +137,8 @@ public class PathFinderComponentTest {
          */
         @Test
         void 교대역에서_양재역까지_경로_조회() {
-            // given
-            List<Line> 모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
-
-            Station 출발_교대역 = 교대;
-            Station 도착_양재역 = 양재;
-
             // when
-            PathResult 경로_조회_결과 = pathFinder.calculateShortestPath(모든_노선_목록, 출발_교대역, 도착_양재역);
+            PathResult 경로_조회_결과 = pathFinder.calculateShortestPath(모든_노선_목록, 교대, 양재);
 
             // then
             assertThat(경로_조회_결과.getStations()).containsExactly(교대, 남부터미널, 양재);
