@@ -55,13 +55,7 @@ public class LineService {
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new BadRequestException(BadRequestException.LINE_NOT_FOUND));
-
-        if (lineRequest.getName() != null) {
-            line.setName(lineRequest.getName());
-        }
-        if (lineRequest.getColor() != null) {
-            line.setColor(lineRequest.getColor());
-        }
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional
