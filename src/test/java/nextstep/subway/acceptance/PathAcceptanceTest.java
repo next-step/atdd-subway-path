@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import nextstep.config.annotations.AcceptanceTest;
 import nextstep.config.fixtures.StationFixture;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.PathRequest;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -80,13 +81,12 @@ public class PathAcceptanceTest {
         @Test
         void 강남역에서_남부터미널역까지_경로_조회() {
             // given
-            Map<String, Long> params = new HashMap<>();
-            params.put("source", 강남역);
-            params.put("target", 남부터미널역);
+            PathRequest pathRequest = new PathRequest(강남역, 남부터미널역);
 
             // when
             ExtractableResponse<Response> 성공하는_경로_조회_응답 = given()
-                    .params(params).log().all()
+                    .param("source", pathRequest.getDepartureStationId())
+                    .param("target", pathRequest.getArrivalStationId())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when()
                     .get("/paths")
@@ -110,13 +110,12 @@ public class PathAcceptanceTest {
         @Test
         void 교대역에서_양재역까지_경로_조회() {
             // given
-            Map<String, Long> params = new HashMap<>();
-            params.put("source", 교대역);
-            params.put("target", 양재역);
+            PathRequest pathRequest = new PathRequest(교대역, 양재역);
 
             // when
             ExtractableResponse<Response> 성공하는_경로_조회_응답 = given()
-                    .params(params).log().all()
+                    .param("source", pathRequest.getDepartureStationId())
+                    .param("target", pathRequest.getArrivalStationId())
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .when()
                     .get("/paths")
