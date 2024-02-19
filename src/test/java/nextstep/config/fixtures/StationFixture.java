@@ -7,6 +7,7 @@ import java.util.List;
 
 public class StationFixture {
     public static final Station 강남 = new Station("강남");
+    public static final Station 교대 = new Station("교대");
     public static final Station 양재 = new Station("양재");
     public static final Station 삼성 = new Station("삼성");
     public static final Station 사성 = new Station("사성");
@@ -14,6 +15,9 @@ public class StationFixture {
     public static final Station 역삼 = new Station("역삼");
     public static final Station 신천 = new Station("신천");
     public static final Station 서초 = new Station("서초");
+    public static final Station 남부터미널 = new Station("남부터미널");
+    public static final Station 정왕 = new Station("정왕");
+    public static final Station 오이도 = new Station("오이도");
 
 
     public static final StationRequest 강남역 = new StationRequest("강남");
