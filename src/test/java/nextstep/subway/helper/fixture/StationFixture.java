@@ -20,7 +20,7 @@ public class StationFixture {
 
     public static Station 강남역_엔티티 = new Station("강남역");
     public static Station 논현역_엔티티 = new Station("논현역");
-    public static Station 신논현역_엔티티 = new Station("신논현역_엔티티");
+    public static Station 신논현역_엔티티 = new Station("신논현역");
     public static Station 신사역_엔티티 = new Station("신사역");
     public static Station 고속터미널역_엔티티 = new Station("고속터미널역");
     public static Station 역삼역_엔티티 = new Station("역삼역");

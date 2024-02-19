@@ -18,11 +18,7 @@ public class PathFinder {
     public Path findShortestPathAndItsDistance(List<Line> lines, Station sourceStation, Station targetStation) {
         validatePathFinderParams(lines, sourceStation, targetStation);
 
-        Path path = pathFinderStrategy.findShortestPathAndItsDistance(lines, sourceStation, targetStation);
-        if (path.getStations().isEmpty()) {
-            throw new PathException("주어진 출발역과 도착역은 연결된 구간이 없습니다.");
-        }
-        return path;
+        return pathFinderStrategy.findShortestPathAndItsDistance(lines, sourceStation, targetStation);
     }
 
     private void validatePathFinderParams(List<Line> lines, Station sourceStation, Station targetStation) {

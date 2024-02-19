@@ -245,7 +245,7 @@ public class Line {
             if (currentSection.equals(section)) {
                 break;
             }
-            if (currentSection.getDownStation().getId().equals(section.getUpStation().getId())) {
+            if (currentSection.getDownStation().equals(section.getUpStation())) {
                 order--;
             }
             order++;
