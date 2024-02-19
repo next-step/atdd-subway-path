@@ -2,14 +2,11 @@ package nextstep.subway.controller.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 public class StationResponse {
@@ -29,26 +26,12 @@ public class StationResponse {
                 .build();
     }
 
-    public static List<StationResponse> sectionsToStationResponses(Sections sections) {
-        Set<Long> addedStationIds = new HashSet<>();
-        List<StationResponse> stationResponses = new ArrayList<>();
+    public static List<StationResponse> sectionsToStationResponses(Line line) {
+        List<Station> orderedStations = line.getSections().getOrderedStations();
 
-        for (Section section : sections.getSections()) {
-            addStationResponseIfNotExists(section.getUpStation(), addedStationIds, stationResponses);
-            addStationResponseIfNotExists(section.getDownStation(), addedStationIds, stationResponses);
-        }
+        return orderedStations.stream()
+                .map(it -> stationToStationResponse(it))
+                .collect(Collectors.toList());
 
-        return stationResponses;
-    }
-
-    private static void addStationResponseIfNotExists(Station station, Set<Long> addedStationIds, List<StationResponse> stationResponses) {
-        Long stationId = station.getId();
-        if (!addedStationIds.contains(stationId)) {
-            stationResponses.add(StationResponse.builder()
-                    .id(stationId)
-                    .name(station.getName())
-                    .build());
-            addedStationIds.add(stationId);
-        }
     }
 }
