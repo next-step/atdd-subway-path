@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.unit.line;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +19,8 @@ class LineTest {
     @BeforeEach
     void setUp() {
         이호선 = new Line("이호선", "green");
-        잠실역 = new Station("잠실역");
-        성수역 = new Station("성수역");
+        잠실역 = new Station(1L, "잠실역");
+        성수역 = new Station(2L, "성수역");
     }
 
     @DisplayName("노선에 구간을 등록한다.")
@@ -53,7 +53,7 @@ class LineTest {
         //given
         이호선.generateSection(10, 잠실역, 성수역);
 
-        Station 건대입구역 = new Station("건대입구역");
+        Station 건대입구역 = new Station(3L, "건대입구역");
         이호선.generateSection(5, 성수역, 건대입구역);
 
         //when

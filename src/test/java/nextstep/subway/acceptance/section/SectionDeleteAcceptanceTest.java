@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 
-@DisplayName("지하철노선 구간 관련 기능")
+@DisplayName("지하철노선 구간 삭제 관련 기능")
 @AcceptanceTest
-public class SectionAcceptanceTest {
+public class SectionDeleteAcceptanceTest {
 
     Long 잠실역id;
     Long 용산역id;
@@ -41,97 +41,6 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * When 노선에 구간을 등록하면
-     * Then 노선을 조회 했을때 등록한 구간이 조회된다
-     */
-    @DisplayName("지하철 노선 구간 등록")
-    @Test
-    void generateSection() {
-        //when
-        SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
-
-        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
-        assertThat(getStationIds(이호선)).containsExactly(잠실역id, 용산역id, 건대입구역id);
-    }
-
-    /**
-     * When 노선의 가운데 구간을 등록하면
-     * Then 노선을 조회 했을때 등록한 구간이 조회된다
-     */
-    @DisplayName("노선의 가운데 구간 등록")
-    @Test
-    void generateMiddleSection() {
-        //when
-        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 건대입구역id, 4);
-
-        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
-        assertThat(getStationIds(이호선)).containsExactly(잠실역id, 건대입구역id, 용산역id);
-    }
-
-    /**
-     * When 노선의 처음부분에 구간을 등록하면
-     * Then 노선을 조회 했을때 등록한 구간이 조회된다
-     */
-    @DisplayName("노선의 첫 구간 등록")
-    @Test
-    void generateFirstSection() {
-        //when
-        SectionCreateRequest request = new SectionCreateRequest(성수역id, 잠실역id, 4);
-
-        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        ExtractableResponse<Response> 이호선 = LineApiRequester.findLineApiCall(이호선id);
-        assertThat(getStationIds(이호선)).containsExactly(성수역id, 잠실역id, 용산역id);
-    }
-
-    /**
-     * When 등록할 구간의 역이 이미 해당 노선에 등록되어있으면
-     * Then 예외가 발생한다
-     */
-    @DisplayName("이미 해당 노선에 등록되어있는 역은 등록할 수 없다")
-    @Test
-    void generateAlreadySection() {
-        //when
-        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 용산역id, 5);
-
-        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asPrettyString()).isEqualTo("이미 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.");
-    }
-
-    /**
-     * When 기존 구간의 거리보다 등록할 구간의 거리가 긴 경우
-     * Then 예외가 발생한다
-     */
-    @DisplayName("기존 구간의 거리보다 등록할 구간의 거리가 긴 경우 예외가 발생한다")
-    @Test
-    void generateMiddleSectionException() {
-        //when
-        SectionCreateRequest request = new SectionCreateRequest(잠실역id, 건대입구역id, 50);
-
-        ExtractableResponse<Response> response = SectionApiRequester.generateSection(request, 이호선id);
-
-        //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(response.asPrettyString()).isEqualTo("기존구간의 거리보다 더 길수 없습니다.");
-    }
-
-    /**
      * Given 지하철 구간을 등록하고
      * When 구간이 2개인 노선의 구간중 1개를 삭제하면
      * Then 삭제한 1개의 구간이 삭제된다
@@ -141,7 +50,6 @@ public class SectionAcceptanceTest {
     void deleteSection() {
         //given
         SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
-
         SectionApiRequester.generateSection(request, 이호선id);
 
         //when
@@ -159,7 +67,7 @@ public class SectionAcceptanceTest {
      * When 구간의 위치에 상관없이 구간을 삭제하면
      * Then 해당 구간이 삭제되고, 구간이 재배치 된다
      */
-    @DisplayName("구간의 위치에 상관없이 수정이 가능하다")
+    @DisplayName("구간의 위치에 상관없이 삭제가 가능하다")
     @Test
     void deleteMiddleSection() {
         //given
@@ -237,6 +145,26 @@ public class SectionAcceptanceTest {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.asPrettyString()).isEqualTo("구간이 1개인 노선의 구간은 삭제할 수 없습니다.");
+    }
+
+    /**
+     * When 존재하지 않는 역을 삭제하면
+     * Then 예외가 발생한다
+     */
+    @DisplayName("노선에 존재하지 않는 역은 삭제할 수 없다")
+    @Test
+    void deleteNotExistsStation() {
+        //given
+        SectionCreateRequest request = new SectionCreateRequest(용산역id, 건대입구역id, 5);
+        SectionApiRequester.generateSection(request, 이호선id);
+        Long 역삼역id = JsonPathUtil.getId(StationApiRequester.createStationApiCall("잠실역"));
+
+        //when
+        ExtractableResponse<Response> response = SectionApiRequester.deleteSection(이호선id, 역삼역id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asPrettyString()).isEqualTo("노선에 존재하지 않는 역은 삭제할 수 없습니다.");
     }
 
     private List<Long> getStationIds(ExtractableResponse<Response> findLine) {
