@@ -12,15 +12,15 @@ import subway.line.Line;
 import subway.line.Section;
 import subway.station.Station;
 
-public class JgraphAdapter {
+public class FindPathAdapter {
 	private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
-	private JgraphAdapter(List<Line> lines) {
+	private FindPathAdapter(List<Line> lines) {
 		this.dijkstraShortestPath = init(lines);
 	}
 
-	public static JgraphAdapter of(List<Line> lines) {
-		return new JgraphAdapter(lines);
+	public static FindPathAdapter of(List<Line> lines) {
+		return new FindPathAdapter(lines);
 	}
 
 	private DijkstraShortestPath<Station, DefaultWeightedEdge> init(List<Line> lines) {
