@@ -20,6 +20,10 @@ public class Sections {
 
     public Sections() {}
 
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public List<Section> getSections() {
         return sections;
     }
@@ -57,7 +61,7 @@ public class Sections {
         return false;
     }
 
-    public void addSection(Section newSection) {
+    public void validateSection(Section newSection) {
         if(isExistStation(newSection.getDownStation())){
             throw new BadRequestException("새로운 구간의 하행역이 이미 노선에 등록된 역입니다.");
         }
@@ -67,7 +71,7 @@ public class Sections {
         }
     }
 
-    public Long deleteStation(Station deleteStation) {
+    public Long deleteDownStation(Station deleteStation) {
         if(sections.size() == MIN_SECTION_SIZE) {
             throw new IllegalArgumentException("구간이 1개 남은 경우 삭제할 수 없습니다.");
         }
@@ -83,6 +87,14 @@ public class Sections {
         sections.removeIf(s -> s.equals(deleteSection));
 
         return deleteSection.getId();
+    }
+
+    public Section createNewSection(Section existingSection, Section newSection) {
+        return new Section(newSection.getDownStation(), existingSection.getDownStation(), existingSection.getDistance() - newSection.getDistance(), existingSection.getNextSectionId());
+    }
+
+    public void removeSection(Section section) {
+        sections.removeIf(s -> s.equals(section));
     }
 
     @Override

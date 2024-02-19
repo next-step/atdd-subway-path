@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import nextstep.exception.BadRequestException;
 import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
@@ -27,12 +28,29 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
 
+    private Long nextSectionId;
+
     public Section() {}
 
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Station upStation, Station downStation, int distance, Long nextSectionId) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+        this.nextSectionId = nextSectionId;
+    }
+
+    public Section(Long id, Station upStation, Station downStation, int distance, Long nextSectionId) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+        this.nextSectionId = nextSectionId;
     }
 
     public Long getId() {
@@ -55,9 +73,26 @@ public class Section {
         return line;
     }
 
+    public Long getNextSectionId() {
+        return nextSectionId;
+    }
+
+    public void changeNextSection(Section section) {
+        this.nextSectionId = section.getId();
+    }
+
     public void registerLine(Line line) {
         this.line = line;
-        line.getSections().add(this);
+        line.getSectionList().add(this);
+    }
+
+    public void validMiddleSection(Section otherSection) {
+        if(upStation.equals(otherSection.getUpStation()) && downStation.equals(otherSection.downStation)){
+            throw new BadRequestException("기존 구간과 같은 구간은 추가할 수 없습니다.");
+        }
+        if(distance >= otherSection.getDistance()) {
+            throw new BadRequestException("기존 구간보다 긴 구간은 추가할 수 없습니다.");
+        }
     }
 
     @Override
@@ -65,11 +100,11 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return getDistance() == section.getDistance() && Objects.equals(getId(), section.getId()) && Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(getLine(), section.getLine());
+        return getDistance() == section.getDistance() && Objects.equals(getId(), section.getId()) && Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(getLine(), section.getLine()) && Objects.equals(nextSectionId, section.nextSectionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUpStation(), getDownStation(), getDistance(), getLine());
+        return Objects.hash(getId(), getUpStation(), getDownStation(), getDistance(), getLine(), nextSectionId);
     }
 }

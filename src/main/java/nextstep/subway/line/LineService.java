@@ -1,8 +1,8 @@
 package nextstep.subway.line;
 
 import nextstep.exception.BadRequestException;
-import nextstep.subway.section.Section;
 import nextstep.subway.section.SectionRequest;
+import nextstep.subway.section.SectionService;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,12 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionService sectionService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionService sectionService) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionService = sectionService;
     }
 
     @Transactional
@@ -38,7 +40,8 @@ public class LineService {
 
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow();
-        return new LineResponse(line);
+        LineResponse lineResponse = new LineResponse(line);
+        return lineResponse;
     }
 
     @Transactional
@@ -55,16 +58,7 @@ public class LineService {
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow();
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(
-                () -> new BadRequestException("존재하지 않는 역입니다.")
-        );
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(
-                () -> new BadRequestException("존재하지 않는 역입니다.")
-        );
-
-        Section newSection = new Section(upStation, downStation, sectionRequest.getDistance());
-
-        line.addSection(newSection);
+        sectionService.addSection(line, sectionRequest);
     }
 
     @Transactional
@@ -74,6 +68,6 @@ public class LineService {
                 () -> new BadRequestException("존재하지 않는 역 입니다.")
         );
 
-        line.deleteSection(station);
+        line.deleteDownSection(station);
     }
 }
