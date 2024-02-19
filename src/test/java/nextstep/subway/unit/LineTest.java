@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.ui.BusinessException;
 import nextstep.subway.utils.FixtureUtil;
@@ -53,7 +52,7 @@ class LineTest {
         노선.addSection(구간);
 
         // when
-        Throwable throwable = catchThrowable(() -> 노선.addSection(구간));
+        final var throwable = catchThrowable(() -> 노선.addSection(구간));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)
@@ -79,7 +78,7 @@ class LineTest {
         final var 네번째역 = FixtureUtil.getFixture(Station.class);
 
         // when
-        Throwable throwable = catchThrowable(() -> 노선.addSection(new Section(노선, 세번째역, 네번째역, 10)));
+        final var throwable = catchThrowable(() -> 노선.addSection(new Section(노선, 세번째역, 네번째역, 10)));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)

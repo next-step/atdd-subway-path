@@ -68,11 +68,12 @@ public class Sections {
         .filter(it -> it.getUpStation().getId().equals(stationId))
         .findAny();
 
-    if (before.isEmpty() && after.isPresent()) {
+    // TODO 메소드로 분리
+    if (before.isEmpty() && after.isPresent()) {          // 첫 구간 삭제
       this.sections.remove(after.get());
-    } else if (before.isPresent() && after.isEmpty()) {
+    } else if (before.isPresent() && after.isEmpty()) {   // 마지막 구간 삭제
       this.sections.remove(before.get());
-    } else if (before.isPresent() && after.isPresent()) {
+    } else if (before.isPresent() && after.isPresent()) { // 중간 구간 삭제
       before.get().updateDownStation(after.get().getDownStation(), before.get().getDistance() + after.get().getDistance());
       this.sections.remove(after.get());
     }

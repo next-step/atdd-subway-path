@@ -10,7 +10,6 @@ import nextstep.subway.applicaion.StationService;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.ui.BusinessException;
 import nextstep.subway.utils.FixtureUtil;
@@ -198,7 +197,7 @@ public class LineServiceMockTest {
         when(stationService.findById(두번째역.getId())).thenReturn(두번째역);
 
         // when
-        Throwable throwable = catchThrowable(() -> lineService.addSection(노선.getId(), 첫번째역.getId(), 두번째역.getId(), 5));
+        final var throwable = catchThrowable(() -> lineService.addSection(노선.getId(), 첫번째역.getId(), 두번째역.getId(), 5));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)
@@ -227,7 +226,7 @@ public class LineServiceMockTest {
         when(stationService.findById(네번째역.getId())).thenReturn(네번째역);
 
         // when
-        Throwable throwable = catchThrowable(() -> lineService.addSection(노선.getId(), 세번째역.getId(), 네번째역.getId(), 5));
+        final var throwable = catchThrowable(() -> lineService.addSection(노선.getId(), 세번째역.getId(), 네번째역.getId(), 5));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)
