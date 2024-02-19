@@ -44,7 +44,7 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        this.sections.removeSection(station);
+        this.sections.deleteSection(station);
     }
 
     public Long getId() {

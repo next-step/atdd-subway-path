@@ -63,7 +63,7 @@ public class Sections {
         return isMatchUpStation(section.getUpStation());
     }
 
-    public void removeSection(Station station) {
+    public void deleteSection(Station station) {
         validateLastSection();
 
         Optional<Section> downSection = findSectionByUpStation(station);
@@ -71,12 +71,12 @@ public class Sections {
         validatePresent(downSection, upSection);
 
         if (isMiddleSection(downSection, upSection)) {
-            removeMiddleSection(downSection.get(), upSection.get());
+            deleteMiddleSection(downSection.get(), upSection.get());
             return;
         }
 
-        removeSection(downSection);
-        removeSection(upSection);
+        deleteSection(downSection);
+        deleteSection(upSection);
     }
 
     private void validatePresent(Optional<Section> downSection, Optional<Section> upSection) {
@@ -85,12 +85,12 @@ public class Sections {
         }
     }
 
-    private void removeMiddleSection(Section downSection, Section upSection) {
+    private void deleteMiddleSection(Section downSection, Section upSection) {
         upSection.join(downSection);
         this.sections.remove(downSection);
     }
 
-    private void removeSection(Optional<Section> section) {
+    private void deleteSection(Optional<Section> section) {
         if (section.isPresent()) {
             this.sections.remove(section.get());
         }
