@@ -157,7 +157,7 @@ public class LineServiceMockTest {
         final var 노선 = FixtureUtil.getBuilder(Line.class)
             .set("name", "신분당선")
             .set("color", "빨강")
-            .set("sections", new Sections())
+            .set("sections", null)
             .sample();
 
         final var 첫번째역 = FixtureUtil.getFixture(Station.class);
@@ -172,17 +172,10 @@ public class LineServiceMockTest {
         when(stationService.findById(세번째역.getId())).thenReturn(세번째역);
 
         // when
-        lineService.addSection(노선.getId(), 두번째역.getId(), 세번째역.getId(), 10);
+        lineService.addSection(노선.getId(), 두번째역.getId(), 세번째역.getId(), 5);
 
         // then
-        assertThat(
-            노선.getSections().getSections().stream()
-                .anyMatch(
-                    section -> section.getLine().getId().equals(노선.getId())
-                        && section.getUpStation().getId().equals(두번째역.getId())
-                        && section.getDownStation().getId().equals(세번째역.getId())
-                )
-        ).isTrue();
+        assertThat(노선.getStations()).containsExactly(첫번째역, 두번째역, 세번째역);
     }
 
     @DisplayName("지하철 구간을 생성 시 노선에 이미 존재하는 구간인 경우 에러가 발생한다.")
@@ -191,7 +184,7 @@ public class LineServiceMockTest {
         final var 노선 = FixtureUtil.getBuilder(Line.class)
             .set("name", "신분당선")
             .set("color", "빨강")
-            .set("sections", new Sections())
+            .set("sections", null)
             .sample();
 
         final var 첫번째역 = FixtureUtil.getFixture(Station.class);
@@ -205,7 +198,7 @@ public class LineServiceMockTest {
         when(stationService.findById(두번째역.getId())).thenReturn(두번째역);
 
         // when
-        Throwable throwable = catchThrowable(() -> lineService.addSection(노선.getId(), 첫번째역.getId(), 두번째역.getId(), 10));
+        Throwable throwable = catchThrowable(() -> lineService.addSection(노선.getId(), 첫번째역.getId(), 두번째역.getId(), 5));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)
@@ -218,7 +211,7 @@ public class LineServiceMockTest {
         final var 노선 = FixtureUtil.getBuilder(Line.class)
             .set("name", "신분당선")
             .set("color", "빨강")
-            .set("sections", new Sections())
+            .set("sections", null)
             .sample();
 
         final var 첫번째역 = FixtureUtil.getFixture(Station.class);
@@ -234,7 +227,7 @@ public class LineServiceMockTest {
         when(stationService.findById(네번째역.getId())).thenReturn(네번째역);
 
         // when
-        Throwable throwable = catchThrowable(() -> lineService.addSection(노선.getId(), 세번째역.getId(), 네번째역.getId(), 10));
+        Throwable throwable = catchThrowable(() -> lineService.addSection(노선.getId(), 세번째역.getId(), 네번째역.getId(), 5));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)

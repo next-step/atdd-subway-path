@@ -56,7 +56,7 @@ class SectionsTest {
 
 
     // when
-    sections.addSection(new Section(null, stations.get(1), stations.get(2), 5));
+    sections.addSection(new Section(null, stations.get(1), stations.get(2), 3));
 
     // then
     assertThat(sections.size()).isEqualTo(stations.size() - 1);

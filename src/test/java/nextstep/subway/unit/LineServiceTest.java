@@ -216,14 +216,7 @@ public class LineServiceTest {
         lineService.addSection(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 5);
 
         // then
-        assertThat(
-            신분당선.getSections().getSections().stream()
-                .anyMatch(
-                    section -> section.getLine().getId().equals(신분당선.getId())
-                        && section.getUpStation().getId().equals(양재역.getId())
-                        && section.getDownStation().getId().equals(청계산입구역.getId())
-                )
-        ).isTrue();
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 청계산입구역);
     }
 
     @DisplayName("지하철 구간을 생성 시 노선에 이미 존재하는 구간인 경우 에러가 발생한다.")
@@ -242,14 +235,7 @@ public class LineServiceTest {
         lineService.addSection(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 5);
 
         // then
-        assertThat(
-            신분당선.getSections().getSections().stream()
-                .anyMatch(
-                    section -> section.getLine().getId().equals(신분당선.getId())
-                        && section.getUpStation().getId().equals(양재역.getId())
-                        && section.getDownStation().getId().equals(청계산입구역.getId())
-                )
-        ).isTrue();
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 청계산입구역);
     }
 
     @DisplayName("지하철 노선의 기존 구간에 연결되지 않는 구간을 추가할 수 없다.")
@@ -268,14 +254,7 @@ public class LineServiceTest {
         lineService.addSection(신분당선.getId(), 양재역.getId(), 청계산입구역.getId(), 5);
 
         // then
-        assertThat(
-            신분당선.getSections().getSections().stream()
-                .anyMatch(
-                    section -> section.getLine().getId().equals(신분당선.getId())
-                        && section.getUpStation().getId().equals(양재역.getId())
-                        && section.getDownStation().getId().equals(청계산입구역.getId())
-                )
-        ).isTrue();
+        assertThat(신분당선.getStations()).containsExactly(강남역, 양재역, 청계산입구역);
     }
 
     @DisplayName("지하철 구간을 삭제한다.")

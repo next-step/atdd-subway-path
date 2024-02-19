@@ -21,7 +21,7 @@ class LineTest {
         final var 노선 = FixtureUtil.getBuilder(Line.class)
             .set("name", "신분당선")
             .set("color", "빨강")
-            .set("sections", new Sections())
+            .set("sections", null)
             .sample();
 
         final var 첫번째역 = FixtureUtil.getFixture(Station.class);
@@ -44,12 +44,12 @@ class LineTest {
         final var 노선 = FixtureUtil.getBuilder(Line.class)
             .set("name", "신분당선")
             .set("color", "빨강")
-            .set("sections", new Sections())
+            .set("sections", null)
             .sample();
 
         final var 첫번째역 = FixtureUtil.getFixture(Station.class);
         final var 두번째역 = FixtureUtil.getFixture(Station.class);
-        final var 구간 = new Section(노선, 첫번째역, 두번째역, 10);
+        final var 구간 = new Section(노선, 첫번째역, 두번째역,  5);
         노선.addSection(구간);
 
         // when
@@ -67,7 +67,7 @@ class LineTest {
         final var 노선 = FixtureUtil.getBuilder(Line.class)
             .set("name", "신분당선")
             .set("color", "빨강")
-            .set("sections", new Sections())
+            .set("sections", null)
             .sample();
 
         final var 첫번째역 = FixtureUtil.getFixture(Station.class);
@@ -93,7 +93,7 @@ class LineTest {
         final var 노선 = FixtureUtil.getBuilder(Line.class)
             .set("name", "신분당선")
             .set("color", "빨강")
-            .set("sections", new Sections())
+            .set("sections", null)
             .sample();
 
         final var 첫번째역 = FixtureUtil.getFixture(Station.class);
@@ -111,9 +111,10 @@ class LineTest {
 
         // then
         assertThat(구간_목록.size()).isEqualTo(2);
-        assertThat(구간_목록.getSections()).containsExactly(첫번째구간, 두번째구간);
+        assertThat(노선.getStations()).containsExactly(첫번째역, 두번째역, 세번째역);
     }
 
+    // TODO 2단계 과제
     @DisplayName("노선에 등록된 구간을 제거한다.")
     @Test
     void removeSection() {
@@ -121,7 +122,7 @@ class LineTest {
         final var 노선 = FixtureUtil.getBuilder(Line.class)
             .set("name", "신분당선")
             .set("color", "빨강")
-            .set("sections", new Sections())
+            .set("sections", null)
             .sample();
 
         final var 첫번째역 = FixtureUtil.getFixture(Station.class);
@@ -137,7 +138,7 @@ class LineTest {
 
         // then
         assertThat(노선.getSections().size()).isEqualTo(1);
-        // TODO 2단계 과제
+
 //        assertThat(노선.getSections().contains(두번째구간)).isFalse();
     }
 }
