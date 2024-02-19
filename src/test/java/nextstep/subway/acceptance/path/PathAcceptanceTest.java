@@ -52,8 +52,8 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
 
         이호선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.이호선, Constant.초록색, 교대역_ID, 강남역_ID, Constant.역_간격_15)).as(CreateLineResponse.class).getLineId();
         지하철_구간_추가(AddSectionRequest.of(강남역_ID, 역삼역_ID, Constant.역_간격_15), 이호선_ID);
-//        삼호선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.삼호선, Constant.주황색, 교대역_ID, 남부터미널역_ID, Constant.역_간격_10)).as(CreateLineResponse.class).getLineId();
-//        지하철_구간_추가(AddSectionRequest.of(남부터미널역_ID, 양재역_ID, Constant.역_간격_15), 삼호선_ID);
+        삼호선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.삼호선, Constant.주황색, 교대역_ID, 남부터미널역_ID, Constant.역_간격_10)).as(CreateLineResponse.class).getLineId();
+        지하철_구간_추가(AddSectionRequest.of(남부터미널역_ID, 양재역_ID, Constant.역_간격_10), 삼호선_ID);
         신분당선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 강남역_ID, 양재역_ID, Constant.역_간격_10)).as(CreateLineResponse.class).getLineId();
     }
 
@@ -84,8 +84,17 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
      */
     @DisplayName("여러 출발역과 도착역의 최단 경로를 조회한다.")
     @Test
-    @Disabled
     void 여러_노선의_출발역과_도착역의_최단_경로_조회() {
+        // when
+        FindPathResponse 경로_조회_응답 = 지하철_최단_경로_조회(교대역_ID, 양재역_ID).as(FindPathResponse.class);
+
+        // then
+        assertThat(경로_조회_응답.getDistance()).isEqualTo(Constant.역_간격_10 + Constant.역_간격_10);
+        assertThat(경로_조회_응답.getStations()).hasSize(3);
+        assertThat(경로_조회_응답.getStations().stream()
+                .map(stationDto -> stationDto.getName())
+                .collect(Collectors.toList())
+        ).containsExactly(Constant.교대역, Constant.남부터미널역, Constant.양재역);
     }
 
 }

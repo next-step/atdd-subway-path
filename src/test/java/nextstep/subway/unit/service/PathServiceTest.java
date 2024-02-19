@@ -73,13 +73,13 @@ public class PathServiceTest {
         강남역_ID = 강남역.getStationId();
         양재역 = stationRepository.save(Station.from(Constant.양재역));
         양재역_ID = 양재역.getStationId();
-//        남부터미널역 = stationRepository.save(Station.from(Constant.남부터미널역));
-//        남부터미널역_ID = 남부터미널역.getStationId();
+        남부터미널역 = stationRepository.save(Station.from(Constant.남부터미널역));
+        남부터미널역_ID = 남부터미널역.getStationId();
 
         이호선 = lineRepository.save(Line.of(Constant.이호선, Constant.초록색));
         이호선_ID = 이호선.getLineId();
-//        삼호선 = lineRepository.save(Line.of(Constant.삼호선, Constant.주황색));
-//        삼호선_ID = 삼호선.getLineId();
+        삼호선 = lineRepository.save(Line.of(Constant.삼호선, Constant.주황색));
+        삼호선_ID = 삼호선.getLineId();
         신분당선 = lineRepository.save(Line.of(Constant.신분당선, Constant.빨간색));
         신분당선_ID = 신분당선.getLineId();
 
@@ -91,8 +91,8 @@ public class PathServiceTest {
         강남역_양재역_구간 = AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.역_간격_10);
 
         lineService.addSection(이호선_ID, 교대역_강남역_구간);
-//        lineService.addSection(삼호선_ID, 교대역_남부터미널역_구간);
-//        lineService.addSection(삼호선_ID, 남부터미널역_양재역_구간);
+        lineService.addSection(삼호선_ID, 교대역_남부터미널역_구간);
+        lineService.addSection(삼호선_ID, 남부터미널역_양재역_구간);
         lineService.addSection(신분당선_ID, 논현역_신논현역_구간);
         lineService.addSection(신분당선_ID, 신논현역_강남역_구간);
         lineService.addSection(신분당선_ID, 강남역_양재역_구간);
@@ -115,8 +115,17 @@ public class PathServiceTest {
 
     @DisplayName("여러 출발역과 도착역의 최단 경로를 조회한다.")
     @Test
-    @Disabled
     void 여러_노선의_출발역과_도착역의_최단_경로_조회() {
+        // when
+        FindPathResponse 교대역_양재역_경로_조회_응답 = pathService.findShortestPath(교대역_ID, 양재역_ID);
+
+        // then
+        assertThat(교대역_양재역_경로_조회_응답.getDistance()).isEqualTo(교대역_강남역_구간.getDistance() + 강남역_양재역_구간.getDistance());
+        assertThat(교대역_양재역_경로_조회_응답.getStations()).hasSize(3);
+        assertThat(교대역_양재역_경로_조회_응답.getStations().stream()
+                .map(stationDto -> stationDto.getName())
+                .collect(Collectors.toList())
+        ).containsExactly(Constant.교대역, Constant.강남역, Constant.양재역);
     }
 
 }
