@@ -135,6 +135,8 @@ public class LineServiceMockTest {
         Line 삼호선;
         Line 사호선;
 
+        List<Line> 모든_노선_목록;
+
         Long 이호선_아이디;
         Long 신분당선_아이디;
         Long 삼호선_아이디;
@@ -173,6 +175,8 @@ public class LineServiceMockTest {
 
             사호선 = new Line("사호선", "blue");
             ReflectionTestUtils.setField(사호선, "id", 사호선_아이디);
+
+            모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
 
             교대역_아이디 = 1L;
             강남역_아이디 = 2L;
@@ -214,8 +218,6 @@ public class LineServiceMockTest {
         @Test
         void 강남역에서_남부터미널역까지_경로_조회() {
             // given
-            List<Line> 모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
-
             when(stationRepository.existsById(강남역_아이디)).thenReturn(true);
             when(stationRepository.existsById(남부터미널역_아이디)).thenReturn(true);
             when(stationRepository.findById(강남역_아이디)).thenReturn(Optional.of(강남));
@@ -224,11 +226,11 @@ public class LineServiceMockTest {
             when(pathFinder.calculateShortestPath(모든_노선_목록, 강남, 남부터미널)).thenReturn(new PathResult(List.of(강남, 교대, 남부터미널), 12));
 
             // when
-            PathResponse shortestPath = lineService.findShortestPath(강남역_아이디, 남부터미널역_아이디);
+            PathResponse 경로_조회_응답 = lineService.findShortestPath(강남역_아이디, 남부터미널역_아이디);
 
             // then
-            assertThat(shortestPath.getStations()).containsExactly(강남, 교대, 남부터미널);
-            assertThat(shortestPath.getDistance()).isEqualTo(12);
+            assertThat(경로_조회_응답.getStations()).containsExactly(강남, 교대, 남부터미널);
+            assertThat(경로_조회_응답.getDistance()).isEqualTo(12);
         }
 
         /**
@@ -239,8 +241,6 @@ public class LineServiceMockTest {
         @Test
         void 교대역에서_양재역까지_경로_조회() {
             // given
-            List<Line> 모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
-
             when(stationRepository.existsById(교대역_아이디)).thenReturn(true);
             when(stationRepository.existsById(양재역_아이디)).thenReturn(true);
             when(stationRepository.findById(교대역_아이디)).thenReturn(Optional.of(교대));
@@ -249,11 +249,11 @@ public class LineServiceMockTest {
             when(pathFinder.calculateShortestPath(모든_노선_목록, 교대, 양재)).thenReturn(new PathResult(List.of(교대, 남부터미널, 양재), 5));
 
             // when
-            PathResponse shortestPath = lineService.findShortestPath(교대역_아이디, 양재역_아이디);
+            PathResponse 경로_조회_응답 = lineService.findShortestPath(교대역_아이디, 양재역_아이디);
 
             // then
-            assertThat(shortestPath.getStations()).containsExactly(교대, 남부터미널, 양재);
-            assertThat(shortestPath.getDistance()).isEqualTo(5);
+            assertThat(경로_조회_응답.getStations()).containsExactly(교대, 남부터미널, 양재);
+            assertThat(경로_조회_응답.getDistance()).isEqualTo(5);
         }
 
     }
