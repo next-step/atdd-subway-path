@@ -37,7 +37,13 @@ public class Sections {
                     .orElseThrow(() -> new IllegalArgumentException("상행역과 일치하는 섹션이 없습니다."));
             this.sections.remove(removedSection);
             this.sections.add(section);
-            this.sections.add(removedSection);
+            this.sections.add(Section.builder()
+                    .upStation(removedSection.getDownStation())
+                    .downStation(section.getDownStation())
+                    .distance(removedSection.getDistance())
+                    .line(removedSection.getLine())
+                    .build());
+
         } else {
             Section changeSection = this.sections.stream()
                     .filter(s -> s.getUpStation().equals(section.getUpStation()))

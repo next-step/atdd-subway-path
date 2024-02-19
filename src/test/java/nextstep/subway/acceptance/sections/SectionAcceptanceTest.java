@@ -101,9 +101,9 @@ public class SectionAcceptanceTest {
 
         //then
         assertThat(신림선_구간_생성.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-//        ExtractableResponse<Response> 신림선_조회 = 조회_요청("/lines/" + 신림선.jsonPath().getLong("id"));
-//        assertThat(신림선_조회.jsonPath().getList("stations.id", Long.class))
-//                .containsExactly(서원역.jsonPath().getLong("id"), 신림역.jsonPath().getLong("id"), 보라매역.jsonPath().getLong("id"));
+        ExtractableResponse<Response> 신림선_조회 = 조회_요청("/lines/" + 신림선.jsonPath().getLong("id"));
+        assertThat(신림선_조회.jsonPath().getList("stations.id", Long.class))
+                .containsExactly(서원역.jsonPath().getLong("id"), 신림역.jsonPath().getLong("id"), 보라매역.jsonPath().getLong("id"));
     }
 
 
