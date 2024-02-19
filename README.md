@@ -16,3 +16,48 @@
 - 중간역이 제거될 경우 재배치를 함 
   - 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨. 거리는 두 구간의 거리의 합으로 정함
 
+## 🚀 3단계 - 경로 조회 기능
+### 요청/응답
+- Request
+  - source : 출발역 id
+  - target : 도착역 id
+~~~
+HTTP/1.1 200
+Request method:	GET
+Request URI:	http://localhost:55494/paths?source=1&target=3
+Headers: 	Accept=application/json
+Content-Type=application/json; charset=UTF-8
+~~~
+- Response
+  - stations: 출발역으로부터 도착역까지의 경로에 있는 역 목록
+  - distance: 조회한 경로 구간의 거리
+~~~
+HTTP/1.1 200
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Sat, 09 May 2020 14:54:11 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+"stations": [
+{
+"id": 1,
+"name": "교대역"
+},
+{
+"id": 4,
+"name": "남부터미널역"
+},
+{
+"id": 3,
+"name": "양재역"
+}
+],
+"distance": 5
+}
+~~~
+### 예외 상황
+- 출발역과 도착역이 같은 경우
+- 출발역과 도착역이 연결이 되어 있지 않은 경우
+- 존재하지 않은 출발역이나 도착역을 조회 할 경우

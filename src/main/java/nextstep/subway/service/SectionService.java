@@ -29,8 +29,6 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-
-
     private boolean isRegisteredStation(List<Section> sections, Station station) {
         for (Section section : sections) {
             if(section.getUpStation().equals(station)){
