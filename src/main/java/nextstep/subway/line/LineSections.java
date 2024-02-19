@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import nextstep.subway.station.Station;
+import nextstep.subway.station.StationNotFoundException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,17 +12,11 @@ import java.util.*;
 public class LineSections {
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new LinkedList<>();
 
     protected LineSections() {
     }
 
-
-    public boolean exist(long downStationId) {
-        return sections.stream()
-                .anyMatch(section -> section.getUpStationId() == downStationId
-                        || section.getDownStationId() == downStationId);
-    }
 
 
     public Optional<Section> find(long stationId) {
@@ -43,8 +38,35 @@ public class LineSections {
         return this.sections.size() > 1;
     }
 
-    public void add(Section section) {
-        this.sections.add(section);
+
+    public void add(Section newSection) {
+
+        if (this.sections.isEmpty()) {
+            this.sections.add(newSection);
+            return;
+        }
+
+        Section last = this.sections.get(sections.size() - 1);
+        if (last.getDownStation().equals(newSection.getUpStation())) {
+            this.sections.add(newSection);
+            return;
+        }
+
+        if (this.sections.stream().anyMatch(asis -> asis.equalSection(newSection))) {
+            throw new DuplicateSectionException(newSection.toString());
+        }
+        Section asis = this.sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new StationNotFoundException(newSection.getUpStation().toString()));
+
+        if (asis.equals(newSection)) {
+            throw new DuplicateSectionException(newSection.toString());
+        }
+
+        int pos = this.sections.indexOf(asis);
+        this.sections.remove(pos);
+        sections.addAll(pos, asis.divide(newSection));
     }
 
     public List<Station> getStations() {

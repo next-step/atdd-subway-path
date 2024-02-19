@@ -2,10 +2,14 @@ package nextstep.subway.fixture;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+import nextstep.subway.line.Color;
 import nextstep.subway.line.LineResponse;
+import nextstep.subway.line.Section;
+import nextstep.subway.station.Station;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,5 +46,19 @@ public class LineSteps {
                 .statusCode(HttpStatus.OK.value())
                 .extract()
                 .as(LineResponse.class);
+    }
+
+    public static LineResponse 이호선_생성(long upStationId, long downStationId) {
+        return LineSteps.이호선_생성(upStationId, downStationId, 10);
+    }
+
+    public static LineResponse 이호선_생성(long upStationId, long downStationId, int distance) {
+        Map<String, Object> param = new HashMap<>();
+        param.put("name", "2호선");
+        param.put("color", Color.GREEN.name());
+        param.put("upStationId", upStationId);
+        param.put("downStationId", downStationId);
+        param.put("distance", distance);
+        return LineSteps.createLine(param);
     }
 }

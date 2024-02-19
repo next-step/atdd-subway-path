@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import nextstep.subway.station.Station;
+import nextstep.subway.station.StationNotFoundException;
 
 import javax.persistence.*;
 import java.util.List;
@@ -20,10 +21,10 @@ public class Line {
     @Enumerated(EnumType.STRING)
     private Color color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -67,13 +68,7 @@ public class Line {
         return lineSections.getStations();
     }
 
-    public boolean hasStation(long downStationId) {
-        return lineSections.exist(downStationId);
-    }
 
-    public boolean isLastStation(long stationID) {
-        return downStation.getId().equals(stationID);
-    }
     public boolean deletableSection() {
         return lineSections.deletable();
     }
