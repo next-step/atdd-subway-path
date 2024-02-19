@@ -48,7 +48,7 @@ public class FindPathAdapter {
 			.orElseThrow(() -> new IllegalArgumentException("경로를 찾을수 없습니다."));
 	}
 
-	public Integer getPathWeight(Station sourceStation, Station targetStation) {
+	public int getPathWeight(Station sourceStation, Station targetStation) {
 		double pathWeight = dijkstraShortestPath.getPathWeight(sourceStation, targetStation);
 		return (int)pathWeight;
 	}
