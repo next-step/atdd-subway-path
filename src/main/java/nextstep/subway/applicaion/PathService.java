@@ -33,11 +33,10 @@ public class PathService {
                 .collect(Collectors.toSet());
 
         PathFinder finder = new PathFinder(edges);
-        Path path = finder.findPath(request.getSource(), request.getTarget());
-        return new PathResponse(path.getShortestPath().stream().map(id -> {
+        Path path = finder.findShortedPath(request.getSource(), request.getTarget());
+        return new PathResponse(path.getVertexList().stream().map(id -> {
             Station station = stationById.get(id);
             return new StationResponse(station.getId(), station.getName());
-        }).collect(
-                Collectors.toList()), path.getDistance());
+        }).collect(Collectors.toList()), path.getDistance());
     }
 }

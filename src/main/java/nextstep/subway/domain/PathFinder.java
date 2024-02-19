@@ -21,7 +21,7 @@ public class PathFinder {
         });
     }
 
-    public Path findPath(Long source, Long target) {
-        return new Path(this.graph, source, target);
+    public Path findShortedPath(Long source, Long target) {
+        return Path.shortestPath(graph, source, target);
     }
 }

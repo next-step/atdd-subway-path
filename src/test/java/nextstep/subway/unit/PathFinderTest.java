@@ -54,9 +54,9 @@ class PathFinderTest {
     @Test
     void findPath() {
         // given
-        Path path = pathFinder.findPath(양재시민의숲역, 교대역);
+        Path path = pathFinder.findShortedPath(양재시민의숲역, 교대역);
         // when
-        List<Long> shortedPath = path.getShortestPath();
+        List<Long> shortedPath = path.getVertexList();
         // then
         assertThat(shortedPath).containsExactly(양재시민의숲역, 양재역, 강남역, 신사역, 잠원역, 교대역);
         assertThat(path.getDistance()).isEqualTo(50);
@@ -71,7 +71,7 @@ class PathFinderTest {
         // given
         // when
         // then
-        assertThatThrownBy(() -> pathFinder.findPath(양재시민의숲역, 양재시민의숲역))
+        assertThatThrownBy(() -> pathFinder.findShortedPath(양재시민의숲역, 양재시민의숲역))
                 .isInstanceOf(PathException.PathSourceTargetSameException.class);
     }
 
@@ -84,7 +84,7 @@ class PathFinderTest {
         // given
         // when
         // then
-        assertThatThrownBy(() -> pathFinder.findPath(양재시민의숲역, 9L))
+        assertThatThrownBy(() -> pathFinder.findShortedPath(양재시민의숲역, 9L))
                 .isInstanceOf(PathException.PathNotFoundException.class);
     }
 
@@ -97,7 +97,7 @@ class PathFinderTest {
         // given
         // when
         // then
-        assertThatThrownBy(() -> pathFinder.findPath(북한역, 잠원역))
+        assertThatThrownBy(() -> pathFinder.findShortedPath(북한역, 잠원역))
                 .isInstanceOf(PathException.SourceTargetNotConnectedException.class);
     }
 }
