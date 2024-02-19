@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.application.dto.PathResult;
 import nextstep.subway.dto.*;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
@@ -24,9 +25,12 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    public LineService(StationRepository stationRepository, LineRepository lineRepository) {
+    private final PathFinder pathFinder;
+
+    public LineService(StationRepository stationRepository, LineRepository lineRepository, PathFinder pathFinder) {
         this.stationRepository = stationRepository;
         this.lineRepository = lineRepository;
+        this.pathFinder = pathFinder;
     }
 
     @Transactional
@@ -72,6 +76,21 @@ public class LineService {
         line.delete(findStation(stationIdToDelete));
     }
 
+    public PathResponse findShortestPath(Long departureStationId, Long arrivalStationId) {
+        if (departureStationId.equals(arrivalStationId)) {
+            throw new IllegalArgumentException("출발역과 도착역이 동일할 수 없습니다.");
+        }
+        if (stationRepository.existsById(departureStationId)) {
+            throw new IllegalArgumentException("출발역은 역으로 등록되어 있지 않습니다.");
+        }
+        if (stationRepository.existsById(arrivalStationId)) {
+            throw new IllegalArgumentException("도착역은 역으로 등록되어 있지 않습니다.");
+        }
+
+        PathResult pathResult = pathFinder.findShortestPath(lineRepository.findAll(), findStation(departureStationId), findStation(arrivalStationId));
+        return new PathResponse(pathResult.getStations(), pathResult.getDistance());
+    }
+
     public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("노선 번호에 해당하는 노선이 없습니다."));
@@ -107,9 +126,9 @@ public class LineService {
         Set<StationResponse> stationResponses = new LinkedHashSet<>();
 
         sections.forEach(section -> {
-                    stationResponses.add(convertToStationResponse(section.getUpStation()));
-                    stationResponses.add(convertToStationResponse(section.getDownStation()));
-                });
+            stationResponses.add(convertToStationResponse(section.getUpStation()));
+            stationResponses.add(convertToStationResponse(section.getDownStation()));
+        });
 
         return new ArrayList<>(stationResponses);
     }
