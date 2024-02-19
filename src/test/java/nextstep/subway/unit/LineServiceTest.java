@@ -75,7 +75,7 @@ public class LineServiceTest {
             .sample();
 
         // when
-        Throwable throwable = catchThrowable(() -> lineService.saveLine(request));
+        final var throwable = catchThrowable(() -> lineService.saveLine(request));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)
@@ -126,7 +126,7 @@ public class LineServiceTest {
         final var 존재하지_않는_노선_ID = 9999L;
 
         // when
-        Throwable throwable = catchThrowable(() -> lineService.findById(존재하지_않는_노선_ID));
+        final var throwable = catchThrowable(() -> lineService.findById(존재하지_않는_노선_ID));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)
@@ -163,7 +163,7 @@ public class LineServiceTest {
             .sample();
 
         // when
-        Throwable throwable = catchThrowable(() -> lineService.updateLine(존재하지_않는_노선_ID, request));
+        final var throwable = catchThrowable(() -> lineService.updateLine(존재하지_않는_노선_ID, request));
 
         // then
         assertThat(throwable).isInstanceOf(BusinessException.class)
@@ -181,7 +181,7 @@ public class LineServiceTest {
             .sample();
 
         // when
-        Throwable throwable = catchThrowable(() -> lineService.updateLine(신분당선.getId(), request));
+        final var throwable = catchThrowable(() -> lineService.updateLine(신분당선.getId(), request));
 
         // then
         assertThat(throwable).isInstanceOf(NullPointerException.class);

@@ -84,4 +84,63 @@ class SectionsTest {
     assertThat(sections.getLastStation().get()).isEqualTo(stations.get(stations.size() - 1));
     assertThat(sections.getStations()).hasSize(stations.size());
   }
+
+  @DisplayName("첫 구간을 제거한다.")
+  @Test
+  void removeSection_첫구간제거() {
+    // given
+    final var stations = FixtureUtil.getFixtures(Station.class, 4);
+    final var sections = new Sections();
+    for (int i = 1; i < stations.size(); i++) {
+      sections.addSection(new Section(null, stations.get(i - 1), stations.get(i), 5));
+    }
+
+    // when
+    sections.removeSection(stations.get(0).getId());
+
+    // then
+    assertThat(sections.size()).isEqualTo(stations.size() - 2);
+    assertThat(sections.getStations()).doesNotContain(stations.get(0));
+    assertThat(sections.getFirstStation().get()).isEqualTo(stations.get(1));
+    assertThat(sections.getStations()).hasSize(stations.size() - 1);
+  }
+
+  @DisplayName("중간 구간을 제거한다.")
+  @Test
+  void removeSection_중간구간제거() {
+    // given
+    final var stations = FixtureUtil.getFixtures(Station.class, 4);
+    final var sections = new Sections();
+    for (int i = 1; i < stations.size(); i++) {
+      sections.addSection(new Section(null, stations.get(i - 1), stations.get(i), 5));
+    }
+
+    // when
+    sections.removeSection(stations.get(2).getId());
+
+    // then
+    assertThat(sections.size()).isEqualTo(stations.size() - 2);
+    assertThat(sections.getStations()).hasSize(stations.size() - 1);
+    assertThat(sections.getStations()).doesNotContain(stations.get(2));
+  }
+
+  @DisplayName("마지막 구간을 제거한다.")
+  @Test
+  void removeSection_마지막구간제거() {
+    // given
+    final var stations = FixtureUtil.getFixtures(Station.class, 4);
+    final var sections = new Sections();
+    for (int i = 1; i < stations.size(); i++) {
+      sections.addSection(new Section(null, stations.get(i - 1), stations.get(i), 5));
+    }
+
+    // when
+    sections.removeSection(stations.get(stations.size() - 1).getId());
+
+    // then
+    assertThat(sections.size()).isEqualTo(stations.size() - 2);
+    assertThat(sections.getStations()).doesNotContain(stations.get(stations.size() - 1));
+    assertThat(sections.getLastStation().get()).isEqualTo(stations.get(stations.size() - 2));
+    assertThat(sections.getStations()).hasSize(stations.size() - 1);
+  }
 }
