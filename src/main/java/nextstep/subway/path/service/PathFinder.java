@@ -1,7 +1,8 @@
 package nextstep.subway.path.service;
 
 import nextstep.subway.exception.NotFoundStationException;
-import nextstep.subway.exception.SameStartStationAndEndStationException;
+import nextstep.subway.exception.SameFindPathStationsException;
+import nextstep.subway.exception.UnconnectedFindPathStationsException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.path.presentation.response.FindPathResponse;
 import nextstep.subway.station.domain.Station;
@@ -12,6 +13,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +28,11 @@ public class PathFinder {
         validate(lines, startStation, endStation);
 
         GraphPath shortestPath = new DijkstraShortestPath(graph).getPath(startStation, endStation);
+
+        if (Objects.isNull(shortestPath)) {
+            throw new UnconnectedFindPathStationsException();
+        }
+
         List<Station> shortestPathStations = shortestPath.getVertexList();
         double shortestPathWeight = shortestPath.getWeight();
 
@@ -37,7 +44,7 @@ public class PathFinder {
             throw new NotFoundStationException();
         }
         if (startStation.equals(endStation)) {
-            throw new SameStartStationAndEndStationException();
+            throw new SameFindPathStationsException();
         }
     }
 

@@ -2,7 +2,8 @@ package nextstep.subway.unit.service;
 
 import nextstep.subway.common.Constant;
 import nextstep.subway.exception.NotFoundStationException;
-import nextstep.subway.exception.SameStartStationAndEndStationException;
+import nextstep.subway.exception.SameFindPathStationsException;
+import nextstep.subway.exception.UnconnectedFindPathStationsException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
@@ -49,6 +50,10 @@ public class PathFinderTest {
     private Long 양재역_ID;
     private Station 남부터미널역;
     private Long 남부터미널역_ID;
+    private Station 압구정로데오역;
+    private Long 압구정로데오역_ID;
+    private Station 강남구청역;
+    private Long 강남구청역_ID;
 
     private Line 이호선;
     private Long 이호선_ID;
@@ -56,6 +61,8 @@ public class PathFinderTest {
     private Long 삼호선_ID;
     private Line 신분당선;
     private Long 신분당선_ID;
+    private Line 수인분당선;
+    private Long 수인분당선_ID;
 
     private List<Line> 노선들;
 
@@ -65,6 +72,7 @@ public class PathFinderTest {
     private AddSectionRequest 논현역_신논현역_구간;
     private AddSectionRequest 신논현역_강남역_구간;
     private AddSectionRequest 강남역_양재역_구간;
+    private AddSectionRequest 압구정로데오역_강남구청역_구간;
 
     @BeforeEach
     protected void setUp() {
@@ -80,6 +88,10 @@ public class PathFinderTest {
         양재역_ID = 양재역.getStationId();
         남부터미널역 = stationRepository.save(Station.from(Constant.남부터미널역));
         남부터미널역_ID = 남부터미널역.getStationId();
+        압구정로데오역 = stationRepository.save(Station.from(Constant.압구정로데오역));
+        압구정로데오역_ID = 압구정로데오역.getStationId();
+        강남구청역 = stationRepository.save(Station.from(Constant.강남구청역));
+        강남구청역_ID = 강남구청역.getStationId();
 
         이호선 = lineRepository.save(Line.of(Constant.이호선, Constant.초록색));
         이호선_ID = 이호선.getLineId();
@@ -87,6 +99,8 @@ public class PathFinderTest {
         삼호선_ID = 삼호선.getLineId();
         신분당선 = lineRepository.save(Line.of(Constant.신분당선, Constant.빨간색));
         신분당선_ID = 신분당선.getLineId();
+        수인분당선 = lineRepository.save(Line.of(Constant.수인분당선, Constant.노란색));
+        수인분당선_ID = 수인분당선.getLineId();
 
         교대역_강남역_구간 = AddSectionRequest.of(교대역_ID, 강남역_ID, Constant.역_간격_10);
         교대역_남부터미널역_구간 = AddSectionRequest.of(교대역_ID, 남부터미널역_ID, Constant.역_간격_10);
@@ -94,6 +108,7 @@ public class PathFinderTest {
         논현역_신논현역_구간 = AddSectionRequest.of(논현역_ID, 신논현역_ID, Constant.역_간격_15);
         신논현역_강남역_구간 = AddSectionRequest.of(신논현역_ID, 강남역_ID, Constant.역_간격_10);
         강남역_양재역_구간 = AddSectionRequest.of(강남역_ID, 양재역_ID, Constant.역_간격_10);
+        압구정로데오역_강남구청역_구간 = AddSectionRequest.of(압구정로데오역_ID, 강남구청역_ID, Constant.역_간격_10);
 
         lineService.addSection(이호선_ID, 교대역_강남역_구간);
         lineService.addSection(삼호선_ID, 교대역_남부터미널역_구간);
@@ -101,6 +116,7 @@ public class PathFinderTest {
         lineService.addSection(신분당선_ID, 논현역_신논현역_구간);
         lineService.addSection(신분당선_ID, 신논현역_강남역_구간);
         lineService.addSection(신분당선_ID, 강남역_양재역_구간);
+        lineService.addSection(수인분당선_ID, 압구정로데오역_강남구청역_구간);
 
         노선들 = lineRepository.findAll();
     }
@@ -140,7 +156,8 @@ public class PathFinderTest {
     void 출발역과_도착역이_동일하게_경로_조회시_예외발생() {
         // when & then
         assertThatThrownBy(() -> pathFinder.findShortestPath(노선들, 양재역, 양재역))
-                .isInstanceOf(SameStartStationAndEndStationException.class);;
+                .isInstanceOf(SameFindPathStationsException.class);
+        ;
     }
 
     /**
@@ -156,6 +173,18 @@ public class PathFinderTest {
         // when & then
         assertThatThrownBy(() -> pathFinder.findShortestPath(노선들, 양재역, 왕십리역))
                 .isInstanceOf(NotFoundStationException.class);
+    }
+
+    /**
+     * When 출발역과 도착역이 연결이 되어 있지 않은 경우
+     * Then 경로가 조회되지 않는다.
+     */
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 경로를 조회할 수 없다.")
+    @Test
+    void 연결되지_않은_출발역과_도착역_경로_조회시_예외발생() {
+        // when & then
+        assertThatThrownBy(() -> pathFinder.findShortestPath(노선들, 양재역, 압구정로데오역))
+                .isInstanceOf(UnconnectedFindPathStationsException.class);
     }
 
 }

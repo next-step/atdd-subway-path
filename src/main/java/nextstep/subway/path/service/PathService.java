@@ -4,20 +4,11 @@ import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.path.presentation.response.FindPathResponse;
-import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
-import nextstep.subway.station.service.dto.ShowStationDto;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class PathService {

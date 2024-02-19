@@ -11,7 +11,6 @@ import nextstep.subway.path.presentation.response.FindPathResponse;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
 import nextstep.subway.station.presentation.response.CreateStationResponse;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -32,11 +31,14 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
     private Long 양재역_ID;
     private Long 남부터미널역_ID;
     private Long 역삼역_ID;
+    private Long 강남구청역_ID;
     private Long 압구정로데오역_ID;
+    private Long 을지로입구역_ID;
 
     private Long 이호선_ID;
     private Long 삼호선_ID;
     private Long 신분당선_ID;
+    private Long 수인분당선_ID;
 
     /**
      * 교대역    --- *2호선* ---   강남역   --- *2호선* ---   역삼역
@@ -54,12 +56,15 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
         남부터미널역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.남부터미널역)).as(CreateStationResponse.class).getStationId();
         역삼역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.역삼역)).as(CreateStationResponse.class).getStationId();
         압구정로데오역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.압구정로데오역)).as(CreateStationResponse.class).getStationId();
+        강남구청역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.강남구청역)).as(CreateStationResponse.class).getStationId();
+        을지로입구역_ID = 지하철_역_생성(CreateStationRequest.from(Constant.을지로입구역)).as(CreateStationResponse.class).getStationId();
 
         이호선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.이호선, Constant.초록색, 교대역_ID, 강남역_ID, Constant.역_간격_15)).as(CreateLineResponse.class).getLineId();
         지하철_구간_추가(AddSectionRequest.of(강남역_ID, 역삼역_ID, Constant.역_간격_15), 이호선_ID);
         삼호선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.삼호선, Constant.주황색, 교대역_ID, 남부터미널역_ID, Constant.역_간격_10)).as(CreateLineResponse.class).getLineId();
         지하철_구간_추가(AddSectionRequest.of(남부터미널역_ID, 양재역_ID, Constant.역_간격_10), 삼호선_ID);
         신분당선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.신분당선, Constant.빨간색, 강남역_ID, 양재역_ID, Constant.역_간격_10)).as(CreateLineResponse.class).getLineId();
+        수인분당선_ID = 지하철_노선_생성(CreateLineRequest.of(Constant.수인분당선, Constant.노란색, 압구정로데오역_ID, 강남구청역_ID, Constant.역_간격_20)).as(CreateLineResponse.class).getLineId();
     }
 
     /**
@@ -122,10 +127,24 @@ class PathAcceptanceTest extends CommonAcceptanceTest {
     @Test
     void 존재하지_않은_출발역이나_도착역_경로_조회() {
         // when
-        ExtractableResponse<Response> 경로_조회_응답 = 지하철_최단_경로_조회(강남역_ID, 압구정로데오역_ID);
+        ExtractableResponse<Response> 경로_조회_응답 = 지하철_최단_경로_조회(강남역_ID, 을지로입구역_ID);
 
         // then
         지하철_경로_조회_예외발생_검증(경로_조회_응답, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * When 출발역과 도착역이 연결이 되어 있지 않은 경우
+     * Then 경로가 조회되지 않는다.
+     */
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 경로를 조회할 수 없다.")
+    @Test
+    void 연결되지_않은_출발역과_도착역_경로_조회() {
+        // when
+        ExtractableResponse<Response> 경로_조회_응답 = 지하철_최단_경로_조회(강남역_ID, 압구정로데오역_ID);
+
+        // then
+        지하철_경로_조회_예외발생_검증(경로_조회_응답, HttpStatus.BAD_REQUEST);
     }
 
     void 지하철_경로_조회_예외발생_검증(ExtractableResponse<Response> extractableResponse, HttpStatus status) {
