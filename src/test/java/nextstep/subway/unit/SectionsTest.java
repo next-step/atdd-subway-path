@@ -142,7 +142,7 @@ class SectionsTest {
         Sections sections = new Sections(sectionList);
 
         //when
-        sections.removeLastSection(왕십리역);
+        sections.removeSection(왕십리역);
 
         //then
         assertAll(
@@ -161,12 +161,12 @@ class SectionsTest {
 
         //when & then
         assertThatThrownBy(
-            () -> sections.removeLastSection(downStation1))
+            () -> sections.removeSection(downStation1))
             .isInstanceOf(IllegalSectionException.class);
     }
 
     @Test
-    void testDeleteLastSection_제거하려는_역이_기존_구간의_하행종점역과_다를_때_구간을_제거하면_예외를_반환한다() {
+    void testDeleteLastSection_제거하려는_역이_기존_구간에_없으면_예외를_반환한다() {
         Section section1 = new Section(역삼역, 선릉역, 10);
         Section section2 = new Section(선릉역, 왕십리역, 10);
         List<Section> sectionList = new ArrayList<>();
@@ -176,8 +176,56 @@ class SectionsTest {
 
         //when & then
         assertThatThrownBy(
-            () -> sections.removeLastSection(잠실역))
+            () -> sections.removeSection(잠실역))
             .isInstanceOf(IllegalSectionException.class);
+    }
+
+    @Test
+    void testDeleteLastSection_가운데_역을_제거할_수_있다() {
+
+        int firstSectionDistance = 10;
+        Section firstSection = new Section(역삼역, 선릉역, firstSectionDistance);
+        int lastSectionDistance = 12;
+        Section lastSection = new Section(선릉역, 왕십리역, lastSectionDistance);
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(firstSection);
+        sectionList.add(lastSection);
+        Sections sections = new Sections(sectionList);
+
+        //when
+        sections.removeSection(선릉역);
+
+        //then
+        assertAll(
+            () -> assertThat(sections.getSections()).hasSize(1),
+            () -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(역삼역),
+            () -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(왕십리역),
+            () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(firstSectionDistance + lastSectionDistance)
+        );
+    }
+
+    @Test
+    void testDeleteLastSection_상행종점역을_제거할_수_있다() {
+
+        int firstSectionDistance = 10;
+        Section firstSection = new Section(역삼역, 선릉역, firstSectionDistance);
+        int lastSectionDistance = 12;
+        Section lastSection = new Section(선릉역, 왕십리역, lastSectionDistance);
+        List<Section> sectionList = new ArrayList<>();
+        sectionList.add(firstSection);
+        sectionList.add(lastSection);
+        Sections sections = new Sections(sectionList);
+
+        //when
+        sections.removeSection(역삼역);
+
+        //then
+        assertAll(
+            () -> assertThat(sections.getSections()).hasSize(1),
+            () -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(선릉역),
+            () -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(왕십리역),
+            () -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(lastSectionDistance)
+        );
     }
 
     @Test

@@ -119,5 +119,4 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .log().all().statusCode(HttpStatus.SC_NO_CONTENT);
         when().get("/lines/" + linePostResponse.getId()).then().log().all().statusCode(HttpStatus.SC_NOT_FOUND);
     }
-
 }
