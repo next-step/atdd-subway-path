@@ -9,11 +9,14 @@ import nextstep.subway.applicaion.dto.StationResponse;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.utils.FixtureUtil;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class PathFinderTest {
 
   static Station 강남역;
@@ -30,8 +33,8 @@ class PathFinderTest {
   @InjectMocks
   private PathFinder pathFinder;
 
-  @BeforeAll
-  public static void setUp() {
+  @BeforeEach
+  public void setUp() {
     /**
      * Given 여러 지하철 노선을 만든다.
      *                         3             1
@@ -55,6 +58,8 @@ class PathFinderTest {
     양재역 = 지하철역_생성("양재역");
     매봉역 = 지하철역_생성("매봉역");
     도곡역 = 지하철역_생성("도곡역");
+    남포역 = 지하철역_생성("남포역");
+    서면역 = 지하철역_생성("서면역");
 
     구간_목록 = List.of(
         지하철_구간_생성(강남역, 역삼역, 3),
@@ -88,6 +93,16 @@ class PathFinderTest {
         선릉역.getId(),
         역삼역.getId()
     );
+  }
+
+  @DisplayName("연결할 수 없는 경로")
+  @Test
+  void 연결할_수_없는_경로() {
+    // when
+    final var result = pathFinder.find(구간_목록, 강남역, 서면역);
+
+    // then
+    assertThat(result.isPresent()).isFalse();
   }
 
   private static Station 지하철역_생성(String name) {
