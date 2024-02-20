@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.presentation.request.AddSectionRequest;
+import nextstep.subway.line.presentation.response.AddSectionResponse;
 import org.springframework.http.MediaType;
 
 public class SectionAcceptanceStep {
@@ -30,5 +31,8 @@ public class SectionAcceptanceStep {
                 .extract();
     }
 
+    public static AddSectionResponse 지하철_구간_추가됨(Long upStation, Long downStation, int distance, Long lineId) {
+        return 지하철_구간_추가(AddSectionRequest.of(upStation, downStation, distance), lineId).as(AddSectionResponse.class);
+    }
 
 }

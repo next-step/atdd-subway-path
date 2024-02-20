@@ -27,7 +27,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
-public class PathFinderTest {
+public class PathServiceTest {
 
     @Autowired
     private StationRepository stationRepository;

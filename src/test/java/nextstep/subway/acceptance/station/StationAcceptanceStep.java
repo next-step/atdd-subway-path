@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.station.presentation.request.CreateStationRequest;
+import nextstep.subway.station.presentation.response.CreateStationResponse;
 import org.springframework.http.MediaType;
 
 public class StationAcceptanceStep {
@@ -33,6 +34,10 @@ public class StationAcceptanceStep {
                 .when().delete("/stations/{stationId}")
                 .then().log().all()
                 .extract();
+    }
+
+    public static Long 지하철_역_생성됨(String stationName) {
+        return 지하철_역_생성(CreateStationRequest.from(stationName)).as(CreateStationResponse.class).getStationId();
     }
 
 }

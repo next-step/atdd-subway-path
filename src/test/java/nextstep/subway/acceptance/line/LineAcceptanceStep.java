@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.presentation.request.CreateLineRequest;
 import nextstep.subway.line.presentation.request.UpdateLineRequest;
+import nextstep.subway.line.presentation.response.CreateLineResponse;
 import org.springframework.http.MediaType;
 
 public class LineAcceptanceStep {
@@ -55,6 +56,10 @@ public class LineAcceptanceStep {
                 .when().delete("/lines/{id}")
                 .then().log().all()
                 .extract();
+    }
+
+    public static Long 지하철_노선_생성됨(String lineName, String color, Long upStation, Long downStation, int distance) {
+        return 지하철_노선_생성(CreateLineRequest.of(lineName, color, upStation, downStation, distance)).as(CreateLineResponse.class).getLineId();
     }
 
 }
