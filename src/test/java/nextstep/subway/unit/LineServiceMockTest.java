@@ -1,8 +1,8 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.LineService;
-import nextstep.subway.service.StationService;
 import nextstep.subway.service.dto.LineDto;
 import nextstep.subway.service.dto.LineSectionDto;
 import nextstep.subway.service.dto.AddSectionCommand;
@@ -29,7 +29,7 @@ public class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
-    private StationService stationService;
+    private StationRepository stationRepository;
     @InjectMocks
     private LineService lineService;
 
@@ -41,8 +41,8 @@ public class LineServiceMockTest {
         final Long downStationId = 3L;
 
         // given
-        when(stationService.findStationById(upStationId)).thenReturn(역삼역_엔티티);
-        when(stationService.findStationById(downStationId)).thenReturn(선릉역_엔티티);
+        when(stationRepository.findById(upStationId)).thenReturn(Optional.ofNullable(역삼역_엔티티));
+        when(stationRepository.findById(downStationId)).thenReturn(Optional.ofNullable(선릉역_엔티티));
         when(lineRepository.findById(lineId)).thenReturn(Optional.of(신분당선_엔티티(강남역_엔티티, 역삼역_엔티티)));
 
         // when

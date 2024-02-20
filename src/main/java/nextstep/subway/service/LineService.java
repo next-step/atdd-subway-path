@@ -3,12 +3,14 @@ package nextstep.subway.service;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
+import nextstep.subway.exception.line.LineNotFoundException;
+import nextstep.subway.exception.station.StationNotFoundException;
 import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,17 +18,18 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    private final StationRepository stationRepository;
+
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.stationService = stationService;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineDto saveLine(SaveLineCommand command) {
-        Station upStation = stationService.findStationById(command.getUpStationId());
-        Station downStation = stationService.findStationById(command.getDownStationId());
+        Station upStation = findStationByIdOrFail(command.getUpStationId());
+        Station downStation = findStationByIdOrFail(command.getDownStationId());
         Line line = lineRepository.save(Line.create(
                 command.getName(),
                 command.getColor(),
@@ -60,8 +63,8 @@ public class LineService {
 
     @Transactional
     public LineSectionDto addSection(AddSectionCommand command) {
-        Station upStation = stationService.findStationById(command.getUpStationId());
-        Station downStation = stationService.findStationById(command.getDownStationId());
+        Station upStation = findStationByIdOrFail(command.getUpStationId());
+        Station downStation = findStationByIdOrFail(command.getDownStationId());
 
         Line line = findLineByIdOrFail(command.getLineId());
 
@@ -78,6 +81,10 @@ public class LineService {
     }
 
     private Line findLineByIdOrFail(Long id) {
-        return lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+    }
+
+    private Station findStationByIdOrFail(Long id) {
+        return stationRepository.findById(id).orElseThrow(StationNotFoundException::new);
     }
 }

@@ -3,7 +3,7 @@ package nextstep.subway.unit;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.exception.LineSectionException;
+import nextstep.subway.exception.line.LineSectionException;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -329,10 +329,10 @@ class LineTest {
             Line 신분당선 = 신분당선_엔티티(강남역_엔티티, 역삼역_엔티티);
             신분당선.addSection(추가구간_엔티티(역삼역_엔티티, 선릉역_엔티티));
             // When
-            신분당선.deleteStation(선릉역_엔티티.getId());
+            신분당선.deleteStation(역삼역_엔티티.getId());
             // Then
             assertEquals(신분당선.getSections().size(), 1);
-            assertFalse(신분당선.getAllStations().contains(선릉역_엔티티));
+            assertFalse(신분당선.getAllStations().contains(역삼역_엔티티));
         }
 
         /**
