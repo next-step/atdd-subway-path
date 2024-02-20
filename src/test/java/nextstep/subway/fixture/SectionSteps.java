@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 public class SectionSteps {
 
 
-    public static SectionResponse createSection(long lineId, SectionRequest SectionRequest) {
+    public static SectionResponse 라인에_구간을_생성한다(long lineId, SectionRequest SectionRequest) {
         return RestAssured.given().log().all()
                 .pathParam("lineId", lineId)
                 .body(SectionRequest)

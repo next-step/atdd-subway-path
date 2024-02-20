@@ -35,7 +35,7 @@ public class LineSteps {
     }
 
 
-    public static LineResponse getLine(long id) {
+    public static LineResponse 노선을_조회한다(long id) {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when()

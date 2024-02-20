@@ -10,6 +10,7 @@ import nextstep.subway.line.persistance.LineRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.persistance.StationRepository;
 import nextstep.subway.station.presentation.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 
 @AcceptanceTest
 @SpringBootTest
