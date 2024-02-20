@@ -36,9 +36,7 @@ class PathServiceTest {
 
   static Station 출발역;
   static Station 도착역;
-
   static List<Section> 구간_목록;
-
   static Path 경로;
 
   @BeforeEach

@@ -23,6 +23,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
   static LineResponse 신분당선;
   static LineResponse 분당선;
   static LineResponse 삼호선;
+  static LineResponse 부산선;
 
   static StationResponse 강남역;
   static StationResponse 역삼역;
@@ -31,6 +32,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
   static StationResponse 양재역;
   static StationResponse 매봉역;
   static StationResponse 도곡역;
+
+  static StationResponse 남포역;
+  static StationResponse 서면역;
 
   /**
    * Given 여러 지하철 노선을 만든다.
@@ -43,6 +47,9 @@ public class PathAcceptanceTest extends AcceptanceTest {
    *                  |                          |   1
    *                 양재 --------- 매봉 --------- 도곡
    *                         1            1
+   *
+   *                 남포 --------- 서면
+   *                         5
    */
   @BeforeEach
   public void setUp() {
@@ -55,6 +62,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
     양재역 = 지하철역_생성("양재역");
     매봉역 = 지하철역_생성("매봉역");
     도곡역 = 지하철역_생성("도곡역");
+    남포역 = 지하철역_생성("남포역");
+    서면역 = 지하철역_생성("서면역");
 
     이호선 = 지하철_노선_생성("2호선", "초록", 강남역.getId(), 역삼역.getId(), 3);
     지하철_구간_생성_요청(이호선.getId(), 역삼역.getId(), 선릉역.getId(), 1);
@@ -66,6 +75,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     삼호선 = 지하철_노선_생성("3호선", "주황", 양재역.getId(), 매봉역.getId(), 1);
     지하철_구간_생성_요청(삼호선.getId(), 매봉역.getId(), 도곡역.getId(), 1);
+
+    부산선 = 지하철_노선_생성("부산선", "검정", 남포역.getId(), 서면역.getId(), 5);
   }
 
   /**
@@ -116,7 +127,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
   @Test
   void 경로를_탐색할_수_없음() {
     // when
-    final var response = 경로_탐색_요청(매봉역.getId(), 역삼역.getId());
+    final var response = 경로_탐색_요청(강남역.getId(), 서면역.getId());
 
     // then
     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
