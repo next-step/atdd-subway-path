@@ -51,7 +51,7 @@ public class Section implements Comparable<Section> {
 
     public void updatePrevSection(Station downStation, Integer distance) {
         this.downStation = downStation;
-        this.distance -= distance;
+        this.distance = distance;
     }
 
     @Override

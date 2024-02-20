@@ -93,15 +93,53 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        verifyStartSection(station);
-        Section endSection = verifyEndSection(station);
-        this.sections.remove(endSection);
+        verifyRemoveSection(station);
+
+        Optional<Section> prevSection = getSections().stream()
+            .filter(it -> it.getDownStation().equals(station))
+            .findAny();
+        Optional<Section> nextSection = getSections().stream()
+            .filter(it -> it.getUpStation().equals(station))
+            .findAny();
+
+        Section removeSection = null;
+        if (prevSection.isEmpty() && nextSection.isPresent()) {
+            removeSection = nextSection.get();
+        }
+        if (prevSection.isPresent() && nextSection.isEmpty()) {
+            removeSection = prevSection.get();
+        }
+        if (prevSection.isPresent() && nextSection.isPresent()) {
+            prevSection.get().updatePrevSection(
+                nextSection.get().getDownStation(),
+                prevSection.get().getDistance() + nextSection.get().getDistance()
+            );
+            removeSection = nextSection.get();
+        }
+
+        this.sections.remove(removeSection);
     }
 
-    private void verifyStartSection(Station station) {
-        boolean isStartSection = getStartSection().getDownStation().equals(station);
-        if(isStartSection) {
-            throw new IllegalArgumentException("지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우) 역을 삭제할 수 없다");
+    private void verifyRemoveSection(Station station) {
+        verifyExistsSection(station);
+
+        verifyIsOnlySection();
+    }
+
+    private void verifyExistsSection(Station station) {
+        boolean existsSection = getStations().stream()
+            .anyMatch(it -> it.equals(station));
+
+        if(!existsSection) {
+            throw new IllegalArgumentException("존재하는 구간만 삭제 가능하다.");
+        }
+    }
+
+    private void verifyIsOnlySection() {
+        boolean isOnlySection = this.sections.size() == 1;
+
+        if(isOnlySection) {
+            throw new IllegalArgumentException("유일한 구간은 삭제가 불가하다.");
         }
     }
 
