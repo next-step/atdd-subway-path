@@ -32,7 +32,7 @@ public class SectionService {
         line.addSection(section);
         Line saved = lineRepository.save(line);
 
-        return new SectionResponse(saved.getUpStation().getId(), saved.getDownStation().getId(), saved.getDistance());
+        return new SectionResponse(saved.getFirstStation().getId(), saved.getLastStation().getId(), saved.getDistance());
     }
 
     public void deleteSection(long lineId, long stationId) {

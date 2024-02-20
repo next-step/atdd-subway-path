@@ -81,10 +81,6 @@ public class LineService {
     }
 
     private static LineResponse toLineResponse(Line line) {
-        Station upStation = line.getUpStation();
-        Station downStation = line.getDownStation();
-        StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
-        StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
         List<StationResponse> stationResponses = line.getStations()
                 .stream().map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());

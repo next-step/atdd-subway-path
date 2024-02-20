@@ -8,6 +8,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class LineSections {
@@ -27,44 +28,39 @@ public class LineSections {
     }
 
     public void remove(Section deleteSection) {
-        Section lastSection = this.sections.get(sections.size() - 1);
-        if (lastSection.equals(deleteSection)) {
-            this.sections = sections.subList(0, sections.size() - 1);
-            return;
+        Station lastStation = getLastStation();
+        if (!lastStation.equals(deleteSection.getDownStation())) {
+            throw new IllegalStateException("하행 종점만 삭제 가능");
         }
-        throw new IllegalStateException("하행 종점만 삭제 가능");
+
+        this.sections = sections.stream()
+                .filter(it -> !it.getDownStation().equals(lastStation))
+                .collect(Collectors.toList());
     }
 
     public boolean deletable() {
         return this.sections.size() > 1;
     }
 
-
     public void add(Section newSection) {
 
-        if (this.sections.isEmpty()) {
+        if (iaAppend(newSection)) {
             this.sections.add(newSection);
             return;
         }
+        insertSection(newSection);
+    }
 
-        Section last = this.sections.get(sections.size() - 1);
-        if (last.getDownStation().equals(newSection.getUpStation())) {
-            this.sections.add(newSection);
-            return;
-        }
+    private boolean iaAppend(Section newSection) {
+        return isEmptySection() || isAppendToLast(newSection);
+    }
 
-        if (this.sections.stream().anyMatch(asis -> asis.equalSection(newSection))) {
-            throw new DuplicateSectionException(newSection.toString());
-        }
-        Section asis = this.sections.stream()
-                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-                .findFirst()
-                .orElseThrow(() -> new StationNotFoundException(newSection.getUpStation().toString()));
-
-        if (asis.equals(newSection)) {
+    private void insertSection(Section newSection) {
+        if (hasDuplicateSection(newSection)) {
             throw new DuplicateSectionException(newSection.toString());
         }
 
+        Section asis = findDivideTarget(newSection);
         int pos = this.sections.indexOf(asis);
         this.sections.remove(pos);
         sections.addAll(pos, asis.divide(newSection));
@@ -77,5 +73,38 @@ public class LineSections {
             set.add(section.getDownStation());
         }
         return List.copyOf(set);
+    }
+
+
+    public Station getFirstStation() {
+        return this.sections.get(0).getUpStation();
+    }
+
+
+    public Station getLastStation() {
+        return this.sections.get(sections.size() - 1).getDownStation();
+    }
+
+
+    private Section findDivideTarget(Section newSection) {
+        return this.sections.stream()
+                .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new StationNotFoundException(newSection.getUpStation().toString()));
+    }
+
+
+    private boolean hasDuplicateSection(Section newSection) {
+        return this.sections.stream().anyMatch(asis -> asis.equalSection(newSection));
+    }
+
+
+    private boolean isAppendToLast(Section newSection) {
+        return getLastStation().equals(newSection.getUpStation());
+    }
+
+
+    private boolean isEmptySection() {
+        return this.sections.isEmpty();
     }
 }

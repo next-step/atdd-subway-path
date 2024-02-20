@@ -53,6 +53,6 @@ class LineTest {
         line.removeSection(section2);
 
         // then
-        assertThat(line.getDownStation()).isEqualTo(구의역);
+        assertThat(line.getLastStation()).isEqualTo(구의역);
     }
 }
