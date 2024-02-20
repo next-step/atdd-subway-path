@@ -105,9 +105,11 @@ public class Sections {
         Section removeSection = null;
         if (prevSection.isEmpty() && nextSection.isPresent()) {
             removeSection = nextSection.get();
-        } else if (prevSection.isPresent() && nextSection.isEmpty()) {
+        }
+        if (prevSection.isPresent() && nextSection.isEmpty()) {
             removeSection = prevSection.get();
-        } else if (prevSection.isPresent() && nextSection.isPresent()) {
+        }
+        if (prevSection.isPresent() && nextSection.isPresent()) {
             prevSection.get().updatePrevSection(
                 nextSection.get().getDownStation(),
                 prevSection.get().getDistance() + nextSection.get().getDistance()

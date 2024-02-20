@@ -145,7 +145,7 @@ public class SectionAcceptanceTest {
         /**
          * Given 구간을 생성하고
          * When 노선의 하행 구간을 삭제하면
-         * Then 해당 구간의 정보는 삭제된다.
+         * Then 노선 조회시 해당 역은 조회되지 않는다.
          */
         @DisplayName("노선의 하행 구간을 삭제한다.")
         @Test
@@ -158,14 +158,21 @@ public class SectionAcceptanceTest {
             // when
             ExtractableResponse<Response> 구간_삭제_응답 = deleteSection(이호선_ID, 선릉역_ID);
 
-            // then
             assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+            // then
+            LineResponse 노선_조회_응답 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            List<Long> 노선의_역_목록 = 노선_조회_응답.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+            assertThat(노선의_역_목록).containsExactly(강남역_ID, 역삼역_ID);
         }
 
         /**
          * Given 구간을 생성하고
          * When 노선의 상행 구간을 삭제하면
-         * Then 해당 구간의 정보는 삭제된다.
+         * Then 노선의 조회시 해당 역은 조회되지 않는다.
          */
         @DisplayName("노선의 상행 구간을 삭제한다.")
         @Test
@@ -178,14 +185,21 @@ public class SectionAcceptanceTest {
             // when
             ExtractableResponse<Response> 구간_삭제_응답 = deleteSection(이호선_ID, 강남역_ID);
 
-            // then
             assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+            // then
+            LineResponse 노선_조회_응답 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            List<Long> 노선의_역_목록 = 노선_조회_응답.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+            assertThat(노선의_역_목록).containsExactly(역삼역_ID, 선릉역_ID);
         }
 
         /**
          * Given 구간을 생성하고
          * When 노선의 중간 구간을 삭제하면
-         * Then 해당 구간의 정보는 삭제된다.
+         * Then 노선의 조회시 해당 역은 조회되지 않는다.
          */
         @DisplayName("노선의 중간 구간을 삭제한다.")
         @Test
@@ -198,8 +212,15 @@ public class SectionAcceptanceTest {
             // when
             ExtractableResponse<Response> 구간_삭제_응답 = deleteSection(이호선_ID, 역삼역_ID);
 
-            // then
             assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+            // then
+            LineResponse 구간_목록_응답 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            List<Long> stationIds = 구간_목록_응답.getStations().stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+
+            assertThat(stationIds).containsExactly(강남역_ID, 선릉역_ID);
         }
 
         /**
