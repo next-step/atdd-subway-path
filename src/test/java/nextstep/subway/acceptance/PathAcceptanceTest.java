@@ -6,12 +6,16 @@ import io.restassured.response.Response;
 import nextstep.subway.acceptance.fixture.LineFixture;
 import nextstep.subway.acceptance.fixture.StationFixture;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.path.PathResponse;
 import nextstep.subway.dto.station.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,7 +58,12 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(경로_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(경로_조회_응답.jsonPath().getList("stations.id")).containsExactly(교대역, 남부터미널역, 양재역);
+
+        List<Long> 최단구간_역_목록 = 경로_조회_응답.as(PathResponse.class).getStations().stream()
+            .map(StationResponse::getId)
+            .collect(Collectors.toList());
+        assertThat(최단구간_역_목록).containsExactly(교대역, 남부터미널역, 양재역);
+        assertThat(경로_조회_응답.as(PathResponse.class).getDistance()).isEqualTo(5);
     }
 
     /**

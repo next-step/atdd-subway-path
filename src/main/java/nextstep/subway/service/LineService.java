@@ -8,6 +8,7 @@ import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
 import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +20,15 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
+    private final SectionRepository sectionRepository;
 
     public LineService(
         LineRepository lineRepository,
-        StationService stationService
-    ) {
+        StationService stationService,
+        SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.sectionRepository = sectionRepository;
     }
 
     /** 지하철 노선을 생성한다. */
@@ -92,6 +95,10 @@ public class LineService {
         Station station = stationService.findStation(stationId);
 
         line.removeSection(station);
+    }
+
+    public List<Section> findSections() {
+        return sectionRepository.findAll();
     }
 
 }
