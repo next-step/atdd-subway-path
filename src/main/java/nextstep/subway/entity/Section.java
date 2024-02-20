@@ -37,10 +37,10 @@ public class Section implements Comparable<Section> {
 
     protected Section() {}
 
-    public Section(Line line, Station downStation, Station upStation, Integer distance) {
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
         this.line = line;
-        this.downStation = downStation;
         this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
