@@ -4,6 +4,21 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.entity.Line;
 
 public class LineFixture {
+
+    public static LineRequest 이호선(Long upStationId, Long downStationId, int distance) {
+        return new LineRequest("이호선", "bg-green-600", upStationId, downStationId, distance);
+    }
+    public static LineRequest 신분당선(Long upStationId, Long downStationId, int distance) {
+        return new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, distance);
+    }
+    public static LineRequest 삼호선(Long upStationId, Long downStationId, int distance) {
+        return new LineRequest("삼호선", "bg-orange-600", upStationId, downStationId, distance);
+    }
+    public static LineRequest 사호선(Long upStationId, Long downStationId, int distance) {
+        return new LineRequest("사호선", "bg-blue-600", upStationId, downStationId, distance);
+    }
+
+
     public static LineRequest 신분당선(Long upStationId, Long downStationId) {
         return new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
     }

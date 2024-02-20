@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
+import static nextstep.subway.utils.HttpResponseUtils.getCreatedLocationId;
 
 public class StationSteps {
 
@@ -23,6 +24,10 @@ public class StationSteps {
 
     public static void 지하철_역_생성_요청(List<StationRequest> requests) {
         requests.forEach(StationSteps::지하철_역_생성_요청);
+    }
+
+    public static Long 지하철_역_생성(StationRequest request) {
+        return getCreatedLocationId(지하철_역_생성_요청(request));
     }
 
     public static ExtractableResponse<Response> 지하철_역_생성_요청(StationRequest request) {
