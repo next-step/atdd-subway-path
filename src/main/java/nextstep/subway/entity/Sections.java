@@ -26,8 +26,6 @@ public class Sections {
             return;
         }
 
-        sortByConnectedSections(sections);
-
         if (isAddLastSection(sectionToAdd)) {
             sections.add(sectionToAdd);
             return;
@@ -53,8 +51,6 @@ public class Sections {
     }
 
     public void deleteSection(Station stationToDelete) {
-        sortByConnectedSections(sections);
-
         if (isFirstStation(stationToDelete)) {
             sections.remove(findFirstSection());
             return;
@@ -67,13 +63,45 @@ public class Sections {
         deleteIntermediateStation(stationToDelete);
     }
 
+    private boolean isLastStation(Station stationToDelete) {
+        return findLastStation().isSame(stationToDelete);
+    }
+
+    public Station findLastStation() {
+        if (sections.isEmpty()) {
+            throw new RuntimeException();
+        }
+        return findLastSection().getDownStation();
+    }
+
+    private boolean isFirstStation(Station insertionStation) {
+        return findFirstSection().getUpStation().isSame(insertionStation);
+    }
+
+    private Section findFirstSection() {
+        return sortByConnectedSections(sections).get(0);
+    }
+
+    private Section findLastSection() {
+        return sortByConnectedSections(sections).get(sections.size() - 1);
+    }
+
+    public boolean hasExistingStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isAtLeastOneSameStation(station));
+    }
+
+    public boolean hasNoSections() {
+        return sections.isEmpty();
+    }
+
     private void deleteIntermediateStation(Station stationToDelete) {
         Section commonSection = findCommonSection(stationToDelete);
         replaceAndConnectSection(commonSection, findNextSection(commonSection));
     }
 
     private Section findNextSection(Section commonSection) {
-        return sections.get(sections.indexOf(commonSection) + 1);
+        return sortByConnectedSections(sections).get(sections.indexOf(commonSection) + 1);
     }
 
     private void replaceAndConnectSection(Section sectionToDelete, Section nextSection) {
@@ -97,18 +125,6 @@ public class Sections {
                 .orElseThrow(RuntimeException::new);
     }
 
-    private Section findLastSection() {
-        return sections.get(sections.size() - 1);
-    }
-
-    private Section findFirstSection() {
-        return sections.get(0);
-    }
-
-    private boolean isLastStation(Station stationToDelete) {
-        return findLastStation().isSame(stationToDelete);
-    }
-
     private List<Section> sortByConnectedSections(List<Section> sections) {
         for (int baseIndex = 0; baseIndex < sections.size(); baseIndex++) {
             connectBasedOnSection(sections.get(baseIndex));
@@ -125,7 +141,7 @@ public class Sections {
     }
 
     private boolean canConnect(Section baseSection, Section sectionToConnect) {
-        if (canPrependSectionBasedOnSection(findFirstSection(), sectionToConnect)) {
+        if (canPrependSectionBasedOnSection(sections.get(0), sectionToConnect)) {
             sections.remove(sectionToConnect);
             sections.add(0, sectionToConnect);
             return true;
@@ -145,22 +161,6 @@ public class Sections {
 
     private boolean canAppendSectionBasedOnSection(Section section, Section sectionToConnect) {
         return section.canAppendSection(sectionToConnect);
-    }
-
-    public Station findLastStation() {
-        if (sections.isEmpty()) {
-            throw new RuntimeException();
-        }
-        return sections.get(sections.size() - 1).getDownStation();
-    }
-
-    public boolean hasExistingStation(Station station) {
-        return sections.stream()
-                .anyMatch(section -> section.isAtLeastOneSameStation(station));
-    }
-
-    public boolean hasNoSections() {
-        return sections.isEmpty();
     }
 
     private void insertSection(Section sectionToInsert) {
@@ -216,10 +216,6 @@ public class Sections {
 
     private boolean canPrependSectionBasedOnStation(Section sectionToInsert, Station commonStation) {
         return commonStation.isSame(sectionToInsert.getDownStation());
-    }
-
-    private boolean isFirstStation(Station insertionStation) {
-        return sections.get(0).getUpStation().isSame(insertionStation);
     }
 
     private Section createPreviousSection(Section sectionToInsert, Section sectionOfIndex) {
