@@ -85,6 +85,11 @@ public class Section {
         return true;
     }
 
+    public void changeDownStationAndDistance(Station deleteStation, int distance) {
+        this.downStation = deleteStation;
+        this.distance += distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -45,6 +45,13 @@ public class Sections {
         return sections.get(sections.size()-1);
     }
 
+    public boolean isLastSection(Station deleteStation) {
+        if(deleteStation.equals(lastSection().getDownStation())) {
+            return true;
+        }
+        return false;
+    }
+
     private boolean isStationMatched(Section section) {
         if(sections.size() > 0){
             return section.getUpStation().equals(lastSection().getDownStation());
@@ -117,6 +124,20 @@ public class Sections {
                 .findAny().get();
 
         sections.removeIf(s -> s.equals(deleteSection));
+    }
+
+    public void deleteMiddleStation(Station deleteStation) {
+        Section removeSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(deleteStation))
+                .findAny().get();
+
+        for(Section section : sections) {
+            if(section.getDownStation().equals(deleteStation)) {
+                section.changeDownStationAndDistance(removeSection.getDownStation(), removeSection.getDistance());
+            }
+        }
+
+        sections.removeIf(s -> s.equals(removeSection));
     }
 
     private Section createNewSection(Section existingSection, Section requestSection) {

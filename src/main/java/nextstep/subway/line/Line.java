@@ -78,8 +78,11 @@ public class Line {
         newSection.registerLine(this);
     }
 
-    public void deleteDownSection(Station deleteStation) {
-        sections.deleteDownStation(deleteStation);
+    public void deleteSection(Station deleteStation) {
+        if(sections.isLastSection(deleteStation)) {
+            sections.deleteDownStation(deleteStation);
+        }
+        sections.deleteMiddleStation(deleteStation);
     }
 
     @Override

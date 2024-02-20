@@ -40,4 +40,8 @@ public class SectionService {
         line.addSection(requestSection);
     }
 
+    public void deleteSection(Line line, Station deleteStation) {
+        line.deleteSection(deleteStation);
+    }
+
 }
