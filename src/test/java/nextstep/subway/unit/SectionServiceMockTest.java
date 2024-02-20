@@ -156,4 +156,25 @@ public class SectionServiceMockTest {
         //then
         assertThat(lineService.findLineById(이호선.getId()).getStations()).hasSize(3);
     }
+
+    @Test
+    @DisplayName("2개의 구간이 존재하는 노선에서 가운데 역을 제거한다.")
+    void deleteMiddleStation() {
+        //given
+        Line 이호선 = new Line(1L, "2호선", "green");
+        Station 강남역 = new Station(1L, "강남역");
+        Station 선릉역 = new Station(2L, "선릉역");
+        Station 삼성역 = new Station(3L, "삼성역");
+
+        Section 강남_선릉_구간 = new Section(1L, 강남역, 선릉역, 10); //기존
+        이호선.addSection(강남_선릉_구간);
+        Section 선릉_삼성_구간 = new Section(2L, 선릉역, 삼성역, 5);
+        이호선.addSection(선릉_삼성_구간);
+
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
+
+        sectionService.deleteSection(이호선, 선릉역);
+
+        assertThat(lineService.findLineById(이호선.getId()).getStations()).hasSize(2);
+    }
 }
