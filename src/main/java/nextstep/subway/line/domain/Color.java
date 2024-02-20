@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 
 public enum Color {

@@ -1,9 +1,9 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.line.Color;
-import nextstep.subway.line.Line;
-import nextstep.subway.line.Section;
-import nextstep.subway.station.Station;
+import nextstep.subway.line.domain.Color;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.Test;
 
 

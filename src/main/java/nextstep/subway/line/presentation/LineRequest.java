@@ -1,4 +1,6 @@
-package nextstep.subway.line;
+package nextstep.subway.line.presentation;
+
+import nextstep.subway.line.domain.Color;
 
 public class LineRequest {
 

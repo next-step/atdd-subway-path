@@ -1,5 +1,10 @@
-package nextstep.subway.station;
+package nextstep.subway.station.application;
 
+import nextstep.subway.station.presentation.StationRequest;
+import nextstep.subway.station.presentation.StationResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
+import nextstep.subway.station.persistance.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

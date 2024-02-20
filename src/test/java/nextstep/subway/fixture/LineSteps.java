@@ -2,10 +2,8 @@ package nextstep.subway.fixture;
 
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
-import nextstep.subway.line.Color;
-import nextstep.subway.line.LineResponse;
-import nextstep.subway.line.Section;
-import nextstep.subway.station.Station;
+import nextstep.subway.line.domain.Color;
+import nextstep.subway.line.presentation.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 

@@ -1,7 +1,6 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
-import nextstep.subway.line.Line;
-import nextstep.subway.station.Station;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.LinkedList;

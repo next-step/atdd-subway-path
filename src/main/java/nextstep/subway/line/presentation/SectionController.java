@@ -1,5 +1,6 @@
-package nextstep.subway.line;
+package nextstep.subway.line.presentation;
 
+import nextstep.subway.line.application.SectionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

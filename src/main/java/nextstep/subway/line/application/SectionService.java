@@ -1,11 +1,15 @@
-package nextstep.subway.line;
+package nextstep.subway.line.application;
 
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationNotFoundException;
-import nextstep.subway.station.StationRepository;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.persistance.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.presentation.SectionResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.presentation.SectionRequest;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
+import nextstep.subway.station.persistance.StationRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class SectionService {

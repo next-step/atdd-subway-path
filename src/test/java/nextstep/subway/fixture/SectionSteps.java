@@ -1,13 +1,10 @@
 package nextstep.subway.fixture;
 
 import io.restassured.RestAssured;
-import nextstep.subway.line.Section;
-import nextstep.subway.line.SectionRequest;
-import nextstep.subway.line.SectionResponse;
+import nextstep.subway.line.presentation.SectionRequest;
+import nextstep.subway.line.presentation.SectionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import java.util.Map;
 
 public class SectionSteps {
 
