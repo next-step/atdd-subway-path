@@ -78,4 +78,13 @@ public class Section {
         return Objects.equals(upStation, newSection.getUpStation())
                 && Objects.equals(downStation, newSection.getDownStation());
     }
+
+    public void changeDownStation(Station toDown, int distance) {
+        this.downStation = toDown;
+        this.distance += distance;
+    }
+
+    public Integer getDistance() {
+        return distance;
+    }
 }

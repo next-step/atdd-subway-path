@@ -38,13 +38,12 @@ public class SectionService {
     public void deleteSection(long lineId, long stationId) {
 
         Line line = getLine(lineId);
-        line.removeSection(stationId);
 
-        if(line.deletableSection()) {
+        if(!line.deletableSection()) {
             throw new IllegalStateException("구간이 1개여서 역을 삭제할 수 없다");
         }
 
-        line.removeSection(stationId);
+        line.removeStation(getStation(stationId));
         lineRepository.save(line);
     }
 

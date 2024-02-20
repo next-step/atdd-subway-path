@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 public class SectionSteps {
 
 
-    public static SectionResponse 라인에_구간을_생성한다(long lineId, SectionRequest SectionRequest) {
+    public static SectionResponse 라인에_구간을_추가한다(long lineId, SectionRequest SectionRequest) {
         return RestAssured.given().log().all()
                 .pathParam("lineId", lineId)
                 .body(SectionRequest)
@@ -17,6 +17,19 @@ public class SectionSteps {
                 .post("lines/{lineId}/sections")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(SectionResponse.class);
+    }
+
+
+    public static void 라인의_구간을_삭제한다(Long lineId, Long stationId) {
+        RestAssured.given().log().all()
+                .pathParam("lineId", lineId)
+                .pathParam("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .delete("lines/{lineId}/sections/{stationId}")
+                .then()
+                .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract()
                 .as(SectionResponse.class);
     }

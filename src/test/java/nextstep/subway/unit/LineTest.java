@@ -10,14 +10,15 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LineTest {
+
+    Station 건대입구역 = new Station("건대입구역");
+    Station 구의역 = new Station("구의역");
+    Station 강변역 = new Station("강변역");
+    Line line = new Line("2호선", Color.GREEN, 건대입구역, 구의역, 6);
+
+
     @Test
     void addSection() {
-
-        Station 건대입구역 = new Station("건대입구역");
-        Station 구의역 = new Station("구의역");
-        Station 강변역 = new Station("강변역");
-
-        Line line = new Line("2호선", Color.GREEN, 건대입구역, 구의역, 6);
         line.addSection(new Section(구의역, 강변역, 4, line));
 
         assertThat(line.getStations()).containsExactly(건대입구역, 구의역, 강변역);
@@ -26,11 +27,6 @@ class LineTest {
     @Test
     void getStations() {
 
-        Station 건대입구역 = new Station("건대입구역");
-        Station 구의역 = new Station("구의역");
-        Station 강변역 = new Station("강변역");
-
-        Line line = new Line("2호선", Color.GREEN, 건대입구역, 구의역, 6);
         Section section2 = new Section(구의역, 강변역, 4, line);
         line.addSection(section2);
 
@@ -41,11 +37,6 @@ class LineTest {
     void removeSection() {
 
         // given
-        Station 건대입구역 = new Station("건대입구역");
-        Station 구의역 = new Station("구의역");
-        Station 강변역 = new Station("강변역");
-
-        Line line = new Line("2호선", Color.GREEN, 건대입구역, 구의역, 6);
         Section section2 = new Section(구의역, 강변역, 4, line);
         line.addSection(section2);
 
@@ -55,4 +46,47 @@ class LineTest {
         // then
         assertThat(line.getLastStation()).isEqualTo(구의역);
     }
+    
+    @Test
+    public void removeMidStation() {
+
+        // given
+        Section section2 = new Section(구의역, 강변역, 4, line);
+        line.addSection(section2);
+
+        // when
+        line.removeStation(구의역);
+
+        // then
+        assertThat(line.getStations()).containsExactly(건대입구역, 강변역);
+    }
+
+    @Test
+    public void removeFirstStation() {
+        // given
+        Section section2 = new Section(구의역, 강변역, 4, line);
+        line.addSection(section2);
+
+        // when
+        line.removeStation(건대입구역);
+
+        // then
+        assertThat(line.getStations()).containsExactly(구의역, 강변역);
+    }
+
+    @Test
+    public void removeLastStation() {
+        // given
+        Section section2 = new Section(구의역, 강변역, 4, line);
+        line.addSection(section2);
+
+        // when
+        line.removeStation(강변역);
+
+        // then
+        assertThat(line.getStations()).containsExactly(건대입구역, 구의역);
+    }
+
+
+
 }

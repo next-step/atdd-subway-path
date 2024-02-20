@@ -20,13 +20,6 @@ public class LineSections {
     }
 
 
-
-    public Optional<Section> find(long stationId) {
-        return sections.stream()
-                .filter(section -> section.getDownStation().getId() == stationId)
-                .findFirst();
-    }
-
     public void remove(Section deleteSection) {
         Station lastStation = getLastStation();
         if (!lastStation.equals(deleteSection.getDownStation())) {
@@ -106,5 +99,30 @@ public class LineSections {
 
     private boolean isEmptySection() {
         return this.sections.isEmpty();
+    }
+
+    public void remove(Station station) {
+        if (getFirstStation().equals(station)) {
+            this.sections.remove(0);
+            return;
+        }
+        if (getLastStation().equals(station)) {
+            this.sections.remove(this.sections.size() - 1);
+            return;
+        }
+
+        List<Section> sectionInclude = getSectionInclude(station);
+
+        Section up = sectionInclude.get(0);
+        Section down = sectionInclude.get(1);
+
+        up.changeDownStation(down.getDownStation(), down.getDistance());
+        this.sections.remove(down);
+    }
+
+    private List<Section> getSectionInclude(Station station) {
+        return this.sections.stream()
+                .filter(it -> it.getDownStation().equals(station) || it.getUpStation().equals(station))
+                .collect(Collectors.toList());
     }
 }

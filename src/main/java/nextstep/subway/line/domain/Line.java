@@ -45,10 +45,6 @@ public class Line {
         lineSections.add(section);
     }
 
-    public void removeSection(long stationsId) {
-        Optional<Section> section = lineSections.find(stationsId);
-        section.ifPresent(value -> lineSections.remove(value));
-    }
 
     public void removeSection(Section section) {
         lineSections.remove(section);
@@ -86,5 +82,9 @@ public class Line {
 
     public Station getLastStation() {
         return lineSections.getLastStation();
+    }
+
+    public void removeStation(Station station) {
+        lineSections.remove(station);
     }
 }
