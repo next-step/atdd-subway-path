@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.Map;
 import nextstep.subway.applicaion.dto.LineResponse;
 import nextstep.subway.applicaion.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +46,8 @@ public class PathAcceptanceTest extends AcceptanceTest {
    */
   @BeforeEach
   public void setUp() {
+    super.setUp();
+
     강남역 = 지하철역_생성("강남역");
     역삼역 = 지하철역_생성("역삼역");
     선릉역 = 지하철역_생성("선릉역");
@@ -93,22 +94,22 @@ public class PathAcceptanceTest extends AcceptanceTest {
   @Test
   void 출발역_정보_누락() {
     // when
-    final var response = 경로_탐색_요청(매봉역.getId(), 역삼역.getId());
+    final var response = 경로_탐색_요청(null, 역삼역.getId());
 
     // then
     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    assertThat(response.body().asString()).isEqualTo("출발역 정보를 입력해주세요.");
+    assertThat(response.body().asString()).contains("출발역 정보를 입력해주세요.");
   }
 
-  @DisplayName("출발역 정보 누락")
+  @DisplayName("도착역 정보 누락")
   @Test
   void 도착역_정보_누락() {
     // when
-    final var response = 경로_탐색_요청(매봉역.getId(), 역삼역.getId());
+    final var response = 경로_탐색_요청(매봉역.getId(), null);
 
     // then
     assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    assertThat(response.body().asString()).isEqualTo("도착역 정보를 입력해주세요.");
+    assertThat(response.body().asString()).contains("도착역 정보를 입력해주세요.");
   }
 
   @DisplayName("경로 탐색 실패")
@@ -123,14 +124,10 @@ public class PathAcceptanceTest extends AcceptanceTest {
   }
 
   private ExtractableResponse<Response> 경로_탐색_요청(Long source, Long target) {
-    final var params = Map.of(
-        "source", source,
-        "target", target
-    );
-
     return RestAssured.given().log().all()
         .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .body(params)
+        .queryParam("source", source)
+        .queryParam("target", target)
         .when().get("/paths")
         .then().log().all().extract();
   }
