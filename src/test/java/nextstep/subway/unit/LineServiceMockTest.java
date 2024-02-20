@@ -67,8 +67,6 @@ public class LineServiceMockTest {
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
         when(stationRepository.findById(삼성역.getId())).thenReturn(Optional.of(삼성역));
-        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.ofNullable(null));
-        when(sectionRepository.findByUpStation(선릉역)).thenReturn(Optional.ofNullable(null));
 
         sectionService.addSection(이호선, new SectionRequest(강남역.getId(), 선릉역.getId(), 7));
         sectionService.addSection(이호선,  new SectionRequest(선릉역.getId(), 삼성역.getId(), 3));

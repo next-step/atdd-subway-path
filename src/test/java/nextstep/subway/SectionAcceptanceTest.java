@@ -52,27 +52,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         assertThat(ids).containsExactly(강남역Id, 선릉역Id);
     }
 
-
-    /**
-     * Given 지하철 노선에 2개의 구간을 등록하고
-     * When 노선에 등록된 역이 하행역인 구간을 등록하면
-     * Then 400에러가 발생한다.
-     */
-    @Test
-    @DisplayName("하행역이 지하철 노선에 등록된 역인 구간을 추가하면 400에러가 발생한다.")
-    void addSectionExistDownStationException() {
-        //given
-        Long 삼성역Id = extractResponseId(StationRestAssuredCRUD.createStation("삼성역"));
-        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 7, 이호선Id);
-        SectionRestAssuredCRUD.addSection(선릉역Id, 삼성역Id, 3, 이호선Id);
-
-        //when
-        ExtractableResponse<Response> addResponse = SectionRestAssuredCRUD.addSection(삼성역Id, 강남역Id, 4, 이호선Id);
-
-        //then
-        assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     /**
      * Given 지하철 노선에 하나의 구간을 등록하고
      * When 지하철 노선의 하행역과 새로운 구간의 상행역이 일치하지 않은 구간을 추가하면

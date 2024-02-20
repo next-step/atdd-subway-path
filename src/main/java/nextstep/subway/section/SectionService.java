@@ -17,7 +17,7 @@ public class SectionService {
         this.stationRepository = stationRepository;
     }
 
-    public Section validSection(SectionRequest sectionRequest) {
+    private Section validSection(SectionRequest sectionRequest) {
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(
                 () -> new BadRequestException("존재하지 않는 역입니다.")
         );
@@ -37,53 +37,7 @@ public class SectionService {
 
     public void addSection(Line line, SectionRequest sectionRequest) {
         Section requestSection = validSection(sectionRequest);
-        Section existingSection = sectionRepository.findByUpStation(requestSection.getUpStation()).orElse(null);
-        if(existingSection != null){
-            requestSection.validMiddleSection(existingSection);
-            addMiddleSection(line, requestSection, existingSection);
-            return;
-        }
-
-        existingSection = sectionRepository.findByUpStation(requestSection.getDownStation()).orElse(null);
-        if(existingSection != null) {
-            addFirstSection(line, requestSection, existingSection);
-            return;
-        }
-
-        line.addEndSection(requestSection);
+        line.addSection(requestSection);
     }
 
-    public void addMiddleSection(Line line, Section requestSection, Section existingSection) {
-        requestSection = sectionRepository.save(requestSection); //A-B 구간
-
-        //기존 구간 역과 요청 구간 역으로 신규 구간 생성
-        Section newSection = line.createNewSection(existingSection, requestSection); //B-C 구간
-        newSection = sectionRepository.save(newSection);
-
-        //요청 구간의 nextStationId에 신규 구간의 id로 셋팅
-        requestSection.changeNextSection(newSection);
-
-        //기존 구간의 이전 구간에 nextStationId 셋팅
-        Section prevSection = sectionRepository.findByDownStation(requestSection.getUpStation()).orElse(null);
-        if(prevSection != null) {
-            prevSection.changeNextSection(requestSection);
-        }
-
-        //기존 구간 삭제
-        line.removeSection(existingSection);
-
-        //신규 구간 추가
-        line.addMiddleSection(newSection);
-        line.addMiddleSection(requestSection);
-    }
-
-    private void addFirstSection(Line line, Section requestSection, Section existingSection) {
-        requestSection = sectionRepository.save(requestSection);
-
-        //요청 구간의 nextStationId에 기존 구간의 id로 셋팅
-        requestSection.changeNextSection(existingSection);
-
-        //신규 구간 추가
-        line.addMiddleSection(requestSection);
-    }
 }

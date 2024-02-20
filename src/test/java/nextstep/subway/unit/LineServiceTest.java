@@ -33,7 +33,7 @@ public class LineServiceTest {
         Station 선릉역 = stationRepository.save(new Station("선릉역"));
         Station 잠실역 = stationRepository.save(new Station("잠실역"));
 
-        line.addEndSection(new Section(강남역, 선릉역, 7));
+        line.addSection(new Section(강남역, 선릉역, 7));
         lineRepository.save(line);
 
         // when
@@ -51,8 +51,8 @@ public class LineServiceTest {
         Station 선릉역 = stationRepository.save(new Station("선릉역"));
         Station 잠실역 = stationRepository.save(new Station("잠실역"));
 
-        line.addEndSection(new Section(강남역, 선릉역, 7));
-        line.addEndSection(new Section(선릉역, 잠실역, 3));
+        line.addSection(new Section(강남역, 선릉역, 7));
+        line.addSection(new Section(선릉역, 잠실역, 3));
         lineRepository.save(line);
 
         // when
