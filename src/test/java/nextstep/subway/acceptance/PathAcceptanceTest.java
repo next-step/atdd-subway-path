@@ -42,8 +42,7 @@ public class PathAcceptanceTest {
      * *3호선*                   *신분당선*
      * |                        |
      * 남부터미널역  --- *3호선* ---   양재역
-     * <p>
-     * <p>
+     *
      * 오이도역 --- *4호선* --- 정왕역
      */
     @BeforeEach
