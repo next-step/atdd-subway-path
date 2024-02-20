@@ -1,6 +1,6 @@
 package nextstep.subway.applicaion;
 
-import java.util.Collection;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.StationRequest;
 import nextstep.subway.applicaion.dto.StationResponse;
@@ -41,9 +41,7 @@ public class StationService {
             .orElseThrow(() -> new BusinessException("역 정보를 찾을 수 없습니다."));
     }
 
-    public List<StationResponse> findAllByIdIn(Collection<Long> ids) {
-        return stationRepository.findAllByIdIn(ids).stream()
-            .map(StationResponse::from)
-            .collect(Collectors.toList());
+    public Optional<Station> getStation(Long id) {
+        return stationRepository.findById(id);
     }
 }
