@@ -126,8 +126,8 @@ public class PathFinderComponentTest {
             PathResult 경로_조회_결과 = pathFinder.calculateShortestPath(모든_노선_목록, 강남, 남부터미널);
 
             // then
-            assertThat(경로_조회_결과.getStations()).containsExactly(강남, 교대, 남부터미널);
-            assertThat(경로_조회_결과.getDistance()).isEqualTo(12);
+            assertThat(경로_조회_결과).usingRecursiveComparison()
+                    .isEqualTo(new PathResult(List.of(강남, 교대, 남부터미널), 12));
         }
 
         /**
@@ -140,9 +140,9 @@ public class PathFinderComponentTest {
             // when
             PathResult 경로_조회_결과 = pathFinder.calculateShortestPath(모든_노선_목록, 교대, 양재);
 
-            // then
-            assertThat(경로_조회_결과.getStations()).containsExactly(교대, 남부터미널, 양재);
-            assertThat(경로_조회_결과.getDistance()).isEqualTo(5);
+            //
+            assertThat(경로_조회_결과).usingRecursiveComparison()
+                    .isEqualTo(new PathResult(List.of(교대, 남부터미널, 양재), 5));
         }
     }
 }
