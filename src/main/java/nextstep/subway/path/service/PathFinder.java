@@ -4,7 +4,6 @@ import nextstep.subway.exception.NotFoundStationException;
 import nextstep.subway.exception.SameFindPathStationsException;
 import nextstep.subway.exception.UnconnectedFindPathStationsException;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.path.presentation.response.FindPathResponse;
 import nextstep.subway.station.domain.Station;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -19,12 +18,14 @@ import java.util.stream.Collectors;
 @Service
 public class PathFinder {
 
-    public FindPathResponse findShortestPath(List<Line> lines, Station startStation, Station endStation) {
+    public WeightedMultigraph makeGraph(List<Line> lines) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        setVertexAndEdgeWeight(graph, lines);
 
-        addVertex(lines, graph);
-        setEdgeWeight(lines, graph);
+        return graph;
+    }
 
+    public GraphPath findShortestPath(WeightedMultigraph graph, List<Line> lines, Station startStation, Station endStation) {
         validate(lines, startStation, endStation);
 
         GraphPath shortestPath = new DijkstraShortestPath(graph).getPath(startStation, endStation);
@@ -33,10 +34,12 @@ public class PathFinder {
             throw new UnconnectedFindPathStationsException();
         }
 
-        List<Station> shortestPathStations = shortestPath.getVertexList();
-        double shortestPathWeight = shortestPath.getWeight();
+        return shortestPath;
+    }
 
-        return FindPathResponse.of(shortestPathStations, (int) shortestPathWeight);
+    private void setVertexAndEdgeWeight(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Line> lines) {
+        addVertex(lines, graph);
+        setEdgeWeight(lines, graph);
     }
 
     private void validate(List<Line> lines, Station startStation, Station endStation) {

@@ -6,6 +6,9 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.path.presentation.response.FindPathResponse;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.jgrapht.GraphPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +33,17 @@ public class PathService {
         Station endStation = stationRepository.findById(endStationId)
                 .orElseThrow(NotFoundLineException::new);
 
-        return pathFinder.findShortestPath(lines, startStation, endStation);
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = pathFinder.makeGraph(lines);
+        GraphPath shortestPath = pathFinder.findShortestPath(graph, lines, startStation, endStation);
+
+        return makePathToResponse(shortestPath);
+    }
+
+    private FindPathResponse makePathToResponse(GraphPath shortestPath) {
+        List<Station> shortestPathStations = shortestPath.getVertexList();
+        double shortestPathWeight = shortestPath.getWeight();
+
+        return FindPathResponse.of(shortestPathStations, (int) shortestPathWeight);
     }
 
 }
