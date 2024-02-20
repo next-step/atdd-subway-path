@@ -6,6 +6,7 @@ import nextstep.subway.dto.line.LineUpdateRequest;
 import nextstep.subway.dto.section.SectionRequest;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
+import nextstep.subway.entity.Sections;
 import nextstep.subway.entity.Station;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.SectionRepository;
@@ -20,15 +21,10 @@ import java.util.stream.Collectors;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
-    private final SectionRepository sectionRepository;
 
-    public LineService(
-        LineRepository lineRepository,
-        StationService stationService,
-        SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
-        this.sectionRepository = sectionRepository;
     }
 
     /** 지하철 노선을 생성한다. */
@@ -97,8 +93,10 @@ public class LineService {
         line.removeSection(station);
     }
 
-    public List<Section> findSections() {
-        return sectionRepository.findAll();
+    public List<Sections> findSectionsList() {
+        return lineRepository.findAll().stream()
+            .map(Line::getSections)
+            .collect(Collectors.toList());
     }
 
 }

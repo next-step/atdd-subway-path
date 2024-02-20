@@ -1,12 +1,8 @@
 package nextstep.subway.service;
 
 import nextstep.subway.dto.path.PathResponse;
-import nextstep.subway.entity.Section;
+import nextstep.subway.entity.Sections;
 import nextstep.subway.entity.Station;
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,27 +26,9 @@ public class PathService {
 
         Station sourceStation = stationService.findStation(source);
         Station targetStation = stationService.findStation(target);
+        List<Sections> sectionsList = lineService.findSectionsList();
 
-        try {
-            WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-
-            List<Station> stations = stationService.findStations();
-            for (Station station : stations) {
-                graph.addVertex(station);
-            }
-            for (Section section : lineService.findSections()) {
-                DefaultWeightedEdge edge = graph.addEdge(section.getUpStation(), section.getDownStation());
-                graph.setEdgeWeight(edge, section.getDistance());
-            }
-
-            DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-            GraphPath path = dijkstraShortestPath.getPath(sourceStation, targetStation);
-            List<Station> shortestPath = path.getVertexList();
-            Integer distance = (int) path.getWeight();
-
-            return new PathResponse(shortestPath, distance);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("출발역과 도착역이 연결되어 있어야 한다.");
-        }
+        PathFinder pathFinder = new PathFinder();
+        return pathFinder.getShortestPath(sectionsList, sourceStation, targetStation);
     }
 }
