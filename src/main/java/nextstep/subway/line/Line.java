@@ -79,10 +79,7 @@ public class Line {
     }
 
     public void deleteSection(Station deleteStation) {
-        if(sections.isLastSection(deleteStation)) {
-            sections.deleteDownStation(deleteStation);
-        }
-        sections.deleteMiddleStation(deleteStation);
+        sections.deleteSection(deleteStation);
     }
 
     @Override

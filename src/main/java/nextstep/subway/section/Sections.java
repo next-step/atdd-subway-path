@@ -78,12 +78,16 @@ public class Sections {
         }
     }
 
+    private void validateFirstSection(Section section, Section newSection) {
+        if(section.getDownStation().equals(newSection.getUpStation())){
+            throw new BadRequestException("새로운 구간의 상행역이 이미 노선에 등록된 역입니다.");
+        }
+    }
+
     public boolean isFirstSection(Section newSection) {
         for(Section section : sections) {
             if(section.getUpStation().equals(newSection.getDownStation())) {
-                if(section.getDownStation().equals(newSection.getUpStation())){
-                    throw new BadRequestException("새로운 구간의 상행역이 이미 노선에 등록된 역입니다.");
-                }
+                validateFirstSection(section, newSection);
                 return true;
             }
         }
@@ -110,11 +114,22 @@ public class Sections {
         return createNewSection(existingSection, requestSection);
     }
 
-    public void deleteDownStation(Station deleteStation) {
+    public void deleteSection(Station deleteStation) {
+        validDeleteSection();
+        if(isLastSection(deleteStation)) {
+            deleteLastStation(deleteStation);
+            return;
+        }
+        deleteStation(deleteStation);
+    }
+
+    private void validDeleteSection() {
         if(sections.size() == MIN_SECTION_SIZE) {
             throw new IllegalArgumentException("구간이 1개 남은 경우 삭제할 수 없습니다.");
         }
+    }
 
+    private void deleteLastStation(Station deleteStation) {
         if(!deleteStation.equals(lastSection().getDownStation())){
             throw new IllegalArgumentException("노선의 하행 종점역이 아닙니다.");
         }
@@ -126,18 +141,18 @@ public class Sections {
         sections.removeIf(s -> s.equals(deleteSection));
     }
 
-    public void deleteMiddleStation(Station deleteStation) {
-        Section removeSection = sections.stream()
+    private void deleteStation(Station deleteStation) {
+        Section deleteSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(deleteStation))
                 .findAny().get();
 
         for(Section section : sections) {
             if(section.getDownStation().equals(deleteStation)) {
-                section.changeDownStationAndDistance(removeSection.getDownStation(), removeSection.getDistance());
+                section.changeDownStationAndDistance(deleteSection.getDownStation(), deleteSection.getDistance());
             }
         }
 
-        sections.removeIf(s -> s.equals(removeSection));
+        sections.removeIf(s -> s.equals(deleteSection));
     }
 
     private Section createNewSection(Section existingSection, Section requestSection) {
