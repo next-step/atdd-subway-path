@@ -51,7 +51,7 @@ public class LineServiceMockTest {
     @Nested
     class 지하철_구간 {
 
-        Long 이호선_아이디;
+        Long 이호선_번호;
         Long 선릉역_번호;
         Long 삼성역_번호;
         Long 신천역_번호;
@@ -63,7 +63,7 @@ public class LineServiceMockTest {
 
         @BeforeEach
         void 사전_스텁_설정() {
-            이호선_아이디 = 1L;
+            이호선_번호 = 1L;
             선릉역_번호 = 1L;
             삼성역_번호 = 2L;
             신천역_번호 = 3L;
@@ -77,7 +77,7 @@ public class LineServiceMockTest {
             신천역 = StationFixture.신천;
             ReflectionTestUtils.setField(신천역, "id", 신천역_번호);
 
-            when(lineRepository.findById(이호선_아이디)).thenReturn(Optional.of(LineFixture.이호선_생성()));
+            when(lineRepository.findById(이호선_번호)).thenReturn(Optional.of(LineFixture.이호선_생성()));
             when(stationRepository.findById(선릉역_번호)).thenReturn(Optional.of(선릉역));
             when(stationRepository.findById(삼성역_번호)).thenReturn(Optional.of(삼성역));
         }
@@ -91,13 +91,13 @@ public class LineServiceMockTest {
         void 지하철_구간_추가() {
             // given
             SectionRequest 선릉_삼성_구간 = SectionRequest.mergeForCreateLine(
-                    이호선_아이디, SectionFixture.지하철_구간(선릉역_번호, 삼성역_번호, 10));
+                    이호선_번호, SectionFixture.지하철_구간(선릉역_번호, 삼성역_번호, 10));
 
             // when
             lineService.addSection(선릉_삼성_구간);
 
             // then
-            assertThat(lineService.findLineById(이호선_아이디).getAllStations())
+            assertThat(lineService.findLineById(이호선_번호).getAllStations())
                     .containsAnyOf(선릉역, 삼성역);
         }
 
@@ -110,9 +110,9 @@ public class LineServiceMockTest {
         void 지하철_구간_삭제() {
             // given
             SectionRequest 선릉_삼성_구간 = SectionRequest.mergeForCreateLine(
-                    이호선_아이디, SectionFixture.지하철_구간(선릉역_번호, 삼성역_번호, 10));
+                    이호선_번호, SectionFixture.지하철_구간(선릉역_번호, 삼성역_번호, 10));
             SectionRequest 삼성_신천_구간 = SectionRequest.mergeForCreateLine(
-                    이호선_아이디, SectionFixture.지하철_구간(삼성역_번호, 신천역_번호, 10));
+                    이호선_번호, SectionFixture.지하철_구간(삼성역_번호, 신천역_번호, 10));
 
             when(stationRepository.findById(신천역_번호)).thenReturn(Optional.of(신천역));
 
@@ -120,28 +120,27 @@ public class LineServiceMockTest {
             lineService.addSection(삼성_신천_구간);
 
             // when
-            lineService.deleteSection(이호선_아이디, 신천역_번호);
+            lineService.deleteSection(이호선_번호, 신천역_번호);
 
             // then
-            assertThat(lineService.findLineById(이호선_아이디).getAllStations())
+            assertThat(lineService.findLineById(이호선_번호).getAllStations())
                     .containsAnyOf(선릉역, 삼성역);
         }
     }
 
     @Nested
     class 지하철_경로 {
+        List<Line> 모든_노선_목록;
 
         Line 이호선;
         Line 신분당선;
         Line 삼호선;
         Line 사호선;
 
-        List<Line> 모든_노선_목록;
-
-        Long 이호선_아이디;
-        Long 신분당선_아이디;
-        Long 삼호선_아이디;
-        Long 사호선_아이디;
+        Long 이호선_번호;
+        Long 신분당선_번호;
+        Long 삼호선_번호;
+        Long 사호선_번호;
 
         Station 교대;
         Station 강남;
@@ -150,59 +149,59 @@ public class LineServiceMockTest {
         Station 정왕;
         Station 오이도;
 
-        Long 교대역_아이디;
-        Long 강남역_아이디;
-        Long 양재역_아이디;
-        Long 남부터미널역_아이디;
-        Long 정왕역_아이디;
-        Long 오이도역_아이디;
+        Long 교대역_번호;
+        Long 강남역_번호;
+        Long 양재역_번호;
+        Long 남부터미널역_번호;
+        Long 정왕역_번호;
+        Long 오이도역_번호;
 
 
         @BeforeEach
         void 사전_노선_설정() {
-            이호선_아이디 = 1L;
-            신분당선_아이디 = 2L;
-            삼호선_아이디 = 3L;
-            사호선_아이디 = 3L;
+            이호선_번호 = 1L;
+            신분당선_번호 = 2L;
+            삼호선_번호 = 3L;
+            사호선_번호 = 3L;
 
             이호선 = new Line("이호선", "green");
-            ReflectionTestUtils.setField(이호선, "id", 이호선_아이디);
+            ReflectionTestUtils.setField(이호선, "id", 이호선_번호);
 
             신분당선 = new Line("신분당선", "red");
-            ReflectionTestUtils.setField(신분당선, "id", 신분당선_아이디);
+            ReflectionTestUtils.setField(신분당선, "id", 신분당선_번호);
 
             삼호선 = new Line("삼호선", "orange");
-            ReflectionTestUtils.setField(삼호선, "id", 삼호선_아이디);
+            ReflectionTestUtils.setField(삼호선, "id", 삼호선_번호);
 
             사호선 = new Line("사호선", "blue");
-            ReflectionTestUtils.setField(사호선, "id", 사호선_아이디);
+            ReflectionTestUtils.setField(사호선, "id", 사호선_번호);
 
             모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
 
-            교대역_아이디 = 1L;
-            강남역_아이디 = 2L;
-            양재역_아이디 = 3L;
-            남부터미널역_아이디 = 4L;
-            정왕역_아이디 = 5L;
-            오이도역_아이디 = 6L;
+            교대역_번호 = 1L;
+            강남역_번호 = 2L;
+            양재역_번호 = 3L;
+            남부터미널역_번호 = 4L;
+            정왕역_번호 = 5L;
+            오이도역_번호 = 6L;
 
             교대 = StationFixture.교대;
-            ReflectionTestUtils.setField(교대, "id", 교대역_아이디);
+            ReflectionTestUtils.setField(교대, "id", 교대역_번호);
 
             강남 = StationFixture.강남;
-            ReflectionTestUtils.setField(강남, "id", 강남역_아이디);
+            ReflectionTestUtils.setField(강남, "id", 강남역_번호);
 
             양재 = StationFixture.양재;
-            ReflectionTestUtils.setField(양재, "id", 양재역_아이디);
+            ReflectionTestUtils.setField(양재, "id", 양재역_번호);
 
             남부터미널 = StationFixture.남부터미널;
-            ReflectionTestUtils.setField(남부터미널, "id", 남부터미널역_아이디);
+            ReflectionTestUtils.setField(남부터미널, "id", 남부터미널역_번호);
 
             정왕 = StationFixture.정왕;
-            ReflectionTestUtils.setField(정왕, "id", 정왕역_아이디);
+            ReflectionTestUtils.setField(정왕, "id", 정왕역_번호);
 
             오이도 = StationFixture.오이도;
-            ReflectionTestUtils.setField(오이도, "id", 오이도역_아이디);
+            ReflectionTestUtils.setField(오이도, "id", 오이도역_번호);
 
             이호선.addSection(new Section(교대, 강남, 10, 이호선));
             신분당선.addSection(new Section(강남, 양재, 10, 신분당선));
@@ -219,15 +218,15 @@ public class LineServiceMockTest {
         @Test
         void 강남역에서_남부터미널역까지_경로_조회() {
             // given
-            when(stationRepository.existsById(강남역_아이디)).thenReturn(true);
-            when(stationRepository.existsById(남부터미널역_아이디)).thenReturn(true);
-            when(stationRepository.findById(강남역_아이디)).thenReturn(Optional.of(강남));
-            when(stationRepository.findById(남부터미널역_아이디)).thenReturn(Optional.of(남부터미널));
+            when(stationRepository.existsById(강남역_번호)).thenReturn(true);
+            when(stationRepository.existsById(남부터미널역_번호)).thenReturn(true);
+            when(stationRepository.findById(강남역_번호)).thenReturn(Optional.of(강남));
+            when(stationRepository.findById(남부터미널역_번호)).thenReturn(Optional.of(남부터미널));
             when(lineRepository.findAll()).thenReturn(모든_노선_목록);
             when(pathFinder.calculateShortestPath(모든_노선_목록, 강남, 남부터미널)).thenReturn(new PathResult(List.of(강남, 교대, 남부터미널), 12));
 
             // when
-            PathResponse 경로_조회_응답 = lineService.findShortestPath(new PathRequest(강남역_아이디, 남부터미널역_아이디));
+            PathResponse 경로_조회_응답 = lineService.findShortestPath(new PathRequest(강남역_번호, 남부터미널역_번호));
 
             // then
             assertThat(경로_조회_응답).usingRecursiveComparison()
@@ -242,15 +241,15 @@ public class LineServiceMockTest {
         @Test
         void 교대역에서_양재역까지_경로_조회() {
             // given
-            when(stationRepository.existsById(교대역_아이디)).thenReturn(true);
-            when(stationRepository.existsById(양재역_아이디)).thenReturn(true);
-            when(stationRepository.findById(교대역_아이디)).thenReturn(Optional.of(교대));
-            when(stationRepository.findById(양재역_아이디)).thenReturn(Optional.of(양재));
+            when(stationRepository.existsById(교대역_번호)).thenReturn(true);
+            when(stationRepository.existsById(양재역_번호)).thenReturn(true);
+            when(stationRepository.findById(교대역_번호)).thenReturn(Optional.of(교대));
+            when(stationRepository.findById(양재역_번호)).thenReturn(Optional.of(양재));
             when(lineRepository.findAll()).thenReturn(모든_노선_목록);
             when(pathFinder.calculateShortestPath(모든_노선_목록, 교대, 양재)).thenReturn(new PathResult(List.of(교대, 남부터미널, 양재), 5));
 
             // when
-            PathResponse 경로_조회_응답 = lineService.findShortestPath(new PathRequest(교대역_아이디, 양재역_아이디));
+            PathResponse 경로_조회_응답 = lineService.findShortestPath(new PathRequest(교대역_번호, 양재역_번호));
 
             // then
             assertThat(경로_조회_응답).usingRecursiveComparison()
