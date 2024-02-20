@@ -14,8 +14,8 @@ import org.springframework.http.MediaType;
 
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.acceptance.LineSteps.지하철_노선_조회_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_생성_요청;
-import static nextstep.subway.acceptance.LineSteps.지하철_노선에_지하철_구간_제거_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_구간_생성_요청;
+import static nextstep.subway.acceptance.LineSteps.지하철_구간_제거_요청;
 import static nextstep.subway.acceptance.StationSteps.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,7 +51,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void 지하철_노선에_구간_추가_노선의_맨_뒤에_새로운_구간_추가() {
         // when
         final var 정자역 = 지하철역_생성("정자역").getId();
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
+        지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -68,7 +68,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void 지하철_노선에_구간_추가_노선의_중간에_새로운_구간_추가() {
         // when
         final var  정자역 = 지하철역_생성("정자역").getId();
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 5));
+        지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 5));
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -154,7 +154,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         final var 정자역 = 지하철역_생성("정자역").getId();
 
         // when
-        final var response = 지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 10));
+        final var response = 지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 양재역, 10));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -171,10 +171,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void 지하철_노선에_구간_제거_마지막_구간_제거() {
         // given
         Long 정자역 = 지하철역_생성("정자역").getId();
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
+        지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 5));
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -193,11 +193,11 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // given
         Long 정자역 = 지하철역_생성("정자역").getId();
         Long 광교역 = 지하철역_생성("광교역").getId();
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
-        지하철_노선에_지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 광교역, 10));
+        지하철_구간_생성_요청(신분당선, createSectionCreateParams(양재역, 정자역, 10));
+        지하철_구간_생성_요청(신분당선, createSectionCreateParams(정자역, 광교역, 10));
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 양재역);
+        지하철_구간_제거_요청(신분당선, 양재역);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -217,7 +217,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         Long 정자역 = 지하철역_생성("정자역").getId();
 
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 정자역);
+        지하철_구간_제거_요청(신분당선, 정자역);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
@@ -234,7 +234,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선에_구간_제거_유일한_구간() {
         // when
-        지하철_노선에_지하철_구간_제거_요청(신분당선, 강남역);
+        지하철_구간_제거_요청(신분당선, 강남역);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(신분당선);
