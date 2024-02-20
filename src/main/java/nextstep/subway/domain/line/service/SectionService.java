@@ -1,6 +1,7 @@
 package nextstep.subway.domain.line.service;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.domain.line.dto.response.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.domain.line.domain.Line;
@@ -23,17 +24,10 @@ public class SectionService {
     private final StationRepository stationRepository;
 
     @Transactional
-    public SectionResponse createSection(Long lineId, CreateSectionRequest request) {
-
+    public LineResponse createSection(Long lineId, CreateSectionRequest request) {
         Line line = lineRepository.getLineById(lineId);
-        Section section = Section.create(
-                line,
-                getStation(request, "upStation"),
-                getStation(request, "downStation"),
-                request.getDistance()
-        );
-        Section savedSection = sectionRepository.save(section);
-        return SectionResponse.from(savedSection);
+        line.addSection(getStation(request, "upStation"), getStation(request, "downStation"), request.getDistance());
+        return LineResponse.from(line);
     }
 
     @Transactional

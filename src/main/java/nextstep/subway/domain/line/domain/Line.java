@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.domain.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -81,5 +82,13 @@ public class Line {
 
     public void removeSections(){
         sections.removeSection();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance){
+        sections.addSection(upStation, downStation, distance);
+    }
+
+    public List<Section> getSections(){
+        return sections.getSections();
     }
 }

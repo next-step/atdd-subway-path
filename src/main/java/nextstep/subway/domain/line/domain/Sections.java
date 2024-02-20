@@ -3,6 +3,7 @@ package nextstep.subway.domain.line.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.station.domain.Station;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -34,7 +35,15 @@ public class Sections {
         return sections.get(sections.size() - 1);
     }
 
-    public void removeSection(){
+    public void removeSection() {
         sections.remove(sections.size() - 1);
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        sections.add(Section.builder()
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(distance)
+                .build());
     }
 }
