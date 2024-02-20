@@ -230,8 +230,8 @@ public class LineServiceMockTest {
             PathResponse 경로_조회_응답 = lineService.findShortestPath(new PathRequest(강남역_아이디, 남부터미널역_아이디));
 
             // then
-            assertThat(경로_조회_응답.getStations()).containsExactly(강남, 교대, 남부터미널);
-            assertThat(경로_조회_응답.getDistance()).isEqualTo(12);
+            assertThat(경로_조회_응답).usingRecursiveComparison()
+                    .isEqualTo(new PathResponse(List.of(강남, 교대, 남부터미널), 12));
         }
 
         /**
@@ -253,8 +253,8 @@ public class LineServiceMockTest {
             PathResponse 경로_조회_응답 = lineService.findShortestPath(new PathRequest(교대역_아이디, 양재역_아이디));
 
             // then
-            assertThat(경로_조회_응답.getStations()).containsExactly(교대, 남부터미널, 양재);
-            assertThat(경로_조회_응답.getDistance()).isEqualTo(5);
+            assertThat(경로_조회_응답).usingRecursiveComparison()
+                    .isEqualTo(new PathResponse(List.of(교대, 남부터미널, 양재), 5));
         }
 
     }
