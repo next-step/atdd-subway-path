@@ -1,10 +1,17 @@
 package nextstep.subway.acceptance;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import nextstep.subway.dto.PathResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.StationResponse;
 
 public class PathAcceptanceTest extends BaseAcceptanceTest {
     private Long 교대역_ID;
@@ -15,11 +22,19 @@ public class PathAcceptanceTest extends BaseAcceptanceTest {
     private Long 신분당선_ID;
     private Long 삼호선_ID;
 
+    /**
+     * 교대역    --- *2호선* ---   강남역
+     * |                        |
+     * *3호선*                   *신분당선*
+     * |                        |
+     * 남부터미널역  --- *3호선* ---   양재
+     */
+
     @BeforeEach
     void setUp() {
         교대역_ID = 지하철_역_생성(교대역);
         양재역_ID = 지하철_역_생성(양재역);
-            남부터미널역_ID = 지하철_역_생성(남부터미널역);
+        남부터미널역_ID = 지하철_역_생성(남부터미널역);
         이호선_ID = 지하철_노선_생성_ID(getRequestParam("이호선", "초록색", 교대역_ID, 강남역_ID, 10));
         신분당선_ID = 지하철_노선_생성_ID(getRequestParam("신분당선", "빨간색", 강남역_ID, 양재역_ID, 10));
         삼호선_ID = 지하철_노선_생성_ID(getRequestParam("삼호선", "주황색", 교대역_ID, 남부터미널역_ID, 2));
@@ -33,8 +48,23 @@ public class PathAcceptanceTest extends BaseAcceptanceTest {
                  + "   and  출발역과 도착역 사이 거리를 조회할 수 있다.")
     @Test
     void 경로를_조회하면_출발역과_도착역_사이_역_목록과_거리를_조회할_수_있다() {
+        //given
+        Long 출발역 = 교대역_ID;
+        Long 도착역 = 양재역_ID;
 
+        //when
+        PathResponse pathResponse = 지하철_경로_조회(출발역, 도착역);
+
+        //then
+        List<StationResponse> stationResponses = pathResponse.getStations();
+        assertAll(
+            () -> assertThat(stationResponses).hasSize(3),
+            () -> assertThat(stationResponses).extracting(StationResponse::getId).containsExactly(교대역_ID, 남부터미널역_ID, 양재역_ID),
+            () -> assertThat(pathResponse.getDistance()).isEqualTo(5)
+        );
     }
+
+
 
     @DisplayName("given 출발역과 도착역이 주어질 때\n"
                  + "    when 경로를 조회하는데\n"

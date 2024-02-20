@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.PathResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.StationResponse;
 
@@ -113,5 +114,11 @@ public class BaseAcceptanceTest {
                .contentType(MediaType.APPLICATION_JSON_VALUE)
                .when().post("/lines/{lineId}/sections").then().log().all();
     }
+
+    public PathResponse 지하철_경로_조회(Long 출발역, Long 도착역) {
+        return new PathResponse();
+    }
+
+
 
 }
