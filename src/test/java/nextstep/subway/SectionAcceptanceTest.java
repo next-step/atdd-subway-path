@@ -296,4 +296,30 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 지하철 노선에 2개의 구간을 등록하고
+     * When 중간 역을 제거하면
+     * Then 지하철 노선에서 해당 역이 삭제된다.
+     */
+    @Test
+    @DisplayName("지하철 노선에서 중간 역을 제거한다.")
+    void deleteMiddleSection() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 7, 이호선Id);
+
+        Long 삼성역Id = extractResponseId(StationRestAssuredCRUD.createStation("삼성역"));
+        SectionRestAssuredCRUD.addSection(선릉역Id, 삼성역Id, 10, 이호선Id);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssuredCRUD.deleteSection(이호선Id, 선릉역Id);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //then
+        ExtractableResponse<Response> lineResponse = LineRestAssuredCRUD.showLine(이호선Id);
+        List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+        assertThat(stationIds).doesNotContain(선릉역Id);
+        assertThat(stationIds).containsOnly(강남역Id, 삼성역Id);
+    }
 }
