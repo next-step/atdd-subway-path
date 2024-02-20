@@ -160,7 +160,7 @@ public class SectionAcceptanceTest {
             assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
             // then
-            LineResponse 노선_조회_응답 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            LineResponse 노선_조회_응답 = LineFixture.노선_조회_요청(이호선_ID).as(LineResponse.class);
             List<Long> 노선의_역_목록 = 노선_조회_응답.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
@@ -187,7 +187,7 @@ public class SectionAcceptanceTest {
             assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
             // then
-            LineResponse 노선_조회_응답 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            LineResponse 노선_조회_응답 = LineFixture.노선_조회_요청(이호선_ID).as(LineResponse.class);
             List<Long> 노선의_역_목록 = 노선_조회_응답.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
@@ -214,7 +214,7 @@ public class SectionAcceptanceTest {
             assertThat(구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
             // then
-            LineResponse 구간_목록_응답 = LineFixture.getLine(이호선_ID).as(LineResponse.class);
+            LineResponse 구간_목록_응답 = LineFixture.노선_조회_요청(이호선_ID).as(LineResponse.class);
             List<Long> stationIds = 구간_목록_응답.getStations().stream()
                 .map(StationResponse::getId)
                 .collect(Collectors.toList());
