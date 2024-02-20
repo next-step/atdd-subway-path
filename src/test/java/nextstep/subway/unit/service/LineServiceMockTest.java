@@ -7,7 +7,6 @@ import nextstep.subway.line.presentation.request.AddSectionRequest;
 import nextstep.subway.line.presentation.response.ShowLineResponse;
 import nextstep.subway.line.service.LineService;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.service.SectionService;
 import nextstep.subway.section.service.dto.ShowLineSectionDto;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.service.StationService;
@@ -33,8 +32,6 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationService stationService;
-    @Mock
-    private SectionService sectionService;
 
     private final Station 논현역 = Station.from(Constant.논현역);
     private final Long 논현역_ID = 1L;
@@ -59,8 +56,6 @@ public class LineServiceMockTest {
         when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
-        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
-        when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
@@ -80,8 +75,6 @@ public class LineServiceMockTest {
         when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
-        when(sectionService.save(논현역_강남역_구간)).thenReturn(논현역_강남역_구간);
-        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
@@ -101,8 +94,6 @@ public class LineServiceMockTest {
         when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
-        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
-        when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
@@ -122,8 +113,6 @@ public class LineServiceMockTest {
         when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
-        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
-        when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
@@ -144,8 +133,6 @@ public class LineServiceMockTest {
         when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
-        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
-        when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when
@@ -166,8 +153,6 @@ public class LineServiceMockTest {
         when(stationService.findById(논현역_ID)).thenReturn(논현역);
         when(stationService.findById(신논현역_ID)).thenReturn(신논현역);
         when(stationService.findById(강남역_ID)).thenReturn(강남역);
-        when(sectionService.save(논현역_신논현역_구간)).thenReturn(논현역_신논현역_구간);
-        when(sectionService.save(신논현역_강남역_구간)).thenReturn(신논현역_강남역_구간);
         when(lineRepository.findById(신분당선_ID)).thenReturn(Optional.of(신분당선));
 
         // when

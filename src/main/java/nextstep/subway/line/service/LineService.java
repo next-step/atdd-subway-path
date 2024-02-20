@@ -9,7 +9,6 @@ import nextstep.subway.line.presentation.request.UpdateLineRequest;
 import nextstep.subway.line.presentation.response.*;
 import nextstep.subway.line.service.dto.ShowLineDto;
 import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.service.StationService;
 import org.springframework.stereotype.Service;
@@ -23,19 +22,17 @@ public class LineService {
 
     private LineRepository lineRepository;
     private StationService stationService;
-    private SectionService sectionService;
 
-    public LineService(LineRepository lineRepository, StationService stationService, SectionService sectionService) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
-        this.sectionService = sectionService;
     }
 
     @Transactional
     public CreateLineResponse saveLine(CreateLineRequest createLineRequest) {
         Station upStation = stationService.findById(createLineRequest.getUpStationId());
         Station downStation = stationService.findById(createLineRequest.getDownStationId());
-        Section section = sectionService.save(Section.of(upStation, downStation, createLineRequest.getDistance()));
+        Section section = Section.of(upStation, downStation, createLineRequest.getDistance());
 
         Line line = lineRepository.save(
                 Line.of(
@@ -80,7 +77,7 @@ public class LineService {
     public AddSectionResponse addSection(Long lineId, AddSectionRequest addSectionRequest) {
         Station upStation = stationService.findById(addSectionRequest.getUpStationId());
         Station downStation = stationService.findById(addSectionRequest.getDownStationId());
-        Section section = sectionService.save(Section.of(upStation, downStation, addSectionRequest.getDistance()));
+        Section section = Section.of(upStation, downStation, addSectionRequest.getDistance());
 
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(NotFoundLineException::new);

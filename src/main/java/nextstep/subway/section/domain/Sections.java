@@ -133,14 +133,8 @@ public class Sections {
         if (possibleAddedFirstSection(newSection) && possibleAddedLastSection(newSection)) {
             return;
         }
-
-        Section section = sections.stream()
-                .filter(s -> s.isUpStation(newSection.getUpStation()))
-                .findFirst()
-                .orElseThrow(NotFoundStationException::new);
-
-        section.updateUpStation(newSection.getDownStation());
-        section.decreaseDistance(newSection.getDistance());
+        Section section = findSectionByHasUpStation(newSection.getUpStation());
+        section.changeSectionWithAddUpSection(newSection);
         this.sections.add(newSection);
     }
 
@@ -173,11 +167,11 @@ public class Sections {
     }
 
     private boolean possibleDeletedFirstSection(Station station) {
-        return getFirstSection().getUpStation().equals(station);
+        return getFirstSection().isUpStation(station);
     }
 
     private boolean possibleDeletedLastSection(Station station) {
-        return getLastSection().getDownStation().equals(station);
+        return getLastSection().isDownStation(station);
     }
 
     private void deleteFirstSection() {
@@ -197,21 +191,27 @@ public class Sections {
             return;
         }
 
-        Section deletedSection = sections.stream()
+        Section deletedSection = findSectionByHasDownStation(station);
+        deletedSection.delete();
+
+        Section updateSection = findSectionByHasUpStation(station);
+        updateSection.changeSectionWithDeleteUpSection(deletedSection);
+
+        this.sections.remove(deletedSection);
+    }
+
+    private Section findSectionByHasDownStation(Station station) {
+        return this.sections.stream()
                 .filter(s -> s.isDownStation(station))
                 .findFirst()
                 .orElseThrow(NotFoundStationException::new);
+    }
 
-        Section updateSection = sections.stream()
+    private Section findSectionByHasUpStation(Station station) {
+        return this.sections.stream()
                 .filter(s -> s.isUpStation(station))
                 .findFirst()
                 .orElseThrow(NotFoundStationException::new);
-
-        updateSection.updateUpStation(deletedSection.getUpStation());
-        updateSection.increaseDistance(deletedSection.getDistance());
-
-        deletedSection.delete();
-        this.sections.remove(deletedSection);
     }
 
     private void validateDeleteSection(Station station) {
