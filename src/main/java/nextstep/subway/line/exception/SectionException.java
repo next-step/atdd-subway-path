@@ -7,4 +7,9 @@ public class SectionException extends RuntimeException {
     public SectionException(String message) {
         this.message = message;
     }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }
