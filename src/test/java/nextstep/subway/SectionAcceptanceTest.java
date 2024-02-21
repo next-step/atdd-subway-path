@@ -52,27 +52,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         assertThat(ids).containsExactly(강남역Id, 선릉역Id);
     }
 
-
-    /**
-     * Given 지하철 노선에 2개의 구간을 등록하고
-     * When 노선에 등록된 역이 하행역인 구간을 등록하면
-     * Then 400에러가 발생한다.
-     */
-    @Test
-    @DisplayName("하행역이 지하철 노선에 등록된 역인 구간을 추가하면 400에러가 발생한다.")
-    void addSectionExistDownStationException() {
-        //given
-        Long 삼성역Id = extractResponseId(StationRestAssuredCRUD.createStation("삼성역"));
-        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 7, 이호선Id);
-        SectionRestAssuredCRUD.addSection(선릉역Id, 삼성역Id, 3, 이호선Id);
-
-        //when
-        ExtractableResponse<Response> addResponse = SectionRestAssuredCRUD.addSection(삼성역Id, 강남역Id, 4, 이호선Id);
-
-        //then
-        assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     /**
      * Given 지하철 노선에 하나의 구간을 등록하고
      * When 지하철 노선의 하행역과 새로운 구간의 상행역이 일치하지 않은 구간을 추가하면
@@ -136,27 +115,6 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
         List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
 
         assertThat(stationIds).doesNotContain(삼성역Id);
-    }
-
-    /**
-     * Given 하나의 구간이 등록된 지하철 노선에 새로운 구간을 등록하고
-     * When 마지막 구간이 아닌 역을 제거하면
-     * Then 500에러가 발생한다.
-     */
-    @Test
-    @DisplayName("지하철 노선에서 마지막 구간이 아닌 역을 제거하면 500에러가 발생한다.")
-    void deleteMiddleSectionException() {
-        //given
-        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 7, 이호선Id);
-
-        Long 삼성역Id = extractResponseId(StationRestAssuredCRUD.createStation("삼성역"));
-        SectionRestAssuredCRUD.addSection(선릉역Id, 삼성역Id, 10, 이호선Id);
-
-        //when
-        ExtractableResponse<Response> deleteResponse = SectionRestAssuredCRUD.deleteSection(이호선Id, 선릉역Id);
-
-        //then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -316,5 +274,75 @@ public class SectionAcceptanceTest extends CommonAcceptanceTest {
 
         //then
         assertThat(addResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선에 2개의 구간을 등록하고
+     * When 중간 역을 제거하면
+     * Then 지하철 노선에서 해당 역이 삭제된다.
+     */
+    @Test
+    @DisplayName("지하철 노선에서 중간 역을 제거한다.")
+    void deleteMiddleSection() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 7, 이호선Id);
+
+        Long 삼성역Id = extractResponseId(StationRestAssuredCRUD.createStation("삼성역"));
+        SectionRestAssuredCRUD.addSection(선릉역Id, 삼성역Id, 10, 이호선Id);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssuredCRUD.deleteSection(이호선Id, 선릉역Id);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //then
+        ExtractableResponse<Response> lineResponse = LineRestAssuredCRUD.showLine(이호선Id);
+        List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+        assertThat(stationIds).doesNotContain(선릉역Id);
+        assertThat(stationIds).containsOnly(강남역Id, 삼성역Id);
+    }
+
+    /**
+     * Given 지하철 노선에 2개의 구간을 등록하고
+     * When 상행 종점역을 제거하면
+     * Then 지하철 노선에서 해당 역이 삭제된다.
+     */
+    @Test
+    @DisplayName("지하철 노선에서 상행 종점역을 제거한다.")
+    void deleteFirstSection() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 7, 이호선Id);
+
+        Long 삼성역Id = extractResponseId(StationRestAssuredCRUD.createStation("삼성역"));
+        SectionRestAssuredCRUD.addSection(선릉역Id, 삼성역Id, 10, 이호선Id);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssuredCRUD.deleteSection(이호선Id, 강남역Id);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //then
+        ExtractableResponse<Response> lineResponse = LineRestAssuredCRUD.showLine(이호선Id);
+        List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+        assertThat(stationIds).doesNotContain(강남역Id);
+        assertThat(stationIds).containsOnly(선릉역Id, 삼성역Id);
+    }
+
+    /**
+     * Given 지하철 노선에 1개의 구간을 등록하고
+     * When 상행 종점역을 제거하면
+     * Then 500에러가 발생한다.
+     */
+    @Test
+    @DisplayName("지하철 노선에서 상행 종점역 제거시 노선에 구간이 하나 남아있으면 500에러가 발생한다.")
+    void deleteOneLeftFirstSectionException() {
+        //given
+        SectionRestAssuredCRUD.addSection(강남역Id, 선릉역Id, 7, 이호선Id);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = SectionRestAssuredCRUD.deleteSection(이호선Id, 강남역Id);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }

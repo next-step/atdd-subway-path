@@ -58,25 +58,28 @@ public class Line {
         this.color = color;
     }
 
-    public void addMiddleSection(Section newSection) {
+    public void addSection(Section requestSection) {
+        if(sections.isFirstSection(requestSection)) {
+            registerSection(requestSection);
+            return;
+        }
+
+        if(sections.isMiddleSection(requestSection)) {
+            registerSection(sections.returnNewSection(requestSection));
+            registerSection(requestSection);
+            return;
+        }
+
+        sections.validateEndSection(requestSection);
+        registerSection(requestSection);
+    }
+
+    private void registerSection(Section newSection) {
         newSection.registerLine(this);
     }
 
-    public void addEndSection(Section newSection) {
-        sections.validateSection(newSection);
-        newSection.registerLine(this);
-    }
-
-    public Long deleteDownSection(Station deleteStation) {
-        return sections.deleteDownStation(deleteStation);
-    }
-
-    public Section createNewSection(Section existingSection, Section requestSection) {
-        return sections.createNewSection(existingSection, requestSection);
-    }
-
-    public void removeSection(Section section) {
-        sections.removeSection(section);
+    public void deleteSection(Station deleteStation) {
+        sections.deleteSection(deleteStation);
     }
 
     @Override

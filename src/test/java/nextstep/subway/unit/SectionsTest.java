@@ -4,7 +4,6 @@ import nextstep.exception.BadRequestException;
 import nextstep.subway.section.Section;
 import nextstep.subway.section.Sections;
 import nextstep.subway.station.Station;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,35 +16,31 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 public class SectionsTest {
 
     @Test
-    @DisplayName("신규구간의 하행역과 기존구간의 하행역으로부터 새로운 구간을 생성한다")
-    void createSectionByRequestSectionAndExistingSection() {
-        Station 기존구간_상행역 = new Station("강남역");
-        Station 기존구간_하행역 = new Station("선릉역");
-        Station 신규구간_하행역 = new Station("역삼역");
+    @DisplayName("신규구간이 중간에 추가되어야 하는 역이면 true를 반환한다.")
+    void isMiddleSection() {
+        Station 강남역 = new Station("강남역");
+        Station 선릉역 = new Station("선릉역");
+        Station 잠실역 = new Station("잠실역");
+        Station 선릉_잠실_중간역 = new Station("역삼역");
 
-        Section 기존구간 = new Section(기존구간_상행역, 기존구간_하행역, 10);
-        Sections sections = new Sections(List.of(기존구간));
-        Section 신규구간 = new Section(기존구간_상행역, 신규구간_하행역, 3);
+        Section 강남_선릉_구간 = new Section(강남역, 선릉역, 10);
+        Section 선릉_잠실_구간 = new Section(선릉역, 잠실역, 7);
+        Sections sections = new Sections(List.of(강남_선릉_구간, 선릉_잠실_구간));
+        Section 신규구간 = new Section(선릉역, 선릉_잠실_중간역, 3);
 
-        //when
-        Section newSection = sections.createNewSection(기존구간, 신규구간);
+        boolean middleSectionFlag = sections.isMiddleSection(신규구간);
 
-        //then
-        assertAll(
-                () -> assertThat(newSection.getUpStation()).isEqualTo(신규구간_하행역),
-                () -> assertThat(newSection.getDownStation()).isEqualTo(기존구간_하행역),
-                () -> assertThat(newSection.getDistance()).isEqualTo(기존구간.getDistance()-신규구간.getDistance())
-        );
+        assertThat(middleSectionFlag).isTrue();
     }
 
     @Test
-    @DisplayName("두 개의 구간의 상행역과 하행역이 동일하면 예외가 발생한다.")
+    @DisplayName("등록할 구간의 상행역과 하행역이 기존 구간의 상행역과 하행역이 동일하면 예외가 발생한다.")
     void validSameSection() {
         Station 강남역 = new Station("강남역");
         Station 선릉역 = new Station("선릉역");
 
-        Section 기존_구간 = new Section(강남역, 선릉역, 10, null);
-        Section 등록할_구간 = new Section(강남역, 선릉역, 10, null);
+        Section 기존_구간 = new Section(강남역, 선릉역, 10);
+        Section 등록할_구간 = new Section(강남역, 선릉역, 10);
 
         assertThatThrownBy(() -> 등록할_구간.validMiddleSection(기존_구간))
                 .isInstanceOf(BadRequestException.class);
@@ -58,11 +53,51 @@ public class SectionsTest {
         Station 선릉역 = new Station("선릉역");
         Station 역삼역 = new Station("역삼역");
 
-        Section 기존_구간 = new Section(강남역, 선릉역, 10, null);
-        Section 등록할_구간 = new Section(강남역, 역삼역, 13, null);
+        Section 기존_구간 = new Section(강남역, 선릉역, 10);
+        Section 등록할_구간 = new Section(강남역, 역삼역, 13);
 
-        assertThatThrownBy(() -> 등록할_구간.validMiddleSection(기존_구간))
+        assertThatThrownBy(() -> 기존_구간.validMiddleSection(등록할_구간))
                 .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("중간에 추가되어야 하는 역이 잘못된 구간이면 예외가 발생한다.")
+    void wrongMiddleSectionException() {
+        Station 강남역 = new Station("강남역");
+        Station 선릉역 = new Station("선릉역");
+        Station 잠실역 = new Station("잠실역");
+        Station 선릉_잠실_중간역 = new Station("역삼역");
+
+        Section 강남_선릉_구간 = new Section(강남역, 선릉역, 10);
+        Section 선릉_잠실_구간 = new Section(선릉역, 잠실역, 7);
+        Sections sections = new Sections(List.of(강남_선릉_구간, 선릉_잠실_구간));
+
+        Section 기존과_같은_구간 = new Section(선릉역, 잠실역, 3);
+        Section 기존구간_보다_긴_구간 = new Section(선릉역, 선릉_잠실_중간역, 11);
+
+        assertThatThrownBy(() -> sections.isMiddleSection(기존과_같은_구간))
+                .isInstanceOf(BadRequestException.class);
+
+        assertThatThrownBy(() -> sections.isMiddleSection(기존구간_보다_긴_구간))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("신규구간이 맨앞에 추가되어야 하는 역이면 true를 반환한다.")
+    void isFirstSection() {
+        Station 강남역 = new Station("강남역");
+        Station 선릉역 = new Station("선릉역");
+        Station 잠실역 = new Station("잠실역");
+        Station 강남역_이전_역 = new Station("역삼역");
+
+        Section 강남_선릉_구간 = new Section(강남역, 선릉역, 10);
+        Section 선릉_잠실_구간 = new Section(선릉역, 잠실역, 7);
+        Sections sections = new Sections(List.of(강남_선릉_구간, 선릉_잠실_구간));
+        Section 신규구간 = new Section(강남역_이전_역, 강남역, 3);
+
+        boolean firstSectionFlag = sections.isFirstSection(신규구간);
+
+        assertThat(firstSectionFlag).isTrue();
     }
 
 }

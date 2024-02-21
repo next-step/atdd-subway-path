@@ -13,7 +13,6 @@ import nextstep.subway.station.StationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,7 +21,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,11 +48,11 @@ public class SectionServiceMockTest {
         Station 강남역 = new Station(1L, "강남역");
         Station 선릉역 = new Station(2L, "선릉역");
 
-        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
-        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.ofNullable(null));
         when(sectionRepository.findByDownStation(선릉역)).thenReturn(Optional.ofNullable(null));
+
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
         // when
         SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 선릉역.getId(), 7);
@@ -73,17 +71,14 @@ public class SectionServiceMockTest {
         Station 선릉역 = new Station(2L, "선릉역");
         Station 신규역 = new Station(3L, "역삼역");
 
-        Section 강남_선릉_구간 = new Section(1L, 강남역, 선릉역, 10, null); //기존
+        Section 강남_선릉_구간 = new Section(1L, 강남역, 선릉역, 10); //기존
+        이호선.addSection(강남_선릉_구간);
 
         SectionRequest sectionRequest = new SectionRequest(강남역.getId(), 신규역.getId(), 3);
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(신규역.getId())).thenReturn(Optional.of(신규역));
-        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.of(강남_선릉_구간));
         when(sectionRepository.findByDownStation(신규역)).thenReturn(Optional.ofNullable(null));
-
-        when(sectionRepository.save(any(Section.class))).then(AdditionalAnswers.returnsFirstArg());
-        when(sectionRepository.findByDownStation(강남역)).thenReturn(Optional.ofNullable(null));
 
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
@@ -101,12 +96,12 @@ public class SectionServiceMockTest {
         Station 강남역 = new Station(1L, "강남역");
         Station 선릉역 = new Station(2L, "선릉역");
 
-        Section 기존_구간 = new Section(1L, 강남역, 선릉역, 10, null);
-        Section 등록할_구간 = new Section(2L, 강남역, 선릉역, 10, null);
+        Section 기존_구간 = new Section(1L, 강남역, 선릉역, 10);
+        이호선.addSection(기존_구간);
+        Section 등록할_구간 = new Section(2L, 강남역, 선릉역, 10);
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
-        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.of(기존_구간));
         when(sectionRepository.findByDownStation(선릉역)).thenReturn(Optional.ofNullable(null));
 
         //when & then
@@ -122,12 +117,12 @@ public class SectionServiceMockTest {
         Station 선릉역 = new Station(2L, "선릉역");
         Station 역삼역 = new Station(3L, "역삼역");
 
-        Section 기존_구간 = new Section(1L, 강남역, 선릉역, 10, null);
-        Section 등록할_구간 = new Section(2L, 강남역, 역삼역, 13, null);
+        Section 기존_구간 = new Section(1L, 강남역, 선릉역, 10);
+        이호선.addSection(기존_구간);
+        Section 등록할_구간 = new Section(2L, 강남역, 역삼역, 13);
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(역삼역.getId())).thenReturn(Optional.of(역삼역));
-        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.of(기존_구간));
         when(sectionRepository.findByDownStation(역삼역)).thenReturn(Optional.ofNullable(null));
 
         //when & then
@@ -144,18 +139,14 @@ public class SectionServiceMockTest {
         Station 선릉역 = new Station(2L, "선릉역");
         Station 신규역 = new Station(3L, "서초역");
 
-        Section 강남_선릉_구간 = new Section(1L, 강남역, 선릉역, 10, null); //기존
-        이호선.addEndSection(강남_선릉_구간);
+        Section 강남_선릉_구간 = new Section(1L, 강남역, 선릉역, 10); //기존
+        이호선.addSection(강남_선릉_구간);
 
         SectionRequest sectionRequest = new SectionRequest(신규역.getId(), 강남역.getId(),3);
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(신규역.getId())).thenReturn(Optional.of(신규역));
         when(sectionRepository.findByDownStation(강남역)).thenReturn(Optional.ofNullable(null));
-
-        when(sectionRepository.save(any(Section.class))).then(AdditionalAnswers.returnsFirstArg());
-        when(sectionRepository.findByUpStation(신규역)).thenReturn(Optional.ofNullable(null));
-        when(sectionRepository.findByUpStation(강남역)).thenReturn(Optional.of(강남_선릉_구간));
 
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
@@ -164,5 +155,26 @@ public class SectionServiceMockTest {
 
         //then
         assertThat(lineService.findLineById(이호선.getId()).getStations()).hasSize(3);
+    }
+
+    @Test
+    @DisplayName("2개의 구간이 존재하는 노선에서 가운데 역을 제거한다.")
+    void deleteMiddleStation() {
+        //given
+        Line 이호선 = new Line(1L, "2호선", "green");
+        Station 강남역 = new Station(1L, "강남역");
+        Station 선릉역 = new Station(2L, "선릉역");
+        Station 삼성역 = new Station(3L, "삼성역");
+
+        Section 강남_선릉_구간 = new Section(1L, 강남역, 선릉역, 10); //기존
+        이호선.addSection(강남_선릉_구간);
+        Section 선릉_삼성_구간 = new Section(2L, 선릉역, 삼성역, 5);
+        이호선.addSection(선릉_삼성_구간);
+
+        when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
+
+        sectionService.deleteSection(이호선, 선릉역);
+
+        assertThat(lineService.findLineById(이호선.getId()).getStations()).hasSize(2);
     }
 }

@@ -68,6 +68,6 @@ public class LineService {
                 () -> new BadRequestException("존재하지 않는 역 입니다.")
         );
 
-        line.deleteDownSection(station);
+        line.deleteSection(station);
     }
 }

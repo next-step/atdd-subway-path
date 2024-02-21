@@ -45,6 +45,13 @@ public class Sections {
         return sections.get(sections.size()-1);
     }
 
+    public boolean isLastSection(Station deleteStation) {
+        if(deleteStation.equals(lastSection().getDownStation())) {
+            return true;
+        }
+        return false;
+    }
+
     private boolean isStationMatched(Section section) {
         if(sections.size() > 0){
             return section.getUpStation().equals(lastSection().getDownStation());
@@ -61,7 +68,7 @@ public class Sections {
         return false;
     }
 
-    public void validateSection(Section newSection) {
+    public void validateEndSection(Section newSection) {
         if(isExistStation(newSection.getDownStation())){
             throw new BadRequestException("새로운 구간의 하행역이 이미 노선에 등록된 역입니다.");
         }
@@ -71,11 +78,58 @@ public class Sections {
         }
     }
 
-    public Long deleteDownStation(Station deleteStation) {
+    private void validateFirstSection(Section section, Section newSection) {
+        if(section.getDownStation().equals(newSection.getUpStation())){
+            throw new BadRequestException("새로운 구간의 상행역이 이미 노선에 등록된 역입니다.");
+        }
+    }
+
+    public boolean isFirstSection(Section newSection) {
+        for(Section section : sections) {
+            if(section.getUpStation().equals(newSection.getDownStation())) {
+                validateFirstSection(section, newSection);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isMiddleSection(Section requestSection) {
+        for(Section section : sections) {
+            if(section.getUpStation().equals(requestSection.getUpStation()))
+                return section.validMiddleSection(requestSection);
+        }
+        return false;
+    }
+
+    public Section returnNewSection(Section requestSection) {
+        Section existingSection = new Section();
+
+        for(Section section : sections) {
+            if(section.getUpStation().equals(requestSection.getUpStation())) {
+                existingSection = section;
+            }
+        }
+
+        return createNewSection(existingSection, requestSection);
+    }
+
+    public void deleteSection(Station deleteStation) {
+        validDeleteSection();
+        if(isLastSection(deleteStation)) {
+            deleteLastStation(deleteStation);
+            return;
+        }
+        deleteStation(deleteStation);
+    }
+
+    private void validDeleteSection() {
         if(sections.size() == MIN_SECTION_SIZE) {
             throw new IllegalArgumentException("구간이 1개 남은 경우 삭제할 수 없습니다.");
         }
+    }
 
+    private void deleteLastStation(Station deleteStation) {
         if(!deleteStation.equals(lastSection().getDownStation())){
             throw new IllegalArgumentException("노선의 하행 종점역이 아닙니다.");
         }
@@ -85,15 +139,29 @@ public class Sections {
                 .findAny().get();
 
         sections.removeIf(s -> s.equals(deleteSection));
-
-        return deleteSection.getId();
     }
 
-    public Section createNewSection(Section existingSection, Section newSection) {
-        return new Section(newSection.getDownStation(), existingSection.getDownStation(), existingSection.getDistance() - newSection.getDistance(), existingSection.getNextSectionId());
+    private void deleteStation(Station deleteStation) {
+        Section deleteSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(deleteStation))
+                .findAny().get();
+
+        for(Section section : sections) {
+            if(section.getDownStation().equals(deleteStation)) {
+                section.changeDownStationAndDistance(deleteSection.getDownStation(), deleteSection.getDistance());
+            }
+        }
+
+        sections.removeIf(s -> s.equals(deleteSection));
     }
 
-    public void removeSection(Section section) {
+    private Section createNewSection(Section existingSection, Section requestSection) {
+        Section newSection = new Section(requestSection.getDownStation(), existingSection.getDownStation(), existingSection.getDistance() - requestSection.getDistance());
+        removeSection(existingSection);
+        return newSection;
+    }
+
+    private void removeSection(Section section) {
         sections.removeIf(s -> s.equals(section));
     }
 
