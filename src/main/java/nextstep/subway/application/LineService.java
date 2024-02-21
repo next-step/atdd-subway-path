@@ -133,7 +133,7 @@ public class LineService {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                convertStationResponses(line.getAllSections()));
+                convertStationResponses(line.getSortedAllSections()));
     }
 
     private List<StationResponse> convertStationResponses(List<Section> sections) {

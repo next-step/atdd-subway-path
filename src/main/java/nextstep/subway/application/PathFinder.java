@@ -53,13 +53,13 @@ public class PathFinder {
 
     private int getTotalSectionCount(List<Line> lines) {
         return lines.stream()
-                .mapToInt(line -> line.getAllSections().size())
+                .mapToInt(line -> line.getSortedAllSections().size())
                 .sum();
     }
 
     private WeightedMultigraph<Station, DefaultWeightedEdge> buildPathFromLines(List<Line> lines,
                                                                                 WeightedMultigraph<Station, DefaultWeightedEdge> path) {
-        lines.forEach(line -> buildPathFromSections(path, line.getAllSections()));
+        lines.forEach(line -> buildPathFromSections(path, line.getSortedAllSections()));
         return path;
     }
 

@@ -79,11 +79,12 @@ public class Sections {
     }
 
     private Section findFirstSection() {
-        return sortByConnectedSections(sections).get(0);
+        return getSortedAllSections().get(0);
     }
 
     private Section findLastSection() {
-        return sortByConnectedSections(sections).get(sections.size() - 1);
+        List<Section> sortedSections = getSortedAllSections();
+        return sortedSections.get(sortedSections.size() - 1);
     }
 
     public boolean hasExistingStation(Station station) {
@@ -101,7 +102,8 @@ public class Sections {
     }
 
     private Section findNextSection(Section commonSection) {
-        return sortByConnectedSections(sections).get(sections.indexOf(commonSection) + 1);
+        List<Section> sortedSections = getSortedAllSections();
+        return sortedSections.get(sortedSections.indexOf(commonSection) + 1);
     }
 
     private void replaceAndConnectSection(Section sectionToDelete, Section nextSection) {
@@ -119,37 +121,39 @@ public class Sections {
     }
 
     private Section findCommonSection(Station station) {
-        return sections.stream()
+        return getSortedAllSections().stream()
                 .filter(section -> section.isAtLeastOneSameStation(station))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
 
     private List<Section> sortByConnectedSections(List<Section> sections) {
-        for (int baseIndex = 0; baseIndex < sections.size(); baseIndex++) {
-            connectBasedOnSection(sections.get(baseIndex));
+        List<Section> sortedSections = new ArrayList<>(sections);
+
+        for (int baseIndex = 0; baseIndex < sortedSections.size(); baseIndex++) {
+            connectBasedOnSection(sortedSections, sortedSections.get(baseIndex));
         }
-        return sections;
+        return sortedSections;
     }
 
-    private void connectBasedOnSection(Section baseSection) {
-        for (int indexToConnect = sections.indexOf(baseSection); indexToConnect < sections.size(); indexToConnect++) {
-            if (canConnect(baseSection, sections.get(indexToConnect))) {
+    private void connectBasedOnSection(List<Section> sortedSections, Section baseSection) {
+        for (int indexToConnect = sortedSections.indexOf(baseSection); indexToConnect < sortedSections.size(); indexToConnect++) {
+            if (canConnect(sortedSections, baseSection, sortedSections.get(indexToConnect))) {
                 break;
             }
         }
     }
 
-    private boolean canConnect(Section baseSection, Section sectionToConnect) {
-        if (canPrependSectionBasedOnSection(sections.get(0), sectionToConnect)) {
-            sections.remove(sectionToConnect);
-            sections.add(0, sectionToConnect);
+    private boolean canConnect(List<Section> sortedSections, Section baseSection, Section sectionToConnect) {
+        if (canPrependSectionBasedOnSection(sortedSections.get(0), sectionToConnect)) {
+            sortedSections.remove(sectionToConnect);
+            sortedSections.add(0, sectionToConnect);
             return true;
         }
 
         if (canAppendSectionBasedOnSection(baseSection, sectionToConnect)) {
-            sections.remove(sectionToConnect);
-            sections.add(sections.indexOf(baseSection) + 1, sectionToConnect);
+            sortedSections.remove(sectionToConnect);
+            sortedSections.add(sortedSections.indexOf(baseSection) + 1, sectionToConnect);
             return true;
         }
         return false;
@@ -235,7 +239,7 @@ public class Sections {
     }
 
     private Section findSectionContainingStation(Section sectionToInsert) {
-        return sections.stream()
+        return getSortedAllSections().stream()
                 .filter(section -> section.isAtLeastOneSameStation(sectionToInsert))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
@@ -245,7 +249,7 @@ public class Sections {
         return canAppendSectionBasedOnStation(section, findLastStation());
     }
 
-    public List<Section> getAllSections() {
+    public List<Section> getSortedAllSections() {
         return sortByConnectedSections(sections);
     }
 

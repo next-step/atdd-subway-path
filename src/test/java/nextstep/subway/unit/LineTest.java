@@ -49,7 +49,7 @@ class LineTest {
                     이호선.addSection(강남_양재_구간);
 
                     // then
-                    assertThat(이호선.getAllSections()).containsAnyOf(강남_양재_구간);
+                    assertThat(이호선.getSortedAllSections()).containsAnyOf(강남_양재_구간);
                 }
             }
 
@@ -95,7 +95,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(사성, 삼성, 선릉, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(사성_삼성_구간, 삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
                     }
 
@@ -119,7 +119,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_사성_구간, 사성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
                     }
 
@@ -148,7 +148,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 선릉, 사성, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_선릉_구간, 선릉_사성_구간, 사성_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
                     }
 
@@ -172,7 +172,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_사성_구간, 사성_강남_구간, 강남_서초_구간);
                     }
 
@@ -201,7 +201,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 선릉, 역삼, 강남, 사성, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_사성_구간, 사성_서초_구간);
                     }
 
@@ -224,7 +224,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간, 서초_사성_구간);
                     }
 
@@ -399,7 +399,7 @@ class LineTest {
                     이호선.delete(StationFixture.삼성);
 
                     // then
-                    assertThat(이호선.getAllSections())
+                    assertThat(이호선.getSortedAllSections())
                             .containsExactly(선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
                 }
 
@@ -422,7 +422,7 @@ class LineTest {
                     이호선.delete(StationFixture.역삼);
 
                     // then
-                    assertThat(이호선.getAllSections())
+                    assertThat(이호선.getSortedAllSections())
                             .containsExactly(삼성_선릉_구간, 선릉_강남_구간, 강남_서초_구간);
                 }
 
@@ -440,7 +440,7 @@ class LineTest {
                     이호선.delete(StationFixture.강남);
 
                     // then
-                    assertThat(이호선.getAllSections())
+                    assertThat(이호선.getSortedAllSections())
                             .containsExactly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_서초_구간);
                 }
             }
@@ -459,7 +459,7 @@ class LineTest {
                     이호선.delete(StationFixture.서초);
 
                     // then
-                    assertThat(이호선.getAllSections())
+                    assertThat(이호선.getSortedAllSections())
                             .containsExactly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간);
                 }
 

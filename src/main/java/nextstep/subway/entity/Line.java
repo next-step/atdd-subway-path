@@ -90,7 +90,7 @@ public class Line {
         return sections.getAllStations();
     }
 
-    public List<Section> getAllSections() {
-        return sections.getAllSections();
+    public List<Section> getSortedAllSections() {
+        return sections.getSortedAllSections();
     }
 }
