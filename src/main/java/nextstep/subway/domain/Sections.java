@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
-import nextstep.subway.exception.CheckDuplicateStationException;
-import nextstep.subway.exception.InvalidDownStationException;
-import nextstep.subway.exception.InvalidSectionDistanceException;
-import nextstep.subway.exception.SingleSectionDeleteException;
+import nextstep.subway.exception.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -28,44 +25,12 @@ public class Sections {
 
         validateDuplicateStation(section);
 
-        if (getEndStation().equals(section.getUpStation())) {
-            this.sections.add(section);
-        }else if (getStartStation().equals(section.getDownStation())) {
-            Section removedSection = this.sections.stream()
-                    .filter(s -> s.getUpStation().equals(getStartStation()))
-                    .findFirst()
-                    .orElseThrow(() -> new IllegalArgumentException("상행역과 일치하는 섹션이 없습니다."));
-            this.sections.remove(removedSection);
-            this.sections.add(section);
-            this.sections.add(Section.builder()
-                    .upStation(removedSection.getDownStation())
-                    .downStation(section.getDownStation())
-                    .distance(removedSection.getDistance())
-                    .line(removedSection.getLine())
-                    .build());
-
+        if (getStartStation().equals(section.getDownStation())) {
+            addStartSection(section);
+        } else if (getEndStation().equals(section.getUpStation())) {
+            addEndSection(section);
         } else {
-            Section changeSection = this.sections.stream()
-                    .filter(s -> s.getUpStation().equals(section.getUpStation()))
-                    .findFirst()
-                    .get();
-
-            Long distance = changeSection.getDistance() - section.getDistance();
-            if (distance.compareTo(0L) <= 0L) {
-                throw new InvalidSectionDistanceException("추가 하려는 구간의 길이는 기존 구간의 길이 보다 크거나 같을 수 없습니다.");
-            }
-
-            Section changeNewSection = Section.builder()
-                    .upStation(changeSection.getDownStation())
-                    .downStation(section.getDownStation())
-                    .distance(distance)
-                    .line(changeSection.getLine())
-                    .build();
-
-
-            this.sections.remove(changeSection);
-            this.sections.add(section);
-            this.sections.add(changeNewSection);
+            addMiddleSection(section);
         }
 
     }
@@ -126,7 +91,7 @@ public class Sections {
                 .map(Section::getUpStation)
                 .filter(startStation -> isStartStation(startStation))
                 .findFirst()
-                .get();
+                .orElseThrow(() -> new NotFoundException("상행역과 일치하는 구간을 찾을 수 없습니다."));
     }
 
     private boolean isStartStation(Station upStation) {
@@ -140,5 +105,48 @@ public class Sections {
                 .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private void addStartSection(Section section) {
+        Section removedSection = this.sections.stream()
+                .filter(s -> s.getUpStation().equals(getStartStation()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("시작역과 일치하는 구간을 찾을 수 없습니다."));
+        this.sections.remove(removedSection);
+        this.sections.add(section);
+        this.sections.add(Section.builder()
+                .upStation(removedSection.getDownStation())
+                .downStation(section.getDownStation())
+                .distance(removedSection.getDistance())
+                .line(removedSection.getLine())
+                .build());
+    }
+
+    private void addEndSection(Section section) {
+        this.sections.add(section);
+    }
+
+    private void addMiddleSection(Section section) {
+        Section changeSection = this.sections.stream()
+                .filter(s -> s.getUpStation().equals(section.getUpStation()))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("구간을 변경할 상행역을 찾을 수 없습니다."));
+
+        Long distance = changeSection.getDistance() - section.getDistance();
+        if (distance.compareTo(0L) <= 0L) {
+            throw new InvalidSectionDistanceException("추가 하려는 구간의 길이는 기존 구간의 길이 보다 크거나 같을 수 없습니다.");
+        }
+
+        Section changeNewSection = Section.builder()
+                .upStation(changeSection.getDownStation())
+                .downStation(section.getDownStation())
+                .distance(distance)
+                .line(changeSection.getLine())
+                .build();
+
+
+        this.sections.remove(changeSection);
+        this.sections.add(section);
+        this.sections.add(changeNewSection);
     }
 }
