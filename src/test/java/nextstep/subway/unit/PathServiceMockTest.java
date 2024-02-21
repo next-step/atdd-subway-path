@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ApplicationTest
-public class PathServiceMockService {
+public class PathServiceMockTest {
 
     PathService pathService;
 
@@ -46,11 +46,6 @@ public class PathServiceMockService {
         Line 신분당선;
         Line 삼호선;
         Line 사호선;
-
-        Long 이호선_번호;
-        Long 신분당선_번호;
-        Long 삼호선_번호;
-        Long 사호선_번호;
 
         Station 교대;
         Station 강남;

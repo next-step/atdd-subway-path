@@ -1,6 +1,5 @@
 package nextstep.subway.unit;
 
-import nextstep.config.annotations.ApplicationTest;
 import nextstep.config.fixtures.StationFixture;
 import nextstep.subway.application.PathFinder;
 import nextstep.subway.application.dto.PathResult;
@@ -10,7 +9,6 @@ import nextstep.subway.entity.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
@@ -18,8 +16,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-@ApplicationTest
-public class PathFinderComponentTest {
+public class PathFinderServiceTest {
 
     List<Line> 모든_노선_목록;
 
@@ -36,23 +33,20 @@ public class PathFinderComponentTest {
     Line 삼호선;
     Line 사호선;
 
-    @Autowired
     private PathFinder pathFinder;
+
+    @BeforeEach
+    void 사전_객체_생성() {
+        pathFinder = new PathFinder();
+    }
 
     @BeforeEach
     void 사전_노선_설정() {
 
         이호선 = new Line("이호선", "green");
-        ReflectionTestUtils.setField(이호선, "id", 1L);
-
         신분당선 = new Line("신분당선", "red");
-        ReflectionTestUtils.setField(신분당선, "id", 2L);
-
         삼호선 = new Line("삼호선", "orange");
-        ReflectionTestUtils.setField(삼호선, "id", 3L);
-
         사호선 = new Line("사호선", "blue");
-        ReflectionTestUtils.setField(사호선, "id", 3L);
 
         모든_노선_목록 = List.of(이호선, 신분당선, 삼호선, 사호선);
 
@@ -91,8 +85,8 @@ public class PathFinderComponentTest {
              * *3호선*                   *신분당선*
              * |                        |
              * 남부터미널역  --- *3호선* ---   양재역
-             *
-             *
+             * <p>
+             * <p>
              * 오이도역 --- *4호선* --- 정왕역
              */
             @BeforeEach
