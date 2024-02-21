@@ -2,7 +2,7 @@ package nextstep.subway.applicaion;
 
 import java.util.Collection;
 import java.util.Optional;
-import nextstep.subway.applicaion.vo.Path;
+import nextstep.subway.domain.vo.Path;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;

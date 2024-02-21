@@ -1,4 +1,4 @@
-package nextstep.subway.applicaion.vo;
+package nextstep.subway.domain.vo;
 
 import java.util.List;
 import java.util.stream.Collectors;
