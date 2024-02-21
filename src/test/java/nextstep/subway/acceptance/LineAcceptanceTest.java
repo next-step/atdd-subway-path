@@ -105,7 +105,8 @@ class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Map<String, String> params = new HashMap<>();
-        params.put("color", "red");
+        params.put("name", "3호선");
+        params.put("color", "초록");
         RestAssured
             .given()
             .body(params)
@@ -117,6 +118,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(line.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getString("name")).isEqualTo("3호선");
         assertThat(response.jsonPath().getString("color")).isEqualTo("초록");
     }
 
