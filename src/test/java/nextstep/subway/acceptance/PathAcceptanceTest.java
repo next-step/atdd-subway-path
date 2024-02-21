@@ -4,14 +4,14 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.config.annotations.AcceptanceTest;
 import nextstep.config.fixtures.StationFixture;
-import nextstep.subway.dto.PathRequest;
-import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.config.fixtures.LineFixture.*;
+import static nextstep.config.fixtures.PathFixture.지하철_경로;
+import static nextstep.config.fixtures.SectionFixture.지하철_구간;
 import static nextstep.subway.steps.LineSteps.지하철_노선_생성;
 import static nextstep.subway.steps.PathSteps.*;
 import static nextstep.subway.steps.SectionSteps.성공하는_지하철_구간_추가요청;
@@ -42,11 +42,11 @@ public class PathAcceptanceTest {
      * *3호선*                   *신분당선*
      * |                        |
      * 남부터미널역  --- *3호선* ---   양재역
-     *
+     * <p>
      * 오이도역 --- *4호선* --- 정왕역
      */
     @BeforeEach
-    public void setUp() {
+    public void 사전_노선_설정() {
         교대역 = 지하철_역_생성(StationFixture.교대역);
         강남역 = 지하철_역_생성(StationFixture.강남역);
         양재역 = 지하철_역_생성(StationFixture.양재역);
@@ -59,7 +59,7 @@ public class PathAcceptanceTest {
         삼호선 = 지하철_노선_생성(삼호선(교대역, 남부터미널역, 2));
         사호선 = 지하철_노선_생성(사호선(정왕역, 오이도역, 10));
 
-        성공하는_지하철_구간_추가요청(삼호선, new SectionRequest(남부터미널역, 양재역, 3));
+        성공하는_지하철_구간_추가요청(삼호선, 지하철_구간(남부터미널역, 양재역, 3));
     }
 
     @Nested
@@ -73,11 +73,11 @@ public class PathAcceptanceTest {
         @Test
         void 강남역에서_남부터미널역까지_경로_조회() {
             // when
-            ExtractableResponse<Response> 성공하는_경로_조회_응답 = 성공하는_지하철_경로_조회_요청(new PathRequest(강남역, 남부터미널역));
+            var 성공하는_경로_조회_응답 = 성공하는_지하철_경로_조회_요청(지하철_경로(강남역, 남부터미널역));
 
             // then
-            assertThat(convertToStationIds(성공하는_경로_조회_응답)).containsExactly(강남역, 교대역, 남부터미널역);
-            assertThat(convertToDistance(성공하는_경로_조회_응답)).isEqualTo(12);
+            경로에_포함된_역_목록_검증(성공하는_경로_조회_응답, 강남역, 교대역, 남부터미널역);
+            경로에_포함된_최단거리_검증(성공하는_경로_조회_응답, 12);
         }
 
         /**
@@ -88,11 +88,11 @@ public class PathAcceptanceTest {
         @Test
         void 교대역에서_양재역까지_경로_조회() {
             // when
-            ExtractableResponse<Response> 성공하는_경로_조회_응답 = 성공하는_지하철_경로_조회_요청(new PathRequest(교대역, 양재역));
+            var 성공하는_경로_조회_응답 = 성공하는_지하철_경로_조회_요청(지하철_경로(교대역, 양재역));
 
             // then
-            assertThat(convertToStationIds(성공하는_경로_조회_응답)).containsExactly(교대역, 남부터미널역, 양재역);
-            assertThat(convertToDistance(성공하는_경로_조회_응답)).isEqualTo(5);
+            경로에_포함된_역_목록_검증(성공하는_경로_조회_응답, 교대역, 남부터미널역, 양재역);
+            경로에_포함된_최단거리_검증(성공하는_경로_조회_응답, 5);
         }
 
     }
@@ -112,7 +112,7 @@ public class PathAcceptanceTest {
             @Test
             void 강남역에서_강남역까지_경로_조회() {
                 // when,then
-                실패하는_지하철_경로_조회_요청(new PathRequest(강남역, 강남역));
+                실패하는_지하철_경로_조회_요청(지하철_경로(강남역, 강남역));
             }
 
         }
@@ -129,7 +129,7 @@ public class PathAcceptanceTest {
             @Test
             void 강남역에서_오이도역까지_경로_조회() {
                 // when,then
-                실패하는_지하철_경로_조회_요청(new PathRequest(강남역, 오이도역));
+                실패하는_지하철_경로_조회_요청(지하철_경로(강남역, 오이도역));
 
             }
 
@@ -145,7 +145,7 @@ public class PathAcceptanceTest {
                 @Test
                 void 강남역에서_존재하지_않는_역까지_경로_조회() {
                     // when,then
-                    실패하는_지하철_경로_조회_요청(new PathRequest(강남역, 존재하지_않는_역));
+                    실패하는_지하철_경로_조회_요청(지하철_경로(강남역, 존재하지_않는_역));
                 }
 
 
@@ -158,10 +158,18 @@ public class PathAcceptanceTest {
                 @Test
                 void 존재하지_않는_역에서_강남역까지_경로_조회() {
                     // when,then
-                    실패하는_지하철_경로_조회_요청(new PathRequest(존재하지_않는_역, 강남역));
+                    실패하는_지하철_경로_조회_요청(지하철_경로(존재하지_않는_역, 강남역));
                 }
 
             }
         }
+    }
+
+    private void 경로에_포함된_역_목록_검증(ExtractableResponse<Response> 성공하는_경로_조회_응답, Long... 역_번호_목록) {
+        assertThat(convertToStationIds(성공하는_경로_조회_응답)).containsExactly(역_번호_목록);
+    }
+
+    private void 경로에_포함된_최단거리_검증(ExtractableResponse<Response> 성공하는_경로_조회_응답, int 예상_최단거리) {
+        assertThat(convertToDistance(성공하는_경로_조회_응답)).isEqualTo(예상_최단거리);
     }
 }
