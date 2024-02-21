@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.application.converter.StationConverter;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.entity.Station;
@@ -9,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.application.converter.StationConverter.convertToStationResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,24 +25,17 @@ public class StationService {
     @Transactional
     public StationResponse createStation(StationRequest stationRequest) {
         Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return createStationResponse(station);
+        return convertToStationResponse(station);
     }
 
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
-                .map(this::createStationResponse)
+                .map(StationConverter::convertToStationResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
-    }
-
-    private StationResponse createStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName()
-        );
     }
 }

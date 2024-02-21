@@ -1,6 +1,10 @@
 package nextstep.subway.application;
 
-import nextstep.subway.dto.*;
+import nextstep.subway.application.converter.LineConverter;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
 import nextstep.subway.entity.Station;
@@ -10,11 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.application.converter.LineConverter.convertToLine;
+import static nextstep.subway.application.converter.LineConverter.convertToLineResponse;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,14 +35,14 @@ public class LineService {
 
     @Transactional
     public LineResponse createLine(LineRequest request) {
-        Line line = convertToLineEntity(request);
-        line.addSection(convertToSectionEntity(request, line));
+        Line line = convertToLine(request);
+        line.addSection(createSection(request, line));
         return convertToLineResponse(lineRepository.save(line));
     }
 
     public List<LineResponse> findAllLineResponses() {
         return lineRepository.findAll().stream()
-                .map(this::convertToLineResponse)
+                .map(LineConverter::convertToLineResponse)
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +65,7 @@ public class LineService {
     @Transactional
     public SectionResponse addSection(SectionRequest request) {
         Line line = findLineById(request.getLineId());
-        Section section = convertSectionRequestToEntity(request, line);
+        Section section = createSection(request, line);
 
         return convertToSectionResponse(section.setLine(line));
     }
@@ -89,37 +93,12 @@ public class LineService {
         );
     }
 
-    private Line convertToLineEntity(LineRequest request) {
-        return new Line(
-                request.getName(),
-                request.getColor());
-    }
-
-    private LineResponse convertToLineResponse(Line line) {
-        return new LineResponse(
-                line.getId(),
-                line.getName(),
-                line.getColor(),
-                convertStationResponses(line.getSortedAllSections()));
-    }
-
     public List<Line> findAllLines() {
         return lineRepository.findAll();
     }
 
-    private List<StationResponse> convertStationResponses(List<Section> sections) {
-        Set<StationResponse> stationResponses = new LinkedHashSet<>();
 
-        sections.forEach(section -> {
-            stationResponses.add(convertToStationResponse(section.getUpStation()));
-            stationResponses.add(convertToStationResponse(section.getDownStation()));
-        });
-
-        return new ArrayList<>(stationResponses);
-    }
-
-
-    private Section convertToSectionEntity(LineRequest request, Line line) {
+    private Section createSection(LineRequest request, Line line) {
         return new Section(
                 findStation(request.getUpStationId()),
                 findStation(request.getDownStationId()),
@@ -127,10 +106,12 @@ public class LineService {
                 line);
     }
 
-    private StationResponse convertToStationResponse(Station station) {
-        return new StationResponse(
-                station.getId(),
-                station.getName()
+    private Section createSection(SectionRequest request, Line line) {
+        return new Section(
+                findStation(request.getUpStationId()),
+                findStation(request.getDownStationId()),
+                request.getDistance(),
+                line
         );
     }
 
@@ -140,15 +121,6 @@ public class LineService {
                 findStation(section.getUpStation().getId()),
                 findStation(section.getDownStation().getId()),
                 section.getDistance()
-        );
-    }
-
-    private Section convertSectionRequestToEntity(SectionRequest request, Line line) {
-        return new Section(
-                findStation(request.getUpStationId()),
-                findStation(request.getDownStationId()),
-                request.getDistance(),
-                line
         );
     }
 }

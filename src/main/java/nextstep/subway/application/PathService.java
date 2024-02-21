@@ -1,9 +1,10 @@
 package nextstep.subway.application;
 
-import nextstep.subway.application.dto.PathResult;
 import nextstep.subway.dto.PathRequest;
 import nextstep.subway.dto.PathResponse;
 import org.springframework.stereotype.Service;
+
+import static nextstep.subway.application.converter.PathConverter.convertToPathResponse;
 
 @Service
 public class PathService {
@@ -20,7 +21,7 @@ public class PathService {
     public PathResponse findShortestPath(PathRequest pathRequest) {
         validatePathRequest(pathRequest);
 
-        return convertPathResponse(pathFinder.calculateShortestPath(
+        return convertToPathResponse(pathFinder.calculateShortestPath(
                 lineService.findAllLines(),
                 lineService.findStation(pathRequest.getDepartureStationId()),
                 lineService.findStation(pathRequest.getArrivalStationId())));
@@ -34,9 +35,5 @@ public class PathService {
 
     private boolean areStationsSame(PathRequest pathRequest) {
         return pathRequest.getDepartureStationId().equals(pathRequest.getArrivalStationId());
-    }
-
-    private PathResponse convertPathResponse(PathResult pathResult) {
-        return new PathResponse(pathResult.getStations(), pathResult.getDistance());
     }
 }
