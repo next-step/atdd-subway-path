@@ -13,7 +13,13 @@ import org.jgrapht.graph.WeightedMultigraph;
 import java.util.List;
 
 public class PathFinder {
-    public PathResponse getShortestPath(List<Sections> sectionsList, Station sourceStation, Station targetStation) {
+    private final List<Sections> sectionsList;
+
+    public PathFinder(List<Sections> sectionsList) {
+        this.sectionsList = sectionsList;
+    }
+
+    public PathResponse getShortestPath(Station sourceStation, Station targetStation) {
         try {
             WeightedMultigraph<Station, DefaultWeightedEdge> graph = getGraph(sectionsList);
 
@@ -32,13 +38,7 @@ public class PathFinder {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
 
         for (Sections sections : sectionsList) {
-            for (Section section : sections.getSections()) {
-                graph.addVertex(section.getDownStation());
-                graph.addVertex(section.getUpStation());
-
-                DefaultWeightedEdge edge = graph.addEdge(section.getUpStation(), section.getDownStation());
-                graph.setEdgeWeight(edge, section.getDistance());
-            }
+            setGraph(graph, sections);
         }
 
         return graph;
@@ -47,5 +47,22 @@ public class PathFinder {
     private GraphPath getPath(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Station sourceStation, Station targetStation) {
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         return dijkstraShortestPath.getPath(sourceStation, targetStation);
+    }
+
+    private void setGraph(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Sections sections) {
+        for (Section section : sections.getSections()) {
+            addVertex(graph, section);
+            setEdgeWeight(graph, section);
+        }
+    }
+
+    private void addVertex(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Section section) {
+        graph.addVertex(section.getDownStation());
+        graph.addVertex(section.getUpStation());
+    }
+
+    private void setEdgeWeight(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Section section) {
+        DefaultWeightedEdge edge = graph.addEdge(section.getUpStation(), section.getDownStation());
+        graph.setEdgeWeight(edge, section.getDistance());
     }
 }

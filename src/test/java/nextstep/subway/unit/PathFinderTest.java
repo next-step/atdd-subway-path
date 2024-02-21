@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PathFinderTest {
-    private PathFinder pathFinder = new PathFinder();
+    private PathFinder pathFinder;
     private Station 교대역;
     private Station 강남역;
     private Station 양재역;
@@ -54,7 +54,8 @@ public class PathFinderTest {
             .collect(Collectors.toList());
 
         // when
-        PathResponse 최단경로_조회_응답 = pathFinder.getShortestPath(sectionsList, 교대역, 양재역);
+        pathFinder = new PathFinder(sectionsList);
+        PathResponse 최단경로_조회_응답 = pathFinder.getShortestPath(교대역, 양재역);
 
         // then
         List<Long> 최단구간_역_목록 = 최단경로_조회_응답.getStations().stream()
@@ -79,7 +80,9 @@ public class PathFinderTest {
             .map(Line::getSections)
             .collect(Collectors.toList());
 
-        assertThatThrownBy(() -> pathFinder.getShortestPath(sectionsList, 교대역, 양재역))
+        pathFinder = new PathFinder(sectionsList);
+
+        assertThatThrownBy(() -> pathFinder.getShortestPath(교대역, 양재역))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("출발역과 도착역이 연결되어 있어야 한다.");
     }

@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("경로 조회 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class PathAcceptanceTest extends AcceptanceTest {
     private Long 교대역;
     private Long 강남역;
@@ -30,6 +29,13 @@ public class PathAcceptanceTest extends AcceptanceTest {
     private Long 신분당선;
     private Long 삼호선;
 
+    /**
+     * 교대역    --- *2호선* ---   강남역
+     * |                        |
+     * *3호선*                   *신분당선*
+     * |                        |
+     * 남부터미널역  --- *3호선* ---   양재
+     */
     @BeforeEach
     public void setUp() {
         super.setUp();
