@@ -1,16 +1,14 @@
 package nextstep.subway.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.controller.dto.*;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.repository.LineRepository;
 import nextstep.subway.domain.repository.SectionRepository;
-import nextstep.subway.exception.CheckDuplicateStationException;
-import nextstep.subway.exception.InvalidUpStationException;
 import nextstep.subway.exception.NotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;

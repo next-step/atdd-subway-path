@@ -85,8 +85,83 @@ public class LineServiceMockTest {
     }
 
     @Test
+    @DisplayName("지하철 마지막 구간을 등록한다.")
+    void 지하철_마지막구간_등록() {
+        // given
+        when(stationService.getStationById(보라매역.getId())).thenReturn(보라매역);
+        when(stationService.getStationById(보라매병원역.getId())).thenReturn(보라매병원역);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신림선));
+
+
+        // when
+        SectionCreateRequest 구간_생성_요청 = SectionCreateRequest.builder()
+                .upStationId(String.valueOf(보라매역.getId()))
+                .downStationId(String.valueOf(보라매병원역.getId()))
+                .distance(22L)
+                .build();
+        lineService.addSection(신림선_아이디, 구간_생성_요청);
+
+
+        // then
+        LineResponse lineResponse = lineService.findLineById(1L);
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(신림역.getName());
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(보라매역.getName());
+        assertThat(lineResponse.getStations().get(2).getName()).isEqualTo(보라매병원역.getName());
+    }
+
+    @Test
+    @DisplayName("지하철 중간 구간을 등록한다.")
+    void 지하철_중간구간_등록() {
+        // given
+        when(stationService.getStationById(신림역.getId())).thenReturn(신림역);
+        when(stationService.getStationById(보라매병원역.getId())).thenReturn(보라매병원역);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신림선));
+
+
+        // when
+        SectionCreateRequest 구간_생성_요청 = SectionCreateRequest.builder()
+                .upStationId(String.valueOf(신림역.getId()))
+                .downStationId(String.valueOf(보라매병원역.getId()))
+                .distance(5L)
+                .build();
+        lineService.addSection(신림선_아이디, 구간_생성_요청);
+
+
+        // then
+        LineResponse lineResponse = lineService.findLineById(1L);
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(신림역.getName());
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(보라매병원역.getName());
+        assertThat(lineResponse.getStations().get(2).getName()).isEqualTo(보라매역.getName());
+    }
+
+    @Test
+    @DisplayName("지하철 처음 구간을 등록한다.")
+    void 지하철_처음구간_등록() {
+        // given
+        when(stationService.getStationById(신림역.getId())).thenReturn(신림역);
+        when(stationService.getStationById(보라매병원역.getId())).thenReturn(보라매병원역);
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신림선));
+
+
+        // when
+        SectionCreateRequest 구간_생성_요청 = SectionCreateRequest.builder()
+                .upStationId(String.valueOf(신림역.getId()))
+                .downStationId(String.valueOf(보라매병원역.getId()))
+                .distance(5L)
+                .build();
+        lineService.addSection(신림선_아이디, 구간_생성_요청);
+
+
+        // then
+        LineResponse lineResponse = lineService.findLineById(1L);
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(신림역.getName());
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(보라매병원역.getName());
+        assertThat(lineResponse.getStations().get(2).getName()).isEqualTo(보라매역.getName());
+    }
+
+    @Test
     @DisplayName("구간을 삭제한다.")
-    void removeSection() {
+    void 지하철_구간_삭제() {
         //given
         Section 보라매보라매병원역 = Section.builder()
                 .upStation(보라매역)

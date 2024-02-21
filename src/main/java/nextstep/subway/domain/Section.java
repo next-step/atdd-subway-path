@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor()
 @Entity
-public class Section {
+public class Section implements Comparable<Section>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,5 +35,16 @@ public class Section {
         this.downStation = downStation;
         this.distance = distance;
         this.line = line;
+    }
+
+    @Override
+    public int compareTo(Section section) {
+        if (this.equals(section)) {
+            return 0;
+        }
+        if (this.downStation.equals(section.upStation)) {
+            return -1;
+        }
+        return 1;
     }
 }

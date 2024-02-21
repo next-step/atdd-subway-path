@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import nextstep.subway.domain.Line;
 
-
 import java.util.List;
 
 import static nextstep.subway.controller.dto.StationResponse.sectionsToStationResponses;
@@ -29,7 +28,7 @@ public class LineResponse {
                 .id(line.getId())
                 .color(line.getColor())
                 .name(line.getName())
-                .stations(sectionsToStationResponses(line.getSections()))
+                .stations(sectionsToStationResponses(line))
                 .build();
     }
 }

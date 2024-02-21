@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import lombok.Builder;
-
 import javax.persistence.*;
 import java.util.Objects;
 

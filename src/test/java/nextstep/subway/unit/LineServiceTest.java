@@ -46,8 +46,8 @@ public class LineServiceTest {
     }
 
     @Test
-    @DisplayName("구간을 등록한다.")
-    void addSection() {
+    @DisplayName("지하철 마지막 구간을 등록한다.")
+    void 지하철_마지막구간_등록() {
         // given
         Line 신림선 = Line.builder()
                 .name("신림선")
@@ -67,15 +67,65 @@ public class LineServiceTest {
                 .build();
         lineService.addSection(신림선.getId(), 구간_생성_요청);
 
+        //then
+        assertThat(신림선.getSections().getOrderedStations()).containsExactly(신림역, 보라매역, 보라매병원역);
+    }
+
+    @Test
+    @DisplayName("지하철 중간구간을 등록한다.")
+    void 지하철_중간구간_등록() {
+        // given
+        Line 신림선 = Line.builder()
+                .name("신림선")
+                .color("BLUE")
+                .upStation(신림역)
+                .downStation(보라매역)
+                .distance(10L)
+                .build();
+
+        신림선 = lineRepository.save(신림선);
+
+        // when
+        SectionCreateRequest 구간_생성_요청 = SectionCreateRequest.builder()
+                .upStationId(String.valueOf(신림역.getId()))
+                .downStationId(String.valueOf(보라매병원역.getId()))
+                .distance(5L)
+                .build();
+        lineService.addSection(신림선.getId(), 구간_생성_요청);
 
         //then
-        LineResponse lineResponse = lineService.findLineById(신림선.getId());
-        assertThat(lineResponse.getStations()).hasSize(3);
+        assertThat(신림선.getSections().getOrderedStations()).containsExactly(신림역, 보라매병원역, 보라매역);
+    }
+
+    @Test
+    @DisplayName("지하철 처음구간을 등록한다.")
+    void 지하철_처음구간_등록() {
+        // given
+        Line 신림선 = Line.builder()
+                .name("신림선")
+                .color("BLUE")
+                .upStation(신림역)
+                .downStation(보라매역)
+                .distance(10L)
+                .build();
+
+        신림선 = lineRepository.save(신림선);
+
+        // when
+        SectionCreateRequest 구간_생성_요청 = SectionCreateRequest.builder()
+                .upStationId(String.valueOf(보라매병원역.getId()))
+                .downStationId(String.valueOf(신림역.getId()))
+                .distance(10L)
+                .build();
+        lineService.addSection(신림선.getId(), 구간_생성_요청);
+
+        //then
+        assertThat(신림선.getSections().getOrderedStations()).containsExactly(보라매병원역, 신림역, 보라매역);
     }
 
     @Test
     @DisplayName("구간을 삭제한다.")
-    void removeSection() {
+    void 지하철_다구간_삭제() {
         // given
         Line 신림선 = Line.builder()
                 .name("신림선")
@@ -100,7 +150,6 @@ public class LineServiceTest {
 
 
         //then
-        LineResponse lineResponse = lineService.findLineById(신림선.getId());
-        assertThat(lineResponse.getStations()).hasSize(2);
+        assertThat(신림선.getSections().getOrderedStations()).containsExactly(신림역, 보라매역);
     }
 }
