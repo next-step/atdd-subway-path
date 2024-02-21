@@ -21,10 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class SectionAcceptanceTest {
-    private static ExtractableResponse<Response> 신림역;
-    private static ExtractableResponse<Response> 보라매역;
-    private static ExtractableResponse<Response> 서원역;
-    private static ExtractableResponse<Response> 신림선;
+    private ExtractableResponse<Response> 신림역;
+    private ExtractableResponse<Response> 보라매역;
+    private ExtractableResponse<Response> 서원역;
+    private ExtractableResponse<Response> 신림선;
 
     /**
      * given 지하철 노선을 생성하고
@@ -52,7 +52,7 @@ public class SectionAcceptanceTest {
      */
     @DisplayName("지하철 구간에 마지막 역을 추가 할 수 있다.")
     @Test
-    void createLineSection() {
+    void 지하철_구간_마지막역을_추가한다() {
         //when
         ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
                 SectionFixture.createSectionParams(보라매역.jsonPath().getLong("id"), 서원역.jsonPath().getLong("id"), 10L),
@@ -106,23 +106,38 @@ public class SectionAcceptanceTest {
                 .containsExactly(서원역.jsonPath().getLong("id"), 신림역.jsonPath().getLong("id"), 보라매역.jsonPath().getLong("id"));
     }
 
-
     /**
-     * when 동일한 노선을 등록하면
-     * then 오류가 난다.
+     * when 동일한 노선을 등록하면.
+     * then 에러가 발생한다.
      */
-    @DisplayName("이미 등록되어있는 역은 노선에 등록될 수 없다.")
+    @DisplayName("동일한 구간을 등록하면 에러가 발생한다.")
     @Test
-    void createLineSection_invalidUpStation() {
-
+    void 동일한구간_에러발생() {
         //when
-        ExtractableResponse<Response> 신림선_구간_생성_오류 = 생성_요청(
-                SectionFixture.createSectionParams(신림역.jsonPath().getLong("id"), 보라매역.jsonPath().getLong("id"), 10L),
+        ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
+                SectionFixture.createSectionParams(신림역.jsonPath().getLong("id"), 서원역.jsonPath().getLong("id"), 20L),
                 "/lines/" + 신림선.jsonPath().getLong("id") + "/sections"
         );
 
         //then
-        assertThat(신림선_구간_생성_오류.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(신림선_구간_생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * when 노선 길이가 기존 노선 길이를 초과하여 구간을 등록하면.
+     * then 에러가 발생한다.
+     */
+    @DisplayName("노선의 길이가 초과되도록 구간을 등록하면 에러가 발생한다.")
+    @Test
+    void 노선길이_초과에러() {
+        //when
+        ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
+                SectionFixture.createSectionParams(신림역.jsonPath().getLong("id"), 보라매역.jsonPath().getLong("id"), 20L),
+                "/lines/" + 신림선.jsonPath().getLong("id") + "/sections"
+        );
+
+        //then
+        assertThat(신림선_구간_생성.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
