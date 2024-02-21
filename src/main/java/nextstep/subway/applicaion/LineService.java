@@ -12,7 +12,6 @@ import nextstep.subway.ui.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,7 +90,8 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId)
             .orElseThrow(() -> new BusinessException("노선 정보를 찾을 수 없습니다."));
+        Station station = stationService.findById(stationId);
 
-        line.removeSection(stationId);
+        line.removeSection(station);
     }
 }

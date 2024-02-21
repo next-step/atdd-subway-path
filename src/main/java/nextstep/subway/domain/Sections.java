@@ -58,14 +58,14 @@ public class Sections {
     this.sections.add(newSection);
   }
 
-  public void removeSection(final Long stationId) {
-    RemoveSectionValidator.validate(this, stationId);
+  public void removeSection(final Station station) {
+    RemoveSectionValidator.validate(this, station);
 
     final var before = sections.stream()
-        .filter(it -> it.getDownStation().getId().equals(stationId))
+        .filter(it -> it.getDownStation().equals(station))
         .findAny();
     final var after = sections.stream()
-        .filter(it -> it.getUpStation().getId().equals(stationId))
+        .filter(it -> it.getUpStation().equals(station))
         .findAny();
 
     // TODO 메소드로 분리
