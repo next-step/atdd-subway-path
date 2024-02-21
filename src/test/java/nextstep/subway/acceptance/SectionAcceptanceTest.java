@@ -3,6 +3,7 @@ package nextstep.subway.acceptance;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.presentation.request.LineCreateRequest;
+import nextstep.subway.steps.LineSteps;
 import nextstep.subway.steps.StationSteps;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
 import static nextstep.subway.steps.LineSteps.createLine;
+import static nextstep.subway.steps.LineSteps.getLine;
 import static nextstep.subway.steps.SectionSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,95 +89,6 @@ public class SectionAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(400);
         assertThat(response.jsonPath().getString("message")).isEqualTo("이미 등록된 상태입니다.");
-    }
-
-    /**
-     * given : 구간을 생성한다.
-     * when : 생성한 구간을 제거한다.
-     * then : 노선에서 구간이 제거된다.
-     */
-    @Test
-    void 구간을_생성하고_구간을_제거한다() {
-        //given
-        Long 선릉역_id = StationSteps.createStation("선릉역");
-        Long 역삼역_id = StationSteps.createStation("역삼역");
-        Long 강남역_id = StationSteps.createStation("강남역");
-
-        LineCreateRequest lineCreateRequest = new LineCreateRequest(
-                "2호선",
-                "green",
-                선릉역_id,
-                역삼역_id,
-                10
-        );
-        Long 이호선_id = createLine(lineCreateRequest);
-        createSection(이호선_id, 역삼역_id, 강남역_id, 20);
-
-        // when
-        ExtractableResponse<Response> response = deleteSection(이호선_id, 강남역_id);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(204);
-    }
-
-    /**
-     * given : 구간을 생성한다.
-     * when : 생성한 구간을 제거한다.
-     * then : 제거할 구간의 역이 하행종점역이 아니면 실패한다.
-     */
-    @Test
-    void 마지막역이_아니면_구간을_제거가_실패한다() {
-        //given
-        Long 선릉역_id = StationSteps.createStation("선릉역");
-        Long 역삼역_id = StationSteps.createStation("역삼역");
-        Long 강남역_id = StationSteps.createStation("강남역");
-
-        LineCreateRequest lineCreateRequest = new LineCreateRequest(
-                "2호선",
-                "green",
-                선릉역_id,
-                역삼역_id,
-                10
-        );
-        Long 이호선_id = createLine(lineCreateRequest);
-        createSection(이호선_id, 역삼역_id, 강남역_id, 20);
-
-        // when
-        ExtractableResponse<Response> response = deleteSection(이호선_id, 역삼역_id);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.jsonPath().getString("message")).isEqualTo("지하철 역이 일치하지 않습니다.");
-    }
-
-    /**
-     * given : 구간을 생성한다.
-     * when : 생성한 구간을 제거한다.
-     * then : 제거할 구간의 역이 노선의 마지막 역이면 실패한다.
-     */
-    @Test
-    void 노선에_1개의_역만_남으면_구간제거가_실패한다() {
-        //given
-        Long 선릉역_id = StationSteps.createStation("선릉역");
-        Long 역삼역_id = StationSteps.createStation("역삼역");
-        Long 강남역_id = StationSteps.createStation("강남역");
-
-        LineCreateRequest lineCreateRequest = new LineCreateRequest(
-                "2호선",
-                "green",
-                선릉역_id,
-                역삼역_id,
-                10
-        );
-        Long 이호선_id = createLine(lineCreateRequest);
-        deleteSection(이호선_id, 역삼역_id);
-
-        // when
-        ExtractableResponse<Response> response = deleteSection(이호선_id, 선릉역_id);
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.jsonPath().getString("message")).isEqualTo("지하철역이 충분하지 않습니다.");
     }
 
     /**
@@ -303,5 +216,123 @@ public class SectionAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(400);
         assertThat(response.jsonPath().getString("message")).isEqualTo("이미 등록된 상태입니다.");
+    }
+
+    @Test
+    void 노선의_시작역을_제거한다() {
+        //given
+        Long 선릉역_id = StationSteps.createStation("선릉역");
+        Long 역삼역_id = StationSteps.createStation("역삼역");
+        Long 강남역_id = StationSteps.createStation("강남역");
+
+        LineCreateRequest lineCreateRequest = new LineCreateRequest(
+                "2호선",
+                "green",
+                선릉역_id,
+                역삼역_id,
+                10
+        );
+        Long 이호선_id = createLine(lineCreateRequest);
+        createSection(이호선_id, 역삼역_id, 강남역_id, 20);
+
+        // when
+        deleteSection(이호선_id, 선릉역_id);
+
+        // when
+        ExtractableResponse<Response> response = getLine(이호선_id);
+
+        // then
+        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsAnyOf(
+                "역삼역", "강남역"
+        );
+    }
+
+    @Test
+    void 노선의_중간역을_제거한다() {
+        //given
+        Long 선릉역_id = StationSteps.createStation("선릉역");
+        Long 역삼역_id = StationSteps.createStation("역삼역");
+        Long 강남역_id = StationSteps.createStation("강남역");
+
+        LineCreateRequest lineCreateRequest = new LineCreateRequest(
+                "2호선",
+                "green",
+                선릉역_id,
+                역삼역_id,
+                10
+        );
+        Long 이호선_id = createLine(lineCreateRequest);
+        createSection(이호선_id, 역삼역_id, 강남역_id, 20);
+
+        // when
+        deleteSection(이호선_id, 역삼역_id);
+
+        // when
+        ExtractableResponse<Response> response = getLine(이호선_id);
+
+        // then
+        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsAnyOf(
+                "선릉역", "강남역"
+        );
+    }
+
+    /**
+     * given : 구간을 생성한다.
+     * when : 생성한 구간을 제거한다.
+     * then : 노선에서 구간이 제거된다.
+     */
+    @Test
+    void 노선의_마지막역을_제거한다() {
+        //given
+        Long 선릉역_id = StationSteps.createStation("선릉역");
+        Long 역삼역_id = StationSteps.createStation("역삼역");
+        Long 강남역_id = StationSteps.createStation("강남역");
+
+        LineCreateRequest lineCreateRequest = new LineCreateRequest(
+                "2호선",
+                "green",
+                선릉역_id,
+                역삼역_id,
+                10
+        );
+        Long 이호선_id = createLine(lineCreateRequest);
+        createSection(이호선_id, 역삼역_id, 강남역_id, 20);
+
+        // when
+        deleteSection(이호선_id, 강남역_id);
+
+        // when
+        ExtractableResponse<Response> response = getLine(이호선_id);
+
+        // then
+        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsAnyOf(
+                "선릉역", "역삼역"
+        );
+    }
+
+    @Test
+    void 노선의_마지막_구간에_포함된_역을_제거할수있다() {
+        //given
+        Long 선릉역_id = StationSteps.createStation("선릉역");
+        Long 역삼역_id = StationSteps.createStation("역삼역");
+
+        LineCreateRequest lineCreateRequest = new LineCreateRequest(
+                "2호선",
+                "green",
+                선릉역_id,
+                역삼역_id,
+                10
+        );
+        Long 이호선_id = createLine(lineCreateRequest);
+        deleteSection(이호선_id, 역삼역_id);
+
+        // when
+        ExtractableResponse<Response> response = getLine(이호선_id);
+
+        // then
+        assertThat(response.jsonPath().getString("name")).isEqualTo(null);
     }
 }
