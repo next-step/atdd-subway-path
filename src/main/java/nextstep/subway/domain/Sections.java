@@ -23,36 +23,12 @@ public class Sections {
     // 첫 번째 구간은 검증 제외
     AddSectionValidator.validate(this, newSection);
 
-    // TODO 로직 이관
-    /**
-     *    중간 구간을 앞에서부터 분할
-     *          origin
-     *   |-------------------|
-     *       new
-     *   |---------|
-     *
-     *           result
-     *       new      origin
-     *   |---------|---------|
-     */
     getBeforeSection(newSection).ifPresent(
-        it -> it.updateDownStation(newSection.getUpStation(), it.getDistance() - newSection.getDistance())
+        it -> it.reduceBack(newSection.getUpStation(), newSection.getDistance())
     );
 
-    // TODO 로직 이관
-    /**
-     *    중간 구간을 뒤에서부터 분할
-     *          origin
-     *   |-------------------|
-     *                 new
-     *             |---------|
-     *
-     *           result
-     *     origin      new
-     *   |---------|---------|
-     */
     getAfterSection(newSection).ifPresent(
-        it -> it.updateUpStation(newSection.getDownStation(), it.getDistance() - newSection.getDistance())
+        it -> it.reduceFront(newSection.getDownStation(), newSection.getDistance())
     );
 
     this.sections.add(newSection);
@@ -74,7 +50,7 @@ public class Sections {
     } else if (before.isPresent() && after.isEmpty()) {   // 마지막 구간 삭제
       this.sections.remove(before.get());
     } else if (before.isPresent() && after.isPresent()) { // 중간 구간 삭제
-      before.get().updateDownStation(after.get().getDownStation(), before.get().getDistance() + after.get().getDistance());
+      before.get().extendBack(after.get().getDownStation(), after.get().getDistance());
       this.sections.remove(after.get());
     }
   }
