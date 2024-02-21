@@ -28,7 +28,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> findAllLines() {
-        return ResponseEntity.ok(lineService.findAllLines());
+        return ResponseEntity.ok(lineService.findAllLineResponses());
     }
 
     @GetMapping("/lines/{lineId}")
@@ -47,11 +47,5 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable Long lineId) {
         lineService.deleteLine(lineId);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/paths")
-    public ResponseEntity<PathResponse> findShortestPath(@RequestParam("source") Long departureStationId,
-                                                         @RequestParam("target") Long arrivalStationId) {
-        return ResponseEntity.ok(lineService.findShortestPath(new PathRequest(departureStationId, arrivalStationId)));
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
-public class StationPathSteps {
+public class PathSteps {
 
     public static ExtractableResponse<Response> 성공하는_지하철_경로_조회_요청(PathRequest pathRequest) {
         return given()

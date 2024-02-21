@@ -10,7 +10,7 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 
-public class StationSectionSteps {
+public class SectionSteps {
 
     private static ExtractableResponse<Response> 지하철_구간_추가요청(Long lineId, SectionRequest request, HttpStatus httpStatus) {
         return given()

@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.config.fixtures.LineFixture.*;
-import static nextstep.subway.steps.StationLineSteps.지하철_노선_생성;
-import static nextstep.subway.steps.StationPathSteps.*;
-import static nextstep.subway.steps.StationSectionSteps.성공하는_지하철_구간_추가요청;
+import static nextstep.subway.steps.LineSteps.지하철_노선_생성;
+import static nextstep.subway.steps.PathSteps.*;
+import static nextstep.subway.steps.SectionSteps.성공하는_지하철_구간_추가요청;
 import static nextstep.subway.steps.StationSteps.지하철_역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 

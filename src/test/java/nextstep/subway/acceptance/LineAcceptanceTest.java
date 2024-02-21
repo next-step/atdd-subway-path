@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static nextstep.config.fixtures.StationFixture.역_10개;
-import static nextstep.subway.steps.StationLineSteps.*;
+import static nextstep.subway.steps.LineSteps.*;
 import static nextstep.subway.steps.StationSteps.*;
 import static nextstep.subway.utils.HttpResponseUtils.getCreatedLocationId;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 @AcceptanceTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class StationLineAcceptanceTest {
+public class LineAcceptanceTest {
 
     Long 가산디지털단지역_번호;
     Long 구로디지털단지역_번호;

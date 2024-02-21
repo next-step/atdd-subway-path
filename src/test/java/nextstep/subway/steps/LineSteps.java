@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import static io.restassured.RestAssured.given;
 import static nextstep.subway.utils.HttpResponseUtils.getCreatedLocationId;
 
-public class StationLineSteps {
+public class LineSteps {
 
     /**
      * 지하철 노선 목록을 조회하고 jsonPath 반환

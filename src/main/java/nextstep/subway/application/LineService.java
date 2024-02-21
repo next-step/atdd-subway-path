@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import nextstep.subway.application.dto.PathResult;
 import nextstep.subway.dto.*;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
@@ -25,12 +24,9 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    private final PathFinder pathFinder;
-
-    public LineService(StationRepository stationRepository, LineRepository lineRepository, PathFinder pathFinder) {
+    public LineService(StationRepository stationRepository, LineRepository lineRepository) {
         this.stationRepository = stationRepository;
         this.lineRepository = lineRepository;
-        this.pathFinder = pathFinder;
     }
 
     @Transactional
@@ -40,7 +36,7 @@ public class LineService {
         return convertToLineResponse(lineRepository.save(line));
     }
 
-    public List<LineResponse> findAllLines() {
+    public List<LineResponse> findAllLineResponses() {
         return lineRepository.findAll().stream()
                 .map(this::convertToLineResponse)
                 .collect(Collectors.toList());
@@ -76,41 +72,12 @@ public class LineService {
         line.delete(findStation(stationIdToDelete));
     }
 
-    public PathResponse findShortestPath(PathRequest pathRequest) {
-        validatePathRequest(pathRequest);
-
-        return convertPathResponse(pathFinder.calculateShortestPath(
-                lineRepository.findAll(),
-                findStation(pathRequest.getDepartureStationId()),
-                findStation(pathRequest.getArrivalStationId())));
-    }
-
-    private void validatePathRequest(PathRequest pathRequest) {
-        if (areStationsSame(pathRequest)) {
-            throw new IllegalArgumentException("출발역과 도착역이 동일할 수 없습니다.");
-        }
-        if (!existsStation(pathRequest.getDepartureStationId())) {
-            throw new IllegalArgumentException("출발역은 역으로 등록되어 있지 않습니다.");
-        }
-        if (!existsStation(pathRequest.getArrivalStationId())) {
-            throw new IllegalArgumentException("도착역은 역으로 등록되어 있지 않습니다.");
-        }
-    }
-
-    private boolean existsStation(Long stationId) {
-        return stationRepository.existsById(stationId);
-    }
-
-    private boolean areStationsSame(PathRequest pathRequest) {
-        return pathRequest.getDepartureStationId().equals(pathRequest.getArrivalStationId());
-    }
-
     public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("노선 번호에 해당하는 노선이 없습니다."));
     }
 
-    private Station findStation(Long stationId) {
+    public Station findStation(Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new EntityNotFoundException("역 번호에 해당하는 역이 없습니다."));
     }
@@ -134,6 +101,10 @@ public class LineService {
                 line.getName(),
                 line.getColor(),
                 convertStationResponses(line.getSortedAllSections()));
+    }
+
+    public List<Line> findAllLines() {
+        return lineRepository.findAll();
     }
 
     private List<StationResponse> convertStationResponses(List<Section> sections) {
@@ -179,9 +150,5 @@ public class LineService {
                 request.getDistance(),
                 line
         );
-    }
-
-    private PathResponse convertPathResponse(PathResult pathResult) {
-        return new PathResponse(pathResult.getStations(), pathResult.getDistance());
     }
 }

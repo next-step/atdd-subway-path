@@ -18,16 +18,16 @@ import java.util.Map;
 import static nextstep.config.fixtures.LineFixture.호남선;
 import static nextstep.config.fixtures.SectionFixture.지하철_구간;
 import static nextstep.config.fixtures.StationFixture.역_10개;
-import static nextstep.subway.steps.StationLineSteps.지하철_노선_생성_요청_검증_포함;
-import static nextstep.subway.steps.StationLineSteps.지하철_노선_조회_요청;
-import static nextstep.subway.steps.StationSectionSteps.*;
+import static nextstep.subway.steps.LineSteps.지하철_노선_생성_요청_검증_포함;
+import static nextstep.subway.steps.LineSteps.지하철_노선_조회_요청;
+import static nextstep.subway.steps.SectionSteps.*;
 import static nextstep.subway.steps.StationSteps.*;
 import static nextstep.subway.utils.HttpResponseUtils.getCreatedLocationId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관리")
 @AcceptanceTest
-public class StationSectionAcceptanceTest {
+public class SectionAcceptanceTest {
 
     Long 가산디지털단지역_번호;
     Long 구로디지털단지역_번호;
