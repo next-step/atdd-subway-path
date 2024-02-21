@@ -40,7 +40,7 @@ public class Line {
 
     public void delete(Station stationToDelete) {
         if (sections.canDeleteSection(stationToDelete)) {
-            sections.deleteSection(this, stationToDelete);
+            sections.deleteSection(stationToDelete);
         }
     }
 
@@ -90,7 +90,7 @@ public class Line {
         return sections.getAllStations();
     }
 
-    public List<Section> getAllSections() {
-        return sections.getAllSections();
+    public List<Section> getSortedAllSections() {
+        return sections.getSortedAllSections();
     }
 }

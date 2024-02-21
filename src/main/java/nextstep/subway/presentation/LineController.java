@@ -3,6 +3,8 @@ package nextstep.subway.presentation;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.PathRequest;
+import nextstep.subway.dto.PathResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +28,7 @@ public class LineController {
 
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> findAllLines() {
-        return ResponseEntity.ok(lineService.findAllLines());
+        return ResponseEntity.ok(lineService.findAllLineResponses());
     }
 
     @GetMapping("/lines/{lineId}")

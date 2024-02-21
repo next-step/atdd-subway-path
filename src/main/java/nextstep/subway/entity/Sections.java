@@ -23,8 +23,6 @@ public class Sections {
             return;
         }
 
-        sortByConnectedSections(sections);
-
         if (isAddLastSection(sectionToAdd)) {
             sections.add(sectionToAdd);
             return;
@@ -49,9 +47,7 @@ public class Sections {
         return true;
     }
 
-    public void deleteSection(Line line, Station stationToDelete) {
-        sortByConnectedSections(sections);
-
+    public void deleteSection(Station stationToDelete) {
         if (isFirstStation(stationToDelete)) {
             sections.remove(findFirstSection());
             return;
@@ -61,16 +57,50 @@ public class Sections {
             sections.remove(findLastSection());
             return;
         }
-        deleteIntermediateStation(line, stationToDelete);
+        deleteIntermediateStation(stationToDelete);
     }
 
-    private void deleteIntermediateStation(Line line, Station stationToDelete) {
+    private boolean isLastStation(Station stationToDelete) {
+        return findLastStation().isSame(stationToDelete);
+    }
+
+    public Station findLastStation() {
+        if (sections.isEmpty()) {
+            throw new RuntimeException();
+        }
+        return findLastSection().getDownStation();
+    }
+
+    private boolean isFirstStation(Station insertionStation) {
+        return findFirstSection().getUpStation().isSame(insertionStation);
+    }
+
+    private Section findFirstSection() {
+        return getSortedAllSections().get(0);
+    }
+
+    private Section findLastSection() {
+        List<Section> sortedSections = getSortedAllSections();
+        return sortedSections.get(sortedSections.size() - 1);
+    }
+
+    public boolean hasExistingStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.isAtLeastOneSameStation(station));
+    }
+
+    public boolean hasNoSections() {
+        return sections.isEmpty();
+    }
+
+    private void deleteIntermediateStation(Station stationToDelete) {
         Section commonSection = findCommonSection(stationToDelete);
         replaceAndConnectSection(commonSection, findNextSection(commonSection));
     }
 
     private Section findNextSection(Section commonSection) {
-        return sections.get(sections.indexOf(commonSection) + 1);
+        List<Section> sortedSections = getSortedAllSections();
+        return sortedSections.get(sortedSections.indexOf(commonSection) + 1);
     }
 
     private void replaceAndConnectSection(Section sectionToDelete, Section nextSection) {
@@ -88,67 +118,62 @@ public class Sections {
     }
 
     private Section findCommonSection(Station station) {
-        return sections.stream()
+        return getSortedAllSections().stream()
                 .filter(section -> section.isAtLeastOneSameStation(station))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
     }
 
-    private Section findLastSection() {
-        return sections.get(sections.size() - 1);
-    }
-
-    private Section findFirstSection() {
-        return sections.get(0);
-    }
-
-    private boolean isLastStation(Station stationToDelete) {
-        return findLastStation().isSame(stationToDelete);
-    }
-
     private List<Section> sortByConnectedSections(List<Section> sections) {
-        for (int baseIndex = 0; baseIndex < sections.size(); baseIndex++) {
-            for (int connectIndex = baseIndex + 1; connectIndex < sections.size(); connectIndex++) {
-                Section sectionToConnect = sections.get(connectIndex);
+        List<Section> sortedSections = new ArrayList<>(sections);
 
-                if(canPrependSectionBasedOnSection(findFirstSection(), sectionToConnect)) {
-                    sections.remove(sectionToConnect);
-                    sections.add(0, sectionToConnect);
-                    break;
-                }
-
-                if(canAppendSectionBasedOnStation(sections.get(baseIndex), sectionToConnect)) {
-                    sections.remove(sectionToConnect);
-                    sections.add(baseIndex + 1, sectionToConnect);
-                    break;
-                }
-            }
+        for (int baseIndex = 0; baseIndex < sortedSections.size(); baseIndex++) {
+            connectBasedOnSection(sortedSections, baseIndex);
         }
-        return sections;
+        return sortedSections;
     }
+
+    private void connectBasedOnSection(List<Section> sortedSections, int baseSectionIndex) {
+        Optional<Section> prependSection = findPrependSection(sortedSections);
+        if (isFindSection(prependSection)) {
+            moveSection(sortedSections, prependSection.get(), 0);
+            return;
+        }
+
+        Optional<Section> appendSection = findAppendSection(sortedSections, baseSectionIndex);
+        if (isFindSection(appendSection)) {
+            moveSection(sortedSections, appendSection.get(), baseSectionIndex + 1);
+        }
+    }
+
+    private boolean isFindSection(Optional<Section> optionalSection) {
+        return optionalSection.isPresent();
+    }
+
+    private Optional<Section> findPrependSection(List<Section> sections) {
+        return sections.stream()
+                .filter(section -> canPrependSectionBasedOnSection(sections.get(0), section))
+                .findFirst();
+    }
+
+    private Optional<Section> findAppendSection(List<Section> sections, int baseSectionIndex) {
+        return sections.subList(baseSectionIndex + 1, sections.size()).stream()
+                .filter(section -> canAppendSectionBasedOnSection(sections.get(baseSectionIndex), section))
+                .findFirst();
+    }
+
+    private void moveSection(List<Section> sections, Section sectionToMove, int indexToMove) {
+        sections.remove(sectionToMove);
+        sections.add(indexToMove, sectionToMove);
+    }
+
 
     private boolean canPrependSectionBasedOnSection(Section section, Section sectionToConnect) {
         return section.canPrependSection(sectionToConnect);
     }
 
-    private boolean canAppendSectionBasedOnStation(Section section, Section sectionToConnect) {
+    private boolean canAppendSectionBasedOnSection(Section section, Section sectionToConnect) {
         return section.canAppendSection(sectionToConnect);
-    }
-
-    public Station findLastStation() {
-        if (sections.isEmpty()) {
-            throw new RuntimeException();
-        }
-        return sections.get(sections.size() - 1).getDownStation();
-    }
-
-    public boolean hasExistingStation(Station station) {
-        return sections.stream()
-                .anyMatch(section -> section.isAtLeastOneSameStation(station));
-    }
-
-    public boolean hasNoSections() {
-        return sections.isEmpty();
     }
 
     private void insertSection(Section sectionToInsert) {
@@ -206,10 +231,6 @@ public class Sections {
         return commonStation.isSame(sectionToInsert.getDownStation());
     }
 
-    private boolean isFirstStation(Station insertionStation) {
-        return sections.get(0).getUpStation().isSame(insertionStation);
-    }
-
     private Section createPreviousSection(Section sectionToInsert, Section sectionOfIndex) {
         return new Section(
                 sectionOfIndex.getUpStation(),
@@ -227,7 +248,7 @@ public class Sections {
     }
 
     private Section findSectionContainingStation(Section sectionToInsert) {
-        return sections.stream()
+        return getSortedAllSections().stream()
                 .filter(section -> section.isAtLeastOneSameStation(sectionToInsert))
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
@@ -237,7 +258,7 @@ public class Sections {
         return canAppendSectionBasedOnStation(section, findLastStation());
     }
 
-    public List<Section> getAllSections() {
+    public List<Section> getSortedAllSections() {
         return sortByConnectedSections(sections);
     }
 

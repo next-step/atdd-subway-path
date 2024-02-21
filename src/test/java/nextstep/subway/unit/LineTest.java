@@ -49,7 +49,7 @@ class LineTest {
                     이호선.addSection(강남_양재_구간);
 
                     // then
-                    assertThat(이호선.getAllSections()).containsAnyOf(강남_양재_구간);
+                    assertThat(이호선.getSortedAllSections()).containsAnyOf(강남_양재_구간);
                 }
             }
 
@@ -95,7 +95,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(사성, 삼성, 선릉, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(사성_삼성_구간, 삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
                     }
 
@@ -119,7 +119,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_사성_구간, 사성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
                     }
 
@@ -148,7 +148,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 선릉, 사성, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_선릉_구간, 선릉_사성_구간, 사성_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
                     }
 
@@ -172,7 +172,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_사성_구간, 사성_강남_구간, 강남_서초_구간);
                     }
 
@@ -201,7 +201,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 선릉, 역삼, 강남, 사성, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_사성_구간, 사성_서초_구간);
                     }
 
@@ -224,7 +224,7 @@ class LineTest {
                         assertThat(이호선.getAllStations())
                                 .containsOnly(삼성, 사성, 선릉, 역삼, 강남, 서초);
 
-                        assertThat(이호선.getAllSections())
+                        assertThat(이호선.getSortedAllSections())
                                 .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간, 서초_사성_구간);
                     }
 
@@ -339,25 +339,50 @@ class LineTest {
         }
     }
 
-    /**
-     * Given 지하철 노선이 생성되고, 지하철 구간을 추가한다.
-     * When  지하철 노선에 포함된 지하철 역을 조회할 경우
-     * Then  모든 지하철 역이 조회된다.
-     */
-    @Test
-    void 지하철_모든_구간의_역_조회() {
-        // given
-        Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10, 이호선);
+    @Nested
+    class 지하철_모든_구간_혹은_역_조회 {
 
-        이호선.addSection(삼성_선릉_구간);
+        /**
+         * Given 지하철 노선이 생성되고, 지하철 구간을 추가한다.
+         * When  지하철 노선에 포함된 지하철 역을 정렬된 형태로 조회할 경우
+         * Then  모든 지하철 구간이 정렬된 형태로 조회된다.
+         */
+        @Test
+        void 지하철_모든_구간_조회() {
+            // given
+            Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10, 이호선);
+            Section 선릉_역삼_구간 = SectionFixture.선릉_역삼_구간(10, 이호선);
+            Section 역삼_강남_구간 = SectionFixture.역삼_강남_구간(10, 이호선);
+            Section 강남_서초_구간 = SectionFixture.강남_서초_구간(10, 이호선);
 
-        // when
-        List<Station> 이호선_모든_역 = 이호선.getAllStations();
+            이호선.addSection(역삼_강남_구간); // 1(역삼 - 강남)
+            이호선.addSection(강남_서초_구간); // 1(역삼 - 강남) ** 2(강남 - 서초)
+            이호선.addSection(선릉_역삼_구간); // 3(선릉 - 역삼) ** 1(역삼 - 강남) ** 2(강남 - 서초)
+            이호선.addSection(삼성_선릉_구간); // 4(삼성 - 선릉) ** 3(선릉 - 역삼) ** 1(역삼 - 강남) ** 2(강남 - 서초)
 
-        // then
-        assertThat(이호선_모든_역).containsOnly(
-                삼성_선릉_구간.getUpStation(),
-                삼성_선릉_구간.getDownStation());
+            // when, then
+            assertThat(이호선.getSortedAllSections())
+                    .containsOnly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
+        }
+
+        /**
+         * Given 지하철 노선이 생성되고, 지하철 구간을 추가한다.
+         * When  지하철 노선에 포함된 지하철 역을 조회할 경우
+         * Then  모든 지하철 역이 조회된다.
+         */
+        @Test
+        void 지하철_모든_구간의_역_조회() {
+            // given
+            Section 삼성_선릉_구간 = SectionFixture.삼성_선릉_구간(10, 이호선);
+
+            이호선.addSection(삼성_선릉_구간);
+
+            // when, then
+            assertThat(이호선.getAllStations()).containsOnly(
+                    삼성_선릉_구간.getUpStation(),
+                    삼성_선릉_구간.getDownStation());
+        }
+
     }
 
     @Nested
@@ -399,7 +424,7 @@ class LineTest {
                     이호선.delete(StationFixture.삼성);
 
                     // then
-                    assertThat(이호선.getAllSections())
+                    assertThat(이호선.getSortedAllSections())
                             .containsExactly(선릉_역삼_구간, 역삼_강남_구간, 강남_서초_구간);
                 }
 
@@ -422,7 +447,7 @@ class LineTest {
                     이호선.delete(StationFixture.역삼);
 
                     // then
-                    assertThat(이호선.getAllSections())
+                    assertThat(이호선.getSortedAllSections())
                             .containsExactly(삼성_선릉_구간, 선릉_강남_구간, 강남_서초_구간);
                 }
 
@@ -440,7 +465,7 @@ class LineTest {
                     이호선.delete(StationFixture.강남);
 
                     // then
-                    assertThat(이호선.getAllSections())
+                    assertThat(이호선.getSortedAllSections())
                             .containsExactly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_서초_구간);
                 }
             }
@@ -459,7 +484,7 @@ class LineTest {
                     이호선.delete(StationFixture.서초);
 
                     // then
-                    assertThat(이호선.getAllSections())
+                    assertThat(이호선.getSortedAllSections())
                             .containsExactly(삼성_선릉_구간, 선릉_역삼_구간, 역삼_강남_구간);
                 }
 
