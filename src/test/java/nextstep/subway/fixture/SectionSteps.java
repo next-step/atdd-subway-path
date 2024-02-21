@@ -26,11 +26,8 @@ public class SectionSteps {
         RestAssured.given().log().all()
                 .pathParam("lineId", lineId)
                 .pathParam("stationId", stationId)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .delete("lines/{lineId}/sections/{stationId}")
                 .then()
-                .statusCode(HttpStatus.NO_CONTENT.value())
-                .extract()
-                .as(SectionResponse.class);
+                .statusCode(HttpStatus.NO_CONTENT.value());
     }
 }

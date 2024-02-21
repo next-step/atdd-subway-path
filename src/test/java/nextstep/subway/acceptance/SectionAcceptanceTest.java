@@ -43,12 +43,13 @@ public class SectionAcceptanceTest {
         건대입구역 = StationSteps.createStation("건대입구역");
         구의역 = StationSteps.createStation("구의역");
         강변역 = StationSteps.createStation("강변역");
-        이호선 = LineSteps.이호선_생성(건대입구역.getId(), 구의역.getId());
     }
 
     @Test
     @DisplayName("노선에 역 추가시 노선 가운데 추가 할 수 있다")
     public void addSectionInMiddle() {
+
+        이호선 = LineSteps.이호선_생성(건대입구역.getId(), 강변역.getId());
 
         // when
         SectionSteps.라인에_구간을_추가한다(이호선.getId(), new SectionRequest(건대입구역.getId(), 구의역.getId(), 7));
@@ -90,6 +91,7 @@ public class SectionAcceptanceTest {
     @DisplayName("노선에 등록된 역 제거 시 해당 역이 노선 가운데 있어도 제거할 수 있다")
     public void shouldDeleteMidSection() {
 
+        이호선 = LineSteps.이호선_생성(건대입구역.getId(), 구의역.getId());
         SectionSteps.라인에_구간을_추가한다(이호선.getId(), new SectionRequest(구의역.getId(), 강변역.getId(), 7));
 
         // when
@@ -104,6 +106,15 @@ public class SectionAcceptanceTest {
     @DisplayName("노선에 등록된 역 제거 시 해당 역이 상행 종점역이어도 제거할 수 있다.")
     public void shouldDeleteFirstSection() {
 
+        이호선 = LineSteps.이호선_생성(건대입구역.getId(), 구의역.getId());
+        SectionSteps.라인에_구간을_추가한다(이호선.getId(), new SectionRequest(구의역.getId(), 강변역.getId(), 7));
+
+        // when
+        SectionSteps.라인의_구간을_삭제한다(이호선.getId(), 건대입구역.getId());
+
+        // then
+        LineResponse lineResponse = LineSteps.노선을_조회한다(이호선.getId());
+        노선이_가진_역을_검증한다(lineResponse.getStations(), List.of(구의역, 강변역));
     }
 
     private void 노선이_가진_역을_검증한다(List<StationResponse> actual, List<StationResponse> expect) {
