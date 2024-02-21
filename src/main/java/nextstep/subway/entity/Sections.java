@@ -4,10 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -131,33 +128,45 @@ public class Sections {
         List<Section> sortedSections = new ArrayList<>(sections);
 
         for (int baseIndex = 0; baseIndex < sortedSections.size(); baseIndex++) {
-            connectBasedOnSection(sortedSections, sortedSections.get(baseIndex));
+            connectBasedOnSection(sortedSections, baseIndex);
         }
         return sortedSections;
     }
 
-    private void connectBasedOnSection(List<Section> sortedSections, Section baseSection) {
-        for (int indexToConnect = sortedSections.indexOf(baseSection); indexToConnect < sortedSections.size(); indexToConnect++) {
-            if (canConnect(sortedSections, baseSection, sortedSections.get(indexToConnect))) {
-                break;
-            }
+    private void connectBasedOnSection(List<Section> sortedSections, int baseSectionIndex) {
+        Optional<Section> prependSection = findPrependSection(sortedSections);
+        if (isFindSection(prependSection)) {
+            moveSection(sortedSections, prependSection.get(), 0);
+            return;
+        }
+
+        Optional<Section> appendSection = findAppendSection(sortedSections, baseSectionIndex);
+        if (isFindSection(appendSection)) {
+            moveSection(sortedSections, appendSection.get(), baseSectionIndex + 1);
         }
     }
 
-    private boolean canConnect(List<Section> sortedSections, Section baseSection, Section sectionToConnect) {
-        if (canPrependSectionBasedOnSection(sortedSections.get(0), sectionToConnect)) {
-            sortedSections.remove(sectionToConnect);
-            sortedSections.add(0, sectionToConnect);
-            return true;
-        }
-
-        if (canAppendSectionBasedOnSection(baseSection, sectionToConnect)) {
-            sortedSections.remove(sectionToConnect);
-            sortedSections.add(sortedSections.indexOf(baseSection) + 1, sectionToConnect);
-            return true;
-        }
-        return false;
+    private boolean isFindSection(Optional<Section> optionalSection) {
+        return optionalSection.isPresent();
     }
+
+    private Optional<Section> findPrependSection(List<Section> sections) {
+        return sections.stream()
+                .filter(section -> canPrependSectionBasedOnSection(sections.get(0), section))
+                .findFirst();
+    }
+
+    private Optional<Section> findAppendSection(List<Section> sections, int baseSectionIndex) {
+        return sections.subList(baseSectionIndex + 1, sections.size()).stream()
+                .filter(section -> canAppendSectionBasedOnSection(sections.get(baseSectionIndex), section))
+                .findFirst();
+    }
+
+    private void moveSection(List<Section> sections, Section sectionToMove, int indexToMove) {
+        sections.remove(sectionToMove);
+        sections.add(indexToMove, sectionToMove);
+    }
+
 
     private boolean canPrependSectionBasedOnSection(Section section, Section sectionToConnect) {
         return section.canPrependSection(sectionToConnect);
