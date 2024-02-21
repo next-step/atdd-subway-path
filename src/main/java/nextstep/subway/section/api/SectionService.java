@@ -48,11 +48,27 @@ public class SectionService {
     public void delete(Long lineId, Long stationId) {
         Line line = getLine(lineId);
 
+        // 찾는 역이 존재하지 않으면 예외
         validateStationId(stationId);
-        line.getSections().validateLastStation();
-        line.getSections().validateDownStationId(stationId);
 
-        line.getSections().deleteLastSection();
+        Section sectionGetByUpstation = line.getSections().getSections().stream().filter(
+                section -> section.getUpStationId() == stationId
+        ).findFirst().orElse(null);
+
+        Section sectionGetByDownStation = line.getSections().getSections().stream().filter(
+                section -> section.getDownStationId() == stationId
+        ).findFirst().orElse(null);
+
+        // 섹션 제거 및 수정
+        if (sectionGetByUpstation != null && sectionGetByDownStation == null) {
+            line.getSections().removeSection(sectionGetByUpstation);
+        } else if (sectionGetByUpstation != null && sectionGetByDownStation != null) {
+            sectionGetByDownStation.changeDownStationId(sectionGetByUpstation.getDownStationId());
+            sectionGetByDownStation.changeDistance(sectionGetByDownStation.getDistance() + sectionGetByUpstation.getDistance());
+            line.getSections().removeSection(sectionGetByUpstation);
+        } else if (sectionGetByUpstation == null && sectionGetByDownStation != null) {
+            line.getSections().removeSection(sectionGetByDownStation);
+        }
     }
 
     private SectionResponse createByDownstationId(SectionCreateRequest request, Line line) {

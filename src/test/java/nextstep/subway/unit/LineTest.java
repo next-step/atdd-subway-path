@@ -81,7 +81,7 @@ class LineTest {
         firstLine.getSections().addSection(secondSection);
 
         // when
-        firstLine.getSections().removeSection();
+        firstLine.getSections().removeSection(secondSection);
 
         // then
         assertThat(firstLine.getSections().getSections().size()).isEqualTo(1);

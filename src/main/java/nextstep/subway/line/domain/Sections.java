@@ -54,13 +54,12 @@ public class Sections {
         return stationIds;
     }
 
-    public void removeSection() {
+    public void removeSection(Section section) {
         if (sections.isEmpty()) {
             return;
         }
 
-        sections.remove(sections.size() - 1);
-
+        sections.remove(section);
         return;
     }
 
