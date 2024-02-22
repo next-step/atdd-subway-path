@@ -363,6 +363,45 @@ public class LineAcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             assertThat(response.body().asString()).isEqualTo("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + 구의역_ID + ", downStationId: " + 잠실역_ID);
         }
+
+        /**
+         * Given 2개의 지하철 역(A, B)이 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * When 지하철 노선 하행 시작지(A)에 추가로 지하철 구간(N-B)을 등록을 시도하면
+         * Then 추가 구간(N-B)의 하행역(B)가 노선의 하행 시작역(A)과 다르기 때문에 에러가 발생한다.
+         */
+        @DisplayName("새로 추가하려는 구간의 하행역이 노선의 하행 시작역과 다른 역이라면 에러가 발생한다.")
+        @Test
+        void invalidDownStationErrorTest() {
+            // given
+            ExtractableResponse<Response> 성수역 = newStation("성수역");
+            Long 성수역_ID = 성수역.jsonPath().getLong("id");
+            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
+            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+            ExtractableResponse<Response> 구의역 = newStation("구의역");
+            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+
+            ExtractableResponse<Response> 이호선 = newLine(
+                    "2호선",
+                    "bg-green-000",
+                    성수역_ID,
+                    건대입구역_ID,
+                    10
+            );
+            Long 이호선_ID = 이호선.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(
+                    이호선_ID,
+                    구의역_ID,
+                    건대입구역_ID,
+                    10
+            );
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.body().asString()).isEqualTo("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + 구의역_ID + ", downStationId: " + 건대입구역_ID);
+        }
     }
 
     @DisplayName("지하철 구간 제거")

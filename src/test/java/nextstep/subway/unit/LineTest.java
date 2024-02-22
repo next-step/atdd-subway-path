@@ -13,6 +13,7 @@ class LineTest {
 
     private final Station 강남역 = new Station(1L, "강남역");
     private final Station 양재역 = new Station(2L, "양재역");
+    private final Station 판교역 = new Station(3L, "판교역");
     private final Line 신분당선 = new Line("신분당선", "RED", 강남역, 양재역, 10L);
 
     @DisplayName("노선에 구간을 추가한다.")
@@ -22,9 +23,6 @@ class LineTest {
         @DisplayName("성공")
         @Test
         void success() {
-            // given
-            Station 판교역 = new Station(3L, "판교역");
-
             // when
             신분당선.addNewSection(양재역, 판교역, 10L);
 
@@ -43,13 +41,17 @@ class LineTest {
         @DisplayName("새로 추가하려는 구간의 상행역이 노선의 하행 종착역과 다른 역이라면 에러가 발생한다.")
         @Test
         void notFoundException() {
-            // given
-            Station 판교역 = new Station(3L, "판교역");
-
-            // when & then
             assertThatThrownBy(() -> 신분당선.addNewSection(강남역, 판교역, 10L))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: 1, downStationId: 3");
+        }
+
+        @DisplayName("새로 추가하려는 구간의 하행역이 노선의 하행 시작역과 다른 역이라면 에러가 발생한다.")
+        @Test
+        void notFoundException2() {
+            assertThatThrownBy(() -> 신분당선.addNewSection(판교역, 양재역, 10L))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: 3, downStationId: 2");
         }
     }
 
