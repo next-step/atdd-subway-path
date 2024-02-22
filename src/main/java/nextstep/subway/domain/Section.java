@@ -48,24 +48,58 @@ public class Section implements Comparable<Section> {
         this.distance = distance;
     }
 
-    // TODO 메소드 네이밍 변경, 로직 이관
-    public void updateDownStation(Station upStation, int distance) {
-        if (distance <= 0) {
+    /**
+     *    중간 구간을 뒤에서부터 분할
+     *          origin
+     *   |-------------------|
+     *                 new
+     *             |---------|
+     *
+     *           result
+     *     origin      new
+     *   |---------|---------|
+     */
+    public void reduceBack(Station newDownStation, int reducedDistance) {
+        if (distance - reducedDistance <= 0) {
             throw new IllegalArgumentException("구간의 거리는 양수여야 합니다.");
         }
 
-        this.downStation = upStation;
-        this.distance = distance;
+        this.downStation = newDownStation;
+        this.distance -= reducedDistance;
     }
 
-    // TODO 메소드 네이밍 변경, 로직 이관
-    public void updateUpStation(Station downStation, int distance) {
-        if (distance <= 0) {
+    /**
+     *    중간 구간을 앞에서부터 분할
+     *          origin
+     *   |-------------------|
+     *       new
+     *   |---------|
+     *
+     *           result
+     *       new      origin
+     *   |---------|---------|
+     */
+    public void reduceFront(Station newUpStation, int reducedDistance) {
+        if (distance - reducedDistance <= 0) {
             throw new IllegalArgumentException("구간의 거리는 양수여야 합니다.");
         }
 
-        this.upStation = downStation;
-        this.distance = distance;
+        this.upStation = newUpStation;
+        this.distance -= reducedDistance;
+    }
+
+    /**
+     *    구간을 확장
+     *      origin
+     *   |---------|
+     *
+     *           result
+     *           origin
+     *   |-------------------|
+     */
+    public void extendBack(Station newDownStation, int extendedDistance) {
+        this.downStation = newDownStation;
+        this.distance += extendedDistance;
     }
 
     public boolean isDownStation(Section other) {

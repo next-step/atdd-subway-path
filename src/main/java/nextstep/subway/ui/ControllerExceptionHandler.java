@@ -1,5 +1,6 @@
 package nextstep.subway.ui;
 
+import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class ControllerExceptionHandler {
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<String> handleBusinessException(ConstraintViolationException e) {
+        log.info(e.getMessage());
+
+        return ResponseEntity
+            .badRequest()
+            .body(e.getMessage());
+    }
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<String> handleBusinessException(BusinessException e) {

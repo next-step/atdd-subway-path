@@ -4,8 +4,8 @@ import nextstep.subway.ui.BusinessException;
 
 public class RemoveSectionValidator {
 
-  public static void validate(final Sections sections, final Long stationId) {
-    if (isNotContainsStation(sections, stationId)) {
+  public static void validate(final Sections sections, final Station station) {
+    if (isNotContainsStation(sections, station)) {
       throw new BusinessException("노선에 속하지 않은 구간을 삭제할 수 없습니다.");
     }
 
@@ -15,9 +15,9 @@ public class RemoveSectionValidator {
   }
 
   // 노선에 속하지 않는 구간을 삭제할 수 없습니다.
-  private static boolean isNotContainsStation(final Sections sections, final Long stationId) {
+  private static boolean isNotContainsStation(final Sections sections, final Station station) {
     return sections.getStations().stream()
-        .noneMatch(station -> station.getId().equals(stationId));
+        .noneMatch(it -> it.equals(station));
   }
 
   // 대상 구간이 노선의 유일한 구간인 경우 삭제할 수 없다.

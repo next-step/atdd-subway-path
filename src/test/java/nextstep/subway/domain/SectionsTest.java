@@ -96,7 +96,7 @@ class SectionsTest {
     }
 
     // when
-    sections.removeSection(stations.get(0).getId());
+    sections.removeSection(stations.get(0));
 
     // then
     assertThat(sections.size()).isEqualTo(stations.size() - 2);
@@ -116,7 +116,7 @@ class SectionsTest {
     }
 
     // when
-    sections.removeSection(stations.get(2).getId());
+    sections.removeSection(stations.get(2));
 
     // then
     assertThat(sections.size()).isEqualTo(stations.size() - 2);
@@ -135,7 +135,7 @@ class SectionsTest {
     }
 
     // when
-    sections.removeSection(stations.get(stations.size() - 1).getId());
+    sections.removeSection(stations.get(stations.size() - 1));
 
     // then
     assertThat(sections.size()).isEqualTo(stations.size() - 2);

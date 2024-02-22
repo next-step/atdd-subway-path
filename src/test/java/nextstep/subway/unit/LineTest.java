@@ -113,7 +113,6 @@ class LineTest {
         assertThat(노선.getStations()).containsExactly(첫번째역, 두번째역, 세번째역);
     }
 
-    // TODO 2단계 과제
     @DisplayName("노선에 등록된 구간을 제거한다.")
     @Test
     void removeSection() {
@@ -133,11 +132,10 @@ class LineTest {
         노선.addSection(두번째구간);
 
         // when
-        노선.removeSection(두번째역.getId());
+        노선.removeSection(두번째역);
 
         // then
         assertThat(노선.getSections().size()).isEqualTo(1);
-
-//        assertThat(노선.getSections().contains(두번째구간)).isFalse();
+        assertThat(노선.getSections().contains(두번째구간)).isFalse();
     }
 }

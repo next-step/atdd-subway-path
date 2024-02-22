@@ -20,7 +20,7 @@ class RemoveSectionValidatorTest {
     sections.addSection(new Section(null, stations.get(1), stations.get(2), 5));
 
     // when
-    final var throwable = catchThrowable(() -> RemoveSectionValidator.validate(sections, stations.get(0).getId()));
+    final var throwable = catchThrowable(() -> RemoveSectionValidator.validate(sections, stations.get(0)));
 
     // then
     assertThat(throwable).isNull();
@@ -35,7 +35,7 @@ class RemoveSectionValidatorTest {
     sections.addSection(new Section(null, stations.get(0), stations.get(1), 5));
 
     // when
-    final var throwable = catchThrowable(() -> RemoveSectionValidator.validate(sections, stations.get(2).getId()));
+    final var throwable = catchThrowable(() -> RemoveSectionValidator.validate(sections, stations.get(2)));
 
     // then
     assertThat(throwable).isInstanceOf(BusinessException.class)
@@ -51,7 +51,7 @@ class RemoveSectionValidatorTest {
     sections.addSection(new Section(null, stations.get(0), stations.get(1), 5));
 
     // when
-    final var throwable = catchThrowable(() -> RemoveSectionValidator.validate(sections, stations.get(0).getId()));
+    final var throwable = catchThrowable(() -> RemoveSectionValidator.validate(sections, stations.get(0)));
 
     // then
     assertThat(throwable).isInstanceOf(BusinessException.class)
