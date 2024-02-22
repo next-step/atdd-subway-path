@@ -209,9 +209,9 @@ public class LineAcceptanceTest {
          * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(B-C)을 등록한다.
          * Then 새로운 지하철 구간이 등록된다. (A-B-C)
          */
-        @DisplayName("지하철 노선에 신규 구간을 등록한다.")
+        @DisplayName("지하철 노선의 마지막에 신규 구간을 등록한다.")
         @Test
-        void successTest() {
+        void successTest1() {
             // given
             ExtractableResponse<Response> 성수역 = newStation("성수역");
             Long 성수역_ID = 성수역.jsonPath().getLong("id");
@@ -242,6 +242,48 @@ public class LineAcceptanceTest {
             assertThat(response.jsonPath().getList("stations")).hasSize(3);
             assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(성수역_ID, 건대입구역_ID, 구의역_ID);
             assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("성수역", "건대입구역", "구의역");
+        }
+
+        /**
+         * Given 2개의 지하철 역(A, B)이 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * When 지하철 노선 시작지(A)에 추가로 지하철 구간(N-A)을 등록을 시도하면
+         * Then 새로운 지하철 구간이 등록된다. (N-A-B)
+         */
+        @DisplayName("지하철 노선의 시작에 신규 구간을 등록한다.")
+        @Test
+        void successTest2() {
+            // given
+            ExtractableResponse<Response> 성수역 = newStation("성수역");
+            Long 성수역_ID = 성수역.jsonPath().getLong("id");
+            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
+            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+
+            ExtractableResponse<Response> 구의역 = newStation("구의역");
+            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+
+            ExtractableResponse<Response> 이호선 = newLine(
+                    "2호선",
+                    "bg-green-000",
+                    성수역_ID,
+                    건대입구역_ID,
+                    10
+            );
+            Long 이호선_ID = 이호선.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(
+                    이호선_ID,
+                    구의역_ID,
+                    성수역_ID,
+                    10
+            );
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.jsonPath().getList("stations")).hasSize(3);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(구의역_ID, 성수역_ID, 건대입구역_ID);
+            assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("구의역", "성수역", "건대입구역");
         }
 
         /**
