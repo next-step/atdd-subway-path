@@ -23,7 +23,6 @@ public class Station {
     private String name;
 
 
-    @Builder
     public Station(String name) {
         this.name = name;
     }

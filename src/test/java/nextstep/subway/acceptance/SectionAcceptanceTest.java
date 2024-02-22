@@ -1,10 +1,10 @@
 package nextstep.subway.acceptance;
 
-import static nextstep.subway.support.fixture.LineFixture.강남역_교대역_구간_이호선_생성;
-import static nextstep.subway.support.fixture.SectionFixture.구간_생성;
-import static nextstep.subway.support.fixture.StationFixture.낙성대역_생성;
-import static nextstep.subway.support.fixture.StationFixture.봉천역_생성;
-import static nextstep.subway.support.fixture.StationFixture.서울대입구역_생성;
+import static nextstep.subway.support.fixture.LineFixture.강남역_교대역_구간_이호선_생성_요청;
+import static nextstep.subway.support.fixture.SectionFixture.구간_생성_요청;
+import static nextstep.subway.support.fixture.StationFixture.낙성대역_생성_요청;
+import static nextstep.subway.support.fixture.StationFixture.봉천역_생성_요청;
+import static nextstep.subway.support.fixture.StationFixture.서울대입구역_생성_요청;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_단일_조회_요청;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_응답에서_노선_아이디_추출;
@@ -39,13 +39,13 @@ class SectionAcceptanceTest {
     @Test
     void addSection() {
         // given
-        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성());
+        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성_요청());
         Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
         Long 교대역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_교대_이호선_응답);
-        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성()));
+        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
 
         // when
-        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성(
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(
             교대역_아이디,
             봉천역_아이디,
             10L
@@ -68,13 +68,13 @@ class SectionAcceptanceTest {
     @Test
     void addSectionWithInvalidUpStation() {
         // given
-        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성());
+        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성_요청());
         Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
-        Long 낙성대역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(낙성대역_생성()));
-        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성()));
+        Long 낙성대역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(낙성대역_생성_요청()));
+        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
 
         // when
-        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성(
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(
             낙성대역_아이디,
             봉천역_아이디,
             10L
@@ -96,16 +96,16 @@ class SectionAcceptanceTest {
     @Test
     void addSectionWithAlreadyExistsStation() {
         // given
-        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성());
+        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성_요청());
         Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
         Long 교대역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_교대_이호선_응답);
-        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성()));
-        지하철_구간_등록_요청(이호선_아이디, 구간_생성(교대역_아이디, 봉천역_아이디, 10L));
+        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
+        지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(교대역_아이디, 봉천역_아이디, 10L));
 
-        Long 서울대입구역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(서울대입구역_생성()));
+        Long 서울대입구역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(서울대입구역_생성_요청()));
 
         // when
-        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성(
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(
             서울대입구역_아이디,
             봉천역_아이디,
             10L
@@ -128,11 +128,11 @@ class SectionAcceptanceTest {
     @Test
     void removeSection() {
         // given
-        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성());
+        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성_요청());
         Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
         Long 교대역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_교대_이호선_응답);
-        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성()));
-        지하철_구간_등록_요청(이호선_아이디, 구간_생성(교대역_아이디, 봉천역_아이디, 10L));
+        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
+        지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(교대역_아이디, 봉천역_아이디, 10L));
 
         // when
         ExtractableResponse<Response> 지하철_구간_삭제_응답 = 지하철_구간_삭제_요청(이호선_아이디, 봉천역_아이디);
@@ -155,7 +155,7 @@ class SectionAcceptanceTest {
     @Test
     void removeSectionWithSectionSizeIsOne() {
         // given
-        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성());
+        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성_요청());
         Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
         Long 교대역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_교대_이호선_응답);
 
@@ -179,11 +179,11 @@ class SectionAcceptanceTest {
     @Test
     void removeSectionWithIsNotLastSection() {
         // given
-        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성());
+        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성_요청());
         Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
         Long 교대역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_교대_이호선_응답);
-        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성()));
-        지하철_구간_등록_요청(이호선_아이디, 구간_생성(교대역_아이디, 봉천역_아이디, 10L));
+        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
+        지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(교대역_아이디, 봉천역_아이디, 10L));
 
         // when
         ExtractableResponse<Response> 지하철_구간_삭제_응답 = 지하철_구간_삭제_요청(이호선_아이디, 교대역_아이디);
