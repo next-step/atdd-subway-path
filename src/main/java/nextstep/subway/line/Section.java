@@ -58,6 +58,10 @@ public class Section {
         return downStation;
     }
 
+    public Long getDistance() {
+        return distance;
+    }
+
     public boolean isMatchWithUpStation(Station station) {
         return upStation.isSameStation(station);
     }
@@ -66,12 +70,22 @@ public class Section {
         return downStation.isSameStation(station);
     }
 
-    public void updateUpStation(Station station) {
+    public void updateUpStationAndDistance(Station station, Long distance) {
+        validateHasLongerDistanceThan(distance);
         this.upStation = station;
+        this.distance -= distance;
     }
 
-    public void updateDownStation(Station station) {
+    public void updateDownStationAndDistance(Station station, Long distance) {
+        validateHasLongerDistanceThan(distance);
         this.downStation = station;
+        this.distance -= distance;
+    }
+
+    private void validateHasLongerDistanceThan(Long otherDistance) {
+        if (distance <= otherDistance) {
+            throw new IllegalArgumentException("기존 구간보다 길거나 같은 구간을 추가할 수 없습니다. 구간 길이: " + otherDistance);
+        }
     }
 
     @Override

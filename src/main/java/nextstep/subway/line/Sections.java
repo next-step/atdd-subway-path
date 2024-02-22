@@ -85,7 +85,7 @@ public class Sections {
 
         if (currentSection.isMatchWithUpStation(upStation)) {
             Section matchedSection = values.remove(matchedIndex);
-            matchedSection.updateUpStation(downStation);
+            matchedSection.updateUpStationAndDistance(downStation, section.getDistance());
             values.add(matchedIndex, section);
             values.add(matchedIndex + 1, matchedSection);
             return true;
@@ -93,7 +93,7 @@ public class Sections {
 
         if (currentSection.isMatchWithDownStation(downStation)) {
             Section matchedSection = values.remove(matchedIndex);
-            matchedSection.updateDownStation(upStation);
+            matchedSection.updateDownStationAndDistance(upStation, section.getDistance());
             values.add(matchedIndex, matchedSection);
             values.add(matchedIndex + 1, section);
             return true;

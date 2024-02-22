@@ -475,7 +475,7 @@ public class LineAcceptanceTest {
                     이호선_ID,
                     구의역_ID,
                     건대입구역_ID,
-                    10
+                    5
             );
 
             // then
