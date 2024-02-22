@@ -47,4 +47,8 @@ public class StationService {
         return stationRepository.findById(id)
             .orElseThrow(IllegalArgumentException::new);
     }
+
+    public List<Station> findStations() {
+        return stationRepository.findAll();
+    }
 }

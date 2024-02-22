@@ -6,8 +6,10 @@ import nextstep.subway.dto.line.LineUpdateRequest;
 import nextstep.subway.dto.section.SectionRequest;
 import nextstep.subway.entity.Line;
 import nextstep.subway.entity.Section;
+import nextstep.subway.entity.Sections;
 import nextstep.subway.entity.Station;
 import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.SectionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +22,7 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
 
-    public LineService(
-        LineRepository lineRepository,
-        StationService stationService
-    ) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
     }
@@ -35,7 +34,7 @@ public class LineService {
         Station downStation = stationService.findStation(request.getDownStationId());
 
         Line line = lineRepository.save(new Line(request.getName(), request.getColor()));
-        Section section = new Section(line, downStation, upStation, request.getDistance());
+        Section section = new Section(line, upStation, downStation, request.getDistance());
         line.addSection(section);
 
         return new LineResponse(line);
@@ -79,7 +78,7 @@ public class LineService {
         Station downStation = stationService.findStation(request.getDownStationId());
         Station upStation = stationService.findStation(request.getUpStationId());
 
-        Section section = new Section(line, downStation, upStation, request.getDistance());
+        Section section = new Section(line, upStation, downStation, request.getDistance());
         line.addSection(section);
 
         return section.getId();
@@ -92,6 +91,12 @@ public class LineService {
         Station station = stationService.findStation(stationId);
 
         line.removeSection(station);
+    }
+
+    public List<Sections> findSectionsList() {
+        return lineRepository.findAll().stream()
+            .map(Line::getSections)
+            .collect(Collectors.toList());
     }
 
 }

@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 
 
 public class StationFixture {
-    public static ExtractableResponse<Response> createStation(String name) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(String name) {
         return RestAssured
             .given()
             .body(new StationRequest(name))
@@ -19,7 +19,7 @@ public class StationFixture {
             .extract();
     }
 
-    public static ExtractableResponse<Response> getStations() {
+    public static ExtractableResponse<Response> 지하철역_목록_조회() {
         return RestAssured
             .given()
             .when()

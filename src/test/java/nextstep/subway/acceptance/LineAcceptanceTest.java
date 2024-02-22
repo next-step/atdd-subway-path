@@ -26,7 +26,7 @@ public class LineAcceptanceTest {
     @BeforeEach
     void setUp() {
         for (String name : List.of("강남역", "역삼역", "선릉역")) {
-            StationFixture.createStation(name);
+            StationFixture.지하철역_생성_요청(name);
         }
     }
 

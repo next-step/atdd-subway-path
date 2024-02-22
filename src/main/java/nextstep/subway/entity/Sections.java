@@ -63,16 +63,6 @@ public class Sections {
             throw new IllegalArgumentException("중복된 역은 등록 불가합니다.");
         }
     }
-    private Section verifyEndSection(Station station) {
-        Section endSection = getEndSection();
-
-        boolean isEndSection = endSection.getDownStation().equals(station);
-        if(!isEndSection) {
-            throw new IllegalArgumentException("지하철 노선에 등록된 마지막 구간만 제거할 수 있다");
-        }
-
-        return endSection;
-    }
 
     private void updateMiddleSection(Section section) {
         // 이후 구간
@@ -141,13 +131,5 @@ public class Sections {
         if(isOnlySection) {
             throw new IllegalArgumentException("유일한 구간은 삭제가 불가하다.");
         }
-    }
-
-    private Section getStartSection() {
-        return getSections().get(0);
-    }
-
-    private Section getEndSection() {
-        return getSections().get(sections.size()-1);
     }
 }
