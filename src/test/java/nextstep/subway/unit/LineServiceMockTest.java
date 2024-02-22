@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import nextstep.subway.controller.dto.LineResponse;
 import nextstep.subway.controller.dto.SectionCreateRequest;
+import nextstep.subway.controller.dto.StationResponse;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -104,9 +105,8 @@ public class LineServiceMockTest {
 
         // then
         LineResponse lineResponse = lineService.findLineById(1L);
-        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(신림역.getName());
-        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(보라매역.getName());
-        assertThat(lineResponse.getStations().get(2).getName()).isEqualTo(보라매병원역.getName());
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getName)
+                .containsExactly(신림역.getName(), 보라매역.getName(), 보라매병원역.getName());
     }
 
     @Test
@@ -129,9 +129,8 @@ public class LineServiceMockTest {
 
         // then
         LineResponse lineResponse = lineService.findLineById(1L);
-        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(신림역.getName());
-        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(보라매병원역.getName());
-        assertThat(lineResponse.getStations().get(2).getName()).isEqualTo(보라매역.getName());
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getName)
+                .containsExactly(신림역.getName(), 보라매병원역.getName(), 보라매역.getName());
     }
 
     @Test
@@ -145,8 +144,8 @@ public class LineServiceMockTest {
 
         // when
         SectionCreateRequest 구간_생성_요청 = SectionCreateRequest.builder()
-                .upStationId(String.valueOf(신림역.getId()))
-                .downStationId(String.valueOf(보라매병원역.getId()))
+                .upStationId(String.valueOf(보라매병원역.getId()))
+                .downStationId(String.valueOf(신림역.getId()))
                 .distance(5L)
                 .build();
         lineService.addSection(신림선_아이디, 구간_생성_요청);
@@ -154,9 +153,8 @@ public class LineServiceMockTest {
 
         // then
         LineResponse lineResponse = lineService.findLineById(1L);
-        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(신림역.getName());
-        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(보라매병원역.getName());
-        assertThat(lineResponse.getStations().get(2).getName()).isEqualTo(보라매역.getName());
+        assertThat(lineResponse.getStations()).extracting(StationResponse::getName)
+                .containsExactly(보라매병원역.getName(), 신림역.getName(), 보라매역.getName());
     }
 
     @Test
