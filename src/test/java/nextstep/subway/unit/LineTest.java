@@ -54,8 +54,10 @@ class LineTest {
         }
     }
 
+    @DisplayName("노선에 속하는 지하철 역 목록을 조회한다.")
     @Test
     void getStations() {
+        assertThat(신분당선.getAllStations()).containsExactly(강남역, 양재역);
     }
 
     @Test
