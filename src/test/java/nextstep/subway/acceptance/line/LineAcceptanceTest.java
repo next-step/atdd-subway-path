@@ -372,7 +372,7 @@ public class LineAcceptanceTest {
          * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(A-B)을 등록을 시도하면
          * Then 추가 구간(A-B)의 양 역(A, B)이 이미 노선에 등록되어있어 에러가 발생한다.
          */
-        @DisplayName("지하철 노선 구간에 이미 등록되어 있는 역을 추가하려 하면 에러가 발생한다.")
+        @DisplayName("지하철 노선 구간에 이미 등록되어 있는 구간을 추가하려 하면 에러가 발생한다.")
         @Test
         void duplicateStationErrorTest() {
             // given
@@ -407,7 +407,7 @@ public class LineAcceptanceTest {
          * Given 2개의 지하철 역(A, B)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
          * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(C-D)을 등록을 시도하면
-         * Then 추가 구간(C-D)의 상행역(C)가 노선의 하행 종착역(B)과 다르기 때문에 에러가 발생한다.
+         * Then 추가 구간(C-D)의 연결점이 없기 때문에 에러가 발생한다.
          */
         @DisplayName("새로 추가하려는 구간의 상행역이 노선의 하행 종착역과 다른 역이라면 에러가 발생한다.")
         @Test
@@ -448,9 +448,9 @@ public class LineAcceptanceTest {
          * Given 2개의 지하철 역(A, B)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
          * When 지하철 노선 하행 시작지(A)에 추가로 지하철 구간(N-B)을 등록을 시도하면
-         * Then 추가 구간(N-B)의 하행역(B)가 노선의 하행 시작역(A)과 다르기 때문에 에러가 발생한다.
+         * Then 구간 중간에 새로운 구간이 추가된다. (A-N-B)
          */
-        @DisplayName("새로 추가하려는 구간의 하행역이 노선의 하행 시작역과 다른 역이라면 에러가 발생한다.")
+        @DisplayName("지하철 노선의 중간에 새로운 구간을 추가한다.")
         @Test
         void invalidDownStationErrorTest() {
             // given
@@ -479,8 +479,10 @@ public class LineAcceptanceTest {
             );
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + 구의역_ID + ", downStationId: " + 건대입구역_ID);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.jsonPath().getList("stations")).hasSize(3);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(성수역_ID, 구의역_ID, 건대입구역_ID);
+            assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("성수역", "구의역", "건대입구역");
         }
     }
 

@@ -57,27 +57,53 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        validateDuplicateStations(section.getUpStation(), section.getDownStation());
-        validateConnectableSection(section.getUpStation(), section.getDownStation());
-        if (getFirstStation().isSameStation(section.getDownStation())) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        validateDuplicateStations(upStation, downStation);
+
+        if (getFirstStation().isSameStation(downStation)) {
             values.add(0, section);
+            return;
         }
-        if (getLastStation().isSameStation(section.getUpStation())) {
+
+        if (getLastStation().isSameStation(upStation)) {
             values.add(section);
+            return;
         }
+
+        for (int index = 0; index < values.size(); index++) {
+            if (tryAddSectionInMiddle(section, index)) return;
+        }
+
+        throw new IllegalArgumentException("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + upStation.getId() + ", downStationId: " + downStation.getId());
+    }
+
+    private boolean tryAddSectionInMiddle(Section section, int matchedIndex) {
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+        Section currentSection = values.get(matchedIndex);
+
+        if (currentSection.isMatchWithUpStation(upStation)) {
+            Section matchedSection = values.remove(matchedIndex);
+            matchedSection.updateUpStation(downStation);
+            values.add(matchedIndex, section);
+            values.add(matchedIndex + 1, matchedSection);
+            return true;
+        }
+
+        if (currentSection.isMatchWithDownStation(downStation)) {
+            Section matchedSection = values.remove(matchedIndex);
+            matchedSection.updateDownStation(upStation);
+            values.add(matchedIndex, matchedSection);
+            values.add(matchedIndex + 1, section);
+            return true;
+        }
+        return false;
     }
 
     public void removeStation(Station station) {
         validateRemovableLastSection(station);
         values.removeIf(value -> value.containStation(station));
-    }
-
-    private void validateConnectableSection(Station upStation, Station downStation) {
-        Station firstStation = getFirstStation();
-        Station lastStation = getLastSection().getDownStation();
-        if (firstStation.isNotSameStation(downStation) && lastStation.isNotSameStation(upStation)) {
-            throw new IllegalArgumentException("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + upStation.getId() + ", downStationId: " + downStation.getId());
-        }
     }
 
     private void validateDuplicateStations(Station upStation, Station downStation) {

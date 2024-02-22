@@ -58,6 +58,22 @@ public class Section {
         return downStation;
     }
 
+    public boolean isMatchWithUpStation(Station station) {
+        return upStation.isSameStation(station);
+    }
+
+    public boolean isMatchWithDownStation(Station station) {
+        return downStation.isSameStation(station);
+    }
+
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void updateDownStation(Station station) {
+        this.downStation = station;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

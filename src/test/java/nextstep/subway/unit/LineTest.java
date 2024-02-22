@@ -20,7 +20,7 @@ class LineTest {
     @Nested
     class AddSection {
 
-        @DisplayName("성공")
+        @DisplayName("노선의 끝에 구간을 추가한다.")
         @Test
         void success() {
             // when
@@ -30,7 +30,27 @@ class LineTest {
             assertThat(신분당선.getAllStations()).containsExactly(강남역, 양재역, 판교역);
         }
 
-        @DisplayName("지하철 노선 구간에 이미 등록되어 있는 역을 추가하려 하면 에러가 발생한다.")
+        @DisplayName("노선의 중간에 구간을 추가한다. - 상행 겹침")
+        @Test
+        void success2() {
+            // when
+            신분당선.addNewSection(강남역, 판교역, 5L);
+
+            // then
+            assertThat(신분당선.getAllStations()).containsExactly(강남역, 판교역, 양재역);
+        }
+
+        @DisplayName("노선의 중간에 구간을 추가한다. - 하행 겹침")
+        @Test
+        void success3() {
+            // when
+            신분당선.addNewSection(판교역, 양재역, 5L);
+
+            // then
+            assertThat(신분당선.getAllStations()).containsExactly(강남역, 판교역, 양재역);
+        }
+
+        @DisplayName("지하철 노선 구간에 이미 등록되어 있는 구간을 추가하려 하면 에러가 발생한다.")
         @Test
         void duplicateException() {
             assertThatThrownBy(() -> 신분당선.addNewSection(양재역, 강남역, 10L))
@@ -38,20 +58,14 @@ class LineTest {
                     .hasMessage("주어진 구간은 이미 노선에 등록되어 있는 구간입니다. upStationId: 2, downStationId: 1");
         }
 
-        @DisplayName("새로 추가하려는 구간의 상행역이 노선의 하행 종착역과 다른 역이라면 에러가 발생한다.")
+        @DisplayName("지하철 노선에 연결할 수 있는 역이 없다면 에러가 발생한다.")
         @Test
-        void notFoundException() {
-            assertThatThrownBy(() -> 신분당선.addNewSection(강남역, 판교역, 10L))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: 1, downStationId: 3");
-        }
+        void notConnectException() {
+            Station 신논현역 = new Station(4L, "신논현역");
 
-        @DisplayName("새로 추가하려는 구간의 하행역이 노선의 하행 시작역과 다른 역이라면 에러가 발생한다.")
-        @Test
-        void notFoundException2() {
-            assertThatThrownBy(() -> 신분당선.addNewSection(판교역, 양재역, 10L))
+            assertThatThrownBy(() -> 신분당선.addNewSection(신논현역, 판교역, 10L))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: 3, downStationId: 2");
+                    .hasMessage("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: 4, downStationId: 3");
         }
     }
 
