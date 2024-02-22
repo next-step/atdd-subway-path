@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.StationResponse;
-import nextstep.subway.domain.DijkstraPathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.utils.FixtureUtil;

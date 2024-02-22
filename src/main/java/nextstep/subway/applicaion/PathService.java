@@ -2,7 +2,6 @@ package nextstep.subway.applicaion;
 
 import lombok.RequiredArgsConstructor;
 import nextstep.subway.applicaion.dto.FindPathResponse;
-import nextstep.subway.domain.DijkstraPathFinder;
 import nextstep.subway.ui.BusinessException;
 import org.springframework.stereotype.Service;
 
