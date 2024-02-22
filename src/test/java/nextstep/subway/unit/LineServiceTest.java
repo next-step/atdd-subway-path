@@ -1,5 +1,7 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.line.LineRepository;
+import nextstep.subway.station.StationRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,8 +15,8 @@ public class LineServiceTest {
     @Autowired
     private LineRepository lineRepository;
 
-    @Autowired
-    private LineService lineService;
+//    @Autowired
+//    private LineService lineService;
 
     @Test
     void addSection() {
