@@ -35,26 +35,19 @@ public class Sections {
 
     }
 
+
     public void deleteSection(Long stationId) {
-        if (this.sections.size() == 1)
+        if (this.sections.size() == 1) {
             throw new SingleSectionDeleteException("구간이 한개인 경우 삭제할 수 없습니다.");
-
-        Long downStationId = findDownStationId();
-        if (downStationId != stationId) {
-            throw new InvalidDownStationException("삭제 역이 하행 종점역이 아닙니다.");
         }
-        this.sections.remove(this.sections.size() - 1);
-    }
 
-    public Long findDownStationId() {
-        return this.sections.get(this.sections.size() - 1).getDownStation().getId();
-    }
-
-    public List<Long> getStationIds() {
-        return this.sections.stream()
-                .flatMap(section -> Stream.of(section.getUpStation().getId(), section.getDownStation().getId()))
-                .distinct()
-                .collect(Collectors.toList());
+        if (isStartSection(stationId)) {
+            removeStartSection();
+        } else if (isEndSection(stationId)) {
+            removeEndSection();
+        } else {
+            removeMiddleSection(stationId);
+        }
     }
 
     private void validateDuplicateStation(Section section) {
@@ -148,5 +141,45 @@ public class Sections {
         this.sections.remove(changeSection);
         this.sections.add(section);
         this.sections.add(changeNewSection);
+    }
+
+    private boolean isStartSection(Long stationId) {
+        return getOrderedStations().get(0).getId() == stationId;
+    }
+
+    private boolean isEndSection(Long stationId) {
+        return getOrderedStations().get(this.sections.size()).getId() == stationId;
+    }
+
+    private void removeStartSection() {
+        this.sections.remove(0);
+    }
+
+    private void removeEndSection() {
+        this.sections.remove(this.sections.size() - 1);
+    }
+
+    private void removeMiddleSection(Long stationId) {
+        Section previousSection = null;
+        Section nextSection = null;
+        for (Section section : sections) {
+            if (section.getUpStation().getId().equals(stationId)) {
+                nextSection = section;
+            } else if (section.getDownStation().getId().equals(stationId)) {
+                previousSection = section;
+            }
+        }
+
+        Long newDistance = previousSection.getDistance() + nextSection.getDistance();
+        Section newSection = Section.builder()
+                .line(sections.get(0).getLine())
+                .upStation(previousSection.getUpStation())
+                .downStation(nextSection.getDownStation())
+                .distance(newDistance)
+                .build();
+
+        sections.remove(previousSection);
+        sections.remove(nextSection);
+        sections.add(newSection);
     }
 }

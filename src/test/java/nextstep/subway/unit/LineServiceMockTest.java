@@ -158,8 +158,8 @@ public class LineServiceMockTest {
     }
 
     @Test
-    @DisplayName("구간을 삭제한다.")
-    void 지하철_구간_삭제() {
+    @DisplayName("지하철 노선의 마지막역을 삭제한다.")
+    void 지하철노선_마지막역_삭제() {
         //given
         Section 보라매보라매병원역 = Section.builder()
                 .upStation(보라매역)
@@ -173,6 +173,50 @@ public class LineServiceMockTest {
 
         //when
         lineService.removeSection(신림선_아이디, 보라매병원역.getId());
+
+        //then
+        LineResponse lineResponse = lineService.findLineById(1L);
+        assertThat(lineResponse.getStations()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 시작역을 삭제한다.")
+    void 지하철노선_시작역_삭제() {
+        //given
+        Section 보라매보라매병원역 = Section.builder()
+                .upStation(보라매역)
+                .downStation(보라매병원역)
+                .line(신림선)
+                .distance(11L)
+                .build();
+        신림선.addSection(보라매보라매병원역);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신림선));
+
+        //when
+        lineService.removeSection(신림선_아이디, 신림역.getId());
+
+        //then
+        LineResponse lineResponse = lineService.findLineById(1L);
+        assertThat(lineResponse.getStations()).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("지하철 노선의 중간역을 삭제한다.")
+    void 지하철노선_중간역_삭제() {
+        //given
+        Section 보라매보라매병원역 = Section.builder()
+                .upStation(보라매역)
+                .downStation(보라매병원역)
+                .line(신림선)
+                .distance(11L)
+                .build();
+        신림선.addSection(보라매보라매병원역);
+
+        when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신림선));
+
+        //when
+        lineService.removeSection(신림선_아이디, 보라매역.getId());
 
         //then
         LineResponse lineResponse = lineService.findLineById(1L);
