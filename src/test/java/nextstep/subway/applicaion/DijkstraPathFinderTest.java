@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.applicaion.dto.StationResponse;
+import nextstep.subway.domain.DijkstraPathFinder;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.utils.FixtureUtil;
@@ -13,11 +14,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class PathFinderTest {
+class DijkstraPathFinderTest {
 
   static Station 강남역;
   static Station 역삼역;
@@ -30,8 +30,7 @@ class PathFinderTest {
   static Station 서면역;
   static List<Section> 구간_목록;
 
-  @InjectMocks
-  private PathFinder pathFinder;
+  static DijkstraPathFinder pathFinder;
 
   @BeforeEach
   public void setUp() {
@@ -71,6 +70,8 @@ class PathFinderTest {
         지하철_구간_생성(매봉역, 도곡역, 1),
         지하철_구간_생성(남포역, 서면역, 5)
     );
+
+    pathFinder = new DijkstraPathFinder(구간_목록);
   }
 
   @DisplayName("최단 경로 조회 성공")

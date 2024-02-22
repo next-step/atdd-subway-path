@@ -1,22 +1,23 @@
-package nextstep.subway.applicaion;
+package nextstep.subway.domain;
 
 import java.util.Collection;
 import java.util.Optional;
 import nextstep.subway.domain.vo.Path;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
-import org.springframework.stereotype.Component;
 
-@Component
-public class PathFinder {
+public class DijkstraPathFinder implements PathFinder {
+
+  private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+
+  public DijkstraPathFinder(Collection<Section> sections) {
+    graph = buildGraph(sections);
+  }
 
   public Optional<Path> find(Collection<Section> sections, Station source, Station target) {
     verifyRequiredArguments(sections, source, target);
 
-    final var graph = buildGraph(sections);
     final var path = new DijkstraShortestPath<>(graph).getPath(source, target);
 
     return Optional.ofNullable(path)
@@ -37,8 +38,7 @@ public class PathFinder {
     }
   }
 
-  // TODO Graph DB or Cache
-  private WeightedMultigraph<Station, DefaultWeightedEdge> buildGraph(
+  private static WeightedMultigraph<Station, DefaultWeightedEdge> buildGraph(
       final Collection<Section> sections
   ) {
     final var graph = WeightedMultigraph.<Station, DefaultWeightedEdge>builder(DefaultWeightedEdge.class).build();
