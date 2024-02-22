@@ -1,11 +1,15 @@
-package nextstep.subway.line;
+package nextstep.subway.line.application;
 
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationNotFoundException;
-import nextstep.subway.station.StationRepository;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.persistance.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.presentation.SectionResponse;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.presentation.SectionRequest;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
+import nextstep.subway.station.persistance.StationRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class SectionService {
@@ -28,19 +32,18 @@ public class SectionService {
         line.addSection(section);
         Line saved = lineRepository.save(line);
 
-        return new SectionResponse(saved.getUpStation().getId(), saved.getDownStation().getId(), saved.getDistance());
+        return new SectionResponse(saved.getFirstStation().getId(), saved.getLastStation().getId(), saved.getDistance());
     }
 
     public void deleteSection(long lineId, long stationId) {
 
         Line line = getLine(lineId);
-        line.removeSection(stationId);
 
-        if(line.deletableSection()) {
+        if(!line.deletableSection()) {
             throw new IllegalStateException("구간이 1개여서 역을 삭제할 수 없다");
         }
 
-        line.removeSection(stationId);
+        line.removeStation(getStation(stationId));
         lineRepository.save(line);
     }
 

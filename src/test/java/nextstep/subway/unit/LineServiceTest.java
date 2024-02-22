@@ -1,11 +1,16 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.fixture.AcceptanceTest;
-import nextstep.subway.line.*;
-import nextstep.subway.line.Section;
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationRepository;
-import nextstep.subway.station.StationResponse;
+import nextstep.subway.line.domain.Color;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.presentation.LineResponse;
+import nextstep.subway.line.persistance.LineRepository;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.persistance.StationRepository;
+import nextstep.subway.station.presentation.StationResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 
 @AcceptanceTest
 @SpringBootTest

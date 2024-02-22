@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.station.presentation;
 
 import java.util.Objects;
 

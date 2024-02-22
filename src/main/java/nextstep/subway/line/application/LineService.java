@@ -1,9 +1,15 @@
-package nextstep.subway.line;
+package nextstep.subway.line.application;
 
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationNotFoundException;
-import nextstep.subway.station.StationRepository;
-import nextstep.subway.station.StationResponse;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.persistance.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.exception.LineNotFoundException;
+import nextstep.subway.line.presentation.LineRequest;
+import nextstep.subway.line.presentation.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
+import nextstep.subway.station.persistance.StationRepository;
+import nextstep.subway.station.presentation.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,10 +81,6 @@ public class LineService {
     }
 
     private static LineResponse toLineResponse(Line line) {
-        Station upStation = line.getUpStation();
-        Station downStation = line.getDownStation();
-        StationResponse upStationResponse = new StationResponse(upStation.getId(), upStation.getName());
-        StationResponse downStationResponse = new StationResponse(downStation.getId(), downStation.getName());
         List<StationResponse> stationResponses = line.getStations()
                 .stream().map(station -> new StationResponse(station.getId(), station.getName()))
                 .collect(Collectors.toList());

@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.station.domain;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -32,7 +32,7 @@ public class Station {
         if (this == o) return true;
         if (!(o instanceof Station)) return false;
         Station station = (Station) o;
-        return Objects.equals(id, station.id) && Objects.equals(name, station.name);
+        return Objects.equals(id, station.getId()) && Objects.equals(name, station.getName());
     }
 
     @Override

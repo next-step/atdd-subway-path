@@ -1,6 +1,7 @@
-package nextstep.subway.station;
+package nextstep.subway.station.presentation;
 
 import com.sun.istack.NotNull;
+import nextstep.subway.station.application.StationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

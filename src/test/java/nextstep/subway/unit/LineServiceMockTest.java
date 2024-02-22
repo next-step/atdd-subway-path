@@ -1,10 +1,12 @@
 package nextstep.subway.unit;
 
-import nextstep.subway.line.*;
-import nextstep.subway.line.Section;
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationResponse;
-import nextstep.subway.station.StationService;
+import nextstep.subway.line.domain.Color;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.presentation.LineResponse;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.presentation.StationResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

@@ -1,7 +1,6 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
-import nextstep.subway.line.Line;
-import nextstep.subway.station.Station;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -78,5 +77,14 @@ public class Section {
     public boolean equalSection(Section newSection) {
         return Objects.equals(upStation, newSection.getUpStation())
                 && Objects.equals(downStation, newSection.getDownStation());
+    }
+
+    public void changeDownStation(Station toDown, int distance) {
+        this.downStation = toDown;
+        this.distance += distance;
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 }

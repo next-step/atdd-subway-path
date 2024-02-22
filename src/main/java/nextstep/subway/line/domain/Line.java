@@ -1,7 +1,6 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
-import nextstep.subway.station.Station;
-import nextstep.subway.station.StationNotFoundException;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
@@ -21,13 +20,6 @@ public class Line {
     @Enumerated(EnumType.STRING)
     private Color color;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
     @Embedded
     private LineSections lineSections = new LineSections();
 
@@ -40,8 +32,6 @@ public class Line {
     public Line(String name, Color color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
         this.distance = distance;
         lineSections.add(new Section(upStation, downStation, distance, this));
     }
@@ -55,10 +45,6 @@ public class Line {
         lineSections.add(section);
     }
 
-    public void removeSection(long stationsId) {
-        Optional<Section> section = lineSections.find(stationsId);
-        section.ifPresent(value -> lineSections.remove(value));
-    }
 
     public void removeSection(Section section) {
         lineSections.remove(section);
@@ -85,15 +71,20 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
 
     public Integer getDistance() {
         return distance;
+    }
+
+    public Station getFirstStation() {
+        return lineSections.getFirstStation();
+    }
+
+    public Station getLastStation() {
+        return lineSections.getLastStation();
+    }
+
+    public void removeStation(Station station) {
+        lineSections.remove(station);
     }
 }
