@@ -60,7 +60,38 @@ class LineTest {
         assertThat(신분당선.getAllStations()).containsExactly(강남역, 양재역);
     }
 
-    @Test
-    void removeSection() {
+    @DisplayName("노선에서 구간을 제거한다.")
+    @Nested
+    class RemoveSection {
+
+        @DisplayName("성공")
+        @Test
+        void success() {
+            // given
+            Station 판교역 = new Station(3L, "판교역");
+            신분당선.addNewSection(양재역, 판교역, 10L);
+
+            // when
+            신분당선.removeStation(판교역);
+
+            // then
+            assertThat(신분당선.getAllStations()).containsExactly(강남역, 양재역);
+        }
+
+        @DisplayName("노선의 하행 종착역만 삭제할 수 있다.")
+        @Test
+        void removeException() {
+            assertThatThrownBy(() -> 신분당선.removeStation(강남역))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("노선의 하행 종착역만 삭제할 수 있습니다. stationId: 1");
+        }
+
+        @DisplayName("노선에 남은 구간이 1개뿐이라 삭제할 수 없다.")
+        @Test
+        void removeLastSectionException() {
+            assertThatThrownBy(() -> 신분당선.removeStation(양재역))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("노선에 남은 구간이 1개뿐이라 삭제할 수 없습니다.");
+        }
     }
 }
