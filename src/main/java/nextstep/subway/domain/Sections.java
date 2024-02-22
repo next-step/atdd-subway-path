@@ -1,7 +1,10 @@
 package nextstep.subway.domain;
 
 import lombok.Getter;
-import nextstep.subway.exception.*;
+import nextstep.subway.exception.CheckDuplicateStationException;
+import nextstep.subway.exception.InvalidSectionDistanceException;
+import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.exception.SingleSectionDeleteException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -71,7 +74,7 @@ public class Sections {
                 .map(Section::getDownStation)
                 .filter(downStation -> isEndStation(downStation))
                 .findFirst()
-                .get();
+                .orElseThrow(()-> new NotFoundException("하행역을 찾을 수 없습니다."));
     }
 
     private boolean isEndStation(Station downStation) {

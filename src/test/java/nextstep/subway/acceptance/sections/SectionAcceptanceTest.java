@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-
 import static nextstep.subway.acceptance.util.RestAssuredUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
