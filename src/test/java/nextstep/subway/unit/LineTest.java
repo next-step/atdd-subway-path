@@ -37,7 +37,7 @@ class LineTest {
         void duplicateException() {
             assertThatThrownBy(() -> 신분당선.addNewSection(양재역, 강남역, 10L))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("주어진 하행역은 이미 노선에 등록되어 있는 등록된 역입니다. downStationId: 1");
+                    .hasMessage("주어진 구간은 이미 노선에 등록되어 있는 구간입니다. upStationId: 2, downStationId: 1");
         }
 
         @DisplayName("새로 추가하려는 구간의 상행역이 노선의 하행 종착역과 다른 역이라면 에러가 발생한다.")
@@ -46,11 +46,10 @@ class LineTest {
             // given
             Station 판교역 = new Station(3L, "판교역");
 
-            // when
-            // then
+            // when & then
             assertThatThrownBy(() -> 신분당선.addNewSection(강남역, 판교역, 10L))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("새로운 구간의 상행역은 노선의 하행 종착역과 같아야 합니다. upStationId: 1");
+                    .hasMessage("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: 1, downStationId: 3");
         }
     }
 

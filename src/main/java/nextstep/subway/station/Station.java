@@ -32,8 +32,12 @@ public class Station {
         return name;
     }
 
+    public boolean isSameStation(Station other) {
+        return this.equals(other);
+    }
+
     public boolean isNotSameStation(Station other) {
-        return !this.equals(other);
+        return !isSameStation(other);
     }
 
     @Override

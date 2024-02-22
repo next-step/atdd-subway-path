@@ -287,10 +287,10 @@ public class LineAcceptanceTest {
         }
 
         /**
-         * Given 2개의 지하철 역(A, C)이 등록되어 있다.
+         * Given 2개의 지하철 역(A, B)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
-         * When 지하철 노선 하행 종착지(C)에 추가로 지하철 구간(B-C)을 등록을 시도하면
-         * Then 추가 구간(B-C)의 하행역(C)이 이미 노선에 등록되어있어 에러가 발생한다.
+         * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(A-B)을 등록을 시도하면
+         * Then 추가 구간(A-B)의 양 역(A, B)이 이미 노선에 등록되어있어 에러가 발생한다.
          */
         @DisplayName("지하철 노선 구간에 이미 등록되어 있는 역을 추가하려 하면 에러가 발생한다.")
         @Test
@@ -313,14 +313,14 @@ public class LineAcceptanceTest {
             // when
             ExtractableResponse<Response> response = addSection(
                     이호선_ID,
-                    구의역_ID,
                     성수역_ID,
+                    구의역_ID,
                     10
             );
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("주어진 하행역은 이미 노선에 등록되어 있는 등록된 역입니다. downStationId: " + 성수역_ID);
+            assertThat(response.body().asString()).isEqualTo("주어진 구간은 이미 노선에 등록되어 있는 구간입니다. upStationId: " + 성수역_ID + ", downStationId: " + 구의역_ID);
         }
 
         /**
@@ -361,7 +361,7 @@ public class LineAcceptanceTest {
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("새로운 구간의 상행역은 노선의 하행 종착역과 같아야 합니다. upStationId: " + 구의역_ID);
+            assertThat(response.body().asString()).isEqualTo("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + 구의역_ID + ", downStationId: " + 잠실역_ID);
         }
     }
 

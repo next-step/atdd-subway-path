@@ -2,10 +2,7 @@ package nextstep.subway.line;
 
 import nextstep.subway.station.Station;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,6 +10,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
+    @OrderBy("upStation.id ASC")
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
@@ -39,6 +37,13 @@ public class Sections {
                 .getUpStation();
     }
 
+    public Station getLastStation() {
+        return values.stream()
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."))
+                .getDownStation();
+    }
+
     private List<Station> getDownStations() {
         return values.stream()
                 .map(Section::getDownStation)
@@ -52,9 +57,14 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        validateLastStation(section);
-        validateDuplicateStation(section);
-        values.add(section);
+        validateDuplicateStations(section.getUpStation(), section.getDownStation());
+        validateConnectableSection(section.getUpStation(), section.getDownStation());
+        if (getFirstStation().isSameStation(section.getDownStation())) {
+            values.add(0, section);
+        }
+        if (getLastStation().isSameStation(section.getUpStation())) {
+            values.add(section);
+        }
     }
 
     public void removeStation(Station station) {
@@ -62,18 +72,19 @@ public class Sections {
         values.removeIf(value -> value.containStation(station));
     }
 
-    private void validateLastStation(Section section) {
+    private void validateConnectableSection(Station upStation, Station downStation) {
+        Station firstStation = getFirstStation();
         Station lastStation = getLastSection().getDownStation();
-        Station upStation = section.getUpStation();
-        if (lastStation.isNotSameStation(upStation)) {
-            throw new IllegalArgumentException("새로운 구간의 상행역은 노선의 하행 종착역과 같아야 합니다. upStationId: " + upStation.getId());
+        if (firstStation.isNotSameStation(downStation) && lastStation.isNotSameStation(upStation)) {
+            throw new IllegalArgumentException("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + upStation.getId() + ", downStationId: " + downStation.getId());
         }
     }
 
-    private void validateDuplicateStation(Section section) {
-        Station downStation = section.getDownStation();
-        if (values.stream().anyMatch(value -> value.containStation(downStation))) {
-            throw new IllegalArgumentException("주어진 하행역은 이미 노선에 등록되어 있는 등록된 역입니다. downStationId: " + downStation.getId());
+    private void validateDuplicateStations(Station upStation, Station downStation) {
+        boolean hasUpStation = values.stream().anyMatch(value -> value.containStation(upStation));
+        boolean hasDownStation = values.stream().anyMatch(value -> value.containStation(downStation));
+        if (hasDownStation && hasUpStation) {
+            throw new IllegalArgumentException("주어진 구간은 이미 노선에 등록되어 있는 구간입니다. upStationId: " + upStation.getId() + ", downStationId: " + downStation.getId());
         }
     }
 
