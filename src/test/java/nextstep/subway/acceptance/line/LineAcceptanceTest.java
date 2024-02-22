@@ -206,6 +206,86 @@ public class LineAcceptanceTest {
         /**
          * Given 2개의 지하철 역(A, B)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
+         * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(N-B)을 등록한다.
+         * Then 새로운 지하철 구간이 등록된다. (A-N-B)
+         */
+        @DisplayName("지하철 노선의 중간에 신규 구간을 등록한다.")
+        @Test
+        void successTestMiddle() {
+            // given
+            ExtractableResponse<Response> 성수역 = newStation("성수역");
+            Long 성수역_ID = 성수역.jsonPath().getLong("id");
+            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
+            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+            ExtractableResponse<Response> 구의역 = newStation("구의역");
+            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+
+            ExtractableResponse<Response> 이호선 = newLine(
+                    "2호선",
+                    "bg-green-000",
+                    성수역_ID,
+                    건대입구역_ID,
+                    10
+            );
+            Long 이호선_ID = 이호선.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(
+                    이호선_ID,
+                    구의역_ID,
+                    건대입구역_ID,
+                    5
+            );
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(response.jsonPath().getList("stations")).hasSize(3);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(성수역_ID, 구의역_ID, 건대입구역_ID);
+            assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("성수역", "구의역", "건대입구역");
+        }
+
+        /**
+         * Given 2개의 지하철 역(A, B)이 10 거리로 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(N-B)을 10 거리로 등록한다.
+         * Then 기존 지하철 구간보다 길이가 같거나 긴 구간은 등록할 수 없어 에러가 발생한다.
+         */
+        @DisplayName("지하철 노선의 하행 종착지에 추가하려는 구간의 길이가 기존 구간보다 길거나 같으면 에러가 발생한다.")
+        @Test
+        void invalidDistanceErrorTest() {
+            // given
+            ExtractableResponse<Response> 성수역 = newStation("성수역");
+            Long 성수역_ID = 성수역.jsonPath().getLong("id");
+            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
+            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+            ExtractableResponse<Response> 구의역 = newStation("구의역");
+            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+
+            ExtractableResponse<Response> 이호선 = newLine(
+                    "2호선",
+                    "bg-green-000",
+                    성수역_ID,
+                    건대입구역_ID,
+                    10
+            );
+            Long 이호선_ID = 이호선.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(
+                    이호선_ID,
+                    구의역_ID,
+                    건대입구역_ID,
+                    10
+            );
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.body().asString()).isEqualTo("기존 구간보다 길거나 같은 구간을 추가할 수 없습니다. 구간 길이: 10");
+        }
+
+        /**
+         * Given 2개의 지하철 역(A, B)이 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
          * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(B-C)을 등록한다.
          * Then 새로운 지하철 구간이 등록된다. (A-B-C)
          */
