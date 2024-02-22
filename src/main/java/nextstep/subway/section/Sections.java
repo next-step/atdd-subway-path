@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 import nextstep.exception.BadRequestException;
+import nextstep.subway.line.Line;
 import nextstep.subway.station.Station;
 
 import javax.persistence.CascadeType;
@@ -41,11 +42,27 @@ public class Sections {
         return stations;
     }
 
+    public void addSection(Line line, Section requestSection) {
+        if(isFirstPositionAddition(requestSection)) {
+            requestSection.registerLine(line);
+            return;
+        }
+
+        if(isMiddlePositionAddition(requestSection)) {
+            addNewSection(line, requestSection);
+            requestSection.registerLine(line);
+            return;
+        }
+
+        validateEndPositionSection(requestSection);
+        requestSection.registerLine(line);
+    }
+
     private Section lastSection() {
         return sections.get(sections.size()-1);
     }
 
-    public boolean isLastSection(Station deleteStation) {
+    public boolean isLastStation(Station deleteStation) {
         if(deleteStation.equals(lastSection().getDownStation())) {
             return true;
         }
@@ -68,7 +85,7 @@ public class Sections {
         return false;
     }
 
-    public void validateEndSection(Section newSection) {
+    public void validateEndPositionSection(Section newSection) {
         if(isExistStation(newSection.getDownStation())){
             throw new BadRequestException("새로운 구간의 하행역이 이미 노선에 등록된 역입니다.");
         }
@@ -84,7 +101,7 @@ public class Sections {
         }
     }
 
-    public boolean isFirstSection(Section newSection) {
+    public boolean isFirstPositionAddition(Section newSection) {
         for(Section section : sections) {
             if(section.getUpStation().equals(newSection.getDownStation())) {
                 validateFirstSection(section, newSection);
@@ -94,7 +111,7 @@ public class Sections {
         return false;
     }
 
-    public boolean isMiddleSection(Section requestSection) {
+    public boolean isMiddlePositionAddition(Section requestSection) {
         for(Section section : sections) {
             if(section.getUpStation().equals(requestSection.getUpStation()))
                 return section.validMiddleSection(requestSection);
@@ -102,7 +119,7 @@ public class Sections {
         return false;
     }
 
-    public Section returnNewSection(Section requestSection) {
+    public void addNewSection(Line line, Section requestSection) {
         Section existingSection = new Section();
 
         for(Section section : sections) {
@@ -111,34 +128,35 @@ public class Sections {
             }
         }
 
-        return createNewSection(existingSection, requestSection);
+        Section newSection = createNewSection(existingSection, requestSection);
+        newSection.registerLine(line);
     }
 
     public void deleteSection(Station deleteStation) {
         validDeleteSection();
-        if(isLastSection(deleteStation)) {
+        //마지막 역인 경우
+        if(isLastStation(deleteStation)) {
             deleteLastStation(deleteStation);
             return;
         }
+        //마지막 역이 아닌 경우
         deleteStation(deleteStation);
     }
 
     private void validDeleteSection() {
         if(sections.size() == MIN_SECTION_SIZE) {
-            throw new IllegalArgumentException("구간이 1개 남은 경우 삭제할 수 없습니다.");
+            throw new BadRequestException("구간이 1개 남은 경우 삭제할 수 없습니다.");
         }
     }
 
     private void deleteLastStation(Station deleteStation) {
+        Section lastSection = lastSection();
+
         if(!deleteStation.equals(lastSection().getDownStation())){
-            throw new IllegalArgumentException("노선의 하행 종점역이 아닙니다.");
+            throw new BadRequestException("노선의 하행 종점역이 아닙니다.");
         }
 
-        Section deleteSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(deleteStation))
-                .findAny().get();
-
-        sections.removeIf(s -> s.equals(deleteSection));
+        sections.remove(lastSection);
     }
 
     private void deleteStation(Station deleteStation) {

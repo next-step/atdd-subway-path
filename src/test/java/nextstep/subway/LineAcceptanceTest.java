@@ -40,7 +40,6 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
     @DisplayName("지하철 노선을 생성하고 노선 목록을 조회한다")
     @Test
     void createLine() {
-
         //when
         String 신분당선 = "신분당선";
         ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(신분당선, "bg-red-600");
@@ -60,7 +59,6 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
     @DisplayName("2개의 지하철 노선을 생성하고 노선 목록을 조회한다")
     @Test
     void createAndShowTwoLineList() {
-
         String 서현역 = "서현역";
         String 신분당선 = "신분당선";
         String 수인분당선 = "수인분당선";
@@ -86,7 +84,6 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
     @DisplayName("지하철 노선을 생성하고 노선을 조회한다")
     @Test
     void createAndShowLine() {
-
         //given
         String 신분당선 = "신분당선";
         ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(신분당선, "bg-red-600");
@@ -108,7 +105,6 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다")
     @Test
     void createAndModifyLine() {
-
         //given
         String createStationName = "신분당선";
         ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine(createStationName, "bg-red-600");
@@ -134,7 +130,6 @@ public class LineAcceptanceTest extends CommonAcceptanceTest {
     @DisplayName("지하철 노선을 생성하고 삭제한다")
     @Test
     void createAndDeleteLine() {
-
         //given
         String 신분당선 = "신분당선";
         ExtractableResponse<Response> createResponse = LineRestAssuredCRUD.createLine("신분당선", "bg-red-600");

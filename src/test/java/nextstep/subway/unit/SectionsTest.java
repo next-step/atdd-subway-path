@@ -11,7 +11,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class SectionsTest {
 
@@ -28,7 +27,7 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(강남_선릉_구간, 선릉_잠실_구간));
         Section 신규구간 = new Section(선릉역, 선릉_잠실_중간역, 3);
 
-        boolean middleSectionFlag = sections.isMiddleSection(신규구간);
+        boolean middleSectionFlag = sections.isMiddlePositionAddition(신규구간);
 
         assertThat(middleSectionFlag).isTrue();
     }
@@ -75,10 +74,10 @@ public class SectionsTest {
         Section 기존과_같은_구간 = new Section(선릉역, 잠실역, 3);
         Section 기존구간_보다_긴_구간 = new Section(선릉역, 선릉_잠실_중간역, 11);
 
-        assertThatThrownBy(() -> sections.isMiddleSection(기존과_같은_구간))
+        assertThatThrownBy(() -> sections.isMiddlePositionAddition(기존과_같은_구간))
                 .isInstanceOf(BadRequestException.class);
 
-        assertThatThrownBy(() -> sections.isMiddleSection(기존구간_보다_긴_구간))
+        assertThatThrownBy(() -> sections.isMiddlePositionAddition(기존구간_보다_긴_구간))
                 .isInstanceOf(BadRequestException.class);
     }
 
@@ -95,7 +94,7 @@ public class SectionsTest {
         Sections sections = new Sections(List.of(강남_선릉_구간, 선릉_잠실_구간));
         Section 신규구간 = new Section(강남역_이전_역, 강남역, 3);
 
-        boolean firstSectionFlag = sections.isFirstSection(신규구간);
+        boolean firstSectionFlag = sections.isFirstPositionAddition(신규구간);
 
         assertThat(firstSectionFlag).isTrue();
     }

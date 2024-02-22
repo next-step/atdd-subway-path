@@ -59,23 +59,7 @@ public class Line {
     }
 
     public void addSection(Section requestSection) {
-        if(sections.isFirstSection(requestSection)) {
-            registerSection(requestSection);
-            return;
-        }
-
-        if(sections.isMiddleSection(requestSection)) {
-            registerSection(sections.returnNewSection(requestSection));
-            registerSection(requestSection);
-            return;
-        }
-
-        sections.validateEndSection(requestSection);
-        registerSection(requestSection);
-    }
-
-    private void registerSection(Section newSection) {
-        newSection.registerLine(this);
+        sections.addSection(this, requestSection);
     }
 
     public void deleteSection(Station deleteStation) {
