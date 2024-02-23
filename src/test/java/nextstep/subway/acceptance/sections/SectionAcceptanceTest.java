@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
-
 import static nextstep.subway.acceptance.util.RestAssuredUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -142,12 +141,12 @@ public class SectionAcceptanceTest {
 
     /**
      * given 지하철 노선에 구간을 추가로 생성하고
-     * when 한개의 구간을 삭제하면
+     * when 마지막역을 삭제하면
      * then 노선을 조회시 노선의 삭제된 역만 빼고 조회된다.
      */
-    @DisplayName("지하철 구간을 삭제한다.")
+    @DisplayName("지하철 구간의 마지막역을 삭제한다.")
     @Test
-    void removeLineSection() {
+    void 지하철구간_마지막역_삭제() {
         //given
         ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
                 SectionFixture.createSectionParams(보라매역.jsonPath().getLong("id"), 서원역.jsonPath().getLong("id"), 10L),
@@ -160,18 +159,41 @@ public class SectionAcceptanceTest {
         //then
         assertThat(삭제_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         ExtractableResponse<Response> 신림선_조회 = 조회_요청("/lines/" + 신림선.jsonPath().getLong("id"));
-        assertThat(신림선_조회.jsonPath().getList("stations").size()).isEqualTo(2);
+        assertThat(신림선_조회.jsonPath().getList("stations")).containsExactly(신림역.jsonPath().get(), 보라매역.jsonPath().get());
     }
 
     /**
      * given 지하철 노선에 구간을 추가로 생성하고
-     * when 하행 종점역이 아닌 역을 제거하면
-     * then 오류가 난다.
+     * when 처음역을 삭제하면
+     * then 노선을 조회시 노선의 삭제된 역만 빼고 조회된다.
      */
-    @DisplayName("삭제 역이 하행 종점역이 아니면 오류가 반환된다.")
+    @DisplayName("지하철 구간의 처음역을 삭제한다.")
     @Test
-    void removeLineSection_InvalidDownStationException() {
-        // given
+    void 지하철구간_처음역_삭제() {
+        //given
+        ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
+                SectionFixture.createSectionParams(보라매역.jsonPath().getLong("id"), 서원역.jsonPath().getLong("id"), 10L),
+                "/lines/" + 신림선.jsonPath().getLong("id") + "/sections"
+        );
+
+        //when
+        ExtractableResponse<Response> 삭제_결과 = 삭제_요청("/lines/" + 신림선.jsonPath().getLong("id") + "/sections?stationId=" + 신림역.jsonPath().getLong("id"));
+
+        //then
+        assertThat(삭제_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> 신림선_조회 = 조회_요청("/lines/" + 신림선.jsonPath().getLong("id"));
+        assertThat(신림선_조회.jsonPath().getList("stations")).containsExactly(보라매역.jsonPath().get(), 서원역.jsonPath().get());
+    }
+
+    /**
+     * given 지하철 노선에 구간을 추가로 생성하고
+     * when 중간역을 삭제하면
+     * then 노선을 조회시 노선의 삭제된 역만 빼고 조회된다.
+     */
+    @DisplayName("지하철 구간의 중간역을 삭제한다.")
+    @Test
+    void 지하철구간_중간역_삭제() {
+        //given
         ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
                 SectionFixture.createSectionParams(보라매역.jsonPath().getLong("id"), 서원역.jsonPath().getLong("id"), 10L),
                 "/lines/" + 신림선.jsonPath().getLong("id") + "/sections"
@@ -181,16 +203,18 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> 삭제_결과 = 삭제_요청("/lines/" + 신림선.jsonPath().getLong("id") + "/sections?stationId=" + 보라매역.jsonPath().getLong("id"));
 
         //then
-        assertThat(삭제_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(삭제_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> 신림선_조회 = 조회_요청("/lines/" + 신림선.jsonPath().getLong("id"));
+        assertThat(신림선_조회.jsonPath().getList("stations")).containsExactly(신림역.jsonPath().get(), 서원역.jsonPath().get());
     }
 
     /**
      * when 구간이 하나만 있는 노선의 역을 제거하면
      * then 오류가 난다.
      */
-    @DisplayName("삭제 역이 하행 종점역이 아니면 오류가 반환된다.")
+    @DisplayName("구간이 하나 있는 역을 삭제하면 오류가 발생한다.")
     @Test
-    void removeLineSection_SingleSectionDeleteException() {
+    void 구간이하나만있는역을삭제하면오류() {
         //when
         ExtractableResponse<Response> 삭제_결과 = 삭제_요청("/lines/" + 신림선.jsonPath().getLong("id") + "/sections?stationId=" + 보라매역.jsonPath().getLong("id"));
 

@@ -101,15 +101,15 @@ class LineTest {
         //given
 
         //when
-        List<Long> stationIds = 신림선.getSections().getStationIds();
+        List<Station> orderedStations = 신림선.getSections().getOrderedStations();
 
         //then
-        assertThat(stationIds.size()).isEqualTo(2);
+        assertThat(orderedStations).containsExactly(신림역, 보라매역);
     }
 
-    @DisplayName("구간을 삭제한다.")
+    @DisplayName("지하철 구간의 마지막역을 삭제한다.")
     @Test
-    void 지하철_구간_삭제() {
+    void 지하철구간_마지막역_삭제() {
         //given
         Section 보라매보라매병원역 = Section.builder()
                 .upStation(보라매역)
@@ -123,6 +123,45 @@ class LineTest {
         신림선.removeSection(보라매병원역.getId());
 
         //then
-        assertThat(신림선.getSections().getStationIds().size()).isEqualTo(2);
+        assertThat(신림선.getSections().getOrderedStations()).containsExactly(신림역, 보라매역);
+    }
+
+    @DisplayName("지하철 구간의 시작역을 삭제한다.")
+    @Test
+    void 지하철구간_시작역_삭제() {
+        //given
+        Section 보라매보라매병원역 = Section.builder()
+                .upStation(보라매역)
+                .downStation(보라매병원역)
+                .line(신림선)
+                .distance(10L)
+                .build();
+        신림선.addSection(보라매보라매병원역);
+
+        //when
+        신림선.removeSection(신림역.getId());
+
+        //then
+        assertThat(신림선.getSections().getOrderedStations()).containsExactly(보라매역, 보라매병원역);
+    }
+
+    @DisplayName("지하철 구간의 중간역을 삭제한다.")
+    @Test
+    void 지하철구간_중간역_삭제() {
+        //given
+        Section 보라매보라매병원역 = Section.builder()
+                .upStation(보라매역)
+                .downStation(보라매병원역)
+                .line(신림선)
+                .distance(10L)
+                .build();
+        신림선.addSection(보라매보라매병원역);
+
+        //when
+        신림선.removeSection(보라매역.getId());
+
+        //then
+        assertThat(신림선.getSections().getOrderedStations()).containsExactly(신림역, 보라매병원역);
+        assertThat(신림선.getSections().getSections().get(0).getDistance()).isEqualTo(20);
     }
 }
