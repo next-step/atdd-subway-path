@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -43,6 +45,8 @@ public class Sections {
     }
 
     public void addSection(Line line, Section requestSection) {
+        validatePossibleSection(line, requestSection);
+
         if(isFirstPositionAddition(requestSection)) {
             requestSection.registerLine(line);
             return;
@@ -85,6 +89,20 @@ public class Sections {
         return false;
     }
 
+    private void validatePossibleSection(Line line, Section requestSection) {
+        for(Section section : sections) {
+            if(line.equals(requestSection.getLine()) && section.getDownStation().equals(requestSection.getDownStation())){
+                throw new BadRequestException("추가할 수 없는 구간입니다.");
+            }
+        }
+    }
+
+    private void validateFirstSection(Section section, Section newSection) {
+        if(section.getDownStation().equals(newSection.getUpStation())){
+            throw new BadRequestException("새로운 구간의 상행역이 이미 노선에 등록된 역입니다.");
+        }
+    }
+
     public void validateEndPositionSection(Section newSection) {
         if(isExistStation(newSection.getDownStation())){
             throw new BadRequestException("새로운 구간의 하행역이 이미 노선에 등록된 역입니다.");
@@ -92,12 +110,6 @@ public class Sections {
 
         if(!isStationMatched(newSection)){
             throw new BadRequestException("새로운 구간의 상행역과 노선의 하행역이 일치하지 않습니다.");
-        }
-    }
-
-    private void validateFirstSection(Section section, Section newSection) {
-        if(section.getDownStation().equals(newSection.getUpStation())){
-            throw new BadRequestException("새로운 구간의 상행역이 이미 노선에 등록된 역입니다.");
         }
     }
 

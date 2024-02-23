@@ -17,7 +17,7 @@ public class SectionService {
         this.stationRepository = stationRepository;
     }
 
-    private Section validSection(SectionRequest sectionRequest) {
+    private Section validSection(Line line, SectionRequest sectionRequest) {
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(
                 () -> new BadRequestException("존재하지 않는 역입니다.")
         );
@@ -25,18 +25,13 @@ public class SectionService {
                 () -> new BadRequestException("존재하지 않는 역입니다.")
         );
 
-        Section requestSection = new Section(upStation, downStation, sectionRequest.getDistance());
-
-        Section section = sectionRepository.findByDownStation(downStation).orElse(null);
-        if(section != null) {
-            throw new BadRequestException("노선에 추가할 수 없는 구간입니다.");
-        }
+        Section requestSection = new Section(upStation, downStation, sectionRequest.getDistance(), line);
 
         return requestSection;
     }
 
     public void addSection(Line line, SectionRequest sectionRequest) {
-        Section requestSection = validSection(sectionRequest);
+        Section requestSection = validSection(line, sectionRequest);
         line.addSection(requestSection);
     }
 

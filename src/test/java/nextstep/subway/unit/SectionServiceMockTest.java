@@ -32,9 +32,6 @@ public class SectionServiceMockTest {
     LineService lineService;
 
     @Mock
-    SectionRepository sectionRepository;
-
-    @Mock
     LineRepository lineRepository;
 
     @Mock
@@ -50,7 +47,6 @@ public class SectionServiceMockTest {
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
-        when(sectionRepository.findByDownStation(선릉역)).thenReturn(Optional.ofNullable(null));
 
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
@@ -78,7 +74,6 @@ public class SectionServiceMockTest {
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(신규역.getId())).thenReturn(Optional.of(신규역));
-        when(sectionRepository.findByDownStation(신규역)).thenReturn(Optional.ofNullable(null));
 
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
@@ -102,8 +97,7 @@ public class SectionServiceMockTest {
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
-        when(sectionRepository.findByDownStation(선릉역)).thenReturn(Optional.ofNullable(null));
-
+//
         //when & then
         assertThatThrownBy(() -> sectionService.addSection(이호선, new SectionRequest(등록할_구간)))
                 .isInstanceOf(BadRequestException.class);
@@ -123,7 +117,6 @@ public class SectionServiceMockTest {
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(역삼역.getId())).thenReturn(Optional.of(역삼역));
-        when(sectionRepository.findByDownStation(역삼역)).thenReturn(Optional.ofNullable(null));
 
         //when & then
         assertThatThrownBy(() -> sectionService.addSection(이호선, new SectionRequest(등록할_구간)))
@@ -146,7 +139,6 @@ public class SectionServiceMockTest {
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(신규역.getId())).thenReturn(Optional.of(신규역));
-        when(sectionRepository.findByDownStation(강남역)).thenReturn(Optional.ofNullable(null));
 
         when(lineRepository.findById(이호선.getId())).thenReturn(Optional.of(이호선));
 
