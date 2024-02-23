@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 
+import static nextstep.subway.steps.AssertStep.assertAlreadyRegistered;
 import static nextstep.subway.steps.LineSteps.createLine;
 import static nextstep.subway.steps.LineSteps.getLine;
 import static nextstep.subway.steps.SectionSteps.*;
@@ -87,8 +88,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = createSection(이호선_id, 강남역_id, 역삼역_id, 20);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 등록된 상태입니다.");
+        assertAlreadyRegistered(response);
     }
 
     /**
@@ -214,8 +214,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = createSection(이호선_id, 역삼역_id, 교대역_id, 30);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 등록된 상태입니다.");
+        assertAlreadyRegistered(response);
     }
 
     @Test
