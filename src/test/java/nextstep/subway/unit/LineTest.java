@@ -33,22 +33,9 @@ class LineTest {
         assertThat(line.getStations()).containsExactly(건대입구역, 구의역, 강변역);
     }
 
+
     @Test
-    void removeSection() {
-
-        // given
-        Section section2 = new Section(구의역, 강변역, 4, line);
-        line.addSection(section2);
-
-        // when
-        line.removeSection(section2);
-
-        // then
-        assertThat(line.getLastStation()).isEqualTo(구의역);
-    }
-    
-    @Test
-    public void removeMidStation() {
+    void removeMidStation() {
 
         // given
         Section section2 = new Section(구의역, 강변역, 4, line);
@@ -62,7 +49,7 @@ class LineTest {
     }
 
     @Test
-    public void removeFirstStation() {
+    void removeFirstStation() {
         // given
         Section section2 = new Section(구의역, 강변역, 4, line);
         line.addSection(section2);
@@ -75,7 +62,7 @@ class LineTest {
     }
 
     @Test
-    public void removeLastStation() {
+    void removeLastStation() {
         // given
         Section section2 = new Section(구의역, 강변역, 4, line);
         line.addSection(section2);

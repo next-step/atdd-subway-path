@@ -4,7 +4,6 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "line")
@@ -45,10 +44,6 @@ public class Line {
         lineSections.add(section);
     }
 
-
-    public void removeSection(Section section) {
-        lineSections.remove(section);
-    }
 
     public List<Station> getStations() {
         return lineSections.getStations();

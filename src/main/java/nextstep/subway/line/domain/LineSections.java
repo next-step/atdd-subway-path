@@ -20,17 +20,6 @@ public class LineSections {
     }
 
 
-    public void remove(Section deleteSection) {
-        Station lastStation = getLastStation();
-        if (!lastStation.equals(deleteSection.getDownStation())) {
-            throw new IllegalStateException("하행 종점만 삭제 가능");
-        }
-
-        this.sections = sections.stream()
-                .filter(it -> !it.getDownStation().equals(lastStation))
-                .collect(Collectors.toList());
-    }
-
     public boolean deletable() {
         return this.sections.size() > 1;
     }
