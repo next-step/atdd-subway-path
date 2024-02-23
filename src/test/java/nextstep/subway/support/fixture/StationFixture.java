@@ -50,6 +50,10 @@ public class StationFixture {
     }
 
 
+    public static Station giveOne(String name) {
+        return new Station(name);
+    }
+
     public static Station giveOne(long id, String name) {
         Station station = new Station(name);
         ReflectionTestUtils.setField(station, "id", id);

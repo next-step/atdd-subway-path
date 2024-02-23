@@ -32,19 +32,20 @@ public class Sections {
         Optional<Station> optionalStation = getEndStation();
         if (optionalStation.isPresent()) {
             Station endStation = optionalStation.get();
-            return !Objects.equals(endStation.getId(), section.getUpStation().getId());
+            return !Objects.equals(endStation, section.getUpStation());
         }
         return false;
     }
 
     public boolean alreadyExistsStation(Section section) {
         return this.getStations().stream()
-            .anyMatch(station -> station.getId().equals(section.getDownStation().getId()));
+            .anyMatch(station -> Objects.equals(station,section.getDownStation()));
     }
 
     public List<Station> getStations() {
         return this.sections.stream()
             .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+            .distinct()
             .collect(Collectors.toList());
     }
 

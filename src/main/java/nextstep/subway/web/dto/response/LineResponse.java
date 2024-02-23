@@ -11,7 +11,7 @@ public class LineResponse {
 
 
     @Getter
-    static class StationDto {
+    public static class StationDto {
 
         private final Long id;
 
@@ -21,8 +21,8 @@ public class LineResponse {
             this.id = station.getId();
             this.name = station.getName();
         }
-    }
 
+    }
 
     private final Long id;
 
