@@ -7,4 +7,9 @@ public class LineException extends RuntimeException {
     public LineException(String message) {
         this.message = message;
     }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
 }
