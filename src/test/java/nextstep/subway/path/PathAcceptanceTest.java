@@ -1,6 +1,5 @@
 package nextstep.subway.path;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.controller.dto.LineCreateRequest;
@@ -11,10 +10,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.helper.JsonPathUtils.getListPath;
-import static nextstep.helper.JsonPathUtils.getLongPath;
+import static nextstep.helper.JsonPathUtils.*;
 import static nextstep.subway.line.acceptance.LineApiRequester.createLine;
 import static nextstep.subway.line.acceptance.SectionApiRequester.addSectionToLineSuccess;
+import static nextstep.subway.path.PathApiRequester.getPaths;
 import static nextstep.subway.station.acceptance.StationApiRequester.createStation;
 import static nextstep.subway.station.acceptance.StationApiRequester.deleteStation;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,17 +85,13 @@ public class PathAcceptanceTest {
     @DisplayName("출발역과 도착역이 주어지면 경로를 조회할 수 있다")
     @Test
     void getPath() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .queryParam("source", 강남역)
-            .queryParam("target", 논현역)
-            .when().get("/paths")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = getPaths(강남역, 논현역);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(getListPath(response.body(), "stations.id", String.class)).isNotEmpty();
         assertThat(getListPath(response.body(), "stations.name", String.class))
             .contains("강남역", "신논현역", "논현역");
+        assertThat(getIntPath(response.body(), "distance")).isEqualTo(7);
     }
 
     /**
@@ -106,12 +101,7 @@ public class PathAcceptanceTest {
     @DisplayName("주어진 출발역과 도착역이 같으면 경로를 조회할 수 없다")
     @Test
     void cannotGetPathIfEqualsSourceAndTarget() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .queryParam("source", 강남역)
-            .queryParam("target", 강남역)
-            .when().get("/paths")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = getPaths(강남역, 강남역);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -124,12 +114,7 @@ public class PathAcceptanceTest {
     @DisplayName("주어진 출발역과 도착역이 같으면 경로를 조회할 수 없다")
     @Test
     void cannotGetPathIfNotConnected() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .queryParam("source", 강남역)
-            .queryParam("target", 화서역)
-            .when().get("/paths")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = getPaths(강남역, 화서역);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -142,12 +127,7 @@ public class PathAcceptanceTest {
     @DisplayName("주어진 출발역과 도착역이 같으면 경로를 조회할 수 없다")
     @Test
     void cannotGetPathIfNotFound() {
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .queryParam("source", 강남역)
-            .queryParam("target", 없는역)
-            .when().get("/paths")
-            .then().log().all()
-            .extract();
+        ExtractableResponse<Response> response = getPaths(강남역, 없는역);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

@@ -13,6 +13,13 @@ public class JsonPathUtils {
         return responseBody.jsonPath().getString(pathName);
     }
 
+    public static Integer getIntPath(
+        ResponseBodyExtractionOptions responseBody,
+        String pathName
+    ) {
+        return responseBody.jsonPath().getInt(pathName);
+    }
+
     public static Long getLongPath(
         ResponseBodyExtractionOptions responseBody,
         String pathName
