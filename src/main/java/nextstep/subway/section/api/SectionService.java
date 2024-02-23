@@ -37,11 +37,10 @@ public class SectionService {
         if (line.getSections().getStations().contains(request.getUpStationId())) {
             // 새로 추가하는 역은 request.다운스테이션
             return createByDownstationId(request, line);
-        } else if (line.getSections().getStations().contains(request.getDownStationId())) {
-            // 새로운 역은 request.getUpstationId
-            return createByUpstationId(request, line);
         }
-        throw new IllegalArgumentException("아직 개발자가 모르는 예외입니다.");
+
+        // 새로운 역은 request.getUpstationId
+         return createByUpstationId(request, line);
     }
 
     @Transactional
