@@ -10,7 +10,9 @@ import static nextstep.subway.support.fixture.StationFixture.낙성대역_이름
 import static nextstep.subway.support.fixture.StationFixture.서울역_이름;
 import static nextstep.subway.support.fixture.StationFixture.청량리역_이름;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domians.domain.Line;
 import nextstep.subway.domians.domain.Section;
@@ -28,21 +30,22 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
-@Transactional
-@DisplayName("노선 서비스 Sociable 단위 테스트")
-class LineServiceTest {
+@DisplayName("노선 서비스 Solitary 단위 테스트")
+@ExtendWith(MockitoExtension.class)
+class LineServiceMockTest {
 
-    @Autowired
-    private StationRepository stationRepository;
-    @Autowired
+    @Mock
     private LineRepository lineRepository;
-    @Autowired
+    @Mock
+    private StationRepository stationRepository;
+    @InjectMocks
     private LineService lineService;
+
 
     Line 이호선;
     Section 강남역_교대역_구간;
@@ -60,15 +63,14 @@ class LineServiceTest {
 
     @BeforeEach
     void setUp() {
+        강남역 = StationFixture.giveOne(1L, 강남역_이름);
+        교대역 = StationFixture.giveOne(2L, 교대역_이름);
+        낙성대역 = StationFixture.giveOne(3L, 낙성대역_이름);
+        서울역 = StationFixture.giveOne(4L, 서울역_이름);
+        청량리역 = StationFixture.giveOne(5L, 청량리역_이름);
 
-        강남역 = stationRepository.save(StationFixture.giveOne(강남역_이름));
-        교대역 = stationRepository.save(StationFixture.giveOne(교대역_이름));
-        낙성대역 = stationRepository.save(StationFixture.giveOne(낙성대역_이름));
-        서울역 = stationRepository.save(StationFixture.giveOne(서울역_이름));
-        청량리역 = stationRepository.save(StationFixture.giveOne(청량리역_이름));
-
-        이호선 = lineRepository.save(LineFixture.giveOne(1L, 이호선_이름, 이호선_색));
-        일호선 = lineRepository.save(LineFixture.giveOne(2L, 일호선_이름, 일호선_색));
+        이호선 = LineFixture.giveOne(1L, 이호선_이름, 이호선_색);
+        일호선 = LineFixture.giveOne(2L, 일호선_이름, 일호선_색);
 
         강남역_교대역_구간 = SectionFixture.giveOne(1L, 이호선, 강남역, 교대역, 10L);
         교대역_낙성대역_구간 = SectionFixture.giveOne(2L, 이호선, 교대역, 낙성대역, 10L);
@@ -80,6 +82,9 @@ class LineServiceTest {
     void addSection() {
         // given
         Line 이호선 = 강남역_교대역_구간_이호선();
+        given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
+        given(stationRepository.findById(교대역.getId())).willReturn(Optional.of(교대역));
+        given(stationRepository.findById(낙성대역.getId())).willReturn(Optional.of(낙성대역));
 
         // when
         AddSectionRequest 교대역_낙성대역_구간_추가_요청 = new AddSectionRequest(교대역.getId(), 낙성대역.getId(), 10L);
@@ -96,6 +101,7 @@ class LineServiceTest {
     void findLine() {
         // given
         Line 강남_교대_이호선 = 강남역_교대역_구간_이호선();
+        given(lineRepository.findById(강남_교대_이호선.getId())).willReturn(Optional.of(이호선));
 
         // when
         LineResponse result = lineService.findLine(강남_교대_이호선.getId());
@@ -114,8 +120,9 @@ class LineServiceTest {
     @Test
     void findLines() {
         // given
-        서울역_청량리역_구간_일호선();
-        강남역_교대역_구간_이호선();
+        Line 일호선 = 서울역_청량리역_구간_일호선();
+        Line 이호선 = 강남역_교대역_구간_이호선();
+        given(lineRepository.findAll()).willReturn(List.of(일호선, 이호선));
 
         // when
         List<LineResponse> result = lineService.findAllLines();
@@ -132,6 +139,7 @@ class LineServiceTest {
     void removeSection() {
         // given
         Line 이호선 = 강남역_낙성대역_구간_이호선();
+        given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
 
         // when
         LineResponse result = lineService.removeSection(이호선.getId(), 낙성대역.getId());
@@ -148,18 +156,18 @@ class LineServiceTest {
 
     private Line 강남역_교대역_구간_이호선() {
         이호선.addSection(강남역_교대역_구간);
-        return lineRepository.save(이호선);
+        return 이호선;
     }
 
     private Line 강남역_낙성대역_구간_이호선() {
         이호선.addSection(강남역_교대역_구간);
         이호선.addSection(교대역_낙성대역_구간);
-        return lineRepository.save(이호선);
+        return 이호선;
     }
 
     private Line 서울역_청량리역_구간_일호선() {
         일호선.addSection(서울역_청량리역_구간);
-        return lineRepository.save(일호선);
+        return 일호선;
     }
 
 }
