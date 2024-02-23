@@ -22,6 +22,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AcceptanceTest
 public class PathAcceptanceTest {
 
+    /**
+     *  강남역 -- 역삼역 -- 선릉역 (2호선)
+     *   ||
+     * 신논현역
+     *   ||
+     *  논현역
+     * (신분당선)
+     */
     // 2호선
     long 이호선;
     long 강남역;
