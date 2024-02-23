@@ -69,16 +69,4 @@ public class Sections {
         }
         return sections.get(sections.size() - 1);
     }
-
-    public void validateLastStation() {
-        if (this.getDownStationIds().isEmpty()) {
-            throw new InsufficientStationException();
-        }
-    }
-
-    public void validateDownStationId(Long stationId) {
-        if (this.getDownStationId() != stationId) {
-            throw new StationNotMatchException();
-        }
-    }
 }
