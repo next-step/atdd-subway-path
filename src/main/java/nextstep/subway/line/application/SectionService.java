@@ -39,10 +39,6 @@ public class SectionService {
 
         Line line = getLine(lineId);
 
-        if(!line.deletableSection()) {
-            throw new IllegalStateException("구간이 1개여서 역을 삭제할 수 없다");
-        }
-
         line.removeStation(getStation(stationId));
         lineRepository.save(line);
     }

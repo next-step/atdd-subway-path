@@ -80,6 +80,9 @@ public class Line {
     }
 
     public void removeStation(Station station) {
+        if (!this.deletableSection()) {
+            throw new IllegalStateException("구간이 1개여서 역을 삭제할 수 없다");
+        }
         lineSections.remove(station);
     }
 }

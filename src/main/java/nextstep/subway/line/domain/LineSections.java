@@ -93,18 +93,17 @@ public class LineSections {
     public void remove(Station station) {
         if (getFirstStation().equals(station)) {
             this.sections.remove(0);
-            return;
-        }
-        if (getLastStation().equals(station)) {
+        } else if (getLastStation().equals(station)) {
             this.sections.remove(this.sections.size() - 1);
-            return;
+        } else {
+            removeStationInMid(station);
         }
+    }
 
+    private void removeStationInMid(Station station) {
         List<Section> sectionInclude = getSectionInclude(station);
-
         Section up = sectionInclude.get(0);
         Section down = sectionInclude.get(1);
-
         up.changeDownStation(down.getDownStation(), down.getDistance());
         this.sections.remove(down);
     }
