@@ -1,6 +1,5 @@
 package nextstep.subway.path.service;
 
-import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.path.controller.dto.PathResponse;
 import nextstep.subway.path.exception.PathException;
@@ -50,15 +49,15 @@ public class PathFinder {
     private WeightedMultigraph<Station, DefaultWeightedEdge> createGraph(List<Sections> sectionsList) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
 
-        for (Sections sections : sectionsList) {
-            for (Section section : sections.getSections()) {
+        sectionsList.stream()
+            .flatMap(sections -> sections.getSections().stream())
+            .forEach(section -> {
                 graph.addVertex(section.getUpStation());
                 graph.addVertex(section.getDownStation());
 
                 DefaultWeightedEdge edge = graph.addEdge(section.getUpStation(), section.getDownStation());
                 graph.setEdgeWeight(edge, section.getDistance());
-            }
-        }
+            });
 
         return graph;
     }
