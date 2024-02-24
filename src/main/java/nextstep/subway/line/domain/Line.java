@@ -4,7 +4,6 @@ import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Table(name = "line")
@@ -46,10 +45,6 @@ public class Line {
     }
 
 
-    public void removeSection(Section section) {
-        lineSections.remove(section);
-    }
-
     public List<Station> getStations() {
         return lineSections.getStations();
     }
@@ -85,6 +80,14 @@ public class Line {
     }
 
     public void removeStation(Station station) {
+        if (!this.deletableSection()) {
+            throw new IllegalStateException("구간이 1개여서 역을 삭제할 수 없다");
+        }
         lineSections.remove(station);
     }
+
+    public List<Section> getLineSections() {
+        return lineSections.getSections();
+    }
+
 }

@@ -20,17 +20,6 @@ public class LineSections {
     }
 
 
-    public void remove(Section deleteSection) {
-        Station lastStation = getLastStation();
-        if (!lastStation.equals(deleteSection.getDownStation())) {
-            throw new IllegalStateException("하행 종점만 삭제 가능");
-        }
-
-        this.sections = sections.stream()
-                .filter(it -> !it.getDownStation().equals(lastStation))
-                .collect(Collectors.toList());
-    }
-
     public boolean deletable() {
         return this.sections.size() > 1;
     }
@@ -104,18 +93,17 @@ public class LineSections {
     public void remove(Station station) {
         if (getFirstStation().equals(station)) {
             this.sections.remove(0);
-            return;
-        }
-        if (getLastStation().equals(station)) {
+        } else if (getLastStation().equals(station)) {
             this.sections.remove(this.sections.size() - 1);
-            return;
+        } else {
+            removeStationInMid(station);
         }
+    }
 
+    private void removeStationInMid(Station station) {
         List<Section> sectionInclude = getSectionInclude(station);
-
         Section up = sectionInclude.get(0);
         Section down = sectionInclude.get(1);
-
         up.changeDownStation(down.getDownStation(), down.getDistance());
         this.sections.remove(down);
     }
@@ -124,5 +112,9 @@ public class LineSections {
         return this.sections.stream()
                 .filter(it -> it.getDownStation().equals(station) || it.getUpStation().equals(station))
                 .collect(Collectors.toList());
+    }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
     }
 }

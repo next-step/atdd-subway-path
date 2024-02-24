@@ -3,6 +3,8 @@ package nextstep.subway.fixture;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import nextstep.subway.line.domain.Color;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.presentation.LineRequest;
 import nextstep.subway.line.presentation.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -58,5 +60,22 @@ public class LineSteps {
         param.put("downStationId", downStationId);
         param.put("distance", distance);
         return LineSteps.createLine(param);
+    }
+
+    public static LineResponse 노선_생성(LineRequest lineRequest) {
+        return LineSteps.createLine(lineRequest);
+    }
+
+    public static LineResponse createLine(LineRequest lineRequest) {
+        return RestAssured.given()
+                .log().all()
+                .when()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .post("/lines")
+                .then()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract()
+                .as(LineResponse.class);
     }
 }
