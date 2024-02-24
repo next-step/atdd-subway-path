@@ -17,13 +17,15 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
     private Long 남부터미널역Id;
     private Long 양재역Id;
     private Long 강남역Id;
-    private Long 역삼역Id;
+    private Long 반포역Id;
+    private Long 학동역Id;
 
     private static int 교대역_남부터미널역_거리 = 3;
     private static int 남부터미널역_양재역_거리 = 4;
     private static int 교대역_강남역_거리 = 1;
     private static int 양재역_강남역_거리 = 2;
-    private static int 강남역_역삼역_거리 = 5;
+
+    private static int 반포역_학동역_거리 = 5;
 
     @BeforeEach
     void setStation() {
@@ -31,7 +33,8 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
         남부터미널역Id = extractResponseId(StationRestAssuredCRUD.createStation("남부터미널역"));
         양재역Id = extractResponseId(StationRestAssuredCRUD.createStation("양재역"));
         강남역Id = extractResponseId(StationRestAssuredCRUD.createStation("강남역"));
-        역삼역Id = extractResponseId(StationRestAssuredCRUD.createStation("역삼역"));
+        반포역Id = extractResponseId(StationRestAssuredCRUD.createStation("반포역"));
+        학동역Id = extractResponseId(StationRestAssuredCRUD.createStation("학동역"));
     }
 
     void setOrangeLine() {
@@ -47,7 +50,6 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
         Long 이호선Id = lineResponse.jsonPath().getLong("id");
 
         SectionRestAssuredCRUD.addSection(교대역Id, 강남역Id, 교대역_강남역_거리, 이호선Id);
-        SectionRestAssuredCRUD.addSection(강남역Id, 역삼역Id, 강남역_역삼역_거리, 이호선Id);
     }
 
     void setRedLine() {
@@ -57,8 +59,15 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
         SectionRestAssuredCRUD.addSection(강남역Id, 양재역Id, 양재역_강남역_거리, 신분당선Id);
     }
 
+    void setDarkGreenLine() {
+        ExtractableResponse<Response> lineResponse = LineRestAssuredCRUD.createLine("7호선", "bg-darkgreen-600");
+        Long 칠호선Id = lineResponse.jsonPath().getLong("id");
+
+        SectionRestAssuredCRUD.addSection(반포역Id, 학동역Id, 반포역_학동역_거리, 칠호선Id);
+    }
+
     /**
-     * 교대역    --- *2호선* (1) ---   강남역  --- *2호선* (5) --- 역삼역
+     * 교대역    --- *2호선* (1) ---   강남역           반포역  --- *7호선* (5) ---  학동역
      * |                              |
      * *3호선*(3)                    *신분당선*(2)
      * |                              |
@@ -129,6 +138,27 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
 
         //when
         ExtractableResponse<Response> response = PathRestAssuredCRUD.showPath(교대역Id, 교대역Id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * given 여러개의 노선에 환승역이 존재하는 구간을 등록하고
+     * when 출발역과 도착역이 연결되어 있지 않은 경로 조회 시
+     * then 400 에러가 발생한다.
+     */
+    @Test
+    @DisplayName("출발역과 도착역이 연결되어 있지 않는 경우 에러가 발생한다.")
+    void sourceAndTargetNotConnectError() {
+        //given
+        setOrangeLine();
+        setGreenLine();
+        setRedLine();
+        setDarkGreenLine();
+
+        //when
+        ExtractableResponse<Response> response = PathRestAssuredCRUD.showPath(교대역Id, 학동역Id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
