@@ -21,9 +21,12 @@ public class PathFinderTest {
     private Station 강남역;
     private Station 양재역;
     private Station 남부터미널역;
+    private Station 수내역;
+    private Station 정자역;
     private Line 이호선;
     private Line 신분당선;
     private Line 삼호선;
+    private Line 수인분당선;
 
     /**
      * 교대역    --- *2호선* ---   강남역
@@ -38,10 +41,13 @@ public class PathFinderTest {
         강남역 = new Station("강남역");
         양재역 = new Station("양재역");
         남부터미널역 = new Station("남부터미널역");
+        수내역 = new Station("수내역");
+        정자역 = new Station("정자역");
 
         이호선 = new Line("2호선", "green", 교대역, 강남역, 10L);
         신분당선 = new Line("신분당선", "red", 강남역, 양재역, 10L);
         삼호선 = new Line("3호선", "orange", 교대역, 남부터미널역, 2L);
+        수인분당선 = new Line("수인분당선", "yellow", 수내역, 정자역, 2L);
 
         삼호선.addSection(new Section(삼호선, 남부터미널역, 양재역, 3L));
     }
@@ -64,6 +70,16 @@ public class PathFinderTest {
         assertThatThrownBy(() -> pathFinder.findPath(Arrays.asList(이호선, 신분당선, 삼호선), 교대역, 교대역))
                 .isInstanceOf(SubwayException.class)
                 .hasMessageContaining("출발역과 도착역이 같습니다.");
+    }
+
+    @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 에러를 반환한다.")
+    @Test
+    void validatePathExists() {
+        PathFinder pathFinder = new PathFinder();
+
+        assertThatThrownBy(() -> pathFinder.findPath(Arrays.asList(이호선, 수인분당선), 강남역, 수내역))
+                .isInstanceOf(SubwayException.class)
+                .hasMessageContaining("출발역과 도착역이 연결이 되어 있지 않습니다.");
     }
 
 }

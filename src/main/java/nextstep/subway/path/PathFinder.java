@@ -30,7 +30,8 @@ public class PathFinder {
                 });
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        GraphPath path = Optional.ofNullable(dijkstraShortestPath.getPath(source, target)).orElseThrow(() -> new SubwayException("출발역과 도착역은 연결되어 있어야 합니다."));
+        GraphPath path = Optional.ofNullable(dijkstraShortestPath.getPath(source, target))
+                .orElseThrow(() -> new SubwayException("출발역과 도착역이 연결이 되어 있지 않습니다."));
 
         return new Path(path.getVertexList(), path.getWeight());
     }
