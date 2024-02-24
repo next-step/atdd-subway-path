@@ -114,6 +114,26 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
         assertThat(distance).isEqualTo(3.0);
     }
 
+    /**
+     * given 여러개의 노선에 환승역이 존재하는 구간을 등록하고
+     * when 출발역과 도착역이 같은 경로를 조회하면
+     * then 400 에러가 발생한다.
+     */
+    @Test
+    @DisplayName("출발역과 도착역이 같으면 에러가 발생한다.")
+    void sameSourceAndTargetError() {
+        //given
+        setOrangeLine();
+        setGreenLine();
+        setRedLine();
+
+        //when
+        ExtractableResponse<Response> response = PathRestAssuredCRUD.showPath(교대역Id, 교대역Id);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     Long extractResponseId(ExtractableResponse<Response> response) {
         return response.body().jsonPath().getLong("id");
     }
