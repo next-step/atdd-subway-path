@@ -26,10 +26,9 @@ public class PathFinder {
         return new Path(path.getVertexList(), path.getWeight());
     }
 
-    private void validateStationExists(WeightedMultigraph<Station, DefaultWeightedEdge> graph,
-                                       Station source, Station target) {
-        if (!graph.containsVertex(source) || !graph.containsVertex(target)) {
-            throw new SubwayException("존재하지 않은 역입니다.");
+    private void validateEqualsStation(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new SubwayException("출발역과 도착역이 같습니다.");
         }
     }
 
@@ -49,9 +48,11 @@ public class PathFinder {
         return graph;
     }
 
-    private void validateEqualsStation(Station source, Station target) {
-        if (source.equals(target)) {
-            throw new SubwayException("출발역과 도착역이 같습니다.");
+    private void validateStationExists(WeightedMultigraph<Station, DefaultWeightedEdge> graph,
+                                       Station source, Station target) {
+        if (!graph.containsVertex(source) || !graph.containsVertex(target)) {
+            throw new SubwayException("존재하지 않은 역입니다.");
         }
     }
+
 }
