@@ -113,4 +113,8 @@ public class LineSections {
                 .filter(it -> it.getDownStation().equals(station) || it.getUpStation().equals(station))
                 .collect(Collectors.toList());
     }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
+    }
 }

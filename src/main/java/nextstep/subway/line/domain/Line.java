@@ -85,4 +85,9 @@ public class Line {
         }
         lineSections.remove(station);
     }
+
+    public List<Section> getLineSections() {
+        return lineSections.getSections();
+    }
+
 }
