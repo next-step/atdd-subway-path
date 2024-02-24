@@ -10,6 +10,18 @@ import java.util.Map;
 
 public class LineFixture {
 
+    public static Long newLineAndGetId(
+            String lineName,
+            String lineColor,
+            Long upStationId,
+            Long downStationId,
+            int distance
+    ) {
+        return newLine(lineName, lineColor, upStationId, downStationId, distance)
+                .jsonPath()
+                .getLong("id");
+    }
+
     public static ExtractableResponse<Response> newLine(
             String lineName,
             String lineColor,

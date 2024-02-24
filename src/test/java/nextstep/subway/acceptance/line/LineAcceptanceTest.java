@@ -16,9 +16,9 @@ import nextstep.subway.station.StationRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+import static nextstep.subway.acceptance.fixture.StationFixture.newStationAndGetId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.acceptance.fixture.LineFixture.*;
-import static nextstep.subway.acceptance.fixture.StationFixture.newStation;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -48,10 +48,8 @@ public class LineAcceptanceTest {
     @Test
     void createLineTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
         // when
         ExtractableResponse<Response> response = newLine(
@@ -80,17 +78,12 @@ public class LineAcceptanceTest {
     @Test
     void getLinesTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        ExtractableResponse<Response> 군자역 = newStation("군자역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-        Long 군자역_ID = 군자역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
+        Long 군자역_ID = newStationAndGetId("군자역");
 
-        ExtractableResponse<Response> 이호선 = newLine("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
-        ExtractableResponse<Response> 칠호선 = newLine("7호선", "bg-orange-600", 건대입구역_ID, 군자역_ID, 20);
-        Long 이호선_ID = 이호선.jsonPath().getLong("id");
-        Long 칠호선_ID = 칠호선.jsonPath().getLong("id");
+        Long 이호선_ID = newLineAndGetId("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
+        Long 칠호선_ID = newLineAndGetId("7호선", "bg-orange-600", 건대입구역_ID, 군자역_ID, 20);
 
         // when
         ExtractableResponse<Response> response = loadLines();
@@ -117,13 +110,10 @@ public class LineAcceptanceTest {
     @Test
     void getLineTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
-        ExtractableResponse<Response> 이호선 = newLine("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
-        Long 이호선_ID = 이호선.jsonPath().getLong("id");
+        Long 이호선_ID = newLineAndGetId("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
 
         // when
         ExtractableResponse<Response> response = loadLine(이호선_ID);
@@ -147,13 +137,10 @@ public class LineAcceptanceTest {
     @Test
     void updateLineTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
-        ExtractableResponse<Response> 이호선 = newLine("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
-        Long 이호선_ID = 이호선.jsonPath().getLong("id");
+        Long 이호선_ID = newLineAndGetId("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "3호선");
@@ -182,13 +169,10 @@ public class LineAcceptanceTest {
     @Test
     void deleteLineTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
-        ExtractableResponse<Response> 이호선 = newLine("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
-        Long 이호선_ID = 이호선.jsonPath().getLong("id");
+        Long 이호선_ID = newLineAndGetId("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
 
         // when
         ExtractableResponse<Response> response = deleteLine(이호선_ID);
@@ -213,21 +197,17 @@ public class LineAcceptanceTest {
         @Test
         void successTestMiddle() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
@@ -254,21 +234,17 @@ public class LineAcceptanceTest {
         @Test
         void invalidDistanceErrorTest() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
@@ -293,21 +269,17 @@ public class LineAcceptanceTest {
         @Test
         void successTest1() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
@@ -334,22 +306,18 @@ public class LineAcceptanceTest {
         @Test
         void successTest2() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 구의역_ID = newStationAndGetId("구의역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
@@ -376,19 +344,16 @@ public class LineAcceptanceTest {
         @Test
         void duplicateStationErrorTest() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 구의역_ID = newStationAndGetId("구의역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     구의역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
@@ -409,27 +374,22 @@ public class LineAcceptanceTest {
          * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(C-D)을 등록을 시도하면
          * Then 추가 구간(C-D)의 연결점이 없기 때문에 에러가 발생한다.
          */
-        @DisplayName("새로 추가하려는 구간의 상행역이 노선의 하행 종착역과 다른 역이라면 에러가 발생한다.")
+        @DisplayName("새로 추가하려는 구간의 연결점이 없다면 에러가 발생한다.")
         @Test
-        void invalidUpStationErrorTest() {
+        void notConnectableErrorTest() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 잠실역 = newStation("잠실역");
-            Long 잠실역_ID = 잠실역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+            Long 잠실역_ID = newStationAndGetId("잠실역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
@@ -454,21 +414,17 @@ public class LineAcceptanceTest {
         @Test
         void invalidDownStationErrorTest() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
@@ -501,21 +457,17 @@ public class LineAcceptanceTest {
         @Test
         void successTest() {
             // given
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 강남역 = newStation("강남역");
-            Long 강남역_ID = 강남역.jsonPath().getLong("id");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+            Long 강남역_ID = newStationAndGetId("강남역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     건대입구역_ID,
                     구의역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             ExtractableResponse<Response> 건대입구역_구의역_구간 = addSection(이호선_ID, 구의역_ID, 강남역_ID, 10);
 
@@ -541,21 +493,17 @@ public class LineAcceptanceTest {
         @Test
         void invalidLastStationErrorTest() {
             // given
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 강남역 = newStation("강남역");
-            Long 강남역_ID = 강남역.jsonPath().getLong("id");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+            Long 강남역_ID = newStationAndGetId("강남역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     건대입구역_ID,
                     구의역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             ExtractableResponse<Response> 건대입구역_구의역_구간 = addSection(이호선_ID, 구의역_ID, 강남역_ID, 10);
 
@@ -578,19 +526,16 @@ public class LineAcceptanceTest {
         @Test
         void invalidSectionSizeErrorTest() {
             // given
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     건대입구역_ID,
                     구의역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = removeSection(이호선_ID, 구의역_ID);

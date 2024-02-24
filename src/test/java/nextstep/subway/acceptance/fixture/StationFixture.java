@@ -3,13 +3,19 @@ package nextstep.subway.acceptance.fixture;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.springframework.http.MediaType;
 import nextstep.subway.station.StationRequest;
+import org.springframework.http.MediaType;
 
 public class StationFixture {
 
     public static ExtractableResponse<Response> newStation() {
         return newStation("강남역");
+    }
+
+    public static Long newStationAndGetId(String stationName) {
+        return newStation(stationName)
+                .jsonPath()
+                .getLong("id");
     }
 
     public static ExtractableResponse<Response> newStation(String stationName) {
