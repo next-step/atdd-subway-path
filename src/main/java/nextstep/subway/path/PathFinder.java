@@ -17,12 +17,20 @@ public class PathFinder {
         validateEqualsStation(source, target);
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = createGraph(lines);
+        validateStationExists(graph, source, target);
 
         DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
         GraphPath path = Optional.ofNullable(dijkstraShortestPath.getPath(source, target))
                 .orElseThrow(() -> new SubwayException("출발역과 도착역이 연결이 되어 있지 않습니다."));
 
         return new Path(path.getVertexList(), path.getWeight());
+    }
+
+    private void validateStationExists(WeightedMultigraph<Station, DefaultWeightedEdge> graph,
+                                       Station source, Station target) {
+        if (!graph.containsVertex(source) || !graph.containsVertex(target)) {
+            throw new SubwayException("존재하지 않은 역입니다.");
+        }
     }
 
     private WeightedMultigraph<Station, DefaultWeightedEdge> createGraph(List<Line> lines) {

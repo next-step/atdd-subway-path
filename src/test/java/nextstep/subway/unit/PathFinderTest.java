@@ -82,4 +82,14 @@ public class PathFinderTest {
                 .hasMessageContaining("출발역과 도착역이 연결이 되어 있지 않습니다.");
     }
 
+    @DisplayName("존재하지 않은 출발역이나 도착역을 조회 할 경우 에러를 반환한다.")
+    @Test
+    void validateStationExists() {
+        PathFinder pathFinder = new PathFinder();
+
+        assertThatThrownBy(() -> pathFinder.findPath(Arrays.asList(이호선), 강남역, 수내역))
+                .isInstanceOf(SubwayException.class)
+                .hasMessageContaining("존재하지 않은 역입니다.");
+    }
+
 }
