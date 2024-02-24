@@ -148,7 +148,7 @@ public class SectionAcceptanceTest {
     @Test
     void 지하철구간_마지막역_삭제() {
         //given
-        ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
+        생성_요청(
                 SectionFixture.createSectionParams(보라매역.jsonPath().getLong("id"), 서원역.jsonPath().getLong("id"), 10L),
                 "/lines/" + 신림선.jsonPath().getLong("id") + "/sections"
         );
@@ -171,7 +171,7 @@ public class SectionAcceptanceTest {
     @Test
     void 지하철구간_처음역_삭제() {
         //given
-        ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
+        생성_요청(
                 SectionFixture.createSectionParams(보라매역.jsonPath().getLong("id"), 서원역.jsonPath().getLong("id"), 10L),
                 "/lines/" + 신림선.jsonPath().getLong("id") + "/sections"
         );
@@ -194,7 +194,7 @@ public class SectionAcceptanceTest {
     @Test
     void 지하철구간_중간역_삭제() {
         //given
-        ExtractableResponse<Response> 신림선_구간_생성 = 생성_요청(
+        생성_요청(
                 SectionFixture.createSectionParams(보라매역.jsonPath().getLong("id"), 서원역.jsonPath().getLong("id"), 10L),
                 "/lines/" + 신림선.jsonPath().getLong("id") + "/sections"
         );
