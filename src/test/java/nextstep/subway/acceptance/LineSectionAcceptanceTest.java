@@ -1,6 +1,7 @@
 package nextstep.subway.acceptance;
 
 import static nextstep.subway.support.fixture.LineFixture.강남역_교대역_구간_이호선_생성_요청;
+import static nextstep.subway.support.fixture.LineFixture.강남역_봉천역_구간_이호선_생성_요청;
 import static nextstep.subway.support.fixture.SectionFixture.구간_생성_요청;
 import static nextstep.subway.support.fixture.StationFixture.낙성대역_생성_요청;
 import static nextstep.subway.support.fixture.StationFixture.봉천역_생성_요청;
@@ -8,6 +9,7 @@ import static nextstep.subway.support.fixture.StationFixture.서울대입구역_
 import static nextstep.subway.support.step.LineSteps.지하철_노선_단일_조회_요청;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_생성_요청;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_응답에서_노선_아이디_추출;
+import static nextstep.subway.support.step.LineSteps.지하철_노선_응답에서_노선의_상행_종점역_아이디_추출;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_응답에서_노선의_하행_종점역_아이디_추출;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_응답에서_역_아이디_목록_추출;
 import static nextstep.subway.support.step.SectionSteps.지하철_구간_등록_요청;
@@ -26,7 +28,7 @@ import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 구간 관련 기능")
 @AcceptanceTest
-class SectionAcceptanceTest {
+class LineSectionAcceptanceTest {
 
 
     /*
@@ -114,6 +116,36 @@ class SectionAcceptanceTest {
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             assertThat(지하철_구간_등록_응답.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        });
+
+    }
+
+    /*
+     * Given 지하철 노선에 구간이 존재하고
+     * When 해당 노선에 역을 중간에 추가하면
+     * Then 기존 구간의 상행역을 기준으로 새로운 구간을 추가한다.
+     */
+    @DisplayName("지하철 노선 중간에 역을 추가한다.")
+    @Test
+    void addSectionWithIndex() {
+        // given
+        ExtractableResponse<Response> 강남_봉천_이호선_응답 = 지하철_노선_생성_요청(강남역_봉천역_구간_이호선_생성_요청(10L));
+        Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_봉천_이호선_응답);
+        Long 강남역_아이디 = 지하철_노선_응답에서_노선의_상행_종점역_아이디_추출(강남_봉천_이호선_응답);
+        Long 봉천역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_봉천_이호선_응답);
+        Long 서울대입구역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(서울대입구역_생성_요청()));
+
+        // when
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(
+            강남역_아이디,
+            서울대입구역_아이디,
+            5L
+        ));
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(지하철_구간_등록_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(지하철_노선_응답에서_역_아이디_목록_추출(지하철_노선_단일_조회_요청(이호선_아이디))).containsExactly(강남역_아이디, 서울대입구역_아이디, 봉천역_아이디);
         });
 
     }
