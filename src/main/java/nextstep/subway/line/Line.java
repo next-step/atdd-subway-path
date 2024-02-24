@@ -44,7 +44,7 @@ public class Line {
     }
 
     public void removeSection(Station station) {
-        this.sections.removeSection(station);
+        this.sections.deleteSection(station);
     }
 
     public Long getId() {
@@ -57,6 +57,10 @@ public class Line {
 
     public String getColor() {
         return color;
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     public List<Station> getOrderedStations() {
