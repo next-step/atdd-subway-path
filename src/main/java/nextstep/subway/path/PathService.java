@@ -31,6 +31,8 @@ public class PathService {
                 () -> new BadRequestException("존재하지 않는 도착역입니다.")
         );
 
+        validStartAndEndStation(startStation, endStation);
+
         List<Line> lines = lineRepository.findAll();
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = PathMaker.makeGraph(lines);
@@ -38,5 +40,11 @@ public class PathService {
         GraphPath shortestPath = new DijkstraShortestPath(graph).getPath(startStation, endStation);
 
         return PathMaker.createPathResponse(shortestPath);
+    }
+
+    public void validStartAndEndStation(Station startStation, Station endStation) {
+        if(startStation.equals(endStation)) {
+            throw new BadRequestException("출발역과 도착역이 같은 경로는 조회할 수 없습니다.");
+        }
     }
 }
