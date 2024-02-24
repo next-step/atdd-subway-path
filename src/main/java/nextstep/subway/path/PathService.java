@@ -12,6 +12,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PathService {
@@ -37,6 +38,8 @@ public class PathService {
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = PathMaker.makeGraph(lines);
 
+        validConnectedStation(graph, startStation, endStation);
+
         GraphPath shortestPath = new DijkstraShortestPath(graph).getPath(startStation, endStation);
 
         return PathMaker.createPathResponse(shortestPath);
@@ -45,6 +48,13 @@ public class PathService {
     public void validStartAndEndStation(Station startStation, Station endStation) {
         if(startStation.equals(endStation)) {
             throw new BadRequestException("출발역과 도착역이 같은 경로는 조회할 수 없습니다.");
+        }
+    }
+
+    public void validConnectedStation(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Station startStation, Station endStation) {
+        GraphPath<Station, DefaultWeightedEdge> edges = DijkstraShortestPath.findPathBetween(graph, startStation, endStation);
+        if(edges == null) {
+            throw new BadRequestException("출발역과 도착역이 연결되어 있지 않습니다.");
         }
     }
 }
