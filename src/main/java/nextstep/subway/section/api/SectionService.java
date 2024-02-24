@@ -36,93 +36,123 @@ public class SectionService {
 
         if (line.getSections().getStations().contains(request.getUpStationId())) {
             // 새로 추가하는 역은 request.다운스테이션
-            int index = line.getSections().getStations().indexOf(request.getUpStationId());
-
-            if (index == line.getSections().getStations().size() - 1) {
-                // 마지막에 추가하는 경우
-                Section newSection = SectionCreateRequest.toEntity(
-                        request.getUpStationId(),
-                        request.getDownStationId(),
-                        request.getDistance()
-                );
-                line.getSections().addSection(newSection);
-                return SectionResponse.of(newSection);
-            }
-
-            // 중간에 추가
-            Long originalUpStationId = line.getSections().getStations().get(index);
-
-            // 기존 구간 찾기
-            Section originalSection = line.getSections().getSections().stream().filter(
-                    section -> section.getUpStationId() == originalUpStationId
-            ).findFirst().get();
-
-            // 기존 구간에 새로운 구간 추가
-            Section newSection = SectionCreateRequest.toEntity(
-                    request.getDownStationId(),
-                    originalSection.getDownStationId(),
-                    originalSection.getDistance() - request.getDistance()
-            );
-            int newIndex = line.getSections().getSections().indexOf(originalSection) + 1;
-            line.getSections().getSections().add(newIndex, newSection);
-
-            // 기존 구간 정보 변경
-            originalSection.changeDownStationId(request.getDownStationId());
-            originalSection.changeDistance(request.getDistance());
-
-            return SectionResponse.of(newSection);
-        } else if (line.getSections().getStations().contains(request.getDownStationId())) {
-            // 새로운 역은 request.getUpstationId
-            int index = line.getSections().getStations().indexOf(request.getDownStationId());
-
-            if (index == 0) {
-                // 라인의 첫구간에 추가
-                Section newSection = SectionCreateRequest.toEntity(
-                        request.getUpStationId(),
-                        request.getDownStationId(),
-                        request.getDistance()
-                );
-
-                line.getSections().getSections().add(0, newSection);
-                return SectionResponse.of(newSection);
-            }
-
-            // 라인의 중간에 추가
-            Long originalDownStationId = line.getSections().getStations().get(index);
-
-            Section originalSection = line.getSections().getSections().stream().filter(
-                    section -> section.getDownStationId() == originalDownStationId
-            ).findFirst().orElseThrow(
-                    () -> new EntityNotFoundException("구간이 존재하지 않습니다.")
-            );
-
-            Section newSection = SectionCreateRequest.toEntity(
-                    request.getUpStationId(),
-                    request.getDownStationId(),
-                    request.getDistance()
-            );
-
-            int newIndex = line.getSections().getSections().indexOf(originalSection) + 1;
-            line.getSections().getSections().add(newIndex, newSection);
-
-            // 기존 구간 정보 변경
-            originalSection.changeDownStationId(request.getUpStationId());
-            originalSection.changeDistance(originalSection.getDistance() - request.getDistance());
-
-            return SectionResponse.of(newSection);
+            return createByDownstationId(request, line);
         }
-        throw new IllegalArgumentException("아직 개발자가 모르는 예외입니다.");
+
+        // 새로운 역은 request.getUpstationId
+         return createByUpstationId(request, line);
     }
 
     @Transactional
     public void delete(Long lineId, Long stationId) {
         Line line = getLine(lineId);
 
+        // 찾는 역이 존재하지 않으면 예외
         validateStationId(stationId);
-        line.validateLastStation();
-        line.validateDownStationId(stationId);
 
-        line.getSections().deleteLastSection();
+        Section sectionGetByUpstation = line.getSections().getSections().stream().filter(
+                section -> section.getUpStationId() == stationId
+        ).findFirst().orElse(null);
+
+        Section sectionGetByDownStation = line.getSections().getSections().stream().filter(
+                section -> section.getDownStationId() == stationId
+        ).findFirst().orElse(null);
+
+        // 섹션 제거 및 수정
+        if (sectionGetByUpstation != null && sectionGetByDownStation == null) {
+            line.getSections().removeSection(sectionGetByUpstation);
+        } else if (sectionGetByUpstation != null && sectionGetByDownStation != null) {
+            sectionGetByDownStation.changeDownStationId(sectionGetByUpstation.getDownStationId());
+            sectionGetByDownStation.changeDistance(sectionGetByDownStation.getDistance() + sectionGetByUpstation.getDistance());
+            line.getSections().removeSection(sectionGetByUpstation);
+        } else if (sectionGetByUpstation == null && sectionGetByDownStation != null) {
+            line.getSections().removeSection(sectionGetByDownStation);
+        }
+    }
+
+    private SectionResponse createByDownstationId(SectionCreateRequest request, Line line) {
+
+        int index = line.getSections().getStations().indexOf(request.getUpStationId());
+
+        if (index == line.getSections().getStations().size() - 1) {
+            // 마지막에 추가하는 경우
+            Section newSection = SectionCreateRequest.toEntity(
+                    request.getUpStationId(),
+                    request.getDownStationId(),
+                    request.getDistance()
+            );
+            line.getSections().addSection(newSection);
+            return SectionResponse.of(newSection);
+        }
+
+        // 중간에 추가
+        Long originalUpStationId = line.getSections().getStations().get(index);
+
+        // 기존 구간 찾기
+        Section originalSection = line.getSections().getSections().stream().filter(
+                section -> section.getUpStationId() == originalUpStationId
+        ).findFirst().orElseThrow(
+                () -> new EntityNotFoundException("구간이 존재하지 않습니다.")
+        );
+
+        // 기존 구간에 새로운 구간 추가
+        Section newSection = SectionCreateRequest.toEntity(
+                request.getDownStationId(),
+                originalSection.getDownStationId(),
+                originalSection.getDistance() - request.getDistance()
+        );
+        int newIndex = nextIndexOfOriginalSection(line, originalSection);
+        line.getSections().getSections().add(newIndex, newSection);
+
+        // 기존 구간 정보 변경
+        originalSection.changeDownStationId(request.getDownStationId());
+        originalSection.changeDistance(request.getDistance());
+
+        return SectionResponse.of(newSection);
+    }
+
+    private SectionResponse createByUpstationId(SectionCreateRequest request, Line line) {
+        int index = line.getSections().getStations().indexOf(request.getDownStationId());
+
+        if (index == 0) {
+            // 라인의 첫구간에 추가
+            Section newSection = SectionCreateRequest.toEntity(
+                    request.getUpStationId(),
+                    request.getDownStationId(),
+                    request.getDistance()
+            );
+
+            line.getSections().getSections().add(0, newSection);
+            return SectionResponse.of(newSection);
+        }
+
+        // 라인의 중간에 추가
+        Long originalDownStationId = line.getSections().getStations().get(index);
+
+        Section originalSection = line.getSections().getSections().stream().filter(
+                section -> section.getDownStationId() == originalDownStationId
+        ).findFirst().orElseThrow(
+                () -> new EntityNotFoundException("구간이 존재하지 않습니다.")
+        );
+
+        Section newSection = SectionCreateRequest.toEntity(
+                request.getUpStationId(),
+                request.getDownStationId(),
+                request.getDistance()
+        );
+
+        int newIndex = nextIndexOfOriginalSection(line, originalSection);
+        line.getSections().getSections().add(newIndex, newSection);
+
+        // 기존 구간 정보 변경
+        originalSection.changeDownStationId(request.getUpStationId());
+        originalSection.changeDistance(originalSection.getDistance() - request.getDistance());
+
+        return SectionResponse.of(newSection);
+    }
+
+    private int nextIndexOfOriginalSection(Line line, Section originalSection) {
+        return line.getSections().getSections().indexOf(originalSection) + 1;
     }
 
     private Line getLine(Long lineId) {
@@ -136,4 +166,6 @@ public class SectionService {
                 () -> new EntityNotFoundException("지하철역을 찾을 수 없습니다.")
         );
     }
+
+
 }
