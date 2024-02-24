@@ -2,15 +2,15 @@ package nextstep.subway.line;
 
 import nextstep.subway.station.Station;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import java.util.*;
 
 @Embeddable
 public class Sections {
 
-    @OrderBy("upStation.id ASC")
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
@@ -22,35 +22,54 @@ public class Sections {
     }
 
     public List<Station> getAllStations() {
-        Station firstStation = getFirstStation();
-        List<Station> downStations = getDownStations();
-        List<Station> stations = new ArrayList<>();
-        stations.add(firstStation);
-        stations.addAll(downStations);
-        return stations;
+        Deque<Station> stations = new ArrayDeque<>();
+        Map<Station, Station> upStationIds = new LinkedHashMap<>();
+        Map<Station, Station> downStationIds = new LinkedHashMap<>();
+
+        initStations(stations, upStationIds, downStationIds);
+        sortStations(stations, upStationIds, downStationIds);
+
+        return new ArrayList<>(stations);
     }
 
-    public Station getFirstStation() {
+    private void initStations(Deque<Station> stations, Map<Station, Station> upStations, Map<Station, Station> downStations) {
+        for (Section section : values) {
+            upStations.put(section.getUpStation(), section.getDownStation());
+            downStations.put(section.getDownStation(), section.getUpStation());
+        }
+
+        Section section = values.get(0);
+        stations.addFirst(section.getUpStation());
+        stations.addLast(section.getDownStation());
+    }
+
+    private void sortStations(Deque<Station> stations, Map<Station, Station> upStations, Map<Station, Station> downStations) {
+        while (upStations.containsKey(stations.peekLast())) {
+            Station tailStation = stations.peekLast();
+            stations.addLast(upStations.get(tailStation));
+        }
+
+        while (downStations.containsKey(stations.peekFirst())) {
+            Station headStation = stations.peekFirst();
+            stations.addFirst(downStations.get(headStation));
+        }
+    }
+
+    private Station getFirstStation() {
         return values.stream()
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."))
                 .getUpStation();
     }
 
-    public Station getLastStation() {
+    private Station getLastStation() {
         return values.stream()
                 .reduce((first, second) -> second)
                 .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."))
                 .getDownStation();
     }
 
-    private List<Station> getDownStations() {
-        return values.stream()
-                .map(Section::getDownStation)
-                .collect(Collectors.toList());
-    }
-
-    public Section getLastSection() {
+    private Section getLastSection() {
         return values.stream()
                 .reduce((first, second) -> second)
                 .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."));
