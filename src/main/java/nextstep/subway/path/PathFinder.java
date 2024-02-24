@@ -16,8 +16,18 @@ public class PathFinder {
     public Path findPath(List<Line> lines, Station source, Station target) {
         validateEqualsStation(source, target);
 
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph = createGraph(lines);
+
+        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
+        GraphPath path = Optional.ofNullable(dijkstraShortestPath.getPath(source, target))
+                .orElseThrow(() -> new SubwayException("출발역과 도착역이 연결이 되어 있지 않습니다."));
+
+        return new Path(path.getVertexList(), path.getWeight());
+    }
+
+    private WeightedMultigraph<Station, DefaultWeightedEdge> createGraph(List<Line> lines) {
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
-        
+
         lines.stream()
                 .flatMap(line -> line.getSections().stream())
                 .distinct()
@@ -28,12 +38,7 @@ public class PathFinder {
                     graph.addVertex(upStation);
                     graph.setEdgeWeight(graph.addEdge(upStation, downStation), section.getDistance());
                 });
-
-        DijkstraShortestPath dijkstraShortestPath = new DijkstraShortestPath(graph);
-        GraphPath path = Optional.ofNullable(dijkstraShortestPath.getPath(source, target))
-                .orElseThrow(() -> new SubwayException("출발역과 도착역이 연결이 되어 있지 않습니다."));
-
-        return new Path(path.getVertexList(), path.getWeight());
+        return graph;
     }
 
     private void validateEqualsStation(Station source, Station target) {
