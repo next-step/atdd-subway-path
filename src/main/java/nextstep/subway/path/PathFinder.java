@@ -14,6 +14,8 @@ import java.util.Optional;
 public class PathFinder {
 
     public Path findPath(List<Line> lines, Station source, Station target) {
+        validateEqualsStation(source, target);
+
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
         
         lines.stream()
@@ -31,5 +33,11 @@ public class PathFinder {
         GraphPath path = Optional.ofNullable(dijkstraShortestPath.getPath(source, target)).orElseThrow(() -> new SubwayException("출발역과 도착역은 연결되어 있어야 합니다."));
 
         return new Path(path.getVertexList(), path.getWeight());
+    }
+
+    private void validateEqualsStation(Station source, Station target) {
+        if (source.equals(target)) {
+            throw new SubwayException("출발역과 도착역이 같습니다.");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.unit;
 
+import nextstep.subway.exception.SubwayException;
 import nextstep.subway.line.Line;
 import nextstep.subway.path.Path;
 import nextstep.subway.path.PathFinder;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PathFinderTest {
 
@@ -52,6 +54,16 @@ public class PathFinderTest {
 
         assertThat(path.getStations()).containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(path.getDistance()).isEqualTo(5L);
+    }
+
+    @DisplayName("출발역과 도착역이 같은 경우 에러를 반환한다.")
+    @Test
+    void validateEqualsStation() {
+        PathFinder pathFinder = new PathFinder();
+
+        assertThatThrownBy(() -> pathFinder.findPath(Arrays.asList(이호선, 신분당선, 삼호선), 교대역, 교대역))
+                .isInstanceOf(SubwayException.class)
+                .hasMessageContaining("출발역과 도착역이 같습니다.");
     }
 
 }
