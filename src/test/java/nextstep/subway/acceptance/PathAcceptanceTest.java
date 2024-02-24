@@ -65,7 +65,7 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(distance).isEqualTo(5);
     }
 
-    private static long getDistance(ExtractableResponse<Response> response) {
+    private static Long getDistance(ExtractableResponse<Response> response) {
         return response.jsonPath().getLong("distance");
     }
 
