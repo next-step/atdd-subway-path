@@ -9,9 +9,9 @@ public class Path {
     private List<Station> stations;
     private Long distance;
 
-    public Path(List<Station> stations, Long distance) {
+    public Path(List<Station> stations, Double distance) {
         this.stations = stations;
-        this.distance = distance;
+        this.distance = Math.round(distance);
     }
 
     public List<Station> getStations() {

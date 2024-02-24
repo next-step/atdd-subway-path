@@ -59,6 +59,10 @@ public class Line {
         return color;
     }
 
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
     public List<Station> getOrderedStations() {
         return sections.getOrderedStations();
     }

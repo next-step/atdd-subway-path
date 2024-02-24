@@ -121,4 +121,8 @@ public class Sections {
                 .distinct()
                 .collect(Collectors.toList());
     }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 }
