@@ -5,9 +5,7 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class PathFinder {
@@ -29,23 +27,15 @@ public class PathFinder {
                 .distinct()
                 .forEach(station -> {
                     graph.addVertex(station);
-                    System.out.println("1111 "+station.getName());
                 });
 
-//        lineList.stream()
-//                .flatMap(line -> line.getSections().getSections().stream())
-//                .forEach(section -> {
-//                    System.out.println("upStation - " + section.getUpStation().getName() + " downStation -" + section.getDownStation().getName());
-//                    graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-//                });
+        lineList.stream()
+                .flatMap(line -> line.getSections().getSections().stream())
+                .forEach(section -> {
+                    System.out.println("upStation - " + section.getUpStation().getName() + " downStation -" + section.getDownStation().getName());
+                    graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+                });
 
-        lineList.forEach(line -> {
-            List<Section> sections = line.getSections().getSections();
-            sections.forEach(section -> {
-                System.out.println("upStation - " + section.getUpStation().getName() + " downStation -" + section.getDownStation().getName());
-                graph.setEdgeWeight(graph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-            });
-        });
 
         return graph;
     }
