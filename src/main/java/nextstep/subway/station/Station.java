@@ -1,7 +1,5 @@
 package nextstep.subway.station;
 
-import org.aspectj.weaver.ast.Instanceof;
-
 import javax.persistence.*;
 import java.util.Objects;
 

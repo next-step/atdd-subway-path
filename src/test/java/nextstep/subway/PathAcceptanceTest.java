@@ -92,10 +92,10 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
 
         // then
         List<Long> stationIds = response.jsonPath().getList("stations.id", Long.class);
-        double distance = response.jsonPath().getDouble("distance"); //PathResponse에는 int로 설정했음에도 응답값은 double 형식으로 리턴..
+        int distance = response.jsonPath().getInt("distance");
 
         assertThat(stationIds).containsExactly(교대역Id, 남부터미널역Id, 양재역Id);
-        assertThat(distance).isEqualTo(7.0);
+        assertThat(distance).isEqualTo(교대역_남부터미널역_거리 + 남부터미널역_양재역_거리);
     }
 
     /**
@@ -117,10 +117,10 @@ public class PathAcceptanceTest extends CommonAcceptanceTest {
 
         // then
         List<Long> stationIds = response.jsonPath().getList("stations.id", Long.class);
-        double distance = response.jsonPath().getDouble("distance"); //PathResponse에는 int로 설정했음에도 응답값은 double 형식으로 리턴..
+        int distance = response.jsonPath().getInt("distance");
 
         assertThat(stationIds).containsExactly(교대역Id, 강남역Id, 양재역Id);
-        assertThat(distance).isEqualTo(3.0);
+        assertThat(distance).isEqualTo(교대역_강남역_거리 + 양재역_강남역_거리);
     }
 
     /**
