@@ -31,12 +31,12 @@ public class PathAcceptanceTest {
     private String 반포역Id;
     private String 학동역Id;
 
-    private static String 교대역_남부터미널역_거리 = 3;
-    private static String 남부터미널역_양재역_거리 = 4;
-    private static String 교대역_강남역_거리 = 1;
-    private static String 양재역_강남역_거리 = 2;
+    private static String 교대역_남부터미널역_거리 = "3";
+    private static String 남부터미널역_양재역_거리 = "4";
+    private static String 교대역_강남역_거리 = "1";
+    private static String 양재역_강남역_거리 = "2";
 
-    private static String 반포역_학동역_거리 = 5;
+    private static String 반포역_학동역_거리 = "5";
 
     @BeforeEach
     void setStation() {
@@ -86,6 +86,6 @@ public class PathAcceptanceTest {
         // then
         assertStatusCode(response, HttpStatus.OK);
         assertThat(stationIds).containsExactly(교대역Id, 강남역Id, 양재역Id);
-        assertThat(distance).isEqualTo(3.0);
+        assertThat(distance).isEqualTo(3);
     }
 }
