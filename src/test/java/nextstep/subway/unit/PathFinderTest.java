@@ -17,8 +17,6 @@ public class PathFinderTest {
     private Station 강남역;
     private Station 양재역;
     private Station 남부터미널역;
-    private Station 수내역;
-    private Station 정자역;
     private Line 이호선;
     private Line 신분당선;
     private Line 삼호선;
