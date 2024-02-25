@@ -1,7 +1,6 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.*;
-import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.exception.PathSourceTargetNotConnectedException;
 import nextstep.subway.exception.PathSourceTargetSameException;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,13 +70,17 @@ public class PathFinderTest {
 
     @DisplayName("출발역과 도착역이 연결되어있지 않으면 에러가 발생한다.")
     @Test
-    void 출발역과_도착역이_존재하지_않으면_에러() {
-        Station 삼성역 = new Station("삼성역");
-        Station 역삼역 = new Station("역삼역");
+    void 출발역과_도착역이_연결되어있_않으면_에러() {
+        Station 신림역 = new Station("신림역");
+        Station 보라매역 = new Station("보라매역");
+        Station 사당역 = new Station("사당역");
+        Station 이수역 = new Station("이수역");
+        Line 신림선 = Line.builder().name("신림선").color("GRAY").upStation(신림역).downStation(보라매역).distance(2L).build();
+        Line 사호선 = Line.builder().name("4호선").color("BLUE").upStation(사당역).downStation(이수역).distance(2L).build();
 
         PathFinder pathFinder = new PathFinder();
 
-        assertThatThrownBy(() -> pathFinder.findPath(Arrays.asList(이호선, 신분당선, 삼호선), 삼성역, 역삼역))
+        assertThatThrownBy(() -> pathFinder.findPath(Arrays.asList(신림선, 사호선), 신림역, 사당역))
                 .isInstanceOf(PathSourceTargetNotConnectedException.class);
     }
 
