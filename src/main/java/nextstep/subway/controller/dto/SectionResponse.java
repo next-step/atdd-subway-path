@@ -1,6 +1,6 @@
 package nextstep.subway.controller.dto;
 
-import  lombok.Builder;
+import lombok.Builder;
 import lombok.Getter;
 import nextstep.subway.domain.Section;
 

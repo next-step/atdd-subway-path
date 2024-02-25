@@ -1,6 +1,9 @@
 package nextstep.subway.unit;
 
 import nextstep.subway.domain.*;
+import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.exception.PathSourceTargetNotConnectedException;
+import nextstep.subway.exception.PathSourceTargetSameException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class PathFinderTest {
     private Station 교대역;
@@ -48,11 +52,33 @@ public class PathFinderTest {
 
     @DisplayName("지하철 최단거리를 조회한다.")
     @Test
-    void 지하철구간_최단거리_조회() {
+    void 지하철경로_조회() {
         PathFinder pathFinder = new PathFinder();
         Path path = pathFinder.findPath(Arrays.asList(이호선, 신분당선, 삼호선), 교대역, 양재역);
 
         assertThat(path.getPath()).containsExactly(교대역, 남부터미널역, 양재역);
         assertThat(path.getDistance()).isEqualTo(5);
     }
+
+    @DisplayName("출발역과 도착역이 같으면 에러가 발생한다.")
+    @Test
+    void 출발역과_도착역이_같은_경로_조회_애러() {
+        PathFinder pathFinder = new PathFinder();
+
+        assertThatThrownBy(() -> pathFinder.findPath(Arrays.asList(이호선, 신분당선, 삼호선), 교대역, 교대역))
+                .isInstanceOf(PathSourceTargetSameException.class);
+    }
+
+    @DisplayName("출발역과 도착역이 연결되어있지 않으면 에러가 발생한다.")
+    @Test
+    void 출발역과_도착역이_존재하지_않으면_에러() {
+        Station 삼성역 = new Station("삼성역");
+        Station 역삼역 = new Station("역삼역");
+
+        PathFinder pathFinder = new PathFinder();
+
+        assertThatThrownBy(() -> pathFinder.findPath(Arrays.asList(이호선, 신분당선, 삼호선), 삼성역, 역삼역))
+                .isInstanceOf(PathSourceTargetNotConnectedException.class);
+    }
+
 }

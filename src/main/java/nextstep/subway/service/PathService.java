@@ -1,15 +1,15 @@
 package nextstep.subway.service;
 
 import nextstep.subway.controller.dto.PathResponse;
-import nextstep.subway.controller.dto.StationResponse;
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Path;
+import nextstep.subway.domain.PathFinder;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.repository.LineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.controller.dto.StationResponse.stationsToStationResponses;
 
