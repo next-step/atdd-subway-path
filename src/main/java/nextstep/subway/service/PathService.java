@@ -21,7 +21,6 @@ public class PathService {
 
     public PathResponse getPath(Long sourceId, Long targetId) {
         //stations & distance를 리턴
-        validatePath(sourceId, targetId);
         Station sourceStation = stationService.findById(sourceId);
         Station targetStation = stationService.findById(targetId);
         List<String> stationNames = path.getStationNamesAlongPath(sourceStation.getName(), targetStation.getName());
@@ -30,12 +29,6 @@ public class PathService {
                                                              .collect(Collectors.toList());
         int distance = path.getShortestDistanceBetweenStations(sourceStation.getName(), targetStation.getName());
         return PathResponse.of(stationResponses, distance);
-    }
-
-    private void validatePath(Long sourceId, Long targetId) {
-        if (Objects.equals(sourceId, targetId)) {
-            throw new IllegalPathException("출발역과 도착역이 같습니다.");
-        }
     }
 
     public void addPath(String sourceName, String targetName, int distance) {
