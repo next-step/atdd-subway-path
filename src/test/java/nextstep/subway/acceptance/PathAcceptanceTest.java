@@ -117,6 +117,16 @@ public class PathAcceptanceTest extends BaseAcceptanceTest {
                  + "    then 예외를 반환한다.")
     @Test
     void 경로를_조회할_때_출발역_또는_도착역이_존재하지_않으면_예외를_반환한다() {
+        Long 출발역 = 교대역_ID;
+        Long 도착역 = 150L; // 존재하지 않는 역 ID
 
+        //when
+        given()
+            .queryParam("sourceId", 출발역)
+            .queryParam("targetId", 도착역)
+            .accept(ContentType.JSON)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/paths")
+            .then().statusCode(HttpStatus.SC_BAD_REQUEST);
     }
 }
