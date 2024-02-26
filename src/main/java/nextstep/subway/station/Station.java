@@ -37,11 +37,11 @@ public class Station {
         if (this == o) return true;
         if (o == null || !(o instanceof Station)) return false;
         Station station = (Station) o;
-        return Objects.equals(id, station.getId()) && Objects.equals(name, station.getName());
+        return Objects.equals(id, station.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(id);
     }
 }

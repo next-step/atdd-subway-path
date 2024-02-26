@@ -10,6 +10,7 @@ import nextstep.subway.section.SectionRequest;
 import nextstep.subway.section.SectionService;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
+import nextstep.subway.station.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,7 +99,7 @@ public class SectionServiceMockTest {
 
         when(stationRepository.findById(강남역.getId())).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(선릉역.getId())).thenReturn(Optional.of(선릉역));
-//
+
         //when & then
         assertThatThrownBy(() -> sectionService.addSection(이호선, new SectionRequest(등록할_구간)))
                 .isInstanceOf(BadRequestException.class);
