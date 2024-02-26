@@ -23,7 +23,7 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public void addSection(Section addSection) {
-        if (alreadyExistsStation(addSection)) {
+        if (alreadyExistingStation(addSection)) {
             throw new IllegalArgumentException("invalid section");
         }
         if (addToLastSection(addSection)) {
@@ -33,33 +33,7 @@ public class Sections {
         }
     }
 
-    private void addToExistingSection(Section addSection) {
-        Optional<Section> existingSection = getSectionByUpStation(addSection.getUpStation());
-        if (existingSection.isEmpty()) {
-            throw new IllegalArgumentException("Invalid section");
-        }
-        Section section = existingSection.get();
-        int idx = sections.indexOf(section);
-        section.changeUpStation(addSection.getDownStation());
-        section.minusDistance(addSection.getDistance());
-        sections.add(idx, addSection);
-    }
-
-    private boolean addToLastSection(Section addSection) {
-        Optional<Station> endStation = getEndStation();
-        boolean isEqualToAddSectionUpStation = endStation.isPresent()
-            && endStation.get().equals(addSection.getUpStation());
-        return sections.isEmpty() || isEqualToAddSectionUpStation;
-    }
-
-
-    private Optional<Section> getSectionByUpStation(Station upStation) {
-        return this.getSections().stream()
-            .filter(section -> Objects.equals(section.getUpStation(), upStation))
-            .findFirst();
-    }
-
-    public boolean alreadyExistsStation(Section section) {
+    public boolean alreadyExistingStation(Section section) {
         return this.getStationsBySortedSection(false).stream()
             .anyMatch(station -> Objects.equals(station, section.getDownStation()));
     }
@@ -92,6 +66,33 @@ public class Sections {
     public int getSectionSize() {
         return this.sections.size();
     }
+
+    private void addToExistingSection(Section addSection) {
+        Optional<Section> existingSection = getSectionByUpStation(addSection.getUpStation());
+        if (existingSection.isEmpty()) {
+            throw new IllegalArgumentException("Invalid section");
+        }
+        Section section = existingSection.get();
+        int idx = sections.indexOf(section);
+        section.changeUpStation(addSection.getDownStation());
+        section.minusDistance(addSection.getDistance());
+        sections.add(idx, addSection);
+    }
+
+    private boolean addToLastSection(Section addSection) {
+        Optional<Station> endStation = getEndStation();
+        boolean isEqualToAddSectionUpStation = endStation.isPresent()
+            && endStation.get().equals(addSection.getUpStation());
+        return sections.isEmpty() || isEqualToAddSectionUpStation;
+    }
+
+
+    private Optional<Section> getSectionByUpStation(Station upStation) {
+        return this.getSections().stream()
+            .filter(section -> Objects.equals(section.getUpStation(), upStation))
+            .findFirst();
+    }
+
 
     private boolean isNotLastStation(Long stationId) {
         Optional<Station> optionalStation = getEndStation();
