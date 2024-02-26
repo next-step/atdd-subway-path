@@ -11,12 +11,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.LineService;
+import nextstep.subway.service.PathService;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
@@ -24,11 +26,13 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationRepository stationRepository;
+    @Mock
+    private PathService pathService;
 
     @Test
     void addSection() {
         // given
-        LineService lineService = new LineService(lineRepository, stationRepository);
+        LineService lineService = new LineService(lineRepository, stationRepository, pathService);
         Line line = new Line(1L, "이호선", "초록색");
         Station 강남역 = new Station(1L, "강남역");
         Station 역삼역 = new Station(2L, "역삼역");

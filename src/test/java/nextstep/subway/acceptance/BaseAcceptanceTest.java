@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
+import io.restassured.http.ContentType;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.PathResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -116,7 +117,14 @@ public class BaseAcceptanceTest {
     }
 
     public PathResponse 지하철_경로_조회(Long 출발역, Long 도착역) {
-        return new PathResponse();
+
+        return given()
+            .queryParam("source", 출발역)
+            .queryParam("target", 도착역)
+            .accept(ContentType.JSON)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/paths")
+            .then().log().all().extract().jsonPath().getObject(".", PathResponse.class);
     }
 
 

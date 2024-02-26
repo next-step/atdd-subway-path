@@ -41,6 +41,17 @@ public class StationService {
     public StationResponse findStationById(Long id) {
         return stationRepository.findById(id)
                                 .map(station -> new StationResponse(station.getId(), station.getName()))
-                                .orElseThrow(() -> new NoStationException("지하철 역이 없습니다."));
+                                .orElseThrow(() -> new NoStationException(id + "에 해당하는 지하철 역이 없습니다."));
+    }
+
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+                                .orElseThrow(() -> new NoStationException(id + "에 해당하는 지하철 역이 없습니다."));
+    }
+
+    public StationResponse findStationByName(String name) {
+        return stationRepository.findStationByName(name)
+                                .map(station -> new StationResponse(station.getId(), station.getName()))
+                                .orElseThrow(() -> new NoStationException(name + "에 해당하는 지하철 역이 없습니다."));
     }
 }

@@ -84,7 +84,7 @@ class LineTest {
         line.addSection(section2);
 
         //when
-        line.deleteLastSection(downStation2);
+        line.deleteSection(downStation2);
 
         //then
         Sections sections = line.getSections();

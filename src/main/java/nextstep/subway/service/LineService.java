@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -27,6 +29,7 @@ import nextstep.subway.repository.StationRepository;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final PathService pathService;
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
@@ -34,6 +37,7 @@ public class LineService {
         Station downStation = getStation(lineRequest.getDownStationId());
         Line line = Line.of(lineRequest, upStation, downStation);
         lineRepository.save(line);
+        pathService.addPath(upStation.getName(), downStation.getName(), lineRequest.getDistance());
         return createLineResponse(line);
     }
 
@@ -76,13 +80,14 @@ public class LineService {
         Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
         lineRepository.save(line);
+        pathService.addPath(upStation.getName(), downStation.getName(), sectionRequest.getDistance());
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoLineException(lineId + "에 해당하는 지하철 노선이 존재하지 않습니다."));
         Station station = stationRepository.findById(stationId).orElseThrow(() -> new NoStationException(stationId + "에 해당하는 지하철 역이 존재하지 않습니다."));
-        line.deleteLastSection(station);
+        line.deleteSection(station);
         lineRepository.save(line);
     }
 }
