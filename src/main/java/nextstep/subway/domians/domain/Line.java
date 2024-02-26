@@ -57,7 +57,7 @@ public class Line {
 
 
     public List<Station> getAllStations() {
-        return this.sections.getStations();
+        return this.sections.getStationsBySortedSection(false);
     }
 
 

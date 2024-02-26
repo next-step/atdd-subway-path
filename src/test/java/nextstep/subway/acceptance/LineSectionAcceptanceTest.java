@@ -121,9 +121,9 @@ class LineSectionAcceptanceTest {
     }
 
     /*
-     * Given 지하철 노선에 구간이 존재하고
-     * When 해당 노선에 역을 중간에 추가하면
-     * Then 기존 구간의 상행역을 기준으로 새로운 구간을 추가한다.
+     * Given 지하철 노선에 구간이 존재하고,  ex) (a - b)
+     * When 해당 노선에 역을 중간에 추가하면, ex) (a - c)
+     * Then 기존 구간의 상행역을 기준으로 새로운 구간이 등록된다. ex) (a - c- b)
      */
     @DisplayName("지하철 노선 중간에 역을 추가한다.")
     @Test

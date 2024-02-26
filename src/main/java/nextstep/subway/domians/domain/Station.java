@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,13 +35,9 @@ public class Station {
         if (!(o instanceof Station)) {
             return false;
         }
-
         Station station = (Station) o;
-
-        if (getId() != null ? !getId().equals(station.getId()) : station.getId() != null) {
-            return false;
-        }
-        return getName().equals(station.getName());
+        return Objects.equals(id, station.getId())
+            && Objects.equals(name, station.getName());
     }
 
     @Override
