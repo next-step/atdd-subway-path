@@ -34,4 +34,11 @@ public class StationResponse {
                 .collect(Collectors.toList());
 
     }
+
+    public static List<StationResponse> stationsToStationResponses(List<Station> stations) {
+        return stations.stream()
+                .map(it -> stationToStationResponse(it))
+                .collect(Collectors.toList());
+
+    }
 }

@@ -47,4 +47,12 @@ public class Section implements Comparable<Section>{
         }
         return 1;
     }
+
+    public boolean hasUpStationWithId(Long stationId) {
+        return this.upStation.getId().equals(stationId);
+    }
+
+    public boolean hasDownStationWithId(Long stationId) {
+        return this.downStation.getId().equals(stationId);
+    }
 }

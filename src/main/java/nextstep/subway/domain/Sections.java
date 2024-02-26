@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 @Getter
 @Embeddable
 public class Sections {
+    private static final int MIN_SECTION_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -40,7 +42,7 @@ public class Sections {
 
 
     public void deleteSection(Long stationId) {
-        if (this.sections.size() == 1) {
+        if (this.sections.size() == MIN_SECTION_SIZE) {
             throw new SingleSectionDeleteException("구간이 한개인 경우 삭제할 수 없습니다.");
         }
 
@@ -147,11 +149,13 @@ public class Sections {
     }
 
     private boolean isStartSection(Long stationId) {
-        return getOrderedStations().get(0).getId() == stationId;
+        return getOrderedStations().get(0).getId().equals(stationId);
     }
 
     private boolean isEndSection(Long stationId) {
-        return getOrderedStations().get(this.sections.size()).getId() == stationId;
+        List<Station> orderedStations = getOrderedStations();
+        Station lastStation = orderedStations.get(orderedStations.size() - 1);
+        return lastStation.getId().equals(stationId);
     }
 
     private void removeStartSection() {
@@ -166,9 +170,9 @@ public class Sections {
         Section previousSection = null;
         Section nextSection = null;
         for (Section section : sections) {
-            if (section.getUpStation().getId().equals(stationId)) {
+            if (section.hasUpStationWithId(stationId)) {
                 nextSection = section;
-            } else if (section.getDownStation().getId().equals(stationId)) {
+            } else if (section.hasDownStationWithId(stationId)) {
                 previousSection = section;
             }
         }
