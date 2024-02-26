@@ -89,7 +89,6 @@ public class PathAcceptanceTest extends BaseAcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/paths")
             .then().statusCode(HttpStatus.SC_BAD_REQUEST);
-
     }
 
     @DisplayName("given 출발역과 도착역이 주어질 때\n"
