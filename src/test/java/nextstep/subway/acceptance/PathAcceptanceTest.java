@@ -117,8 +117,11 @@ public class PathAcceptanceTest extends BaseAcceptanceTest {
                  + "    then 예외를 반환한다.")
     @Test
     void 경로를_조회할_때_출발역_또는_도착역이_존재하지_않으면_예외를_반환한다() {
+        //given
+        Long 왕십리역_ID = 지하철_역_생성(왕십리역);
+
         Long 출발역 = 교대역_ID;
-        Long 도착역 = 150L; // 존재하지 않는 역 ID
+        Long 도착역 = 왕십리역_ID; //  경로에 존재하지 않는 역 ID
 
         //when
         given()

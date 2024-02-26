@@ -36,5 +36,9 @@ public class Path {
         if (Objects.equals(sourceName, targetName)) {
             throw new IllegalPathException("출발역과 도착역이 같습니다.");
         }
+
+        if (!pathGraph.containsVertex(sourceName) || !pathGraph.containsVertex(targetName)) {
+            throw new IllegalPathException("출발역 또는 도착역이 경로에 들어있지 않습니다");
+        }
     }
 }
