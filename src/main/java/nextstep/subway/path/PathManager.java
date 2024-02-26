@@ -6,6 +6,7 @@ import nextstep.subway.line.Line;
 import nextstep.subway.section.Section;
 import nextstep.subway.station.Station;
 import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
@@ -39,5 +40,19 @@ public class PathManager {
                     Long distance = section.getDistance();
                     graph.setEdgeWeight(defaultWeightedEdge, distance);
                 });
+    }
+
+    public static void validStartAndEndStation(Station startStation, Station endStation) {
+        if(startStation.getId().equals(endStation.getId())) {
+            throw new IllegalArgumentException("출발역과 도착역이 같은 경로는 조회할 수 없습니다.");
+        }
+    }
+
+
+    public static void validConnectedStation(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Station startStation, Station endStation) {
+        GraphPath<Station, DefaultWeightedEdge> edges = DijkstraShortestPath.findPathBetween(graph, startStation, endStation);
+        if(edges == null) {
+            throw new IllegalArgumentException("출발역과 도착역이 연결되어 있지 않습니다.");
+        }
     }
 }

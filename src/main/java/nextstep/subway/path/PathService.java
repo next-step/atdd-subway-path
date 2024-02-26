@@ -29,7 +29,7 @@ public class PathService {
         Station endStation = stationRepository.findById(targetId)
                                               .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 도착역입니다."));
 
-        validStartAndEndStation(startStation, endStation);
+        PathManager.validStartAndEndStation(startStation, endStation);
 
         List<Line> lines = lineRepository.findAll();
 
@@ -43,22 +43,10 @@ public class PathService {
 
         WeightedMultigraph<Station, DefaultWeightedEdge> graph = PathManager.makeGraph(lineListHashMap);
 
-        validConnectedStation(graph, startStation, endStation);
+        PathManager.validConnectedStation(graph, startStation, endStation);
 
         GraphPath shortestPath = new DijkstraShortestPath(graph).getPath(startStation, endStation);
         return PathResponse.createResponse(shortestPath.getVertexList(), shortestPath.getWeight());
     }
 
-    public void validStartAndEndStation(Station startStation, Station endStation) {
-        if(startStation.getId().equals(endStation.getId())) {
-            throw new IllegalArgumentException("출발역과 도착역이 같은 경로는 조회할 수 없습니다.");
-        }
-    }
-
-    public void validConnectedStation(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Station startStation, Station endStation) {
-        GraphPath<Station, DefaultWeightedEdge> edges = DijkstraShortestPath.findPathBetween(graph, startStation, endStation);
-        if(edges == null) {
-            throw new IllegalArgumentException("출발역과 도착역이 연결되어 있지 않습니다.");
-        }
-    }
 }
