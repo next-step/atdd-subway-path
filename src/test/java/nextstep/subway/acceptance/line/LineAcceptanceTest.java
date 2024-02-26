@@ -190,38 +190,42 @@ public class LineAcceptanceTest {
         /**
          * Given 2개의 지하철 역(A, B)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
-         * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(N-B)을 등록한다.
-         * Then 새로운 지하철 구간이 등록된다. (A-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(N-B)을 등록한다. (A-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(A-K)을 등록한다. (A-K-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(K-L)을 등록한다. (A-K-L-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(Z-A)을 등록한다. (Z-A-K-L-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(Y-B)을 등록한다. (Z-A-K-L-N-Y-B)
+         * When 지하철 노선에 추가로 지하철 구간(X-A)을 등록한다. (Z-X-A-K-L-N-Y-B)
+         * Then 새로운 지하철 구간이 등록된다. (Z-X-A-K-L-N-Y-B)
          */
-        @DisplayName("지하철 노선의 중간에 신규 구간을 등록한다.")
+        @DisplayName("지하철 노선에 신규 구간을 등록한다.")
         @Test
         void successTestMiddle() {
             // given
-            Long 성수역_ID = newStationAndGetId("성수역");
-            Long 건대입구역_ID = newStationAndGetId("건대입구역");
-            Long 구의역_ID = newStationAndGetId("구의역");
+            Long A = newStationAndGetId("A");
+            Long B = newStationAndGetId("B");
+            Long N = newStationAndGetId("N");
+            Long K = newStationAndGetId("K");
+            Long L = newStationAndGetId("L");
+            Long Z = newStationAndGetId("Z");
+            Long Y = newStationAndGetId("Y");
+            Long X = newStationAndGetId("X");
 
-            Long 이호선_ID = newLineAndGetId(
-                    "2호선",
-                    "bg-green-000",
-                    성수역_ID,
-                    건대입구역_ID,
-                    10
-            );
+            Long lineId = newLineAndGetId("2호선", "bg-green-000", A, B, 100);
 
             // when
-            addSection(
-                    이호선_ID,
-                    구의역_ID,
-                    건대입구역_ID,
-                    5
-            );
+            addSection(lineId, N, B, 50);
+            addSection(lineId, A, K, 10);
+            addSection(lineId, K, L, 30);
+            addSection(lineId, Z, A, 10);
+            addSection(lineId, Y, B, 5);
+            addSection(lineId, X, A, 5);
 
             // then
-            ExtractableResponse<Response> response = loadLine(이호선_ID);
-            assertThat(response.jsonPath().getList("stations")).hasSize(3);
-            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(성수역_ID, 구의역_ID, 건대입구역_ID);
-            assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("성수역", "구의역", "건대입구역");
+            ExtractableResponse<Response> response = loadLine(lineId);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.jsonPath().getList("stations")).hasSize(8);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(Z, X, A, K, L, N, Y, B);
         }
 
         /**

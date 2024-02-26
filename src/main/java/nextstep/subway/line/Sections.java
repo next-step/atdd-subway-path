@@ -11,7 +11,7 @@ import java.util.*;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
     protected Sections() {
@@ -22,37 +22,11 @@ public class Sections {
     }
 
     public List<Station> getAllStations() {
-        Deque<Station> stations = new ArrayDeque<>();
-        Map<Station, Station> upStationIds = new LinkedHashMap<>();
-        Map<Station, Station> downStationIds = new LinkedHashMap<>();
-
-        initStations(stations, upStationIds, downStationIds);
-        sortStations(stations, upStationIds, downStationIds);
-
-        return new ArrayList<>(stations);
-    }
-
-    private void initStations(Deque<Station> stations, Map<Station, Station> upStations, Map<Station, Station> downStations) {
-        for (Section section : values) {
-            upStations.put(section.getUpStation(), section.getDownStation());
-            downStations.put(section.getDownStation(), section.getUpStation());
-        }
-
-        Section section = values.get(0);
-        stations.addFirst(section.getUpStation());
-        stations.addLast(section.getDownStation());
-    }
-
-    private void sortStations(Deque<Station> stations, Map<Station, Station> upStations, Map<Station, Station> downStations) {
-        while (upStations.containsKey(stations.peekLast())) {
-            Station tailStation = stations.peekLast();
-            stations.addLast(upStations.get(tailStation));
-        }
-
-        while (downStations.containsKey(stations.peekFirst())) {
-            Station headStation = stations.peekFirst();
-            stations.addFirst(downStations.get(headStation));
-        }
+        sortSections();
+        List<Station> stations = new ArrayList<>();
+        stations.add(getFirstStation());
+        values.forEach(section -> stations.add(section.getDownStation()));
+        return stations;
     }
 
     private Station getFirstStation() {
@@ -79,6 +53,7 @@ public class Sections {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
         validateDuplicateStations(upStation, downStation);
+        sortSections();
 
         if (getFirstStation().isSameStation(downStation)) {
             values.add(0, section);
@@ -95,6 +70,38 @@ public class Sections {
         }
 
         throw new IllegalArgumentException("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + upStation.getId() + ", downStationId: " + downStation.getId());
+    }
+
+    public void sortSections() {
+        List<Section> sortedSections = new ArrayList<>();
+        sortFirstSection(sortedSections);
+        sortAllSections(sortedSections);
+        values.addAll(sortedSections);
+    }
+
+    private void sortAllSections(List<Section> sortedSections) {
+        while (!values.isEmpty()) {
+            Section currentSection = sortedSections.get(sortedSections.size() - 1);
+            Station currentDownStation = currentSection.getDownStation();
+
+            Section nextSection = values.stream()
+                    .filter(section -> section.getUpStation().isSameStation(currentDownStation))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."));
+
+            sortedSections.add(nextSection);
+            values.remove(nextSection);
+        }
+    }
+
+    private void sortFirstSection(List<Section> sortedSections) {
+        Section firstSection = values.stream()
+                .filter(section -> values.stream().noneMatch(other -> section.getUpStation().isSameStation(other.getDownStation())))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."));
+
+        sortedSections.add(firstSection);
+        values.remove(firstSection);
     }
 
     private boolean tryAddSectionInMiddle(Section section, int matchedIndex) {
