@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import nextstep.subway.station.Station;
 
 @Entity
 public class Section {
@@ -68,5 +69,13 @@ public class Section {
 
     public void updateDistance(Long distance) {
         this.distance = distance;
+    }
+
+    public Station getUpStation() {
+        return new Station(upStationId);
+    }
+
+    public Station getDownStation() {
+        return new Station(downStationId);
     }
 }

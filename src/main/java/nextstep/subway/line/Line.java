@@ -65,4 +65,7 @@ public class Line {
         sections.removeLastSection(stationId);
     }
 
+    public List<Section> getSectionList() {
+        return sections.getSectionList();
+    }
 }

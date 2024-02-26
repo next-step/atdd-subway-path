@@ -18,8 +18,8 @@ public class ResponseParser {
         return response.jsonPath().getString("name");
     }
 
-    public static List<String> getNamesFromResponse(final ExtractableResponse<Response> response) {
-        return response.jsonPath().getList("name", String.class);
+    public static List<String> getStationIdsFromResponse(final ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.id", String.class);
     }
 
 }

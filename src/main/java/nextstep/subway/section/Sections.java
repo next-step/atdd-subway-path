@@ -168,4 +168,8 @@ public class Sections {
                           .findFirst()
                           .orElseThrow(() -> new IllegalArgumentException("일치하는 구간이 없습니다."));
     }
+
+    public List<Section> getSectionList() {
+        return sectionList;
+    }
 }
