@@ -32,5 +32,4 @@ public class PathTest {
             () -> assertThat(shortestDistanceBetweenStations).isEqualTo(교대역_남부터미널역_사이_거리 + 남부터미널역_양재역_사이_거리)
         );
     }
-
 }

@@ -14,7 +14,7 @@ import nextstep.subway.service.PathService;
 public class PathController {
     private final PathService pathService;
 
-    @GetMapping("/paths?source={sourceId}&target={targetId}")
+    @GetMapping("/paths")
     public ResponseEntity<PathResponse> showPath(@RequestParam Long sourceId, @RequestParam Long targetId) {
         return ResponseEntity.ok().body(pathService.getPath(sourceId, targetId));
     }

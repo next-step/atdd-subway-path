@@ -2,12 +2,16 @@ package nextstep.subway.dto;
 
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PathResponse {
-    List<StationResponse> stationResponses;
+    List<StationResponse> stations;
     int distance;
 
-    public PathResponse(List<StationResponse> stationResponses, int distance) {
-        this.stationResponses = stationResponses;
+    public PathResponse(List<StationResponse> stations, int distance) {
+        this.stations = stations;
         this.distance = distance;
     }
 
@@ -16,7 +20,7 @@ public class PathResponse {
     }
 
     public List<StationResponse> getStations() {
-        return stationResponses;
+        return stations;
     }
 
     public int getDistance() {

@@ -33,6 +33,7 @@ public class PathAcceptanceTest extends BaseAcceptanceTest {
     @BeforeEach
     void setUp() {
         교대역_ID = 지하철_역_생성(교대역);
+        강남역_ID = 지하철_역_생성(강남역);
         양재역_ID = 지하철_역_생성(양재역);
         남부터미널역_ID = 지하철_역_생성(남부터미널역);
         이호선_ID = 지하철_노선_생성_ID(getRequestParam("이호선", "초록색", 교대역_ID, 강남역_ID, 10));

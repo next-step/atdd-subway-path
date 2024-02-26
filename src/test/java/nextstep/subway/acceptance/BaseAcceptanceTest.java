@@ -119,14 +119,11 @@ public class BaseAcceptanceTest {
     public PathResponse 지하철_경로_조회(Long 출발역, Long 도착역) {
 
         return given()
-            .queryParam("source", 출발역)
-            .queryParam("target", 도착역)
+            .queryParam("sourceId", 출발역)
+            .queryParam("targetId", 도착역)
             .accept(ContentType.JSON)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/paths")
             .then().log().all().extract().jsonPath().getObject(".", PathResponse.class);
     }
-
-
-
 }

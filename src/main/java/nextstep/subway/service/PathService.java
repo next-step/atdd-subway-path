@@ -14,7 +14,7 @@ import nextstep.subway.dto.StationResponse;
 @Service
 @AllArgsConstructor
 public class PathService {
-    private final Path path;
+    private static final Path path = new Path();
     private final StationService stationService;
 
     public PathResponse getPath(Long sourceId, Long targetId) {
