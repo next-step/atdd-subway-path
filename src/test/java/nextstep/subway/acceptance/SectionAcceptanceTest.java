@@ -19,16 +19,7 @@ import static nextstep.subway.steps.SectionSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class SectionAcceptanceTest {
-
-    @Autowired
-    DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        databaseCleanup.execute();
-    }
+public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * given : 역과 노선을 생성한다.
