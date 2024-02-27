@@ -29,6 +29,14 @@ public class Section {
     }
 
     public Section(
+            Station upStation, Station downStation, Long distance
+    ) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public Section(
             Station upStation, Station downStation,
             Long distance, Line line
     ) {
@@ -58,8 +66,20 @@ public class Section {
         return line;
     }
 
+    public boolean equalUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
     public boolean equalDownStation(Station station) {
         return downStation.equals(station);
+    }
+
+    public boolean isDistanceLowerOrEqual(Section section) {
+        return distance <= section.getDistance();
+    }
+
+    public long subtractDistance(Section section) {
+        return distance - section.getDistance();
     }
 
     @Override
