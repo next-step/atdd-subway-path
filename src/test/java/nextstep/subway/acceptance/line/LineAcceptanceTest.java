@@ -16,9 +16,9 @@ import nextstep.subway.station.StationRepository;
 import java.util.HashMap;
 import java.util.Map;
 
+import static nextstep.subway.acceptance.fixture.StationFixture.newStationAndGetId;
 import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.acceptance.fixture.LineFixture.*;
-import static nextstep.subway.acceptance.fixture.StationFixture.newStation;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -48,10 +48,8 @@ public class LineAcceptanceTest {
     @Test
     void createLineTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
         // when
         ExtractableResponse<Response> response = newLine(
@@ -80,17 +78,12 @@ public class LineAcceptanceTest {
     @Test
     void getLinesTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        ExtractableResponse<Response> 군자역 = newStation("군자역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-        Long 군자역_ID = 군자역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
+        Long 군자역_ID = newStationAndGetId("군자역");
 
-        ExtractableResponse<Response> 이호선 = newLine("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
-        ExtractableResponse<Response> 칠호선 = newLine("7호선", "bg-orange-600", 건대입구역_ID, 군자역_ID, 20);
-        Long 이호선_ID = 이호선.jsonPath().getLong("id");
-        Long 칠호선_ID = 칠호선.jsonPath().getLong("id");
+        Long 이호선_ID = newLineAndGetId("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
+        Long 칠호선_ID = newLineAndGetId("7호선", "bg-orange-600", 건대입구역_ID, 군자역_ID, 20);
 
         // when
         ExtractableResponse<Response> response = loadLines();
@@ -117,13 +110,10 @@ public class LineAcceptanceTest {
     @Test
     void getLineTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
-        ExtractableResponse<Response> 이호선 = newLine("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
-        Long 이호선_ID = 이호선.jsonPath().getLong("id");
+        Long 이호선_ID = newLineAndGetId("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
 
         // when
         ExtractableResponse<Response> response = loadLine(이호선_ID);
@@ -147,13 +137,10 @@ public class LineAcceptanceTest {
     @Test
     void updateLineTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
-        ExtractableResponse<Response> 이호선 = newLine("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
-        Long 이호선_ID = 이호선.jsonPath().getLong("id");
+        Long 이호선_ID = newLineAndGetId("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", "3호선");
@@ -182,13 +169,10 @@ public class LineAcceptanceTest {
     @Test
     void deleteLineTest() {
         // given
-        ExtractableResponse<Response> 강남역 = newStation("강남역");
-        ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-        Long 강남역_ID = 강남역.jsonPath().getLong("id");
-        Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
+        Long 강남역_ID = newStationAndGetId("강남역");
+        Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
-        ExtractableResponse<Response> 이호선 = newLine("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
-        Long 이호선_ID = 이호선.jsonPath().getLong("id");
+        Long 이호선_ID = newLineAndGetId("2호선", "bg-green-999", 강남역_ID, 건대입구역_ID, 10);
 
         // when
         ExtractableResponse<Response> response = deleteLine(이호선_ID);
@@ -206,31 +190,103 @@ public class LineAcceptanceTest {
         /**
          * Given 2개의 지하철 역(A, B)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
-         * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(B-C)을 등록한다.
-         * Then 새로운 지하철 구간이 등록된다. (A-B-C)
+         * When 지하철 노선에 추가로 지하철 구간(N-B)을 등록한다. (A-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(A-K)을 등록한다. (A-K-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(K-L)을 등록한다. (A-K-L-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(Z-A)을 등록한다. (Z-A-K-L-N-B)
+         * When 지하철 노선에 추가로 지하철 구간(Y-B)을 등록한다. (Z-A-K-L-N-Y-B)
+         * When 지하철 노선에 추가로 지하철 구간(X-A)을 등록한다. (Z-X-A-K-L-N-Y-B)
+         * Then 새로운 지하철 구간이 등록된다. (Z-X-A-K-L-N-Y-B)
          */
         @DisplayName("지하철 노선에 신규 구간을 등록한다.")
         @Test
-        void successTest() {
+        void successTestMiddle() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long A = newStationAndGetId("A");
+            Long B = newStationAndGetId("B");
+            Long N = newStationAndGetId("N");
+            Long K = newStationAndGetId("K");
+            Long L = newStationAndGetId("L");
+            Long Z = newStationAndGetId("Z");
+            Long Y = newStationAndGetId("Y");
+            Long X = newStationAndGetId("X");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long lineId = newLineAndGetId("2호선", "bg-green-000", A, B, 100);
+
+            // when
+            addSection(lineId, N, B, 50);
+            addSection(lineId, A, K, 10);
+            addSection(lineId, K, L, 30);
+            addSection(lineId, Z, A, 10);
+            addSection(lineId, Y, B, 5);
+            addSection(lineId, X, A, 5);
+
+            // then
+            ExtractableResponse<Response> response = loadLine(lineId);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.jsonPath().getList("stations")).hasSize(8);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(Z, X, A, K, L, N, Y, B);
+        }
+
+        /**
+         * Given 2개의 지하철 역(A, B)이 10 거리로 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(N-B)을 10 거리로 등록한다.
+         * Then 기존 지하철 구간보다 길이가 같거나 긴 구간은 등록할 수 없어 에러가 발생한다.
+         */
+        @DisplayName("지하철 노선의 하행 종착지에 추가하려는 구간의 길이가 기존 구간보다 길거나 같으면 에러가 발생한다.")
+        @Test
+        void invalidDistanceErrorTest() {
+            // given
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
+                    이호선_ID,
+                    구의역_ID,
+                    건대입구역_ID,
+                    10
+            );
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.body().asString()).isEqualTo("기존 구간보다 길거나 같은 구간을 추가할 수 없습니다. 구간 길이: 10");
+        }
+
+        /**
+         * Given 2개의 지하철 역(A, B)이 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(B-C)을 등록한다.
+         * Then 새로운 지하철 구간이 등록된다. (A-B-C)
+         */
+        @DisplayName("지하철 노선의 마지막에 신규 구간을 등록한다.")
+        @Test
+        void successTest1() {
+            // given
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+
+            Long 이호선_ID = newLineAndGetId(
+                    "2호선",
+                    "bg-green-000",
+                    성수역_ID,
+                    건대입구역_ID,
+                    10
+            );
+
+            // when
+            addSection(
                     이호선_ID,
                     건대입구역_ID,
                     구의역_ID,
@@ -238,38 +294,38 @@ public class LineAcceptanceTest {
             );
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            ExtractableResponse<Response> response = loadLine(이호선_ID);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(response.jsonPath().getList("stations")).hasSize(3);
             assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(성수역_ID, 건대입구역_ID, 구의역_ID);
             assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("성수역", "건대입구역", "구의역");
         }
 
         /**
-         * Given 2개의 지하철 역(A, C)이 등록되어 있다.
+         * Given 2개의 지하철 역(A, B)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
-         * When 지하철 노선 하행 종착지(C)에 추가로 지하철 구간(B-C)을 등록을 시도하면
-         * Then 추가 구간(B-C)의 하행역(C)이 이미 노선에 등록되어있어 에러가 발생한다.
+         * When 지하철 노선 시작지(A)에 추가로 지하철 구간(N-A)을 등록을 시도하면
+         * Then 새로운 지하철 구간이 등록된다. (N-A-B)
          */
-        @DisplayName("지하철 노선 구간에 이미 등록되어 있는 역을 추가하려 하면 에러가 발생한다.")
+        @DisplayName("지하철 노선의 시작에 신규 구간을 등록한다.")
         @Test
-        void duplicateStationErrorTest() {
+        void successTest2() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 구의역_ID = newStationAndGetId("구의역");
+
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
-                    구의역_ID,
+                    건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(
+            addSection(
                     이호선_ID,
                     구의역_ID,
                     성수역_ID,
@@ -277,37 +333,69 @@ public class LineAcceptanceTest {
             );
 
             // then
+            ExtractableResponse<Response> response = loadLine(이호선_ID);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.jsonPath().getList("stations")).hasSize(3);
+            assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(구의역_ID, 성수역_ID, 건대입구역_ID);
+            assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("구의역", "성수역", "건대입구역");
+        }
+
+        /**
+         * Given 2개의 지하철 역(A, B)이 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(A-B)을 등록을 시도하면
+         * Then 추가 구간(A-B)의 양 역(A, B)이 이미 노선에 등록되어있어 에러가 발생한다.
+         */
+        @DisplayName("지하철 노선 구간에 이미 등록되어 있는 구간을 추가하려 하면 에러가 발생한다.")
+        @Test
+        void duplicateStationErrorTest() {
+            // given
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+
+            Long 이호선_ID = newLineAndGetId(
+                    "2호선",
+                    "bg-green-000",
+                    성수역_ID,
+                    구의역_ID,
+                    10
+            );
+
+            // when
+            ExtractableResponse<Response> response = addSection(
+                    이호선_ID,
+                    성수역_ID,
+                    구의역_ID,
+                    10
+            );
+
+            // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("주어진 하행역은 이미 노선에 등록되어 있는 등록된 역입니다. downStationId: " + 성수역_ID);
+            assertThat(response.body().asString()).isEqualTo("주어진 구간은 이미 노선에 등록되어 있는 구간입니다. upStationId: " + 성수역_ID + ", downStationId: " + 구의역_ID);
         }
 
         /**
          * Given 2개의 지하철 역(A, B)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
          * When 지하철 노선 하행 종착지(B)에 추가로 지하철 구간(C-D)을 등록을 시도하면
-         * Then 추가 구간(C-D)의 상행역(C)가 노선의 하행 종착역(B)과 다르기 때문에 에러가 발생한다.
+         * Then 추가 구간(C-D)의 연결점이 없기 때문에 에러가 발생한다.
          */
-        @DisplayName("새로 추가하려는 구간의 상행역이 노선의 하행 종착역과 다른 역이라면 에러가 발생한다.")
+        @DisplayName("새로 추가하려는 구간의 연결점이 없다면 에러가 발생한다.")
         @Test
-        void invalidUpStationErrorTest() {
+        void notConnectableErrorTest() {
             // given
-            ExtractableResponse<Response> 성수역 = newStation("성수역");
-            Long 성수역_ID = 성수역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 잠실역 = newStation("잠실역");
-            Long 잠실역_ID = 잠실역.jsonPath().getLong("id");
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+            Long 잠실역_ID = newStationAndGetId("잠실역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     성수역_ID,
                     건대입구역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = addSection(
@@ -319,7 +407,45 @@ public class LineAcceptanceTest {
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("새로운 구간의 상행역은 노선의 하행 종착역과 같아야 합니다. upStationId: " + 구의역_ID);
+            assertThat(response.body().asString()).isEqualTo("새로운 구간을 추가할 수 있는 연결점이 없습니다. upStationId: " + 구의역_ID + ", downStationId: " + 잠실역_ID);
+        }
+
+        /**
+         * Given 2개의 지하철 역(A, B)이 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * When 지하철 노선 하행 시작지(A)에 추가로 지하철 구간(N-B)을 등록을 시도하면
+         * Then 구간 중간에 새로운 구간이 추가된다. (A-N-B)
+         */
+        @DisplayName("지하철 노선의 중간에 새로운 구간을 추가한다.")
+        @Test
+        void addNewSectionInMiddleTest() {
+            // given
+            Long 성수역_ID = newStationAndGetId("성수역");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+
+            Long 이호선_ID = newLineAndGetId(
+                    "2호선",
+                    "bg-green-000",
+                    성수역_ID,
+                    건대입구역_ID,
+                    10
+            );
+
+            // when
+            addSection(
+                    이호선_ID,
+                    구의역_ID,
+                    건대입구역_ID,
+                    5
+            );
+
+            // then
+            ExtractableResponse<Response> result = loadLine(이호선_ID);
+            assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(result.jsonPath().getList("stations")).hasSize(3);
+            assertThat(result.jsonPath().getList("stations.id", Long.class)).containsExactly(성수역_ID, 구의역_ID, 건대입구역_ID);
+            assertThat(result.jsonPath().getList("stations.name", String.class)).containsExactly("성수역", "구의역", "건대입구역");
         }
     }
 
@@ -338,21 +464,17 @@ public class LineAcceptanceTest {
         @Test
         void successTest() {
             // given
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 강남역 = newStation("강남역");
-            Long 강남역_ID = 강남역.jsonPath().getLong("id");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+            Long 강남역_ID = newStationAndGetId("강남역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     건대입구역_ID,
                     구의역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             ExtractableResponse<Response> 건대입구역_구의역_구간 = addSection(이호선_ID, 구의역_ID, 강남역_ID, 10);
 
@@ -378,21 +500,17 @@ public class LineAcceptanceTest {
         @Test
         void invalidLastStationErrorTest() {
             // given
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 강남역 = newStation("강남역");
-            Long 강남역_ID = 강남역.jsonPath().getLong("id");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+            Long 강남역_ID = newStationAndGetId("강남역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     건대입구역_ID,
                     구의역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             ExtractableResponse<Response> 건대입구역_구의역_구간 = addSection(이호선_ID, 구의역_ID, 강남역_ID, 10);
 
@@ -415,19 +533,16 @@ public class LineAcceptanceTest {
         @Test
         void invalidSectionSizeErrorTest() {
             // given
-            ExtractableResponse<Response> 건대입구역 = newStation("건대입구역");
-            Long 건대입구역_ID = 건대입구역.jsonPath().getLong("id");
-            ExtractableResponse<Response> 구의역 = newStation("구의역");
-            Long 구의역_ID = 구의역.jsonPath().getLong("id");
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
 
-            ExtractableResponse<Response> 이호선 = newLine(
+            Long 이호선_ID = newLineAndGetId(
                     "2호선",
                     "bg-green-000",
                     건대입구역_ID,
                     구의역_ID,
                     10
             );
-            Long 이호선_ID = 이호선.jsonPath().getLong("id");
 
             // when
             ExtractableResponse<Response> response = removeSection(이호선_ID, 구의역_ID);

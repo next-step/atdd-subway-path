@@ -12,15 +12,15 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
@@ -56,6 +56,36 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Long getDistance() {
+        return distance;
+    }
+
+    public boolean isMatchWithUpStation(Station station) {
+        return upStation.isSameStation(station);
+    }
+
+    public boolean isMatchWithDownStation(Station station) {
+        return downStation.isSameStation(station);
+    }
+
+    public void updateUpStationAndDistance(Station station, Long distance) {
+        validateHasLongerDistanceThan(distance);
+        this.upStation = station;
+        this.distance -= distance;
+    }
+
+    public void updateDownStationAndDistance(Station station, Long distance) {
+        validateHasLongerDistanceThan(distance);
+        this.downStation = station;
+        this.distance -= distance;
+    }
+
+    private void validateHasLongerDistanceThan(Long otherDistance) {
+        if (distance <= otherDistance) {
+            throw new IllegalArgumentException("기존 구간보다 길거나 같은 구간을 추가할 수 없습니다. 구간 길이: " + otherDistance);
+        }
     }
 
     @Override
