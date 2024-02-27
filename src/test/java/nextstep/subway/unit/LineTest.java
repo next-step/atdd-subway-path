@@ -95,7 +95,7 @@ class LineTest {
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(이호선_모든_역_아이디_리스트).doesNotContain(낙성대역.getId());
+            assertThat(이호선_모든_역_아이디_리스트).doesNotContain(낙성대역.getId()).isNotEmpty();
         });
     }
 

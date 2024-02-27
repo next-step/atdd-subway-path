@@ -148,8 +148,9 @@ class LineServiceMockTest {
         SoftAssertions.assertSoftly(softAssertions -> {
             assertThat(result.getStations().stream()
                 .map(StationDto::getId)
-                .collect(Collectors.toList())
-            ).doesNotContain(낙성대역.getId());
+                .collect(Collectors.toList()))
+            .doesNotContain(낙성대역.getId())
+            .isNotEmpty();
         });
     }
 

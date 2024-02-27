@@ -159,7 +159,7 @@ class LineAcceptanceTest {
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             assertThat(지하철_노선_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-            assertThat(지하철_노선_목록_응답에서_노선_아이디_목록_추출(지하철_노선_목록_조회_요청())).doesNotContain(일호선_아이디);
+            assertThat(지하철_노선_목록_응답에서_노선_아이디_목록_추출(지하철_노선_목록_조회_요청())).doesNotContain(일호선_아이디).isEmpty();
         });
 
     }
