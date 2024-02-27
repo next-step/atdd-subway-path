@@ -22,11 +22,15 @@ public class Sections {
     @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public void addSection(Section addSection) {
         if (alreadyExistingStation(addSection)) {
             throw new IllegalArgumentException("invalid section");
         }
-        if (addToLastSection(addSection)) {
+        if (isAddingToLastSection(addSection)) {
             sections.add(addSection);
         } else {
             addToExistingSection(addSection);
@@ -79,13 +83,14 @@ public class Sections {
         sections.add(idx, addSection);
     }
 
-    private boolean addToLastSection(Section addSection) {
-        Optional<Station> endStation = getEndStation();
-        boolean isEqualToAddSectionUpStation = endStation.isPresent()
-            && endStation.get().equals(addSection.getUpStation());
-        return sections.isEmpty() || isEqualToAddSectionUpStation;
+    private boolean isAddingToLastSection(Section addSection) {
+        return sections.isEmpty() || hasSameEndStationAs(addSection);
     }
 
+    private boolean hasSameEndStationAs(Section addSection) {
+        Optional<Station> endStation = getEndStation();
+        return endStation.map(station -> station.equals(addSection.getUpStation())).orElse(false);
+    }
 
     private Optional<Section> getSectionByUpStation(Station upStation) {
         return this.getSections().stream()

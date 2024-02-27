@@ -51,6 +51,9 @@ public class Section implements Comparable<Section> {
     }
 
     public void minusDistance(long distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException("must be smaller than exists");
+        }
         this.distance -= distance;
     }
 
