@@ -30,6 +30,13 @@ public class LineFixture {
         return 노선_생성_요청(이호선_이름, 이호선_색, 강남역.getId(), 교대역.getId(), 10L);
     }
 
+    public static Map<String, Object> 강남역_봉천역_구간_이호선_생성_요청(long distance) {
+        StationResponse 강남역 = StationSteps.지하철_역_생성_요청(StationFixture.강남역_생성_요청()).as(StationResponse.class);
+        StationResponse 봉천역 = StationSteps.지하철_역_생성_요청(StationFixture.봉천역_생성_요청()).as(StationResponse.class);
+        return 노선_생성_요청(이호선_이름, 이호선_색, 강남역.getId(), 봉천역.getId(), distance);
+    }
+
+
 
     public static Map<String, Object> 노선_생성_요청(
         String name,

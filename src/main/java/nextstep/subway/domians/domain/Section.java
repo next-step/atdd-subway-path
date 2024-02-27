@@ -1,5 +1,6 @@
 package nextstep.subway.domians.domain;
 
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,4 +50,39 @@ public class Section {
         this.line = line;
     }
 
+    public void minusDistance(long distance) {
+        this.distance -= distance;
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    @Override
+    public int compareTo(Section section) {
+        if (this.equals(section)) {
+            return 0;
+        }
+        if (this.downStation.equals(section.upStation)) {
+            return -1;
+        }
+        return 1;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
