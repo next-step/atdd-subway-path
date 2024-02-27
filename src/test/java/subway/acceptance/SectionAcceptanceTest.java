@@ -28,9 +28,11 @@ public class SectionAcceptanceTest {
     private static Long SINSA_STATION_ID;
     private static Long GWANGGYO_STATION_ID;
     private static Long SUSEO_STATION_ID;
+    private static Long WANGSIMNI_STATION_ID;
     private static Long LINE_SHINBUNDANG_ID;
     private static SectionRequest SECTION_TWO;
-    private static SectionRequest SECTION_ERROR;
+    private static SectionRequest SECTION_THREE;
+    private static SectionRequest SECTION_FOURTH;
 
     @BeforeEach
     void setFixture() {
@@ -40,11 +42,14 @@ public class SectionAcceptanceTest {
                 .as(StationResponse.class).getId();
         SUSEO_STATION_ID = RestAssuredUtil.post(new Station("수서역"), "stations")
                 .as(StationResponse.class).getId();
+        WANGSIMNI_STATION_ID = RestAssuredUtil.post(new Station("왕십리역"), "stations")
+                .as(StationResponse.class).getId();
         LINE_SHINBUNDANG_ID = RestAssuredUtil.post(
                 new LineRequest(0L, "신분당선", "bg-red-600", 10L, SINSA_STATION_ID, GWANGGYO_STATION_ID),
                 "/lines").as(LineResponse.class).getId();
         SECTION_TWO = new SectionRequest(GWANGGYO_STATION_ID, SUSEO_STATION_ID, 30L);
-        SECTION_ERROR = new SectionRequest(SINSA_STATION_ID, SUSEO_STATION_ID, 40L);
+        SECTION_THREE = new SectionRequest(SINSA_STATION_ID, SUSEO_STATION_ID, 5L);
+        SECTION_FOURTH = new SectionRequest(WANGSIMNI_STATION_ID, SINSA_STATION_ID, 20L);
     }
 
     /**
@@ -69,20 +74,79 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * When 신규 구간의 상행역과 노선의 하행종점역이 같지 않으면
+     * When 지하철 구간을 맨 앞에 생성하면
+     * Then 지하철 노선 조회 시 생성한 구간을 찾을 수 있다
+     */
+    @DisplayName("지하철 구간을 처음에 생성할 수 있다.")
+    @Test
+    void 지하철_노선_맨_앞에_구간_생성() {
+        ExtractableResponse<Response> response
+                = RestAssuredUtil.post(SECTION_FOURTH, "/lines/" + LINE_SHINBUNDANG_ID + "/sections");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        LineResponse res
+                = RestAssuredUtil.get("/lines/" + LINE_SHINBUNDANG_ID).as(LineResponse.class);
+        assertThat(res.getStations().get(0).getName()).isEqualTo("왕십리역");
+        assertThat(res.getStations().get(1).getName()).isEqualTo("신사역");
+        assertThat(res.getStations().get(2).getName()).isEqualTo("광교역");
+    }
+
+    /**
+     * When 지하철 구간을 중간에 생성하면
+     * Then 지하철 노선 조회 시 생성한 구간을 찾을 수 있다
+     */
+    @DisplayName("지하철 구간을 중간에 생성한다.")
+    @Test
+    void 지하철_구간_중간에_구간_생성() {
+        ExtractableResponse<Response> response
+                = RestAssuredUtil.post(SECTION_THREE, "/lines/" + LINE_SHINBUNDANG_ID + "/sections");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        LineResponse res
+                = RestAssuredUtil.get("/lines/" + LINE_SHINBUNDANG_ID).as(LineResponse.class);
+        assertThat(res.getStations().get(0).getName()).isEqualTo("신사역");
+        assertThat(res.getStations().get(1).getName()).isEqualTo("수서역");
+        assertThat(res.getStations().get(2).getName()).isEqualTo("광교역");
+    }
+
+    /**
+     * When 동일한 지하철 구간을 등록하면
      * Then IllegalArgumentException이 발생한다.
      */
-    @DisplayName("신규 구간의 상행역과 노선의 하행종점역이 같아야 한다.")
+    @DisplayName("동일한 지하철 구간을 등록할 수 없다.")
     @Test
-    void cant_add_section_when_upStation_in_new_section_is_not_equal_line_downStation() {
-        // then
+    void 동일_지하철_구간_유효성_검사() {
+        //then
         RestAssured.given().log().all()
-                .body(SECTION_ERROR)
+                .body(new SectionRequest(SINSA_STATION_ID, GWANGGYO_STATION_ID, 10L))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .post("/lines/" + LINE_SHINBUNDANG_ID + "/sections")
+                .when().post("/lines/" + LINE_SHINBUNDANG_ID + "/sections")
                 .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
+    }
+
+    /**
+     * When 지하철 구간을 중간에 추가할 때 기존 구간보다 거리가 길면
+     * Then IllegalArgumentException이 발생한다.
+     */
+    @DisplayName("지하철 구간을 중간에 추가할 때 기존 구간보다 거리가 길면 추가할 수 없다.")
+    @Test
+    void 지하철_구간_중간에_구간_생성시_거리_유효성_검사() {
+       //then
+        RestAssured.given().log().all()
+                .body(new SectionRequest(SINSA_STATION_ID, SUSEO_STATION_ID, 20L))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/" + LINE_SHINBUNDANG_ID + "/sections")
+                .then().log().all()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .extract();
     }
 
     /**
