@@ -95,11 +95,11 @@ public class Section {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return getDistance() == section.getDistance() && Objects.equals(getId(), section.getId()) && Objects.equals(getUpStation(), section.getUpStation()) && Objects.equals(getDownStation(), section.getDownStation()) && Objects.equals(getLine(), section.getLine());
+        return Objects.equals(getId(), section.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getUpStation(), getDownStation(), getDistance(), getLine());
+        return Objects.hash(getId());
     }
 }

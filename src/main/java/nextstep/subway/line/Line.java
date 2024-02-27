@@ -59,23 +59,7 @@ public class Line {
     }
 
     public void addSection(Section requestSection) {
-        if(sections.isFirstSection(requestSection)) {
-            registerSection(requestSection);
-            return;
-        }
-
-        if(sections.isMiddleSection(requestSection)) {
-            registerSection(sections.returnNewSection(requestSection));
-            registerSection(requestSection);
-            return;
-        }
-
-        sections.validateEndSection(requestSection);
-        registerSection(requestSection);
-    }
-
-    private void registerSection(Section newSection) {
-        newSection.registerLine(this);
+        sections.addSection(this, requestSection);
     }
 
     public void deleteSection(Station deleteStation) {
@@ -87,11 +71,11 @@ public class Line {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName()) && Objects.equals(getColor(), line.getColor()) && Objects.equals(getSectionList(), line.getSectionList());
+        return Objects.equals(getId(), line.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor(), getSectionList());
+        return Objects.hash(getId());
     }
 }
