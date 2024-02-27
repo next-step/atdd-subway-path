@@ -1,9 +1,6 @@
-package nextstep.subway.line.domain;
+package nextstep.subway.section.domain;
 
 import lombok.Getter;
-import nextstep.subway.global.exception.InsufficientStationException;
-import nextstep.subway.global.exception.StationNotMatchException;
-import nextstep.subway.section.domain.Section;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,19 +15,8 @@ public class Sections {
     @JoinColumn(name = "line_id")
     private final List<Section> sections = new ArrayList<>();
 
-    public List<Long> getDownStationIds() {
-        return sections.stream()
-                    .map(Section::getDownStationId)
-                    .collect(Collectors.toList());
-    }
-
     public void addSection(Section section) {
         sections.add(section);
-    }
-
-    public void deleteLastSection() {
-        Section section = getLastSection();
-        sections.remove(section);
     }
 
     public Long getUpStationId() {
@@ -61,12 +47,5 @@ public class Sections {
 
         sections.remove(section);
         return;
-    }
-
-    private Section getLastSection() {
-        if (sections.isEmpty()) {
-            return null;
-        }
-        return sections.get(sections.size() - 1);
     }
 }
