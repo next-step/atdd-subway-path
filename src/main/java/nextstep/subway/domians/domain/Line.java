@@ -51,13 +51,13 @@ public class Line {
         this.sections.addSection(section);
     }
 
-    public void removeSection(Long downStationId) {
-        this.sections.removeSection(downStationId);
+    public void removeSection(Station station) {
+        this.sections.removeStation(station);
     }
 
 
     public List<Station> getAllStations() {
-        return this.sections.getStationsBySortedSection(false);
+        return this.sections.getSortedStationsByUpDirection(false);
     }
 
 

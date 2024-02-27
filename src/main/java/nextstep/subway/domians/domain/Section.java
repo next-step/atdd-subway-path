@@ -46,21 +46,6 @@ public class Section implements Comparable<Section> {
         return new Section(line, upStation, downStation, distance);
     }
 
-    public void setLine(Line line) {
-        this.line = line;
-    }
-
-    public void minusDistance(long distance) {
-        if (this.distance <= distance) {
-            throw new IllegalArgumentException("must be smaller than exists");
-        }
-        this.distance -= distance;
-    }
-
-    public void changeUpStation(Station station) {
-        this.upStation = station;
-    }
-
     @Override
     public int compareTo(Section section) {
         if (this.equals(section)) {
@@ -87,5 +72,28 @@ public class Section implements Comparable<Section> {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
+
+    public void minusDistance(long distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException("must be smaller than exists");
+        }
+        this.distance -= distance;
+    }
+
+    public void plusDistance(long distance) {
+        this.distance += distance;
+    }
+
+    public void changeUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downStation = station;
     }
 }

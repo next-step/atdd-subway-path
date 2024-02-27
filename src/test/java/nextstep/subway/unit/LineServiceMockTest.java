@@ -140,6 +140,7 @@ class LineServiceMockTest {
         // given
         Line 이호선 = 강남역_낙성대역_구간_이호선();
         given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
+        given(stationRepository.findById(낙성대역.getId())).willReturn(Optional.of(낙성대역));
 
         // when
         LineResponse result = lineService.removeSection(이호선.getId(), 낙성대역.getId());
@@ -149,8 +150,8 @@ class LineServiceMockTest {
             assertThat(result.getStations().stream()
                 .map(StationDto::getId)
                 .collect(Collectors.toList()))
-            .doesNotContain(낙성대역.getId())
-            .isNotEmpty();
+                .doesNotContain(낙성대역.getId())
+                .isNotEmpty();
         });
     }
 

@@ -68,7 +68,7 @@ class SectionsTest {
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             assertThat(강남_낙성대_구간들.getSections()).hasSize(2);
-            assertThat(강남_낙성대_구간들.getStationsBySortedSection(false)).containsExactly(강남역, 낙성대역, 봉천역);
+            assertThat(강남_낙성대_구간들.getSortedStationsByUpDirection(false)).containsExactly(강남역, 낙성대역, 봉천역);
         });
     }
 
@@ -90,7 +90,7 @@ class SectionsTest {
                     .map(Section::getDistance)
                     .collect(Collectors.toList())
             ).containsExactly(5L, 5L, 10L);
-            assertThat(강남_낙성대_봉천_구간들.getStationsBySortedSection(false)).containsExactly(강남역, 교대역, 낙성대역, 봉천역);
+            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(false)).containsExactly(강남역, 교대역, 낙성대역, 봉천역);
         });
     }
 
@@ -110,6 +110,48 @@ class SectionsTest {
         SoftAssertions.assertSoftly(softAssertions -> {
             assertThat(catchThrowable).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("must be smaller than exists");
+        });
+    }
+
+
+    @DisplayName("구간 삭제 단위 테스트 - 상행 종점역 삭제")
+    @Test
+    void removeUpStation() {
+        // given
+        Sections 강남_낙성대_봉천_구간들 = 구간들(강남역_낙성대역_구간, 낙성대역_봉천역_구간);
+
+        // when
+        강남_낙성대_봉천_구간들.removeStation(강남역);
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(강남_낙성대_봉천_구간들.getSections()).hasSize(1);
+            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(false)).containsExactly(낙성대역, 봉천역);
+        });
+    }
+
+    @DisplayName("구간 삭제 단위 테스트 - 중간역 삭제")
+    @Test
+    void removeMiddleStation() {
+        // given
+        long 강남역_낙성대역_구간_길이 = 강남역_낙성대역_구간.getDistance();
+        long 낙성대역_봉천역_구간_길이 = 낙성대역_봉천역_구간.getDistance();
+        Sections 강남_낙성대_봉천_구간들 = 구간들(강남역_낙성대역_구간, 낙성대역_봉천역_구간);
+
+        // when
+        강남_낙성대_봉천_구간들.removeStation(낙성대역);
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(강남_낙성대_봉천_구간들.getSections()).hasSize(1);
+
+            assertThat(
+                강남_낙성대_봉천_구간들.getSections()
+                    .stream()
+                    .map(Section::getDistance)
+                    .collect(Collectors.toList())
+            ).containsExactly(강남역_낙성대역_구간_길이 + 낙성대역_봉천역_구간_길이);
+            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(false)).containsExactly(강남역, 봉천역);
         });
     }
 
