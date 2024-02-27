@@ -2,10 +2,15 @@ package nextstep.subway.support.fixture;
 
 import java.util.Map;
 import nextstep.subway.domians.domain.Line;
+import nextstep.subway.domians.domain.Section;
 import nextstep.subway.domians.domain.Station;
+import nextstep.subway.support.step.LineSteps;
+import nextstep.subway.support.step.SectionSteps;
 import nextstep.subway.support.step.StationSteps;
+import nextstep.subway.web.dto.response.LineResponse;
 import nextstep.subway.web.dto.response.StationResponse;
 import org.springframework.test.util.ReflectionTestUtils;
+import static nextstep.subway.support.fixture.SectionFixture.구간_등록_요청;
 import static nextstep.subway.support.fixture.StationFixture.강남역_이름;
 import static nextstep.subway.support.fixture.StationFixture.교대역_이름;
 
@@ -35,8 +40,6 @@ public class LineFixture {
         StationResponse 봉천역 = StationSteps.지하철_역_생성_요청(StationFixture.봉천역_생성_요청()).as(StationResponse.class);
         return 노선_생성_요청(이호선_이름, 이호선_색, 강남역.getId(), 봉천역.getId(), distance);
     }
-
-
 
     public static Map<String, Object> 노선_생성_요청(
         String name,

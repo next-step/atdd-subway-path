@@ -8,7 +8,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class SectionFixture {
 
-    public static Map<String, Object> 구간_생성_요청(Long upStationId, Long downStationId, Long distance) {
+    public static Map<String, Object> 구간_등록_요청(Long upStationId, Long downStationId, Long distance) {
         return Map.of(
             "upStationId", upStationId,
             "downStationId", downStationId,
