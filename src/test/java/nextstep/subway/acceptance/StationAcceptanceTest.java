@@ -85,7 +85,9 @@ class StationAcceptanceTest {
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             assertThat(지하철역_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-            assertThat(지하철역_목록_응답에서_역_이름_목록_추출(지하철역_목록_조회_요청())).doesNotContain(강남역_이름);
+            assertThat(지하철역_목록_응답에서_역_이름_목록_추출(지하철역_목록_조회_요청()))
+                .doesNotContain(강남역_이름)
+                .isNotEmpty();
         });
 
     }

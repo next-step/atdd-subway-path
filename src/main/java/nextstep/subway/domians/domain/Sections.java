@@ -22,11 +22,15 @@ public class Sections {
     @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public void addSection(Section addSection) {
         if (alreadyExistingStation(addSection)) {
             throw new IllegalArgumentException("invalid section");
         }
-        if (addToLastSection(addSection)) {
+        if (isAddingToLastSection(addSection)) {
             sections.add(addSection);
         } else {
             addToExistingSection(addSection);
@@ -34,32 +38,64 @@ public class Sections {
     }
 
     public boolean alreadyExistingStation(Section section) {
-        return this.getStationsBySortedSection(false).stream()
+        return this.getSortedStationsByUpDirection(false).stream()
             .anyMatch(station -> Objects.equals(station, section.getDownStation()));
     }
 
-    public List<Station> getStationsBySortedSection(boolean isReverse) {
-        var stations = this.sections.stream()
+    public List<Station> getSortedStationsByUpDirection(boolean isDownDirection) {
+        List<Station> stations = this.sections.stream()
             .sorted()
             .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
             .distinct()
             .collect(Collectors.toList());
-        if (isReverse) {
+        if (isDownDirection) {
             Collections.reverse(stations);
         }
         return stations;
 
     }
 
-    public void removeSection(Long downStationId) {
-        if (isNotLastStation(downStationId) || getSectionSize() < 2) {
-            throw new IllegalArgumentException("invalid section");
+    public void removeStation(Station removeStation) {
+        if (getSectionSize() == 1) {
+            throw new IllegalStateException("invalid section state");
         }
-        sections.remove(sections.size() - 1);
+        Optional<Section> removeSection = getSectionToRemove(removeStation);
+        if (removeSection.isEmpty()) {
+            throw new IllegalArgumentException("not found remove station: " + removeStation.getId());
+        }
+        sections.remove(removeSection.get());
+    }
+
+    private Optional<Section> getSectionToRemove(Station removeStation) {
+        if (isSameStartStationAs(removeStation)) {
+            return getSectionByUpStation(removeStation);
+        }
+        if (isSameEndStationAs(removeStation)) {
+            return getSectionByDownStation(removeStation);
+        }
+        return getMergedSectionForRemove(removeStation);
+    }
+
+    private Optional<Section> getMergedSectionForRemove(Station removeStation) {
+        Optional<Section> leftSectionByUp = getSectionByDownStation(removeStation);
+        Optional<Section> rightSectionByUp = getSectionByUpStation(removeStation);
+        if (leftSectionByUp.isEmpty() || rightSectionByUp.isEmpty()) {
+            return Optional.empty();
+        }
+        Section left = leftSectionByUp.get();
+        Section right = rightSectionByUp.get();
+        left.changeDownStation(right.getDownStation());
+        left.plusDistance(right.getDistance());
+        return rightSectionByUp;
+    }
+
+
+    public Optional<Station> getStartStation() {
+        return getSortedStationsByUpDirection(false).stream().findFirst();
     }
 
     public Optional<Station> getEndStation() {
-        return getStationsBySortedSection(true).stream().findFirst();
+        return getSortedStationsByUpDirection(true).stream().findFirst();
     }
 
 
@@ -73,34 +109,33 @@ public class Sections {
             throw new IllegalArgumentException("Invalid section");
         }
         Section section = existingSection.get();
-        int idx = sections.indexOf(section);
         section.changeUpStation(addSection.getDownStation());
         section.minusDistance(addSection.getDistance());
+        int idx = sections.indexOf(section);
         sections.add(idx, addSection);
     }
 
-    private boolean addToLastSection(Section addSection) {
-        Optional<Station> endStation = getEndStation();
-        boolean isEqualToAddSectionUpStation = endStation.isPresent()
-            && endStation.get().equals(addSection.getUpStation());
-        return sections.isEmpty() || isEqualToAddSectionUpStation;
+    private boolean isAddingToLastSection(Section addSection) {
+        return sections.isEmpty() || isSameEndStationAs(addSection.getUpStation());
     }
 
+    private boolean isSameStartStationAs(Station station) {
+        return getStartStation().map(firstStation -> firstStation.equals(station)).orElse(false);
+    }
 
-    private Optional<Section> getSectionByUpStation(Station upStation) {
+    private boolean isSameEndStationAs(Station station) {
+        return getEndStation().map(endStation -> endStation.equals(station)).orElse(false);
+    }
+
+    private Optional<Section> getSectionByUpStation(Station station) {
         return this.getSections().stream()
-            .filter(section -> Objects.equals(section.getUpStation(), upStation))
+            .filter(section -> Objects.equals(section.getUpStation(), station))
             .findFirst();
     }
 
-
-    private boolean isNotLastStation(Long stationId) {
-        Optional<Station> optionalStation = getEndStation();
-        if (optionalStation.isPresent()) {
-            Station endStation = optionalStation.get();
-            return !Objects.equals(endStation.getId(), stationId);
-        } else {
-            return false;
-        }
+    private Optional<Section> getSectionByDownStation(Station station) {
+        return this.getSections().stream()
+            .filter(section -> Objects.equals(section.getDownStation(), station))
+            .findFirst();
     }
 }

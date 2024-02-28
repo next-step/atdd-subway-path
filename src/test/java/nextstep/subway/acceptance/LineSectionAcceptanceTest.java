@@ -2,7 +2,12 @@ package nextstep.subway.acceptance;
 
 import static nextstep.subway.support.fixture.LineFixture.강남역_교대역_구간_이호선_생성_요청;
 import static nextstep.subway.support.fixture.LineFixture.강남역_봉천역_구간_이호선_생성_요청;
-import static nextstep.subway.support.fixture.SectionFixture.구간_생성_요청;
+import static nextstep.subway.support.fixture.LineFixture.노선_생성_요청;
+import static nextstep.subway.support.fixture.LineFixture.이호선_색;
+import static nextstep.subway.support.fixture.LineFixture.이호선_이름;
+import static nextstep.subway.support.fixture.SectionFixture.구간_등록_요청;
+import static nextstep.subway.support.fixture.StationFixture.강남역_생성_요청;
+import static nextstep.subway.support.fixture.StationFixture.교대역_생성_요청;
 import static nextstep.subway.support.fixture.StationFixture.낙성대역_생성_요청;
 import static nextstep.subway.support.fixture.StationFixture.봉천역_생성_요청;
 import static nextstep.subway.support.fixture.StationFixture.서울대입구역_생성_요청;
@@ -47,7 +52,7 @@ class LineSectionAcceptanceTest {
         Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
 
         // when
-        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_등록_요청(
             교대역_아이디,
             봉천역_아이디,
             10L
@@ -76,7 +81,7 @@ class LineSectionAcceptanceTest {
         Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
 
         // when
-        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_등록_요청(
             낙성대역_아이디,
             봉천역_아이디,
             10L
@@ -102,12 +107,12 @@ class LineSectionAcceptanceTest {
         Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
         Long 교대역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_교대_이호선_응답);
         Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
-        지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(교대역_아이디, 봉천역_아이디, 10L));
+        지하철_구간_등록_요청(이호선_아이디, 구간_등록_요청(교대역_아이디, 봉천역_아이디, 10L));
 
         Long 서울대입구역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(서울대입구역_생성_요청()));
 
         // when
-        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_등록_요청(
             서울대입구역_아이디,
             봉천역_아이디,
             10L
@@ -136,7 +141,7 @@ class LineSectionAcceptanceTest {
         Long 서울대입구역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(서울대입구역_생성_요청()));
 
         // when
-        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(
+        ExtractableResponse<Response> 지하철_구간_등록_응답 = 지하철_구간_등록_요청(이호선_아이디, 구간_등록_요청(
             강남역_아이디,
             서울대입구역_아이디,
             5L
@@ -164,7 +169,7 @@ class LineSectionAcceptanceTest {
         Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
         Long 교대역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_교대_이호선_응답);
         Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
-        지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(교대역_아이디, 봉천역_아이디, 10L));
+        지하철_구간_등록_요청(이호선_아이디, 구간_등록_요청(교대역_아이디, 봉천역_아이디, 10L));
 
         // when
         ExtractableResponse<Response> 지하철_구간_삭제_응답 = 지하철_구간_삭제_요청(이호선_아이디, 봉천역_아이디);
@@ -172,18 +177,17 @@ class LineSectionAcceptanceTest {
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
             assertThat(지하철_구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(지하철_노선_응답에서_역_아이디_목록_추출(지하철_구간_삭제_응답)).doesNotContain(봉천역_아이디);
+            assertThat(지하철_노선_응답에서_역_아이디_목록_추출(지하철_구간_삭제_응답)).doesNotContain(봉천역_아이디).isNotEmpty();
         });
 
     }
 
     /*
-    Given 지하철 노선이 있을 때
-    When 지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우)
-    Then 구간이 노선에 등록되어야 한다.
-    Then 노선의 하행역이 구간의 하행역으로 바뀌어야 한다.
+    Given 지하철 노선에 구간이 하나있는 경우
+    When 노선에서 지하철역을 삭제 하려하면
+    Then 지하철역을 삭제할 수 없다.
      */
-    @DisplayName("지하철 노선에 구간이 하나인 경우 해당 구간을 제거할 수 없다.")
+    @DisplayName("지하철 노선에 구간이 하나인 경우 지하철역을 제거할 수 없다.")
     @Test
     void removeSectionWithSectionSizeIsOne() {
         // given
@@ -202,29 +206,30 @@ class LineSectionAcceptanceTest {
     }
 
     /*
-    Given 지하철 노선이 있을 때
-    When 지하철 노선에 상행 종점역과 하행 종점역만 있는 경우(구간이 1개인 경우)
-    Then 구간이 노선에 등록되어야 한다.
-    Then 노선의 하행역이 구간의 하행역으로 바뀌어야 한다.
+    Given 지하철 노선에 등록된 구간이 존재하고
+    When 마지막 역이 아닌 역이라도 제거하면
+    Then 위치에 상관없이 역이 제거되며 재배치 된다.
      */
-    @DisplayName("지하철 노선에 마지막 구간이 아닌 경우 구간을 제거할 수 없다.")
+    @DisplayName("지하철 노선에 중간역을 제거한다.")
     @Test
-    void removeSectionWithIsNotLastSection() {
+    void removeSectionWithIndex() {
         // given
-        ExtractableResponse<Response> 강남_교대_이호선_응답 = 지하철_노선_생성_요청(강남역_교대역_구간_이호선_생성_요청());
-        Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(강남_교대_이호선_응답);
-        Long 교대역_아이디 = 지하철_노선_응답에서_노선의_하행_종점역_아이디_추출(강남_교대_이호선_응답);
-        Long 봉천역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(봉천역_생성_요청()));
-        지하철_구간_등록_요청(이호선_아이디, 구간_생성_요청(교대역_아이디, 봉천역_아이디, 10L));
+        Long 강남역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(강남역_생성_요청()));
+        Long 교대역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(교대역_생성_요청()));
+        Long 낙성대역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(낙성대역_생성_요청()));
+        Long 이호선_아이디 = 지하철_노선_응답에서_노선_아이디_추출(지하철_노선_생성_요청(노선_생성_요청(이호선_이름, 이호선_색, 강남역_아이디, 교대역_아이디, 10L)));
+        지하철_구간_등록_요청(이호선_아이디, 구간_등록_요청(교대역_아이디, 낙성대역_아이디, 10L));
 
         // when
         ExtractableResponse<Response> 지하철_구간_삭제_응답 = 지하철_구간_삭제_요청(이호선_아이디, 교대역_아이디);
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(지하철_구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            assertThat(지하철_구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(지하철_노선_응답에서_역_아이디_목록_추출(지하철_구간_삭제_응답)).containsExactly(강남역_아이디, 낙성대역_아이디);
         });
 
     }
+
 
 }

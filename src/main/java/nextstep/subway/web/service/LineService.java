@@ -74,7 +74,8 @@ public class LineService {
     @Transactional
     public LineResponse removeSection(Long lineId, Long downStationId) {
         Line line = getLine(lineId);
-        line.removeSection(downStationId);
+        Station station = getStationById(downStationId);
+        line.removeSection(station);
         return new LineResponse(line);
     }
 

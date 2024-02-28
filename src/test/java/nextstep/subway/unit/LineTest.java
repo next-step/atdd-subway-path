@@ -6,7 +6,6 @@ import static nextstep.subway.support.fixture.StationFixture.강남역_이름;
 import static nextstep.subway.support.fixture.StationFixture.교대역_이름;
 import static nextstep.subway.support.fixture.StationFixture.낙성대역_이름;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domians.domain.Line;
@@ -88,34 +87,14 @@ class LineTest {
         이호선.addSection(교대역_낙성대역_구간);
 
         // when
-        이호선.removeSection(낙성대역.getId());
+        이호선.removeSection(낙성대역);
         List<Long> 이호선_모든_역_아이디_리스트 = 이호선.getAllStations().stream()
             .map(Station::getId)
             .collect(Collectors.toList());
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(이호선_모든_역_아이디_리스트).doesNotContain(낙성대역.getId());
-        });
-    }
-
-    @DisplayName("노선의 구간 제거 실패 단위 테스트 - 제거할 구간이 노선의 마지막 구간이 아닌 경우")
-    @Test
-    void removeSectionWithNotLastStation() {
-
-        // given
-        Line 이호선 = 강남역_교대역_구간_이호선();
-        이호선.addSection(교대역_낙성대역_구간);
-
-        // when
-        Throwable catchThrowable = catchThrowable(() -> {
-            이호선.removeSection(교대역.getId());
-        });
-
-        // then
-        SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(catchThrowable).isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("invalid section");
+            assertThat(이호선_모든_역_아이디_리스트).doesNotContain(낙성대역.getId()).isNotEmpty();
         });
     }
 
