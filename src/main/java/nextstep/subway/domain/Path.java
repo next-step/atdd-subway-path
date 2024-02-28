@@ -19,6 +19,33 @@ public class Path {
         this.pathGraph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
     }
 
+    public PathResponse getShortestPath(List<Line> allLines, Station sourceStation, Station targetStation) {
+        validateStationsIsSame(sourceStation, targetStation);
+        addAllLinesToPath(allLines);
+
+        validateStationsInPath(sourceStation, targetStation);
+        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(pathGraph);
+        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
+
+        List<Station> stations = path.getVertexList();
+        int shortestDistance = (int) path.getWeight();
+        List<StationResponse> stationResponses = stations.stream().map(StationResponse::createStationResponse).collect(Collectors.toList());
+
+        return PathResponse.of(stationResponses, shortestDistance);
+    }
+
+    private void addAllLinesToPath(List<Line> allLines) {
+        allLines.stream()
+                .map(Line::getSections)
+                .flatMap(sections -> sections.getSections().stream())
+                .collect(Collectors.toList())
+                .forEach(section -> {
+                    pathGraph.addVertex(section.getUpStation());
+                    pathGraph.addVertex(section.getDownStation());
+                    pathGraph.setEdgeWeight(pathGraph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+                });
+    }
+
     private void validateStationsInPath(Station sourceStation, Station targetStation) {
         if (!pathGraph.containsVertex(sourceStation) || !pathGraph.containsVertex(targetStation)) {
             throw new IllegalPathException("출발역 또는 도착역이 경로에 들어있지 않습니다");
@@ -29,27 +56,5 @@ public class Path {
         if (sourceStation.equals(targetStation)) {
             throw new IllegalPathException("출발역과 도착역이 같습니다.");
         }
-    }
-
-
-    public PathResponse getShortestPath(List<Line> allLines, Station sourceStation, Station targetStation) {
-        validateStationsIsSame(sourceStation, targetStation);
-        allLines.stream()
-                .map(Line::getSections)
-                .flatMap(sections -> sections.getSections().stream())
-                .collect(Collectors.toList())
-                .forEach(section -> {
-                    pathGraph.addVertex(section.getUpStation());
-                    pathGraph.addVertex(section.getDownStation());
-                    pathGraph.setEdgeWeight(pathGraph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
-                });
-        validateStationsInPath(sourceStation, targetStation);
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(pathGraph);
-        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
-        List<Station> stations = path.getVertexList();
-        int shortestDistance = (int) path.getWeight();
-        List<StationResponse> stationResponses = stations.stream().map(StationResponse::createStationResponse).collect(Collectors.toList());
-
-        return PathResponse.of(stationResponses, shortestDistance);
     }
 }
