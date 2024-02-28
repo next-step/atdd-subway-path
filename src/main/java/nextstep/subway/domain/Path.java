@@ -20,7 +20,7 @@ public class Path {
     }
 
     public PathResponse getShortestPath(List<Line> allLines, Station sourceStation, Station targetStation) {
-        validateStationsIsSame(sourceStation, targetStation);
+        validateStationsAreDifferent(sourceStation, targetStation);
         addAllLinesToPath(allLines);
 
         validateStationsInPath(sourceStation, targetStation);
@@ -38,7 +38,7 @@ public class Path {
         allLines.stream()
                 .map(Line::getSections)
                 .flatMap(sections -> sections.getSections().stream())
-                .collect(Collectors.toList())
+                .distinct()
                 .forEach(section -> {
                     pathGraph.addVertex(section.getUpStation());
                     pathGraph.addVertex(section.getDownStation());
@@ -52,7 +52,7 @@ public class Path {
         }
     }
 
-    private void validateStationsIsSame(Station sourceStation, Station targetStation) {
+    private void validateStationsAreDifferent(Station sourceStation, Station targetStation) {
         if (sourceStation.equals(targetStation)) {
             throw new IllegalPathException("출발역과 도착역이 같습니다.");
         }
