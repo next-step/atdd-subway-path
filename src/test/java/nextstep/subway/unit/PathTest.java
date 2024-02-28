@@ -58,16 +58,19 @@ public class PathTest {
         //when & then
         assertThatThrownBy(() -> path.getShortestPath(List.of(이호선), 교대역, 교대역)).isInstanceOf(IllegalPathException.class);
     }
-//
-//    @Test
-//    void testValidatePath_출발역_또는_도착역이_경로에_존재하지_않으면_예외를_반환한다() {
-//        //given
-//        Path path = new Path();
-//        path.addConnectionBetweenStations(교대역, 남부터미널역, 교대역_남부터미널역_사이_거리);
-//        path.addConnectionBetweenStations(남부터미널역, 양재역, 남부터미널역_양재역_사이_거리);
-//        String 왕십리역 = "왕십리역";
-//
-//        //when & then
-//        assertThatThrownBy(() -> path.getStationNamesAlongPath(교대역, 왕십리역)).isInstanceOf(IllegalPathException.class);
-//    }
+
+    @Test
+    void testValidatePath_출발역_또는_도착역이_경로에_존재하지_않으면_예외를_반환한다() {
+        //given
+        Line 이호선 = new Line(1L, "이호선", "초록색");
+        Section 교대역_남부터미널역 = new Section(교대역, 남부터미널역, 교대역_남부터미널역_사이_거리);
+        Section 남부터미널역_양재역 = new Section(남부터미널역, 양재역, 남부터미널역_양재역_사이_거리);
+        이호선.addSection(교대역_남부터미널역);
+        이호선.addSection(남부터미널역_양재역);
+        Path path = new Path();
+
+        //when & then
+        Station 왕십리역 = new Station("왕십리역");
+        assertThatThrownBy(() -> path.getShortestPath(List.of(이호선), 교대역, 왕십리역)).isInstanceOf(IllegalPathException.class);
+    }
 }
