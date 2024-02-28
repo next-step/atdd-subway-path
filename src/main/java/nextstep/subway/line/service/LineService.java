@@ -88,7 +88,7 @@ public class LineService {
         final Long downStationId = request.getDownStationId();
 
         if (sections.isSectionRegistered(upStationId, downStationId)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("This section has already registered. upStationId: " + upStationId + ", downStationId: " + downStationId);
         }
 
         final Station requestUpStation = this.findStationById(upStationId);

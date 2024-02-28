@@ -145,11 +145,14 @@ class LineTest {
     @Test
     void 지하철_노선_구간_추가() {
         // given
+        final Station upStation = new Station(1L, "AAA역");
+        final Station downStation = new Station(2L, "BBB역");
         final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
 
-        final Station newDownStation = mock(Station.class);
+        final Station newDownStation = new Station(3L, "CCC역");
+
+        when(section.getUpStation()).thenReturn(downStation);
         when(section.getDownStation()).thenReturn(newDownStation);
-        when(section.getDownStation().getId()).thenReturn(2L);
 
         // when
         assertThat(newLine.getSections().getSections().size()).isEqualTo(1);
@@ -181,11 +184,14 @@ class LineTest {
     @Test
     void 지하철_노선_구간_제거() {
         // given
+        final Station upStation = new Station(1L, "AAA역");
+        final Station downStation = new Station(2L, "BBB역");
         final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
 
-        final Station newDownStation = mock(Station.class);
+        final Station newDownStation = new Station(3L, "CCC역");
+
+        when(section.getUpStation()).thenReturn(downStation);
         when(section.getDownStation()).thenReturn(newDownStation);
-        when(section.getDownStation().getId()).thenReturn(2L);
 
         newLine.addSection(section);
 
@@ -201,11 +207,14 @@ class LineTest {
     @Test
     void 지하철_노선_구간_제거_시_마지막_구간이_아니라면_제거_불가() {
         // given
+        final Station upStation = new Station(1L, "AAA역");
+        final Station downStation = new Station(2L, "BBB역");
         final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
 
-        final Station newDownStation = mock(Station.class);
+        final Station newDownStation = new Station(3L, "CCC역");
+
+        when(section.getUpStation()).thenReturn(downStation);
         when(section.getDownStation()).thenReturn(newDownStation);
-        when(section.getDownStation().getId()).thenReturn(2L);
         newLine.addSection(section);
 
         final Station deleteTargetStation = mock(Station.class);
