@@ -2,8 +2,8 @@ package nextstep.subway.acceptance;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.global.exception.AlreadyRegisteredException;
 import nextstep.subway.line.presentation.request.LineCreateRequest;
-import nextstep.subway.steps.LineSteps;
 import nextstep.subway.steps.StationSteps;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,25 +11,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 
-import static nextstep.subway.steps.AssertStep.assertAlreadyRegistered;
+import static nextstep.subway.steps.AssertStep.에러코드400을_검증한다;
 import static nextstep.subway.steps.LineSteps.createLine;
 import static nextstep.subway.steps.LineSteps.getLine;
 import static nextstep.subway.steps.SectionSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class SectionAcceptanceTest {
-
-    @Autowired
-    DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        databaseCleanup.execute();
-    }
+public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * given : 역과 노선을 생성한다.
@@ -88,7 +78,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = createSection(이호선_id, 강남역_id, 역삼역_id, 20);
 
         // then
-        assertAlreadyRegistered(response);
+        에러코드400을_검증한다(response, new AlreadyRegisteredException());
     }
 
     /**
@@ -214,7 +204,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = createSection(이호선_id, 역삼역_id, 교대역_id, 30);
 
         // then
-        assertAlreadyRegistered(response);
+        에러코드400을_검증한다(response, new AlreadyRegisteredException());
     }
 
     @Test

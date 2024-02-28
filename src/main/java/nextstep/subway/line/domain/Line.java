@@ -3,11 +3,7 @@ package nextstep.subway.line.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nextstep.subway.global.exception.AlreadyRegisteredException;
-import nextstep.subway.global.exception.InsufficientStationException;
-import nextstep.subway.global.exception.SectionMismatchException;
-import nextstep.subway.global.exception.StationNotMatchException;
-import nextstep.subway.section.presentation.request.SectionCreateRequest;
+import nextstep.subway.section.domain.Sections;
 
 import javax.persistence.*;
 

@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AssertStep {
 
-    public static void assertAlreadyRegistered(ExtractableResponse<Response> response) {
+    public static void 에러코드400을_검증한다(ExtractableResponse<Response> response, RuntimeException e) {
         assertThat(response.statusCode()).isEqualTo(400);
-        assertThat(response.jsonPath().getString("message")).isEqualTo("이미 등록된 상태입니다.");
+        assertThat(response.jsonPath().getString("message")).isEqualTo(e.getMessage());
     }
 }
