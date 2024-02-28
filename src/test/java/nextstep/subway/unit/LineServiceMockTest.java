@@ -26,13 +26,11 @@ public class LineServiceMockTest {
     private LineRepository lineRepository;
     @Mock
     private StationRepository stationRepository;
-    @Mock
-    private PathService pathService;
 
     @Test
     void addSection() {
         // given
-        LineService lineService = new LineService(lineRepository, stationRepository, pathService);
+        LineService lineService = new LineService(lineRepository, stationRepository);
         Line line = new Line(1L, "이호선", "초록색");
         Station 강남역 = new Station(1L, "강남역");
         Station 역삼역 = new Station(2L, "역삼역");

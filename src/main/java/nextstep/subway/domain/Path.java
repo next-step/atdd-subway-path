@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jgrapht.GraphPath;
@@ -20,23 +19,31 @@ public class Path {
         this.pathGraph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
     }
 
-    private void validatePath(Station sourceStation, Station targetStation) {
-        if (sourceStation.equals(targetStation)) {
-            throw new IllegalPathException("출발역과 도착역이 같습니다.");
-        }
-
+    private void validateStationsInPath(Station sourceStation, Station targetStation) {
         if (!pathGraph.containsVertex(sourceStation) || !pathGraph.containsVertex(targetStation)) {
             throw new IllegalPathException("출발역 또는 도착역이 경로에 들어있지 않습니다");
         }
     }
 
+    private void validateStationsIsSame(Station sourceStation, Station targetStation) {
+        if (sourceStation.equals(targetStation)) {
+            throw new IllegalPathException("출발역과 도착역이 같습니다.");
+        }
+    }
+
+
     public PathResponse getShortestPath(List<Line> allLines, Station sourceStation, Station targetStation) {
-        validatePath(sourceStation, targetStation);
+        validateStationsIsSame(sourceStation, targetStation);
         allLines.stream()
                 .map(Line::getSections)
                 .flatMap(sections -> sections.getSections().stream())
                 .collect(Collectors.toList())
-                .forEach(section -> pathGraph.setEdgeWeight(pathGraph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance()));
+                .forEach(section -> {
+                    pathGraph.addVertex(section.getUpStation());
+                    pathGraph.addVertex(section.getDownStation());
+                    pathGraph.setEdgeWeight(pathGraph.addEdge(section.getUpStation(), section.getDownStation()), section.getDistance());
+                });
+        validateStationsInPath(sourceStation, targetStation);
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(pathGraph);
         GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
         List<Station> stations = path.getVertexList();
