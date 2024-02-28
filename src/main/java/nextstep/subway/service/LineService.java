@@ -29,7 +29,6 @@ import nextstep.subway.repository.StationRepository;
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-    private final PathService pathService;
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
@@ -37,7 +36,6 @@ public class LineService {
         Station downStation = getStation(lineRequest.getDownStationId());
         Line line = Line.of(lineRequest, upStation, downStation);
         lineRepository.save(line);
-        pathService.addPath(upStation.getName(), downStation.getName(), lineRequest.getDistance());
         return createLineResponse(line);
     }
 
@@ -80,7 +78,6 @@ public class LineService {
         Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
         lineRepository.save(line);
-        pathService.addPath(upStation.getName(), downStation.getName(), sectionRequest.getDistance());
     }
 
     @Transactional
