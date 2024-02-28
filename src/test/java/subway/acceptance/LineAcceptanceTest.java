@@ -32,18 +32,17 @@ public class LineAcceptanceTest {
 
     @BeforeEach
     void setFixture() {
-        SINSA_STATION_ID = RestAssuredUtil.post(new Station("신사역"), "stations")
+        SINSA_STATION_ID = RestAssuredUtil.post(new Station(1L, "신사역"), "stations")
                 .as(StationResponse.class).getId();
-        GWANGGYO_STATION_ID = RestAssuredUtil.post(new Station("광교역"), "stations")
+        GWANGGYO_STATION_ID = RestAssuredUtil.post(new Station(2L, "광교역"), "stations")
                 .as(StationResponse.class).getId();
-        DAEHWA_STATION_ID = RestAssuredUtil.post(new Station("대화역"), "stations")
+        DAEHWA_STATION_ID = RestAssuredUtil.post(new Station(3L, "대화역"), "stations")
                 .as(StationResponse.class).getId();
-        OGEUM_STATION_ID = RestAssuredUtil.post(new Station("오금역"), "stations")
+        OGEUM_STATION_ID = RestAssuredUtil.post(new Station(4L, "오금역"), "stations")
                 .as(StationResponse.class).getId();
 
-
-        LINE_SHINBUNDANG = new LineRequest(0L, "신분당선", "bg-red-600", 10L, SINSA_STATION_ID, GWANGGYO_STATION_ID);
-        LINE_THREE = new LineRequest(0L ,"3호선", "bg-navy-600", 20L, DAEHWA_STATION_ID, OGEUM_STATION_ID);
+        LINE_SHINBUNDANG = new LineRequest(1L, "신분당선", "bg-red-600", 10L, SINSA_STATION_ID, GWANGGYO_STATION_ID);
+        LINE_THREE = new LineRequest(2L ,"3호선", "bg-navy-600", 20L, DAEHWA_STATION_ID, OGEUM_STATION_ID);
     }
 
     /**

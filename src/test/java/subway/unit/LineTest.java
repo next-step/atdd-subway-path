@@ -10,12 +10,12 @@ import static org.assertj.core.api.Assertions.*;
 
 public class LineTest {
 
-    private final Line line = new Line("9호선", "bg-gold-600");
-    private final Station dangsan = new Station("당산역");
-    private final Station seonyudo = new Station("선유도역");
-    private final Station Sinmokdong = new Station("신목동역");
-    private final Section firstSection = new Section(dangsan, seonyudo, 10L, line);
-    private final Section secondSection = new Section(seonyudo, Sinmokdong, 20L, line);
+    private final Line line = new Line(1L, "9호선", "bg-gold-600");
+    private final Station dangsan = new Station(1L, "당산역");
+    private final Station seonyudo = new Station(2L, "선유도역");
+    private final Station sinmokdong = new Station(3L, "신목동역");
+    private final Section firstSection = new Section(1L, dangsan, seonyudo, 10L, line);
+    private final Section secondSection = new Section(2L, seonyudo, sinmokdong, 20L, line);
 
     @BeforeEach
     void beforeEach(){

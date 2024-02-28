@@ -2,10 +2,8 @@ package subway.line;
 
 import subway.section.Section;
 import subway.section.Sections;
-import subway.station.Station;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Line {
@@ -25,6 +23,12 @@ public class Line {
     }
 
     public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public Line(Long id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
     }
