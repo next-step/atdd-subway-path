@@ -79,7 +79,7 @@ class LineTest {
     @Nested
     class RemoveSection {
 
-        @DisplayName("성공")
+        @DisplayName("노선의 하행 종착역을 제거할 수 있다.")
         @Test
         void success() {
             // given
@@ -93,20 +93,40 @@ class LineTest {
             assertThat(신분당선.getAllStations()).containsExactly(강남역, 양재역);
         }
 
-        @DisplayName("노선의 하행 종착역만 삭제할 수 있다.")
+        @DisplayName("노선의 하행 시작역을 제거할 수 있다.")
         @Test
-        void removeException() {
-            assertThatThrownBy(() -> 신분당선.removeStation(강남역))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("노선의 하행 종착역만 삭제할 수 있습니다. stationId: 1");
+        void success2() {
+            // given
+            Station 판교역 = new Station(3L, "판교역");
+            신분당선.addNewSection(양재역, 판교역, 10L);
+
+            // when
+            신분당선.removeStation(강남역);
+
+            // then
+            assertThat(신분당선.getAllStations()).containsExactly(양재역, 판교역);
         }
 
-        @DisplayName("노선에 남은 구간이 1개뿐이라 삭제할 수 없다.")
+        @DisplayName("노선의 중간역을 제거할 수 있다.")
+        @Test
+        void removeException() {
+            Station 판교역 = new Station(3L, "판교역");
+
+            신분당선.addNewSection(양재역, 판교역, 10L);
+
+            // when
+            신분당선.removeStation(양재역);
+
+            // then
+            assertThat(신분당선.getAllStations()).containsExactly(강남역, 판교역);
+        }
+
+        @DisplayName("노선에 남은 구간이 1개뿐이라 제거할 수 없다.")
         @Test
         void removeLastSectionException() {
             assertThatThrownBy(() -> 신분당선.removeStation(양재역))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("노선에 남은 구간이 1개뿐이라 삭제할 수 없습니다.");
+                    .hasMessage("노선에 남은 구간이 1개뿐이라 제거할 수 없습니다.");
         }
     }
 }

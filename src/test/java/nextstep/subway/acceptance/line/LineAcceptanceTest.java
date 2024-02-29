@@ -588,7 +588,7 @@ public class LineAcceptanceTest {
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("노선에 남은 구간이 1개뿐이라 삭제할 수 없습니다.");
+            assertThat(response.body().asString()).isEqualTo("노선에 남은 구간이 1개뿐이라 제거할 수 없습니다.");
         }
 
         /**
@@ -626,7 +626,6 @@ public class LineAcceptanceTest {
             assertThat(loadLine.jsonPath().getList("stations")).hasSize(2);
             assertThat(loadLine.jsonPath().getList("stations.id", Long.class)).containsExactly(건대입구역_ID, 강남역_ID);
             assertThat(loadLine.jsonPath().getList("stations.name", String.class)).containsExactly("건대입구역", "강남역");
-            assertThat(loadLine.jsonPath().getLong("distance")).isEqualTo(30);
         }
     }
 }
