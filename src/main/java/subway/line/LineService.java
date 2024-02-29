@@ -38,13 +38,13 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-                .map(line -> new LineResponse(line, line.sections().transferToStations()))
+                .map(line -> new LineResponse(line, line.sections().toStations()))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
         Line line = lineRepository.getReferenceById(id);
-        List<Station> stations = line.sections().transferToStations();
+        List<Station> stations = line.sections().toStations();
         return new LineResponse(line, stations);
     }
 
