@@ -39,10 +39,10 @@ public class PathCalculatorTest {
         Section 남부터미널역_양재역 = new Section(남부터미널역, 양재역, 남부터미널역_양재역_사이_거리);
         이호선.addSection(교대역_남부터미널역);
         이호선.addSection(남부터미널역_양재역);
-        PathCalculator pathCalculator = new PathCalculator();
+        PathCalculator pathCalculator = new PathCalculator(List.of(이호선));
 
         //when
-        Path path = pathCalculator.getShortestPath(List.of(이호선), 교대역, 양재역);
+        Path path = pathCalculator.getShortestPath(교대역, 양재역);
         //then
         assertAll(
             () -> assertThat(path.getStations()).hasSize(3)
@@ -60,10 +60,10 @@ public class PathCalculatorTest {
         Section 남부터미널역_양재역 = new Section(남부터미널역, 양재역, 남부터미널역_양재역_사이_거리);
         이호선.addSection(교대역_남부터미널역);
         이호선.addSection(남부터미널역_양재역);
-        PathCalculator pathCalculator = new PathCalculator();
+        PathCalculator pathCalculator = new PathCalculator(List.of(이호선));
 
         //when & then
-        assertThatThrownBy(() -> pathCalculator.getShortestPath(List.of(이호선), 교대역, 교대역)).isInstanceOf(IllegalPathException.class);
+        assertThatThrownBy(() -> pathCalculator.getShortestPath(교대역, 교대역)).isInstanceOf(IllegalPathException.class);
     }
 
     @Test
@@ -74,10 +74,10 @@ public class PathCalculatorTest {
         Section 남부터미널역_양재역 = new Section(남부터미널역, 양재역, 남부터미널역_양재역_사이_거리);
         이호선.addSection(교대역_남부터미널역);
         이호선.addSection(남부터미널역_양재역);
-        PathCalculator pathCalculator = new PathCalculator();
+        PathCalculator pathCalculator = new PathCalculator(List.of(이호선));
 
         //when & then
         Station 왕십리역 = new Station("왕십리역");
-        assertThatThrownBy(() -> pathCalculator.getShortestPath(List.of(이호선), 교대역, 왕십리역)).isInstanceOf(IllegalPathException.class);
+        assertThatThrownBy(() -> pathCalculator.getShortestPath(교대역, 왕십리역)).isInstanceOf(IllegalPathException.class);
     }
 }

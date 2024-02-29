@@ -33,8 +33,8 @@ public class PathService {
         Station sourceStation = stationService.findById(sourceId);
         Station targetStation = stationService.findById(targetId);
 
-        PathCalculator pathCalculator = new PathCalculator();
-        Path shortestPath = pathCalculator.getShortestPath(allLines, sourceStation, targetStation);
+        PathCalculator pathCalculator = new PathCalculator(allLines);
+        Path shortestPath = pathCalculator.getShortestPath(sourceStation, targetStation);
 
         PathResponse pathResponse = PathResponse.of(shortestPath);
         PATH_CACHE.put(getKey(sourceId, targetId), pathResponse); // cache miss

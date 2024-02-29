@@ -12,13 +12,13 @@ import nextstep.subway.exception.IllegalPathException;
 public class PathCalculator {
     private final WeightedMultigraph<Station, DefaultWeightedEdge> pathGraph;
 
-    public PathCalculator() {
+    public PathCalculator(List<Line> allLines) {
         this.pathGraph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        addAllLinesToPath(allLines);
     }
 
-    public Path getShortestPath(List<Line> allLines, Station sourceStation, Station targetStation) {
+    public Path getShortestPath(Station sourceStation, Station targetStation) {
         validateStationsAreDifferent(sourceStation, targetStation);
-        addAllLinesToPath(allLines);
 
         validateStationsInPath(sourceStation, targetStation);
         DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(pathGraph);
