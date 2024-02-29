@@ -101,6 +101,7 @@ public class LineTest {
         assertThat(line.sections().sections()).hasSize(1);
         assertThat(line.sections().sections().get(0).getUpStation().getName()).isEqualTo("여의도역");
         assertThat(line.sections().sections().get(0).getDownStation().getName()).isEqualTo("신목동역");
+        assertThat(line.sections().sections().get(0).getDistance()).isEqualTo(70L);
     }
 
     /**
