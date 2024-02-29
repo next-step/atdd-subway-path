@@ -3,6 +3,7 @@ package nextstep.subway.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ import nextstep.subway.repository.LineRepository;
 @Slf4j
 @AllArgsConstructor
 public class PathService {
-    private static final Map<String, PathResponse> PATH_CACHE = new HashMap<>();
+    private static final Map<String, PathResponse> PATH_CACHE = new ConcurrentHashMap<>();
     private final StationService stationService;
     private final LineRepository lineRepository;
 
