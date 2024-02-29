@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Path;
+import nextstep.subway.domain.PathCalculator;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.PathResponse;
 import nextstep.subway.repository.LineRepository;
@@ -30,10 +31,13 @@ public class PathService {
         List<Line> allLines = lineRepository.findAll();
         Station sourceStation = stationService.findById(sourceId);
         Station targetStation = stationService.findById(targetId);
-        Path path = new Path();
-        PathResponse shortestPath = path.getShortestPath(allLines, sourceStation, targetStation);
-        PATH_CACHE.put(getKey(sourceId, targetId), shortestPath); // cache miss
-        return shortestPath;
+
+        PathCalculator pathCalculator = new PathCalculator();
+        Path shortestPath = pathCalculator.getShortestPath(allLines, sourceStation, targetStation);
+
+        PathResponse pathResponse = PathResponse.of(shortestPath);
+        PATH_CACHE.put(getKey(sourceId, targetId), pathResponse); // cache miss
+        return pathResponse;
     }
 
     private String getKey(Long sourceId, Long targetId) {

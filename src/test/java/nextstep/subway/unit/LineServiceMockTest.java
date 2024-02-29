@@ -11,14 +11,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Path;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.service.LineService;
-import nextstep.subway.service.PathService;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {

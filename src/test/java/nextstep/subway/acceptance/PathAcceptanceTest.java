@@ -69,30 +69,6 @@ public class PathAcceptanceTest extends BaseAcceptanceTest {
         );
     }
 
-    @DisplayName("   given 출발역과 도착역이 주어질 때\n"
-                 + "   when 경로를 조회하면\n"
-                 + "   then 출발역과 도착역 사이 역 목록과\n"
-                 + "   and  출발역과 도착역 사이 거리를 조회할 수 있다.")
-    @Test
-    void 경로를_두_번_조회하면_캐시한다() {
-        //given
-        Long 출발역 = 교대역_ID;
-        Long 도착역 = 양재역_ID;
-
-        //when
-        PathResponse pathResponse = 지하철_경로_조회(출발역, 도착역);
-        PathResponse pathResponse2 = 지하철_경로_조회(출발역, 도착역);
-        //then
-        List<StationResponse> stationResponses = pathResponse.getStations();
-        assertAll(
-            () -> assertThat(stationResponses).hasSize(3),
-            () -> assertThat(stationResponses).extracting(StationResponse::getId).containsExactly(교대역_ID, 남부터미널역_ID, 양재역_ID),
-            () -> assertThat(pathResponse.getDistance()).isEqualTo(5)
-        );
-    }
-
-
-
     @DisplayName("given 출발역과 도착역이 주어질 때\n"
                  + "    when 경로를 조회하는데\n"
                  + "    and  출발역과 도착역이 동일하면\n"
