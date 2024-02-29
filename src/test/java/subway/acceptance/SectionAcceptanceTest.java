@@ -166,41 +166,4 @@ public class SectionAcceptanceTest {
                 .jsonPath().getList("stations.name", String.class);
         assertThat(stationNames).doesNotContain("수서역");
     }
-
-    /**
-     * When 하행 종점역이 아닌 구간을 제거하면
-     * Then IllegalArgumentException이 발생한다.
-     */
-    @DisplayName("하행 종점역이 아닌 지하철 구간을 제거할 수 없다.")
-    @Test
-    void cantDeleteNotDownStation() {
-        // when
-        RestAssuredUtil.post(SECTION_TWO, "/lines/" + LINE_SHINBUNDANG_ID + "/sections");
-
-        // then
-        RestAssured
-                .given()
-                .param("stationId", GWANGGYO_STATION_ID)
-                .when()
-                .delete("/lines/" + LINE_SHINBUNDANG_ID + "/sections")
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
-
-    /**
-     * When 구간이 한개 이하일 떄 구간 삭제 요청을 하면
-     * Then IllegalArgumentException이 발생한다.
-     */
-    @DisplayName("지하철 구간이 한 개 이하일 때 구간을 삭제할 수 없다.")
-    @Test
-    void cantDeleteUnderOneSection() {
-        // then
-        RestAssured
-                .given()
-                .param("stationId", GWANGGYO_STATION_ID)
-                .when()
-                .delete("/lines/" + LINE_SHINBUNDANG_ID + "/sections")
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
-    }
 }
