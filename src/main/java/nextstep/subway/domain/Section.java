@@ -57,25 +57,16 @@ public class Section {
         return upStation;
     }
 
-    public Long getUpStationId() {
-        return upStation.getId();
-    }
 
     public Station getDownStation() {
         return downStation;
     }
 
-    public Long getDownStationId() {
-        return downStation.getId();
-    }
 
     public int getDistance() {
         return distance;
     }
 
-    public boolean isPossibleToDelete(Station station) {
-        return downStation.isSameStation(station);
-    }
 
     public boolean isSameWithUpStation(Station station) {
         return upStation.equals(station);
