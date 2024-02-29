@@ -49,9 +49,9 @@ public class Station {
     @Override
     public boolean equals(Object o) {
         if (this == o) {return true;}
-        if (o == null || getClass() != o.getClass()) {return false;}
+        if (!(o instanceof Station)) {return false;}
         Station station = (Station) o;
-        return Objects.equals(name, station.name);
+        return Objects.equals(id, station.getId());
     }
 
     @Override
