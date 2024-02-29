@@ -43,12 +43,6 @@ public class Sections {
                 .getDownStation();
     }
 
-    private Section getLastSection() {
-        return values.stream()
-                .reduce((first, second) -> second)
-                .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."));
-    }
-
     public void addSection(Section section) {
         Station upStation = section.getUpStation();
         Station downStation = section.getDownStation();
@@ -128,7 +122,8 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
-        validateRemovableLastSection(station);
+        validateSize();
+        sortSections();
         values.removeIf(value -> value.containStation(station));
     }
 
@@ -137,18 +132,6 @@ public class Sections {
         boolean hasDownStation = values.stream().anyMatch(value -> value.containStation(downStation));
         if (hasDownStation && hasUpStation) {
             throw new IllegalArgumentException("주어진 구간은 이미 노선에 등록되어 있는 구간입니다. upStationId: " + upStation.getId() + ", downStationId: " + downStation.getId());
-        }
-    }
-
-    public void validateRemovableLastSection(Station station) {
-        validateLatestSection(station);
-        validateSize();
-    }
-
-    private void validateLatestSection(Station station) {
-        Section lastSection = getLastSection();
-        if (lastSection.getDownStation().isNotSameStation(station)) {
-            throw new IllegalArgumentException("노선의 하행 종착역만 삭제할 수 있습니다. stationId: " + station.getId());
         }
     }
 
