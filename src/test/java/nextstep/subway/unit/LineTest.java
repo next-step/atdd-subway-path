@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
@@ -35,9 +36,11 @@ class LineTest {
     @Test
     void addSection_기존_노선의_하행종점역과_추가_구간의_상행역이_다르면_예외를_반환한다() {
         //given
-        Station upStation = new Station("역삼역");
-        Station downStation = new Station("선릉역");
-        Section existingSection = new Section(upStation, downStation, 10);
+        Station 역삼역 = new Station("역삼역");
+        ReflectionTestUtils.setField(역삼역, "id", 1L);
+        Station 선릉역 = new Station("선릉역");
+        ReflectionTestUtils.setField(선릉역, "id", 2L);
+        Section existingSection = new Section(역삼역, 선릉역, 10);
         Line line = new Line("이호선", "초록색");
         line.addSection(existingSection);
 
@@ -72,25 +75,29 @@ class LineTest {
 
     @Test
     void testDeleteLastSection_노선에_구간이_2개_이상_등록되어_있을_때_구간을_제거할_수_있다() {
-        Station upStation1 = new Station("역삼역");
-        Station downStation1 = new Station("선릉역");
-        Station downStation2 = new Station("잠실역");
-        Section section1 = new Section(upStation1, downStation1, 10);
-        Section section2 = new Section(downStation1, downStation2, 2);
+        Station 역삼역 = new Station("역삼역");
+        ReflectionTestUtils.setField(역삼역, "id", 1L);
+        Station 선릉역 = new Station("선릉역");
+        ReflectionTestUtils.setField(선릉역, "id", 2L);
+        Station 잠실역 = new Station("잠실역");
+        ReflectionTestUtils.setField(잠실역, "id", 3L);
+
+        Section 역삼_선릉_구간 = new Section(역삼역, 선릉역, 10);
+        Section 선릉_잠실_구간 = new Section(선릉역, 잠실역, 2);
         String lineName = "이호선";
         String lineColor = "초록색";
         Line line = new Line(lineName, lineColor);
-        line.addSection(section1);
-        line.addSection(section2);
+        line.addSection(역삼_선릉_구간);
+        line.addSection(선릉_잠실_구간);
 
         //when
-        line.deleteSection(downStation2);
+        line.deleteSection(잠실역);
 
         //then
         Sections sections = line.getSections();
         assertAll(
             () -> assertThat(sections.getSections()).hasSize(1),
-            () -> assertThat(sections.getSections().get(0)).isEqualTo(section1)
+            () -> assertThat(sections.getSections().get(0)).isEqualTo(역삼_선릉_구간)
         );
     }
 

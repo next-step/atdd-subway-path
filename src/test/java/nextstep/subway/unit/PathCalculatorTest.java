@@ -2,20 +2,19 @@ package nextstep.subway.unit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.Matchers.contains;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Path;
 import nextstep.subway.domain.PathCalculator;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.dto.PathResponse;
-import nextstep.subway.dto.StationResponse;
 import nextstep.subway.exception.IllegalPathException;
 
 public class PathCalculatorTest {
@@ -24,6 +23,14 @@ public class PathCalculatorTest {
     private static final Station 양재역 = new Station("양재역");
     private static final int 교대역_남부터미널역_사이_거리 = 10;
     private static final int 남부터미널역_양재역_사이_거리 = 12;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(교대역, "id", 1L);
+        ReflectionTestUtils.setField(남부터미널역, "id", 2L);
+        ReflectionTestUtils.setField(양재역, "id", 3L);
+    }
+
     @Test
     void testGetShortestPath_경로_사이의_모든_역과_최단거리를_반환한다() {
         //given
@@ -39,8 +46,8 @@ public class PathCalculatorTest {
         //then
         assertAll(
             () -> assertThat(path.getStations()).hasSize(3)
-                                                    .extracting(Station::getName)
-                                                    .containsExactly("교대역", "남부터미널역", "양재역"),
+                                                .extracting(Station::getName)
+                                                .containsExactly("교대역", "남부터미널역", "양재역"),
             () -> assertThat(path.getDistance()).isEqualTo(교대역_남부터미널역_사이_거리 + 남부터미널역_양재역_사이_거리)
         );
     }
