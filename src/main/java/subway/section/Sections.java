@@ -5,6 +5,7 @@ import subway.station.Station;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
@@ -38,14 +39,6 @@ public class Sections {
                 )).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."))
                 .getDownStation();
-    }
-
-    public boolean hasUnderOneSection() {
-        return sections.size() <= 1;
-    }
-
-    public boolean isLastSection(Station station) {
-        return lastSection().equalDownStation(station);
     }
 
     public Section lastSection() {
@@ -120,7 +113,41 @@ public class Sections {
         }
     }
 
-    public void remove(Section section) {
-        sections.remove(section);
+    public void remove(Station station) {
+        Optional<Section> upSection = this.sections.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findAny();
+        Optional<Section> downSection = this.sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findAny();
+        // 역기준 상하행 구간이 있을시 두 구간 삭제 및 두 구간을 병합한 구간 생성
+        if (upSection.isPresent() && downSection.isPresent()) {
+            sections.remove(upSection.get());
+            sections.remove(downSection.get());
+            sections.add(
+                    new Section(
+                            upSection.get().getUpStation(),
+                            downSection.get().getDownStation(),
+                            upSection.get().getDistance() + downSection.get().getDistance()
+                    )
+            );
+            return;
+        }
+        // 역기준 상행 구간 있을시 구간 삭제
+        upSection.ifPresent(
+                section -> sections.remove(section)
+        );
+        // 역기준 하행 구간 있을시 구간 삭제
+        downSection.ifPresent(
+                section -> sections.remove(section)
+        );
+
+        if (hasUnderOneSection()) {
+            throw new IllegalArgumentException("노선에는 하나 이상의 구간이 존재해야 합니다.");
+        }
+    }
+
+    private boolean hasUnderOneSection() {
+        return sections.size() < 1;
     }
 }

@@ -77,15 +77,6 @@ public class LineService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 라인을 찾을 수 없습니다."));
         Station station = stationRepository.findById(stationId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 역을 찾을 수 없습니다."));
-
-        if (line.sections().hasUnderOneSection()) {
-            throw new IllegalArgumentException("노선에는 하나 이상의 구간이 존재해야 합니다.");
-        }
-
-        if (!line.sections().isLastSection(station)) {
-            throw new IllegalArgumentException("노선의 마지막 구간이 아닙니다.");
-        }
-
-        line.sections().remove(line.sections().lastSection());
+        line.removeSection(station);
     }
 }
