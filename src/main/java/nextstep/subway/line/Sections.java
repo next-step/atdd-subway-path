@@ -72,7 +72,7 @@ public class Sections {
             Station currentDownStation = currentSection.getDownStation();
 
             Section nextSection = values.stream()
-                    .filter(section -> section.getUpStation().isSameStation(currentDownStation))
+                    .filter(section -> section.isMatchWithUpStation(currentDownStation))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."));
 
@@ -83,7 +83,7 @@ public class Sections {
 
     private void sortFirstSection(List<Section> sortedSections) {
         Section firstSection = values.stream()
-                .filter(section -> values.stream().noneMatch(other -> section.getUpStation().isSameStation(other.getDownStation())))
+                .filter(section -> values.stream().noneMatch(other -> section.isMatchWithUpStation(other.getDownStation())))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("노선에 구간이 존재하지 않습니다."));
 
