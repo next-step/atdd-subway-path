@@ -166,4 +166,40 @@ public class SectionAcceptanceTest {
                 .jsonPath().getList("stations.name", String.class);
         assertThat(stationNames).doesNotContain("수서역");
     }
+
+    /**
+     * When 지하철 구간을 맨 앞에 생성하면
+     * Then 지하철 노선 조회 시 생성한 구간을 찾을 수 있다
+     */
+    @DisplayName("지하철 노선 맨 앞 구간을 삭제한다.")
+    @Test
+    void 지하철_노선_맨_앞_구간_삭제() {
+        // when
+        RestAssuredUtil.post(SECTION_TWO, "/lines/" + LINE_SHINBUNDANG_ID + "/sections");
+        RestAssuredUtil.delete("/lines/" + LINE_SHINBUNDANG_ID + "/sections" + "?stationId=" + SINSA_STATION_ID);
+
+        // then
+        LineResponse res
+                = RestAssuredUtil.get("/lines/" + LINE_SHINBUNDANG_ID).as(LineResponse.class);
+        assertThat(res.getStations().get(0).getName()).isEqualTo("광교역");
+        assertThat(res.getStations().get(1).getName()).isEqualTo("수서역");
+    }
+
+    /**
+     * When 지하철 구간을 중간에 생성하면
+     * Then 지하철 노선 조회 시 생성한 구간을 찾을 수 있다
+     */
+    @DisplayName("지하철 노선 중간 구간을 삭제한다.")
+    @Test
+    void 지하철_노선_중간_구간_삭제() {
+        // when
+        RestAssuredUtil.post(SECTION_TWO, "/lines/" + LINE_SHINBUNDANG_ID + "/sections");
+        RestAssuredUtil.delete("/lines/" + LINE_SHINBUNDANG_ID + "/sections" + "?stationId=" + SUSEO_STATION_ID);
+
+        // then
+        LineResponse res
+                = RestAssuredUtil.get("/lines/" + LINE_SHINBUNDANG_ID).as(LineResponse.class);
+        assertThat(res.getStations().get(0).getName()).isEqualTo("신사역");
+        assertThat(res.getStations().get(1).getName()).isEqualTo("광교역");
+    }
 }
