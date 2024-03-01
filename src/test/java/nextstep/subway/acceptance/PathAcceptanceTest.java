@@ -74,6 +74,7 @@ class PathAcceptanceTest {
     void getPaths() {
         // given
         이호선_삼호선_신분당선_노선의_구간_존재();
+
         // when
         ExtractableResponse<Response> 지하철_경로_조회_응답 = 지하철_경로_조회_요청(교대역_아이디, 양재역_아이디);
         // then

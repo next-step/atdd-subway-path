@@ -101,7 +101,6 @@ class SectionsTest {
         Sections 강남_낙성대_봉천_구간들 = 구간들(강남역_낙성대역_구간, 낙성대역_봉천역_구간);
 
         // when
-
         Throwable catchThrowable = catchThrowable(() -> {
             강남_낙성대_봉천_구간들.addSection(강남역_낙성대역_구간의_길이와_같은_강남역_교대역_구간);
         });

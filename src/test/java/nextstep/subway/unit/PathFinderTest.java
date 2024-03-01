@@ -5,6 +5,7 @@ import static nextstep.subway.support.fixture.LineFixture.이호선_이름;
 import static nextstep.subway.support.fixture.StationFixture.강남역_이름;
 import static nextstep.subway.support.fixture.StationFixture.교대역_이름;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import java.util.List;
 import nextstep.subway.domain.entity.Line;
 import nextstep.subway.domain.entity.Path;
@@ -36,8 +37,11 @@ class PathFinderTest {
 
 
     /**
-     * 교대역   --- 2호선, 10 ----    강남역 |                            | 3호선, 2                   신분당선, 10 |
-     * | 남부터미널역  --- 3호선, 3 ---   양재
+     * 교대역   --- 2호선, 10 ----    강남역
+     * |                            |
+     * 3호선, 2                   신분당선, 10
+     * |                            |
+     * 남부터미널역  --- 3호선, 3 ---   양재
      */
     void 이호선_삼호선_신분당선_노선의_구간_존재() {
         교대역 = StationFixture.giveOne(1L, 교대역_이름);
@@ -62,7 +66,7 @@ class PathFinderTest {
 
     @DisplayName("지하철 최단거리를 조회한다.")
     @Test
-    void findShortestPath() {
+    void findShorPath() {
         // given
         이호선_삼호선_신분당선_노선의_구간_존재();
         PathFinder pathFinder = new PathFinder(List.of(이호선, 삼호선, 신분당선));
@@ -77,5 +81,70 @@ class PathFinderTest {
         });
 
     }
+
+    @DisplayName("지하철 최단거리를 조회에 실패한다. - 출발역과 도착역이 같은 경우")
+    @Test
+    void findShorPathWithError() {
+        // given
+        이호선_삼호선_신분당선_노선의_구간_존재();
+        PathFinder pathFinder = new PathFinder(List.of(이호선, 삼호선, 신분당선));
+
+        // when
+        Throwable catchThrowable = catchThrowable(() -> {
+            pathFinder.findShortestPath(교대역, 교대역);
+        });
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(catchThrowable)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Source and target stations are the same");
+        });
+
+    }
+
+    @DisplayName("지하철 최단거리를 조회에 실패한다. - 출발역과 도착역이 연결이 되어 있지 않은 경우")
+    @Test
+    void findShorPathWithError2() {
+        // given
+        이호선_삼호선_신분당선_노선의_구간_존재();
+        PathFinder pathFinder = new PathFinder(List.of(이호선, 신분당선));
+
+        // when
+        Throwable catchThrowable = catchThrowable(() -> {
+            pathFinder.findShortestPath(교대역, 남부터미널역);
+        });
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(catchThrowable)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Unable to find the shortest path.");
+        });
+
+    }
+
+    @DisplayName("지하철 최단거리를 조회에 실패한다. - 존재하지 않은 출발역이나 도착역을 조회 할 경우")
+    @Test
+    void findShorPathWithError3() {
+        // given
+        이호선_삼호선_신분당선_노선의_구간_존재();
+        PathFinder pathFinder = new PathFinder(List.of(이호선, 삼호선, 신분당선));
+        Station 존재하지_않는_역 = StationFixture.giveOne(Long.MAX_VALUE, "폐쇄역");
+
+        // when
+        Throwable catchThrowable = catchThrowable(() -> {
+            pathFinder.findShortestPath(존재하지_않는_역, 양재역);
+        });
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(catchThrowable)
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Unable to find the shortest path.");
+        });
+
+    }
+
 
 }
