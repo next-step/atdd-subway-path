@@ -55,10 +55,18 @@ public class Route {
     }
 
     public List<Station> findShortestPath(Station sourceStation, Station targetStation) {
+        validateSameStation(sourceStation, targetStation);
         return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
     }
 
     public int findShortestDistance(Station sourceStation, Station targetStation) {
+        validateSameStation(sourceStation, targetStation);
         return (int) dijkstraShortestPath.getPath(sourceStation, targetStation).getWeight();
+    }
+
+    private void validateSameStation(Station sourceStation, Station targetStation) {
+        if (sourceStation.isSameStation(targetStation)) {
+            throw new IllegalArgumentException("출발역과 도착역이 같습니다. stationId: " + sourceStation.getId());
+        }
     }
 }
