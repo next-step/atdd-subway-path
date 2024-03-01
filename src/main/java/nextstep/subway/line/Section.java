@@ -42,8 +42,8 @@ public class Section {
         this.distance = distance;
     }
 
-    public boolean containStation(Station station) {
-        return upStation.equals(station) || downStation.equals(station);
+    public boolean hasStation(Station station) {
+        return upStation.isSameStation(station) || downStation.isSameStation(station);
     }
 
     public Long getId() {
@@ -70,16 +70,21 @@ public class Section {
         return downStation.isSameStation(station);
     }
 
-    public void updateUpStationAndDistance(Station station, Long distance) {
+    public void updateUpStationAndDecreaseDistance(Station station, Long distance) {
         validateHasLongerDistanceThan(distance);
         this.upStation = station;
         this.distance -= distance;
     }
 
-    public void updateDownStationAndDistance(Station station, Long distance) {
+    public void updateDownStationAndDecreaseDistance(Station station, Long distance) {
         validateHasLongerDistanceThan(distance);
         this.downStation = station;
         this.distance -= distance;
+    }
+
+    public void updateDownStationAndIncreaseDistance(Section other) {
+        this.downStation = other.downStation;
+        this.distance += other.distance;
     }
 
     private void validateHasLongerDistanceThan(Long otherDistance) {

@@ -36,10 +36,6 @@ public class Station {
         return this.equals(other);
     }
 
-    public boolean isNotSameStation(Station other) {
-        return !isSameStation(other);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

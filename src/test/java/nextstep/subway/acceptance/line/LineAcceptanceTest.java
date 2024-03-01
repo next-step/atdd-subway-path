@@ -493,12 +493,12 @@ public class LineAcceptanceTest {
          * Given 3개의 지하철 역(A, B, C)이 등록되어 있다.
          * And 1개의 지하철 노선이 등록되어 있다.
          * And 지하철 노선에 2개의 구간(A-B, B-C)이 등록되어 있다.
-         * When 지하철 노선에서 하행 종착역이 아닌 역(B)을 이용해서 구간을 제거한다.
-         * Then 지하철 노선의 가장 마지막 구간이 아니므로 에러가 발생한다.
+         * When 지하철 노선에서 하행 종착역(C)을 이용해서 구간(B-C)을 제거한다.
+         * Then 지하철 노선에 남은 구간 목록은 1개(A-B)이다.
          */
-        @DisplayName("지하철 노선에서 하행 종착역이 아닌 역을 이용해서 구간을 제거하면 에러가 발생한다.")
+        @DisplayName("지하철 노선에서 종착역을 이용해서 구간을 제거한다.")
         @Test
-        void invalidLastStationErrorTest() {
+        void removeSectionByDownStationTest() {
             // given
             Long 건대입구역_ID = newStationAndGetId("건대입구역");
             Long 구의역_ID = newStationAndGetId("구의역");
@@ -512,14 +512,53 @@ public class LineAcceptanceTest {
                     10
             );
 
-            ExtractableResponse<Response> 건대입구역_구의역_구간 = addSection(이호선_ID, 구의역_ID, 강남역_ID, 10);
+            addSection(이호선_ID, 구의역_ID, 강남역_ID, 10);
 
             // when
-            ExtractableResponse<Response> response = removeSection(이호선_ID, 구의역_ID);
+            ExtractableResponse<Response> response = removeSection(이호선_ID, 강남역_ID);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("노선의 하행 종착역만 삭제할 수 있습니다. stationId: " + 구의역_ID);
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            ExtractableResponse<Response> loadLine = loadLine(Long.valueOf(이호선_ID));
+            assertThat(loadLine.jsonPath().getList("stations")).hasSize(2);
+            assertThat(loadLine.jsonPath().getList("stations.id", Long.class)).containsExactly(건대입구역_ID, 구의역_ID);
+            assertThat(loadLine.jsonPath().getList("stations.name", String.class)).containsExactly("건대입구역", "구의역");
+        }
+
+        /**
+         * Given 3개의 지하철 역(A, B, C)이 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * And 지하철 노선에 2개의 구간(A-B, B-C)이 등록되어 있다.
+         * When 지하철 노선에서 하행 시작역(A)을 이용해서 구간(A-B)을 제거한다.
+         * Then 지하철 노선에 남은 구간 목록은 1개(B-C)이다.
+         */
+        @DisplayName("지하철 노선에서 시작역을 이용해서 구간을 제거한다.")
+        @Test
+        void removeSectionByUpStationTest() {
+            // given
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+            Long 강남역_ID = newStationAndGetId("강남역");
+
+            Long 이호선_ID = newLineAndGetId(
+                    "2호선",
+                    "bg-green-000",
+                    건대입구역_ID,
+                    구의역_ID,
+                    10
+            );
+
+            addSection(이호선_ID, 구의역_ID, 강남역_ID, 10);
+
+            // when
+            ExtractableResponse<Response> response = removeSection(이호선_ID, 건대입구역_ID);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            ExtractableResponse<Response> loadLine = loadLine(Long.valueOf(이호선_ID));
+            assertThat(loadLine.jsonPath().getList("stations")).hasSize(2);
+            assertThat(loadLine.jsonPath().getList("stations.id", Long.class)).containsExactly(구의역_ID, 강남역_ID);
+            assertThat(loadLine.jsonPath().getList("stations.name", String.class)).containsExactly("구의역", "강남역");
         }
 
         /**
@@ -549,7 +588,44 @@ public class LineAcceptanceTest {
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            assertThat(response.body().asString()).isEqualTo("노선에 남은 구간이 1개뿐이라 삭제할 수 없습니다.");
+            assertThat(response.body().asString()).isEqualTo("노선에 남은 구간이 1개뿐이라 제거할 수 없습니다.");
+        }
+
+        /**
+         * Given 3개의 지하철 역(A, B, C)이 등록되어 있다.
+         * And 1개의 지하철 노선이 등록되어 있다.
+         * And 지하철 노선에 2개의 구간(A-B, B-C)이 등록되어 있다.
+         * And 두 구간의 거리는 각각 10, 20이다.
+         * When 지하철 노선에서 하행 종착역(B)을 이용해서 구간을 제거한다.
+         * Then 지하철 노선에 남은 구간은 1개 (A-C) 이며, 구간의 거리는 30 (10+20)이 된다.
+         */
+        @DisplayName("지하철 노선에서 중간 구간을 제거하면 남은 구간의 거리는 제거된 구간의 거리를 합친 값이 된다.")
+        @Test
+        void removeSectionAndSumDistanceTest() {
+            // given
+            Long 건대입구역_ID = newStationAndGetId("건대입구역");
+            Long 구의역_ID = newStationAndGetId("구의역");
+            Long 강남역_ID = newStationAndGetId("강남역");
+
+            Long 이호선_ID = newLineAndGetId(
+                    "2호선",
+                    "bg-green-000",
+                    건대입구역_ID,
+                    구의역_ID,
+                    10
+            );
+
+            addSection(이호선_ID, 구의역_ID, 강남역_ID, 20);
+
+            // when
+            ExtractableResponse<Response> response = removeSection(이호선_ID, 구의역_ID);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+            ExtractableResponse<Response> loadLine = loadLine(Long.valueOf(이호선_ID));
+            assertThat(loadLine.jsonPath().getList("stations")).hasSize(2);
+            assertThat(loadLine.jsonPath().getList("stations.id", Long.class)).containsExactly(건대입구역_ID, 강남역_ID);
+            assertThat(loadLine.jsonPath().getList("stations.name", String.class)).containsExactly("건대입구역", "강남역");
         }
     }
 }
