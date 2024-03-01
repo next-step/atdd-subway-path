@@ -1,6 +1,5 @@
 package subway.path;
 
-import subway.station.Station;
 import subway.station.StationResponse;
 
 import java.util.List;
@@ -12,11 +11,11 @@ public class PathResponse {
 
     public PathResponse() {}
 
-    public PathResponse(List<Station> stations, Long distance) {
-        this.stations = stations.stream()
+    public PathResponse(Path path) {
+        this.stations = path.getStations().stream()
                 .map(StationResponse::new)
                 .collect(Collectors.toList());
-        this.distance = distance;
+        this.distance = path.getDistance();
     }
 
     public List<StationResponse> getStations() {

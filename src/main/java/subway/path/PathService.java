@@ -28,7 +28,6 @@ public class PathService {
         Station end = stationRepository.findById(target)
                 .orElseThrow(() -> new EntityNotFoundException("해당 역이 존재하지 않습니다."));
 
-        PathGenerator path = new PathGenerator(sections);
-        return new PathResponse(path.getStations(start, end), path.getDistance(start, end));
+        return new PathResponse(new Path(sections, start, end));
     }
 }

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import subway.line.Line;
-import subway.path.PathGenerator;
+import subway.path.Path;
 import subway.section.Section;
 import subway.station.Station;
 
@@ -13,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class PathGeneratorTest {
+public class PathTest {
     private Station 교대역;
     private Station 강남역;
     private Station 양재역;
@@ -63,10 +63,13 @@ public class PathGeneratorTest {
         // given
 
         // when
-        PathGenerator pathGen = new PathGenerator(
-                List.of(이호선_첫번째_구간, 삼호선_첫번째_구간, 삼호선_두번째_구간, 신분당선_첫번째_구간));
-        List<Station> stations = pathGen.getStations(교대역, 양재역);
-        long distance = pathGen.getDistance(교대역, 양재역);
+        Path path = new Path(
+                List.of(이호선_첫번째_구간, 삼호선_첫번째_구간, 삼호선_두번째_구간, 신분당선_첫번째_구간),
+                교대역,
+                양재역
+        );
+        List<Station> stations = path.getStations();
+        long distance = path.getDistance();
 
         // then
         assertThat(stations).hasSize(3);
@@ -86,11 +89,13 @@ public class PathGeneratorTest {
         // given
 
         // when
-        PathGenerator pathGen = new PathGenerator(
-                List.of(이호선_첫번째_구간, 삼호선_첫번째_구간, 삼호선_두번째_구간, 신분당선_첫번째_구간));
 
         //then
-        assertThatThrownBy(() -> pathGen.getDistance(교대역, 교대역))
+        assertThatThrownBy(() -> new Path(
+                List.of(이호선_첫번째_구간, 삼호선_첫번째_구간, 삼호선_두번째_구간, 신분당선_첫번째_구간),
+                교대역,
+                교대역
+        ))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("출발역과 도착역이 같습니다.");
     }
@@ -105,11 +110,13 @@ public class PathGeneratorTest {
         // given
 
         // when
-        PathGenerator pathGen = new PathGenerator(
-                List.of(이호선_첫번째_구간, 삼호선_첫번째_구간, 삼호선_두번째_구간, 신분당선_첫번째_구간));
 
         //then
-        assertThatThrownBy(() -> pathGen.getDistance(삼성역, 교대역))
+        assertThatThrownBy(() -> new Path(
+                List.of(이호선_첫번째_구간, 삼호선_첫번째_구간, 삼호선_두번째_구간, 신분당선_첫번째_구간),
+                삼성역,
+                교대역
+        ))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("출발역 또는 도착역이 연결되어 있지 않습니다");
     }

@@ -10,15 +10,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class PathGenerator {
-    private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+public class Path {
+    private final List<Station> stations;
+    private final long distance;
 
-    public PathGenerator(List<Section> sections) {
-        this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-        init(sections);
+    public Path(List<Section> sections, Station start, Station end) {
+        WeightedMultigraph<Station, DefaultWeightedEdge> graph
+                = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        init(graph, sections);
+        this.stations = getStations(graph, start, end);
+        this.distance = calcDistance(graph, start, end);
     }
 
-    private void init(List<Section> sections) {
+    private void init(WeightedMultigraph<Station, DefaultWeightedEdge> graph, List<Section> sections) {
         for (Station station : toStations(sections)) {
             if (!graph.containsVertex(station)) {
                 graph.addVertex(station);
@@ -44,20 +48,20 @@ public class PathGenerator {
     }
 
     // 다익스트라 알고리즘을 활용하여 최단 경로 계산
-    public List<Station> getStations(Station start, Station end) {
-        validateIsConnected(start, end);
+    private List<Station> getStations(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Station start, Station end) {
+        validateIsConnected(graph, start, end);
         validateIsDifferentStation(start, end);
         return new DijkstraShortestPath<>(graph).getPath(start, end).getVertexList();
     }
 
     // 다익스트라 알고리즘을 활용하여 최단 거리 계산
-    public long getDistance(Station start, Station end) {
-        validateIsConnected(start, end);
+    private long calcDistance(WeightedMultigraph<Station, DefaultWeightedEdge> graph,Station start, Station end) {
+        validateIsConnected(graph, start, end);
         validateIsDifferentStation(start, end);
         return (long) new DijkstraShortestPath<>(graph).getPath(start, end).getWeight();
     }
 
-    private void validateIsConnected(Station start, Station end) {
+    private void validateIsConnected(WeightedMultigraph<Station, DefaultWeightedEdge> graph, Station start, Station end) {
         if (!graph.containsVertex(start) || !graph.containsVertex(end)) {
             throw new IllegalArgumentException("출발역 또는 도착역이 연결되어 있지 않습니다");
         }
@@ -67,5 +71,13 @@ public class PathGenerator {
         if (start.equals(end)) {
             throw new IllegalArgumentException("출발역과 도착역이 같습니다.");
         }
+    }
+
+    public List<Station> getStations() {
+        return stations;
+    }
+
+    public long getDistance() {
+        return distance;
     }
 }

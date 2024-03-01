@@ -1,6 +1,6 @@
 package subway.section;
 
-import subway.path.PathGenerator;
+import subway.path.Path;
 import subway.station.Station;
 
 import javax.persistence.*;
@@ -21,7 +21,7 @@ public class Sections {
     }
 
     public List<Station> toStations() {
-        return new PathGenerator(sections).getStations(getFirstStation(), getLastStation());
+        return new Path(sections, getFirstStation(), getLastStation()).getStations();
     }
 
     public Station getFirstStation() {
