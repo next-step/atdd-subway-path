@@ -1,8 +1,8 @@
 package nextstep.subway.support.fixture;
 
 import java.util.List;
-import nextstep.subway.domians.domain.Section;
-import nextstep.subway.domians.domain.Sections;
+import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Sections;
 
 public class SectionsFixture {
 

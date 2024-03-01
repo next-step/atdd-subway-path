@@ -1,14 +1,14 @@
 package nextstep.subway.support.fixture;
 
 import java.util.Map;
-import nextstep.subway.domians.domain.Line;
-import nextstep.subway.domians.domain.Section;
-import nextstep.subway.domians.domain.Station;
+import nextstep.subway.domain.entity.Line;
+import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Station;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class SectionFixture {
 
-    public static Map<String, Object> 구간_등록_요청(Long upStationId, Long downStationId, Long distance) {
+    public static Map<String, Object> 구간_등록_요청_본문(Long upStationId, Long downStationId, Long distance) {
         return Map.of(
             "upStationId", upStationId,
             "downStationId", downStationId,

@@ -1,4 +1,4 @@
-package nextstep.subway.domians.domain;
+package nextstep.subway.domain.entity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +13,8 @@ import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Station;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

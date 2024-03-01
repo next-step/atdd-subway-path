@@ -3,8 +3,8 @@ package nextstep.subway.web.dto.response;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import nextstep.subway.domians.domain.Line;
-import nextstep.subway.domians.domain.Station;
+import nextstep.subway.domain.entity.Line;
+import nextstep.subway.domain.entity.Station;
 
 @Getter
 public class LineResponse {

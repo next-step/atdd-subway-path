@@ -8,9 +8,9 @@ import static nextstep.subway.support.fixture.StationFixture.낙성대역_이름
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.domians.domain.Line;
-import nextstep.subway.domians.domain.Section;
-import nextstep.subway.domians.domain.Station;
+import nextstep.subway.domain.entity.Line;
+import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Station;
 import nextstep.subway.support.fixture.LineFixture;
 import nextstep.subway.support.fixture.SectionFixture;
 import nextstep.subway.support.fixture.StationFixture;

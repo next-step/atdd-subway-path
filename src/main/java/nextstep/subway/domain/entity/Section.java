@@ -1,4 +1,4 @@
-package nextstep.subway.domians.domain;
+package nextstep.subway.domain.entity;
 
 import java.util.Objects;
 import javax.persistence.Entity;

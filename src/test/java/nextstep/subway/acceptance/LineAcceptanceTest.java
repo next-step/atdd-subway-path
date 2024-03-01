@@ -1,13 +1,13 @@
 package nextstep.subway.acceptance;
 
 import static nextstep.subway.support.fixture.LineFixture.강남역_교대역_구간_이호선_생성_요청;
-import static nextstep.subway.support.fixture.LineFixture.노선_생성_요청;
+import static nextstep.subway.support.fixture.LineFixture.노선_생성_요청_본문;
 import static nextstep.subway.support.fixture.LineFixture.노선_수정_요청;
 import static nextstep.subway.support.fixture.LineFixture.서울역_청량리역_구간_일호선_생성_요청;
 import static nextstep.subway.support.fixture.LineFixture.이호선_이름;
 import static nextstep.subway.support.fixture.LineFixture.일호선_이름;
-import static nextstep.subway.support.fixture.StationFixture.강남역_생성_요청;
-import static nextstep.subway.support.fixture.StationFixture.교대역_생성_요청;
+import static nextstep.subway.support.fixture.StationFixture.강남역_생성_요청_본문;
+import static nextstep.subway.support.fixture.StationFixture.교대역_생성_요청_본문;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_단일_조회_요청;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_목록_응답에서_노선_아이디_목록_추출;
 import static nextstep.subway.support.step.LineSteps.지하철_노선_목록_응답에서_노선_이름_목록_추출;
@@ -51,12 +51,12 @@ class LineAcceptanceTest {
     @Test
     void createLine() {
         // given
-        Long 강남역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(강남역_생성_요청()));
-        Long 교대역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(교대역_생성_요청()));
+        Long 강남역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(강남역_생성_요청_본문()));
+        Long 교대역_아이디 = 지하철역_응답에서_역_아이디_추출(지하철_역_생성_요청(교대역_생성_요청_본문()));
 
         // when
         ExtractableResponse<Response> 지하철_라인_생성_응답 = 지하철_노선_생성_요청(
-            노선_생성_요청(
+            노선_생성_요청_본문(
                 LINE_TWO,
                 COLOR_ONE,
                 강남역_아이디,
