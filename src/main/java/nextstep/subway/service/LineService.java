@@ -82,7 +82,7 @@ public class LineService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoLineException(lineId + "에 해당하는 지하철 노선이 존재하지 않습니다."));
         Station station = stationRepository.findById(stationId).orElseThrow(() -> new NoStationException(stationId + "에 해당하는 지하철 역이 존재하지 않습니다."));
-        line.deleteLastSection(station);
+        line.deleteSection(station);
         lineRepository.save(line);
     }
 }

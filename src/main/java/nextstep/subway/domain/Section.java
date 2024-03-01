@@ -19,11 +19,11 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
     @Column(name = "distance")
@@ -57,17 +57,16 @@ public class Section {
         return upStation;
     }
 
+
     public Station getDownStation() {
         return downStation;
     }
+
 
     public int getDistance() {
         return distance;
     }
 
-    public boolean isPossibleToDelete(Station station) {
-        return downStation.isSameStation(station);
-    }
 
     public boolean isSameWithUpStation(Station station) {
         return upStation.equals(station);

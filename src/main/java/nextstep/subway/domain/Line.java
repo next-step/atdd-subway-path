@@ -80,7 +80,7 @@ public class Line {
         sections.add(section);
     }
 
-    public void deleteLastSection(Station station) {
+    public void deleteSection(Station station) {
         sections.removeSection(station);
     }
 

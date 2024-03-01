@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
@@ -24,6 +26,15 @@ class SectionsTest {
     public static final Station 강남역 = new Station("강남역");
     public static final Station 삼성역 = new Station("삼성역");
 
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(역삼역, "id", 1L);
+        ReflectionTestUtils.setField(선릉역, "id", 2L);
+        ReflectionTestUtils.setField(왕십리역, "id", 3L);
+        ReflectionTestUtils.setField(잠실역, "id", 4L);
+        ReflectionTestUtils.setField(강남역, "id", 5L);
+        ReflectionTestUtils.setField(삼성역, "id", 6L);
+    }
     @Test
     void testAddSection_마지막_구간의_하행_종점역이_추가하려는_구간의_상행역과_같으면_추가할_수_있다() {
         //given

@@ -265,7 +265,8 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     private void addSection(LineResponse lineResponse, SectionRequest sectionRequest) {
         given().body(sectionRequest)
+            .pathParam("lineId", lineResponse.getId())
                .contentType(MediaType.APPLICATION_JSON_VALUE)
-               .when().post("/lines/" + lineResponse.getId() + "/sections").then().log().all();
+               .when().post("/lines/{lineId}/sections").then().log().all();
     }
 }
