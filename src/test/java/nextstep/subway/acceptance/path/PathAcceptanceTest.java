@@ -58,14 +58,11 @@ public class PathAcceptanceTest {
         양재역 = newStationAndGetId("양재역");
         남부터미널역 = newStationAndGetId("남부터미널역");
 
-        이호선 = newLineAndGetId("2호선", "green", 교대역, 강남역, 10);
-        신분당선 = newLineAndGetId("신분당선", "red", 강남역, 양재역, 10);
+        이호선 = newLineAndGetId("2호선", "green", 교대역, 강남역, 4);
+        신분당선 = newLineAndGetId("신분당선", "red", 강남역, 양재역, 5);
         삼호선 = newLineAndGetId("3호선", "orange", 교대역, 남부터미널역, 2);
 
-        addSection(삼호선, 교대역, 남부터미널역, 2);
         addSection(삼호선, 남부터미널역, 양재역, 3);
-        addSection(이호선, 교대역, 강남역, 4);
-        addSection(신분당선, 강남역, 양재역, 5);
     }
 
     @DisplayName("지하철 경로 조회가 가능하다.")
