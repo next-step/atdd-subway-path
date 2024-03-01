@@ -42,10 +42,6 @@ public class Sections {
                 .getDownStation();
     }
 
-    public Section lastSection() {
-        return sections.get(sections.size() - 1);
-    }
-
     public void add(Section newSection) {
         // sections가 비어있다면 조건없이 추가한다.
         if (sections.isEmpty()) {
@@ -121,19 +117,7 @@ public class Sections {
         Optional<Section> downSection = this.sections.stream()
                 .filter(section -> section.equalUpStation(station))
                 .findAny();
-        // 역기준 상하행 구간이 있을시 두 구간 삭제 및 두 구간을 병합한 구간 생성
-        if (upSection.isPresent() && downSection.isPresent()) {
-            sections.remove(upSection.get());
-            sections.remove(downSection.get());
-            sections.add(
-                    new Section(
-                            upSection.get().getUpStation(),
-                            downSection.get().getDownStation(),
-                            upSection.get().getDistance() + downSection.get().getDistance()
-                    )
-            );
-            return;
-        }
+
         // 역기준 상행 구간 있을시 구간 삭제
         upSection.ifPresent(
                 section -> sections.remove(section)
@@ -143,6 +127,21 @@ public class Sections {
                 section -> sections.remove(section)
         );
 
+        // 역기준 상하행 구간이 있을시 두 구간 삭제 및 두 구간을 병합한 구간 생성
+        if (upSection.isPresent() && downSection.isPresent()) {
+            sections.add(
+                    new Section(
+                            upSection.get().getUpStation(),
+                            downSection.get().getDownStation(),
+                            upSection.get().getDistance() + downSection.get().getDistance()
+                    )
+            );
+        }
+
+        validateHasSection();
+    }
+
+    private void validateHasSection() {
         if (hasUnderOneSection()) {
             throw new IllegalArgumentException("노선에는 하나 이상의 구간이 존재해야 합니다.");
         }
