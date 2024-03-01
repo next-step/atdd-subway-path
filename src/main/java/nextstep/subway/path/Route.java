@@ -2,6 +2,7 @@ package nextstep.subway.path;
 
 import nextstep.subway.line.Section;
 import nextstep.subway.station.Station;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
@@ -56,12 +57,20 @@ public class Route {
 
     public List<Station> findShortestPath(Station sourceStation, Station targetStation) {
         validate(sourceStation, targetStation);
-        return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
+        return getPath(sourceStation, targetStation).getVertexList();
     }
 
     public int findShortestDistance(Station sourceStation, Station targetStation) {
         validate(sourceStation, targetStation);
-        return (int) dijkstraShortestPath.getPath(sourceStation, targetStation).getWeight();
+        return (int) getPath(sourceStation, targetStation).getWeight();
+    }
+
+    private GraphPath<Station, DefaultWeightedEdge> getPath(Station sourceStation, Station targetStation) {
+        GraphPath<Station, DefaultWeightedEdge> path = dijkstraShortestPath.getPath(sourceStation, targetStation);
+        if (path == null) {
+            throw new IllegalArgumentException("출발역과 도착역이 연결되어 있지 않습니다. sourceStationId: " + sourceStation.getId() + ", targetStationId: " + targetStation.getId());
+        }
+        return path;
     }
 
     private void validate(Station sourceStation, Station targetStation) {

@@ -28,10 +28,13 @@ public class RouteTest {
     private Station 강남역;
     private Station 양재역;
     private Station 남부터미널역;
+    private Station 노원역;
+    private Station 상계역;
 
     private Line 이호선;
     private Line 신분당선;
     private Line 삼호선;
+    private Line 사호선;
 
     private Route route = new Route();
 
@@ -41,10 +44,13 @@ public class RouteTest {
         강남역 = new Station(2L, "강남역");
         양재역 = new Station(3L, "양재역");
         남부터미널역 = new Station(4L, "남부터미널역");
+        노원역 = new Station(5L, "노원역");
+        상계역 = new Station(6L, "상계역");
 
         이호선 = new Line("2호선", "green", 교대역, 강남역, 4L);
         신분당선 = new Line("신분당선", "red", 강남역, 양재역, 5L);
         삼호선 = new Line("3호선", "orange", 교대역, 남부터미널역, 2L);
+        사호선 = new Line("4호선", "blue", 노원역, 상계역, 1L);
 
         삼호선.addNewSection(남부터미널역, 양재역, 3L);
 
@@ -53,7 +59,8 @@ public class RouteTest {
                         new Section(이호선, 교대역, 강남역, 4L),
                         new Section(신분당선, 강남역, 양재역, 5L),
                         new Section(삼호선, 교대역, 남부터미널역, 2L),
-                        new Section(삼호선, 남부터미널역, 양재역, 3L)
+                        new Section(삼호선, 남부터미널역, 양재역, 3L),
+                        new Section(사호선, 노원역, 상계역, 1L)
                 )
         );
     }
@@ -85,27 +92,27 @@ public class RouteTest {
         @Test
         void findShortestDistanceWithNotConnectStation() {
             // when & then
-            assertThatThrownBy(() -> route.findShortestDistance(교대역, 양재역))
+            assertThatThrownBy(() -> route.findShortestDistance(교대역, 노원역))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("출발역과 도착역이 연결되어 있지 않습니다. sourceStationId: 1, targetStationId: 3");
+                    .hasMessage("출발역과 도착역이 연결되어 있지 않습니다. sourceStationId: 1, targetStationId: 5");
         }
 
         @DisplayName("최단 거리 조회 기능 - 출발역이 존재하지 않는 경우 에러가 발생한다.")
         @Test
         void findShortestDistanceWithNotExistSourceStation() {
             // when & then
-            assertThatThrownBy(() -> route.findShortestDistance(new Station(5L, "잠실역"), 양재역))
+            assertThatThrownBy(() -> route.findShortestDistance(new Station(100L, "잠실역"), 양재역))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("출발역이 존재하지 않습니다. stationId: 5");
+                    .hasMessage("출발역이 존재하지 않습니다. stationId: 100");
         }
 
         @DisplayName("최단 거리 조회 기능 - 도착역이 존재하지 않는 경우 에러가 발생한다.")
         @Test
         void findShortestDistanceWithNotExistTargetStation() {
             // when & then
-            assertThatThrownBy(() -> route.findShortestDistance(교대역, new Station(5L, "잠실역")))
+            assertThatThrownBy(() -> route.findShortestDistance(교대역, new Station(100L, "잠실역")))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("도착역이 존재하지 않습니다. stationId: 5");
+                    .hasMessage("도착역이 존재하지 않습니다. stationId: 100");
         }
     }
 
@@ -136,27 +143,27 @@ public class RouteTest {
         @Test
         void findShortestPathWithNotConnectStation() {
             // when & then
-            assertThatThrownBy(() -> route.findShortestPath(교대역, 양재역))
+            assertThatThrownBy(() -> route.findShortestPath(교대역, 노원역))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("출발역과 도착역이 연결되어 있지 않습니다. sourceStationId: 1, targetStationId: 3");
+                    .hasMessage("출발역과 도착역이 연결되어 있지 않습니다. sourceStationId: 1, targetStationId: 5");
         }
 
         @DisplayName("최단 경로 조회 기능 - 출발역이 존재하지 않는 경우 에러가 발생한다.")
         @Test
         void findShortestPathWithNotExistSourceStation() {
             // when & then
-            assertThatThrownBy(() -> route.findShortestPath(new Station(5L, "잠실역"), 양재역))
+            assertThatThrownBy(() -> route.findShortestPath(new Station(100L, "잠실역"), 양재역))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("출발역이 존재하지 않습니다. stationId: 5");
+                    .hasMessage("출발역이 존재하지 않습니다. stationId: 100");
         }
 
         @DisplayName("최단 경로 조회 기능 - 도착역이 존재하지 않는 경우 에러가 발생한다.")
         @Test
         void findShortestPathWithNotExistTargetStation() {
             // when & then
-            assertThatThrownBy(() -> route.findShortestPath(교대역, new Station(5L, "잠실역")))
+            assertThatThrownBy(() -> route.findShortestPath(교대역, new Station(100L, "잠실역")))
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("도착역이 존재하지 않습니다. stationId: 5");
+                    .hasMessage("도착역이 존재하지 않습니다. stationId: 100");
         }
     }
 }
