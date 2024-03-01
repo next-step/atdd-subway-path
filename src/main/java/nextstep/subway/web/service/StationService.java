@@ -42,4 +42,8 @@ public class StationService {
             station.getName()
         );
     }
+
+    public Station getStationById(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(() -> new RuntimeException("not found station"));
+    }
 }

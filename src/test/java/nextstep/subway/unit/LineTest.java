@@ -56,7 +56,7 @@ class LineTest {
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(이호선.getSections().getSections()).hasSize(2);
+            assertThat(이호선.getSections().getAllSections()).hasSize(2);
         });
     }
 

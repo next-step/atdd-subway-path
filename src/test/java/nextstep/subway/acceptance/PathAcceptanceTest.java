@@ -74,7 +74,6 @@ class PathAcceptanceTest {
     void getPaths() {
         // given
         이호선_삼호선_신분당선_노선의_구간_존재();
-
         // when
         ExtractableResponse<Response> 지하철_경로_조회_응답 = 지하철_경로_조회_요청(교대역_아이디, 양재역_아이디);
         // then
@@ -82,6 +81,8 @@ class PathAcceptanceTest {
             assertThat(지하철_경로_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(PathSteps.지하철역_경로_조회_응답에서_역_아이디_목록_추출(지하철_경로_조회_응답))
                 .containsExactly(교대역_아이디, 남부터미널역_아이디, 양재역_아이디);
+            assertThat(PathSteps.지하철역_경로_조회_응답에서_경로_거리_추출(지하철_경로_조회_응답))
+                .isEqualTo(5L);
         });
 
     }

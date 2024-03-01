@@ -26,6 +26,7 @@ import nextstep.subway.web.dto.request.AddSectionRequest;
 import nextstep.subway.web.dto.response.LineResponse;
 import nextstep.subway.web.dto.response.LineResponse.StationDto;
 import nextstep.subway.web.service.LineService;
+import nextstep.subway.web.service.StationService;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +43,7 @@ class LineServiceMockTest {
     @Mock
     private LineRepository lineRepository;
     @Mock
-    private StationRepository stationRepository;
+    private StationService stationService;
     @InjectMocks
     private LineService lineService;
 
@@ -83,8 +84,8 @@ class LineServiceMockTest {
         // given
         Line 이호선 = 강남역_교대역_구간_이호선();
         given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
-        given(stationRepository.findById(교대역.getId())).willReturn(Optional.of(교대역));
-        given(stationRepository.findById(낙성대역.getId())).willReturn(Optional.of(낙성대역));
+        given(stationService.getStationById(교대역.getId())).willReturn(교대역);
+        given(stationService.getStationById(낙성대역.getId())).willReturn(낙성대역);
 
         // when
         AddSectionRequest 교대역_낙성대역_구간_추가_요청 = new AddSectionRequest(교대역.getId(), 낙성대역.getId(), 10L);
@@ -140,7 +141,7 @@ class LineServiceMockTest {
         // given
         Line 이호선 = 강남역_낙성대역_구간_이호선();
         given(lineRepository.findById(이호선.getId())).willReturn(Optional.of(이호선));
-        given(stationRepository.findById(낙성대역.getId())).willReturn(Optional.of(낙성대역));
+        given(stationService.getStationById(낙성대역.getId())).willReturn(낙성대역);
 
         // when
         LineResponse result = lineService.removeSection(이호선.getId(), 낙성대역.getId());

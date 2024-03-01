@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 import nextstep.subway.domain.entity.Section;
 import nextstep.subway.domain.entity.Station;
 
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Sections {
@@ -130,14 +129,18 @@ public class Sections {
     }
 
     private Optional<Section> getSectionByUpStation(Station station) {
-        return this.getSections().stream()
+        return this.getAllSections().stream()
             .filter(section -> Objects.equals(section.getUpStation(), station))
             .findFirst();
     }
 
     private Optional<Section> getSectionByDownStation(Station station) {
-        return this.getSections().stream()
+        return this.getAllSections().stream()
             .filter(section -> Objects.equals(section.getDownStation(), station))
             .findFirst();
+    }
+
+    public List<Section> getAllSections() {
+        return this.sections;
     }
 }
