@@ -55,18 +55,32 @@ public class Route {
     }
 
     public List<Station> findShortestPath(Station sourceStation, Station targetStation) {
-        validateSameStation(sourceStation, targetStation);
+        validate(sourceStation, targetStation);
         return dijkstraShortestPath.getPath(sourceStation, targetStation).getVertexList();
     }
 
     public int findShortestDistance(Station sourceStation, Station targetStation) {
-        validateSameStation(sourceStation, targetStation);
+        validate(sourceStation, targetStation);
         return (int) dijkstraShortestPath.getPath(sourceStation, targetStation).getWeight();
+    }
+
+    private void validate(Station sourceStation, Station targetStation) {
+        validateSameStation(sourceStation, targetStation);
+        validateExistStation(sourceStation, targetStation);
     }
 
     private void validateSameStation(Station sourceStation, Station targetStation) {
         if (sourceStation.isSameStation(targetStation)) {
             throw new IllegalArgumentException("출발역과 도착역이 같습니다. stationId: " + sourceStation.getId());
+        }
+    }
+
+    private void validateExistStation(Station sourceStation, Station targetStation) {
+        if (!route.containsVertex(sourceStation)) {
+            throw new IllegalArgumentException("출발역이 존재하지 않습니다. stationId: " + sourceStation.getId());
+        }
+        if (!route.containsVertex(targetStation)) {
+            throw new IllegalArgumentException("도착역이 존재하지 않습니다. stationId: " + targetStation.getId());
         }
     }
 }
