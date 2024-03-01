@@ -110,8 +110,7 @@ class LineTest {
         @DisplayName("노선의 중간역을 제거할 수 있다.")
         @Test
         void removeException() {
-            Station 판교역 = new Station(3L, "판교역");
-
+            // given
             신분당선.addNewSection(양재역, 판교역, 10L);
 
             // when
@@ -127,6 +126,18 @@ class LineTest {
             assertThatThrownBy(() -> 신분당선.removeStation(양재역))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("노선에 남은 구간이 1개뿐이라 제거할 수 없습니다.");
+        }
+
+        @DisplayName("노선에 구간(역)이 존재하지 않으면 에러가 발생한다.")
+        @Test
+        void removeSectionException() {
+            // given
+            신분당선.addNewSection(양재역, 판교역, 10L);
+            Station 신논현역 = new Station(4L, "신논현역");
+
+            assertThatThrownBy(() -> 신분당선.removeStation(신논현역))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("노선에 구간이 존재하지 않습니다. stationId: 4");
         }
     }
 }
