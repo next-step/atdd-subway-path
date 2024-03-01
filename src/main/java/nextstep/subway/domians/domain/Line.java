@@ -57,7 +57,7 @@ public class Line {
 
 
     public List<Station> getAllStations() {
-        return this.sections.getSortedStationsByUpDirection(false);
+        return this.sections.getSortedStationsByUpDirection(true);
     }
 
 
