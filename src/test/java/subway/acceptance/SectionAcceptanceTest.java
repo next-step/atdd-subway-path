@@ -168,39 +168,38 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * When 하행 종점역이 아닌 구간을 제거하면
-     * Then IllegalArgumentException이 발생한다.
+     * When 지하철 구간을 맨 앞에 생성하면
+     * Then 지하철 노선 조회 시 생성한 구간을 찾을 수 있다
      */
-    @DisplayName("하행 종점역이 아닌 지하철 구간을 제거할 수 없다.")
+    @DisplayName("지하철 노선 맨 앞 구간을 삭제한다.")
     @Test
-    void cantDeleteNotDownStation() {
+    void 지하철_노선_맨_앞_구간_삭제() {
         // when
         RestAssuredUtil.post(SECTION_TWO, "/lines/" + LINE_SHINBUNDANG_ID + "/sections");
+        RestAssuredUtil.delete("/lines/" + LINE_SHINBUNDANG_ID + "/sections" + "?stationId=" + SINSA_STATION_ID);
 
         // then
-        RestAssured
-                .given()
-                .param("stationId", GWANGGYO_STATION_ID)
-                .when()
-                .delete("/lines/" + LINE_SHINBUNDANG_ID + "/sections")
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+        LineResponse res
+                = RestAssuredUtil.get("/lines/" + LINE_SHINBUNDANG_ID).as(LineResponse.class);
+        assertThat(res.getStations().get(0).getName()).isEqualTo("광교역");
+        assertThat(res.getStations().get(1).getName()).isEqualTo("수서역");
     }
 
     /**
-     * When 구간이 한개 이하일 떄 구간 삭제 요청을 하면
-     * Then IllegalArgumentException이 발생한다.
+     * When 지하철 구간을 중간에 생성하면
+     * Then 지하철 노선 조회 시 생성한 구간을 찾을 수 있다
      */
-    @DisplayName("지하철 구간이 한 개 이하일 때 구간을 삭제할 수 없다.")
+    @DisplayName("지하철 노선 중간 구간을 삭제한다.")
     @Test
-    void cantDeleteUnderOneSection() {
+    void 지하철_노선_중간_구간_삭제() {
+        // when
+        RestAssuredUtil.post(SECTION_TWO, "/lines/" + LINE_SHINBUNDANG_ID + "/sections");
+        RestAssuredUtil.delete("/lines/" + LINE_SHINBUNDANG_ID + "/sections" + "?stationId=" + SUSEO_STATION_ID);
+
         // then
-        RestAssured
-                .given()
-                .param("stationId", GWANGGYO_STATION_ID)
-                .when()
-                .delete("/lines/" + LINE_SHINBUNDANG_ID + "/sections")
-                .then().log().all()
-                .statusCode(HttpStatus.BAD_REQUEST.value());
+        LineResponse res
+                = RestAssuredUtil.get("/lines/" + LINE_SHINBUNDANG_ID).as(LineResponse.class);
+        assertThat(res.getStations().get(0).getName()).isEqualTo("신사역");
+        assertThat(res.getStations().get(1).getName()).isEqualTo("광교역");
     }
 }

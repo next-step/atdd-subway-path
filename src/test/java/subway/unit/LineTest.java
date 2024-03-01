@@ -1,17 +1,12 @@
 package subway.unit;
 
-import io.restassured.RestAssured;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import subway.line.Line;
 import subway.section.Section;
-import subway.section.SectionRequest;
 import subway.station.Station;
-import util.RestAssuredUtil;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -70,11 +65,56 @@ public class LineTest {
      *  Then 삭제한 구간을 조회할 수 없다.
      */
     @Test
-    void removeSection() {
-        line.sections().add(firstSection);
-        line.remove(firstSection);
+    void 노선_맨_앞_구간을_삭제한다() {
+        line.addSection(firstSection);
+        line.addSection(secondSection);
+        line.removeSection(yeouido);
 
-        assertThat(line.sections().sections()).hasSize(0);
+        assertThat(line.sections().sections()).hasSize(1);
+        assertThat(line.sections().sections().get(0)).isEqualTo(secondSection);
+    }
+
+    /**
+     *  When 노선의 구간을 추가후 삭제시
+     *  Then 삭제한 구간을 조회할 수 없다.
+     */
+    @Test
+    void 노선_맨_뒤_구간을_삭제한다() {
+        line.addSection(firstSection);
+        line.addSection(secondSection);
+        line.removeSection(sinmokdong);
+
+        assertThat(line.sections().sections()).hasSize(1);
+        assertThat(line.sections().sections().get(0)).isEqualTo(firstSection);
+    }
+
+    /**
+     *  When 노선의 구간을 추가후 삭제시
+     *  Then 삭제한 구간을 조회할 수 없다.
+     */
+    @Test
+    void 노선_중간_구간을_삭제한다() {
+        line.addSection(firstSection);
+        line.addSection(secondSection);
+        line.removeSection(dangsan);
+
+        assertThat(line.sections().sections()).hasSize(1);
+        assertThat(line.sections().sections().get(0).getUpStation().getName()).isEqualTo("여의도역");
+        assertThat(line.sections().sections().get(0).getDownStation().getName()).isEqualTo("신목동역");
+        assertThat(line.sections().sections().get(0).getDistance()).isEqualTo(70L);
+    }
+
+    /**
+     * When 구간이 한개 이하일 떄 구간 삭제 요청을 하면
+     * Then IllegalArgumentException이 발생한다.
+     */
+    @DisplayName("지하철 구간이 한 개 이하일 때 구간을 삭제할 수 없다.")
+    @Test
+    void 노선_내_구간이_한_개_이하일_때_구간을_삭제할_수_없다() {
+        line.addSection(firstSection);
+        Assertions.assertThatThrownBy(() -> line.removeSection(dangsan))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에는 하나 이상의 구간이 존재해야 합니다.");
     }
 
     /**

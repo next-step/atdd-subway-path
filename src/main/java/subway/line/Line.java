@@ -2,6 +2,7 @@ package subway.line;
 
 import subway.section.Section;
 import subway.section.Sections;
+import subway.station.Station;
 
 import javax.persistence.*;
 
@@ -58,7 +59,7 @@ public class Line {
         sections.add(section);
     }
 
-    public void remove(Section section) {
-        sections.remove(section);
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 }
