@@ -23,30 +23,6 @@ public class Sections {
     }
 
     public void addSection(final Section newSection) {
-        this.ensureNoDuplicateDownStation(newSection);
-
-        /**
-         * 1. 기존 어떤 Section의 upStation에 추가되는 경우
-         *  1) A-B + C-A -> C-A-B
-         *  => newSection의 upStation 으로 기존 downStation 조회 시에는 없고, downStation 으로 조회 시에는 기존 upStation 중 하나일 경우
-         *  2-1) A-B + A-C -> A-C-B
-         *  => newSection의 upStation 으로 조회 시 기존 upStation 중 하나이고, downStation 으로 기존 downStation 조회 시에는 없음
-         *     + newSection의 distance가 기존의 distance보다 짧음
-         *  2-2) A-B + A-C -> A-B-C
-         *  => newSection의 upStation 으로 조회 시 기존 upStation 중 하나이고, downStation 으로 기존 downStation 조회 시에는 없음
-         *     + newSection의 distance가 기존의 distance보다 길음
-         *
-         * 2. downStation에 추가되는 경우
-         *  1) A-B + B-C -> A-B-C
-         *  => newSection의 upStation 으로 조회 시 기존 downStation 중 하나이고, downStation 으로 기존 upStation 조회 시에는 없음
-         *  2-1) A-B + C-B -> A-C-B
-         *  => newSection의 upStation 으로 기존 upStation 조회 시에는 없고, downStation 으로 조회 시에는 기존 downStation 중 하나일 경우
-         *     + newSection의 distance가 기존의 distance보다 짧음
-         *  2-2) A-B + C-B -> C-A-B
-         *  => newSection의 upStation 으로 기존 upStation 조회 시에는 없고, downStation 으로 조회 시에는 기존 downStation 중 하나일 경우
-         *     + newSection의 distance가 기존의 distance보다 길음
-         */
-
         if (sections.isEmpty()) {
             sections.add(newSection);
             return;
@@ -68,6 +44,8 @@ public class Sections {
     }
 
     private void addAtDownStation(final Section section, final Section newSection) {
+        this.ensureNoDuplicateDownStation(newSection);
+
         // A-B + B-C -> A-B-C
         if (this.canAddSectionAfterExistingDownStation(newSection, section)) {
             sections.add(sections.indexOf(section) +1, newSection);
@@ -115,7 +93,7 @@ public class Sections {
                     , distanceDifference
             );
 
-            newSections.add(prevIdx -1, adjustedNewSection);
+            newSections.add(prevIdx, adjustedNewSection);
             sections = newSections;
             return;
         }
@@ -185,14 +163,6 @@ public class Sections {
     }
 
     private boolean canAddSectionAfterExistingDownStation(final Section newSection, final Section section) {
-        System.out.println();
-        System.out.println("section.getUpStation() = " + section.getUpStation());
-        System.out.println("newSection.getDownStation() = " + newSection.getDownStation());
-        System.out.println("!section.getUpStation().equals(newSection.getDownStation()) = " + !section.getUpStation().equals(newSection.getDownStation()));
-        System.out.println("section.getDownStation() = " + section.getDownStation());
-        System.out.println("newSection.getUpStation() = " + newSection.getUpStation());
-        System.out.println("section.getDownStation().equals(newSection.getUpStation() = " + section.getDownStation().equals(newSection.getUpStation()));
-
         return !section.getUpStation().equals(newSection.getDownStation()) &&
                 section.getDownStation().equals(newSection.getUpStation());
     }
