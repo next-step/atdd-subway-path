@@ -1,5 +1,8 @@
 package nextstep.subway.web.dto.response;
 
+import lombok.Getter;
+
+@Getter
 public class StationResponse {
 
     private final Long id;
@@ -10,11 +13,4 @@ public class StationResponse {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
 }

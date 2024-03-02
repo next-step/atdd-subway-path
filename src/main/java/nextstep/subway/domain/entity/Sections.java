@@ -1,4 +1,4 @@
-package nextstep.subway.domians.domain;
+package nextstep.subway.domain.entity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,8 +13,9 @@ import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Station;
 
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Sections {
@@ -38,17 +39,17 @@ public class Sections {
     }
 
     public boolean alreadyExistingStation(Section section) {
-        return this.getSortedStationsByUpDirection(false).stream()
+        return this.getSortedStationsByUpDirection(true).stream()
             .anyMatch(station -> Objects.equals(station, section.getDownStation()));
     }
 
-    public List<Station> getSortedStationsByUpDirection(boolean isDownDirection) {
+    public List<Station> getSortedStationsByUpDirection(boolean isUpDirection) {
         List<Station> stations = this.sections.stream()
             .sorted()
             .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
             .distinct()
             .collect(Collectors.toList());
-        if (isDownDirection) {
+        if (!isUpDirection) {
             Collections.reverse(stations);
         }
         return stations;
@@ -77,25 +78,25 @@ public class Sections {
     }
 
     private Optional<Section> getMergedSectionForRemove(Station removeStation) {
-        Optional<Section> leftSectionByUp = getSectionByDownStation(removeStation);
-        Optional<Section> rightSectionByUp = getSectionByUpStation(removeStation);
-        if (leftSectionByUp.isEmpty() || rightSectionByUp.isEmpty()) {
+        Optional<Section> leftSectionByUpDirectionOpt = getSectionByDownStation(removeStation);
+        Optional<Section> rightSectionByUpDirectionOpt = getSectionByUpStation(removeStation);
+        if (leftSectionByUpDirectionOpt.isEmpty() || rightSectionByUpDirectionOpt.isEmpty()) {
             return Optional.empty();
         }
-        Section left = leftSectionByUp.get();
-        Section right = rightSectionByUp.get();
-        left.changeDownStation(right.getDownStation());
-        left.plusDistance(right.getDistance());
-        return rightSectionByUp;
+        Section leftSectionByUpDirection = leftSectionByUpDirectionOpt.get();
+        Section rightSectionByUpDirection = rightSectionByUpDirectionOpt.get();
+        leftSectionByUpDirection.changeDownStation(rightSectionByUpDirection.getDownStation());
+        leftSectionByUpDirection.plusDistance(rightSectionByUpDirection.getDistance());
+        return rightSectionByUpDirectionOpt;
     }
 
 
     public Optional<Station> getStartStation() {
-        return getSortedStationsByUpDirection(false).stream().findFirst();
+        return getSortedStationsByUpDirection(true).stream().findFirst();
     }
 
     public Optional<Station> getEndStation() {
-        return getSortedStationsByUpDirection(true).stream().findFirst();
+        return getSortedStationsByUpDirection(false).stream().findFirst();
     }
 
 
@@ -128,14 +129,18 @@ public class Sections {
     }
 
     private Optional<Section> getSectionByUpStation(Station station) {
-        return this.getSections().stream()
+        return this.getAllSections().stream()
             .filter(section -> Objects.equals(section.getUpStation(), station))
             .findFirst();
     }
 
     private Optional<Section> getSectionByDownStation(Station station) {
-        return this.getSections().stream()
+        return this.getAllSections().stream()
             .filter(section -> Objects.equals(section.getDownStation(), station))
             .findFirst();
+    }
+
+    public List<Section> getAllSections() {
+        return this.sections;
     }
 }

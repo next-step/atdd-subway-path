@@ -1,6 +1,7 @@
-package nextstep.subway.domians.domain;
+package nextstep.subway.domain.entity;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -57,7 +58,13 @@ public class Line {
 
 
     public List<Station> getAllStations() {
-        return this.sections.getSortedStationsByUpDirection(false);
+        return this.sections.getSortedStationsByUpDirection(true);
+    }
+
+    public List<Station> getAllStationsByDistinct() {
+        return this.sections.getSortedStationsByUpDirection(true)
+            .stream().distinct()
+            .collect(Collectors.toList());
     }
 
 

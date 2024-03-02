@@ -2,8 +2,8 @@ package nextstep.subway.web.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.domians.domain.Station;
-import nextstep.subway.domians.repository.StationRepository;
+import nextstep.subway.domain.entity.Station;
+import nextstep.subway.domain.repository.StationRepository;
 import nextstep.subway.web.dto.request.StationCreateRequest;
 import nextstep.subway.web.dto.response.StationResponse;
 import org.springframework.stereotype.Service;
@@ -41,5 +41,9 @@ public class StationService {
             station.getId(),
             station.getName()
         );
+    }
+
+    public Station getStationById(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(() -> new RuntimeException("not found station"));
     }
 }

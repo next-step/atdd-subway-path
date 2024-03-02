@@ -1,6 +1,6 @@
-package nextstep.subway.domians.repository;
+package nextstep.subway.domain.repository;
 
-import nextstep.subway.domians.domain.Station;
+import nextstep.subway.domain.entity.Station;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StationRepository extends JpaRepository<Station, Long> {

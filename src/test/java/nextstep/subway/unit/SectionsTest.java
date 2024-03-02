@@ -11,10 +11,10 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.domians.domain.Line;
-import nextstep.subway.domians.domain.Section;
-import nextstep.subway.domians.domain.Sections;
-import nextstep.subway.domians.domain.Station;
+import nextstep.subway.domain.entity.Line;
+import nextstep.subway.domain.entity.Section;
+import nextstep.subway.domain.entity.Sections;
+import nextstep.subway.domain.entity.Station;
 import nextstep.subway.support.fixture.LineFixture;
 import nextstep.subway.support.fixture.SectionFixture;
 import nextstep.subway.support.fixture.SectionsFixture;
@@ -67,8 +67,8 @@ class SectionsTest {
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(강남_낙성대_구간들.getSections()).hasSize(2);
-            assertThat(강남_낙성대_구간들.getSortedStationsByUpDirection(false)).containsExactly(강남역, 낙성대역, 봉천역);
+            assertThat(강남_낙성대_구간들.getAllSections()).hasSize(2);
+            assertThat(강남_낙성대_구간들.getSortedStationsByUpDirection(true)).containsExactly(강남역, 낙성대역, 봉천역);
         });
     }
 
@@ -83,14 +83,14 @@ class SectionsTest {
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(강남_낙성대_봉천_구간들.getSections()).hasSize(3);
+            assertThat(강남_낙성대_봉천_구간들.getAllSections()).hasSize(3);
             assertThat(
-                강남_낙성대_봉천_구간들.getSections()
+                강남_낙성대_봉천_구간들.getAllSections()
                     .stream()
                     .map(Section::getDistance)
                     .collect(Collectors.toList())
             ).containsExactly(5L, 5L, 10L);
-            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(false)).containsExactly(강남역, 교대역, 낙성대역, 봉천역);
+            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(true)).containsExactly(강남역, 교대역, 낙성대역, 봉천역);
         });
     }
 
@@ -101,7 +101,6 @@ class SectionsTest {
         Sections 강남_낙성대_봉천_구간들 = 구간들(강남역_낙성대역_구간, 낙성대역_봉천역_구간);
 
         // when
-
         Throwable catchThrowable = catchThrowable(() -> {
             강남_낙성대_봉천_구간들.addSection(강남역_낙성대역_구간의_길이와_같은_강남역_교대역_구간);
         });
@@ -125,8 +124,8 @@ class SectionsTest {
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(강남_낙성대_봉천_구간들.getSections()).hasSize(1);
-            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(false)).containsExactly(낙성대역, 봉천역);
+            assertThat(강남_낙성대_봉천_구간들.getAllSections()).hasSize(1);
+            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(true)).containsExactly(낙성대역, 봉천역);
         });
     }
 
@@ -143,15 +142,15 @@ class SectionsTest {
 
         // then
         SoftAssertions.assertSoftly(softAssertions -> {
-            assertThat(강남_낙성대_봉천_구간들.getSections()).hasSize(1);
+            assertThat(강남_낙성대_봉천_구간들.getAllSections()).hasSize(1);
 
             assertThat(
-                강남_낙성대_봉천_구간들.getSections()
+                강남_낙성대_봉천_구간들.getAllSections()
                     .stream()
                     .map(Section::getDistance)
                     .collect(Collectors.toList())
             ).containsExactly(강남역_낙성대역_구간_길이 + 낙성대역_봉천역_구간_길이);
-            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(false)).containsExactly(강남역, 봉천역);
+            assertThat(강남_낙성대_봉천_구간들.getSortedStationsByUpDirection(true)).containsExactly(강남역, 봉천역);
         });
     }
 
