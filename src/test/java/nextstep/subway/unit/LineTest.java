@@ -163,23 +163,6 @@ class LineTest {
         assertThat(newLine.getSections().getSections()).contains(section);
     }
 
-//    @DisplayName("노선에 구간을 추가 시 등록되어있는 역이 새로운 구간의 하행역이 된다면 오류가 발생한다.")
-//    @Test
-//    void 지하철_노선_구간_추가_시_이미_등록되어있는_역이라면_새로운_구간의_하행역으로_등록_불가() {
-//        // given
-//        final Line newLine = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
-//        when(upStation.getId()).thenReturn(2L);
-//
-//        final Station newDownStation = mock(Station.class);
-//        when(section.getDownStation()).thenReturn(newDownStation);
-//        when(section.getDownStation().getId()).thenReturn(2L);
-//
-//        // when
-//        assertThatThrownBy(() -> newLine.addSection(section))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessage("The down station of the new section matches the up station of an existing section, causing a duplication.");
-//    }
-
     @DisplayName("노선에 구간을 제거한다.")
     @Test
     void 지하철_노선_구간_제거() {

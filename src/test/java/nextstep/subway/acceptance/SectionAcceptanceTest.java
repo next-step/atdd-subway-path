@@ -82,19 +82,6 @@ public class SectionAcceptanceTest extends BaseTest{
         callPostApiWithServerError(sameRequest, SECTION_API_PATH, 신분당선_ID);
     }
 
-//    @DisplayName("지하철 구간 생성 시 이미 등록되어있는 역이 새로운 구간의 하행역이 된다면 오류가 발생한다.")
-//    @Test
-//    void 지하철_구간_생성_시_이미_등록되어있는_역이라면_새로운_구간의_하행역으로_등록_불가() {
-//        // given
-//        this.신분당선_생성();
-//
-//        // when
-//        final SectionRequest sameRequest = new SectionRequest(지하철역_ID, 강남역_ID, 5);
-//
-//        // then
-//        callPostApiWithServerError(sameRequest, SECTION_API_PATH, 신분당선_ID);
-//    }
-
     /**
      * Given 지하철 구간을 생성하고
      * When 생성한 지하철 구간을 삭제하면
