@@ -61,14 +61,14 @@ public class LineServiceMockTest {
         when(lineRepository.save(any(Line.class))).thenReturn(신분당선);
 
         // when
-        final LineResponse response = lineService.createSubwayLine(lineRequest);
+        final LineResponse response = lineService.createLine(lineRequest);
 
         // then
         assertThat(response.getName()).isEqualTo(lineRequest.getName());
         assertThat(response.getColor()).isEqualTo(lineRequest.getColor());
-        verify(lineRepository).save(any(Line.class));
-        verify(stationRepository).findById(lineRequest.getUpStationId());
-        verify(stationRepository).findById(lineRequest.getDownStationId());
+        verify(lineRepository, times(1)).save(any(Line.class));
+        verify(stationRepository, times(1)).findById(lineRequest.getUpStationId());
+        verify(stationRepository, times(1)).findById(lineRequest.getDownStationId());
     }
 
     @DisplayName("지하철 노선 생성 시 존재하지 않는 역으로 조회할 경우 오류가 발생한다.")
@@ -80,27 +80,45 @@ public class LineServiceMockTest {
         when(stationRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // then
-        assertThatThrownBy(() -> lineService.createSubwayLine(lineRequest))
-                .isInstanceOf(EntityNotFoundException.class);
-        verify(stationRepository).findById(anyLong());
+        assertThatThrownBy(() -> lineService.createLine(lineRequest))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Station not found. Station Id: ");
+        verify(stationRepository, times(1)).findById(anyLong());
     }
 
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void 지하철_노선_조회() {
         // given
+        강남역 = mock(Station.class);
+        역삼역 = mock(Station.class);
+        Section section = mock(Section.class);
+        Sections sections = mock(Sections.class);
+        신분당선 = mock(Line.class);
+
+        when(신분당선.getSections()).thenReturn(sections);
+        when(sections.getSections()).thenReturn(List.of(section));
+        when(section.getUpStation()).thenReturn(강남역);
+        when(section.getDownStation()).thenReturn(역삼역);
+        when(강남역.getId()).thenReturn(1L);
+        when(역삼역.getId()).thenReturn(2L);
         when(lineRepository.findById(신분당선.getId())).thenReturn(Optional.of(신분당선));
 
         // when
-        final LineResponse response = lineService.getSubwayLine(신분당선.getId());
+        final LineResponse response = lineService.getLine(신분당선.getId());
 
         // then
         assertThat(response.getName()).isEqualTo(신분당선.getName());
         assertThat(response.getColor()).isEqualTo(신분당선.getColor());
         assertThat(response.getStations().get(0).getName()).isEqualTo(강남역.getName());
-        // 아래 검증은 실패하는데 이유는 equals에서 id 값으로만 비교하기 때문으로 추측. 어떻게 할 수 있을지?
-//        assertThat(response.getStations().get(1).getName()).isEqualTo(upStation.getName());
-        verify(lineRepository).findById(신분당선.getId());
+        assertThat(response.getStations().get(1).getName()).isEqualTo(역삼역.getName());
+        verify(신분당선, times(1)).getSections();
+        verify(sections, times(1)).getSections();
+        verify(section, times(1)).getUpStation();
+        verify(section, times(1)).getDownStation();
+        verify(강남역, times(1)).getId();
+        verify(역삼역, times(1)).getId();
+        verify(lineRepository, times(1)).findById(신분당선.getId());
     }
 
     @DisplayName("지하철 노선 조회 시 존재하지 않는 역으로 조회할 경우 오류가 발생한다.")
@@ -110,9 +128,10 @@ public class LineServiceMockTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // then
-        assertThatThrownBy(() -> lineService.getSubwayLine(1L))
-                .isInstanceOf(EntityNotFoundException.class);
-        verify(lineRepository).findById(anyLong());
+        assertThatThrownBy(() -> lineService.getLine(1L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Line not found. Line Id: " + 1L);
+        verify(lineRepository, times(1)).findById(anyLong());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -125,13 +144,13 @@ public class LineServiceMockTest {
         when(lineRepository.findAll()).thenReturn(List.of(신분당선, 지하철노선));
 
         // when
-        final List<LineResponse> response = lineService.getSubwayLines();
+        final List<LineResponse> response = lineService.getLines();
 
         // then
         assertThat(response).hasSize(2);
         assertThat(response.get(0).getName()).isEqualTo("신분당선");
         assertThat(response.get(1).getName()).isEqualTo("지하철노선");
-        verify(lineRepository).findAll();
+        verify(lineRepository, times(1)).findAll();
     }
 
     @DisplayName("지하철 노선 정보를 수정한다.")
@@ -142,12 +161,12 @@ public class LineServiceMockTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
 
         // when
-        lineService.updateSubwayLine(1L, request);
+        lineService.updateLine(1L, request);
 
         // then
         assertThat(신분당선.getName()).isEqualTo("2호선");
         assertThat(신분당선.getColor()).isEqualTo("bg-green-600");
-        verify(lineRepository).findById(1L);
+        verify(lineRepository, times(1)).findById(1L);
     }
 
     @DisplayName("지하철 노선 정보 수정 시 존재하지 않는 역을 수정할 경우 오류가 발생한다.")
@@ -158,9 +177,10 @@ public class LineServiceMockTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, request))
-                .isInstanceOf(EntityNotFoundException.class);
-        verify(lineRepository).findById(anyLong());
+        assertThatThrownBy(() -> lineService.updateLine(1L, request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Line not found. Line Id: " + 1L);
+        verify(lineRepository, times(1)).findById(anyLong());
     }
 
     @DisplayName("지하철 노선 정보 수정 시 노선명이 null 혹은 공백일 때 수정할 경우 오류가 발생한다.")
@@ -172,10 +192,12 @@ public class LineServiceMockTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 노선명_null))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 노선명_공백))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> lineService.updateLine(1L, 노선명_null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
+        assertThatThrownBy(() -> lineService.updateLine(1L, 노선명_공백))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
         verify(lineRepository, times(2)).findById(anyLong());
     }
 
@@ -188,10 +210,12 @@ public class LineServiceMockTest {
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 색상값_null))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> lineService.updateSubwayLine(1L, 색상값_공백))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> lineService.updateLine(1L, 색상값_null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
+        assertThatThrownBy(() -> lineService.updateLine(1L, 색상값_공백))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
         verify(lineRepository, times(2)).findById(anyLong());
     }
 
@@ -204,13 +228,13 @@ public class LineServiceMockTest {
         when(stationRepository.findById(2L)).thenReturn(Optional.of(역삼역));
         when(lineRepository.save(any(Line.class))).thenReturn(신분당선);
         when(lineRepository.findById(anyLong())).thenReturn(Optional.of(신분당선));
-        lineService.createSubwayLine(신분당선_생성_요청);
+        lineService.createLine(신분당선_생성_요청);
 
         // when
-        lineService.deleteSubwayLine(1L);
+        lineService.deleteLine(1L);
 
         // then
-        verify(lineRepository).deleteById(1L);
+        verify(lineRepository, times(1)).deleteById(1L);
     }
 
     @DisplayName("지하철 노선 구간을 생성한다.")
@@ -236,7 +260,7 @@ public class LineServiceMockTest {
         lineService.createLineSection(1L, 구간_생성_요청);
 
         // then
-        verify(line).addSection(any(Section.class));
+        verify(line, times(1)).addSection(any(Section.class));
     }
 
     @DisplayName("지하철 노선 구간을 삭제한다.")
@@ -256,7 +280,7 @@ public class LineServiceMockTest {
         lineService.deleteLineSection(1L, 1L);
 
         // then
-        verify(line).removeSection(station);
+        verify(line, times(1)).removeSection(station);
     }
 
     @DisplayName("지하철 노선 구간을 삭제 시 구간이 1개라면 오류가 발생한다.")
@@ -272,7 +296,8 @@ public class LineServiceMockTest {
 
         // then
         assertThatThrownBy(() -> lineService.deleteLineSection(1L, 1L))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot delete the only section in the line.");
     }
 
     private LineRequest 신분당선_생성_요청() {

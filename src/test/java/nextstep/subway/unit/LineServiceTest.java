@@ -59,7 +59,7 @@ public class LineServiceTest {
         final LineRequest lineRequest = this.신분당선_생성_요청();
 
         // when
-        final LineResponse response = lineService.createSubwayLine(lineRequest);
+        final LineResponse response = lineService.createLine(lineRequest);
 
         // then
         assertThat(response.getName()).isEqualTo(lineRequest.getName());
@@ -73,8 +73,9 @@ public class LineServiceTest {
         final LineRequest lineRequest = this.신분당선_생성_요청();
 
         // then
-        assertThatThrownBy(() -> lineService.createSubwayLine(lineRequest))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> lineService.createLine(lineRequest))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("Station not found. Station Id: ");
     }
 
     @DisplayName("지하철 노선을 조회한다.")
@@ -86,7 +87,7 @@ public class LineServiceTest {
         신분당선 = 노선_생성("신분당선", "bg-red-600", 강남역, 역삼역, 10);
 
         // when
-        final LineResponse response = lineService.getSubwayLine(신분당선.getId());
+        final LineResponse response = lineService.getLine(신분당선.getId());
 
         // then
         assertThat(response.getName()).isEqualTo(신분당선.getName());
@@ -99,8 +100,9 @@ public class LineServiceTest {
     @Test
     void 지하철_노선_조회_시_존재하지_않는_역으로_조회_불가() {
         // then
-        assertThatThrownBy(() -> lineService.getSubwayLine(1L))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> lineService.getLine(1L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Line not found. Line Id: " + 1L);
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -114,7 +116,7 @@ public class LineServiceTest {
         노선_생성("지하철노선", "bg-yellow-600", 역삼역, 지하철역, 15);
 
         // when
-        final List<LineResponse> response = lineService.getSubwayLines();
+        final List<LineResponse> response = lineService.getLines();
 
         // then
         assertThat(response).hasSize(2);
@@ -132,7 +134,7 @@ public class LineServiceTest {
         final LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
 
         // when
-        lineService.updateSubwayLine(신분당선.getId(), request);
+        lineService.updateLine(신분당선.getId(), request);
 
         // then
         assertThat(신분당선.getName()).isEqualTo("2호선");
@@ -149,8 +151,9 @@ public class LineServiceTest {
         final LineUpdateRequest request = new LineUpdateRequest("2호선", "bg-green-600");
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(3L, request))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> lineService.updateLine(3L, request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Line not found. Line Id: " + 3L);
     }
 
     @DisplayName("지하철 노선 정보 수정 시 노선명이 null 혹은 공백일 때 수정할 경우 오류가 발생한다.")
@@ -164,10 +167,12 @@ public class LineServiceTest {
         final LineUpdateRequest 노선명_공백 = new LineUpdateRequest("", "bg-green-600");
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 노선명_null))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 노선명_공백))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> lineService.updateLine(신분당선.getId(), 노선명_null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
+        assertThatThrownBy(() -> lineService.updateLine(신분당선.getId(), 노선명_공백))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line name cannot be empty.");
     }
 
     @DisplayName("지하철 노선 정보 수정 시 색상값이 null 혹은 공백일 때 수정할 경우 오류가 발생한다.")
@@ -181,10 +186,12 @@ public class LineServiceTest {
         final LineUpdateRequest 색상값_공백 = new LineUpdateRequest("2호선", "");
 
         // then
-        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 색상값_null))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> lineService.updateSubwayLine(신분당선.getId(), 색상값_공백))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> lineService.updateLine(신분당선.getId(), 색상값_null))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
+        assertThatThrownBy(() -> lineService.updateLine(신분당선.getId(), 색상값_공백))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Line color cannot be empty.");
     }
 
     @DisplayName("지하철 노선을 삭제한다.")
@@ -197,11 +204,12 @@ public class LineServiceTest {
         final LineRequest 신분당선_생성_요청 = 신분당선_생성_요청();
 
         // when
-        lineService.deleteSubwayLine(신분당선.getId());
+        lineService.deleteLine(신분당선.getId());
 
         // then
-        assertThatThrownBy(() -> lineService.getSubwayLine(신분당선.getId()))
-                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> lineService.getLine(신분당선.getId()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("Line not found. Line Id: " + 신분당선.getId());
     }
 
     @DisplayName("지하철 노선 구간을 생성한다.")
@@ -252,7 +260,8 @@ public class LineServiceTest {
 
         // then
         assertThatThrownBy(() -> lineService.deleteLineSection(신분당선.getId(), 역삼역.getId()))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot delete the only section in the line.");
     }
 
     private Line 노선_생성(final String name, final String color, final Station upStation, final Station downStation, final int distance) {

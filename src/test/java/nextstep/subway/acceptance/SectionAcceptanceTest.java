@@ -45,11 +45,11 @@ public class SectionAcceptanceTest extends BaseTest{
     }
 
     /**
-     * Given 1개의 지하철 노선을 등록하고
-     * When 지하철 노선에 구간을 등록하면
-     * Then 지하철 노선 조회 시 새로운 구간의 하행역을 찾을 수 있다
+     * Given 1개의 지하철 노선을 등록하고 (A-B)
+     * When 지하철 노선에 구간을 등록하면 (B-C)
+     * Then 지하철 노선 조회 시 새로운 구간의 하행역을 찾을 수 있다 (A-B-C)
      */
-    @DisplayName("지하철 구간을 생성한다.")
+    @DisplayName("지하철 구간을 가장 뒤에 추가한다.")
     @Test
     void 지하철_구간_등록() {
         // given
@@ -64,6 +64,9 @@ public class SectionAcceptanceTest extends BaseTest{
 
         final String newDownStationName = createSectionResponse.get("stations[2].name");
         assertThat(newDownStationName).isEqualTo("지하철역");
+
+        final List<String> names = createSectionResponse.get("stations.name");
+        assertThat(names).containsExactly("강남역", "역삼역", "지하철역");
     }
 
     @DisplayName("지하철 구간 생성 시 이미 등록된 구간이라면 오류가 발생한다.")
@@ -74,19 +77,6 @@ public class SectionAcceptanceTest extends BaseTest{
 
         // when
         final SectionRequest sameRequest = new SectionRequest(강남역_ID, 역삼역_ID, 5);
-
-        // then
-        callPostApiWithServerError(sameRequest, SECTION_API_PATH, 신분당선_ID);
-    }
-
-    @DisplayName("지하철 구간 생성 시 이미 등록되어있는 역이 새로운 구간의 하행역이 된다면 오류가 발생한다.")
-    @Test
-    void 지하철_구간_생성_시_이미_등록되어있는_역이라면_새로운_구간의_하행역으로_등록_불가() {
-        // given
-        this.신분당선_생성();
-
-        // when
-        final SectionRequest sameRequest = new SectionRequest(지하철역_ID, 강남역_ID, 5);
 
         // then
         callPostApiWithServerError(sameRequest, SECTION_API_PATH, 신분당선_ID);
@@ -134,6 +124,116 @@ public class SectionAcceptanceTest extends BaseTest{
 
         // then
         callDeleteApiWithServerError("stationId", 역삼역_ID, SECTION_API_PATH, 신분당선_ID);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 (A-B)
+     * When 노선에 역을 노선 가운데 추가하면 (A-C)
+     * Then 지하철 노선 조회 시 가운데 추가한 역을 찾을 수 있다 (A-C-B)
+     */
+    @DisplayName("지하철 노선에 역을 노선 가운데 추가한다.")
+    @Test
+    void 지하철_노선_가운데_역_추가() {
+        // given
+        this.신분당선_생성();
+
+        // when
+        final SectionRequest sectionRequest = new SectionRequest(강남역_ID, 지하철역_ID, 5);
+        final ExtractableResponse<Response> createSectionResponse = callPostApi(sectionRequest, SECTION_API_PATH, 신분당선_ID);
+        final JsonPath jsonPath = createSectionResponse.jsonPath();
+
+
+        // then
+        final List<String> names = jsonPath.get("stations.name");
+        assertThat(names).containsExactly("강남역", "지하철역", "역삼역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 (A-B)
+     * When 노선에 역을 노선 가장 앞에 추가하면 (C-A)
+     * Then 지하철 노선 조회 시 가장 앞에 추가한 역을 찾을 수 있다 (C-A-B)
+     */
+    @DisplayName("지하철 노선에 역을 노선 가장 앞에 추가한다.")
+    @Test
+    void 지하철_노선_가장_앞에_역_추가() {
+        // given
+        this.신분당선_생성();
+
+        // when
+        final SectionRequest sectionRequest = new SectionRequest(지하철역_ID, 강남역_ID, 5);
+        final ExtractableResponse<Response> createSectionResponse = callPostApi(sectionRequest, SECTION_API_PATH, 신분당선_ID);
+        final JsonPath jsonPath = createSectionResponse.jsonPath();
+
+
+        // then
+        final List<String> names = jsonPath.get("stations.name");
+        assertThat(names).containsExactly("지하철역", "강남역", "역삼역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 (A-B, distance 10)
+     * When 노선에 기존 상행역을 가진 역이면서 거리가 더 먼 역을 추가하면 (A-C, distance 15)
+     * Then 지하철 노선 조회 시 가장 뒤에 추가한 역을 찾을 수 있다 (A-B-C)
+     */
+    @DisplayName("지하철 노선에 기존 상행역을 가진 역이면서 거리가 더 먼 역을 노선 가장 뒤에 추가한다.")
+    @Test
+    void 지하철_노선_기존_상행역_가진_역이면서_거리가_더_먼_노선_가장_뒤에_추가() {
+        // given
+        this.신분당선_생성();
+
+        // when
+        final SectionRequest sectionRequest = new SectionRequest(강남역_ID, 지하철역_ID, 15);
+        final ExtractableResponse<Response> createSectionResponse = callPostApi(sectionRequest, SECTION_API_PATH, 신분당선_ID);
+        final JsonPath jsonPath = createSectionResponse.jsonPath();
+
+
+        // then
+        final List<String> names = jsonPath.get("stations.name");
+        assertThat(names).containsExactly("강남역", "역삼역", "지하철역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 (A-B, distance 10)
+     * When 노선에 기존 하행역을 가진 역이면서 거리가 짧은 역을 추가하면 (C-B, distance 5)
+     * Then 지하철 노선 조회 시 중간에 추가한 역을 찾을 수 있다 (A-C-B)
+     */
+    @DisplayName("지하철 노선에 기존 상행역을 가진 역이면서 거리가 더 먼 역을 노선 가장 뒤에 추가한다.")
+    @Test
+    void 지하철_노선_기존_하행역_가진_역이면서_거리가_짧은_노선_중간에_추가() {
+        // given
+        this.신분당선_생성();
+
+        // when
+        final SectionRequest sectionRequest = new SectionRequest(지하철역_ID, 역삼역_ID, 5);
+        final ExtractableResponse<Response> createSectionResponse = callPostApi(sectionRequest, SECTION_API_PATH, 신분당선_ID);
+        final JsonPath jsonPath = createSectionResponse.jsonPath();
+
+
+        // then
+        final List<String> names = jsonPath.get("stations.name");
+        assertThat(names).containsExactly("강남역", "지하철역", "역삼역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 (A-B, distance 10)
+     * When 노선에 기존 하행역을 가진 역이면서 거리가 더 긴 역을 추가하면 (C-B, distance 15)
+     * Then 지하철 노선 조회 시 가장 앞에 추가한 역을 찾을 수 있다 (C-A-B)
+     */
+    @DisplayName("지하철 노선에 기존 상행역을 가진 역이면서 거리가 더 먼 역을 노선 가장 뒤에 추가한다.")
+    @Test
+    void 지하철_노선_기존_하행역_가진_역이면서_거리가_더_긴_노선_앞에_추가() {
+        // given
+        this.신분당선_생성();
+
+        // when
+        final SectionRequest sectionRequest = new SectionRequest(지하철역_ID, 역삼역_ID, 15);
+        final ExtractableResponse<Response> createSectionResponse = callPostApi(sectionRequest, SECTION_API_PATH, 신분당선_ID);
+        final JsonPath jsonPath = createSectionResponse.jsonPath();
+
+
+        // then
+        final List<String> names = jsonPath.get("stations.name");
+        assertThat(names).containsExactly("지하철역", "강남역", "역삼역");
     }
 
     private JsonPath 신분당선_구간_연장_역삼역_지하철역() {
