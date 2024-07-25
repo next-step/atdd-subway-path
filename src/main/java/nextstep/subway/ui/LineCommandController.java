@@ -34,7 +34,7 @@ public class LineCommandController {
     }
 
     private String getLineUriString(LineResponse line) {
-        return String.format("/lines/%s", line.getId());
+        return String.format("/lines/%s", line.getId().toString());
     }
 
     @PutMapping("/{id}")
@@ -56,7 +56,7 @@ public class LineCommandController {
     }
 
     private String getSectionUriString(SectionResponse section) {
-        return String.format("/lines/%s/sections/%s", section, section.getSectionId());
+        return String.format("/lines/%s/sections", section.getLineId().toString());
     }
 
     @DeleteMapping("/{lineId}/sections")

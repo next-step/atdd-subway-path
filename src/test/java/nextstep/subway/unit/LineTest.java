@@ -344,11 +344,10 @@ public class LineTest {
             line.addSection(initialSection);
 
             // when
-            Optional<Section> lastSection = line.getLastSection();
+            Sections sections = line.getSections();
 
             // then
-            assertThat(lastSection.isPresent()).isEqualTo(true);
-            assertThat(lastSection.get()).isEqualTo(initialSection);
+            assertThat(sections.getSections()).containsExactly(initialSection);
         }
 
 

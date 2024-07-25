@@ -1,9 +1,7 @@
 package nextstep.subway.domain.model;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -69,7 +67,7 @@ public class Line {
     }
 
     public void addSection(SectionAdditionStrategy sectionAdditionStrategy, Section section) {
-        sections.addSection(this, sectionAdditionStrategy, section);
+        sections.addSection(sectionAdditionStrategy, this, section);
     }
 
     public void removeSection(Station station) {
@@ -80,12 +78,8 @@ public class Line {
         sections.removeSection(station);
     }
 
-    public Optional<Section> getLastSection() {
-        return sections.getLastSection();
-    }
-
-    public List<Section> getSections() {
-        return sections.getSections();
+    public Sections getSections() {
+        return sections;
     }
 
     public List<Section> getUnmodifiableSections() {

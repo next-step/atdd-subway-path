@@ -2,14 +2,12 @@ package nextstep.subway.application.strategy.addition;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.application.strategy.addition.AddSectionBeforeFirstUpStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
@@ -31,8 +29,11 @@ class AddSectionBeforeFirstUpStationStrategyTest {
             Section existingSection = new Section(null, null, yeoksamStation, seolleungStation, 10);
             Section newSection = new Section(null, null, gangnamStation, yeoksamStation, 8);
 
+            Line line = new Line("2호선", "green");
+            line.addSection(existingSection);
+
             // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
+            boolean result = strategy.canAddToExistingSection(line.getSections(), existingSection, newSection);
 
             // then
             assertThat(result).isTrue();
@@ -42,23 +43,6 @@ class AddSectionBeforeFirstUpStationStrategyTest {
     @Nested
     @DisplayName("구간 추가")
     class AddSectionTests {
-        @Test
-        @DisplayName("구간이 하나도 없는 상태에서 새 구간을 추가하면 새 구간이 추가된다")
-        void addSectionWhenEmpty() {
-            // given
-            Line line = new Line("2호선", "green");
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Section newSection = new Section(line, gangnamStation, yeoksamStation, 10);
-
-            List<Section> sections = new ArrayList<>();
-
-            // when
-            strategy.addSection(line, sections, newSection);
-
-            // then
-            assertThat(sections).containsExactly(newSection);
-        }
 
         @Test
         @DisplayName("구간이 하나 추가되어 있는 상태에서 새 구간을 추가하면 새 구간이 기존 구간 앞에 추가된다")
@@ -73,11 +57,10 @@ class AddSectionBeforeFirstUpStationStrategyTest {
             Section existingSection = new Section(line, yeoksamStation, seolleungStation, 10);
             line.addSection(existingSection);
 
-            List<Section> sections = line.getSections();
             Section newSection = new Section(line, gangnamStation, yeoksamStation, 8);
 
             // when
-            strategy.addSection(line, sections, newSection);
+            strategy.addSection(line, newSection);
 
             List<Section> orderedSections = line.getOrderedUnmodifiableSections();
 
@@ -100,12 +83,10 @@ class AddSectionBeforeFirstUpStationStrategyTest {
             line.addSection(firstSection);
             line.addSection(secondSection);
 
-            List<Section> sections = line.getSections();
-
             Section newSection = new Section(line, gangnamStation, yeoksamStation, 8);
 
             // when
-            strategy.addSection(line, sections, newSection);
+            strategy.addSection(line, newSection);
 
             List<Section> orderedSections = line.getOrderedUnmodifiableSections();
 

@@ -1,19 +1,22 @@
 package nextstep.subway.application.strategy.addition;
 
-import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
+import nextstep.subway.domain.model.Sections;
 import nextstep.subway.domain.service.SectionAdditionStrategy;
 
 @Component
+@Order(4)
 public class AddSectionBeforeDownStationStrategy implements SectionAdditionStrategy {
     public static final String ADD_SECTION_BEFORE_DOWN_STATION_FAIL_MESSAGE = "하행역 앞에";
 
     @Override
-    public boolean canAdd(Section existingSection, Section newSection, int maxIndex, int index) {
+    public boolean canAddToExistingSection(Sections sections, Section existingSection, Section newSection) {
         return areOnlyDownStationSame(existingSection, newSection) &&
             hasValidDistance(existingSection, newSection);
     }
@@ -24,10 +27,11 @@ public class AddSectionBeforeDownStationStrategy implements SectionAdditionStrat
     }
 
     @Override
-    public void addSection(Line line, List<Section> sections, Section newSection) {
-        Section existingSection = findExistingSectionForNewAddition(sections, newSection);
+    public void addSection(Line line, Section newSection) {
+        Section existingSection = findExistingSectionForNewAddition(line.getSections(), newSection)
+            .orElseThrow(() -> new NoSuchElementException(SECTION_NOT_FOUND_TO_ADD_NEW_ONE));
         existingSection.updateDownStation(newSection.getUpStation(), calculateNewDistance(existingSection, newSection));
-        sections.add(newSection);
+        line.addSection(newSection);
     }
 
     @Override

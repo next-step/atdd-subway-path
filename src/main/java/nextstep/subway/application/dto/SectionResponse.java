@@ -3,12 +3,14 @@ package nextstep.subway.application.dto;
 import nextstep.subway.domain.model.Section;
 
 public class SectionResponse {
+    private Long lineId;
     private Long sectionId;
     private Long upStationId;
     private Long downStationId;
     private Integer distance;
 
-    public SectionResponse(Long sectionId, Long upStationId, Long downStationId, Integer distance) {
+    public SectionResponse(Long lineId, Long sectionId, Long upStationId, Long downStationId, Integer distance) {
+        this.lineId = lineId;
         this.sectionId = sectionId;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
@@ -19,6 +21,10 @@ public class SectionResponse {
         return new SectionResponseBuilder();
     }
 
+    public Long getLineId() {
+        return lineId;
+    }
+
     public Long getSectionId() {
         return sectionId;
     }
@@ -27,28 +33,17 @@ public class SectionResponse {
         return upStationId;
     }
 
-    public void setUpStationId(Long upStationId) {
-        this.upStationId = upStationId;
-    }
-
     public Long getDownStationId() {
         return downStationId;
-    }
-
-    public void setDownStationId(Long downStationId) {
-        this.downStationId = downStationId;
     }
 
     public Integer getDistance() {
         return distance;
     }
 
-    public void setDistance(Integer distance) {
-        this.distance = distance;
-    }
-
     public static SectionResponse from(Section section) {
         return new SectionResponseBuilder()
+            .lineId(section.getLine().getId())
             .sectionId(section.getId())
             .upStationId(section.getUpStationId())
             .downStationId(section.getDownStationId())
@@ -57,6 +52,7 @@ public class SectionResponse {
     }
 
     public static class SectionResponseBuilder {
+        private Long lineId;
         private Long sectionId;
         private Long upStationId;
         private Long downStationId;
@@ -64,6 +60,12 @@ public class SectionResponse {
 
         SectionResponseBuilder() {
         }
+
+        public SectionResponseBuilder lineId(Long lineId) {
+            this.lineId = lineId;
+            return this;
+        }
+
 
         public SectionResponseBuilder sectionId(Long sectionId) {
             this.sectionId = sectionId;
@@ -86,7 +88,7 @@ public class SectionResponse {
         }
 
         public SectionResponse build() {
-            return new SectionResponse(this.sectionId, this.upStationId, this.downStationId, this.distance);
+            return new SectionResponse(this.lineId, this.sectionId, this.upStationId, this.downStationId, this.distance);
         }
     }
 }

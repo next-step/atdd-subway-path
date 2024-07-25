@@ -1,33 +1,38 @@
 package nextstep.subway.domain.service;
 
-import java.util.List;
+import java.util.Optional;
 
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
+import nextstep.subway.domain.model.Sections;
 
 public interface SectionAdditionStrategy {
-    int INVALID_SECTION_INDEX = -1;
+    String SECTION_NOT_FOUND_TO_ADD_NEW_ONE = "새 구간을 추가할 기존 구간이 존재하지 않습니다.";
 
-    int EMPTY_SECTION_INDEX = 0;
+    default boolean canApply(Line line, Section newSection) {
+        return findExistingSectionForNewAddition(line.getSections(), newSection).isPresent();
+    }
 
-    default Section findExistingSectionForNewAddition(List<Section> sections, Section newSection) {
+    default Optional<Section> findExistingSectionForNewAddition(Sections sections, Section newSection) {
         if (sections.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         for (int i = 0; i < sections.size(); i++) {
             Section currentSection = sections.get(i);
-            if (canAdd(currentSection, newSection, sections.size() - 1, i)) {
-                return currentSection;
+            if (canAddToExistingSection(sections, currentSection, newSection)) {
+                return Optional.of(currentSection);
             }
         }
 
-        return null;
+        return Optional.empty();
     }
 
-    boolean canAdd(Section existingSection, Section newSection, int maxIndex, int index);
+    default boolean canAddToExistingSection(Sections sections, Section existingSection, Section newSection) {
+        return false;
+    }
 
-    void addSection(Line line, List<Section> sections, Section newSection);
+    void addSection(Line line, Section newSection);
 
     default boolean hasValidDistance(Section existingSection, Section newSection) {
         return existingSection.getDistance() > newSection.getDistance();

@@ -66,6 +66,10 @@ public class TestFixture {
             .extract();
     }
 
+    public static Long createLineAndGetId(LineRequest request) {
+        return createLine(request).jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> getLine(Long id) {
         return RestAssured.given().log().all()
             .when().get("/lines/" + id)
@@ -119,6 +123,18 @@ public class TestFixture {
             .delete("/lines/" + lineId + "/sections?stationId=" + stationId)
             .then()
             .log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> getPaths(Long source, Long target) {
+        return RestAssured
+            .given().log().all()
+            .queryParam("source", source)
+            .queryParam("target", target)
+            .accept(MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get("/paths")
+            .then().log().all()
             .extract();
     }
 }
