@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SectionStationSorterTest {
+class ChainSorterTest {
 
     private List<Section> sections;
 
@@ -20,15 +20,17 @@ class SectionStationSorterTest {
         sections.add(new Section(1L, 2L, 10L));
         sections.add(new Section(3L, 4L, 10L));
         sections.add(new Section(2L, 3L, 10L));
+        sections.add(new Section(4L, 5L, 10L));
     }
 
     @Test
-    @DisplayName("정렬되지 않은 구간의 역을 순서대로 반환한다")
+    @DisplayName("ChainSorter를 새롭게 생성해 정렬하여 반환한다")
     void returnSortedStation() {
+        ChainSorter<Section, Long> sectionSorter = new ChainSorter<>(Section::getUpStationId, Section::getDownStationId);
         //when 정렬 메소드 실행시
-        var sortedStationIds = SectionStationSorter.getSortedStationIds(sections);
+        var sortedStationIds = sectionSorter.getSortedStationIds(sections);
         //then 순서대로 반환한다
-        assertThat(sortedStationIds).containsExactly(1L, 2L, 3L, 4L);
+        assertThat(sortedStationIds).containsExactly(1L, 2L, 3L, 4L, 5L);
     }
 
 

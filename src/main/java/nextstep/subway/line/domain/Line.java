@@ -2,6 +2,7 @@ package nextstep.subway.line.domain;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Entity
 public class Line {
@@ -56,4 +57,7 @@ public class Line {
         sections.removeStation(stationId);
     }
 
+    public Stream<Section> sectionStream() {
+        return sections.stream();
+    }
 }

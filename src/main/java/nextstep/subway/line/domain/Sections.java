@@ -11,12 +11,14 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
+    private static final ChainSorter<Section, Long> chainSorter = new ChainSorter<>(Section::getUpStationId, Section::getDownStationId);
 
     public void add(final Section section) {
         if (this.sections.isEmpty()) {
@@ -39,7 +41,7 @@ public class Sections {
 
 
     public List<Long> getSortedStationIds() {
-        return SectionStationSorter.getSortedStationIds(this.sections);
+        return chainSorter.getSortedStationIds(this.sections);
     }
 
     public void removeStation(final Long stationId) {
@@ -55,14 +57,19 @@ public class Sections {
             mergeSection(previousSection.get(), nextSection.get());
             return;
         }
-
-        throw new LineHasNoStationException(ErrorMessage.NON_EXISTENT_STATION);
+        if ((previousSection.isEmpty() && nextSection.isEmpty())) {
+            throw new LineHasNoStationException(ErrorMessage.NON_EXISTENT_STATION);
+        }
     }
 
     public void mergeSection(final Section previousSection, final Section nextSection) {
         Long distance = previousSection.getDistance() + nextSection.getDistance();
         Section newSection = new Section(previousSection.getUpStationId(), nextSection.getDownStationId(), distance);
         sections.add(newSection);
+    }
+
+    public Stream<Section> stream() {
+        return sections.stream();
     }
 
     Optional<Section> findByUpStationId(Long upStationId) {

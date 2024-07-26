@@ -12,6 +12,11 @@ public class Station {
     public Station() {
     }
 
+    public Station(final Long id, final String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Station(String name) {
         this.name = name;
     }

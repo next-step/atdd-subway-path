@@ -14,10 +14,10 @@ public class StationResponse {
         this.name = name;
     }
 
-    public static StationResponse from(final Station line) {
+    public static StationResponse from(final Station station) {
         return new StationResponse(
-                line.getId(),
-                line.getName()
+                station.getId(),
+                station.getName()
         );
     }
 
