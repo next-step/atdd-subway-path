@@ -5,16 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Optional;
 
-@Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "subway_section")
-public class Section {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Section extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
@@ -30,14 +27,11 @@ public class Section {
     @JoinColumn(name = "line_id")
     private SubwayLine subwayLine;
 
-    private Section(Long distance, Station upStation, Station downStation) {
+    protected Section(Long distance, Station upStation, Station downStation) {
+        super();
         this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
-    }
-
-    public static Section of(Long distance, Station upStation, Station downStation) {
-        return new Section(distance, upStation, downStation);
     }
 
     public void assignSubwayLine(SubwayLine subwayLine) {
@@ -52,11 +46,12 @@ public class Section {
         return this.downStation.getId().equals(id);
     }
 
-    public Long getUpStationId() {
-        return this.upStation.getId();
+    public Optional<Long> getUpStationId() {
+        return this.upStation.getSafeId();
     }
 
-    public Long getDownStationId() {
-        return this.downStation.getId();
+    public Optional<Long> getDownStationId() {
+        return this.downStation.getSafeId();
+
     }
 }

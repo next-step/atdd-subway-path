@@ -7,14 +7,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SubwayLine {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class SubwayLine extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String name;
 
@@ -34,18 +30,13 @@ public class SubwayLine {
     @Embedded
     private Sections sections = new Sections();
 
-    private SubwayLine(String name, String color) {
+    protected SubwayLine(String name, String color) {
+        super();
         this.name = name;
         this.color = color;
     }
 
-    public static SubwayLine of(String name, String color, Section section) {
-        var subwayLine = new SubwayLine(name, color);
-        subwayLine.addFirstSection(section);
-        return subwayLine;
-    }
-
-    private void addFirstSection(Section section) {
+    protected void addFirstSection(Section section) {
         this.upStation = section.getUpStation();
         addSection(section);
     }

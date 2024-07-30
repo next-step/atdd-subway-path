@@ -6,18 +6,15 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity
 @Getter
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Station {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Station extends BaseEntity{
     @Column(length = 20, nullable = false)
     private String name;
 
     public Station(String name) {
+        super();
         this.name = name;
     }
 }

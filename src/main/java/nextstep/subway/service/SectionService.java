@@ -1,6 +1,7 @@
 package nextstep.subway.service;
 
 import lombok.RequiredArgsConstructor;
+import nextstep.subway.domain.SectionBuilder;
 import org.springframework.stereotype.Service;
 import nextstep.subway.domain.Section;
 import nextstep.subway.dto.SectionRequest;
@@ -19,7 +20,11 @@ public class SectionService {
         var subwayLine = subwayLineService.findSubwayLineOrElseThrow(lineId);
         var upStation = stationService.findStationOrElseThrow(request.getUpStationId());
         var downStation = stationService.findStationOrElseThrow(request.getDownStationId());
-        var section = Section.of(request.getDistance(), upStation, downStation);
+        var section = new SectionBuilder()
+                .distance(request.getDistance())
+                .upStation(upStation)
+                .downStation(downStation)
+                .build();
         subwayLine.addSection(section);
         return new SectionResponse(section.getId());
     }

@@ -26,10 +26,10 @@ public class Sections {
             return;
         }
 
-        if (!lastSection.get().isDownStationId(section.getUpStationId())) {
+        if (!lastSection.get().isDownStationId(section.getUpStationId().orElseThrow(IllegalArgumentException::new))) {
             throw new UnsupportedOperationException(ADD_ERROR_INVALID_UPSTATION);
         }
-        if (hasStation(section.getDownStationId())) {
+        if (hasStation(section.getDownStationId().orElseThrow(IllegalArgumentException::new))) {
             throw new UnsupportedOperationException(ADD_ERROR_INVALID_DOWNSTATION);
         }
 
@@ -57,7 +57,7 @@ public class Sections {
 
     private Optional<Section> getLastSection() {
         return this.sections.stream()
-                .filter(s -> isLastSection(s.getDownStationId()))
+                .filter(s -> isLastSection(s.getDownStationId().orElseThrow(IllegalStateException::new)))
                 .findFirst();
     }
 
