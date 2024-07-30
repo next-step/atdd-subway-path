@@ -26,7 +26,7 @@ public class SectionService {
                 .downStation(downStation)
                 .build();
         subwayLine.addSection(section);
-        return new SectionResponse(section.getId());
+        return new SectionResponse(subwayLine.getId(), section.getId());
     }
 
     @Transactional

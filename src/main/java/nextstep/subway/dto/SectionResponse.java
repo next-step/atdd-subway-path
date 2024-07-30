@@ -6,5 +6,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public final class SectionResponse {
-    private final Long id;
+    private final Long subwayLineId;
+    private final Long sectionId;
 }
