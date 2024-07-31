@@ -12,33 +12,98 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
     private static final Integer MIN_SECTION_COUNT = 1;
-    private static final String ADD_ERROR_INVALID_UPSTATION = "구간 추가 실패 - 구간의 상행역이 마지막 구간의 하행종점역이어야 합니다";
-    private static final String ADD_ERROR_INVALID_DOWNSTATION = "구간 추가 실패 - 구간의 하행역 이미 등록되어있습니다";
     private static final String REMOVE_ERROR_COUNT = "구간 삭제 실패 - 구간이 %d 개 이하입니다.";
     private static final String REMOVE_ERROR_LAST = "구간 삭제 실패 - 마지막 구간만 제거할 수 있습니다.";
     @OneToMany(mappedBy = "subwayLine", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section section) {
+    public boolean addSectionToLast(Section section) {
         var lastSection = getLastSection();
         if (lastSection.isEmpty()) {
             this.sections.add(section);
-            return;
+            return true;
         }
 
-        if (!lastSection.get().isDownStationId(section.getUpStationId().orElseThrow(IllegalArgumentException::new))) {
-            throw new UnsupportedOperationException(ADD_ERROR_INVALID_UPSTATION);
-        }
-        if (hasStation(section.getDownStationId().orElseThrow(IllegalArgumentException::new))) {
-            throw new UnsupportedOperationException(ADD_ERROR_INVALID_DOWNSTATION);
-        }
+        var upStationId = section.getUpStationId().orElse(null);
+        var canAddToLast = lastSection.get().isDownStationId(upStationId) && !hasStation(section.getDownStation());
+        if (!canAddToLast) return false;
 
         this.sections.add(section);
+        return true;
     }
 
-    private boolean hasStation(Long id) {
-        return getStations().stream()
-                .anyMatch(s -> s.getId().equals(id));
+    public boolean addSectionToFirst(Section section) {
+        var firstSection = getFirstSection();
+        if (firstSection.isEmpty()) {
+            this.sections.add(section);
+            return true;
+        }
+
+        var downStationId = section.getDownStationId().orElse(null);
+
+        var canAddToFirst = firstSection.get().isUpStationId(downStationId) && !hasStation(section.getUpStation());
+        if (!canAddToFirst) return false;
+
+        this.sections.add(section);
+        return true;
+    }
+
+    public boolean addSectionToMiddle(Section section) {
+        if (hasStation(section.getDownStation()) && hasStation(section.getUpStation())) {
+            return false;
+        }
+
+        var optionalMiddleSection = this.sections.stream()
+                .filter(s -> s.getDownStationId().equals(section.getDownStationId()) || s.getUpStationId().equals(section.getUpStationId()))
+                .findFirst();
+
+        if (optionalMiddleSection.isEmpty()) {
+            return false;
+        }
+
+        var middleSection = optionalMiddleSection.get();
+
+        var newDistance = middleSection.getDistance() - section.getDistance();
+        if (middleSection.getUpStationId().equals(section.getUpStationId())) {
+            middleSection.updateUpStation(section.getDownStation(), newDistance);
+        } else {
+            middleSection.updateDownStation(section.getUpStation(), newDistance);
+        }
+
+        sections.add(section);
+        return true;
+    }
+
+    private Optional<Section> getFirstSection() {
+        return this.sections.stream()
+                .filter(s -> isFirstSection(s.getUpStationId().orElseThrow(IllegalStateException::new)))
+                .findFirst();
+    }
+
+    private boolean isFirstSection(Long upStationId) {
+        return this.sections.stream()
+                .noneMatch(s -> s.isDownStationId(upStationId));
+    }
+
+    private Optional<Section> getLastSection() {
+        return this.sections.stream()
+                .filter(s -> isLastSection(s.getDownStationId().orElseThrow(IllegalStateException::new)))
+                .findFirst();
+    }
+
+    private boolean isLastSection(Long downStationId) {
+        return this.sections.stream()
+                .noneMatch(s -> s.isUpStationId(downStationId));
+    }
+
+
+    private boolean hasStation(Station station) {
+        return this.sections.stream()
+                .anyMatch(section ->
+                        section.getUpStationId().map(id -> id.equals(station.getId())).orElse(false)
+                                || section.getDownStationId().map(id -> id.equals(station.getId())).orElse(false)
+                );
+
     }
 
     public Section removeSection(Long downStationId) {
@@ -53,17 +118,6 @@ public class Sections {
 
         this.sections.remove(sectionToRemove);
         return sectionToRemove;
-    }
-
-    private Optional<Section> getLastSection() {
-        return this.sections.stream()
-                .filter(s -> isLastSection(s.getDownStationId().orElseThrow(IllegalStateException::new)))
-                .findFirst();
-    }
-
-    private boolean isLastSection(Long downStationId) {
-        return this.sections.stream()
-                .noneMatch(s -> s.isUpStationId(downStationId));
     }
 
     public List<Station> getStations() {

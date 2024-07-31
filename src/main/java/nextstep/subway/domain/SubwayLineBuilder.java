@@ -29,7 +29,7 @@ public class SubwayLineBuilder {
             throw new IllegalArgumentException("필수값 입니다");
         }
         var subwayLine = new SubwayLine(name, color);
-        subwayLine.addFirstSection(section);
+        subwayLine.addInitSection(section);
         return subwayLine;
     }
 }

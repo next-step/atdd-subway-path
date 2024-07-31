@@ -26,6 +26,7 @@ public class LineRequestHelper {
                 .when()
                 .get("/lines/{id}")
                 .then()
+                .log().all()
                 .extract();
         return new ResponseHelper<>(response, new TypeReference<>() {
         });
@@ -47,7 +48,7 @@ public class LineRequestHelper {
         var contentType = MediaType.APPLICATION_JSON_VALUE;
         var path = "/lines";
 
-        var response = RestAssured.given().log().all()
+        var response = RestAssured.given()
                 .body(request)
                 .contentType(contentType)
                 .when().post(path)

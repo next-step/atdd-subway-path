@@ -11,7 +11,7 @@ import java.util.Optional;
 @Table(name = "subway_section")
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Section extends BaseEntity{
+public class Section extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
@@ -36,6 +36,17 @@ public class Section extends BaseEntity{
 
     public void assignSubwayLine(SubwayLine subwayLine) {
         this.subwayLine = subwayLine;
+    }
+
+    public void updateDownStation(Station downStation, Long newDistance){
+        this.downStation = downStation;
+        this.distance = newDistance;
+    }
+
+    public void updateUpStation(Station upStation, Long newDistance){
+        this.upStation = upStation;
+        if(distance<= 0) throw new IllegalArgumentException("구간의 길이는 0보다 커야합니다");
+        this.distance = newDistance;
     }
 
     public boolean isUpStationId(Long id) {

@@ -26,8 +26,8 @@ public class SubwayLineService {
     public SubwayLineResponse saveSubwayLine(SubwayLineRequest request) {
         var upStation = stationService.findStationOrElseThrow(request.getUpStationId());
         var downStation = stationService.findStationOrElseThrow(request.getDownStationId());
-        var section = new SectionBuilder().
-                distance(request.getDistance())
+        var section = new SectionBuilder()
+                .distance(request.getDistance())
                 .upStation(upStation)
                 .downStation(downStation)
                 .build();

@@ -17,6 +17,7 @@ public class SubwayLine extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
+    @Column(nullable = false)
     private Long distance = 0L;
 
     @ManyToOne
@@ -36,16 +37,36 @@ public class SubwayLine extends BaseEntity {
         this.color = color;
     }
 
-    protected void addFirstSection(Section section) {
+    protected void addInitSection(Section section) {
         this.upStation = section.getUpStation();
-        addSection(section);
+        this.downStation = section.getDownStation();
+        this.distance = section.getDistance();
+        this.sections.addSectionToFirst(section);
+        section.assignSubwayLine(this);
     }
 
     public void addSection(Section section) {
-        this.distance = this.distance + section.getDistance();
-        this.downStation = section.getDownStation();
-        this.sections.addSection(section);
-        section.assignSubwayLine(this);
+        var addToLastResult = this.sections.addSectionToLast(section);
+        if (addToLastResult) {
+            this.distance = this.distance + section.getDistance();
+            this.downStation = section.getDownStation();
+            section.assignSubwayLine(this);
+            return;
+        }
+        var addToFirstResult = this.sections.addSectionToFirst(section);
+        if (addToFirstResult) {
+            this.distance = this.distance + section.getDistance();
+            this.upStation = section.getUpStation();
+            section.assignSubwayLine(this);
+            return;
+        }
+        var addToMiddleResult = this.sections.addSectionToMiddle(section);
+        if(addToMiddleResult){
+            section.assignSubwayLine(this);
+            return;
+        }
+        throw new UnsupportedOperationException("구간을 추가할 수 없습니다");
+
     }
 
     public void updateBasicInfo(String name, String color) {
