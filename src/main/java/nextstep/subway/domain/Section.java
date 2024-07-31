@@ -40,6 +40,7 @@ public class Section extends BaseEntity {
 
     public void updateDownStation(Station downStation, Long newDistance){
         this.downStation = downStation;
+        if(distance<= 0) throw new IllegalArgumentException("구간의 길이는 0보다 커야합니다");
         this.distance = newDistance;
     }
 
