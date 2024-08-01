@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.acceptance;
 
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;

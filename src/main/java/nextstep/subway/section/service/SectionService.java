@@ -6,16 +6,12 @@ import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.entity.Sections;
-import nextstep.subway.section.exception.SectionException;
 import nextstep.subway.section.repository.SectionRepository;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.service.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
-import static nextstep.subway.common.constant.ErrorCode.SECTION_NOT_FOUND;
 import static nextstep.subway.converter.SectionConverter.convertToSectionResponseByLineAndSection;
 
 @Service
@@ -50,32 +46,13 @@ public class SectionService {
     public void deleteSection(Long lineId, Long stationId) {
         Line line = lineService.getLineByIdOrThrow(lineId);
 
-        Section section = getADeleteSection(stationId);
         Sections sections = line.getSections();
+        Section section = sections.getRemoveTargetSection(stationId);
 
         sections.removeSection(section);
 
         deleteSection(section);
         lineService.saveLine(line);
-    }
-
-    public Optional<Section> getByUpStationId(Long stationId) {
-        return sectionRepository.findByUpStationId(stationId);
-    }
-
-    public Section getByDownStationId(Long stationId) {
-        return sectionRepository.findByDownStationId(stationId).orElseThrow(
-                () -> new SectionException(String.valueOf(SECTION_NOT_FOUND))
-        );
-    }
-
-    public Section getADeleteSection(Long stationId) {
-        Optional<Section> isNotLastSection = getByUpStationId(stationId);
-        if (isNotLastSection.isEmpty()) {
-            return getByDownStationId(stationId);
-        }
-
-        return isNotLastSection.get();
     }
 
     public void deleteSection(Section section) {

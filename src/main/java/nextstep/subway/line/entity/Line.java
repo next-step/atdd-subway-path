@@ -1,8 +1,14 @@
 package nextstep.subway.line.entity;
 
+import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.entity.Sections;
+import nextstep.subway.station.entity.Station;
+import nextstep.subway.station.exception.StationNotFoundException;
 
 import javax.persistence.*;
+import java.util.function.Predicate;
+
+import static nextstep.subway.common.constant.ErrorCode.STATION_NOT_FOUND;
 
 @Entity
 public class Line {
@@ -76,5 +82,4 @@ public class Line {
     public Sections getSections() {
         return this.sections;
     }
-
 }

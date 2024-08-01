@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.section.unit;
 
 import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.entity.Sections;
@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class SectionTest {
 
@@ -50,7 +53,7 @@ public class SectionTest {
 
         // then
         Section 생성된_Section_조회 = 생성된_구간들.getSectionByUpStationId(역삼역.getId());
-        Assertions.assertEquals(역삼역_강남역, 생성된_Section_조회);
+        assertEquals(역삼역_강남역, 생성된_Section_조회);
     }
 
     @Test
@@ -66,7 +69,7 @@ public class SectionTest {
 
         // then
         var 생성된_Section_조회 = 생성된_구간들.getSectionByUpStationId(강남역.getId());
-        Assertions.assertEquals(중간_구간에_추가할_Section, 생성된_Section_조회);
+        assertEquals(중간_구간에_추가할_Section, 생성된_Section_조회);
     }
 
     @Test
@@ -81,7 +84,7 @@ public class SectionTest {
 
         // then
         var 생성된_Section_조회 = 생성된_구간들.getSectionByUpStationId(강남역.getId());
-        Assertions.assertEquals(마지막_구간에_추가할_Section, 생성된_Section_조회);
+        assertEquals(마지막_구간에_추가할_Section, 생성된_Section_조회);
     }
 
     @Test
@@ -133,12 +136,14 @@ public class SectionTest {
 
         // then
         var 삭제_후_강남역_선릉역_구간 = 생성된_구간들.getSectionByUpStationId(강남역.getId());
-        Assertions.assertEquals(생성된_구간들.getSections().size(), 1);
-        Assertions.assertNull(삭제_후_강남역_선릉역_구간.getNextSection());
-        Assertions.assertNull(삭제_후_강남역_선릉역_구간.getPreviousSection());
-        Assertions.assertEquals(삭제_후_강남역_선릉역_구간.getUpStation(), 강남역);
-        Assertions.assertEquals(삭제_후_강남역_선릉역_구간.getDownStation(), 선릉역);
-        Assertions.assertEquals(삭제_후_강남역_선릉역_구간.getDistance(), 2L);
+        Assertions.assertAll(
+                () -> assertEquals(생성된_구간들.getSections().size(), 1),
+                () -> assertNull(삭제_후_강남역_선릉역_구간.getNextSection()),
+                () -> assertEquals(삭제_후_강남역_선릉역_구간.getUpStation(), 강남역),
+                () -> assertEquals(삭제_후_강남역_선릉역_구간.getDownStation(), 선릉역),
+                () -> assertEquals(삭제_후_강남역_선릉역_구간.getDistance(), 2L)
+        );
+
     }
 
     @Test
@@ -156,18 +161,18 @@ public class SectionTest {
         var 삭제_후_역삼역_선릉역_구간 = 생성된_구간들.getSectionByUpStationId(역삼역.getId());
         var 삭제_후_선릉역_선정릉역_구간 = 생성된_구간들.getSectionByUpStationId(선릉역.getId());
 
-        Assertions.assertEquals(생성된_구간들.getSections().size(), 2);
-        Assertions.assertNull(삭제_후_역삼역_선릉역_구간.getPreviousSection());
-        Assertions.assertEquals(삭제_후_역삼역_선릉역_구간.getNextSection(), 삭제_후_선릉역_선정릉역_구간);
-        Assertions.assertEquals(삭제_후_역삼역_선릉역_구간.getUpStation(), 역삼역);
-        Assertions.assertEquals(삭제_후_역삼역_선릉역_구간.getDownStation(), 선릉역);
-        Assertions.assertEquals(삭제_후_역삼역_선릉역_구간.getDistance(), 4L);
+        assertEquals(생성된_구간들.getSections().size(), 2);
+        assertNull(삭제_후_역삼역_선릉역_구간.getPreviousSection());
+        assertEquals(삭제_후_역삼역_선릉역_구간.getNextSection(), 삭제_후_선릉역_선정릉역_구간);
+        assertEquals(삭제_후_역삼역_선릉역_구간.getUpStation(), 역삼역);
+        assertEquals(삭제_후_역삼역_선릉역_구간.getDownStation(), 선릉역);
+        assertEquals(삭제_후_역삼역_선릉역_구간.getDistance(), 4L);
 
-        Assertions.assertEquals(삭제_후_선릉역_선정릉역_구간.getPreviousSection(), 역삼역_강남역);
-        Assertions.assertNull(삭제_후_선릉역_선정릉역_구간.getNextSection());
-        Assertions.assertEquals(삭제_후_선릉역_선정릉역_구간.getUpStation(), 선릉역);
-        Assertions.assertEquals(삭제_후_선릉역_선정릉역_구간.getDownStation(), 선정릉역);
-        Assertions.assertEquals(삭제_후_선릉역_선정릉역_구간.getDistance(), 1L);
+        assertEquals(삭제_후_선릉역_선정릉역_구간.getPreviousSection(), 역삼역_강남역);
+        assertNull(삭제_후_선릉역_선정릉역_구간.getNextSection());
+        assertEquals(삭제_후_선릉역_선정릉역_구간.getUpStation(), 선릉역);
+        assertEquals(삭제_후_선릉역_선정릉역_구간.getDownStation(), 선정릉역);
+        assertEquals(삭제_후_선릉역_선정릉역_구간.getDistance(), 1L);
     }
 
     @Test
@@ -183,12 +188,12 @@ public class SectionTest {
 
         // then
         var 삭제_후_강남역_선릉역_구간 = 생성된_구간들.getSectionByUpStationId(강남역.getId());
-        Assertions.assertEquals(생성된_구간들.getSections().size(), 2);
-        Assertions.assertNull(삭제_후_강남역_선릉역_구간.getNextSection());
-        Assertions.assertEquals(삭제_후_강남역_선릉역_구간.getPreviousSection(), 역삼역_강남역);
-        Assertions.assertEquals(삭제_후_강남역_선릉역_구간.getUpStation(), 강남역);
-        Assertions.assertEquals(삭제_후_강남역_선릉역_구간.getDownStation(), 선릉역);
-        Assertions.assertEquals(삭제_후_강남역_선릉역_구간.getDistance(), 2L);
+        assertEquals(생성된_구간들.getSections().size(), 2);
+        assertNull(삭제_후_강남역_선릉역_구간.getNextSection());
+        assertEquals(삭제_후_강남역_선릉역_구간.getPreviousSection(), 역삼역_강남역);
+        assertEquals(삭제_후_강남역_선릉역_구간.getUpStation(), 강남역);
+        assertEquals(삭제_후_강남역_선릉역_구간.getDownStation(), 선릉역);
+        assertEquals(삭제_후_강남역_선릉역_구간.getDistance(), 2L);
 
     }
 

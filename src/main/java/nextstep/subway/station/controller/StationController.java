@@ -1,5 +1,6 @@
 package nextstep.subway.station.controller;
 
+import nextstep.subway.path.service.PathFinder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import nextstep.subway.station.dto.StationRequest;
@@ -11,10 +12,13 @@ import java.util.List;
 
 @RestController
 public class StationController {
-    private StationService stationService;
 
-    public StationController(StationService stationService) {
+    private StationService stationService;
+    private PathFinder pathFinder;
+
+    public StationController(StationService stationService, PathFinder pathFinder) {
         this.stationService = stationService;
+        this.pathFinder = pathFinder;
     }
 
     @PostMapping("/stations")
@@ -32,5 +36,13 @@ public class StationController {
     public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/paths")
+    public ResponseEntity<Object> retrieveStationPath(@RequestParam("source") Long source,
+                                                      @RequestParam("target") Long target) {
+        ;
+
+        return ResponseEntity.ok().body(pathFinder.retrieveStationPath(source, target));
     }
 }

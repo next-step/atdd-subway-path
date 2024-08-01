@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.section.unit;
 
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.exception.LineNotFoundException;
@@ -24,7 +24,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SectionServiceMockTest {
@@ -50,7 +51,7 @@ public class SectionServiceMockTest {
 
     @BeforeEach
     public void setup() {
-        stationService = new StationService(stationRepository);
+        stationService = new StationService(stationRepository, lineService);
         lineService = new LineService(lineRepository, stationService);
         sectionService = new SectionService(sectionRepository, stationService, lineService);
         강남역 = Station.of(1L, "강남역");
@@ -78,11 +79,19 @@ public class SectionServiceMockTest {
         var 삼성역_강남역_구간_생성_응답 = sectionService.createSection(신분당선.getId(), 삼성역_강남역_구간_생성_요청);
 
         // then
-        Assertions.assertEquals(삼성역_강남역_구간_생성_응답.getLineId(), 신분당선.getId());
-        Assertions.assertEquals(삼성역_강남역_구간_생성_응답.getUpStationResponse().getId(), 삼성역.getId());
-        Assertions.assertEquals(삼성역_강남역_구간_생성_응답.getUpStationResponse().getName(), 삼성역.getName());
-        Assertions.assertEquals(삼성역_강남역_구간_생성_응답.getDownStationResponse().getId(), 강남역.getId());
-        Assertions.assertEquals(삼성역_강남역_구간_생성_응답.getDownStationResponse().getName(), 강남역.getName());
+        verify(lineRepository, times(1)).findById(1L);
+        verify(stationRepository, times(1)).findById(1L);
+        verify(stationRepository, times(1)).findById(3L);
+        verify(lineRepository, times(1)).save(신분당선);
+
+        Assertions.assertAll(
+                () -> assertEquals(삼성역_강남역_구간_생성_응답.getLineId(), 신분당선.getId()),
+                () -> assertEquals(삼성역_강남역_구간_생성_응답.getUpStationResponse().getId(), 삼성역.getId()),
+                () -> assertEquals(삼성역_강남역_구간_생성_응답.getUpStationResponse().getName(), 삼성역.getName()),
+                () -> assertEquals(삼성역_강남역_구간_생성_응답.getDownStationResponse().getId(), 강남역.getId()),
+                () ->assertEquals(삼성역_강남역_구간_생성_응답.getDownStationResponse().getName(), 강남역.getName())
+        );
+
     }
 
     @Test
@@ -102,12 +111,21 @@ public class SectionServiceMockTest {
         var 선릉역_언주역_구간_생성_응답 = sectionService.createSection(신분당선.getId(), 선릉역_언주역_구간_생성_요청);
 
         // then
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getLineId(), 신분당선.getId());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getUpStationResponse().getId(), 선릉역.getId());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getUpStationResponse().getName(), 선릉역.getName());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getDownStationResponse().getId(), 언주역.getId());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getDownStationResponse().getName(), 언주역.getName());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getDistance(), 1L);
+        verify(lineRepository, times(2)).findById(1L);
+        verify(stationRepository, times(2)).findById(2L);
+        verify(stationRepository, times(1)).findById(3L);
+        verify(stationRepository, times(1)).findById(4L);
+        verify(lineRepository, times(2)).save(신분당선);
+
+        Assertions.assertAll(
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getLineId(), 신분당선.getId()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getUpStationResponse().getId(), 선릉역.getId()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getUpStationResponse().getName(), 선릉역.getName()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getDownStationResponse().getId(), 언주역.getId()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getDownStationResponse().getName(), 언주역.getName()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getDistance(), 1L)
+        );
+
     }
 
     @Test
@@ -125,12 +143,20 @@ public class SectionServiceMockTest {
         var 선릉역_언주역_구간_생성_응답 = sectionService.createSection(신분당선.getId(), 선릉역_언주역_구간_생성_요청);
 
         // then
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getLineId(), 신분당선.getId());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getUpStationResponse().getId(), 선릉역.getId());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getUpStationResponse().getName(), 선릉역.getName());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getDownStationResponse().getId(), 언주역.getId());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getDownStationResponse().getName(), 언주역.getName());
-        Assertions.assertEquals(선릉역_언주역_구간_생성_응답.getDistance(), 1L);
+        verify(lineRepository, times(1)).findById(1L);
+        verify(stationRepository, times(1)).findById(2L);
+        verify(stationRepository, times(1)).findById(4L);
+        verify(lineRepository, times(1)).save(신분당선);
+
+        Assertions.assertAll(
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getLineId(), 신분당선.getId()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getUpStationResponse().getId(), 선릉역.getId()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getUpStationResponse().getName(), 선릉역.getName()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getDownStationResponse().getId(), 언주역.getId()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getDownStationResponse().getName(), 언주역.getName()),
+                () -> assertEquals(선릉역_언주역_구간_생성_응답.getDistance(), 1L)
+        );
+
     }
 
     @Test
@@ -180,7 +206,6 @@ public class SectionServiceMockTest {
     public void delete_section_first_section() {
         // given
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
-        when(sectionRepository.findByUpStationId(1L)).thenReturn(Optional.ofNullable(강남역_선릉역_구간));
         when(stationRepository.findById(2L)).thenReturn(Optional.ofNullable(선릉역));
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
         when(lineRepository.save(신분당선)).thenReturn(신분당선);
@@ -190,6 +215,11 @@ public class SectionServiceMockTest {
 
         // when & then
         sectionService.deleteSection(신분당선.getId(), 강남역.getId());
+
+        verify(lineRepository, times(2)).findById(1L);
+        verify(stationRepository, times(1)).findById(2L);
+        verify(stationRepository, times(1)).findById(4L);
+        verify(lineRepository, times(2)).save(신분당선);
     }
 
     @Test
@@ -197,7 +227,6 @@ public class SectionServiceMockTest {
     public void delete_section_middle_section() {
         // given
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
-        when(sectionRepository.findByUpStationId(2L)).thenReturn(Optional.ofNullable(Section.of(선릉역, 언주역, 1L)));
         when(stationRepository.findById(2L)).thenReturn(Optional.ofNullable(선릉역));
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
         when(stationRepository.findById(5L)).thenReturn(Optional.ofNullable(논현역));
@@ -210,6 +239,12 @@ public class SectionServiceMockTest {
 
         // when & then
         sectionService.deleteSection(신분당선.getId(), 선릉역.getId());
+
+        verify(lineRepository, times(3)).findById(1L);
+        verify(stationRepository, times(1)).findById(2L);
+        verify(stationRepository, times(2)).findById(4L);
+        verify(stationRepository, times(1)).findById(5L);
+        verify(lineRepository, times(3)).save(신분당선);
     }
 
     @Test
@@ -217,7 +252,6 @@ public class SectionServiceMockTest {
     public void delete_section_last_section() {
         // given
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
-        when(sectionRepository.findByUpStationId(4L)).thenReturn(Optional.ofNullable(Section.of(선릉역, 언주역, 2L)));
         when(stationRepository.findById(2L)).thenReturn(Optional.ofNullable(선릉역));
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
         when(lineRepository.save(신분당선)).thenReturn(신분당선);
@@ -227,6 +261,11 @@ public class SectionServiceMockTest {
 
         // when & then
         sectionService.deleteSection(신분당선.getId(), 언주역.getId());
+
+        verify(lineRepository, times(2)).findById(1L);
+        verify(stationRepository, times(1)).findById(2L);
+        verify(stationRepository, times(1)).findById(4L);
+        verify(lineRepository, times(2)).save(신분당선);
     }
 
     @Test
@@ -236,8 +275,6 @@ public class SectionServiceMockTest {
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
         when(stationRepository.findById(2L)).thenReturn(Optional.ofNullable(선릉역));
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
-        when(sectionRepository.findByUpStationId(5L)).thenReturn(Optional.ofNullable(null));
-        when(sectionRepository.findByDownStationId(5L)).thenReturn(Optional.ofNullable(null));
         when(lineRepository.save(신분당선)).thenReturn(신분당선);
 
         var 선릉역_언주역_구간_생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);

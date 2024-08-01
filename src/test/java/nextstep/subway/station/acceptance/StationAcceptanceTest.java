@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.station.acceptance;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

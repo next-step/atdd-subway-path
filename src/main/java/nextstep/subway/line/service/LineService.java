@@ -95,4 +95,8 @@ public class LineService {
         return lineRepository.save(line);
     }
 
+    public List<Line> getAllLines() {
+        return lineRepository.findAll();
+    }
+
 }
