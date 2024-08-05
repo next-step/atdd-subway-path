@@ -10,7 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
-import static nextstep.subway.acceptance.StationSteps.findAllStationNames;
+import static nextstep.subway.acceptance.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -26,13 +26,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = StationSteps.createStation("강남역");
+        ExtractableResponse<Response> response = 지하철_역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = StationSteps.findAllStationNames();
+        List<String> stationNames = 전체_지하철_역_이름_찾기();
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -45,11 +45,11 @@ public class StationAcceptanceTest {
     @Test
     void retrieveStation() {
         // given
-        StationSteps.createStation("강남역");
-        StationSteps.createStation("신논현역");
+        지하철_역_생성("강남역");
+        지하철_역_생성("신논현역");
 
         // when
-        List<String> stationNames = findAllStationNames();
+        List<String> stationNames = 전체_지하철_역_이름_찾기();
 
         // then
         assertThat(stationNames).contains("강남역", "신논현역");
@@ -65,12 +65,12 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> response = StationSteps.createStation("신논현역");
+        ExtractableResponse<Response> response = 지하철_역_생성("신논현역");
         String createdStationId = response.body().jsonPath().getString("id");
 
         // when
-        StationSteps.deleteStation(createdStationId);
-        List<String> stationNames = findAllStationNames();
+        지하철_역_삭제(createdStationId);
+        List<String> stationNames = 전체_지하철_역_이름_찾기();
 
         // then
         assertThat(stationNames).doesNotContain("신논현역");

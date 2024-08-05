@@ -12,6 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
+import static nextstep.subway.acceptance.LineSteps.노선_아이디로_지하철_노선_찾기;
+import static nextstep.subway.acceptance.LineSteps.지하철_노선_내_지하철_역_삭제;
+import static nextstep.subway.acceptance.SectionSteps.지하철_구간_삭제;
+import static nextstep.subway.acceptance.SectionSteps.지하철_구간_생성;
+import static nextstep.subway.acceptance.StationSteps.지하철_역_생성;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -27,12 +32,12 @@ public class SectionAcceptanceTest {
 
     @BeforeEach
     void setup() {
-        강남역_ID = StationSteps.createStation("강남역").body().jsonPath().getLong("id");
-        신사역_ID = StationSteps.createStation("신사역").body().jsonPath().getLong("id");
-        신논현역_ID = StationSteps.createStation("신논현역").body().jsonPath().getLong("id");
+        강남역_ID = 지하철_역_생성("강남역").body().jsonPath().getLong("id");
+        신사역_ID = 지하철_역_생성("신사역").body().jsonPath().getLong("id");
+        신논현역_ID = 지하철_역_생성("신논현역").body().jsonPath().getLong("id");
 
         신분당선_request = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 신사역_ID, 20);
-        신분당선_ID = LineSteps.createLine(신분당선_request).body().jsonPath().getLong("id");
+        신분당선_ID = LineSteps.지하철_노선_생성(신분당선_request).body().jsonPath().getLong("id");
     }
 
     /**
@@ -45,13 +50,12 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 구간을 생성한다.")
     void createSection() {
         // when
-        ExtractableResponse<Response> response = SectionSteps.createSection(신분당선_ID, new SectionRequest(강남역_ID, 신논현역_ID, 10));
+        ExtractableResponse<Response> response = 지하철_구간_생성(신분당선_ID, new SectionRequest(강남역_ID, 신논현역_ID, 10));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.body().jsonPath().getLong("lineId")).isEqualTo(신분당선_ID);
         assertThat(response.body().jsonPath().getLong("downStationId")).isEqualTo(신논현역_ID);
-
     }
 
     /**
@@ -65,8 +69,8 @@ public class SectionAcceptanceTest {
         // given
 
         // when
-        SectionSteps.createSection(신분당선_ID, new SectionRequest(신논현역_ID, 신사역_ID, 15));
-        LineResponse findLine = LineSteps.findByLineId(신분당선_ID);
+        지하철_구간_생성(신분당선_ID, new SectionRequest(신논현역_ID, 신사역_ID, 15));
+        LineResponse findLine = 노선_아이디로_지하철_노선_찾기(신분당선_ID);
 
         // then
         assertThat(findLine.getStations().size()).isEqualTo(3);
@@ -81,12 +85,12 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 구간을 삭제한다.")
     void deleteSection() {
         // given
-        ExtractableResponse<Response> response = SectionSteps.createSection(신분당선_ID, new SectionRequest(강남역_ID, 신논현역_ID, 10));
+        ExtractableResponse<Response> response = 지하철_구간_생성(신분당선_ID, new SectionRequest(강남역_ID, 신논현역_ID, 10));
 
         // when
         Long id = response.body().jsonPath().getLong("sectionId");
-        SectionSteps.deleteSection(신분당선_ID, id);
-        LineResponse findLine = LineSteps.findByLineId(신분당선_ID);
+        지하철_구간_삭제(신분당선_ID, id);
+        LineResponse findLine = 노선_아이디로_지하철_노선_찾기(신분당선_ID);
 
         // then
         assertThat(findLine.getStations().get(0).getName()).isEqualTo("강남역");
@@ -102,11 +106,11 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선에 포함된 역을 위치에 상관없이 삭제할 수 있다.")
     void deleteMiddleSection() {
         // given
-        SectionSteps.createSection(신분당선_ID, new SectionRequest(신논현역_ID, 신사역_ID, 15));
+        지하철_구간_생성(신분당선_ID, new SectionRequest(신논현역_ID, 신사역_ID, 15));
 
         // when
-        LineSteps.deleteStation(신분당선_ID, 신논현역_ID);
-        LineResponse findLine = LineSteps.findByLineId(신분당선_ID);
+        지하철_노선_내_지하철_역_삭제(신분당선_ID, 신논현역_ID);
+        LineResponse findLine = 노선_아이디로_지하철_노선_찾기(신분당선_ID);
 
         // then
         assertThat(findLine.getStations().size()).isEqualTo(2);

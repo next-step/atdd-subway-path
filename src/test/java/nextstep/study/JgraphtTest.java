@@ -50,8 +50,9 @@ class JgraphtTest {
         assertThat(paths).hasSize(2);
         paths.stream()
                 .forEach(it -> {
-                    assertThat(it.getVertexList()).startsWith(source);
-                    assertThat(it.getVertexList()).endsWith(target);
+                    List vertexList = it.getVertexList();
+                    assertThat(vertexList).startsWith(source);
+                    assertThat(vertexList).endsWith(target);
                 });
     }
 }

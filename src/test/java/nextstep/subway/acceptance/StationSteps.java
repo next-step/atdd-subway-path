@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class StationSteps {
-    static ExtractableResponse<Response> createStation(String stationName) {
+    static ExtractableResponse<Response> 지하철_역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -22,14 +22,14 @@ public class StationSteps {
                 .extract();
     }
 
-    static List<String> findAllStationNames() {
+    static List<String> 전체_지하철_역_이름_찾기() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    static void deleteStation(String stationId) {
+    static void 지하철_역_삭제(String stationId) {
         RestAssured.given().log().all()
                 .when().delete("/stations/" + stationId)
                 .then().log().all();

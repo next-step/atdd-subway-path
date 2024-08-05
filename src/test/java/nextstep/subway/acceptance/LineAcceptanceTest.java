@@ -13,6 +13,8 @@ import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
+import static nextstep.subway.acceptance.LineSteps.*;
+import static nextstep.subway.acceptance.StationSteps.지하철_역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -26,9 +28,9 @@ public class LineAcceptanceTest {
 
     @BeforeEach
     void setup() {
-        강남역_ID = StationSteps.createStation("강남역").body().jsonPath().getLong("id");
-        신논현역_ID = StationSteps.createStation("신논현역").body().jsonPath().getLong("id");
-        신사역_ID = StationSteps.createStation("신사역").body().jsonPath().getLong("id");
+        강남역_ID = 지하철_역_생성("강남역").body().jsonPath().getLong("id");
+        신논현역_ID = 지하철_역_생성("신논현역").body().jsonPath().getLong("id");
+        신사역_ID = 지하철_역_생성("신사역").body().jsonPath().getLong("id");
         신분당선_request = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 신논현역_ID, 10);
     }
 
@@ -44,10 +46,10 @@ public class LineAcceptanceTest {
         LineRequest newLine = new LineRequest("신분당선", "bg-red-600", 강남역_ID, 신논현역_ID, 10);
 
         // when
-        ExtractableResponse<Response> response = LineSteps.createLine(newLine);
+        ExtractableResponse<Response> response = 지하철_노선_생성(newLine);
 
         // then
-        List<String> allLineNames = LineSteps.findAllLineNames();
+        List<String> allLineNames = 지하철_노선_내_전체_지하철_역_이름_찾기();
         assertThat(allLineNames).containsAnyOf("신분당선");
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -63,11 +65,11 @@ public class LineAcceptanceTest {
         // given
         LineRequest _5호선_request = new LineRequest("5호선", "bg-purple-400", 강남역_ID, 신사역_ID, 10);
 
-        LineSteps.createLine(신분당선_request);
-        LineSteps.createLine(_5호선_request);
+        지하철_노선_생성(신분당선_request);
+        지하철_노선_생성(_5호선_request);
 
         // when
-        List<String> allLineNames = LineSteps.findAllLineNames();
+        List<String> allLineNames = 지하철_노선_내_전체_지하철_역_이름_찾기();
 
         // then
         assertThat(allLineNames).contains("신분당선", "5호선");
@@ -83,13 +85,13 @@ public class LineAcceptanceTest {
     void retrieveLine() {
         // given
         LineRequest _5호선_request = new LineRequest("5호선", "bg-purple-400", 강남역_ID, 신사역_ID, 10);
-        LineSteps.createLine(신분당선_request);
+        지하철_노선_생성(신분당선_request);
 
-        ExtractableResponse<Response> response = LineSteps.createLine(_5호선_request);
+        ExtractableResponse<Response> response = 지하철_노선_생성(_5호선_request);
         Long _5호선_id = response.body().jsonPath().getLong("id");
 
         // when
-        LineResponse findLine = LineSteps.findByLineId(_5호선_id);
+        LineResponse findLine = 노선_아이디로_지하철_노선_찾기(_5호선_id);
 
         // then
         assertThat(findLine.getName()).isEqualTo("5호선");
@@ -106,12 +108,12 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     void updateLine() {
         // given
-        ExtractableResponse<Response> response = LineSteps.createLine(신분당선_request);
+        ExtractableResponse<Response> response = 지하철_노선_생성(신분당선_request);
         Long 신분당선_ID = Long.valueOf(response.body().jsonPath().getString("id"));
 
         // when
-        LineSteps.updateLine(신분당선_ID, "2호선", "bg-red-700");
-        LineResponse findLine = LineSteps.findByLineId(신분당선_ID);
+        지하철_노선_정보_수정(신분당선_ID, "2호선", "bg-red-700");
+        LineResponse findLine = 노선_아이디로_지하철_노선_찾기(신분당선_ID);
 
         // then
         assertThat(findLine.getName()).isEqualTo("2호선");
@@ -129,12 +131,12 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     void deleteLine() {
         // given
-        ExtractableResponse<Response> response = LineSteps.createLine(신분당선_request);
+        ExtractableResponse<Response> response = 지하철_노선_생성(신분당선_request);
         String 신분당선_ID = response.body().jsonPath().getString("id");
 
         // when
-        LineSteps.deleteLine(신분당선_ID);
-        List<String> allLineNames = LineSteps.findAllLineNames();
+        지하철_노선_삭제(신분당선_ID);
+        List<String> allLineNames = 지하철_노선_내_전체_지하철_역_이름_찾기();
 
         // then
         assertThat(allLineNames).doesNotContain("신분당선");
