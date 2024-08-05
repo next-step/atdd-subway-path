@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class LineServiceMockTest {
+
     @Mock
     private LineRepository lineRepository;
     @Mock
@@ -41,7 +42,8 @@ public class LineServiceMockTest {
         when(stationRepository.findByIdOrThrow(신사역_id)).thenReturn(new Station("신사역"));
         when(stationRepository.findByIdOrThrow(논현역_id)).thenReturn(new Station("논현역"));
         when(stationRepository.findByIdOrThrow(신논현역_id)).thenReturn(new Station("신논현역"));
-        when(lineRepository.findByIdOrThrow(신분당선_id)).thenReturn(new Line("신분당선", "red", new LineSections()));
+        when(lineRepository.findByIdOrThrow(신분당선_id)).thenReturn(
+            new Line("신분당선", "red", new LineSections()));
         lineSectionService.saveSection(신분당선_id, new SectionRequest(신사역_id, 논현역_id, 10L));
 
         // when

@@ -12,11 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class StationUtils {
+
     public static final String 신사역 = "신사역";
     public static final String 논현역 = "논현역";
     public static final String 신논현역 = "신논현역";
     public static final String 강남역 = "강남역";
     public static final String 역삼역 = "역삼역";
+    public static final String 교대역 = "교대역";
+    public static final String 양재역 = "양재역";
+    public static final String 남부터미널역 = "남부터미널역";
 
 
     public static ExtractableResponse<Response> 지하철역_생성(String stationName) {

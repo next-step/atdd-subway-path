@@ -25,8 +25,8 @@ public class StationService {
 
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
-                .map(this::createStationResponse)
-                .collect(Collectors.toList());
+            .map(this::createStationResponse)
+            .collect(Collectors.toList());
     }
 
     @Transactional
@@ -37,8 +37,8 @@ public class StationService {
 
     private StationResponse createStationResponse(Station station) {
         return new StationResponse(
-                station.getId(),
-                station.getName()
+            station.getId(),
+            station.getName()
         );
     }
 }

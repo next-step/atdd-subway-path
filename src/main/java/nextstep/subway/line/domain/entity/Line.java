@@ -10,10 +10,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.station.domain.Station;
 
-@Entity
+@Entity(name = "lines")
 @Getter
 @NoArgsConstructor
 public class Line {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

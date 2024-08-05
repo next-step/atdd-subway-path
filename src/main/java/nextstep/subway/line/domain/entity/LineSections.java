@@ -148,7 +148,7 @@ public class LineSections {
     }
 
     private Optional<Station> getLastDownStation() {
-        if(lineSections.isEmpty()) {
+        if (lineSections.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(lineSections.get(lineSections.size() - 1).getDownStation());
@@ -167,17 +167,17 @@ public class LineSections {
     }
 
     private void validateDeletelineSection() {
-        if(lineSections.size() <= 1) {
+        if (lineSections.size() <= 1) {
             throw new SubwayException(SubwayExceptionType.CANNOT_DELETE_SINGLE_SECTION);
         }
     }
 
     private void deleteSectionByPosition(Station station) {
-        if(isSameAsFirstUpStation(station)) {
+        if (isSameAsFirstUpStation(station)) {
             lineSections.remove(0);
             return;
         }
-        if(isSameAsLastDownStation(station)) {
+        if (isSameAsLastDownStation(station)) {
             lineSections.remove(lineSections.size() - 1);
             return;
         }
@@ -221,4 +221,7 @@ public class LineSections {
         return lineSections.size();
     }
 
+    public Stream<LineSection> stream() {
+        return lineSections.stream();
+    }
 }

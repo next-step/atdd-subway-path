@@ -7,14 +7,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nextstep.subway.station.domain.Station;
 
-@Entity
+@Entity(name = "line_sections")
 @Getter
 @NoArgsConstructor
 public class LineSection {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

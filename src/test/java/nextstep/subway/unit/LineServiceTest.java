@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
+
     @Autowired
     private LineRepository lineRepository;
     @Autowired
@@ -32,14 +33,16 @@ public class LineServiceTest {
     @Test
     void addSection() {
         // given
-        Line 신분당선 = lineRepository.save(new Line("신분당선", "red" ,new LineSections()));
+        Line 신분당선 = lineRepository.save(new Line("신분당선", "red", new LineSections()));
         Station 신사역 = stationRepository.save(new Station("신사역"));
         Station 논현역 = stationRepository.save(new Station("논현역"));
         Station 신논현역 = stationRepository.save(new Station("신논현역"));
-        lineSectionService.saveSection(신분당선.getId(), new SectionRequest(신사역.getId(), 논현역.getId(), 10L));
+        lineSectionService.saveSection(신분당선.getId(),
+            new SectionRequest(신사역.getId(), 논현역.getId(), 10L));
 
         // when
-        lineSectionService.saveSection(신분당선.getId(), new SectionRequest(논현역.getId(), 신논현역.getId(), 10L));
+        lineSectionService.saveSection(신분당선.getId(),
+            new SectionRequest(논현역.getId(), 신논현역.getId(), 10L));
 
         // then
         LineResponse lineResponse = lineService.findLine(신분당선.getId());

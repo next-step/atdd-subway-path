@@ -12,7 +12,8 @@ import org.springframework.http.MediaType;
 
 public class SectionUtils {
 
-    public static ExtractableResponse<Response> 지하철구간_생성(Long id, Long upStationId, Long downStationId, Long distance) {
+    public static ExtractableResponse<Response> 지하철구간_생성(Long id, Long upStationId,
+        Long downStationId, Long distance) {
         Map<String, Object> params = createSectionParams(upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
@@ -30,14 +31,17 @@ public class SectionUtils {
             .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철구간_생성_후_검증(Long id, Long upStationId, Long downStationId, Long distance) {
-        ExtractableResponse<Response> 지하철구간_생성_응답 = 지하철구간_생성(id, upStationId, downStationId, distance);
+    public static ExtractableResponse<Response> 지하철구간_생성_후_검증(Long id, Long upStationId,
+        Long downStationId, Long distance) {
+        ExtractableResponse<Response> 지하철구간_생성_응답 = 지하철구간_생성(id, upStationId, downStationId,
+            distance);
         assertThat(지하철구간_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         return 지하철구간_생성_응답;
     }
 
-    private static Map<String, Object> createSectionParams(Long upStationId, Long downStationId, Long distance) {
+    private static Map<String, Object> createSectionParams(Long upStationId, Long downStationId,
+        Long distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);

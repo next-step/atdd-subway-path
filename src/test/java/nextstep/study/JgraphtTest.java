@@ -13,12 +13,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 class JgraphtTest {
+
     @Test
     void getDijkstraShortestPath() {
         String source = "v3";
         String target = "v1";
 
-        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(
+            DefaultWeightedEdge.class);
         graph.addVertex("v1");
         graph.addVertex("v2");
         graph.addVertex("v3");
@@ -37,7 +39,8 @@ class JgraphtTest {
         String source = "v3";
         String target = "v1";
 
-        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+        WeightedMultigraph<String, DefaultWeightedEdge> graph = new WeightedMultigraph(
+            DefaultWeightedEdge.class);
         graph.addVertex("v1");
         graph.addVertex("v2");
         graph.addVertex("v3");
@@ -49,9 +52,9 @@ class JgraphtTest {
 
         assertThat(paths).hasSize(2);
         paths.stream()
-                .forEach(it -> {
-                    assertThat(it.getVertexList()).startsWith(source);
-                    assertThat(it.getVertexList()).endsWith(target);
-                });
+            .forEach(it -> {
+                assertThat(it.getVertexList()).startsWith(source);
+                assertThat(it.getVertexList()).endsWith(target);
+            });
     }
 }
