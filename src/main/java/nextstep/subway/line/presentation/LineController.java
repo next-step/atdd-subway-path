@@ -1,23 +1,22 @@
 package nextstep.subway.line.presentation;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.api.LineService;
 import nextstep.subway.line.api.response.LineResponse;
 import nextstep.subway.line.presentation.request.LineCreateRequest;
 import nextstep.subway.line.presentation.request.LineUpdateRequest;
+import nextstep.subway.path.api.PathService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 public class LineController {
 
     private final LineService lineService;
-
-    public LineController(LineService lineService) {
-        this.lineService = lineService;
-    }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest request) {

@@ -16,7 +16,8 @@ public class GlobalExceptionHandler {
             SectionMismatchException.class,
             AlreadyRegisteredException.class,
             InsufficientStationException.class,
-            StationNotMatchException.class
+            StationNotMatchException.class,
+            IllegalArgumentException.class
     })
     public ResponseEntity<ErrorResponse> handleBadRequestException(RuntimeException e) {
         return new ResponseEntity<>(new ErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);

@@ -1,5 +1,8 @@
 package nextstep.subway.station;
 
+import lombok.RequiredArgsConstructor;
+import nextstep.subway.path.domain.PathEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -7,17 +10,18 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public StationService(StationRepository stationRepository) {
-        this.stationRepository = stationRepository;
-    }
 
     @Transactional
-    public StationResponse saveStation(StationRequest stationRequest) {
+    public StationResponse saveStation(StationRequest stationRequest, PathEvent event) {
+        eventPublisher.publishEvent(event);
+
         Station station = stationRepository.save(new Station(stationRequest.getName()));
         return createStationResponse(station);
     }
@@ -29,7 +33,9 @@ public class StationService {
     }
 
     @Transactional
-    public void deleteStationById(Long id) {
+    public void deleteStationById(Long id, PathEvent event) {
+        eventPublisher.publishEvent(event);
+
         stationRepository.deleteById(id);
     }
 

@@ -1,33 +1,34 @@
 package nextstep.subway.section.api;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.global.exception.AlreadyRegisteredException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.path.domain.PathEvent;
 import nextstep.subway.section.SectionRepository;
 import nextstep.subway.section.api.response.SectionResponse;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.presentation.request.SectionCreateRequest;
 import nextstep.subway.station.StationRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 
+@RequiredArgsConstructor
 @Service
 public class SectionService {
 
     private final SectionRepository sectionRepository;
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
-
-    public SectionService(SectionRepository sectionRepository, LineRepository lineRepository, StationRepository stationRepository) {
-        this.sectionRepository = sectionRepository;
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-    }
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
-    public SectionResponse create(Long lineId, SectionCreateRequest request) {
+    public SectionResponse create(Long lineId, SectionCreateRequest request, PathEvent event) {
+        eventPublisher.publishEvent(event);
+
         Line line = getLine(lineId);
 
         if (line.getSections().getStations().contains(request.getUpStationId()) && line.getSections().getStations().contains(request.getDownStationId())) {
@@ -36,15 +37,17 @@ public class SectionService {
 
         if (line.getSections().getStations().contains(request.getUpStationId())) {
             // 새로 추가하는 역은 request.다운스테이션
-            return createByDownstationId(request, line);
+            return SectionResponse.of(createByDownstationId(request, line));
         }
 
         // 새로운 역은 request.getUpstationId
-         return createByUpstationId(request, line);
+         return SectionResponse.of(createByUpstationId(request, line));
     }
 
     @Transactional
-    public void delete(Long lineId, Long stationId) {
+    public void delete(Long lineId, Long stationId, PathEvent event) {
+        eventPublisher.publishEvent(event);
+
         Line line = getLine(lineId);
 
         // 찾는 역이 존재하지 않으면 예외
@@ -70,7 +73,7 @@ public class SectionService {
         }
     }
 
-    private SectionResponse createByDownstationId(SectionCreateRequest request, Line line) {
+    private Section createByDownstationId(SectionCreateRequest request, Line line) {
 
         int index = line.getSections().getStations().indexOf(request.getUpStationId());
 
@@ -81,8 +84,9 @@ public class SectionService {
                     request.getDownStationId(),
                     request.getDistance()
             );
+            sectionRepository.save(newSection);
             line.getSections().addSection(newSection);
-            return SectionResponse.of(newSection);
+            return newSection;
         }
 
         // 중간에 추가
@@ -108,10 +112,10 @@ public class SectionService {
         originalSection.changeDownStationId(request.getDownStationId());
         originalSection.changeDistance(request.getDistance());
 
-        return SectionResponse.of(newSection);
+        return newSection;
     }
 
-    private SectionResponse createByUpstationId(SectionCreateRequest request, Line line) {
+    private Section createByUpstationId(SectionCreateRequest request, Line line) {
         int index = line.getSections().getStations().indexOf(request.getDownStationId());
 
         if (index == 0) {
@@ -123,7 +127,7 @@ public class SectionService {
             );
 
             line.getSections().getSections().add(0, newSection);
-            return SectionResponse.of(newSection);
+            return newSection;
         }
 
         // 라인의 중간에 추가
@@ -148,7 +152,7 @@ public class SectionService {
         originalSection.changeDownStationId(request.getUpStationId());
         originalSection.changeDistance(originalSection.getDistance() - request.getDistance());
 
-        return SectionResponse.of(newSection);
+        return newSection;
     }
 
     private int nextIndexOfOriginalSection(Line line, Section originalSection) {

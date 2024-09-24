@@ -1,16 +1,19 @@
 package nextstep.subway.line.api;
 
+import lombok.RequiredArgsConstructor;
 import nextstep.subway.line.api.response.LineResponse;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.presentation.request.LineCreateRequest;
 import nextstep.subway.line.presentation.request.LineUpdateRequest;
 import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.path.domain.PathEvent;
 import nextstep.subway.section.SectionRepository;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.presentation.request.SectionCreateRequest;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import nextstep.subway.station.StationResponse;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,21 +21,18 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class LineService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
     private final SectionRepository sectionRepository;
-
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
-        this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
-    }
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public LineResponse create(LineCreateRequest request) {
+        eventPublisher.publishEvent(new PathEvent(this));
 
         Station upStation = getStationEntity(request.getUpStationId());
         Station downStation = getStationEntity(request.getDownStationId());

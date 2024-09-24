@@ -22,16 +22,7 @@ import static nextstep.subway.steps.StationSteps.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-public class LineAcceptanceTest {
-
-    @Autowired
-    DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        databaseCleanup.execute();
-    }
+public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
      *  When : 지하철 노선을 생성하고
